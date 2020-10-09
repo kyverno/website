@@ -18,6 +18,10 @@ enableMissingTranslationPlaceholders = true
 
 disableKinds = ["taxonomy", "taxonomyTerm"]
 
+ignoreFiles = [ "^OWNERS$", "README[-]+[a-z]*\\.md", "^node_modules$"]
+
+timeout = 3000
+
 # Highlighting config
 pygmentsCodeFences = true
 pygmentsUseClasses = false
@@ -25,7 +29,15 @@ pygmentsUseClasses = false
 pygmentsUseClassic = false
 #pygmentsOptions = "linenos=table"
 # See https://help.farbox.com/pygments.html
-pygmentsStyle = "tango"
+pygmentsStyle = "emacs"
+
+# Norwegian ("no") is sometimes but not currently used for testing.
+# Hindi is disabled because it's currently in development.
+disableLanguages = ["hi", "no"]
+
+[frontmatter]
+date = ["date", ":filename", "publishDate", "lastmod"]
+
 
 # Configure how URLs look like per section.
 [permalinks]
@@ -72,8 +84,7 @@ weight = 1
 # Everything below this are Site Params
 
 [params]
-copyright = "Kyverno"
-privacy_policy = ""
+    copyright = "Copyright © 2020 Nirmata ®."
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
@@ -179,3 +190,16 @@ enable = false
 	icon = "fa fa-envelope"
         desc = "Discuss development issues around the project"
 
+version_menu = "Versions"
+
+time_format_blog = "Monday, January 02, 2006"
+time_format_default = "January 02, 2006 at 3:04 PM PST"
+
+[params.pushAssets]
+css = [
+    "callouts",
+    "styles"
+]
+js = [
+    "script"
+]
