@@ -1,11 +1,9 @@
 ---
-title: "Selecting Resource"
+title: "Match & Exclude"
 weight: 2
 description: >
   
 ---
-
-# Match & Exclude
 
 The `match` and `exclude` filters control which resources policies are applied to. 
 

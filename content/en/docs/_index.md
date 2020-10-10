@@ -1,20 +1,21 @@
 
 ---
-title: "Kyverno Documentation"
-linkTitle: "Kyverno Documentation"
+title: "Kyverno - Kubernetes Native Policy Management"
+linkTitle: "Kyverno - Kubernetes Native Policy Management"
 weight: 20
 menu:
   main:
     weight: 20
 ---
-
+<!-- 
 {{% pageinfo %}}
 Kyverno is a policy engine designed for Kubernetes.
-{{% /pageinfo %}}
+{{% /pageinfo %}} -->
 
-# Kyverno - Kubernetes Native Policy Management
 
-[![Build Status](https://travis-ci.org/kyverno/kyverno.svg?branch=master)](https://travis-ci.org/kyverno/kyverno) [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno)
+![build](https://github.com/kyverno/kyverno/workflows/build/badge.svg) ![prereleaser](https://github.com/kyverno/kyverno/workflows/prereleaser/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) ![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)
+
+![logo](documentation/images/Kyverno_Horizontal.png)
 
 Kubernetes supports declarative validation, mutation, and generation of resource configurations using policies written as Kubernetes resources. 
 

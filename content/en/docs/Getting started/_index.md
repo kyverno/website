@@ -6,7 +6,6 @@ description: >
   What does your user need to know to try your project?
 ---
 
-# Kyverno - Kubernetes Native Policy Management
 Kyverno is a policy engine built for Kubernetes:
 * policies as Kubernetes resources (no new language to learn!)
 * validate, mutate, or generate any resource
@@ -16,21 +15,17 @@ Kyverno is a policy engine built for Kubernetes:
 * block or report violations 
 * test using kubectl 
 
-## Prerequisites
+## Quick Start
 
- Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts. 
+**NOTE** : Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts. 
 To check the version, enter `kubectl version`.
-
-## Installation
 
 Install Kyverno:
 ```console
-kubectl create -f https://raw.githubusercontent.com/nirmata/kyverno/master/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/master/definitions/release/install.yaml
 ```
 
-You can also install Kyverno using a [Helm chart](https://github.com/nirmata/kyverno/blob/master/documentation/installation.md#install-kyverno-using-helm).
-
-## Setup
+You can also install Kyverno using a [Helm chart](#install-kyverno-using-helm).
 
 Add the policy below. It contains a single validation rule that requires that all pods have 
 a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, 
@@ -59,8 +54,6 @@ spec:
             app.kubernetes.io/name: "?*"
 ```
 
-## Try it out!
-
 Try creating a deployment without the required label:
 
 ```console
@@ -76,3 +69,31 @@ resource Deployment/default/nginx was blocked due to the following policies
 require-labels:
   autogen-check-for-labels: 'Validation error: label `app.kubernetes.io/name` is required;
     Validation rule autogen-check-for-labels failed at path /spec/template/metadata/labels/app.kubernetes.io/name/'
+```
+
+Create a pod with the required label. For example from this YAML:
+```yaml
+kind: "Pod"
+apiVersion: "v1"
+metadata:
+  name: nginx
+  labels:
+    app.kubernetes.io/name: nginx
+spec:
+  containers:
+  - name: "nginx"
+    image: "nginx:latest"
+```
+
+This pod configuration complies with the policy rules, and is not blocked. 
+
+Clean up by deleting all cluster policies:
+
+```console
+kubectl delete cpol --all
+```
+
+As a next step, browse the [sample policies](https://github.com/kyverno/kyverno/blob/master/samples/README.md) 
+and learn about [writing policies](https://kyverno.io/docs/writing-policies/). 
+You can test policies using the [Kyverno cli](https://kyverno.io/docs/kyverno-cli/). 
+See [docs](https://kyverno.io/docs) for complete details.
