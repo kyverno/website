@@ -5,8 +5,6 @@ description:
 weight: 4
 ---
 
-# Policy Violations
-
 Policy Violations are created to:
 1. Report resources that do not comply with validation rules with `validationFailureAction` set to `audit`.
 2. Report existing resources (i.e. resources created before the policy was created) that do not comply with validation or mutation rules.

@@ -6,8 +6,6 @@ weight: 6
 ---
 
 
-# Validating Resources and Requests
-
 A validation rule can be used to validate resources or to deny API requests based on other information.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along a set of conditions that control when to allow or deny the request.
@@ -255,7 +253,7 @@ spec:
                 runAsNonRoot: true
 ````
 
-Additional examples are available in [samples](/samples/README.md)
+Additional examples are available in [samples](https://github.com/kyverno/kyverno/tree/master/samples)
 
 ## Validation Failure Action
 
@@ -298,6 +296,4 @@ spec:
               value: "DELETE"        
 ```
 
-Learn more about using [variables](writing-policies-variables.md) and [conditions](writing-policies-preconditions.md) in upcoming sections.
-
----
+Learn more about using [variables](https://kyverno.io/docs/writing-policies/variables/) and [conditions](https://kyverno.io/docs/writing-policies/precondition) in upcoming sections.

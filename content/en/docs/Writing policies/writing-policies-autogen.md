@@ -5,9 +5,10 @@ description:
 weight: 11
 ---
 
-# Auto Generating Rules for Pod Controllers
+{{% pageinfo %}}
+Note: The auto-gen feature is only supported for validation rules with patterns and mutation rules with overlay. Validate - Deny rules and Generate rules are not supported.
+{{% /pageinfo %}}
 
-**Note: The auto-gen feature is only supported for validation rules with patterns and mutation rules with overlay. Validate - Deny rules and Generate rules are not supported.**
 
 Writing policies on pods helps address all pod creation flows. 
 

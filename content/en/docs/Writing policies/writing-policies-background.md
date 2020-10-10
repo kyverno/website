@@ -5,8 +5,6 @@ description:
 weight: 12
 ---
 
-# Background processing
-
 Kyverno applies policies during admission control and to existing resources in the cluster that may have been created before a policy was created. The application of policies to existing resources is referred to as `background` processing. 
 
 Note, that Kyverno does not mutate existing resources, and will only report policy violation for existing resources that do not match mutation, validation, or generation rules.
