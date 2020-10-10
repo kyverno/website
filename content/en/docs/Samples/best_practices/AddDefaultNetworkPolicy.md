@@ -4,8 +4,6 @@ title: "Default deny all ingress traffic"
 linkTitle: "Default deny all ingress traffic"
 weight: 1
 description: >
-  By default, Kubernetes allows communications across all pods within a cluster. Network policies and, a CNI that supports network policies, must be used to restrict communinications.
-  A default NetworkPolicy should be configured for each namespace to default deny all ingress traffic to the pods in the namespace. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application pods from select sources.
 ---
 
 By default, Kubernetes allows communications across all pods within a cluster. Network policies and, a CNI that supports network policies, must be used to restrict communinications. 

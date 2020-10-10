@@ -1,7 +1,7 @@
 
 ---
-title: "Kyverno - Kubernetes Native Policy Management"
-linkTitle: "Kyverno - Kubernetes Native Policy Management"
+title: "Kyverno"
+linkTitle: "Kyverno "
 weight: 20
 menu:
   main:

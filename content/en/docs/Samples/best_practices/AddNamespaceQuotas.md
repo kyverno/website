@@ -4,7 +4,6 @@ title: "Configure namespace limits and quotas"
 linkTitle: "Configure namespace limits and quotas"
 weight: 2
 description: >
-  To limit the number of resources like CPU and memory, as well as objects that may be consumed by workloads in a namespace, it is important to configure resource limits and quotas for each namespace. The generated default limitrange sets the default quotas for a container.
 ---
 
 By default, Kubernetes allows communications across all pods within a cluster. Network policies and, a CNI that supports network policies, must be used to restrict communinications. 
