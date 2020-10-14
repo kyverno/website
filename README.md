@@ -1,3 +1,3 @@
-# website
+# The Kyverno Website
 
-The Kyverno Website - https://kyverno.io
+https://kyverno.io
