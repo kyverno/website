@@ -197,11 +197,6 @@ enable = false
 	icon = "fab fa-twitter"
         desc = "Follow Kyverno on Twitter for the latest news!"
 [[params.links.user]]
-	name = "Kyverno GitHub repository"
-	url = "https://github.com/kyverno/kyverno"
-	icon = "fab fa-github"
-        desc = "Kyverno GitHub repository"
-[[params.links.user]]
 	name = "Kyverno slack channel"
 	url = "https://kubernetes.slack.com/"
 	icon = "fab fa-slack"
