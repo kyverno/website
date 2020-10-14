@@ -1,91 +1,53 @@
 +++
 title = "Kyverno"
 linkTitle = "Kyverno"
-
 +++
 
-{{< blocks/cover title="Kubernetes Native Policy Management" image_anchor="top" height="full" color="orange" >}}
-<div class="mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="{{< relref "/docs" >}}">
-		Learn More <i class="fas fa-arrow-alt-circle-right ml-2"></i>
+{{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
+<h1 class="text-center">Kubernetes Native Policy Management</h1>
+<div class="mt-5 mx-auto">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#td-block-1">
+		Learn More <i class="fa fa-chalkboard-teacher ml-2"></i>
 	</a>
 	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/kyverno/kyverno">
-		Github <i class="fab fa-github ml-2 "></i>
-	</a>
-	<p class="lead mt-5">Manage policies as Kubernetes resources. Validate, mutate, and generate configurations. Select resources based on labels and wildcards. View policy enforcement as events. Detect policy violations for existing resources.</p>
+		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
+  	</a>
 	{{< blocks/link-down color="info" >}}
 </div>
 {{< /blocks/cover >}}
 
 
-{{% blocks/lead color="primary" %}}
-Manage policies as Kubernetes resources. Validate, mutate, and generate configurations. Select resources based on labels and wildcards. View policy enforcement as events. Detect policy violations for existing resources.{{% /blocks/lead %}}
+{{% blocks/lead color="light" %}}
 
-{{< blocks/section color="dark" >}}
-{{% blocks/feature icon="fa-lightbulb" title="New chair metrics!" %}}
-The Goldydocs UI now shows chair size metrics by default.
+Kyverno is a policy engine designed for Kubernetes. With Kyverno, policies are managed as
+Kubernetes resources and no new language is required to write policies. This allows using 
+familiar tools such as `kubectl`, `Git`, and `kustomize` to manage policies. Kyverno policies 
+can validate, mutate, and generate Kubernetes resources. The Kyverno CLI 
+can be used to test policies and validate resources as part of the CI/CD pipeline.  
 
-Please follow this space for updates!
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/kyverno/kyverno" %}}
-We do a [Pull Request](https://github.com/kyverno/kyverno/pulls) contributions workflow on **GitHub**. New users are always welcome!
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-twitter" title="Follow us on Twitter!" url="https://twitter.com/kyverno" %}}
-For announcement of latest features etc.
-{{% /blocks/feature %}}
-
-
-{{< /blocks/section >}}
-
-
-{{< blocks/section >}}
-<div class="col" >
-<h1 class="text-center">Features</h1>
-  <div class="text-center" >
-  <ul >
-     <li>Policy definitions as Kubernetes resources</li>
-     <li>Validate, mutate, or generate Kubernetes resources</li>
-     <li>Match resources using label selectors and wildcards</li>
-     <li>Mutate using overlays (like Kustomize) or JSON Patch</li>
-     <li>Validate using overlays and powerful conditionals</li>
-     <li>Generate default resources during namespace creation</li>
-     <li>Reporting of policy violations for existing resources</li>
-     <li>Kubernetes events for resource changes and policy enforcement</li>
-     <li>Test policy changes using kubectl</li>
-  </ul>
-  </div>
-
-
+<div class="mt-5 mx-auto">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="{{< relref "/docs" >}}">
+		Documentation <i class="fa fa-book ml-2"></i>
+	</a>
+	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/kyverno/kyverno/blob/master/samples/README.md">
+		Sample Policies <i class="fa fa-shield-alt ml-2 "></i>
+  	</a>	
 </div>
 
-{{< /blocks/section >}}
-
-{{< blocks/section >}}
-{{% blocks/feature icon="fab fa-app-store-ios" title="Download **from AppStore**" %}}
-Get the Goldydocs app!
-{{% /blocks/feature %}}
+{{% /blocks/lead %}}
 
 
-{{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/kyverno/kyverno" %}}
-We do a [Pull Request](https://github.com/google/docsy-example/pulls) contributions workflow on **GitHub**. New users are always welcome!
-{{% /blocks/feature %}}
+{{< blocks/lead color="gray" >}}
+
+<h1 class="text-center">Join our community</h1>
+
+<p class="mt-5 mx-auto">
+	Interested in learning and contributing? Sign up on our <a href="https://groups.google.com/g/kyverno">mailing list</a> 
+	or <a href="https://kubernetes.slack.com/">slack channel</a> for discussions, and join our next community meeting. You 
+	can also browse through <a href="https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">issues</a>
+	and suggest <a href="https://github.com/kyverno/kyverno/issues">features</a> or sample policies.
+</p>
 
 
-{{% blocks/feature icon="fab fa-twitter" title="Follow us on Twitter!" url="https://twitter.com/kyverno" %}}
-For announcement of latest features etc.
-{{% /blocks/feature %}}
+{{< /blocks/lead >}}
 
-
-{{< /blocks/section >}}
-
-{{< blocks/section >}}
-
-<div class="col-12">
-<h1 class="text-center">This is another Section</h1>
-</div>
-
-{{< /blocks/section >}}

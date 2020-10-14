@@ -66,8 +66,9 @@ id = ""
 [languages]
 [languages.en]
 title = "Kyverno"
-description = "Kyverno website"
+description = "Kyverno Website"
 languageName ="English"
+
 # Weight used for sorting.
 weight = 1
 
@@ -84,10 +85,34 @@ weight = 1
 # Everything below this are Site Params
 
 [params]
-    copyright = "Copyright © 2020 Nirmata ®."
+    copyright = "The Kyverno Authors"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
+
+# Top-level navigation (horizontal)
+
+[[menu.main]]
+    name = "About Kyverno"
+    weight = 10
+    url = "#td-block-1"
+[[menu.main]]
+    name = "Documentation"
+    weight = 20
+    url = "/docs/"
+[[menu.main]]
+    name = "Sample Policies"
+    weight = 30
+    url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
+[[menu.main]]
+    name = "GitHub"
+    weight = 40
+    url = "https://github.com/kyverno/kyverno/"
+[[menu.main]]
+    name = "Resources"
+    weight = 50
+    url = "/blog/"
+
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [params.versions] set.
@@ -109,6 +134,7 @@ url_latest_version = "https://kyverno.io"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/kyverno/website"
+
 # An optional link to a related project repo. For example, the sibling repository where your product code lives.
 github_project_repo = "https://github.com/kyverno/kyverno"
 
@@ -129,14 +155,19 @@ prism_syntax_highlighting = false
 
 # User interface configuration
 [params.ui]
+
 # Enable to show the side bar menu in its compact state.
 sidebar_menu_compact = false
+
 #  Set to true to disable breadcrumb navigation.
 breadcrumb_disable = false
+
 #  Set to true to hide the sidebar search box (the top nav search box will still be displayed if search is enabled)
 sidebar_search_disable = false
+
 #  Set to false if you don't want to display a logo (/assets/icons/logo.svg) in the top nav bar
-navbar_logo = true
+navbar_logo = false
+
 # Set to true to disable the About link in the site footer
 footer_about_disable = false
 
@@ -146,6 +177,7 @@ footer_about_disable = false
 # add "hide_feedback: true" to the page's front matter.
 [params.ui.feedback]
 enable = true
+
 # The responses that the user sees after clicking "yes" (the page was helpful) or "no" (the page was not helpful).
 yes = 'Glad to hear it! Please <a href="https://github.com/kyverno/kyverno/issues/new">tell us how we can improve</a>.'
 no = 'Sorry to hear that. Please <a href="https://github.com/kyverno/kyverno/issues/new">tell us how we can improve</a>.'
@@ -158,37 +190,27 @@ enable = false
 
 [params.links]
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
+
 [[params.links.user]]
-	name = "User mailing list"
-	url = "https://groups.google.com/g/kyverno"
-	icon = "fa fa-envelope"
-        desc = "Discussion and help from your fellow users"
-[[params.links.user]]
-	name ="Twitter"
+	name ="Follow Kyverno on Twitter"
 	url = "https://twitter.com/kyverno"
 	icon = "fab fa-twitter"
-        desc = "Follow us on Twitter to get the latest news!"
-#[[params.links.user]]
-#	name = "Stack Overflow"
-#	url = "https://stackoverflow.com/kyverno"
-#	icon = "fab fa-stack-overflow"
-#        desc = "Practical questions and curated answers"
-# Developer relevant links. These will show up on right side of footer and in the community page if you have one.
-[[params.links.developer]]
-	name = "GitHub"
+        desc = "Follow Kyverno on Twitter for the latest news!"
+[[params.links.user]]
+	name = "Kyverno GitHub repository"
 	url = "https://github.com/kyverno/kyverno"
 	icon = "fab fa-github"
-        desc = "Development takes place here!"
-[[params.links.developer]]
-	name = "Slack"
+        desc = "Kyverno GitHub repository"
+[[params.links.user]]
+	name = "Kyverno slack channel"
 	url = "https://kubernetes.slack.com/"
 	icon = "fab fa-slack"
-        desc = "Chat with other project developers"
-[[params.links.developer]]
-	name = "Kyverno Google Group"
+        desc = "Kyverno slack channel"
+[[params.links.user]]
+	name = "Kyverno mailing list"
 	url = "https://groups.google.com/g/kyverno"
 	icon = "fa fa-envelope"
-        desc = "Discuss development issues around the project"
+        desc = "Kyverno mailing list"
 
 version_menu = "Versions"
 
@@ -200,6 +222,7 @@ css = [
     "callouts",
     "styles"
 ]
+
 js = [
     "script"
 ]
