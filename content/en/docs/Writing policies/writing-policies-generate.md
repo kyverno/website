@@ -1,15 +1,17 @@
 ---
 title: Generate Resources
-slug: /generate-resource
-description: 
-weight: 8
+description: Create additional resources based on resource creation, or label/metadata changes. 
+weight: 4
 ---
 
-The ```generate``` rule can used to create additional resources when a new resource is created. This is useful to create supporting resources, such as new role bindings for a new namespace.
+A ```generate``` rule can used to create additional resources when a new resource is created, or when labels or metadata is updated for a resource. This is useful to create supporting resources, such as new role bindings or network policies for a namespace.
 
 The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource and its possible to match or exclude API requests based on subjects, roles, etc. 
 
 The generate rule is triggered during a API CREATE operation. To keep resources synchronized across changes you can use the `synchronize` property. When `synchronize`  is set to `true`  the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
+
+
+## Generate a ConfigMap using inline data
 
 This policy sets the Zookeeper and Kafka connection strings for all namespaces.
 
@@ -36,7 +38,7 @@ spec:
         kind: ConfigMap
         name: zk-kafka-address
         # generate the resource in the new namespace
-        namespace: "{{request.object.metadata.name}}"
+        namespace: "{{request.object.metadata.namespace}}"
         data:
           kind: ConfigMap
           data:
@@ -44,7 +46,7 @@ spec:
             KAFKA_ADDRESS: "192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092"
 ```
 
-## Example 1
+## Clone a ConfigMap and propagate changes
 
 ````yaml
 apiVersion: kyverno.io/v1
@@ -53,7 +55,7 @@ metadata:
   name: basic-policy
 spec:
   rules:
-    - name: "Generate ConfigMap"
+    - name: "Clone ConfigMap"
       match:
         resources:
           kinds: 
@@ -65,37 +67,21 @@ spec:
           - "kube-public"
           - "kyverno"
       generate:
-        kind: ConfigMap # Kind of resource 
-        name: default-config # Name of the new Resource
-        namespace: "{{request.object.metadata.name}}" # namespace that triggers this rule
+        # Kind of generated resource 
+        kind: ConfigMap 
+        # Name of the generated resource
+        name: default-config 
+        # namespace for the generated resource
+        namespace: "{{request.object.metadata.name}}" 
+        # propagate changes from the upstream resource
         synchronize : true
         clone:
           namespace: default
           name: config-template
-    - name: "Generate Secret (insecure)"
-      match:
-        resources:
-          kinds: 
-          - Namespace
-      generate:
-        kind: Secret
-        name: mongo-creds
-        namespace: "{{request.object.metadata.name}}" # namespace that triggers this rule
-        data:
-          data:
-            DB_USER: YWJyYWthZGFicmE=
-            DB_PASSWORD: YXBwc3dvcmQ=
-        metadata:
-          labels:
-            purpose: mongo
 ````
 
-In this example each namespaces will receive 2 new resources:
-  * A `ConfigMap` cloned from `default/config-template`.
-  * A `Secret` with values `DB_USER` and `DB_PASSWORD`, and label `purpose: mongo`.
+## Generate a NetworkPolicy
 
-
-## Example 2
 ````yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -118,16 +104,16 @@ spec:
     generate: 
       kind: NetworkPolicy
       name: deny-all-traffic
-      namespace: "{{request.object.metadata.name}}" # namespace that triggers this rule
-      data:
+      namespace: "{{request.object.metadata.namespace}}" 
+      data:  
         spec:
           # select all pods in the namespace
           podSelector: {}
           policyTypes: 
           - Ingress
-        metadata:
-          labels:
-            policyname: "default"
+          - Egress
 ````
 
-In this example new namespaces will receive a `NetworkPolicy` that by default denies all inbound and outbound traffic.
+In this example new namespaces will receive a `NetworkPolicy` that denies all inbound and outbound traffic.
+
+

@@ -1,15 +1,37 @@
 ---
 title: Kyverno CLI
-slug: /kyverno-cli
-description: 
-weight: 5
+description: >
+  Test policies and validate resources outside a cluster.
+weight: 70
 ---
 
 The Kyverno Command Line Interface (CLI) is designed to validate policies and test the behavior of applying policies to resources before adding the policy to a cluster. It can be used as a kubectl plugin and as a standalone CLI.
 
-## Build the CLI
 
-You can build the CLI binary locally, then move the binary into a directory in your PATH.
+## Installing the CLI
+
+You can use [Krew](https://github.com/kubernetes-sigs/krew) to install the Kyverno CLI:
+
+```bash
+# Install Kyverno CLI using kubectl krew plugin manager
+kubectl krew install kyverno 
+
+# test the Kyverno CLI
+kubectl kyverno version  
+
+```
+
+## Install via AUR (archlinux)
+
+You can install the Kyverno cli via your favourite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
+
+```
+yay -S kyverno-git
+```
+
+## Building the CLI
+
+You can also build the CLI binary from the Git repository, and then move the binary into a directory in your PATH.
 
 ```bash
 git clone https://github.com/kyverno/kyverno.git
@@ -18,25 +40,8 @@ make cli
 mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 ```
 
-You can also use [Krew](https://github.com/kubernetes-sigs/krew)
-```bash
-# Install kyverno using krew plugin manager
-kubectl krew install kyverno 
 
-#example 
-kubectl kyverno version  
-
-```
-
-## Install via AUR (archlinux)
-
-You can install the kyverno cli via your favourite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
-
-```
-yay -S kyverno-git
-```
-
-## Commands
+## CLI Commands
 
 ### Version
 
@@ -49,14 +54,17 @@ kyverno version
 ```
 
 ### Validate
-Validates a policy, can validate multiple policy resource description files or even an entire folder containing policy resource description 
-files. Currently supports files with resource description in yaml. The policies can also be passed from stdin.
+
+Validates a policy, can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
 
 Example:
+
 ```
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies
 ```
+
 Passing policy from stdin:
+
 ```
 kustomize build nginx/overlays/envs/prod/ | kyverno validate -
 ```
@@ -64,6 +72,7 @@ kustomize build nginx/overlays/envs/prod/ | kyverno validate -
 Use the -o <yaml/json> flag to display the mutated policy.
 
 Example:
+
 ```
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
 ```
@@ -71,13 +80,14 @@ kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFull
 Policy can also be validated with CRDs. Use -c flag to pass the CRD, can pass multiple CRD files or even an entire folder containin CRDs.
 
 Example:
+
 ```
 kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFullOfCRDs
 ```
 
 ### Apply
-Applies policies on resources, and supports applying multiple policies on multiple resources in a single command.
-Also supports applying the given policies to an entire cluster. The current kubectl context will be used to access the cluster.
+
+Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current kubectl context will be used to access the cluster.
 
 Displays mutate results to stdout, by default. Use the -o <path> flag to save mutated resources to a file or directory.
 
@@ -122,7 +132,7 @@ kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/re
 
 Format of value.yaml :
 
-```
+```yaml
 policies:
   - name: <policy1 name>
     resources:
@@ -150,7 +160,7 @@ Example:
 
 Policy file(add_network_policy.yaml):
 
-```
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -185,12 +195,13 @@ spec:
 ```
 Resource file(required_default_network_policy.yaml) :
 
-```
+```yaml
 kind: Namespace
 apiVersion: v1
 metadata: 
     name: "devtest"
 ```
+
 Applying policy on resource using set/-s flag:
 
 ```
@@ -199,9 +210,9 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 
 Applying policy on resource using --values_file/-f flag:
 
-yaml file with variables(value.yaml) :
+YAML file with variables(value.yaml) :
 
-```
+```yaml
 policies:
   - name: default-deny-ingress
     resources:
@@ -213,3 +224,4 @@ policies:
 ```
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
+

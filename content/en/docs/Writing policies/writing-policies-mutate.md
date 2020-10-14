@@ -1,13 +1,13 @@
 ---
-title: Mutate Resources
-slug: /mutate-resource
-description: 
-weight: 7
+title: Mutating Resources
+description: >
+  Update resources during admission controls 
+weight: 3
 ---
 
-The ```mutate``` rule can be used to add, replace, or delete elements in matching resources. A mutate rule can be written as a JSON Patch or as an overlay. 
+A ```mutate``` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern. 
 
-By using a ```patch``` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. Using an ```overlay``` is convenient for describing the desired state of the resource.
+By using a ```patch``` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A ```strategic merge patch``` is useful for controlling merge behaviors on elements with lists. Using an ```overlay``` is convenient for describing the desired state of the resource.
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
 
@@ -35,9 +35,9 @@ spec:
                 imagePullPolicy: "Always"
 ```
 
-## JSONPatch - RFC 6902
+## RFC 6902 JSONPatch
 
-A JSON Patch rule provides an alternate way to mutate resources.
+A JSON Patch provides a precise way to mutate resources.
 
 [JSONPatch](http://jsonpatch.com/) supports the following operations (in the 'op' field):
 * **add**
@@ -114,7 +114,7 @@ spec:
             op: remove
 ````
 
-This policy adds elements to list:
+This policy rule adds elements to list:
 
 ````yaml
 apiVersion: kyverno.io/v1
@@ -142,10 +142,9 @@ spec:
 Note, that if **remove** operation cannot be applied, then this **remove** operation will be skipped with no error.
 
 
-
 ## Strategic Merge Patch
 
-A `patchStrategicMerge` patch is [stategic-merge](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md)-style patch. The `patchStrategicMerge` overlay resolves to a partial resource definition.
+The `kubectl` command uses a [stategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
 This policy sets the imagePullPolicy, adds command to container `nginx`:
 ````yaml
@@ -201,7 +200,7 @@ spec:
         overlay:
           spec:
             containers:
-            # the wildcard * will match all containers in the list
+            # the wildcard * will match all containers
             - (name): "*"
               resources:
                 requests:
@@ -233,7 +232,6 @@ spec:
         - addresses:
           - ip: 192.168.42.172
 ````
-
 
 
 ### Conditional logic using anchors
@@ -320,9 +318,3 @@ The anchor processing behavior for mutate conditions is as follows:
 
 2. Next, all tag-values without anchors and all `add anchor` tags are processed to apply the mutation. 
 
-
-## Additional Details
-
-Additional details on mutation overlay behaviors are available on the wiki: [Mutation Overlay](https://github.com/kyverno/kyverno/wiki/Mutation-Overlay)
-
----

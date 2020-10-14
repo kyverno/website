@@ -1,8 +1,8 @@
 ---
 title: Policy Violations
-slug: /policy-violation
-description: 
-weight: 4
+description: >
+    Manage policy violations for non-compliant resources.
+weight: 60
 ---
 
 Policy Violations are created to:

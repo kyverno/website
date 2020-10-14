@@ -1,12 +1,11 @@
 ---
-title: Validate Resources
-slug: validate-resource
-description: 
-weight: 6
+title: Validating Resources
+description: Check resource configurations for policy compliance
+weight: 2
 ---
 
 
-A validation rule can be used to validate resources or to deny API requests based on other information.
+A validation rule can be used to check resource configurations for compliance during admission control or via periodic scans.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along a set of conditions that control when to allow or deny the request.
 
@@ -45,7 +44,7 @@ spec:
                     cpu: "?*"
 ```
 
-This policy prevents users from changing default network policies:
+This policy prevents users from changing network policies with names that end with `-default`:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -86,8 +85,38 @@ A validation rule that checks resource data is defined as an overlay pattern tha
 
 
 ### Wildcards
+
 1. `*` - matches zero or more alphanumeric characters
 2. `?` - matches a single alphanumeric character
+
+
+The following validation rule checks for a label in Deployment, StatefuleSet and DaemonSet resources:
+
+````yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validation-example
+spec:
+  rules:
+    - name: check-label
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefuleSet
+            - DaemonSet
+      validate:
+        message: "The label app is required"    
+        pattern:
+          spec:
+            template:
+              metadata:
+                labels:
+                  app: "?*"
+
+````
+
 
 ### Operators
 
@@ -146,42 +175,6 @@ For equality anchors, a child element is considered to be part of the "then" cla
 This is read as "If a hostPath volume exists, then the path must not be equal to /var/run/docker.sock".
 
 
-### Validation Pattern Examples
-
-The following rule prevents the creation of Deployment, StatefuleSet and DaemonSet resources without label 'app' in selector:
-
-````yaml
-
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: validation-example
-spec:
-  rules:
-    - name: check-label
-      match:
-        resources:
-          # Kind specifies one or more resource types to match
-          kinds:
-            - Deployment
-            - StatefuleSet
-            - DaemonSet
-          # Name is optional and can use wildcards
-          name: "*"
-          # Selector is optional
-          selector:
-      validate:
-        # Message is optional, used to report custom message if the rule condition fails
-        message: "The label app is required"    
-        pattern:
-          spec:
-            template:
-              metadata:
-                labels:
-                  app: "?*"
-
-````
-
 #### Existence anchor: at least one
 
 A variation of an anchor, is to check that in a list of elements at least one element exists that matches the patterm. This is done by using the ^(...) notation for the field.
@@ -216,7 +209,7 @@ spec:
                             memory: "2048Mi"
 ````
 
-#### Logical OR across validation patterns
+#### `anyPattern` - logical OR across multiple validation patterns
 
 In some cases content can be defined at a different level. For example, a security context can be defined at the Pod or Container level. The validation rule should pass if either one of the conditions is met. 
 
@@ -253,15 +246,14 @@ spec:
                 runAsNonRoot: true
 ````
 
-Additional examples are available in [samples](https://github.com/kyverno/kyverno/tree/master/samples)
 
 ## Validation Failure Action
 
-The `validationFailureAction` attribute controls processing behaviors when the resource is not compliant with the policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validate rule can `deny` a request based on a set of conditions. This is useful for applying fine grained access controls that cannot be performed using Kubernetes RBAC.
+In addition to applying patterns to check resources, a validation rule can `deny` a request based on a set of conditions. This is useful for applying fine grained access controls that cannot be performed using Kubernetes RBAC.
 
 For example, the policy below denies `delete requests` for objects with the label `app.kubernetes.io/managed-by: kyverno` and for all users who do not have the `cluster-admin` role.
 
@@ -295,5 +287,3 @@ spec:
               operator: Equals
               value: "DELETE"        
 ```
-
-Learn more about using [variables](https://kyverno.io/docs/writing-policies/variables/) and [conditions](https://kyverno.io/docs/writing-policies/precondition) in upcoming sections.
