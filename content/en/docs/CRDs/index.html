@@ -599,6 +599,96 @@ interface{}
 <p>
 <p>ConditionOperator defines the type for condition operator</p>
 </p>
+<h3 id="kyverno.io/v1.ConfigMapReference">ConfigMapReference
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#kyverno.io/v1.ContextEntry">ContextEntry</a>)
+</p>
+<p>
+</p>
+<table class="table table-striped">
+<thead class="thead-dark">
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>name</code></br>
+<em>
+string
+</em>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>namespace</code></br>
+<em>
+string
+</em>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="kyverno.io/v1.ContextEntry">ContextEntry
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#kyverno.io/v1.Rule">Rule</a>)
+</p>
+<p>
+</p>
+<table class="table table-striped">
+<thead class="thead-dark">
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>name</code></br>
+<em>
+string
+</em>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>path</code></br>
+<em>
+string
+</em>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>configMap</code></br>
+<em>
+<a href="#kyverno.io/v1.ConfigMapReference">
+ConfigMapReference
+</a>
+</em>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h3 id="kyverno.io/v1.Deny">Deny
 </h3>
 <p>
@@ -704,7 +794,6 @@ RequestInfo
 </em>
 </td>
 <td>
-<p>UserRequestInfo &hellip;</p>
 </td>
 </tr>
 </tbody>
@@ -973,7 +1062,8 @@ interface{}
 </em>
 </td>
 <td>
-<p>Specifies overlay patterns</p>
+<p>Specifies overlay patterns
+Overlay is preserved for backwards compatibility and will be removed in Kyverno 1.5+</p>
 </td>
 </tr>
 <tr>
@@ -986,7 +1076,28 @@ interface{}
 </em>
 </td>
 <td>
-<p>Specifies JSON Patch</p>
+<p>Specifies JSON Patch
+Patches is preserved for backwards compatibility and will be removed in Kyverno 1.5+</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>patchStrategicMerge</code></br>
+<em>
+interface{}
+</em>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>patchesJson6902</code></br>
+<em>
+string
+</em>
+</td>
+<td>
 </td>
 </tr>
 </tbody>
@@ -1550,6 +1661,17 @@ string
 </tr>
 <tr>
 <td>
+<code>annotations</code></br>
+<em>
+map[string]string
+</em>
+</td>
+<td>
+<p>Specifies map of annotations</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>selector</code></br>
 <em>
 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#labelselector-v1-meta">
@@ -1584,6 +1706,18 @@ Kubernetes meta/v1.LabelSelector
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<code>apiVersion</code></br>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Specifies resource apiVersionm</p>
+</td>
+</tr>
 <tr>
 <td>
 <code>kind</code></br>
@@ -1629,7 +1763,7 @@ string
 <a href="#kyverno.io/v1.Spec">Spec</a>)
 </p>
 <p>
-<p>Rule is set of mutation, validation and generation actions
+<p>Rule contains a mutation, validation, or generation action
 for the single resource description</p>
 </p>
 <table class="table table-striped">
@@ -1648,7 +1782,21 @@ string
 </em>
 </td>
 <td>
-<p>Specifies rule name</p>
+<p>A unique label for the rule</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>context</code></br>
+<em>
+<a href="#kyverno.io/v1.ContextEntry">
+[]ContextEntry
+</a>
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Defines variables that can be used during rule execution.</p>
 </td>
 </tr>
 <tr>
@@ -1662,8 +1810,8 @@ MatchResources
 </td>
 <td>
 <em>(Optional)</em>
-<p>Specifies resources for which the rule has to be applied.
-If it&rsquo;s defined, &ldquo;kind&rdquo; inside MatchResources block is required.</p>
+<p>Selects resources for which the policy rule should be applied.
+If it&rsquo;s defined, &ldquo;kinds&rdquo; inside MatchResources block is required.</p>
 </td>
 </tr>
 <tr>
@@ -1677,7 +1825,7 @@ ExcludeResources
 </td>
 <td>
 <em>(Optional)</em>
-<p>Specifies resources for which rule can be excluded</p>
+<p>Selects resources for which the policy rule should not be applied.</p>
 </td>
 </tr>
 <tr>
@@ -1691,7 +1839,7 @@ ExcludeResources
 </td>
 <td>
 <em>(Optional)</em>
-<p>Allows controlling policy rule execution</p>
+<p>Allows condition-based control of the policy rule execution.</p>
 </td>
 </tr>
 <tr>
@@ -1705,7 +1853,7 @@ Mutation
 </td>
 <td>
 <em>(Optional)</em>
-<p>Specifies patterns to mutate resources</p>
+<p>Modifies matching resources.</p>
 </td>
 </tr>
 <tr>
@@ -1719,7 +1867,7 @@ Validation
 </td>
 <td>
 <em>(Optional)</em>
-<p>Specifies patterns to validate resources</p>
+<p>Checks matching resources.</p>
 </td>
 </tr>
 <tr>
@@ -1733,7 +1881,7 @@ Generation
 </td>
 <td>
 <em>(Optional)</em>
-<p>Specifies patterns to create additional resources</p>
+<p>Generates new resources.</p>
 </td>
 </tr>
 </tbody>
