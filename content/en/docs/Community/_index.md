@@ -14,8 +14,8 @@ To attend our community meeting join the [Kyverno group](https://groups.google.c
 
 Thanks for your interest in contributing! Here are a few pointers to help get you started:
 
-- Please review and agree to abide with the [Code of Conduct](https://github.com/kyverno/kyverno/CODE_OF_CONDUCT.md) before contributing.
-- We encourage all contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/CONTRIBUTING.md).
+- Please review and agree to abide with the [Code of Conduct](https://github.com/kyverno/kyverno/blob/master/CODE_OF_CONDUCT.md) before contributing.
+- We encourage all contributions and encourage you to read our [contribution guidelines]https://github.com/kyverno/kyverno/blob/master/CONTRIBUTING.md).
 - See the [Wiki](https://github.com/kyverno/kyverno/wiki) for developer documentation.
 - Browse through the [open issues](https://github.com/kyverno/kyverno/issues)
 
