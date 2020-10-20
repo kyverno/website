@@ -94,24 +94,24 @@ weight = 1
 
 [[menu.main]]
     name = "About Kyverno"
-    weight = 10
+    weight = -100
     url = "#td-block-1"
 [[menu.main]]
     name = "Documentation"
-    weight = 20
-    url = "/docs/introduction/"
+    weight = -99
+    url = "/docs"
 [[menu.main]]
     name = "Sample Policies"
-    weight = 30
+    weight = -98
     url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
 [[menu.main]]
     name = "GitHub"
-    weight = 40
+    weight = -97
     url = "https://github.com/kyverno/kyverno/"
 [[menu.main]]
     name = "Resources"
-    weight = 50
-    url = "/resources/"
+    weight = -96
+    url = "/resources"
 
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
@@ -142,7 +142,7 @@ github_project_repo = "https://github.com/kyverno/kyverno"
 # github_subdir = ""
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
-#gcs_engine_id = "011737558837375720776:fsdu1nryfng"
+gcs_engine_id = "016003b0b44d00772"
 
 # Enable Algolia DocSearch
 algolia_docsearch = false
@@ -163,7 +163,7 @@ sidebar_menu_compact = false
 breadcrumb_disable = false
 
 #  Set to true to hide the sidebar search box (the top nav search box will still be displayed if search is enabled)
-sidebar_search_disable = false
+sidebar_search_disable = true
 
 #  Set to false if you don't want to display a logo (/assets/icons/logo.svg) in the top nav bar
 navbar_logo = false
