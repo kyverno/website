@@ -1,10 +1,11 @@
 baseURL = "/"
+languageCode = "en-us"
 title = "Kyverno"
+theme = ["docsy"]
+description = "Kyverno is a policy engine designed for Kubernetes"
+Paginate = 20
 
 enableRobotsTXT = true
-
-# Hugo allows theme composition (and inheritance). The precedence is from left to right.
-theme = ["docsy"]
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
@@ -38,7 +39,6 @@ disableLanguages = ["hi", "no"]
 [frontmatter]
 date = ["date", ":filename", "publishDate", "lastmod"]
 
-
 # Configure how URLs look like per section.
 [permalinks]
 blog = "/:section/:year/:month/:day/:slug/"
@@ -56,6 +56,34 @@ resampleFilter = "CatmullRom"
 quality = 75
 anchor = "smart"
 
+
+# First one is picked as the Twitter card image if not set on page.
+# images = ["images/project-illustration.png"]
+
+# Top-level navigation (horizontal)
+
+[[menu.main]]
+    name = "About Kyverno"
+    weight = -103
+    url = "#td-block-1"
+[[menu.main]]
+    name = "Documentation"
+    weight = -102
+    url = "/docs"
+[[menu.main]]
+    name = "Sample Policies"
+    weight = -101
+    url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
+[[menu.main]]
+    name = "GitHub"
+    weight = -100
+    url = "https://github.com/kyverno/kyverno/"
+[[menu.main]]
+    name = "Resources"
+    weight = -99
+    url = "/resources"
+
+
 [services]
 [services.googleAnalytics]
 # Comment out the next line to disable GA tracking. Also disables the feature described in [params.ui.feedback].
@@ -66,7 +94,7 @@ id = ""
 [languages]
 [languages.en]
 title = "Kyverno"
-description = "Kyverno Website"
+description = "Kyverno is a policy engine designed for Kubernetes"
 languageName ="English"
 
 # Weight used for sorting.
@@ -86,33 +114,6 @@ weight = 1
 
 [params]
     copyright = "The Kyverno Authors"
-
-# First one is picked as the Twitter card image if not set on page.
-# images = ["images/project-illustration.png"]
-
-# Top-level navigation (horizontal)
-
-[[menu.main]]
-    name = "About Kyverno"
-    weight = -100
-    url = "#td-block-1"
-[[menu.main]]
-    name = "Documentation"
-    weight = -99
-    url = "/docs"
-[[menu.main]]
-    name = "Sample Policies"
-    weight = -98
-    url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
-[[menu.main]]
-    name = "GitHub"
-    weight = -97
-    url = "https://github.com/kyverno/kyverno/"
-[[menu.main]]
-    name = "Resources"
-    weight = -96
-    url = "/resources"
-
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [params.versions] set.
@@ -157,7 +158,7 @@ prism_syntax_highlighting = false
 [params.ui]
 
 # Enable to show the side bar menu in its compact state.
-sidebar_menu_compact = false
+sidebar_menu_compact = true
 
 #  Set to true to disable breadcrumb navigation.
 breadcrumb_disable = false
