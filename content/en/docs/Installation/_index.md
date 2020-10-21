@@ -317,14 +317,4 @@ data:
 To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration [install.yaml] and redeploy it or modify the `ConfigMap` use `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
 
 
-## Installing outside of the cluster (debug mode)
-
-To build Kyverno in a development environment see: https://github.com/kyverno/kyverno/wiki/Building
-
-To run controller in this mode you should prepare a TLS key/certificate pair for debug webhook, then start controller with kubeconfig and the server address.
-
-1. Run `sudo scripts/deploy-controller-debug.sh --service=localhost --serverIP=<server_IP>`, where <server_IP> is the IP address of the host where controller runs. This scripts will generate a TLS certificate for debug webhook server and register this webhook in the cluster. It also registers a CustomResource policy.
-
-2. Start the controller using the following command: `sudo KYVERNO_NAMESPACE=<namespace> KYVERNO_SVC=<service_name> go run ./cmd/kyverno/main.go --kubeconfig=~/.kube/config --serverIP=<server_IP>`. In case environment variable "KYVERNO_NAMESPACE" and "KYVERNO_SVC" is not passed kyverno will run in its default namespace "kyverno" and with default service name "kyverno-svc".
-
 
