@@ -32,7 +32,7 @@ helm install kyverno --namespace kyverno kyverno/kyverno
 
 The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are 2 ways to configure the secure communications link between Kyverno and the kube-apiserver.
 
-### Option 1: Use kube-controller-manager to generate a CA-signed certificate
+### Option 1: Let Kyverno automatically generate a self-signed CA and a certificate
 
 Kyverno can request a CA signed certificate-key pair from `kube-controller-manager`. To install Kyverno in a cluster that supports certificate signing, run the following command on a host with kubectl `cluster-admin` access: 
 
@@ -153,8 +153,10 @@ You can now install kyverno by downloading and updating the [install.yaml], or u
 kubectl create -f https://github.com/kyverno/kyverno/raw/master/definitions/install.yaml
 ```
 
+## Configuring Kyverno
 
-## Configure Kyverno permissions
+### Permissions
+
 Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRole, which defines the default resources and operations that are permitted.
 
 ClusterRoles used by kyverno:
@@ -204,7 +206,7 @@ subjects:
   namespace: kyverno
 ```
 
-## Custom installations
+### Version
 
 To install a specific version, download [install.yaml] and then change the image tag.
 
@@ -259,14 +261,14 @@ kubectl logs <kyverno-pod-name> -n <namespace>
 
 Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
-## Configure Kyverno flags 
+### Flags 
 
 1. `excludeGroupRole` : excludeGroupRole role expected string with Comma seperated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername` : excludeUsername expected string with Comma seperated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `filterK8Resources`: k8s resource in format [kind,namespace,name] where policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *].
 
 
-## Configure access to policy violations
+### PolicyViolation access
 
 During Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a namespace admin, configure the following YAML file then apply to the cluster.
 
@@ -297,7 +299,7 @@ subjects:
 #   name: 
 ```
 
-## Filter resources that Kyverno should not process
+### Resource Filters
 
 The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment dpec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
 
