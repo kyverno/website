@@ -319,7 +319,7 @@ spec:
         - custom-controller:*
         - clusterAdmin
       validate:
-        message: "Access to {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} denied"
+        message: "Access denied"
         deny:
 ```
 
