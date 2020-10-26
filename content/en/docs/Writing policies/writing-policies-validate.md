@@ -247,10 +247,6 @@ spec:
 ````
 
 
-## Validation Failure Action
-
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
-
 ## Deny rules
 
 In addition to applying patterns to check resources, a validation rule can `deny` a request based on a set of conditions. This is useful for applying fine grained access controls that cannot be performed using Kubernetes RBAC.
@@ -287,3 +283,10 @@ spec:
               operator: Equals
               value: "DELETE"        
 ```
+
+Also see using [Preconditions](/docs/writing-policies/writing-policies-preconditions).
+
+## Validation Failure Action
+
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
+
