@@ -19,7 +19,7 @@ The following operators are currently supported for preconditon evaluation:
 - In
 - NotIn
 
-## Deny requests without a service account
+## Matching requests without a service account
 
 In this example, the rule is only applied to requests from service accounts i.e. when the `{{serviceAccountName}}` is not empty.
 
@@ -36,7 +36,7 @@ In this example, the rule is only applied to requests from service accounts i.e.
       value: ""
 ```
 
-## Allow requests from specific service accounts
+## Matching requests from specific service accounts
 
 In this example, the rule is only applied to requests from service account with name `build-default` and `build-base`.
 
@@ -53,36 +53,4 @@ In this example, the rule is only applied to requests from service account with 
       value: ["build-default", "build-base"]
 ```
 
-## Deny delete requests
 
-This example prevents deletion of resources with a specific label:
-
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
- name: deny-policy
-spec:
- validationFailureAction: enforce
- background: false
- rules:
-   - name: block-deletes-for-critical-apps
-     match:
-       resources:
-         kinds:
-         - Deployment
-         selector:
-           matchLabels:
-             app: critical
-     validate:
-       message: |
-        Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} 
-        is not allowed
-       deny:
-         conditions:
-           - key: "{{request.operation}}"
-             operator: In
-             value: 
-             - DELETE
-```
