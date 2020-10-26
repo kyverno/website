@@ -246,16 +246,24 @@ spec:
                 runAsNonRoot: true
 ````
 
+## Validation Failure Action
+
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
+
 
 ## Deny rules
 
 In addition to applying patterns to check resources, a validation rule can `deny` a request based on a set of conditions. This is useful for applying fine grained access controls that cannot be performed using Kubernetes RBAC.
 
-For example, the policy below denies `delete requests` for objects with the label `app.kubernetes.io/managed-by: kyverno` and for all users who do not have the `cluster-admin` role.
-
-As the example shows, you can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls. 
+You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls. 
 
 Note that the `validationFailureAction` must be set to `enforce` to block the request.
+
+Also see using [Preconditions](/docs/writing-policies/writing-policies-preconditions) for matching rules based on variables.
+
+### Deny DELETE based on labels
+
+This policy denies `delete requests` for objects with the label `app.kubernetes.io/managed-by: kyverno` and for all users who do not have the `cluster-admin` role:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -280,13 +288,39 @@ spec:
         deny:
           conditions:
             - key: "{{request.operation}}"
-              operator: Equals
-              value: "DELETE"        
+              operator: In
+              value: 
+              - DELETE      
 ```
 
-Also see using [Preconditions](/docs/writing-policies/writing-policies-preconditions).
+### Block changes for a custom resource
 
-## Validation Failure Action
+This policy denies admission review requests for updates or deletes on a custom resource, unless the request is from a specific service account or matches specified roles.
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce` resource creation or updates are blocked when the resource does not comply, and when the value is set to `audit` a policy violation is reported but the resource creation or update is allowed.
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pv-access-controls
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: block-updates
+      match:
+        resources:
+          kinds:
+          - SomeCustomResource
+      exclude:
+        subjects:
+        - kind: ServiceAccount
+          name: custom-controller       
+        clusterRoles:
+        - custom-controller:*
+        - clusterAdmin
+      validate:
+        message: "Access to {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} denied"
+        deny:
+```
+
 
