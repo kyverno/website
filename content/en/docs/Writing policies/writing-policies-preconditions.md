@@ -17,6 +17,8 @@ The following operators are currently supported for preconditon evaluation:
 - In
 - NotIn
 
+The set operators, `In` and `NotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). Sets of other types are currently not supported.
+
 ## Matching requests without a service account
 
 In this example, the rule is only applied to requests from service accounts i.e. when the `{{serviceAccountName}}` is not empty.
