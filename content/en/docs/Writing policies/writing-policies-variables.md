@@ -1,5 +1,5 @@
 ---
-title: Using Variables and External Data Sources
+title: Variables and External Data Sources
 description: >
     Use request data, ConfigMaps, and built-in variables in policy rules
 weight: 5
