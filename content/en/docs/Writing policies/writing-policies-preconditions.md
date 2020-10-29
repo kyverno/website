@@ -12,9 +12,7 @@ While `match` & `exclude` allow filtering requests based on resource and user in
 ## Operators
 
 The following operators are currently supported for preconditon evaluation:
-- Equal
 - Equals
-- NotEqual
 - NotEquals
 - In
 - NotIn
