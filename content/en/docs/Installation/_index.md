@@ -28,6 +28,11 @@ kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
 ```
 
+Alternatively, use Helm to complete both steps:
+```sh
+helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
+```
+
 ## Install Kyverno using YAMLs
 
 The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are 2 ways to configure the secure communications link between Kyverno and the kube-apiserver.
