@@ -113,6 +113,11 @@ spec:
     image: "nginx:latest"
 ```
 
+Or imperatively with the following command:
+```sh
+kubectl run nginx --image nginx --labels app.kubernetes.io/name=nginx
+```
+
 This pod configuration is compliant with the policy rules, and is not blocked. 
 
 Clean up by deleting all cluster policies:
