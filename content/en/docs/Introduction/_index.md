@@ -99,18 +99,10 @@ require-labels:
     Validation rule autogen-check-for-labels failed at path /spec/template/metadata/labels/app.kubernetes.io/name/'
 ```
 
-Create a pod with the required label. For example from this YAML:
-```yaml
-kind: "Pod"
-apiVersion: "v1"
-metadata:
-  name: nginx
-  labels:
-    app.kubernetes.io/name: nginx
-spec:
-  containers:
-  - name: "nginx"
-    image: "nginx:latest"
+Create a pod with the required label. For example, using this command:
+
+```sh
+kubectl run nginx --image nginx --labels app.kubernetes.io/name=nginx
 ```
 
 This pod configuration is compliant with the policy rules, and is not blocked. 
