@@ -28,7 +28,8 @@ kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
 ```
 
-Alternatively, use Helm to complete both steps:
+Alternatively, use Helm 3.2+ to complete both steps in a single command:
+
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 ```
