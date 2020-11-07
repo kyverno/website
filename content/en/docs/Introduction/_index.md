@@ -40,7 +40,7 @@ To check the version, enter `kubectl version`.
 Install Kyverno:
 
 ```console
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/master/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
 You can also install Kyverno using a Helm chart:
