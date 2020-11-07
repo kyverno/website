@@ -16,5 +16,5 @@ If you are unable to attend a community meeting, feel free to reachout anytime o
 
 ### Contributing
 
-Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/master/CONTRIBUTING.md) for next steps.
+Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
 
