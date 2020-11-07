@@ -44,7 +44,7 @@ Kyverno can automatically generate a new self-signed Certificate Authority (CA) 
 
 ```sh
 ## Install Kyverno
-kubectl create -f https://github.com/kyverno/kyverno/raw/master/definitions/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
 ```
 
 Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the [install.yaml] and update the image tag. 
@@ -152,7 +152,7 @@ Kyverno uses secrets created above to setup TLS communication with the kube-apis
 You can now install kyverno by downloading and updating the [install.yaml], or using the command below (assumes that the namespace is **kyverno**):
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/raw/master/definitions/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
 ```
 
 ## Configuring Kyverno
