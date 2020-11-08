@@ -2,7 +2,7 @@
 title: Variables and External Data Sources
 description: >
     Use request data, ConfigMaps, and built-in variables in policy rules
-weight: 5
+weight: 6
 ---
 
 Sometimes it is necessary to vary the contents of a mutated or generated resource based on request data or other variables. To achieve this, Kyverno builds a `context` for each rule that contains information from the `AdmissionReview` request like the namespace and object, or from specified `ConfigMap` instances. 
