@@ -24,7 +24,7 @@ type: docs
 
 *(latest to oldest)*
 
-- [Policy-as-Code on Kuberbernetes with Kyverno](https://medium.com/better-programming/policy-as-code-on-kubernetes-with-kyverno-b144749f144) 
+- [Policy-as-Code on Kubernetes with Kyverno](https://medium.com/better-programming/policy-as-code-on-kubernetes-with-kyverno-b144749f144) 
 - [Generate policies! Make life hassle free with Kyverno](https://evalsocket.dev/kyverno-generate-policy/)
 - [Deny Rules! Fine Grained Access Controls with Kyverno](https://medium.com/@shutting06/deny-rules-fine-grained-kubernetes-access-controls-with-kyverno-88eaffb7bc6)
 - [10 Kubernetes Best Practices](https://thenewstack.io/10-kubernetes-best-practices-you-can-easily-apply-to-your-clusters/)
