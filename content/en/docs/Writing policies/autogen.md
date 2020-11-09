@@ -2,7 +2,7 @@
 title: Auto-Gen Rules for Pod Controllers
 description: >
     Automatically generate rules for pod controllers.
-weight: 7
+weight: 8
 ---
 
 **Note: The auto-gen feature is only supported for validation rules with patterns and mutation rules with overlay. Deny rules and Generate rules are not supported.**

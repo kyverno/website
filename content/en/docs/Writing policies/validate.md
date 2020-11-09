@@ -1,7 +1,7 @@
 ---
 title: Validating Resources
 description: Check resource configurations for policy compliance
-weight: 2
+weight: 3
 ---
 
 

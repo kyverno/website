@@ -2,7 +2,7 @@
 title: Background Scans 
 description: >
   Manage aplying policies to existing resources in a cluster
-weight: 8
+weight: 9
 ---
 
 Kyverno applies policies during admission control and to existing resources in the cluster that may have been created before a policy was created. The application of policies to existing resources is referred to as `background scanning`. 

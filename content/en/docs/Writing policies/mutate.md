@@ -2,7 +2,7 @@
 title: Mutating Resources
 description: >
   Update resources during admission controls 
-weight: 3
+weight: 4
 ---
 
 A ```mutate``` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern. 

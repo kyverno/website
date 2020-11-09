@@ -1,7 +1,7 @@
 ---
 title: Selecting Resources
 description: Use `Match` and `Exclude` to filter and select resources
-weight: 1
+weight: 2
 ---
 
 The `match` and `exclude` filters control which resources policies are applied to. 
