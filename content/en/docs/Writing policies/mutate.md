@@ -1,11 +1,11 @@
 ---
 title: Mutating Resources
 description: >
-  Update resources during admission controls 
+  Update resources during admission control 
 weight: 4
 ---
 
-A ```mutate``` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern. 
+A ```mutate``` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
 
 By using a ```patch``` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A ```strategic merge patch``` is useful for controlling merge behaviors on elements with lists. Using an ```overlay``` is convenient for describing the desired state of the resource.
 
@@ -40,6 +40,7 @@ spec:
 A JSON Patch provides a precise way to mutate resources.
 
 [JSONPatch](http://jsonpatch.com/) supports the following operations (in the 'op' field):
+
 * **add**
 * **replace**
 * **remove**
@@ -74,6 +75,7 @@ spec :
 ````
 
 If your ConfigMap has empty data, the following policy adds an entry to `config-game`.
+
 ````yaml
 apiVersion : kyverno.io/v1
 kind : ClusterPolicy
@@ -141,12 +143,12 @@ spec:
 
 Note, that if **remove** operation cannot be applied, then this **remove** operation will be skipped with no error.
 
-
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
 This policy sets the imagePullPolicy, adds command to container `nginx`:
+
 ````yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -175,7 +177,7 @@ spec:
 
 ## Mutate Overlay
 
-A mutation overlay describes the desired form of resource. The existing resource values are replaced with the values specified in the overlay. If a value is specified in the overlay but not present in the target resource, then it will be added to the resource. 
+A mutation overlay describes the desired form of resource. The existing resource values are replaced with the values specified in the overlay. If a value is specified in the overlay but not present in the target resource, then it will be added to the resource.
 
 The overlay cannot be used to delete values in a resource: use **patches** for this purpose.
 
@@ -233,20 +235,19 @@ spec:
           - ip: 192.168.42.172
 ````
 
-
 ### Conditional logic using anchors
 
-An **anchor** field, marked by parentheses and an optional preceeding character, allows conditional processing for mutations. 
+An **anchor** field, marked by parentheses and an optional preceeding character, allows conditional processing for mutations.
 
 The mutate overlay rules support two types of anchors:
 
-| Anchor      	     | Tag 	| Behavior                                    	       |
-|--------------------|-----	|----------------------------------------------------- |
-| Conditional 	     | ()  	| Use the tag and value as an "if" condition           |
-| Add if not present | +() 	| Add the tag value, if the tag is not already present |
-
+| Anchor             | Tag  | Behavior                                             |
+|--------------------|----- |----------------------------------------------------- |
+| Conditional        | ()   | Use the tag and value as an "if" condition           |
+| Add if not present | +()  | Add the tag value, if the tag is not already present |
 
 The **anchors** values support **wildcards**:
+
 1. `*` - matches zero or more alphanumeric characters
 2. `?` - matches a single alphanumeric character
 
@@ -289,24 +290,24 @@ For example, this policy matches and mutates pods with `emptyDir` volume, to add
 ````yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
-metadata: 
+metadata:
   name: add-safe-to-evict
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
-spec: 
-  rules: 
+spec:
+  rules:
   - name: "annotate-empty-dir"
-    match: 
-      resources: 
-        kinds: 
+    match:
+      resources:
+        kinds:
         - Pod
-    mutate: 
+    mutate:
       overlay:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
-        spec:          
-          volumes: 
+        spec:
+          volumes:
           - (emptyDir): {}
 ````
 
@@ -316,5 +317,4 @@ The anchor processing behavior for mutate conditions is as follows:
 
 1. First, all conditional anchors are processed. Processing stops when the first conditional anchor return a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for `conditional anchor` tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
 
-2. Next, all tag-values without anchors and all `add anchor` tags are processed to apply the mutation. 
-
+2. Next, all tag-values without anchors and all `add anchor` tags are processed to apply the mutation.
