@@ -7,7 +7,7 @@ weight: 3
 
 A validation rule can be used to check resource configurations for compliance during admission control or via periodic scans.
 
-To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along a set of conditions that control when to allow or deny the request.
+To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
 This policy requires that all pods have CPU and memory resource requests and limits:
 
@@ -90,7 +90,7 @@ A validation rule that checks resource data is defined as an overlay pattern tha
 2. `?` - matches a single alphanumeric character
 
 
-The following validation rule checks for a label in Deployment, StatefuleSet and DaemonSet resources:
+The following validation rule checks for a label in Deployment, StatefulSet, and DaemonSet resources:
 
 ````yaml
 apiVersion: kyverno.io/v1
@@ -133,7 +133,7 @@ There is no operator for `equals` as providing a field value in the pattern requ
 
 ### Anchors
 
-Anchors allow conditional processing (i.e. "if-then-else) and other logical checks in validation patterns. The following types of anchors are supported:
+Anchors allow conditional processing (i.e. "if-then-else") and other logical checks in validation patterns. The following types of anchors are supported:
 
 
 | Anchor      	| Tag 	| Behavior                                                                                                                                                                                                                                     	|
