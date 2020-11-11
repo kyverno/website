@@ -9,6 +9,8 @@ Sometimes it is necessary to vary the contents of a mutated or generated resourc
 
 The context data can then be referenced in the policy rule using the [JMESPATH](http://jmespath.org/) notation. The policy engine will substitute any values with the format `{{ <JMESPATH> }}` with the variable value before processing the rule.
 
+Variables are currently not supported on `match` or `exclude` statements within a rule.
+
 ## Pre-defined Variables
 
 Kyverno automatically creates a few useful variables and adds them in the rule `context`:
