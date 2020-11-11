@@ -28,11 +28,12 @@ spec:
           kinds:
             - Namespace
       exclude:
-        namespaces:
-          - "kube-system"
-          - "default"
-          - "kube-public"
-          - "kyverno"
+        resources:
+          namespaces:
+            - "kube-system"
+            - "default"
+            - "kube-public"
+            - "kyverno"
       generate:
         synchronize: true
         kind: ConfigMap
@@ -61,11 +62,12 @@ spec:
           kinds: 
           - Namespace
       exclude:
-        namespaces:
-          - "kube-system"
-          - "default"
-          - "kube-public"
-          - "kyverno"
+        resources:
+          namespaces:
+            - "kube-system"
+            - "default"
+            - "kube-public"
+            - "kyverno"
       generate:
         # Kind of generated resource 
         kind: ConfigMap 
@@ -96,11 +98,12 @@ spec:
         - Namespace
         name: "*"
     exclude:
-      namespaces:
-        - "kube-system"
-        - "default"
-        - "kube-public"
-        - "kyverno"
+      resources:
+        namespaces:
+          - "kube-system"
+          - "default"
+          - "kube-public"
+          - "kyverno"
     generate: 
       kind: NetworkPolicy
       name: deny-all-traffic
