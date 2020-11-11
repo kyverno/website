@@ -95,8 +95,9 @@ spec:
         kinds:
         - Pod
     exclude:
-      namespaces:
-      - "kube-system"
+      resources:
+        namespaces:
+        - "kube-system"
 ````
 
 ## Combining match and exclude
