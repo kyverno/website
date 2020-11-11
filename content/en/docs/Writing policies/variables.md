@@ -71,13 +71,19 @@ data:
 
 ### Looking up ConfigMap values
 
-A ConfigMap that is defined in a rule context can be referred to using its unique name within the context. ConfigMap values can be referenced using a JMESPATH style expression:
+A ConfigMap that is defined in a rule context can be referred to using its unique name within the context. ConfigMap values can be referenced using a [JMESPATH](http://jmespath.org/) style expression:
 
 ```
 {{ <name>.<data>.<key> }}
 ```
 
 For the example above, we can refer to a ConfigMap value using `{{dictionary.data.env}}`. The variable will be substituted with the value `production` during policy execution.
+
+**Note:** ConfigMap names and keys can contain characters that are not supported by [JMESPATH](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add quotes to that part of the JMESPATH expression as follows:
+
+```
+{{ "<name>".<data>."<key>" }}
+```
 
 ### Handling ConfigMap Array Values
 
@@ -96,6 +102,8 @@ metadata:
 data:
   allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 ````
+
+**NOTE:** as mentioned above, the quotes are necessary due to the `-` character that needs to be escaped for [JMESPATH](http://jmespath.org/) processing.
 
 Here is a rule to block a Deployment if the value of annotation `role` is not in the allowed list:
 
