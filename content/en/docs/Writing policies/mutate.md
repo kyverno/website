@@ -144,7 +144,7 @@ Note, that if **remove** operation cannot be applied, then this **remove** opera
 
 ## Strategic Merge Patch
 
-The `kubectl` command uses a [stategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
+The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
 This policy sets the imagePullPolicy, adds command to container `nginx`:
 ````yaml
