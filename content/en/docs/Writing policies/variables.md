@@ -40,7 +40,7 @@ Here are some examples of looking up this data:
 
 ## Using ConfigMaps
 
-Kyverno supports using Kubernetes [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) to manage variable values outside of a policy definition.
+Kyverno supports using Kubernetes [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) to manage variable values outside of a policy definition. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the ConfigMap are always dynamic. Should the ConfigMap be updated later, subsequent policy lookups will pick up the data at that point.
 
 To refer to values from a ConfigMap inside any Rule, define a context inside the rule with one or more ConfigMap declarations.
 
