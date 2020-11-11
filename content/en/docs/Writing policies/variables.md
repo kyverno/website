@@ -5,10 +5,9 @@ description: >
 weight: 6
 ---
 
-Sometimes it is necessary to vary the contents of a mutated or generated resource based on request data or other variables. To achieve this, Kyverno builds a `context` for each rule that contains information from the `AdmissionReview` request like the namespace and object, or from specified `ConfigMap` instances. 
+Sometimes it is necessary to vary the contents of a mutated or generated resource based on request data or other variables. To achieve this, Kyverno builds a `context` for each rule that contains information from the `AdmissionReview` request like the namespace and object, or from specified `ConfigMap` instances.
 
 The context data can then be referenced in the policy rule using the [JMESPATH](http://jmespath.org/) notation. The policy engine will substitute any values with the format `{{ <JMESPATH> }}` with the variable value before processing the rule.
-
 
 ## Pre-defined Variables
 
@@ -21,6 +20,7 @@ Kyverno automatically creates a few useful variables and adds them in the rule `
 ## Using AdmissionReview request data
 
 The following `AdmissionReview` request data is available for use in context:
+
 - Resource: `{{request.object}}`
 - UserInfo: `{{request.userInfo}}`
 
@@ -38,21 +38,20 @@ Here are some examples of looking up this data:
 
 `{{request.object.metadata}}`
 
-
 ## Using ConfigMaps
 
-Kyverno supports using Kubernetes [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) to manage variable values outside of a policy definition. 
+Kyverno supports using Kubernetes [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) to manage variable values outside of a policy definition.
 
 To refer to values from a ConfigMap inside any Rule, define a context inside the rule with one or more ConfigMap declarations.
 
 ````yaml
   rules:
     - name: example-configmap-lookup
-      # added context to define the configmap information which will be referred 
+      # added context to define the configmap information which will be referred
       context:
       # unique name to identify configmap
       - name: dictionary
-        configMap: 
+        configMap:
           # configmap name - name of the configmap which will be referred
           name: mycmap
           # configmap namepsace - namespace of the configmap which will be referred
@@ -61,14 +60,13 @@ To refer to values from a ConfigMap inside any Rule, define a context inside the
 
 Sample ConfigMap Definition:
 
-
 ````yaml
 apiVersion: v1
-data:
-  env: production
 kind: ConfigMap
 metadata:
   name: mycmap
+data:
+  env: production
 ````
 
 ### Looking up ConfigMap values
@@ -91,12 +89,12 @@ Here are the allowed roles in the ConfigMap:
 
 ````yaml
 apiVersion: v1
-data:
-  allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 kind: ConfigMap
 metadata:
   name: roles-dictionary
   namespace: test
+data:
+  allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 ````
 
 Here is a rule to block a Deployment if the value of annotation `role` is not in the allowed list:
@@ -108,7 +106,7 @@ spec:
   - name: validate-role-annotation
     context:
       - name: roles-dictionary
-        configMap: 
+        configMap:
           name: roles-dictionary
           namespace: test
     match:
@@ -122,7 +120,7 @@ spec:
     validate:
       message: "role {{ request.object.metadata.annotations.role }} is not in the allowed list {{ \"roles-dictionary\".data.\"allowed-roles\" }}"
       deny:
-        conditions: 
+        conditions:
         - key: "{{ request.object.metadata.annotations.role }}"
           operator: NotIn
           value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"

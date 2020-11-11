@@ -8,20 +8,20 @@ description: >
 
 ## Install Kyverno using Helm
 
-Add the nirmata Helm repository
+Add the Nirmata Helm repository
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
-Create a namespace and then install the kyverno helm chart.
+Create a namespace and then install the Kyverno helm chart.
 ```sh
 # Create a namespace
 kubectl create ns <namespace>
 
-# Install the kyverno helm chart
+# Install the Kyverno helm chart
 helm install kyverno --namespace <namespace> kyverno/kyverno
 ```
-For installing in kyverno namespace:
+For installing in the kyverno namespace:
 ```sh
 kubectl create ns kyverno
 
@@ -47,9 +47,9 @@ Kyverno can automatically generate a new self-signed Certificate Authority (CA) 
 kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
 ```
 
-Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the [install.yaml] and update the image tag. 
+Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
 
-Also, by default kyverno is installed in "kyverno" namespace. To install in different namespace, you can edit the [install.yaml] and update the namespace.
+Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
 
 To check the Kyverno controller status, run the command:
 
@@ -149,7 +149,7 @@ Kyverno uses secrets created above to setup TLS communication with the kube-apis
 
 #### 2.3. Install Kyverno
 
-You can now install kyverno by downloading and updating the [install.yaml], or using the command below (assumes that the namespace is **kyverno**):
+You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is **kyverno**):
 
 ```sh
 kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
@@ -159,7 +159,7 @@ kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/instal
 
 ### Permissions
 
-Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRole, which defines the default resources and operations that are permitted.
+Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
 
 ClusterRoles used by kyverno:
 - kyverno:webhook
@@ -168,7 +168,7 @@ ClusterRoles used by kyverno:
 - kyverno:policycontroller
 - kyverno:generatecontroller
 
-The `generate` rule creates a new resource, and to allow kyverno to create resource kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by kyverno or by creating a new ClusterRole and a ClusterRoleBinding to kyverno's default ServiceAccount.
+The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -210,7 +210,7 @@ subjects:
 
 ### Version
 
-To install a specific version, download [install.yaml] and then change the image tag.
+To install a specific version, download `install.yaml` and then change the image tag.
 
 e.g., change image tag from `latest` to the specific tag `v1.0.0`.
 >>>
@@ -305,7 +305,7 @@ subjects:
 
 The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment dpec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
 
-By default we have specified Nodes, Events, APIService & SubjectAccessReview as the kinds to be skipped in the default configuration [install.yaml].
+By default we have specified Nodes, Events, APIService, and SubjectAccessReview as the kinds to be skipped in the default configuration in `install.yaml`.
 
 ```yaml
 apiVersion: v1
@@ -318,7 +318,4 @@ data:
   resourceFilters: "[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][*,kyverno,*]"
 ```
 
-To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration [install.yaml] and redeploy it or modify the `ConfigMap` use `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
-
-
-
+To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the `ConfigMap` using `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
