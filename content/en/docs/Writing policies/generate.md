@@ -39,7 +39,7 @@ spec:
         kind: ConfigMap
         name: zk-kafka-address
         # generate the resource in the new namespace
-        namespace: "{{request.object.metadata.namespace}}"
+        namespace: "{{request.object.metadata.name}}"
         data:
           kind: ConfigMap
           data:
@@ -107,7 +107,7 @@ spec:
     generate: 
       kind: NetworkPolicy
       name: deny-all-traffic
-      namespace: "{{request.object.metadata.namespace}}" 
+      namespace: "{{request.object.metadata.name}}" 
       data:  
         spec:
           # select all pods in the namespace
