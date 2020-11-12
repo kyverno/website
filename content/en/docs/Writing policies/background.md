@@ -5,9 +5,9 @@ description: >
 weight: 9
 ---
 
-Kyverno applies policies during admission control and to existing resources in the cluster that may have been created before a policy was created. The application of policies to existing resources is referred to as `background scanning`. 
+Kyverno can validate existing resources in the cluster that may have been created before a policy was created. The application of policies to existing resources is referred to as `background scanning`. 
 
-Note, that Kyverno does not mutate existing resources during scans, and will only report policy violations for existing resources that do not match policy rules.
+**Note: Kyverno does not mutate existing resources, to prevent inadvertent changes to workloads. Mutate and generate rules are not processed during background scans.** 
 
 A policy is always enabled for processing during admission control. However, policy rules that rely on variable ``AdmissionReview`` request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the `background scanning` mode as the user information is not available. Hence, these rules must set the boolean flag `{spec.background}` to `false` to disable `background` scanning.
 
