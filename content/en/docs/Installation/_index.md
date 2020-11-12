@@ -44,7 +44,7 @@ Kyverno can automatically generate a new self-signed Certificate Authority (CA) 
 
 ```sh
 ## Install Kyverno
-kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
 Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
