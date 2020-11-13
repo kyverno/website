@@ -32,7 +32,7 @@ In this example, the rule is only applied to requests from service accounts i.e.
         - Namespace
     preconditions:
     - key: "{{serviceAccountName}}"
-      operator: NotEqual
+      operator: NotEquals
       value: ""
 ```
 
