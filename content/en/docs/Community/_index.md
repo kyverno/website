@@ -8,7 +8,7 @@ description: >
 
 ### Community Meetings
 
-To attend our community meeting join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the [agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#). Feel free to propose topics to the agenda.
+To attend our community meeting, join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the [agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#). Feel free to propose topics to the agenda.
 
 ### Get in touch
 
