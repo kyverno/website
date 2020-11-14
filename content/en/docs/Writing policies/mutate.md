@@ -134,7 +134,7 @@ spec:
         patchesJson6902: |-
           - op: add
             path: /spec/containers/1
-            value: {"name":"busyboxx","image":"busybox:latest"}
+            value: {"name":"busybox","image":"busybox:latest"}
           - op: add
             path: /spec/containers/0/command
             value:
@@ -237,7 +237,7 @@ spec:
 
 ### Conditional logic using anchors
 
-An **anchor** field, marked by parentheses and an optional preceeding character, allows conditional processing for mutations.
+An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
 The mutate overlay rules support two types of anchors:
 

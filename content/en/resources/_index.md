@@ -35,6 +35,3 @@ type: docs
 - [CNCF Webinar - Keep Your Clusters Safe and Healthy](https://www.cncf.io/webinars/how-to-keep-your-clusters-safe-and-healthy/)
 - [VMware Code Meetup Video](https://www.youtube.com/watch?v=mgEmTvLytb0)
 - [Virtual Rejekts 2020 EU Presentation](https://www.youtube.com/watch?v=caFMtSg4A6I)
-
-
-

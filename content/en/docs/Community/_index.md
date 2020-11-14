@@ -12,9 +12,8 @@ To attend our community meeting join the [Kyverno group](https://groups.google.c
 
 ### Get in touch
 
-If you are unable to attend a community meeting, feel free to reachout anytime on the [#kyverno slack channel](https://app.slack.com/client/T09NY5SBT/CLGR9BJU9) or [mailing list](https://groups.google.com/g/kyverno). We love hearing from our community!
+If you are unable to attend a community meeting, feel free to reach out anytime on the [#kyverno Slack channel](https://app.slack.com/client/T09NY5SBT/CLGR9BJU9) or [mailing list](https://groups.google.com/g/kyverno). We love hearing from our community!
 
 ### Contributing
 
 Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
-

@@ -9,19 +9,24 @@ description: >
 ## Install Kyverno using Helm
 
 Add the Nirmata Helm repository
+
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
 Create a namespace and then install the Kyverno helm chart.
+
 ```sh
 # Create a namespace
 kubectl create ns <namespace>
 
 # Install the Kyverno helm chart
 helm install kyverno --namespace <namespace> kyverno/kyverno
+
 ```
+
 For installing in the kyverno namespace:
+
 ```sh
 kubectl create ns kyverno
 
@@ -68,20 +73,19 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs <kyverno-pod-name> -n <namespace>
 ````
 
-
 ### Option 2: Use your own CA-signed certificate
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certifcate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
 
 #### 2.1. Generate a self-signed CA and signed certificate-key pair
 
-**Note: using a separate self-signed root CA is difficult to manage and not recommeded for production use.** 
+**Note: using a separate self-signed root CA is difficult to manage and not recommended for production use.**
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
 Here are the commands to create a self-signed root CA, and generate a signed certificate and key using openssl (you can customize the certificate attributes for your deployment):
 
-1. Create a self-signed CA 
+1. Create a self-signed CA
 
 ````bash
 openssl genrsa -out rootCA.key 4096
@@ -116,15 +120,15 @@ openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateseri
 The certificate must contain the SAN information in the X509v3 extensions section:
 
 ````
-X509v3 extensions:                                                                                                                              
-    X509v3 Subject Alternative Name:                                                                                                            
-        DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc          
+X509v3 extensions:
+    X509v3 Subject Alternative Name:
+        DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
 ````
-
 
 #### 2.2. Configure secrets for the CA and TLS certificate-key pair
 
 You can now use the following files to create secrets:
+
 - rootCA.crt
 - webhooks.crt
 - webhooks.key
@@ -133,9 +137,9 @@ To create the required secrets, use the following commands (do not change the se
 
 ````bash
 kubectl create ns <namespace>
-kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace> 
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace> 
-kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace> 
+kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
+kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
+kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
 ````
 
 **NOTE: The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret**
@@ -162,6 +166,7 @@ kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/instal
 Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
 
 ClusterRoles used by kyverno:
+
 - kyverno:webhook
 - kyverno:userinfo
 - kyverno:customresources
@@ -193,6 +198,7 @@ rules:
   - update # update existing resource, if required configuration defined in policy is not present
   - delete # clean-up, if the generate trigger resource is deleted
 ```
+
 ```yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -223,12 +229,14 @@ e.g., change image tag from `latest` to the specific tag `v1.0.0`.
 To install in a specific namespace replace the namespace "kyverno" with your namespace.
 
 Example:
+
 ````sh
 apiVersion: v1
 kind: Namespace
 metadata:
   name: <namespace>
 ````
+
 ````sh
 apiVersion: v1
 kind: Service
@@ -238,9 +246,11 @@ metadata:
   name: kyverno-svc
   namespace: <namespace>
 ````
+
 and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where namespace is mentioned.
 
 To run kyverno:
+
 ````sh
 kubectl create -f ./install.yaml
 ````
@@ -263,12 +273,11 @@ kubectl logs <kyverno-pod-name> -n <namespace>
 
 Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
-### Flags 
+### Flags
 
-1. `excludeGroupRole` : excludeGroupRole role expected string with Comma seperated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
-2. `excludeUsername` : excludeUsername expected string with Comma seperated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
+1. `excludeGroupRole` : excludeGroupRole role expected string with Comma separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
+2. `excludeUsername` : excludeUsername expected string with Comma separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `filterK8Resources`: k8s resource in format [kind,namespace,name] where policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *].
-
 
 ### PolicyViolation access
 
@@ -295,15 +304,15 @@ subjects:
   namespace: default
 # - apiGroup: rbac.authorization.k8s.io
 #   kind: User
-#   name: 
+#   name:
 # - apiGroup: rbac.authorization.k8s.io
 #   kind: Group
-#   name: 
+#   name:
 ```
 
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment dpec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
+The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
 
 By default we have specified Nodes, Events, APIService, and SubjectAccessReview as the kinds to be skipped in the default configuration in `install.yaml`.
 

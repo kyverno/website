@@ -11,7 +11,8 @@ While `match` & `exclude` allow filtering requests based on resource and user in
 
 ## Operators
 
-The following operators are currently supported for preconditon evaluation:
+The following operators are currently supported for precondition evaluation:
+
 - Equals
 - NotEquals
 - In
@@ -22,7 +23,6 @@ The set operators, `In` and `NotIn` support a set of strings as the value (e.g. 
 ## Matching requests without a service account
 
 In this example, the rule is only applied to requests from service accounts i.e. when the `{{serviceAccountName}}` is not empty.
-
 
 ```yaml
   - name: generate-owner-role
@@ -40,7 +40,6 @@ In this example, the rule is only applied to requests from service accounts i.e.
 
 In this example, the rule is only applied to requests from service account with name `build-default` and `build-base`.
 
-
 ```yaml
   - name: generate-default-build-role
     match:
@@ -52,5 +51,3 @@ In this example, the rule is only applied to requests from service account with 
       operator: In
       value: ["build-default", "build-base"]
 ```
-
-

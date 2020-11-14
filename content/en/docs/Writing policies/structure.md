@@ -10,7 +10,7 @@ The following picture shows the structure of a Kyverno Policy:
 
 Each Kyverno policy contains one or more rules. Each rule has a `match` clause, an optional `exclude` clause, and one of a `mutate`, `validate`, or `generate` clause.
 
-Each rule can validate, mutate, or generate configurations of matching resources. A rule definition can contain only a single **mutate**, **validate**, or **generate** child node. 
+Each rule can validate, mutate, or generate configurations of matching resources. A rule definition can contain only a single **mutate**, **validate**, or **generate** child node.
 
 Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy`) or namespaced resources (using the kind `Policy`.) As expected, namespaced policies will only apply to resources within the namespace they are defined in and cluster-wide policies are applied to matching resources across all namespaces. Otherwise, there is no difference between the two types.
 

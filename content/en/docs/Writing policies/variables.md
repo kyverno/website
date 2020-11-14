@@ -56,7 +56,7 @@ To refer to values from a ConfigMap inside any Rule, define a context inside the
         configMap:
           # configmap name - name of the configmap which will be referred
           name: mycmap
-          # configmap namepsace - namespace of the configmap which will be referred
+          # configmap namespace - namespace of the configmap which will be referred
           namespace: test
 ````
 
@@ -89,7 +89,7 @@ For the example above, we can refer to a ConfigMap value using `{{dictionary.dat
 
 ### Handling ConfigMap Array Values
 
-The ConfigMap value can be an array of string values in JSON format. Kyverno will parse the JSON string to a list of strings, so set operations like In and NotIn can then be applied.
+The ConfigMap value must be an array of string values in JSON format. Kyverno will parse the JSON string to a list of strings, so set operations like In and NotIn can then be applied.
 
 For example, a list of allowed roles can be stored in a ConfigMap, and the Kyverno policy can refer to this list to deny the requests where the role does not match one of the values in the list.
 
