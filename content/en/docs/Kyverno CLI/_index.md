@@ -343,22 +343,36 @@ This will validate all the pods avaliable in cluster avaliable under default nam
 
 On applying policy.yaml on the mentioned resources, the following report will be generated: 
 
-```apiVersion: policy.k8s.io/v1alpha1
+```
+apiVersion: wgpolicyk8s.io/v1alpha1
 kind: ClusterPolicyReport
 metadata:
   name: clusterpolicyreport
 results:
-- message: 'Validation error: CPU and memory resource requests and limits are required; Validation rule validate-resources failed at path /spec/containers/0/resources/requests/'
+- message: Validation rule 'validate-resources' succeeded.
+  policy: require-pod-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: nginx1
+    namespace: default
+  rule: validate-resources
+  scored: true
+  status: pass
+- message: 'Validation error: CPU and memory resource requests and limits are required; Validation rule validate-resources failed at path /spec/containers/0/resources/limits/'
   policy: require-pod-requests-limits
   resources:
   - apiVersion: v1
     kind: Pod
     name: nginx2
     namespace: default
-    uid: 5fc041f2-b479-4b65-94b8-33e955f6f0d3
   rule: validate-resources
   scored: true
   status: fail
 summary:
+  error: 0
   fail: 1
+  pass: 1
+  skip: 0
+  warn: 0
 ```
