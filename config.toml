@@ -73,7 +73,7 @@ anchor = "smart"
 [[menu.main]]
     name = "Sample Policies"
     weight = -101
-    url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
+    url = "https://github.com/kyverno/kyverno/blob/main/samples/README.md"
 [[menu.main]]
     name = "GitHub"
     weight = -100

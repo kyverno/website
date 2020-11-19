@@ -9,16 +9,17 @@ description: >
 ## Features
 
 Kyverno is a policy engine designed for Kubernetes. Here are some of its features:
+
 * policies as Kubernetes resources (no new language to learn!)
 * validate, mutate, or generate any resource
 * match resources using label selectors and wildcards
 * validate and mutate using overlays (like Kustomize!)
 * synchronize configurations across namespaces
-* block non-conformant resources using admission controls, or report policy violations 
-* test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster 
+* block non-conformant resources using admission controls, or report policy violations
+* test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
 * manage `policies-as-code` using familiar tools like Git and Kustomize
 
-Kyverno allows cluster adminstrators to manage environment specific configurations independently of workload configurations and enforce configuration best practices for their clusters. Kyverno can be used to scan existing workloads for best practices, or can be used to enforce best practices by blocking or mutating API requests. 
+Kyverno allows cluster administrators to manage environment specific configurations independently of workload configurations and enforce configuration best practices for their clusters. Kyverno can be used to scan existing workloads for best practices, or can be used to enforce best practices by blocking or mutating API requests.
 
 ## How Kyverno works
 
@@ -34,19 +35,19 @@ Policy enforcement is captured using Kubernetes events. Kyverno also reports pol
 
 This section will help you install Kyverno and create your first policy:
 
-**NOTE** : Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts. 
+**NOTE** : Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
 To check the version, enter `kubectl version`.
 
 Install Kyverno:
 
 ```console
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/master/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
 You can also install Kyverno using a Helm chart:
 
 ```sh
-# Add the Helm respository
+# Add the Helm repository
 helm repo add kyverno https://kyverno.github.io/kyverno/
 
 # Create a namespace
@@ -56,10 +57,7 @@ kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
 ```
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, 
-mutate, and generate configurations. The policy attribute `validationFailureAction` is set 
-to `enforce` to block API requests that are non-compliant (using the default value `audit` 
-will report violations but not block requests.)
+Add the policy below to your cluster. It contains a single validation rule that requires that all pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, and generate configurations. The policy attribute `validationFailureAction` is set to `enforce` to block API requests that are non-compliant (using the default value `audit` will report violations but not block requests.)
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -89,6 +87,7 @@ kubectl create deployment nginx --image=nginx
 ```
 
 You should see an error:
+
 ```console
 Error from server: admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request:
 
@@ -105,12 +104,10 @@ Create a pod with the required label. For example, using this command:
 kubectl run nginx --image nginx --labels app.kubernetes.io/name=nginx
 ```
 
-This pod configuration is compliant with the policy rules, and is not blocked. 
+This pod configuration is compliant with the policy rules, and is not blocked.
 
 Clean up by deleting all cluster policies:
 
 ```console
 kubectl delete cpol --all
 ```
-
-
