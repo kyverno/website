@@ -178,7 +178,7 @@ In the above `ClusterPolicy`, a `mutate` rule matches all incoming `Pod` resourc
 
 > ⚠️**Note: ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:**
 >```
->{{ "<name>".<data>."<key>" }}
+>{{ "<name>".data."<key>" }}
 >```
 
 ### Handling ConfigMap Array Values
