@@ -7,7 +7,7 @@ weight: 6
 
 It is sometimes necessary to refer to contents or values of other fields and objects in a given rule in order to make those rules more "intelligent" and applicable. In order to do so, Kyverno allows the use of three different types of variables which can be used in various portions of a rule. The sources of these types of variables are `ConfigMap` resources, Admission Review request data, and manifest lookups.
 
-In order to refer to both `ConfigMap` data values as well as Admission Review request data as variables, Kyverno uses the [JMESPath](http://jmespath.org/) notation format. Using JMESPath, values from these sources are written in the format of ``{{<key_1>.<key_2>.<key_3>}}``. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
+In order to refer to both `ConfigMap` data values as well as Admission Review request data as variables, Kyverno uses the [JMESPath](http://jmespath.org/) notation format. Using JMESPath, values from these sources are written in the format of `{{<key_1>.<key_2>.<key_3>}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
 
 > ⚠️ **Note: Variables are currently not supported on `match` or `exclude` statements within a rule.**
 
