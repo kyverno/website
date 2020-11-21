@@ -8,24 +8,24 @@ description: >
 
 ## Install Kyverno using Helm
 
-Add the Nirmata Helm repository
+Add the Kyverno Helm repository.
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
-Create a namespace and then install the Kyverno helm chart.
+Create a namespace and then install the Kyverno Helm chart.
 
 ```sh
 # Create a namespace
 kubectl create ns <namespace>
 
-# Install the Kyverno helm chart
+# Install the Kyverno Helm chart
 helm install kyverno --namespace <namespace> kyverno/kyverno
 
 ```
 
-For installing in the kyverno namespace:
+For installing in the `kyverno` namespace:
 
 ```sh
 kubectl create ns kyverno
@@ -41,7 +41,7 @@ helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 
 ## Install Kyverno using YAMLs
 
-The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are 2 ways to configure the secure communications link between Kyverno and the kube-apiserver.
+The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
 
 ### Option 1: Auto-generate a self-signed CA and certificate
 
