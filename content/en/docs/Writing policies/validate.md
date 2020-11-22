@@ -77,6 +77,10 @@ require-ns-purpose-label:
 
 Change the `development` value to `production` and try again. Kyverno permits creation of your new `Namespace` resource.
 
+## Validation Failure Action
+
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed.
+
 ## Patterns
 
 A validation rule that checks resource data is defined as an overlay pattern that provides the desired configuration. Resource configurations must match fields and expressions defined in the pattern to pass the validation rule. The following rules are followed when processing the overlay pattern:
@@ -167,7 +171,7 @@ spec:
 | `>=`       | greater than or equals to |
 | `<=`       | less than or equals to    |
 | `!`        | not equals                |
-|  \|        | logical or                |
+| `|`        | logical or                |
 
 There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
 
@@ -320,10 +324,6 @@ spec:
               securityContext:
                 runAsNonRoot: true
 ```
-
-## Validation Failure Action
-
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed.
 
 ## Deny rules
 
