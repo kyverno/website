@@ -282,8 +282,8 @@ Contrast this existence anchor, which checks for at least one instance, with a [
       pattern:
         spec:
           containers:
-            - name: "*"
-              image: nginx:latest
+          - name: "*"
+            image: nginx:latest
 ```
 
 This snippet above instead states that *every* entry in the array of containers, regardless of name, must have the `image` set to `nginx:latest`.
@@ -300,8 +300,10 @@ The `anyPattern` tag can be used to check if any one of the patterns in the list
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: check-container-security-context
+  name: check-root-user
 spec:
+  validationFailureAction: enforce
+  background: false
   rules:
   - name: check-root-user
     exclude:
@@ -315,14 +317,16 @@ spec:
     validate:
       message: "Root user is not allowed. Set runAsNonRoot to true."
       anyPattern:
-        - spec:
+      # Checks for `runAsNonRoot` on the Pod.
+      - spec:
+          securityContext:
+            runAsNonRoot: true
+      # Checks for `runAsNonRoot` on every container.
+      - spec:
+          containers:
+          - name: "*"
             securityContext:
               runAsNonRoot: true
-        - spec:
-            containers:
-            - name: "*"
-              securityContext:
-                runAsNonRoot: true
 ```
 
 ## Deny rules
