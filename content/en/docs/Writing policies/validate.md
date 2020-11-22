@@ -337,34 +337,34 @@ Also see using [Preconditions](/docs/writing-policies/preconditions) for matchin
 
 ### Deny DELETE requests based on labels
 
-This policy denies `delete` requests for objects with the label `app.kubernetes.io/managed-by: kyverno` and for all users who do not have the `cluster-admin` role:
+This policy denies `delete` requests for objects with the label `app.kubernetes.io/managed-by: kyverno` and for all users who do not have the `cluster-admin` role.
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: multi-tenancy
+  name: deny-deletes
 spec:
   validationFailureAction: enforce
   background: false
   rules:
-    - name: block-deletes-for-kyverno-resources
-      match:
-        resources:
-          selector:
-            matchLabels:
-              app.kubernetes.io/managed-by: kyverno
-      exclude:
-        clusterRoles:
-        - cluster-admin
-      validate:
-        message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
-        deny:
-          conditions:
-            - key: "{{request.operation}}"
-              operator: In
-              value:
-              - DELETE
+  - name: block-deletes-for-kyverno-resources
+    match:
+      resources:
+        selector:
+          matchLabels:
+            app.kubernetes.io/managed-by: kyverno
+    exclude:
+      clusterRoles:
+      - cluster-admin
+    validate:
+      message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
+      deny:
+        conditions:
+        - key: "{{request.operation}}"
+          operator: In
+          value:
+          - DELETE
 ```
 
 ### Block changes to a custom resource
@@ -375,12 +375,12 @@ This policy denies admission review requests for updates or deletes to a custom 
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: pv-access-controls
+  name: block-updates-to-custom-resource
 spec:
   validationFailureAction: enforce
   background: false
   rules:
-  - name: block-updates
+  - name: block-updates-to-custom-resource
     match:
       resources:
         kinds:
@@ -391,15 +391,15 @@ spec:
         name: custom-controller
       clusterRoles:
       - custom-controller:*
-      - clusterAdmin
+      - cluster-admin
     validate:
-      message: "Access denied"
+      message: "Modifying or deleting this custom resource is forbidden."
       deny: {}
 ```
 
 ### Prevent changing NetworkPolicy resources
 
-This policy prevents users from changing network policies with names that end with `-default`:
+This policy prevents users from changing `NetworkPolicy` resources with names that end with `-default`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -410,17 +410,16 @@ spec:
   validationFailureAction: enforce
   background: false
   rules:
-    - name: check-netpol-updates
-      match:
-        resources:
-          kinds:
-            - NetworkPolicy
-          name:
-            - *-default
-      exclude:
-        clusterRoles:
-          - cluster-admin
-      validate:
-        message: "Changing default network policies is not allowed"
-        deny: {}
+  - name: deny-netpol-changes
+    match:
+      resources:
+        kinds:
+        - NetworkPolicy
+        name: "*-default"
+    exclude:
+      clusterRoles:
+      - cluster-admin
+    validate:
+      message: "Changing default network policies is not allowed."
+      deny: {}
 ```
