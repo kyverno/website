@@ -6,7 +6,7 @@ weight: 5
 
 A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new role bindings or network policies for a namespace.
 
-The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource and it's possible to match or exclude API requests based on subjects, roles, etc.
+The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource. It is also possible to match or exclude API requests based on subjects, roles, etc.
 
 The generate rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
 
@@ -120,3 +120,59 @@ spec:
           - Ingress
           - Egress
 ```
+
+## Generating resources into existing namespaces
+
+Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
+
+Normally, Kyverno does not alter existing objects in any way as a central tenet of its design. However, using this method of controlled roll-out, you may use `generate` rules to create new objects into existing namespaces. To do so, follow these steps:
+
+1. Identify some Kubernetes label or annotation which is not yet defined on any namespace but can be used to add to existing ones signaling to Kyverno that these namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved key names such as `kubernetes.io` or `kyverno.io`.
+
+2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind `namespace` as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only namespaces but a label of `mycorp-rollout=true` and copies into these namespaces a Secret called `corp-secret` stored in the `default` namespace.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-secret
+spec:
+  rules:
+  - name: sync-secret
+    match:
+      resources:
+        kinds:
+        - Namespace
+        selector:
+          matchLabels:
+            mycorp-rollout: "true"
+    generate:
+      kind: Secret
+      name: corp-secret
+      namespace: "{{request.object.metadata.name}}"
+      synchronize : true
+      clone:
+        namespace: default
+        name: corp-secret
+```
+
+3. Create the policy as usual.
+
+4. On an existing namespace where you wish to have the Secret `corp-secret` copied into it, label it with `mycorp-rollout=true`. This step must be completed after the ClusterPolicy exists. If it is labeled before, Kyverno will not see the request.
+
+```sh
+$ kubectl label ns prod-bus-app1 mycorp-rollout=true
+
+namespace/prod-bus-app1 labeled
+```
+
+5. Check the namespace you just labeled to see if the Secret exists.
+
+```sh
+$ kubectl -n prod-bus-app1 get secret
+
+NAME                                               TYPE                                  DATA   AGE
+corp-secret                                        Opaque                                2      10s
+```
+
+6. Repeat these steps as needed on any additional namespaces where you wish this ClusterPolicy to apply its `generate` rule.
