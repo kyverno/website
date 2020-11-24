@@ -176,3 +176,11 @@ corp-secret                                        Opaque                       
 ```
 
 6. Repeat these steps as needed on any additional namespaces where you wish this ClusterPolicy to apply its `generate` rule.
+
+If you would like Kyverno to remove the resource it generated into these existing namespaces, you may unlabel the namespace.
+
+```sh
+$ kubectl label ns prod-bus-app1 mycorp-rollout-
+```
+
+The Secret from the previous example should be removed.
