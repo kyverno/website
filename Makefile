@@ -7,7 +7,7 @@ NETLIFY_FUNC      = $(NODE_BIN)/netlify-lambda
 # CONTAINER_ENGINE=podman make container-image
 CONTAINER_ENGINE ?= docker
 IMAGE_VERSION=$(shell scripts/hash-files.sh Dockerfile Makefile | cut -c 1-12)
-CONTAINER_IMAGE   = kubernetes-hugo:v$(HUGO_VERSION)-$(IMAGE_VERSION)
+CONTAINER_IMAGE   = kyverno-hugo:v$(HUGO_VERSION)-$(IMAGE_VERSION)
 CONTAINER_RUN     = $(CONTAINER_ENGINE) run --rm --interactive --tty --volume $(CURDIR):/src
 
 CCRED=\033[0;31m
