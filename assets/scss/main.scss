@@ -58,3 +58,10 @@ footer {
 }
 
 @import "styles_project";
+
+.videos {
+  display: flex;
+}
+.videos > .video {
+  margin-right: 1.5rem;
+}

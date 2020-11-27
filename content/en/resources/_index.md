@@ -8,17 +8,16 @@ type: docs
 
 *Click to play videos*
 
-<a href="https://www.youtube.com/watch?v=DW2u6LhNMh0&feature=youtu.be&t=116">
-<img src="https://img.youtube.com/vi/DW2u6LhNMh0/0.jpg" width="250">
-</a>
+{{% videos %}}
 
-<a href="https://www.youtube.com/watch?v=ZE4Zu9WQET4&feature=youtu.be&t=1621">
-<img src="https://img.youtube.com/vi/ZE4Zu9WQET4/0.jpg" width="250">
-</a>
+{{< youtube id="DW2u6LhNMh0" start="116" class="video" >}}
 
-<a href="https://www.youtube.com/watch?v=Mukbfbr2b_k&t=1053">
-<img src="https://img.youtube.com/vi/Mukbfbr2b_k/0.jpg" width="250">
-</a>
+{{< youtube id="ZE4Zu9WQET4" start="1621" class="video" >}}
+
+{{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
+
+
+{{% /videos %}}
 
 ## Blogs
 
