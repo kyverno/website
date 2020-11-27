@@ -46,18 +46,6 @@ non-production-build: ## Build the non-production site, which adds noindex heade
 serve: module-check ## Boot the development server.
 	hugo server --buildFuture
 
-docker-image:
-	@echo -e "$(CCRED)**** The use of docker-image is deprecated. Use container-image instead. ****$(CCEND)"
-	$(MAKE) container-image
-
-docker-build:
-	@echo -e "$(CCRED)**** The use of docker-build is deprecated. Use container-build instead. ****$(CCEND)"
-	$(MAKE) container-build
-
-docker-serve:
-	@echo -e "$(CCRED)**** The use of docker-serve is deprecated. Use container-serve instead. ****$(CCEND)"
-	$(MAKE) container-serve
-
 container-image:
 	$(CONTAINER_ENGINE) build . \
 		--network=host \
