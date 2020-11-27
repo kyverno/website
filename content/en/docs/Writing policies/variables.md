@@ -87,13 +87,15 @@ This sample will mutate all incoming `Pod` creation requests with a label named 
 Create a simple `Pod` resource.
 
 ```sh
-$ kubectl run busybox --image busybox:1.28
+kubectl run busybox --image busybox:1.28
 ```
 
 Now `get` the newly-created `busybox` Pod.
 
 ```sh
-$ kubectl get po busybox --show-labels
+kubectl get po busybox --show-labels
+```
+```
 NAME       READY   STATUS    RESTARTS   AGE   LABELS
 busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=busybox
 ```
@@ -202,7 +204,9 @@ data:
 Once created, `describe` the resource to see how the array of strings is stored.
 
 ```sh
-$ kubectl describe cm roles-dictionary
+kubectl describe cm roles-dictionary
+```
+```
 Name:         roles-dictionary
 Namespace:    default
 Labels:       <none>
@@ -283,7 +287,9 @@ spec:
 Submit the manifest and see how Kyverno reacts.
 
 ```sh
-$ kubectl create -f deploy.yaml
+kubectl create -f deploy.yaml
+```
+```
 Error from server: error when creating "deploy.yaml": admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request:
 
 resource Deployment/default/busybox was blocked due to the following policies

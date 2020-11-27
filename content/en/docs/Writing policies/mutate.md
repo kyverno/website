@@ -49,7 +49,7 @@ With Kyverno, the add and replace have the same behavior i.e. both operations wi
 
 This patch policy adds, or replaces, entries in a `ConfigMap` with the name `config-game` in any namespace.
 
-````yaml
+```yaml
 apiVersion : kyverno.io/v1
 kind : ClusterPolicy
 metadata :
@@ -72,11 +72,11 @@ spec :
           - path : "/data/newKey1"
             op : add
             value : newValue1
-````
+```
 
 If your ConfigMap has empty data, the following policy adds an entry to `config-game`.
 
-````yaml
+```yaml
 apiVersion : kyverno.io/v1
 kind : ClusterPolicy
 metadata :
@@ -94,11 +94,11 @@ spec :
           - path: "/data"
             op: add
             value: {"ship.properties": "{\"type\": \"starship\", \"owner\": \"utany.corp\"}"}
-````
+```
 
 Here is the example of a patch that removes a label from the secret:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -114,11 +114,11 @@ spec:
         patchesJson6902: |-
           - path: "/metadata/labels/purpose"
             op: remove
-````
+```
 
 This policy rule adds elements to list:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -139,7 +139,7 @@ spec:
             path: /spec/containers/0/command
             value:
             - ls
-````
+```
 
 Note, that if **remove** operation cannot be applied, then this **remove** operation will be skipped with no error.
 
@@ -149,7 +149,7 @@ The `kubectl` command uses a [strategic merge patch](https://github.com/kubernet
 
 This policy sets the imagePullPolicy, adds command to container `nginx`:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -173,7 +173,7 @@ spec:
                 imagePullPolicy: "Never"
                 command:
                 - ls
-````
+```
 
 ## Mutate Overlay
 
@@ -183,7 +183,7 @@ The overlay cannot be used to delete values in a resource: use **patches** for t
 
 The following mutation overlay will add (or replace) the memory request and limit to 10Gi for every Pod with a label `memory: high`:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -210,13 +210,13 @@ spec:
                 limits:
                   memory: "10Gi"
 
-````
+```
 
 ### Working with lists
 
 Applying overlays to a list type is fairly straightforward: new items will be added to the list, unless they already exist. For example, the next overlay will add IP "192.168.10.172" to all addresses in all Endpoints:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -233,7 +233,7 @@ spec:
         subsets:
         - addresses:
           - ip: 192.168.42.172
-````
+```
 
 ### Conditional logic using anchors
 
@@ -257,7 +257,7 @@ A `conditional anchor` evaluates to `true` if the anchor tag exists and if the v
 
  For example, this overlay will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure":
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -275,7 +275,7 @@ spec:
         - ports:
           - (name): "secure*"
             port: 6443
-````
+```
 
 If the anchor tag value is an object or array, the entire object or array must match. In other words, the entire object or array becomes part of the "if" clause. Nested `conditional anchor` tags are not supported.
 
@@ -287,7 +287,7 @@ An `add anchor` is processed as part of applying the mutation. Typically, every 
 
 For example, this policy matches and mutates pods with `emptyDir` volume, to add the `safe-to-evict` annotation if it is not specified.
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -309,7 +309,7 @@ spec:
         spec:
           volumes:
           - (emptyDir): {}
-````
+```
 
 #### Anchor processing flow
 

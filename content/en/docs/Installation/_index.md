@@ -61,17 +61,17 @@ To check the Kyverno controller status, run the command:
 ```sh
 ## Check pod status
 kubectl get pods -n <namespace>
-````
+```
 
 If the Kyverno controller is not running, you can check its status and logs for errors:
 
-````sh
+```sh
 kubectl describe pod <kyverno-pod-name> -n <namespace>
-````
+```
 
-````sh
+```sh
 kubectl logs <kyverno-pod-name> -n <namespace>
-````
+```
 
 ### Option 2: Use your own CA-signed certificate
 
@@ -167,11 +167,11 @@ Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming a
 
 ClusterRoles used by kyverno:
 
-- kyverno:webhook
-- kyverno:userinfo
-- kyverno:customresources
-- kyverno:policycontroller
-- kyverno:generatecontroller
+- `kyverno:webhook`
+- `kyverno:userinfo`
+- `kyverno:customresources`
+- `kyverno:policycontroller`
+- `kyverno:generatecontroller`
 
 The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
 
@@ -230,14 +230,14 @@ To install in a specific namespace replace the namespace "kyverno" with your nam
 
 Example:
 
-````sh
+```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: <namespace>
-````
+```
 
-````sh
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -245,31 +245,31 @@ metadata:
     app: kyverno
   name: kyverno-svc
   namespace: <namespace>
-````
+```
 
 and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where namespace is mentioned.
 
 To run kyverno:
 
-````sh
+```sh
 kubectl create -f ./install.yaml
-````
+```
 
 To check the Kyverno controller status, run the command:
 
-````sh
+```sh
 kubectl get pods -n <namespace>
-````
+```
 
 If the Kyverno controller is not running, you can check its status and logs for errors:
 
-````sh
+```sh
 kubectl describe pod <kyverno-pod-name> -n <namespace>
-````
+```
 
-````sh
+```sh
 kubectl logs <kyverno-pod-name> -n <namespace>
-````
+```
 
 Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](/scripts/generate-self-signed-cert-and-k8secrets.sh)
 

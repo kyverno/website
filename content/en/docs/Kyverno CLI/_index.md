@@ -67,7 +67,7 @@ Passing policy from stdin:
 kustomize build nginx/overlays/envs/prod/ | kyverno validate -
 ```
 
-Use the -o <yaml/json> flag to display the mutated policy.
+Use the `-o <yaml/json>` flag to display the mutated policy.
 
 Example:
 
@@ -87,7 +87,7 @@ kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFu
 
 Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current kubectl context will be used to access the cluster.
 
-Displays mutate results to stdout, by default. Use the -o <path> flag to save mutated resources to a file or directory.
+Displays mutate results to stdout, by default. Use the `-o <path>` flag to save mutated resources to a file or directory.
 
 Apply to a resource:
 ```
@@ -116,19 +116,19 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o <file pa
 
 Apply policy with variables:
 
-Use --set flag to pass the values for variables in a policy while applying on a resource.
+Use the `--set` flag to pass the values for variables in a policy while applying on a resource.
 
 ```
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use --values_file for applying multiple policies on multiple resources and pass a file containing variables and its values.
+Use `--values_file` for applying multiple policies on multiple resources and pass a file containing variables and its values.
 
 ```
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
 ```
 
-Format of value.yaml :
+Format of `value.yaml`:
 
 ```yaml
 policies:
@@ -156,7 +156,7 @@ policies:
 
 Example:
 
-Policy file(add_network_policy.yaml):
+Policy manifest (`add_network_policy.yaml`):
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -192,7 +192,7 @@ spec:
           - Ingress
 ```
 
-Resource file(required_default_network_policy.yaml) :
+Resource manifest (`required_default_network_policy.yaml`):
 
 ```yaml
 kind: Namespace
@@ -201,15 +201,15 @@ metadata:
     name: "devtest"
 ```
 
-Applying policy on resource using set/-s flag:
+Applying policy on resource using `--set` or `-s` flag:
 
 ```
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -s request.object.metadata.name=devtest
 ```
 
-Applying policy on resource using --values_file/-f flag:
+Applying policy on resource using `--values_file` or `-f` flag:
 
-YAML file with variables(value.yaml) :
+YAML file containing variables (`value.yaml`):
 
 ```yaml
 policies:
