@@ -126,7 +126,7 @@ spec:
 | `!`        | not equals                |
 |  \|        | logical or                |
 
-There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
+🛈  There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
 
 ### Anchors
 
