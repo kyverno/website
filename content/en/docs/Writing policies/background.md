@@ -36,4 +36,4 @@ When background scanning is enabled, regardless of whether the policy's `validat
 | `validationFailureAction: enforce` | None         | None              |
 | `validationFailureAction: audit`   | Report       | None              |
 
-Also, policy rules that are written using variables from [Admission Review]({{< relref "/variables#using-admissionreview-request-data" >}} "Admission Review") request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.
+Also, policy rules that are written using variables from [Admission Review](/docs/writing-policies/variables/#variables-from-admission-review-request-data) request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.
