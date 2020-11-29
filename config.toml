@@ -73,7 +73,7 @@ anchor = "smart"
 [[menu.main]]
     name = "Sample Policies"
     weight = -101
-    url = "https://github.com/kyverno/kyverno/blob/master/samples/README.md"
+    url = "https://github.com/kyverno/kyverno/blob/main/samples/README.md"
 [[menu.main]]
     name = "GitHub"
     weight = -100
@@ -153,7 +153,7 @@ algolia_docsearch = false
 offlineSearch = false
 
 # Enable syntax highlighting and copy buttons on code blocks with Prism
-prism_syntax_highlighting = false
+prism_syntax_highlighting = true
 
 # User interface configuration
 [params.ui]

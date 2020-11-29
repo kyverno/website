@@ -6,7 +6,7 @@ weight: 5
 
 A ```generate``` rule can used to create additional resources when a new resource is created, when labels are created, or when metadata is updated for a resource. This policy type is useful to create supporting resources, such as new role bindings, or network policies, for a namespace.
 
-The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource and its possible to match or exclude API requests based on subjects, roles, etc. 
+The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource and its possible to match or exclude API requests based on subjects, roles, etc.
 
 ## Updating existing resources
 
@@ -61,6 +61,8 @@ spec:
 
 ### Clone a ConfigMap and propagate changes
 
+This policy clones an existing config map and synchronizes changes across namespaces.
+
 ````yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -71,7 +73,7 @@ spec:
     - name: "Clone ConfigMap"
       match:
         resources:
-          kinds: 
+          kinds:
           - Namespace
       exclude:
         resources:
@@ -81,12 +83,12 @@ spec:
             - "kube-public"
             - "kyverno"
       generate:
-        # Kind of generated resource 
-        kind: ConfigMap 
+        # Kind of generated resource
+        kind: ConfigMap
         # Name of the generated resource
-        name: default-config 
+        name: default-config
         # namespace for the generated resource
-        namespace: "{{request.object.metadata.name}}" 
+        namespace: "{{request.object.metadata.name}}"
         # propagate changes from the upstream resource
         synchronize : true
         clone:
@@ -95,6 +97,8 @@ spec:
 ````
 
 ### Generate a NetworkPolicy
+
+In this example new namespaces will receive a `NetworkPolicy` that denies all inbound and outbound traffic.
 
 ````yaml
 apiVersion: kyverno.io/v1
@@ -105,7 +109,7 @@ spec:
   rules:
   - name: "deny-all-traffic"
     match:
-      resources: 
+      resources:
         kinds:
         - Namespace
         name: "*"
@@ -116,19 +120,16 @@ spec:
           - "default"
           - "kube-public"
           - "kyverno"
-    generate: 
+    generate:
       kind: NetworkPolicy
       name: deny-all-traffic
-      namespace: "{{request.object.metadata.name}}" 
+      namespace: "{{request.object.metadata.name}}"
       data:  
         spec:
           # select all pods in the namespace
           podSelector: {}
-          policyTypes: 
+          policyTypes:
           - Ingress
           - Egress
 ````
-
-In this example new namespaces will receive a `NetworkPolicy` that denies all inbound and outbound traffic.
-
 

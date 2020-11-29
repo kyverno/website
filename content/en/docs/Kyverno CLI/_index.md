@@ -7,14 +7,13 @@ weight: 70
 
 The Kyverno Command Line Interface (CLI) is designed to validate policies and test the behavior of applying policies to resources before adding the policy to a cluster. It can be used as a kubectl plugin and as a standalone CLI.
 
-
 ## Installing the CLI
 
 You can use [Krew](https://github.com/kubernetes-sigs/krew) to install the Kyverno CLI:
 
 ```bash
 # Install Kyverno CLI using kubectl krew plugin manager
-kubectl krew install kyverno 
+kubectl krew install kyverno
 
 # test the Kyverno CLI
 kubectl kyverno version  
@@ -23,7 +22,7 @@ kubectl kyverno version
 
 ## Install via AUR (archlinux)
 
-You can install the Kyverno cli via your favourite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
+You can install the Kyverno cli via your favorite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
 
 ```
 yay -S kyverno-git
@@ -39,7 +38,6 @@ cd github.com/kyverno/kyverno
 make cli
 mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 ```
-
 
 ## CLI Commands
 
@@ -77,7 +75,7 @@ Example:
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
 ```
 
-Policy can also be validated with CRDs. Use -c flag to pass the CRD, can pass multiple CRD files or even an entire folder containin CRDs.
+Policy can also be validated with CRDs. Use -c flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
 
 Example:
 
@@ -167,21 +165,21 @@ metadata:
   name: add-networkpolicy
   annotations:
     policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: By default, Kubernetes allows communications across 
-      all pods within a cluster. Network policies and, a CNI that supports network policies, 
-      must be used to restrict communinications. A default NetworkPolicy should be configured 
-      for each namespace to default deny all ingress traffic to the pods in the namespace. 
-      Application teams can then configure additional NetworkPolicy resources to allow 
+    policies.kyverno.io/description: By default, Kubernetes allows communications across
+      all pods within a cluster. Network policies and, a CNI that supports network policies,
+      must be used to restrict communications. A default NetworkPolicy should be configured
+      for each namespace to default deny all ingress traffic to the pods in the namespace.
+      Application teams can then configure additional NetworkPolicy resources to allow
       desired traffic to application pods from select sources.
 spec:
   rules:
   - name: default-deny-ingress
     match:
-      resources: 
+      resources:
         kinds:
         - Namespace
         name: "*"
-    generate: 
+    generate:
       kind: NetworkPolicy
       name: default-deny-ingress
       namespace: "{{request.object.metadata.name}}"
@@ -190,15 +188,16 @@ spec:
         spec:
           # select all pods in the namespace
           podSelector: {}
-          policyTypes: 
+          policyTypes:
           - Ingress
 ```
+
 Resource file(required_default_network_policy.yaml) :
 
 ```yaml
 kind: Namespace
 apiVersion: v1
-metadata: 
+metadata:
     name: "devtest"
 ```
 
@@ -224,4 +223,3 @@ policies:
 ```
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
-

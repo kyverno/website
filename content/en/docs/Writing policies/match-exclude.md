@@ -13,7 +13,7 @@ The `match` / `exclude` clauses have the same structure, and can each contain th
 * roles: select namespaced roles
 * clusterroles: select cluster wide roles
 
-At least one element must be specified in a `match` or `exclude` block. The `kind` attribute is optional when working with the `resources` element, but if it's not specified the policy rule will only be applicable to metatdata that is common across all resources kinds.
+At least one element must be specified in a `match` or `exclude` block. The `kind` attribute is optional when working with the `resources` element, but if it's not specified the policy rule will only be applicable to metadata that is common across all resources kinds.
 
 When Kyverno receives an admission controller request, i.e. a validation or mutation webhook, it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
