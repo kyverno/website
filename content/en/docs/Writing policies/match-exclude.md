@@ -21,7 +21,7 @@ When Kyverno receives an admission controller request, i.e. a validation or muta
 
 The following YAML provides an example for a match clause.
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -65,13 +65,13 @@ spec:
 
         ...
 
-````
+```
 
 ## Exclude `cluster-admin` role
 
 Here is an example of a rule that matches all pods, excluding pods created by using the `cluster-admin` cluster role.
 
-````yaml
+```yaml
 spec:
   rules:
     name: "match-pods-except-admin"
@@ -81,13 +81,13 @@ spec:
         - Pod
     exclude:
       clusterroles: cluster-admin
-````
+```
 
 ## Exclude `kube-system` namespace
 
 This rule matches all pods, excluding pods in the `kube-system` namespace.
 
-````yaml
+```yaml
 spec:
   rules:
     name: "match-pods-except-admin"
@@ -99,7 +99,7 @@ spec:
       resources:
         namespaces:
         - "kube-system"
-````
+```
 
 ## Combining match and exclude
 
@@ -111,7 +111,7 @@ Condition checks inside the `resources` block follow the logic "**AND across typ
 
 This is an example that selects a Deployment **OR** a StatefulSet with a label `app=critical`.
 
-````yaml
+```yaml
 spec:
   rules:
     - name: match-critical-app
@@ -124,13 +124,13 @@ spec:
           selector:
             matchLabels:
               app: critical
-````
+```
 
 ## Match a label and exclude users and roles
 
-The following example matches all resources with label `app=critical` excluding the resource created by ClusterRole `cluster-admin` **OR** by the user `John`.
+The following example matches all resources with label `app=critical` excluding the resources created by ClusterRole `cluster-admin` **OR** by the user `John`.
 
-````yaml
+```yaml
 spec:
   rules:
     - name: match-criticals-except-given-rbac
@@ -145,13 +145,13 @@ spec:
         subjects:
         - kind: User
           name: John
-````
+```
 
 ## Match all pods and exclude using annotations
 
 Here is an example of a rule that matches all pods having 'imageregistry: "https://hub.docker.com/"' annotations.
 
-````yaml
+```yaml
 spec:
   rules:
     - name: match-pod-annotations
@@ -162,4 +162,4 @@ spec:
           kinds:
             - Pod
           name: "*"
-````
+```

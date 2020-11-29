@@ -9,7 +9,10 @@ It is sometimes necessary to refer to contents or values of other fields and obj
 
 In order to refer to both `ConfigMap` data values as well as Admission Review request data as variables, Kyverno uses the [JMESPath](http://jmespath.org/) notation format. Using JMESPath, values from these sources are written in the format of `{{key_1.key_2.key_3}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
 
-> ⚠️ **Note: Variables are currently not supported on `match` or `exclude` statements within a rule.**
+{{% alert title="Note" color="info" %}}
+⚠️  Variables are currently not supported on `match` or `exclude` statements within a rule.
+{{% /alert %}}
+
 
 ## Variables from Admission Review request data
 
@@ -87,13 +90,15 @@ This sample will mutate all incoming `Pod` creation requests with a label named 
 Create a simple `Pod` resource.
 
 ```sh
-$ kubectl run busybox --image busybox:1.28
+kubectl run busybox --image busybox:1.28
 ```
 
 Now `get` the newly-created `busybox` Pod.
 
 ```sh
-$ kubectl get po busybox --show-labels
+kubectl get po busybox --show-labels
+```
+```
 NAME       READY   STATUS    RESTARTS   AGE   LABELS
 busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=busybox
 ```
@@ -176,10 +181,13 @@ spec:
 
 In the above `ClusterPolicy`, a `mutate` rule matches all incoming `Pod` resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier `ConfigMap` named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new `Pod` will then receive the label `my-environment-name=production`.
 
-> ⚠️**Note: ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:**
->```
->{{ "<name>".data."<key>" }}
->```
+{{% alert title="Note" color="info" %}}
+⚠️  `ConfigMap` names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
+```jmespath
+{{ "<name>".data."<key>" }}
+```
+{{% /alert %}}
+
 
 ### Handling ConfigMap Array Values
 
@@ -202,7 +210,9 @@ data:
 Once created, `describe` the resource to see how the array of strings is stored.
 
 ```sh
-$ kubectl describe cm roles-dictionary
+kubectl describe cm roles-dictionary
+```
+```
 Name:         roles-dictionary
 Namespace:    default
 Labels:       <none>
@@ -217,7 +227,9 @@ allowed-roles:
 
 From the output above, the array of strings are stored in JSON array format.
 
-> ⚠️**Note: As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the `ConfigMap` data to be stored as a JSON array.**
+{{% alert title="Note" color="info" %}}
+⚠️ As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the `ConfigMap` data to be stored as a JSON array.
+{{% /alert %}}
 
 Now that the array data is saved in the `allowed-roles` key, here is a sample `ClusterPolicy` containing a single `rule` that blocks a `Deployment` if the value of the annotation named `role` is not in the allowed list:
 
@@ -251,7 +263,9 @@ spec:
 
 This rule denies the request for a new `Deployment` if the annotation `role` is not found in the array we defined in the earlier `ConfigMap` named `roles-dictionary`. 
 
-> ⚠️ **Note: You may also notice that this sample uses variables from both `AdmissionReview` and `ConfigMap` sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.**
+{{% alert title="Note" color="info" %}}
+⚠️  You may also notice that this sample uses variables from both `AdmissionReview` and `ConfigMap` sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
+{{% /alert %}}
 
 Once creating this sample `ClusterPolicy`, attempt to create a new `Deployment` where the annotation `role=super-user` and test the result.
 
@@ -283,7 +297,9 @@ spec:
 Submit the manifest and see how Kyverno reacts.
 
 ```sh
-$ kubectl create -f deploy.yaml
+kubectl create -f deploy.yaml
+```
+```
 Error from server: error when creating "deploy.yaml": admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request:
 
 resource Deployment/default/busybox was blocked due to the following policies

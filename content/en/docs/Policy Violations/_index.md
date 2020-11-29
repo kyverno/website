@@ -14,8 +14,10 @@ Policy Violation objects are created in the resource namespace. Policy Violation
 
 You can view all existing policy violations as shown below:
 
-````bash
-$ kubectl get polv --all-namespaces
+```bash
+kubectl get polv --all-namespaces
+```
+```
 NAMESPACE   NAME                        POLICY                RESOURCEKIND   RESOURCENAME                  AGE
 default     disallow-root-user-56j4t    disallow-root-user    Deployment     nginx-deployment              5m7s
 default     validation-example2-7snmh   validation-example2   Deployment     nginx-deployment              5m7s
@@ -25,7 +27,7 @@ docker      disallow-root-user-s5rjp    disallow-root-user    Deployment     com
 docker      disallow-root-user-w58kp    disallow-root-user    Deployment     compose-api                   43m
 docker      validation-example2-dgj9j   validation-example2   Deployment     compose                       5m28s
 docker      validation-example2-gzfdf   validation-example2   Deployment     compose-api                   5m27s
-````
+```
 
 # Cluster Policy Violations
 

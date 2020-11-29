@@ -35,8 +35,10 @@ Policy enforcement is captured using Kubernetes events. Kyverno also reports pol
 
 This section will help you install Kyverno and create your first policy:
 
-**NOTE** : Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
+{{% alert title="Note" color="info" %}}
+Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
 To check the version, enter `kubectl version`.
+{{% /alert %}}
 
 Install Kyverno:
 
