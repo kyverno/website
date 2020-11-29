@@ -52,7 +52,9 @@ Kyverno can automatically generate a new self-signed Certificate Authority (CA) 
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
-Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+{{% alert title="Note" color="info" %}}
+🛈 The above command installs the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+{{% /alert %}}
 
 Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
 
@@ -79,70 +81,74 @@ You can install your own CA-signed certificate, or generate a self-signed CA and
 
 #### 2.1. Generate a self-signed CA and signed certificate-key pair
 
-**Note: using a separate self-signed root CA is difficult to manage and not recommended for production use.**
+{{% alert title="Note" color="warning" %}}
+Using a separate self-signed root CA is difficult to manage and not recommended for production use.
+{{% /alert %}}
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Here are the commands to create a self-signed root CA, and generate a signed certificate and key using openssl (you can customize the certificate attributes for your deployment):
+Here are the commands to create a self-signed root CA, and generate a signed certificate and key using OpenSSL (you can customize the certificate attributes for your deployment):
 
 1. Create a self-signed CA
 
-````bash
+```bash
 openssl genrsa -out rootCA.key 4096
 openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt  -subj "/C=US/ST=test/L=test /O=test /OU=PIB/CN=*.kyverno.svc/emailAddress=test@test.com"
-````
+```
 
 2. Create a keypair
 
-````bash
+```bash
 openssl genrsa -out webhook.key 4096
 openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
-````
+```
 
-3. Create a **webhook.ext file** with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
+3. Create a **`webhook.ext` file** with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
 
-````
+```
 subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
-````
+```
 
 4. Sign the keypair with the CA passing in the extension
 
-````bash
+```bash
 openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out webhook.crt -days 1024 -sha256 -extfile webhook.ext
-````
+```
 
 5. Verify the contents of the certificate
 
-````bash
+```bash
  openssl x509 -in webhook.crt -text -noout
-````
+```
 
-The certificate must contain the SAN information in the X509v3 extensions section:
+The certificate must contain the SAN information in the _X509v3 extensions_ section:
 
-````
+```
 X509v3 extensions:
     X509v3 Subject Alternative Name:
         DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
-````
+```
 
 #### 2.2. Configure secrets for the CA and TLS certificate-key pair
 
 You can now use the following files to create secrets:
 
-- rootCA.crt
-- webhooks.crt
-- webhooks.key
+- `rootCA.crt`
+- `webhooks.crt`
+- `webhooks.key`
 
 To create the required secrets, use the following commands (do not change the secret names):
 
-````bash
+```bash
 kubectl create ns <namespace>
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
 kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
-````
+```
 
-**NOTE: The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret**
+{{% alert title="Note" color="info" %}}
+The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret.
+{{% /alert %}}
 
 Secret | Data | Content
 ------------ | ------------- | -------------
