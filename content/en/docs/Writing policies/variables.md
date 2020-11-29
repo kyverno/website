@@ -354,4 +354,4 @@ Operators also work on manifest lookup variables as well so the previous snippet
 
 In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
 
-For more information on operators see the [Operators]({{< relref "/validate#operators" >}} "Operators") section.
+For more information on operators see the [Operators](/docs/writing-policies/validate/#operators) section.

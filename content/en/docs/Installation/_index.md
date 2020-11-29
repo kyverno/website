@@ -6,26 +6,32 @@ description: >
   Installation and configuration details for Kyverno using `Helm` or `kubectl`.
 ---
 
+Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running. 
+
+{{% alert title="Note" color="info" %}}
+Currently, Kyverno runs as a single replica in the `Deployment` resource. Supporting multiple replicas, for increased scale and availability, is being worked on as a [roadmap item](https://github.com/kyverno/kyverno/issues/1214).
+{{% /alert %}}
+
 ## Install Kyverno using Helm
 
-Add the Nirmata Helm repository
+Add the Kyverno Helm repository.
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
-Create a namespace and then install the Kyverno helm chart.
+Create a namespace and then install the Kyverno Helm chart.
 
 ```sh
 # Create a namespace
 kubectl create ns <namespace>
 
-# Install the Kyverno helm chart
+# Install the Kyverno Helm chart
 helm install kyverno --namespace <namespace> kyverno/kyverno
 
 ```
 
-For installing in the kyverno namespace:
+For installing in the `kyverno` namespace:
 
 ```sh
 kubectl create ns kyverno
@@ -39,9 +45,25 @@ Alternatively, use Helm 3.2+ to complete both steps in a single command:
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 ```
 
+To install non-stable releases, add the `--devel` switch to Helm
+
+```sh
+helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace --devel
+```
+
 ## Install Kyverno using YAMLs
 
-The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are 2 ways to configure the secure communications link between Kyverno and the kube-apiserver.
+If you'd rather deploy the manifest directly, simply apply the latest release file. This manifest path will always point to the latest release, including release candidates and other non-stable releases.
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+## Customize the installation of Kyverno
+
+If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
+
+The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
 
 ### Option 1: Auto-generate a self-signed CA and certificate
 
@@ -162,7 +184,7 @@ Kyverno uses secrets created above to setup TLS communication with the kube-apis
 You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is **kyverno**):
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
 ## Configuring Kyverno
@@ -277,7 +299,7 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs <kyverno-pod-name> -n <namespace>
 ```
 
-Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](/scripts/generate-self-signed-cert-and-k8secrets.sh)
+Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
 ### Flags
 
