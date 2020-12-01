@@ -245,7 +245,8 @@ Example:
 Consider the following policy and resources:
 
 policy.yaml
-```apiVersion: kyverno.io/v1
+```
+apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-pod-requests-limits
@@ -278,7 +279,8 @@ spec:
 ```
 
 resource1.yaml
-```apiVersion: v1
+```
+apiVersion: v1
 kind: Pod
 metadata:
   name: nginx1
@@ -299,7 +301,8 @@ spec:
 ```
 
 resource2.yaml
-```apiVersion: v1
+```
+apiVersion: v1
 kind: Pod
 metadata:
   name: nginx2
