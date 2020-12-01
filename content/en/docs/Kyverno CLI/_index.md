@@ -251,10 +251,11 @@ metadata:
   name: require-pod-requests-limits
   annotations:
     policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: As application workloads share cluster resources, it is important 
-      to limit resources requested and consumed by each pod. It is recommended to require 
-      'resources.requests' and 'resources.limits' per pod. If a namespace level request or limit is 
-      specified, defaults will automatically be applied to each pod based on the 'LimitRange' configuration.
+    policies.kyverno.io/description: >-
+      As application workloads share cluster resources, it is important to limit resources
+      requested and consumed by each pod. It is recommended to require 'resources.requests'
+      and 'resources.limits' per pod. If a namespace level request or limit is specified,
+      defaults are automatically applied to each pod based on the 'LimitRange' configuration.
 spec:
   validationFailureAction: audit
   rules:
