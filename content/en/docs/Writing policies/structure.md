@@ -1,6 +1,6 @@
 ---
 title: Policy Structure
-description: Learn how Kyverno policies and rules work
+description: Learn how Kyverno policies and rules work.
 weight: 1
 ---
 
