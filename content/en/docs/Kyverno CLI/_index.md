@@ -224,7 +224,7 @@ policies:
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
-#### Policy Report:
+#### Policy Report
 
 Use '--policy_report' with apply command to generate policy report.
 
