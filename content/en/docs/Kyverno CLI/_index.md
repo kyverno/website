@@ -244,7 +244,7 @@ Example:
 Consider the following policy and resources:
 
 policy.yaml
-```
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -278,7 +278,7 @@ spec:
 ```
 
 resource1.yaml
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -300,7 +300,7 @@ spec:
 ```
 
 resource2.yaml
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
