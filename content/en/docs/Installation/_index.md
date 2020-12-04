@@ -20,6 +20,12 @@ Add the Kyverno Helm repository.
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
+Scan the new repository for charts.
+
+```sh
+helm repo update
+```
+
 Create a namespace and then install the Kyverno Helm chart.
 
 ```sh
@@ -356,3 +362,53 @@ data:
 ```
 
 To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the `ConfigMap` using `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
+
+## Upgrading Kyverno
+
+Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed.
+
+### Upgrade Kyverno with YAML manifest
+
+Apply the new manifest over the existing installation.
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+### Upgrade Kyverno with Helm
+
+Kyverno can be upgraded like any other Helm chart.
+
+Scan your Helm repositories for updated charts.
+
+```sh
+helm repo update
+```
+
+Show the versions of the Kyverno chart which are available. To see pre-release charts, add the `--devel` flag to the `helm` command.
+
+```sh
+helm search repo kyverno
+```
+
+Run the upgrade command picking the target version.
+
+```sh
+helm upgrade kyverno --namespace kyverno kyverno/kyverno --version <version_number>
+```
+
+## Uninstalling Kyverno
+
+To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment and all CRDs will be removed, including any reports.
+
+### Uninstall Kyverno with YAML manifest
+
+```sh
+kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+### Uninstall Kyverno with Helm
+
+```sh
+helm uninstall kyverno --namespace kyverno kyverno/kyverno
+```
