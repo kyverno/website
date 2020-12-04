@@ -17,7 +17,7 @@ Kyverno (Greek for "govern") is a policy engine designed specifically for Kubern
 * synchronize configurations across namespaces
 * block non-conformant resources using admission controls, or report policy violations
 * test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
-* manage `policies-as-code` using familiar tools like Git and Kustomize
+* manage policies as code using familiar tools like `git` and `kustomize`
 
 Kyverno allows cluster administrators to manage environment specific configurations independently of workload configurations and enforce configuration best practices for their clusters. Kyverno can be used to scan existing workloads for best practices, or can be used to enforce best practices by blocking or mutating API requests.
 
