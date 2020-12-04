@@ -15,7 +15,7 @@ By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, 
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
 
-This policy sets the `imagePullPolicy` to `Always` if the image tag is `latest`:
+This policy sets the `imagePullPolicy` to `IfNotPresent` if the image tag is `latest`:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -35,36 +35,36 @@ spec:
             containers:
               # match images which end with :latest
               - (image): "*:latest"
-                # set the imagePullPolicy to "Always"
-                imagePullPolicy: "Always"
+                # set the imagePullPolicy to "IfNotPresent"
+                imagePullPolicy: "IfNotPresent"
 ```
 
 ## RFC 6902 JSONPatch
 
 A JSON Patch provides a precise way to mutate resources.
 
-[JSONPatch](http://jsonpatch.com/) supports the following operations (in the 'op' field):
+[JSONPatch](http://jsonpatch.com/) supports the following operations (in the `op` field):
 
-* **add**
-* **replace**
-* **remove**
+* `add`
+* `replace`
+* `remove`
 
-With Kyverno, the add and replace have the same behavior (i.e., both operations will add or replace the target element).
+With Kyverno, the `add` and `replace` have the same behavior (i.e., both operations will add or replace the target element).
 
 This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any namespace.
 
 ```yaml
-apiVersion : kyverno.io/v1
-kind : ClusterPolicy
-metadata :
-  name : policy-generate-cm
-spec :
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: policy-patch-cm
+spec:
   rules:
     - name: pCM1
       match:
         resources:
           name: "config-game"
-          kinds :
+          kinds:
           - ConfigMap
       mutate:
         patchesJson6902: |-
@@ -73,25 +73,25 @@ spec :
             value: |
               type=starship
               owner=utany.corp
-          - path : "/data/newKey1"
-            op : add
-            value : newValue1
+          - path: "/data/newKey1"
+            op: add
+            value: newValue1
 ```
 
 If your ConfigMap has empty data, the following policy adds an entry to `config-game`.
 
 ```yaml
-apiVersion : kyverno.io/v1
-kind : ClusterPolicy
-metadata :
-  name : policy-generate-cm
-spec :
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: policy-add-cm
+spec:
   rules:
     - name: pCM1
       match:
         resources:
           name: "config-game"
-          kinds :
+          kinds:
           - ConfigMap
       mutate:
         patchesJson6902: |-
@@ -100,7 +100,7 @@ spec :
             value: {"ship.properties": "{\"type\": \"starship\", \"owner\": \"utany.corp\"}"}
 ```
 
-Here is the example of a patch that removes a label from the secret:
+This is an example of a patch that removes a label from a Secret:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -113,14 +113,14 @@ spec:
       match:
         resources:
           kinds:
-            - Secret
+          - Secret
       mutate:
         patchesJson6902: |-
           - path: "/metadata/labels/purpose"
             op: remove
 ```
 
-This policy rule adds elements to list:
+This policy rule adds elements to list. In this case, it adds a new busybox container and a command. Note that because the `path` statement is a precise schema element, this will only work on a direct Pod and not higher-level objects such as Deployments.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -129,29 +129,29 @@ metadata:
   name: insert-container
 spec:
   rules:
-    - name: insert-container
-      match:
-        resources:
-          kinds:
-            - Pod
-      mutate:
-        patchesJson6902: |-
-          - op: add
-            path: /spec/containers/1
-            value: {"name":"busybox","image":"busybox:latest"}
-          - op: add
-            path: /spec/containers/0/command
-            value:
-            - ls
+  - name: insert-container
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchesJson6902: |-
+        - op: add
+          path: "/spec/containers/1"
+          value: {"name":"busybox","image":"busybox:latest"}
+        - op: add
+          path: "/spec/containers/1/command"
+          value:
+          - ls
 ```
 
-Note, that if **remove** operation cannot be applied, then it will be skipped with no error.
+Note, that if the `remove` operation cannot be applied, it will be skipped with no error.
 
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
-This policy sets the `imagePullPolicy` and adds a command to the `nginx` container:
+This policy sets adds a new container to the Pod, sets the `imagePullPolicy`, adds a command, and sets a label with the key name of `name` and value set to the name of the Pod from AdmissionReview data. Once again, the overlay in this case names a specific schema path which is relevant only to a Pod and not higher-level resources.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -160,23 +160,23 @@ metadata:
   name: strategic-merge-patch
 spec:
   rules:
-    - name: set-image-pull-policy-add-command
-      match:
-        resources:
-          kinds:
-            - Pod
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              name: "{{request.object.metadata.name}}"
-          spec:
-            containers:
-              - name: "nginx"
-                image: "nginx:latest"
-                imagePullPolicy: "Never"
-                command:
-                - ls
+  - name: set-image-pull-policy-add-command
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            name: "{{request.object.metadata.name}}"
+        spec:
+          containers:
+            - name: "nginx"
+              image: "nginx:latest"
+              imagePullPolicy: "Never"
+              command:
+              - ls
 ```
 
 ## Mutate Overlay
@@ -194,26 +194,25 @@ metadata:
   name: policy-change-memory-limit
 spec:
   rules:
-    - name: "Set hard memory limit to 2Gi"
-      match:
-        resources:
-          kinds:
-            - Pod
-          selector:
-            matchLabels:
-              memory: high
-      mutate:
-        overlay:
-          spec:
-            containers:
-            # the wildcard * will match all containers
-            - (name): "*"
-              resources:
-                requests:
-                  memory: "10Gi"
-                limits:
-                  memory: "10Gi"
-
+  - name: "Set memory to 10Gi"
+    match:
+      resources:
+        kinds:
+        - Pod
+        selector:
+          matchLabels:
+            memory: high
+    mutate:
+      overlay:
+        spec:
+          containers:
+          # the wildcard * will match all containers
+          - (name): "*"
+            resources:
+              requests:
+                memory: "10Gi"
+              limits:
+                memory: "10Gi"
 ```
 
 ### Working with lists
@@ -285,7 +284,7 @@ If the anchor tag value is an object or array, the entire object or array must m
 
 ### Add if not present anchor
 
-A variation of an anchor, is to add a field value if it is not already defined. This is done by using the `add anchor` (short for `add if not present anchor`) with the notation `+(...)` for the tag.
+A variation of an anchor is to add a field value if it is not already defined. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
 
 An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource.
 
@@ -319,6 +318,135 @@ spec:
 
 The anchor processing behavior for mutate conditions is as follows:
 
-1. First, all conditional anchors are processed. Processing stops when the first conditional anchor return a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
+1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
 
 2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
+
+## Mutate Rule Ordering (Cascading)
+
+In some cases, it might be desired to have multiple levels of mutation rules apply to incoming resources. The `match` statement in rule A would apply a mutation to the resource, and the result of that mutation would trigger a `match` statement in rule B that would apply a second mutation. In such cases, Kyverno can accommodate more complex mutation rules, however rule ordering matters to guarantee consistent results.
+
+For example, assume you wished to assign a label to each incoming Pod describing the type of application it contained. For those with an `image` having the string either `cassandra` or `mongo` you wished to apply the label `type=database`. This could be done with the following sample policy.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: database-type-labeling
+spec:
+  rules:
+    - name: assign-type-database
+      match:
+        resources:
+          kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              type: database
+          spec:
+            (containers):
+            - (image): "*cassandra* | *mongo*"
+```
+
+Also assume that for certain application types, a backup strategy needs to be defined. For those applications where `type=database`, this would be designated with an additional label with the key name of `backup-needed` and value of either `yes` or `no`. The label would only be added if not already specified since operators can choose if they want protection or not. This policy would be defined like the following.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: database-backup-labeling
+spec:
+  rules:
+    - name: assign-backup-database
+      match:
+        resources:
+          kinds:
+            - Pod
+          selector:
+            matchLabels:
+              type: database
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              +(backup-needed): "yes"
+```
+
+In such a case, Kyverno is able to perform cascading mutations whereby an incoming Pod that matched in the first rule and was mutated would potentially be further mutated by the second rule. In these cases, the rules must be ordered from top to bottom in the order of their dependencies and stored within the same policy. The resulting policy definition would look like the following:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: database-protection
+spec:
+  rules:
+  - name: assign-type-database
+    match:
+      resources:
+        kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            type: database
+        spec:
+          (containers):
+          - (image): "*cassandra* | *mongo*"
+  - name: assign-backup-database
+    match:
+      resources:
+        kinds:
+          - Pod
+        selector:
+          matchLabels:
+            type: database
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            +(backup-needed): yes
+```
+
+Test the cascading mutation policy by creating a Pod using the Cassandra image.
+
+```sh
+$ kubectl run cassandra --image=cassandra:latest
+pod/cassandra created
+```
+
+Perform a `get` or `describe` on the Pod to see the result of the metadata.
+
+```sh
+$ kubectl describe po cassandra
+Name:         cassandra
+Namespace:    default
+<snip>
+Labels:       backup-needed=yes
+              run=cassandra
+              type=database
+<snip>
+```
+
+As can be seen, both `type=database` and `backup-needed=yes` were applied according to the mutation rules.
+
+Verify that applying your own `backup-needed` label with the value of `no` triggers the first mutation rule but not the second.
+
+```sh
+$ kubectl run cassandra --image=cassandra:latest --labels backup-needed=no
+```
+
+Perform another `get` or `describe` to verify the `backup-needed` label was not altered by the mutation rule.
+
+```sh
+$ kubectl describe po cassandra
+Name:         cassandra
+Namespace:    default
+<snip>
+Labels:       backup-needed=no
+              type=database
+<snip>
+```
