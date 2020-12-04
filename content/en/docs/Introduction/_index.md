@@ -64,6 +64,7 @@ helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, and generate configurations. The policy attribute `validationFailureAction` is set to `enforce` to block API requests that are non-compliant (using the default value `audit` will report violations but not block requests.)
 
 ```yaml
+kubectl create -f- << EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -82,6 +83,7 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: "?*"
+EOF
 ```
 
 Try creating a Deployment without the required label:
