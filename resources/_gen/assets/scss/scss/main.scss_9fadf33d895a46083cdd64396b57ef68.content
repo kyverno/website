@@ -13956,5 +13956,10 @@ Nothing defined here. The Hugo project that uses this theme can override Bootstr
 assets/scss/_styles_project.scss
 
 */
+.videos {
+  display: flex; }
+
+.videos > .video {
+  margin-right: 1.5rem; }
 
 /*# sourceMappingURL=main.css.map */
