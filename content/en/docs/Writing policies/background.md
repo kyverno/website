@@ -18,7 +18,10 @@ Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object 
 
 By default, background scanning occurs every 15 minutes and is not currently configurable.
 
-> ⚠️ **Note: Kyverno does not mutate existing resources to prevent inadvertent changes to workloads. Mutate and generate rules are not processed during background scans.**
+{{% alert title="Note" color="info" %}}
+⚠️  Kyverno does not mutate existing resources to prevent inadvertent changes to workloads.
+Mutate and generate rules are not processed during background scans.
+{{% /alert %}}
 
 When background scanning is enabled, regardless of whether the policy's `validationFailureAction` is set to `enforce` or `audit`, the violation will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
 
@@ -36,4 +39,4 @@ When background scanning is enabled, regardless of whether the policy's `validat
 | `validationFailureAction: enforce` | None         | None              |
 | `validationFailureAction: audit`   | Report       | None              |
 
-Also, policy rules that are written using variables from [Admission Review]({{< relref "/variables#using-admissionreview-request-data" >}} "Admission Review") request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.
+Also, policy rules that are written using variables from [Admission Review](/docs/writing-policies/variables/#variables-from-admission-review-request-data) request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.

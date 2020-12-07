@@ -1,17 +1,21 @@
 ---
 title: Mutating Resources
 description: >
-  Update resources during admission control 
+  Modify resources during admission control.
 weight: 4
 ---
 
-A ```mutate``` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
+A `mutate` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
 
-By using a ```patch``` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A ```strategic merge patch``` is useful for controlling merge behaviors on elements with lists. Using an ```overlay``` is convenient for describing the desired state of the resource.
+{{% alert title="Note" color="warning" %}}
+Overlay and RFC 6902 JSON Patch methods are currently deprecated and scheduled for removal in Kyverno 1.5. Please use the [patch strategic merge](#strategic-merge-patch) method from now forward.
+{{% /alert %}}
+
+By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Using an `overlay` is convenient for describing the desired state of the resource.
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
 
-This policy sets the imagePullPolicy to Always if the image tag is latest:
+This policy sets the `imagePullPolicy` to `Always` if the image tag is `latest`:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -45,11 +49,11 @@ A JSON Patch provides a precise way to mutate resources.
 * **replace**
 * **remove**
 
-With Kyverno, the add and replace have the same behavior i.e. both operations will add or replace the target element.
+With Kyverno, the add and replace have the same behavior (i.e., both operations will add or replace the target element).
 
-This patch policy adds, or replaces, entries in a `ConfigMap` with the name `config-game` in any namespace.
+This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any namespace.
 
-````yaml
+```yaml
 apiVersion : kyverno.io/v1
 kind : ClusterPolicy
 metadata :
@@ -72,11 +76,11 @@ spec :
           - path : "/data/newKey1"
             op : add
             value : newValue1
-````
+```
 
 If your ConfigMap has empty data, the following policy adds an entry to `config-game`.
 
-````yaml
+```yaml
 apiVersion : kyverno.io/v1
 kind : ClusterPolicy
 metadata :
@@ -94,11 +98,11 @@ spec :
           - path: "/data"
             op: add
             value: {"ship.properties": "{\"type\": \"starship\", \"owner\": \"utany.corp\"}"}
-````
+```
 
 Here is the example of a patch that removes a label from the secret:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -114,11 +118,11 @@ spec:
         patchesJson6902: |-
           - path: "/metadata/labels/purpose"
             op: remove
-````
+```
 
 This policy rule adds elements to list:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -139,17 +143,17 @@ spec:
             path: /spec/containers/0/command
             value:
             - ls
-````
+```
 
-Note, that if **remove** operation cannot be applied, then this **remove** operation will be skipped with no error.
+Note, that if **remove** operation cannot be applied, then it will be skipped with no error.
 
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
-This policy sets the imagePullPolicy, adds command to container `nginx`:
+This policy sets the `imagePullPolicy` and adds a command to the `nginx` container:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -173,7 +177,7 @@ spec:
                 imagePullPolicy: "Never"
                 command:
                 - ls
-````
+```
 
 ## Mutate Overlay
 
@@ -181,9 +185,9 @@ A mutation overlay describes the desired form of resource. The existing resource
 
 The overlay cannot be used to delete values in a resource: use **patches** for this purpose.
 
-The following mutation overlay will add (or replace) the memory request and limit to 10Gi for every Pod with a label `memory: high`:
+The following mutation overlay will add (or replace) the memory request and limit to 10Gi for every Pod with a label `memory=high`:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -210,13 +214,13 @@ spec:
                 limits:
                   memory: "10Gi"
 
-````
+```
 
 ### Working with lists
 
-Applying overlays to a list type is fairly straightforward: new items will be added to the list, unless they already exist. For example, the next overlay will add IP "192.168.10.172" to all addresses in all Endpoints:
+Applying overlays to a list type is fairly straightforward: new items will be added to the list unless they already exist. For example, the next overlay will add the IP "192.168.10.172" to all addresses in all Endpoints:
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -233,7 +237,7 @@ spec:
         subsets:
         - addresses:
           - ip: 192.168.42.172
-````
+```
 
 ### Conditional logic using anchors
 
@@ -244,7 +248,7 @@ The mutate overlay rules support two types of anchors:
 | Anchor             | Tag  | Behavior                                             |
 |--------------------|----- |----------------------------------------------------- |
 | Conditional        | ()   | Use the tag and value as an "if" condition           |
-| Add if not present | +()  | Add the tag value, if the tag is not already present |
+| Add if not present | +()  | Add the tag value if the tag is not already present  |
 
 The **anchors** values support **wildcards**:
 
@@ -253,11 +257,11 @@ The **anchors** values support **wildcards**:
 
 #### Conditional anchor
 
-A `conditional anchor` evaluates to `true` if the anchor tag exists and if the value matches the specified value. Processing stops if a tag does not exist or when the value does not match. Once processing stops, any child elements or any remaining siblings in a list, will not be processed.
+A conditional anchor evaluates to `true` if the anchor tag exists and if the value matches the specified value. Processing stops if a tag does not exist or when the value does not match. Once processing stops, any child elements or any remaining siblings in a list will not be processed.
 
- For example, this overlay will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure":
+For example, this overlay will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure":
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -275,19 +279,19 @@ spec:
         - ports:
           - (name): "secure*"
             port: 6443
-````
+```
 
-If the anchor tag value is an object or array, the entire object or array must match. In other words, the entire object or array becomes part of the "if" clause. Nested `conditional anchor` tags are not supported.
+If the anchor tag value is an object or array, the entire object or array must match. In other words, the entire object or array becomes part of the "if" clause. Nested conditional anchor tags are not supported.
 
 ### Add if not present anchor
 
 A variation of an anchor, is to add a field value if it is not already defined. This is done by using the `add anchor` (short for `add if not present anchor`) with the notation `+(...)` for the tag.
 
-An `add anchor` is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the `add anchor` is set on a tag, the tag and value are only applied if they do not exist in the resource.
+An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource.
 
-For example, this policy matches and mutates pods with `emptyDir` volume, to add the `safe-to-evict` annotation if it is not specified.
+For example, this policy matches and mutates pods with an `emptyDir` volume to add the `safe-to-evict` annotation if it is not specified.
 
-````yaml
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -309,12 +313,12 @@ spec:
         spec:
           volumes:
           - (emptyDir): {}
-````
+```
 
 #### Anchor processing flow
 
 The anchor processing behavior for mutate conditions is as follows:
 
-1. First, all conditional anchors are processed. Processing stops when the first conditional anchor return a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for `conditional anchor` tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
+1. First, all conditional anchors are processed. Processing stops when the first conditional anchor return a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
 
-2. Next, all tag-values without anchors and all `add anchor` tags are processed to apply the mutation.
+2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
