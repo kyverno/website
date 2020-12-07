@@ -23,9 +23,9 @@ spec:
 
 When background scans are enabled for a policy, if existing resources are found which would violate the policy, the background scan reports them using a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. 
 
-The bachround scan does not block, or otherwise impact, any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
+The background scan does not block, or otherwise impact, any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
 
-By default, background scanning occurs at start and then every 15 minutes. Currently the scan interval is not configurable.
+Background scanning is initiated when Kyverno first starts and then repeats every 15 minutes. Currently the scan interval is not configurable.
 
 When background scanning is enabled, regardless of whether the policy's `validationFailureAction` is set to `enforce` or `audit`, the violation will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
 
