@@ -8,7 +8,7 @@ weight: 4
 A `mutate` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
 
 {{% alert title="Note" color="warning" %}}
-Overlay and RFC 6902 JSON Patch methods are currently deprecated and scheduled for removal in Kyverno 1.5. Please use the [patch strategic merge](#strategic-merge-patch) method from now forward.
+Overlay and patches methods are currently deprecated and scheduled for removal in Kyverno 1.5. Please use the [patch strategic merge](#strategic-merge-patch) or [RFC 6902 JSON Patch](#rfc-6902-jsonpatch) methods from now forward.
 {{% /alert %}}
 
 By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Using an `overlay` is convenient for describing the desired state of the resource.
