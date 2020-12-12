@@ -16,16 +16,22 @@ In order to refer to both `ConfigMap` data values as well as Admission Review re
 
 ## Variables from Admission Review request data
 
-Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to, example, create a `Pod`, the API server sends this information to the webhooks registered to listen for the creation of `Pod` resources. This incoming data to a webhook is known as `AdmissionReview` request data. There are two broad categories of data available in any Admission Review, resource info and user info.
+Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to, for example, create a `Pod`, the API server sends this information to the webhooks registered to listen for the creation of `Pod` resources. This incoming data to a webhook is known as `AdmissionReview` request data. There are four broad categories of data available in any Admission Review: new resource info, old resource info, user info, and operation.
 
-The following `AdmissionReview` request data is available for Kyverno's use in a `rule` statement.
+The following `AdmissionReview` request data is available to Kyverno for use in a `rule` statement.
 
-- Resource: `{{request.object}}`
+- New resource: `{{request.object}}`
 - UserInfo: `{{request.userInfo}}`
+- Operation: `{{request.operation}}`
+- Old resource: `{{request.oldObject}}`
 
 The `request.object` object contains information on the request itself, for example the name, metadata, and spec of the resource.
 
 The `request.userInfo` object contains information on who/what submitted the request which includes the `groups` and `username` keys.
+
+The `request.operation` object contains the type of action being performed. Values are either `CREATE`, `UPDATE`, or `DELETE`.
+
+The `request.oldObject` object is a representation of an existing resource that is being modified, commonly used during `UPDATE` operations.
 
 Here are some examples of looking up this data:
 
