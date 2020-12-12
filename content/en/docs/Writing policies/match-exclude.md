@@ -33,7 +33,7 @@ spec:
         - Service
 ```
 
-By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. For example, by adding the `resources.name` field, the previous `match` statement can further filter out Services that begin with the text "prod-".
+By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.name` field, the previous `match` statement can further filter out Services that begin with the text "prod-".
 
 ```yaml
 spec:
