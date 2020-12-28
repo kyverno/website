@@ -19,7 +19,7 @@ When Kyverno receives an admission controller request (i.e., a validation or mut
 
 ## Match statements
 
-In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc.
+In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
 
 In this snippet, the `match` statement matches on any and all resources that have the kind `Service`. It does not take any other criteria into consideration, only that it be of kind `Service`.
 
@@ -33,7 +33,7 @@ spec:
         - Service
 ```
 
-By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. For example, by adding the `resources.name` field, the previous `match` statement can further filter out Services that begin with the text "prod-".
+By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.name` field, the previous `match` statement can further filter out Services that begin with the text "prod-".
 
 ```yaml
 spec:
@@ -132,7 +132,7 @@ Here is an example of a rule that matches all Pods excluding those created by us
 ```yaml
 spec:
   rules:
-    name: "match-pods-except-cluster-admin"
+    name: match-pods-except-cluster-admin
     match:
       resources:
         kinds:
@@ -146,10 +146,14 @@ spec:
 
 This rule matches all Pods except those in the `kube-system` Namespace.
 
+{{% alert title="Note" color="info" %}}
+Exclusion of selected Namespaces by name is supported beginning in Kyverno v1.3.0.
+{{% /alert %}}
+
 ```yaml
 spec:
   rules:
-    name: "match-pods-except-admin"
+    name: match-pods-except-admin
     match:
       resources:
         kinds:
@@ -181,7 +185,7 @@ spec:
           name: John
 ```
 
-### Match all Pods and exclude using annotations
+### Match all Pods using annotations
 
 Here is an example of a rule that matches all Pods having `imageregistry: "https://hub.docker.com/"` annotations.
 

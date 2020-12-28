@@ -1,17 +1,11 @@
 ---
 title: Background Scans 
 description: >
-  Apply policies to existing resources in a cluster.
+  Manage applying policies to existing resources in a cluster.
 weight: 9
 ---
 
-{{% alert title="Note" color="info" %}}
-⚠️  Kyverno is designed to prevent inadvertent changes to running applications. Hence, mutate and generate rules are not processed during background scans. To generate new resources for existing workloads (e.g. namespaces) use labels or metadata to manage a controlled rollout as detailed [here](/docs/writing-policies/generate/#generating-resources-into-existing-namespaces).
-{{% /alert %}}
-
-Background scanning applies validation rules to workloads that are already running in a cluster.
-
-Kyverno can validate existing resources in a cluster that may have been created before a policy was created. This can also be useful when evaluating the potential effects new policies will have on a cluster prior to applying them with `enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `background` is set to `false` in a policy like shown below in the snippet.
+Kyverno can validate existing resources in the cluster that may have been created before a policy was created. This can be useful when evaluating the potential effects new policies will have on a cluster prior to changing them to `enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `background` is set to `false` in a policy like shown below in the snippet.
 
 ```yaml
 spec:
@@ -20,12 +14,14 @@ spec:
   - name: default-deny-ingress
 ```
 
+Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to scan existing resources and find if they match any `validate` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
 
-When background scans are enabled for a policy, if existing resources are found which would violate the policy, the background scan reports them using a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. 
+By default, background scanning occurs every 15 minutes and is not currently configurable.
 
-The background scan does not block, or otherwise impact, any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
-
-Background scanning is initiated when Kyverno first starts and then repeats every 15 minutes. Currently the scan interval is not configurable.
+{{% alert title="Note" color="info" %}}
+⚠️  Kyverno does not mutate existing resources to prevent inadvertent changes to workloads.
+Mutate and generate rules are not processed during background scans.
+{{% /alert %}}
 
 When background scanning is enabled, regardless of whether the policy's `validationFailureAction` is set to `enforce` or `audit`, the violation will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
 
@@ -43,5 +39,4 @@ When background scanning is enabled, regardless of whether the policy's `validat
 | `validationFailureAction: enforce` | None         | None              |
 | `validationFailureAction: audit`   | Report       | None              |
 
-
-Policy rules that are written using variables from [Admission Review](/docs/writing-policies/variables/#variables-from-admission-review-request-data) request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.
+Also, policy rules that are written using variables from [Admission Review](/docs/writing-policies/variables/#variables-from-admission-review-request-data) request information (e.g. `{{request.userInfo}}`) cannot be applied to existing resources in the background scanning mode since that information is not available. Hence, these rules must set `background` to `false` to disable background scanning.
