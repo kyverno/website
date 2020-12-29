@@ -47,7 +47,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 * Check Kyverno logs when designing rules if the desired result is not achieved:
   ```
-  kubectl -n <kyverno_namespace> logs -l app=kyverno`
+  kubectl -n <kyverno_namespace> logs -l app=kyverno
   ```
 
 ## Validate
@@ -57,6 +57,8 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Before deploying into production, ensure you have `validationFailureAction: audit` so the policy doesn't have unintended consequences.
 
 * `validate` rules have no precedence/overriding behavior, so even though a rule may be written to either allow or deny a resource/action, one cannot counteract the other. For example, a rule written to ensure all images come from registry `reg.corp.com` and another rule written to ensure they do **not** come from `reg.corp.com` will effectively render all image pulls impossible and nothing will run. Where the rule is defined is irrelevant.
+
+* The choice between using a `pattern` statement or a `deny` statement depends largely on the data you need to consider. `pattern` works on incoming (new) objects while `deny` works on operations and existing objects.
 
 ## Mutate
 
