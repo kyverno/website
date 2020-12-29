@@ -173,7 +173,9 @@ spec:
 | `!`        | not equals                |
 | `|`        | logical or                |
 
-🛈  There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
+{{% alert title="Note" color="info" %}}
+There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
+{{% /alert %}}
 
 ### Anchors
 
@@ -247,7 +249,10 @@ spec:
 
 This is read as "If a hostPath volume exists, then the path must not be equal to /var/run/docker.sock". In this sample, the object `spec.volumes.hostPath` is being checked, which is where the "If" evaluation ends. Similar to the conditional example above, the `path` key is a child to `hostPath` and therefore is the one being evaluated under the "then" check.
 
-> ⚠️ **Note: In both of these examples, the validation rule merely checks for the existence of a `hostPath` volume definition. It does not validate whether a container is actually consuming the volume.**
+{{% alert title="Note" color="info" %}}
+In both of these examples, the validation rule merely checks for the existence of a `hostPath` volume definition. It does not validate whether a container is actually consuming the volume.
+{{% /alert %}}
+
 
 #### Existence anchor: At Least One
 
@@ -294,7 +299,9 @@ In some cases, content can be defined at different levels. For example, a securi
 
 The `anyPattern` tag can be used to check if any one of the patterns in the list match.
 
-<small>*Note: either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be declared in the same rule.*</small>
+{{% alert title="Note" color="info" %}}
+Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be declared in the same rule.
+{{% /alert %}}
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -331,13 +338,17 @@ spec:
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validation rule can `deny` a request based on a set of conditions. This is useful for applying fine-grained access controls that cannot be performed using Kubernetes RBAC.
+In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions. A `deny` condition is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
 
 You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
 
-Note that the `validationFailureAction` must be set to `enforce` to block the request.
+{{% alert title="Note" color="info" %}}
+When using a `deny` statement, `validationFailureAction` must be set to `enforce` to block the request.
+{{% /alert %}}
 
 Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables.
+
+In addition to admission review request data, user information, and built-in variables, `deny` rules and preconditions can also operate on ConfigMap data, and in the future data from API server lookups, etc.
 
 ### Deny DELETE requests based on labels
 
