@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Selinux
 linkTitle: Disallow Selinux
-weight: 45
+weight: 44
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/disallow-selinux.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-selinux.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-selinux.yaml" target="-blank">/pod-security/default/disallow-selinux.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

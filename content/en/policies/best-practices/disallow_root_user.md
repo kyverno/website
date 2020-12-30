@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Root User
 linkTitle: Disallow Root User
-weight: 3
+weight: 6
 description: >
     By default, processes in a container run as a root user (uid 0). To prevent potential compromise of container hosts, specify a least privileged user ID when building the container image and require that application containers run as non root users.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_root_user.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_root_user.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_root_user.yaml" target="-blank">/best-practices/disallow_root_user.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

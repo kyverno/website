@@ -2,16 +2,13 @@
 type: "docs"
 title: Require Pod Probes
 linkTitle: Require Pod Probes
-weight: 9
+weight: 2
 description: >
     Liveness and readiness probes need to be configured to correctly manage a pods lifecycle during deployments, restarts, and upgrades. For each pod, a periodic `livenessProbe` is performed by the kubelet to determine if the pod's containers are running or need to be restarted. A `readinessProbe` is used by services and deployments to determine if the pod is ready to receive network traffic.
 ---
 
-## Category
-Workload Management
-
-## Definition
-[/best-practices/require_probes.yaml](https://github.com/kyverno/policies/raw/main//best-practices/require_probes.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_probes.yaml" target="-blank">/best-practices/require_probes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

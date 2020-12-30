@@ -2,16 +2,13 @@
 type: "docs"
 title: Insert Podantiaffinity
 linkTitle: Insert Podantiaffinity
-weight: 36
+weight: 28
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/create_pod_antiaffinity.yaml](https://github.com/kyverno/policies/raw/main//other/create_pod_antiaffinity.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/create_pod_antiaffinity.yaml" target="-blank">/other/create_pod_antiaffinity.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -144,13 +144,13 @@ github_project_repo = "https://github.com/kyverno/kyverno"
 # github_subdir = ""
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
-gcs_engine_id = "016003b0b44d00772"
+# gcs_engine_id = "016003b0b44d00772"
 
 # Enable Algolia DocSearch
 algolia_docsearch = false
 
 # Enable Lunr.js offline search
-offlineSearch = false
+offlineSearch = true
 
 # Enable syntax highlighting and copy buttons on code blocks with Prism
 prism_syntax_highlighting = true

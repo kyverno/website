@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Privileged Containers
 linkTitle: Disallow Privileged Containers
-weight: 39
+weight: 51
 description: >
     Privileged mode disables most security mechanisms and must not be allowed.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/disallow-privileged-containers.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-privileged-containers.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-privileged-containers.yaml" target="-blank">/pod-security/default/disallow-privileged-containers.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

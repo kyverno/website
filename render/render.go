@@ -43,8 +43,14 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, weight int, rawYAML, rawURL, path
 }
 
 func buildTitle(p *kyvernov1.ClusterPolicy) string {
-	name := p.Name
+	name := p.Annotations["policies.kyverno.io/title"]
+	if name != "" {
+		return name
+	}
+
+	name = p.Name
 	title := strings.ReplaceAll(name, "-", " ")
+	title = strings.ReplaceAll(name, "_", " ")
 	return strings.Title(title)
 }
 
@@ -114,6 +120,7 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
+		log.Printf("rendered %s", outFile.Name())
 		weight++
 	}
 

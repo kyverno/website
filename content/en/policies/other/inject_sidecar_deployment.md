@@ -2,16 +2,13 @@
 type: "docs"
 title: Inject Sidecar
 linkTitle: Inject Sidecar
-weight: 22
+weight: 30
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/inject_sidecar_deployment.yaml](https://github.com/kyverno/policies/raw/main//other/inject_sidecar_deployment.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/inject_sidecar_deployment.yaml" target="-blank">/other/inject_sidecar_deployment.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

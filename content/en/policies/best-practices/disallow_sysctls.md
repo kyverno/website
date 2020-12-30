@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Sysctls
 linkTitle: Disallow Sysctls
-weight: 16
+weight: 19
 description: >
     The Sysctl interface allows modifications to kernel parameters at runtime. In a Kubernetes pod these parameters can be specified under `securityContext.sysctls`. Kernel parameter modifications can be used for exploits and should be restricted.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_sysctls.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_sysctls.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_sysctls.yaml" target="-blank">/best-practices/disallow_sysctls.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

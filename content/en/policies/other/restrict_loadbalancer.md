@@ -2,16 +2,13 @@
 type: "docs"
 title: No Loadbalancers
 linkTitle: No Loadbalancers
-weight: 34
+weight: 24
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/restrict_loadbalancer.yaml](https://github.com/kyverno/policies/raw/main//other/restrict_loadbalancer.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_loadbalancer.yaml" target="-blank">/other/restrict_loadbalancer.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

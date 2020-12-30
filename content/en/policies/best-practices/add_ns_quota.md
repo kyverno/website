@@ -2,16 +2,13 @@
 type: "docs"
 title: Add Ns Quota
 linkTitle: Add Ns Quota
-weight: 5
+weight: 17
 description: >
     To limit the number of objects, as well as the total amount of compute that may be consumed by a single namespace, create a default resource quota for each namespace.
 ---
 
-## Category
-Workload Isolation
-
-## Definition
-[/best-practices/add_ns_quota.yaml](https://github.com/kyverno/policies/raw/main//best-practices/add_ns_quota.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/add_ns_quota.yaml" target="-blank">/best-practices/add_ns_quota.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

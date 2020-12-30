@@ -2,16 +2,13 @@
 type: "docs"
 title: Validate Probes
 linkTitle: Validate Probes
-weight: 28
+weight: 36
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/ensure_probes_different.yaml](https://github.com/kyverno/policies/raw/main//other/ensure_probes_different.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/ensure_probes_different.yaml" target="-blank">/other/ensure_probes_different.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

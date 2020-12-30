@@ -2,16 +2,13 @@
 type: "docs"
 title: Restrict External Ips
 linkTitle: Restrict External Ips
-weight: 29
+weight: 20
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/restrict-service-external-ips.yaml](https://github.com/kyverno/policies/raw/main//other/restrict-service-external-ips.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict-service-external-ips.yaml" target="-blank">/other/restrict-service-external-ips.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

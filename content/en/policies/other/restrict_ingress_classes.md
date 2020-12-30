@@ -2,16 +2,13 @@
 type: "docs"
 title: Restrict Ingress Classes
 linkTitle: Restrict Ingress Classes
-weight: 25
+weight: 23
 description: >
     It can be useful to restrict Ingress resources to a set of known ingress classes that are allowed in the cluster. You can customize this policy to allow ingress classes that are configured in the cluster.
 ---
 
-## Category
-Workload Management
-
-## Definition
-[/other/restrict_ingress_classes.yaml](https://github.com/kyverno/policies/raw/main//other/restrict_ingress_classes.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_ingress_classes.yaml" target="-blank">/other/restrict_ingress_classes.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1

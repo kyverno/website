@@ -2,16 +2,13 @@
 type: "docs"
 title: Add Default Labels
 linkTitle: Add Default Labels
-weight: 35
+weight: 34
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/add_default_labels.yaml](https://github.com/kyverno/policies/raw/main//other/add_default_labels.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/add_default_labels.yaml" target="-blank">/other/add_default_labels.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

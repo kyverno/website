@@ -2,16 +2,13 @@
 type: "docs"
 title: Drop All Capabilities
 linkTitle: Drop All Capabilities
-weight: 33
+weight: 21
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/require_drop_all.yaml](https://github.com/kyverno/policies/raw/main//other/require_drop_all.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/require_drop_all.yaml" target="-blank">/other/require_drop_all.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

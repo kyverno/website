@@ -2,16 +2,13 @@
 type: "docs"
 title: Restrict Image Registries
 linkTitle: Restrict Image Registries
-weight: 31
+weight: 33
 description: >
     Images from unknown registries may not be scanned and secured. Requiring use of known registries helps reduce threat exposure.
 ---
 
-## Category
-Workload Management
-
-## Definition
-[/other/restrict_image_registries.yaml](https://github.com/kyverno/policies/raw/main//other/restrict_image_registries.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_image_registries.yaml" target="-blank">/other/restrict_image_registries.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1

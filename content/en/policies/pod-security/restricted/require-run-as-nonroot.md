@@ -2,16 +2,13 @@
 type: "docs"
 title: Require Run As Non Root
 linkTitle: Require Run As Non Root
-weight: 48
+weight: 40
 description: >
     Containers must be required to run as non-root users.
 ---
 
-## Category
-Pod Security Standards (Restricted)
-
-## Definition
-[/pod-security/restricted/require-run-as-nonroot.yaml](https://github.com/kyverno/policies/raw/main//pod-security/restricted/require-run-as-nonroot.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/require-run-as-nonroot.yaml" target="-blank">/pod-security/restricted/require-run-as-nonroot.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

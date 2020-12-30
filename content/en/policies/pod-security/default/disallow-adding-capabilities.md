@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Adding Capabilities
 linkTitle: Disallow Adding Capabilities
-weight: 38
+weight: 46
 description: >
     Adding additional capabilities beyond the default set must not be allowed.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/disallow-adding-capabilities.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-adding-capabilities.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-adding-capabilities.yaml" target="-blank">/pod-security/default/disallow-adding-capabilities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
