@@ -16,6 +16,10 @@ As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified
 
 When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a `ConfigMap` or `Secret`, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
 
+{{% alert title="Caution" color="warning" %}}
+Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
+{{% /alert %}}
+
 ## Generate a ConfigMap using inline data
 
 This policy sets the Zookeeper and Kafka connection strings for all namespaces based upon a `ConfigMap` defined within the rule itself. Notice that this rule has the `generate.data` object defined in which case the rule will create a new `ConfigMap` called `zk-kafka-address` using the data specified in the rule's manifest.
