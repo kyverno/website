@@ -11,10 +11,14 @@ The `generate` rule supports `match` and `exclude` blocks, like other rules. Hen
 The generate rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
 
 {{% alert title="Note" color="info" %}}
-As of Kyverno v1.3.0, resources generated with `synchronize=true` may be deleted.
+As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified or deleted by other Kubernetes controllers and users with appropriate access permissions, and Kyverno will recreate or update the resource to comply with configured policies.
 {{% /alert %}}
 
 When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a `ConfigMap` or `Secret`, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
+
+{{% alert title="Caution" color="warning" %}}
+Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
+{{% /alert %}}
 
 ## Generate a ConfigMap using inline data
 
@@ -88,6 +92,60 @@ spec:
         namespace: default
         name: config-template
 ```
+
+## Generating Bindings
+
+In order for Kyverno to generate a new RoleBinding or ClusterRoleBinding resource, its service account must first be bound to the same Role or ClusterRole which you're attempting to generate. If this is not done, Kubernetes blocks the request because it sees a possible privilege escalation attempt from the Kyverno service account. This is not a Kyverno function but rather how Kubernetes RBAC is designed to work.
+
+For example, if you wish to write a `generate` rule which creates a new RoleBinding resource granting some user the `admin` role over a new Namespace, the Kyverno service account must have a ClusterRoleBinding in place for that same `admin` role.
+
+Create a new ClusterRoleBinding for the Kyverno service account by default called `kyverno-service-account`.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno:generate-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: kyverno-service-account
+  namespace: kyverno
+```
+
+Now, create a `generate` rule as you normally would which assigns a test user named `steven` to the `admin` ClusterRole for a new Namespace. The built-in ClusterRole named `admin` in this rule must match the ClusterRole granted to the Kyverno service account in the previous ClusterRoleBinding.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: steven-rolebinding
+spec:
+  rules:
+  - name: steven-rolebinding
+    match:
+      resources:
+        kinds:
+        - Namespace
+    generate:
+      kind: RoleBinding
+      name: steven-rolebinding
+      namespace: "{{request.object.metadata.name}}"
+      data:  
+        subjects:
+        - kind: User
+          name: steven
+          apiGroup: rbac.authorization.k8s.io
+        roleRef:
+          kind: ClusterRole
+          name: admin
+          apiGroup: rbac.authorization.k8s.io
+```
+
+When a new Namespace is created, Kyverno will generate a new RoleBinding called `steven-rolebinding` which grants the user `steven` the `admin` ClusterRole over said new Namespace.
 
 ## Generate a NetworkPolicy
 
