@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Host Network Port
 linkTitle: Disallow Host Network Port
-weight: 2
+weight: 4
 description: >
     Using 'hostPort' and 'hostNetwork' allows pods to share the host network stack, allowing potential snooping of network traffic from an application pod.
 ---
 
-## Category
-Workload Isolation
-
-## Definition
-[/best-practices/disallow_host_network_port.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_host_network_port.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_host_network_port.yaml" target="-blank">/best-practices/disallow_host_network_port.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

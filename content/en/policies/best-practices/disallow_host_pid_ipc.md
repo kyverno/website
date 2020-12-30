@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Host Pid Ipc
 linkTitle: Disallow Host Pid Ipc
-weight: 18
+weight: 11
 description: >
     Sharing the host's PID namespace allows visibility of process on the host, potentially exposing process information. Sharing the host's IPC namespace allows the container process to communicate with processes on the host. To avoid pod container from having visibility to host process space, validate that 'hostPID' and 'hostIPC' are set to 'false'.
 ---
 
-## Category
-Workload Isolation
-
-## Definition
-[/best-practices/disallow_host_pid_ipc.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_host_pid_ipc.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_host_pid_ipc.yaml" target="-blank">/best-practices/disallow_host_pid_ipc.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -2,16 +2,13 @@
 type: "docs"
 title: Imagepullpolicy Always
 linkTitle: Imagepullpolicy Always
-weight: 37
+weight: 29
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/imagepullpolicy-always.yaml](https://github.com/kyverno/policies/raw/main//other/imagepullpolicy-always.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/imagepullpolicy-always.yaml" target="-blank">/other/imagepullpolicy-always.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1

@@ -2,16 +2,13 @@
 type: "docs"
 title: Non Root Groups
 linkTitle: Non Root Groups
-weight: 47
+weight: 39
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
 ---
 
-## Category
-Pod Security Standards (Restricted)
-
-## Definition
-[/pod-security/restricted/non-root-groups.yaml](https://github.com/kyverno/policies/raw/main//pod-security/restricted/non-root-groups.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/non-root-groups.yaml" target="-blank">/pod-security/restricted/non-root-groups.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

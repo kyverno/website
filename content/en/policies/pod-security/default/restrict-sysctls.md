@@ -2,16 +2,13 @@
 type: "docs"
 title: Restrict Sysctls
 linkTitle: Restrict Sysctls
-weight: 40
+weight: 49
 description: >
     Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/restrict-sysctls.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/restrict-sysctls.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/restrict-sysctls.yaml" target="-blank">/pod-security/default/restrict-sysctls.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow New Capabilities
 linkTitle: Disallow New Capabilities
-weight: 19
+weight: 12
 description: >
     Linux allows defining fine-grained permissions using capabilities. With Kubernetes, it is possible to add capabilities that escalate the level of kernel access and allow other potentially dangerous behaviors. This policy enforces that containers cannot add new capabilities. Other policies can be used to set default capabilities.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_new_capabilities.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_new_capabilities.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_new_capabilities.yaml" target="-blank">/best-practices/disallow_new_capabilities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -2,16 +2,13 @@
 type: "docs"
 title: Restrict Apparmor Profiles
 linkTitle: Restrict Apparmor Profiles
-weight: 46
+weight: 45
 description: >
     On supported hosts, the 'runtime/default' AppArmor profile is applied by default.  The default policy should prevent overriding or disabling the policy, or restrict  overrides to an allowed set of profiles.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/restrict-apparmor-profiles.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/restrict-apparmor-profiles.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/restrict-apparmor-profiles.yaml" target="-blank">/pod-security/default/restrict-apparmor-profiles.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

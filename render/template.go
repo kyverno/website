@@ -9,9 +9,6 @@ description: >
     {{ index .Policy.ObjectMeta.Annotations "policies.kyverno.io/description" }}
 ---
 
-## Category
-{{ index .Policy.ObjectMeta.Annotations "policies.kyverno.io/category" }}
-
-## Definition
-[{{ .Path }}]({{ .RawURL }})
+## Policy Definition
+<a href="{{ .RawURL }}" target="-blank">{{ .Path }}</a>
 ` + "\n" + "```yaml\n" + "{{ .YAML }}" + "\n```\n"

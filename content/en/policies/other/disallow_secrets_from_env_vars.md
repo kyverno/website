@@ -2,16 +2,13 @@
 type: "docs"
 title: Secrets Not From Env Vars
 linkTitle: Secrets Not From Env Vars
-weight: 27
+weight: 35
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/disallow_secrets_from_env_vars.yaml](https://github.com/kyverno/policies/raw/main//other/disallow_secrets_from_env_vars.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/disallow_secrets_from_env_vars.yaml" target="-blank">/other/disallow_secrets_from_env_vars.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

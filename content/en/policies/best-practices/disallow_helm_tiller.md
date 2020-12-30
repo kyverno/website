@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Helm Tiller
 linkTitle: Disallow Helm Tiller
-weight: 11
+weight: 8
 description: >
     Tiller has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilge escalation as restricted users can impact other users.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_helm_tiller.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_helm_tiller.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_helm_tiller.yaml" target="-blank">/best-practices/disallow_helm_tiller.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1

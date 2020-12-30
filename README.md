@@ -9,3 +9,7 @@ https://kyverno.io
 * `git clone https://github.com/kyverno/website kyverno-website/ --recurse-submodules`
 * `cd kyverno-website`
 * `hugo server -v`
+
+## Rendering Policies to Markdown
+
+See [render](/render/README.md) folder.

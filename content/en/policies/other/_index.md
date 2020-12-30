@@ -1,7 +1,7 @@
 ---
 title: "Other"
 weight: 30
-type: docs
+type: "docs"
 description: >
     Addition sample policies.
 ---

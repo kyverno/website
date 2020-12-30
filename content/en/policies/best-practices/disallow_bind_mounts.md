@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Bind Mounts
 linkTitle: Disallow Bind Mounts
-weight: 17
+weight: 7
 description: >
     The volume of type `hostPath` allows pods to use host bind mounts (i.e. directories and volumes mounted to a host path) in containers. Using host resources can be used to access shared data or escalate privileges. Also, this couples pods to a specific host and data persisted in the `hostPath` volume is coupled to the life of the node leading to potential pod scheduling failures. It is highly recommended that applications are designed to be decoupled from the underlying infrastructure (in this case, nodes).
 ---
 
-## Category
-Workload Isolation
-
-## Definition
-[/best-practices/disallow_bind_mounts.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_bind_mounts.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_bind_mounts.yaml" target="-blank">/best-practices/disallow_bind_mounts.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

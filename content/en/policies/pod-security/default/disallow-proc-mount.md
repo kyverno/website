@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Proc Mount
 linkTitle: Disallow Proc Mount
-weight: 44
+weight: 48
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/disallow-proc-mount.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-proc-mount.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-proc-mount.yaml" target="-blank">/pod-security/default/disallow-proc-mount.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

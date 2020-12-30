@@ -2,16 +2,13 @@
 type: "docs"
 title: Require Labels
 linkTitle: Require Labels
-weight: 13
+weight: 1
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/best-practices/require_labels.yaml](https://github.com/kyverno/policies/raw/main//best-practices/require_labels.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_labels.yaml" target="-blank">/best-practices/require_labels.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

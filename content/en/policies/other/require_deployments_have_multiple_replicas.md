@@ -2,16 +2,13 @@
 type: "docs"
 title: Deployment Has Multiple Replicas
 linkTitle: Deployment Has Multiple Replicas
-weight: 23
+weight: 32
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/require_deployments_have_multiple_replicas.yaml](https://github.com/kyverno/policies/raw/main//other/require_deployments_have_multiple_replicas.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/require_deployments_have_multiple_replicas.yaml" target="-blank">/other/require_deployments_have_multiple_replicas.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

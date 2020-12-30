@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Docker Sock Mount
 linkTitle: Disallow Docker Sock Mount
-weight: 1
+weight: 10
 description: >
     The Docker socket bind mount allows access to the Docker daemon on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_docker_sock_mount.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_docker_sock_mount.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_docker_sock_mount.yaml" target="-blank">/best-practices/disallow_docker_sock_mount.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

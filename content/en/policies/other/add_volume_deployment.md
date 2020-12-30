@@ -2,16 +2,13 @@
 type: "docs"
 title: Add Volume
 linkTitle: Add Volume
-weight: 21
+weight: 27
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/add_volume_deployment.yaml](https://github.com/kyverno/policies/raw/main//other/add_volume_deployment.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/add_volume_deployment.yaml" target="-blank">/other/add_volume_deployment.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

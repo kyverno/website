@@ -2,16 +2,13 @@
 type: "docs"
 title: Spread Pods
 linkTitle: Spread Pods
-weight: 20
+weight: 26
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/spread_pods_across_topology.yaml](https://github.com/kyverno/policies/raw/main//other/spread_pods_across_topology.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/spread_pods_across_topology.yaml" target="-blank">/other/spread_pods_across_topology.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

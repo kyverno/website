@@ -2,16 +2,13 @@
 type: "docs"
 title: Deny Privilege Escalation
 linkTitle: Deny Privilege Escalation
-weight: 51
+weight: 38
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
 ---
 
-## Category
-Pod Security Standards (Restricted)
-
-## Definition
-[/pod-security/restricted/deny-privilege-escalation.yaml](https://github.com/kyverno/policies/raw/main//pod-security/restricted/deny-privilege-escalation.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/deny-privilege-escalation.yaml" target="-blank">/pod-security/restricted/deny-privilege-escalation.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

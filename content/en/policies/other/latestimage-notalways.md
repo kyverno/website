@@ -2,16 +2,13 @@
 type: "docs"
 title: Latestimage Notalways
 linkTitle: Latestimage Notalways
-weight: 30
+weight: 31
 description: >
     
 ---
 
-## Category
-
-
-## Definition
-[/other/latestimage-notalways.yaml](https://github.com/kyverno/policies/raw/main//other/latestimage-notalways.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other/latestimage-notalways.yaml" target="-blank">/other/latestimage-notalways.yaml</a>
 
 ```yaml
 ### This policy requires Kyverno v1.3.0+ ###

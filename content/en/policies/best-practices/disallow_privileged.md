@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Privileged
 linkTitle: Disallow Privileged
-weight: 15
+weight: 5
 description: >
     Privileged containers are defined as any container where the container uid 0 is mapped to the host’s uid 0. A process within a privileged container can get unrestricted host access. With `securityContext.allowPrivilegeEscalation` enabled, a process can gain privileges from its parent.
 ---
 
-## Category
-Security
-
-## Definition
-[/best-practices/disallow_privileged.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_privileged.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_privileged.yaml" target="-blank">/best-practices/disallow_privileged.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

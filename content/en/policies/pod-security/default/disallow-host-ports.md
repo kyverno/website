@@ -7,11 +7,8 @@ description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
 ---
 
-## Category
-Pod Security Standards (Default)
-
-## Definition
-[/pod-security/default/disallow-host-ports.yaml](https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-host-ports.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-host-ports.yaml" target="-blank">/pod-security/default/disallow-host-ports.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -2,16 +2,13 @@
 type: "docs"
 title: Disallow Latest Tag
 linkTitle: Disallow Latest Tag
-weight: 12
+weight: 9
 description: >
     The ':latest' tag is mutable and can lead to unexpected errors if the image changes. A best practice is to use an immutable tag that maps to a specific version of an application pod.
 ---
 
-## Category
-Workload Isolation
-
-## Definition
-[/best-practices/disallow_latest_tag.yaml](https://github.com/kyverno/policies/raw/main//best-practices/disallow_latest_tag.yaml)
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_latest_tag.yaml" target="-blank">/best-practices/disallow_latest_tag.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1
