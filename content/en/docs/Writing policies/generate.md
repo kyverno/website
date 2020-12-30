@@ -91,7 +91,7 @@ spec:
 
 ## Generating Bindings
 
-In order for Kyverno to generate a new RoleBinding or ClusterRoleBinding resource, the service account must first be bound to the same Role or ClusterRole which you're attempting to generate. If this is not done, Kubernetes blocks the request because it sees a possible privilege escalation attempt from the Kyverno service account. This is not a Kyverno function but rather how Kubernetes RBAC is designed to work.
+In order for Kyverno to generate a new RoleBinding or ClusterRoleBinding resource, its service account must first be bound to the same Role or ClusterRole which you're attempting to generate. If this is not done, Kubernetes blocks the request because it sees a possible privilege escalation attempt from the Kyverno service account. This is not a Kyverno function but rather how Kubernetes RBAC is designed to work.
 
 For example, if you wish to write a `generate` rule which creates a new RoleBinding resource granting some user the `admin` role over a new Namespace, the Kyverno service account must have a ClusterRoleBinding in place for that same `admin` role.
 
