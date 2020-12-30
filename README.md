@@ -8,4 +8,4 @@ https://kyverno.io
   [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
 * `git clone https://github.com/kyverno/website kyverno-website/ --recurse-submodules`
 * `cd kyverno-website`
-* `hugo serve -v`
+* `hugo server -v`

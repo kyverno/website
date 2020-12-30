@@ -1,0 +1,52 @@
+---
+type: "docs"
+title: Insert Podantiaffinity
+linkTitle: Insert Podantiaffinity
+weight: 36
+description: >
+    
+---
+
+## Category
+
+
+## Definition
+[/other/create_pod_antiaffinity.yaml](https://github.com/kyverno/policies/raw/main//other/create_pod_antiaffinity.yaml)
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: insert-podantiaffinity
+spec:
+  rules:
+    - name: insert-podantiaffinity
+      match:
+        resources:
+          kinds:
+            - Deployment
+      preconditions:
+        # This precondition ensures that the label `app` is applied to Pods within the Deployment resource.
+      - key: "{{request.object.metadata.labels.app}}"
+        operator: NotEquals
+        value: ""
+      # Mutates the Deployment resource to add fields.
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                # Add the `affinity` key and others if not already specified in the Deployment manifest.
+                +(affinity):
+                  +(podAntiAffinity):
+                    +(preferredDuringSchedulingIgnoredDuringExecution):
+                      - weight: 1
+                        podAffinityTerm:
+                          topologyKey: "kubernetes.io/hostname"
+                          labelSelector:
+                            matchExpressions:
+                            - key: app
+                              operator: In
+                              values:
+                              - "{{request.object.metadata.labels.app}}"
+```
