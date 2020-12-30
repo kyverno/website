@@ -6,16 +6,18 @@ type: docs
 
 ## Reviews
 
-*Click to play videos*
-
 {{% videos %}}
 
 {{< youtube id="DW2u6LhNMh0" start="116" class="video" >}}
 
 {{< youtube id="ZE4Zu9WQET4" start="1621" class="video" >}}
 
-{{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
 {{% /videos %}}
 
@@ -23,6 +25,10 @@ type: docs
 
 *(latest to oldest)*
 
+- [How Kyverno helps with policy management](https://mccricardo.com/kyverno-roles/), December 2020
+- [Easy as one-two-three policy management with Kyverno on Amazon EKS](https://aws.amazon.com/blogs/containers/easy-as-one-two-three-policy-management-with-kyverno-on-amazon-eks/), December 2020
+- [Kyverno, a New CNCF Sandbox Project, Offers Kubernetes-Native Policy Management](https://thenewstack.io/kyverno-a-new-cncf-sandbox-project-offers-kubernetes-native-policy-management/), November 2020
+- [Exploring Kyverno Series](https://neonmirrors.net/post/2020-11/exploring-kyverno-intro/), November 2020
 - [Policy-as-Code on Kubernetes with Kyverno](https://medium.com/better-programming/policy-as-code-on-kubernetes-with-kyverno-b144749f144), November 2020 
 - [Generate policies! Make life hassle free with Kyverno](https://evalsocket.dev/kyverno-generate-policy/), July 2020
 - [Deny Rules! Fine Grained Access Controls with Kyverno](https://medium.com/@shutting06/deny-rules-fine-grained-kubernetes-access-controls-with-kyverno-88eaffb7bc6), July 2020
