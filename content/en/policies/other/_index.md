@@ -3,5 +3,5 @@ title: "Other"
 weight: 30
 type: "docs"
 description: >
-    Addition sample policies.
+    Additional sample policies to customize and use.
 ---
