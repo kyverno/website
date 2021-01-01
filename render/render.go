@@ -67,7 +67,7 @@ func render(git *gitInfo, outdir string) error {
 		return fmt.Errorf("failed to list YAMLs in repository %s: %v", repoURL, err)
 	}
 
-	log.Printf("retrieved %d YAMLs in repostory %s", len(yamls), repoURL)
+	log.Printf("retrieved %d YAMLs in repository %s", len(yamls), repoURL)
 
 	t := template.New("policy")
 	t, err = t.Parse(policyTemplate)
