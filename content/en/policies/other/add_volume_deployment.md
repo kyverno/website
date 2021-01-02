@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Add Volume
-linkTitle: Add Volume
-weight: 27
+title: Add-Volume
+linkTitle: Add-Volume
+weight: 16
 description: >
-    
+    Sample policy to add a volume and volumeMount. 
 ---
 
 ## Policy Definition
@@ -15,6 +15,10 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: add-volume
+  annotations:
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy to add a volume and volumeMount. 
 spec:
   background: false
   rules:
@@ -25,7 +29,7 @@ spec:
         - Deployment
     preconditions:
     - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"
-      operator: "Equals"
+      operator: Equals
       value: "enabled"
     mutate:
       patchesJson6902: |-

@@ -2,9 +2,9 @@
 type: "docs"
 title: Validate Probes
 linkTitle: Validate Probes
-weight: 36
+weight: 19
 description: >
-    
+    Sample policy to check that liveness and readiness probes are not set to the same values.
 ---
 
 ## Policy Definition
@@ -14,12 +14,16 @@ description: >
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: validate-probes
+  name: validate-probes  
   annotations:
     # Only applies to pods originating from DaemonSet, Deployment, or StatefulSet.
-    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet  
+    policies.kyverno.io/title: Validate Probes
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy to check that liveness and readiness probes are not set to the same values.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   background: false
   rules:
     # Checks the first container in a Pod.
@@ -27,7 +31,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       validate:
         message: "Liveness and readiness probes cannot be the same."
         # A `deny` rule is different in structure than a `validate` rule and inverts the check. It uses `conditions` written in JMESPath notation upon which to base its decisions.
@@ -43,7 +47,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       validate:
         message: "Liveness and readiness probes cannot be the same."
         deny:
@@ -56,7 +60,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       validate:
         message: "Liveness and readiness probes cannot be the same."
         deny:
@@ -69,7 +73,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       validate:
         message: "Liveness and readiness probes cannot be the same."
         deny:

@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Disallow Adding Capabilities
-linkTitle: Disallow Adding Capabilities
-weight: 46
+title: Disallow-Add-Capabilities
+linkTitle: Disallow-Add-Capabilities
+weight: 28
 description: >
-    Adding additional capabilities beyond the default set must not be allowed.
+    Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
 ---
 
 ## Policy Definition
@@ -14,11 +14,12 @@ description: >
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-adding-capabilities
+  name: disallow-add-capabilities
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Default)
     policies.kyverno.io/description: >-
-      Adding additional capabilities beyond the default set must not be allowed.
+      Capabilities permit privileged actions without giving full root access.
+      Adding capabilities beyond the default set must not be allowed.
 spec:
   validationFailureAction: audit
   background: true

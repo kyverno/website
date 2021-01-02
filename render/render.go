@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -67,6 +68,7 @@ func render(git *gitInfo, outdir string) error {
 		return fmt.Errorf("failed to list YAMLs in repository %s: %v", repoURL, err)
 	}
 
+	sort.Strings(yamls)
 	log.Printf("retrieved %d YAMLs in repository %s", len(yamls), repoURL)
 
 	t := template.New("policy")

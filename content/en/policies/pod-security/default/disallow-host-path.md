@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Disallow Host Path
-linkTitle: Disallow Host Path
-weight: 47
+title: Disallow-Host-Path
+linkTitle: Disallow-Host-Path
+weight: 30
 description: >
     HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.
 ---

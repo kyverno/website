@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Disallow Default Namespace
-linkTitle: Disallow Default Namespace
-weight: 18
+title: Disallow-Default-Namespace
+linkTitle: Disallow-Default-Namespace
+weight: 5
 description: >
-    Kubernetes namespaces are an optional feature that provide a way to segment and isolate cluster resources across multiple applications and users. As a best practice, workloads should be isolated with namespaces. Namespaces should be required and the default (empty) namespace should not be used.
+    Kubernetes namespaces are an optional feature that provide a way to segment and  isolate cluster resources across multiple applications and users. As a best  practice, workloads should be isolated with namespaces. Namespaces should be required  and the default (empty) namespace should not be used.
 ---
 
 ## Policy Definition
@@ -16,13 +16,13 @@ kind: ClusterPolicy
 metadata:
   name: disallow-default-namespace
   annotations:
-    pod-policies.kyverno.io/autogen-controllers: none	
-    policies.kyverno.io/category: Workload Isolation
-    policies.kyverno.io/description: Kubernetes namespaces are an optional feature 
-      that provide a way to segment and isolate cluster resources across multiple 
-      applications and users. As a best practice, workloads should be isolated with 
-      namespaces. Namespaces should be required and the default (empty) namespace 
-      should not be used.
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/description: >-
+      Kubernetes namespaces are an optional feature that provide a way to segment and 
+      isolate cluster resources across multiple applications and users. As a best 
+      practice, workloads should be isolated with namespaces. Namespaces should be required 
+      and the default (empty) namespace should not be used.
 spec:
   validationFailureAction: audit
   rules:
@@ -32,7 +32,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "Using 'default' namespace is not allowed"
+      message: "Using 'default' namespace is not allowed."
       pattern:
         metadata:
           namespace: "!default"
@@ -42,7 +42,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "A namespace is required"
+      message: "A namespace is required."
       pattern:
         metadata:
           namespace: "?*"
@@ -55,7 +55,7 @@ spec:
         - Job
         - StatefulSet
     validate:
-      message: "Using 'default' namespace is not allowed for podcontrollers"
+      message: "Using 'default' namespace is not allowed for pod controllers."
       pattern:
         metadata:
           namespace: "!default"
@@ -68,10 +68,8 @@ spec:
         - Job
         - StatefulSet
     validate:
-      message: "A namespace is required for podcontrollers"
+      message: "A namespace is required for pod controllers."
       pattern:
         metadata:
           namespace: "?*"
-
-
 ```

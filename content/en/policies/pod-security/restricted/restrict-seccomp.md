@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Seccomp
 linkTitle: Restrict Seccomp
-weight: 41
+weight: 40
 description: >
     The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
 ---
@@ -16,6 +16,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-seccomp
   annotations:
+    policies.kyverno.io/title: Restrict Seccomp
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/description: >-
       The runtime default seccomp profile must be required, or only specific

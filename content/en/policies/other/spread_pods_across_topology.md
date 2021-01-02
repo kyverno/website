@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Spread Pods
-linkTitle: Spread Pods
-weight: 26
+title: Spread Pods Across Nodes
+linkTitle: Spread Pods Across Nodes
+weight: 27
 description: >
-    
+    Sample policy to spread pods matching a label across nodes.
 ---
 
 ## Policy Definition
@@ -15,6 +15,11 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: spread-pods
+  annotations:
+    policies.kyverno.io/title: Spread Pods Across Nodes 
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy to spread pods matching a label across nodes.
 spec:
   rules:
     - name: spread-pods-across-nodes

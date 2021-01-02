@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Restrict Volume Types
-linkTitle: Restrict Volume Types
-weight: 42
+title: Restrict-Volume-Types
+linkTitle: Restrict-Volume-Types
+weight: 41
 description: >
     In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes.
 ---

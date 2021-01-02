@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Add Ns Quota
-linkTitle: Add Ns Quota
-weight: 17
+title: Add Quota
+linkTitle: Add Quota
+weight: 2
 description: >
-    To limit the number of objects, as well as the total amount of compute that may be consumed by a single namespace, create a default resource quota for each namespace.
+    To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
 ---
 
 ## Policy Definition
@@ -16,10 +16,12 @@ kind: ClusterPolicy
 metadata:
   name: add-ns-quota
   annotations:
-    policies.kyverno.io/category: Workload Isolation
-    policies.kyverno.io/description: To limit the number of objects, as well as the 
-      total amount of compute that may be consumed by a single namespace, create 
-      a default resource quota for each namespace.
+    policies.kyverno.io/title: Add Quota
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/description: >-
+      To limit the number of objects, as well as the total amount of compute that 
+      may be consumed by a single namespace, create a default resource quota for 
+      each namespace.
 spec:
   rules:
   - name: generate-resourcequota
@@ -27,17 +29,10 @@ spec:
       resources:
         kinds:
         - Namespace
-    exclude:
-      resources:
-        namespaces:
-          - "kube-system"
-          - "default"
-          - "kube-public"
-          - "kyverno"
     generate:
       kind: ResourceQuota
       name: default-resourcequota
-      synchronize : true
+      synchronize: true
       namespace: "{{request.object.metadata.name}}"
       data:
         spec:
@@ -54,7 +49,7 @@ spec:
     generate:
       kind: LimitRange
       name: default-limitrange
-      synchronize : true
+      synchronize: true
       namespace: "{{request.object.metadata.name}}"
       data:
         spec:
@@ -66,5 +61,4 @@ spec:
               cpu: 200m
               memory: 256Mi
             type: Container
-
 ```

@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Deployment Has Multiple Replicas
-linkTitle: Deployment Has Multiple Replicas
-weight: 32
+title: Require Multiple Replicas
+linkTitle: Require Multiple Replicas
+weight: 22
 description: >
-    
+    Sample policy that requires more than one replica for deployments.    
 ---
 
 ## Policy Definition
@@ -15,6 +15,11 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: deployment-has-multiple-replicas
+  annotations:
+    policies.kyverno.io/title: Require Multiple Replicas
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy that requires more than one replica for deployments.    
 spec:
   validationFailureAction: audit
   rules:
@@ -22,16 +27,9 @@ spec:
       match:
         resources:
           kinds:
-            - Deployment
-      exclude:
-        resources:
-          namespaces:
-          - kyverno
-          - kube-system
-          - kube-node-lease
-          - kube-public
+          - Deployment
       validate:
-        message: "Deployments must have more than one replica to ensure availability."
+        message: "Deployments should have more than one replica to ensure availability."
         pattern:
           spec:
             replicas: ">1"

@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Disallow Selinux
-linkTitle: Disallow Selinux
-weight: 44
+title: Disallow SELinux
+linkTitle: Disallow SELinux
+weight: 34
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
 ---
@@ -16,6 +16,7 @@ kind: ClusterPolicy
 metadata:
   name: disallow-selinux
   annotations:
+    policies.kyverno.io/title: Disallow SELinux
     policies.kyverno.io/category: Pod Security Standards (Default)
     policies.kyverno.io/description: >-
       SELinux options can be used to escalate privileges and should not be allowed.
