@@ -1,7 +1,7 @@
 ---
 type: "docs"
-title: Drop-All-Capabilities
-linkTitle: Drop-All-Capabilities
+title: Drop All Capabilities
+linkTitle: Drop All Capabilities
 weight: 8
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.

@@ -51,7 +51,7 @@ func buildTitle(p *kyvernov1.ClusterPolicy) string {
 
 	name = p.Name
 	title := strings.ReplaceAll(name, "-", " ")
-	title = strings.ReplaceAll(name, "_", " ")
+	title = strings.ReplaceAll(title, "_", " ")
 	return strings.Title(title)
 }
 

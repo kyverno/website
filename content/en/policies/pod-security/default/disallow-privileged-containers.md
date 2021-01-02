@@ -1,7 +1,7 @@
 ---
 type: "docs"
-title: Disallow-Privileged-Containers
-linkTitle: Disallow-Privileged-Containers
+title: Disallow Privileged Containers
+linkTitle: Disallow Privileged Containers
 weight: 32
 description: >
     Privileged mode disables most security mechanisms and must not be allowed.
