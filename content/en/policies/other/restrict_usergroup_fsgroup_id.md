@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Validate Userid Groupid Fsgroup
-linkTitle: Validate Userid Groupid Fsgroup
-weight: 25
+title: Validate User ID, Group ID, and FS Group
+linkTitle: Validate User ID, Group ID, and FS Group
+weight: 26
 description: >
-    All processes inside the pod can be made to run with specific user and groupID by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified to make sure any file created in the volume with have the specified groupID. These options can be used to validate the IDs used for user and group.
+    All processes inside the pod can be made to run with specific user and groupID  by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified  to make sure any file created in the volume with have the specified groupID.  These options can be used to validate the IDs used for user and group.
 ---
 
 ## Policy Definition
@@ -16,11 +16,13 @@ kind: ClusterPolicy
 metadata:
   name: validate-userid-groupid-fsgroup
   annotations:
-    policies.kyverno.io/category: Security Context
-    policies.kyverno.io/description: All processes inside the pod can be made to run with specific user 
-      and groupID by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified 
-      to make sure any file created in the volume with have the specified groupID. These options can be 
-      used to validate the IDs used for user and group.
+    policies.kyverno.io/title: Validate User ID, Group ID, and FS Group 
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      All processes inside the pod can be made to run with specific user and groupID 
+      by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified 
+      to make sure any file created in the volume with have the specified groupID. 
+      These options can be used to validate the IDs used for user and group.
 spec:
   rules:
   - name: validate-userid
@@ -29,7 +31,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "User ID should be 1000"
+      message: "User ID should be 1000."
       pattern:
         spec:
           securityContext:
@@ -40,7 +42,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "Group ID should be 3000"
+      message: "Group ID should be 3000."
       pattern:
         spec:
           securityContext:
@@ -51,7 +53,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "fsgroup should be 2000"
+      message: "fsgroup should be 2000."
       pattern:
         spec:
           securityContext:

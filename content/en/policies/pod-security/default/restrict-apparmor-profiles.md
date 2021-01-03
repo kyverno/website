@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Restrict Apparmor Profiles
-linkTitle: Restrict Apparmor Profiles
-weight: 45
+title: Restrict AppArmor
+linkTitle: Restrict AppArmor
+weight: 35
 description: >
     On supported hosts, the 'runtime/default' AppArmor profile is applied by default.  The default policy should prevent overriding or disabling the policy, or restrict  overrides to an allowed set of profiles.
 ---
@@ -16,6 +16,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-apparmor-profiles
   annotations:
+    policies.kyverno.io/title: Restrict AppArmor
     policies.kyverno.io/category: Pod Security Standards (Default)
     policies.kyverno.io/description: >-
       On supported hosts, the 'runtime/default' AppArmor profile is applied by default. 

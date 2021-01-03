@@ -2,9 +2,9 @@
 type: "docs"
 title: Require Labels
 linkTitle: Require Labels
-weight: 1
+weight: 9
 description: >
-    
+    The ':latest' tag is mutable and can lead to unexpected errors if the  image changes. A best practice is to use an immutable tag that maps to  a specific version of an application pod.  
 ---
 
 ## Policy Definition
@@ -15,6 +15,12 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-labels
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      The ':latest' tag is mutable and can lead to unexpected errors if the 
+      image changes. A best practice is to use an immutable tag that maps to 
+      a specific version of an application pod.  
 spec:
   validationFailureAction: audit
   rules:
@@ -29,6 +35,7 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: "?*"
-            # You can add more labels if you wish the policy to validate more than just one is present. Uncomment the below line, or add new ones.
+            # You can add more labels if you wish the policy to validate more 
+            # than just one is present. Uncomment the below line, or add new ones.
             #app.kubernetes.io/component: "?*
 ```

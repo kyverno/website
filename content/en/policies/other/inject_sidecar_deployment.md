@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Inject Sidecar
-linkTitle: Inject Sidecar
-weight: 30
+title: Inject Sidecar Container
+linkTitle: Inject Sidecar Container
+weight: 21
 description: >
-    
+    Sample policy that injects a sidecar container into Pods that match an annotation.  
 ---
 
 ## Policy Definition
@@ -15,6 +15,11 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: inject-sidecar
+  annotations:
+    policies.kyverno.io/title: Inject Sidecar Container
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy that injects a sidecar container into Pods that match an annotation.  
 spec:
   background: false
   rules:

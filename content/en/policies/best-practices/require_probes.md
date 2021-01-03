@@ -2,9 +2,9 @@
 type: "docs"
 title: Require Pod Probes
 linkTitle: Require Pod Probes
-weight: 2
+weight: 11
 description: >
-    Liveness and readiness probes need to be configured to correctly manage a pods lifecycle during deployments, restarts, and upgrades. For each pod, a periodic `livenessProbe` is performed by the kubelet to determine if the pod's containers are running or need to be restarted. A `readinessProbe` is used by services and deployments to determine if the pod is ready to receive network traffic.
+    Liveness and readiness probes need to be configured to correctly manage a pods  lifecycle during deployments, restarts, and upgrades. For each pod, a periodic  `livenessProbe` is performed by the kubelet to determine if the pod's containers  are running or need to be restarted. A `readinessProbe` is used by services  and deployments to determine if the pod is ready to receive network traffic.
 ---
 
 ## Policy Definition
@@ -17,11 +17,12 @@ metadata:
   name: require-pod-probes
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: Liveness and readiness probes need to be configured to 
-      correctly manage a pods lifecycle during deployments, restarts, and upgrades. For each 
-      pod, a periodic `livenessProbe` is performed by the kubelet to determine if the pod's 
-      containers are running or need to be restarted. A `readinessProbe` is used by services 
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      Liveness and readiness probes need to be configured to correctly manage a pods 
+      lifecycle during deployments, restarts, and upgrades. For each pod, a periodic 
+      `livenessProbe` is performed by the kubelet to determine if the pod's containers 
+      are running or need to be restarted. A `readinessProbe` is used by services 
       and deployments to determine if the pod is ready to receive network traffic.
 spec:
   validationFailureAction: audit
@@ -32,7 +33,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "Liveness and readiness probes are required"
+      message: "Liveness and readiness probes are required."
       pattern:
         spec:
           containers:
@@ -40,6 +41,4 @@ spec:
               periodSeconds: ">0"      
             readinessProbe:
               periodSeconds: ">0"
-
-
 ```

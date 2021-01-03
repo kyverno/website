@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Secrets Not From Env Vars
-linkTitle: Secrets Not From Env Vars
-weight: 35
+title: Disallow Secrets from Env Vars
+linkTitle: Disallow Secrets from Env Vars
+weight: 18
 description: >
-    
+    Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
 ---
 
 ## Policy Definition
@@ -15,13 +15,18 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: secrets-not-from-env-vars
+  annotations:
+    policies.kyverno.io/title: Disallow Secrets from Env Vars
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Sample policy to disallow using secrets from environment variables 
+      which are visible in resource definitions. 
 spec:
-  background: false
   validationFailureAction: audit
   rules:
   - name: secrets-not-from-env-vars
     match:
-    resources:
+      resources:
         kinds:
         - Pod
     validate:

@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -50,7 +51,7 @@ func buildTitle(p *kyvernov1.ClusterPolicy) string {
 
 	name = p.Name
 	title := strings.ReplaceAll(name, "-", " ")
-	title = strings.ReplaceAll(name, "_", " ")
+	title = strings.ReplaceAll(title, "_", " ")
 	return strings.Title(title)
 }
 
@@ -67,6 +68,7 @@ func render(git *gitInfo, outdir string) error {
 		return fmt.Errorf("failed to list YAMLs in repository %s: %v", repoURL, err)
 	}
 
+	sort.Strings(yamls)
 	log.Printf("retrieved %d YAMLs in repository %s", len(yamls), repoURL)
 
 	t := template.New("policy")

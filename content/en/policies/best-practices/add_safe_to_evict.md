@@ -1,10 +1,10 @@
 ---
 type: "docs"
-title: Add Safe To Evict
-linkTitle: Add Safe To Evict
+title: Add safe-to-evict
+linkTitle: Add safe-to-evict
 weight: 3
 description: >
-    The Kubernetes cluster autoscaler does not evict pods that use hostPath or emptyDir volumes. To allow eviction of these pods, the annotation cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to the pods.
+    The Kubernetes cluster autoscaler does not evict pods that use hostPath  or emptyDir volumes. To allow eviction of these pods, the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to pods. 
 ---
 
 ## Policy Definition
@@ -16,10 +16,12 @@ kind: ClusterPolicy
 metadata: 
   name: add-safe-to-evict
   annotations:
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: The Kubernetes cluster autoscaler does not evict pods that 
-      use hostPath or emptyDir volumes. To allow eviction of these pods, the annotation 
-      cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to the pods. 
+    policies.kyverno.io/title: Add safe-to-evict 
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      The Kubernetes cluster autoscaler does not evict pods that use hostPath 
+      or emptyDir volumes. To allow eviction of these pods, the annotation 
+      cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to pods. 
 spec: 
   rules: 
   - name: annotate-empty-dir
@@ -49,5 +51,4 @@ spec:
           volumes: 
           - (hostPath):
               path: "*"
-
 ```

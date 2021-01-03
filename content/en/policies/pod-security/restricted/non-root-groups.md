@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Non Root Groups
-linkTitle: Non Root Groups
-weight: 39
+title: Require Non Root Groups
+linkTitle: Require Non Root Groups
+weight: 38
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
 ---
@@ -14,7 +14,7 @@ description: >
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: non-root-groups
+  name: require-non-root-groups
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/description: >-
