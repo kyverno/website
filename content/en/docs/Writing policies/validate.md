@@ -10,7 +10,7 @@ To validate resource data, define a [pattern](#patterns) in the validation rule.
 
 ## Basic Validations
 
-As a basic example, consider the below `ClusterPolicy` which validates that any new `Namespace` that is created has the label `purpose` with the value of `production`.
+As a basic example, consider the below `ClusterPolicy` which validates that any new Namespace that is created has the label `purpose` with the value of `production`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -41,7 +41,7 @@ spec:
             purpose: production
 ```
 
-If a new `Namespace` with the following definition is submitted to Kyverno, given the `ClusterPolicy` above, it will be **allowed** (validated). This is because it contains the label of `purpose=production`, which is the only pattern being validated in the rule.
+If a new Namespace with the following definition is submitted to Kyverno, given the `ClusterPolicy` above, it will be **allowed** (validated). This is because it contains the label of `purpose=production`, which is the only pattern being validated in the rule.
 
 ```yaml
 apiVersion: v1
@@ -52,7 +52,7 @@ metadata:
     purpose: production
 ```
 
-By contrast, if a new `Namespace` with the below definition is submitted, given the `ClusterPolicy` above, it will be **blocked** (invalidated). As you can see, its value of the `purpose` label differs from that required in the policy. But this isn't the only way a validation can fail. If, for example, the same `Namespace` is requested which has no labels defined whatsoever, it too will be blocked for the same reason.
+By contrast, if a new Namespace with the below definition is submitted, given the `ClusterPolicy` above, it will be **blocked** (invalidated). As you can see, its value of the `purpose` label differs from that required in the policy. But this isn't the only way a validation can fail. If, for example, the same Namespace is requested which has no labels defined whatsoever, it too will be blocked for the same reason.
 
 ```yaml
 apiVersion: v1
@@ -67,7 +67,7 @@ Save the above manifest as `ns.yaml` and try to create it with your sample `Clus
 
 ```sh
 $ kubectl create -f ns.yaml
-Error from server: error when creating "ns.yaml": admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request: 
+Error from server: error when creating "ns.yaml": admission webhook "validate.kyverno.svc" denied the request: 
 
 resource Namespace//prod-bus-app1 was blocked due to the following policies
 
@@ -75,7 +75,7 @@ require-ns-purpose-label:
   require-ns-purpose-label: 'Validation error: You must have label `purpose` with value `production` set on all new namespaces.; Validation rule require-ns-purpose-label failed at path /metadata/labels/purpose/'
 ```
 
-Change the `development` value to `production` and try again. Kyverno permits creation of your new `Namespace` resource.
+Change the `development` value to `production` and try again. Kyverno permits creation of your new Namespace resource.
 
 ## Validation Failure Action
 
@@ -83,7 +83,7 @@ The `validationFailureAction` attribute controls admission control behaviors for
 
 ## Patterns
 
-A validation rule that checks resource data is defined as an overlay pattern that provides the desired configuration. Resource configurations must match fields and expressions defined in the pattern to pass the validation rule. The following rules are followed when processing the overlay pattern:
+A validation rule which checks resource data is defined as an overlay pattern that provides the desired configuration. Resource configurations must match fields and expressions defined in the pattern to pass the validation rule. The following rules are followed when processing the overlay pattern:
 
 1. Validation will fail if a field is defined in the pattern and if the field does not exist in the configuration.
 1. Undefined fields are treated as wildcards.
@@ -101,7 +101,7 @@ A validation rule that checks resource data is defined as an overlay pattern tha
 
 For a couple of examples on how wildcards work in rules, see the following.
 
-This policy requires that all containers in all pods have CPU and memory resource requests and limits defined:
+This policy requires that all containers in all Pods have CPU and memory resource requests and limits defined:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -121,7 +121,8 @@ spec:
       pattern:
         spec:
           containers:
-          # Select all containers in the pod.
+          # Select all containers in the pod. The `name` field here is not specifically required but serves
+          # as a visual aid for instructional purposes.
           - name: "*"
             resources:
               limits:
@@ -192,7 +193,7 @@ Anchors allow conditional processing (i.e. "if-then-else") and other logical che
 
 Child elements are handled differently for conditional and equality anchors.
 
-For conditional anchors, the child element is considered to be part of the "if" clause, and all peer elements are considered to be part of the "then" clause. For example, consider the following `ClusterPolicy`s pattern statement:
+For conditional anchors, the child element is considered to be part of the "if" clause, and all peer elements are considered to be part of the "then" clause. For example, consider the following `ClusterPolicy` pattern statement:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -220,7 +221,7 @@ spec:
               path: "/var/run/docker.sock"
 ```
 
-This reads as "If a hostPath volume exists and the path equals /var/run/docker.sock, then a label "allow-docker" must be specified with a value of true." In this case, the conditional checks the `spec.volumes` and `spec.volumes.hostPath` map. The child element of `spec.volumes.hostPath` is the `path` key and so the check ends the "If" evaluation at `path`. The entire `metadata` object is a peer element to the `spec` object because these reside at the same hierarchy within a `Pod` definition. Therefore, conditional anchors can not only compare peers when they are simple key/value, but also when peers are objects or YAML maps.
+This reads as "If a hostPath volume exists and the path equals /var/run/docker.sock, then a label "allow-docker" must be specified with a value of true." In this case, the conditional checks the `spec.volumes` and `spec.volumes.hostPath` map. The child element of `spec.volumes.hostPath` is the `path` key and so the check ends the "If" evaluation at `path`. The entire `metadata` object is a peer element to the `spec` object because these reside at the same hierarchy within a Pod definition. Therefore, conditional anchors can not only compare peers when they are simple key/value, but also when peers are objects or YAML maps.
 
 For equality anchors, a child element is considered to be part of the "then" clause. Now, consider the same `ClusterPolicy` as above but using equality anchors:
 
@@ -331,6 +332,8 @@ spec:
       # Checks for `runAsNonRoot` on every container.
       - spec:
           containers:
+          # The `name` field here is not specifically required but rather used
+          # as a visual aid for instructional purposes.
           - name: "*"
             securityContext:
               runAsNonRoot: true
@@ -414,7 +417,7 @@ spec:
 
 ### Prevent changing NetworkPolicy resources
 
-This policy prevents users from changing `NetworkPolicy` resources with names that end with `-default`.
+This policy prevents users from changing NetworkPolicy resources with names that end with `-default`.
 
 ```yaml
 apiVersion: kyverno.io/v1

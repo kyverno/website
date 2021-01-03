@@ -28,7 +28,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       mutate:
         overlay:
           spec:
@@ -120,7 +120,7 @@ spec:
             op: remove
 ```
 
-This policy rule adds elements to list. In this case, it adds a new busybox container and a command. Note that because the `path` statement is a precise schema element, this will only work on a direct Pod and not higher-level objects such as Deployments.
+This policy rule adds elements to a list. In this case, it adds a new busybox container and a command. Note that because the `path` statement is a precise schema element, this will only work on a direct Pod and not higher-level objects such as Deployments.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -149,9 +149,9 @@ Note, that if the `remove` operation cannot be applied, it will be skipped with 
 
 ## Strategic Merge Patch
 
-The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md), with special directives, to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
+The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
-This policy sets adds a new container to the Pod, sets the `imagePullPolicy`, adds a command, and sets a label with the key name of `name` and value set to the name of the Pod from AdmissionReview data. Once again, the overlay in this case names a specific schema path which is relevant only to a Pod and not higher-level resources.
+This policy adds a new container to the Pod, sets the `imagePullPolicy`, adds a command, and sets a label with the key of `name` and value set to the name of the Pod from AdmissionReview data. Once again, the overlay in this case names a specific schema path which is relevant only to a Pod and not higher-level resources like a Deployment.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -206,7 +206,8 @@ spec:
       overlay:
         spec:
           containers:
-          # the wildcard * will match all containers
+          # The wildcard * will match all containers. This `name` field is not specifically required
+          # but is included for instructional purposes.
           - (name): "*"
             resources:
               requests:
@@ -230,7 +231,7 @@ spec:
     match:
       resources:
         kinds:
-          - Endpoints
+        - Endpoints
     mutate:
       overlay:
         subsets:
@@ -318,7 +319,7 @@ spec:
 
 The anchor processing behavior for mutate conditions is as follows:
 
-1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values the entire value (child) object is treated as part of the condition, as explained above.
+1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
 
 2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
 
@@ -339,7 +340,7 @@ spec:
       match:
         resources:
           kinds:
-            - Pod
+          - Pod
       mutate:
         patchStrategicMerge:
           metadata:
@@ -350,7 +351,7 @@ spec:
             - (image): "*cassandra* | *mongo*"
 ```
 
-Also assume that for certain application types, a backup strategy needs to be defined. For those applications where `type=database`, this would be designated with an additional label with the key name of `backup-needed` and value of either `yes` or `no`. The label would only be added if not already specified since operators can choose if they want protection or not. This policy would be defined like the following.
+Also, assume that for certain application types a backup strategy needs to be defined. For those applications where `type=database`, this would be designated with an additional label with the key name of `backup-needed` and value of either `yes` or `no`. The label would only be added if not already specified since operators can choose if they want protection or not. This policy would be defined like the following.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -387,7 +388,7 @@ spec:
     match:
       resources:
         kinds:
-          - Pod
+        - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -400,7 +401,7 @@ spec:
     match:
       resources:
         kinds:
-          - Pod
+        - Pod
         selector:
           matchLabels:
             type: database
