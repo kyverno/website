@@ -14,7 +14,7 @@ The generate rule is triggered during the API CREATE operation. To keep resource
 As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified or deleted by other Kubernetes controllers and users with appropriate access permissions, and Kyverno will recreate or update the resource to comply with configured policies.
 {{% /alert %}}
 
-When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a `ConfigMap` or `Secret`, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
+When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a ConfigMap or Secret, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
 
 {{% alert title="Caution" color="warning" %}}
 Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
@@ -22,7 +22,7 @@ Deleting the policy containing a `generate` rule with `synchronize=true` will ca
 
 ## Generate a ConfigMap using inline data
 
-This policy sets the Zookeeper and Kafka connection strings for all namespaces based upon a `ConfigMap` defined within the rule itself. Notice that this rule has the `generate.data` object defined in which case the rule will create a new `ConfigMap` called `zk-kafka-address` using the data specified in the rule's manifest.
+This policy sets the Zookeeper and Kafka connection strings for all namespaces based upon a ConfigMap defined within the rule itself. Notice that this rule has the `generate.data` object defined in which case the rule will create a new ConfigMap called `zk-kafka-address` using the data specified in the rule's manifest.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -58,7 +58,7 @@ spec:
 
 ## Clone a ConfigMap and propagate changes
 
-In this policy, the source of the data is an existing `ConfigMap` resource named `config-template` which is stored in the `default` namespace. Notice how the `generate` rule here instead uses the `generate.clone` object when the origin data exists within Kubernetes.
+In this policy, the source of the data is an existing ConfigMap resource named `config-template` which is stored in the `default` namespace. Notice how the `generate` rule here instead uses the `generate.clone` object when the origin data exists within Kubernetes.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -149,7 +149,7 @@ When a new Namespace is created, Kyverno will generate a new RoleBinding called 
 
 ## Generate a NetworkPolicy
 
-In this example, new namespaces will receive a `NetworkPolicy` that denies all inbound and outbound traffic. Similar to the first example, the `generate.data` object is used to define, as an overlay pattern, the `spec` for the `NetworkPolicy` resource.
+In this example, new namespaces will receive a NetworkPolicy that denies all inbound and outbound traffic. Similar to the first example, the `generate.data` object is used to define, as an overlay pattern, the `spec` for the NetworkPolicy resource.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -185,13 +185,13 @@ spec:
 
 ## Generating resources into existing namespaces
 
-Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
+Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
 
 Normally, Kyverno does not alter existing objects in any way as a central tenet of its design. However, using this method of controlled roll-out, you may use `generate` rules to create new objects into existing namespaces. To do so, follow these steps:
 
-1. Identify some Kubernetes label or annotation which is not yet defined on any namespace but can be used to add to existing ones signaling to Kyverno that these namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved key names such as `kubernetes.io` or `kyverno.io`.
+1. Identify some Kubernetes label or annotation which is not yet defined on any Namespace but can be used to add to existing ones signaling to Kyverno that these namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved keys such as `kubernetes.io` or `kyverno.io`.
 
-2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind `namespace` as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only namespaces but a label of `mycorp-rollout=true` and copies into these namespaces a Secret called `corp-secret` stored in the `default` namespace.
+2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind Namespace as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only namespaces but a label of `mycorp-rollout=true` and copies into these namespaces a Secret called `corp-secret` stored in the `default` Namespace.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -228,7 +228,7 @@ $ kubectl label ns prod-bus-app1 mycorp-rollout=true
 namespace/prod-bus-app1 labeled
 ```
 
-5. Check the namespace you just labeled to see if the Secret exists.
+5. Check the Namespace you just labeled to see if the Secret exists.
 
 ```sh
 $ kubectl -n prod-bus-app1 get secret

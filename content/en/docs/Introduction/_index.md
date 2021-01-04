@@ -44,7 +44,7 @@ You have the option of installing Kyverno directly from the latest release manif
 
 To install Kyverno using the latest release manifest (which may be a pre-release):
 
-```console
+```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
@@ -88,13 +88,13 @@ EOF
 
 Try creating a Deployment without the required label:
 
-```console
+```sh
 kubectl create deployment nginx --image=nginx
 ```
 
 You should see an error:
 
-```console
+```sh
 Error from server: admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request:
 
 resource Deployment/default/nginx was blocked due to the following policies
@@ -116,7 +116,7 @@ This Pod configuration is compliant with the policy rules and is not blocked.
 
 Clean up by deleting all cluster policies:
 
-```console
+```sh
 kubectl delete cpol --all
 ```
 

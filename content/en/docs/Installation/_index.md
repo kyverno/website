@@ -81,7 +81,7 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ```
 
 {{% alert title="Note" color="info" %}}
-🛈 The above command installs the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+The above command installs the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
 {{% /alert %}}
 
 Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
@@ -131,7 +131,7 @@ openssl genrsa -out webhook.key 4096
 openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
 ```
 
-3. Create a **`webhook.ext` file** with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
+3. Create a `webhook.ext` file with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
 
 ```
 subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
@@ -149,7 +149,7 @@ openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateseri
  openssl x509 -in webhook.crt -text -noout
 ```
 
-The certificate must contain the SAN information in the _X509v3 extensions_ section:
+The certificate must contain the SAN information in the `X509v3 extensions` section:
 
 ```
 X509v3 extensions:
@@ -253,12 +253,14 @@ subjects:
 To install a specific version, download `install.yaml` and then change the image tag.
 
 e.g., change image tag from `latest` to the specific tag `v1.0.0`.
->>>
-    spec:
-      containers:
-        - name: kyverno
-          # image: nirmata/kyverno:latest
-          image: nirmata/kyverno:v1.0.0
+
+```yaml
+spec:
+  containers:
+    - name: kyverno
+      # image: ghcr.io/kyverno/kyverno:latest
+      image: ghcr.io/kyverno/kyverno:v1.3.0
+```
 
 To install in a specific namespace replace the namespace "kyverno" with your namespace.
 
@@ -283,7 +285,7 @@ metadata:
 
 and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where namespace is mentioned.
 
-To run kyverno:
+To run Kyverno:
 
 ```sh
 kubectl create -f ./install.yaml
@@ -302,16 +304,18 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 ```
 
 ```sh
-kubectl logs <kyverno-pod-name> -n <namespace>
+kubectl logs -l app=kyverno -n <namespace>
 ```
 
-Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
 ### Flags
 
-1. `excludeGroupRole` : excludeGroupRole role expected string with Comma separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
-2. `excludeUsername` : excludeUsername expected string with Comma separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8Resources`: k8s resource in format [kind,namespace,name] where policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *].
+The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
+
+1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
+2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
+3. `filterK8Resources`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
 
 ### PolicyViolation access
 
@@ -346,7 +350,7 @@ subjects:
 
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
+The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
 
 By default we have specified Nodes, Events, APIService, and SubjectAccessReview as the kinds to be skipped in the default configuration in `install.yaml`.
 
@@ -361,7 +365,7 @@ data:
   resourceFilters: "[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][*,kyverno,*]"
 ```
 
-To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the `ConfigMap` using `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
+To modify the ConfigMap, either directly edit the ConfigMap `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the ConfigMap using `kubectl`.  Changes to the ConfigMap through `kubectl` will automatically be picked up at runtime.
 
 ## Upgrading Kyverno
 
