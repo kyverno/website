@@ -26,35 +26,20 @@ Scan the new repository for charts.
 helm repo update
 ```
 
-Create a namespace and then install the Kyverno Helm chart.
-
-```sh
-# Create a namespace
-kubectl create ns <namespace>
-
-# Install the Kyverno Helm chart
-helm install kyverno --namespace <namespace> kyverno/kyverno
-
-```
-
-For installing in the `kyverno` namespace:
-
-```sh
-kubectl create ns kyverno
-
-helm install kyverno --namespace kyverno kyverno/kyverno
-```
-
-Alternatively, use Helm 3.2+ to complete both steps in a single command:
-
+Use Helm 3.2+ to create a namespace and install Kyverno:
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 ```
 
 To install non-stable releases, add the `--devel` switch to Helm
-
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace --devel
+```
+
+For Helm versions prior to 3.2, create a namespace and then install the Kyverno Helm chart.
+```sh
+kubectl create ns kyverno
+helm install kyverno --namespace kyverno kyverno/kyverno
 ```
 
 ## Install Kyverno using YAMLs
