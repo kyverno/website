@@ -58,7 +58,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 ### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for Webhook registration.  
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno, and when done the certificate validity period is 10 years.
 
 ```sh
 ## Install Kyverno
@@ -66,7 +66,7 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ```
 
 {{% alert title="Note" color="info" %}}
-The above command installs the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
 {{% /alert %}}
 
 Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
@@ -89,6 +89,10 @@ kubectl logs <kyverno-pod-name> -n <namespace>
 ```
 
 ### Option 2: Use your own CA-signed certificate
+
+{{% alert title="Note" color="warning" %}}
+There is a known issue with this process. It is being worked on and should be available again in Kyverno 1.3.1.
+{{% /alert %}}
 
 You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
 
@@ -152,7 +156,7 @@ You can now use the following files to create secrets:
 
 To create the required secrets, use the following commands (do not change the secret names):
 
-```bash
+```sh
 kubectl create ns <namespace>
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
 kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
@@ -170,9 +174,11 @@ Secret | Data | Content
 
 Kyverno uses secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
 
+This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+
 #### 2.3. Install Kyverno
 
-You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is **kyverno**):
+You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
@@ -182,9 +188,9 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 
 ### Permissions
 
-Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
+Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming API requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
 
-ClusterRoles used by kyverno:
+ClusterRoles used by Kyverno:
 
 - `kyverno:webhook`
 - `kyverno:userinfo`
@@ -237,7 +243,7 @@ subjects:
 
 To install a specific version, download `install.yaml` and then change the image tag.
 
-e.g., change image tag from `latest` to the specific tag `v1.0.0`.
+e.g., change image tag from `latest` to the specific tag `v1.3.0`.
 
 ```yaml
 spec:
@@ -268,7 +274,9 @@ metadata:
   namespace: <namespace>
 ```
 
-and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where namespace is mentioned.
+and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where Namespace is mentioned.
+
+Alternatively, use [Kustomize](https://kustomize.io/) to replace the Namespace.
 
 To run Kyverno:
 
@@ -292,8 +300,6 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs -l app=kyverno -n <namespace>
 ```
 
-Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
-
 ### Flags
 
 The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
@@ -304,9 +310,9 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 ### PolicyViolation access
 
-During Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a namespace admin, configure the following YAML file then apply to the cluster.
+During the Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a Namespace admin, configure the following YAML file then apply to the cluster.
 
-- Replace `metadata.namespace` with namespace of the admin
+- Replace `metadata.namespace` with Namespace of the admin
 - Configure `subjects` field to bind admin's role to the ClusterRole `policyviolation`
 
 ```yaml
