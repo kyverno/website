@@ -37,7 +37,7 @@ FIELDS:
      The default value is "audit".
 ```
 
-Kyverno's support for structural schema's also enables integrated help in Kubernetes enabled Integrated Development Environments like VS Code with the Kubernetes Extension installed.
+Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
 
 The complete Kyverno CRD reference can be viewed using this link:
 
