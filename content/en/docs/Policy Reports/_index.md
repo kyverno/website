@@ -5,12 +5,14 @@ description: >
 weight: 60
 ---
 
-Kyverno Policy reports provide information about policy execution and violations. Kyverno creates policy reports for each namespace and a single cluster-level report for cluster resources.
+Kyverno policy reports provide information about policy execution and violations. Kyverno creates policy reports for each namespace and a single cluster-level report for cluster resources.
 
 Kyverno uses the policy report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
 
 {{% alert title="Note" color="info" %}}
-Policy Reports are available in Kyverno 1.3.0+. If you are using an older version use use `kubectl get polv -A` to view policy violations.
+Policy reports are available in Kyverno 1.3.0+. If you are using an older version you can view policy violations using: 
+    `kubectl get polv -A`
+
 {{% /alert %}}
 
 ## Viewing policy report summaries
@@ -22,7 +24,7 @@ kubectl get policyreport -A
 ```
 
 {{% alert title="Tip" color="info" %}}
-`polr` is short for `policyreport`.
+`polr` is the short name for `policyreport`.
 {{% /alert %}}
 
 For example, here are the policy reports for a small test cluster:
@@ -41,7 +43,7 @@ kubectl get clusterpolicyreport -A
 ```
 
 {{% alert title="Tip" color="info" %}}
-`cpolr` is short for `clusterpolicyreport`.
+`cpolr` is the short name for `clusterpolicyreport`.
 {{% /alert %}}
 
 
