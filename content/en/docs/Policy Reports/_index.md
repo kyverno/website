@@ -7,18 +7,23 @@ weight: 60
 
 Kyverno Policy reports provide information about policy execution and violations. Kyverno creates policy reports for each namespace and a single cluster-level report for cluster resources.
 
-Kyverno uses the common report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common report format for Kubernetes tools.
+Kyverno uses the policy report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
 
+{{% alert title="Note" color="info" %}}
+Policy Reports are available in Kyverno 1.3.0+. If you are using an older version use use `kubectl get polv -A` to view policy violations.
+{{% /alert %}}
 
 ## Viewing policy report summaries
 
 You can view a summary of the namespaced policy report using the following command:
 
 ```shell
-kubectl get polr -A
+kubectl get policyreport -A
 ```
 
-Note: `polr` is short for `policyreport`.
+{{% alert title="Tip" color="info" %}}
+`polr` is short for `policyreport`.
+{{% /alert %}}
 
 For example, here are the policy reports for a small test cluster:
 
@@ -32,10 +37,13 @@ flux-system   polr-ns-flux-system   135    5      0      0       0      28h
 Similarly, you can view the cluster-wide report using:
 
 ```shell
-kubectl get cpolr -A
+kubectl get clusterpolicyreport -A
 ```
 
-Here, `cpolr` is short for `clusterpolicyreport`.
+{{% alert title="Tip" color="info" %}}
+`cpolr` is short for `clusterpolicyreport`.
+{{% /alert %}}
+
 
 ## Viewing policy violations
 
@@ -79,5 +87,5 @@ Running this in the test cluster shows two containers without `runAsNotRoot: tru
 To view all namespaced violations in a cluster use:
 
 ```shell
-kubectl describe polr -A | grep "Status: \+fail" -B10
+kubectl describe polr -A | grep -i "status: \+fail" -B10
 ```
