@@ -38,6 +38,7 @@ type: docs
 
 ## Presentations
 
+- [Multi-Tenancy WG - Namespaces-as-a-Service with Kyverno and HNC](https://youtu.be/xICR6Zxs7js?t=464), Jan 2021
 - [CNCF Webinar - Keep Your Clusters Safe and Healthy](https://www.cncf.io/webinars/how-to-keep-your-clusters-safe-and-healthy/), May 2020
 - [VMware Code Meetup Video](https://www.youtube.com/watch?v=mgEmTvLytb0), April 2020
 - [Virtual Rejekts 2020 EU Presentation](https://www.youtube.com/watch?v=caFMtSg4A6I), May 2020
