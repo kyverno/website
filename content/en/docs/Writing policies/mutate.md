@@ -5,13 +5,13 @@ description: >
 weight: 4
 ---
 
-A `mutate` rule can be used to modify matching resources. A mutate rule can be written as a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
+A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
 
 {{% alert title="Note" color="warning" %}}
 Overlay and patches methods are currently deprecated and scheduled for removal in Kyverno 1.5. Please use the [patch strategic merge](#strategic-merge-patch) or [RFC 6902 JSON Patch](#rfc-6902-jsonpatch) methods from now forward.
 {{% /alert %}}
 
-By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Using an `overlay` is convenient for describing the desired state of the resource.
+By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Using an `overlay` is convenient for describing the desired state of the resource. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
 
@@ -41,15 +41,17 @@ spec:
 
 ## RFC 6902 JSONPatch
 
-A JSON Patch provides a precise way to mutate resources.
-
-[JSONPatch](http://jsonpatch.com/) supports the following operations (in the `op` field):
+A [JSON Patch](http://jsonpatch.com/), implemented as a mutation method called `patchesJson6902`, provides a precise way to mutate resources and supports the following operations (in the `op` field):
 
 * `add`
 * `replace`
 * `remove`
 
 With Kyverno, the `add` and `replace` have the same behavior (i.e., both operations will add or replace the target element).
+
+The `patchesJson6902` method can be useful when a specific mutation is needed which cannot be performed by `patchesStrategicMerge`. For example, when needing to mutate a specific object within an array, the index can be specified as part of a `patchesJson6902` mutation rule.
+
+One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/writing-policies/preconditions/) instead. Also, mutations using `patchesJson6902` to Pods directly is not supported as the rules are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](/docs/writing-policies/autogen/). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
 
 This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any namespace.
 
@@ -147,6 +149,20 @@ spec:
 
 Note, that if the `remove` operation cannot be applied, it will be skipped with no error.
 
+{{% alert title="Note" color="warning" %}}
+Mutations using `patchesJson6902` which match on Pods are not translated to higher-level Pod controllers as noted above.
+{{% /alert %}}
+
+When needing to append an object to an array of objects, for example in `pod.spec.tolerations`, use a dash (`-`) at the end of the path.
+
+```yaml
+mutate:
+  patchesJson6902: |-
+    - op: add
+      path: "/spec/tolerations/-"
+      value: {"key":"networkzone","operator":"Equal","value":"dmz","effect":"NoSchedule"}
+```
+
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
@@ -241,6 +257,8 @@ spec:
 
 ### Conditional logic using anchors
 
+Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/writing-policies/validate/#anchors) for more general information on conditionals.
+
 An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
 The mutate overlay rules support two types of anchors:
@@ -254,6 +272,8 @@ The **anchors** values support **wildcards**:
 
 1. `*` - matches zero or more alphanumeric characters
 2. `?` - matches a single alphanumeric character
+
+Note that conditional anchors are only supported with the `overlay` and `patchStrategicMerge` mutation methods.
 
 #### Conditional anchor
 
