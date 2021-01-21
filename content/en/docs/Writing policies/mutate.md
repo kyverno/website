@@ -163,6 +163,14 @@ mutate:
       value: {"key":"networkzone","operator":"Equal","value":"dmz","effect":"NoSchedule"}
 ```
 
+JSON Patch uses [JSON Pointer](http://jsonpatch.com/#json-pointer) to reference keys, and keys with tilde (`~`) and forward slash (`/`) characters need to be escaped with `~0` and `~1`, respectively. For example, the following adds an annotation with the key of `config.linkerd.io/skip-outbound-ports` with the value of `"8200"`.
+
+```yaml
+- op: add
+  path: /spec/template/metadata/annotations/config.linkerd.io~1skip-outbound-ports
+  value: "8200"
+```
+
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
