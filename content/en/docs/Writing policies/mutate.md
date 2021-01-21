@@ -163,7 +163,7 @@ mutate:
       value: {"key":"networkzone","operator":"Equal","value":"dmz","effect":"NoSchedule"}
 ```
 
-When needing to apply a mutation containing a special character like a forward slash (`/`) such as when adding an annotation, use `~1` as the escape character. The following adds an annotation with the key of `config.linkerd.io/skip-outbound-ports` with the value of `"8200"`.
+JSON Patch uses [JSON Pointer](http://jsonpatch.com/#json-pointer) to reference keys, and keys with tilde (`~`) and forward slash (`/`) characters need to be escaped with `~0` and `~1`, respectively. For example, the following adds an annotation with the key of `config.linkerd.io/skip-outbound-ports` with the value of `"8200"`.
 
 ```yaml
 - op: add
