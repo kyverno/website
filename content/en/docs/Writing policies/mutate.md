@@ -163,6 +163,14 @@ mutate:
       value: {"key":"networkzone","operator":"Equal","value":"dmz","effect":"NoSchedule"}
 ```
 
+When needing to apply a mutation containing a special character like a forward slash (`/`) such as when adding an annotation, use `~1` as the escape character. The following adds an annotation with the key of `config.linkerd.io/skip-outbound-ports` with the value of `"8200"`.
+
+```yaml
+- op: add
+  path: /spec/template/metadata/annotations/config.linkerd.io~1skip-outbound-ports
+  value: "8200"
+```
+
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
