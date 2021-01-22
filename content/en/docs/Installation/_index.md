@@ -12,6 +12,14 @@ Kyverno can be installed using Helm or deploying from the YAML manifests directl
 Currently, Kyverno runs as a single replica in the `Deployment` resource. Supporting multiple replicas, for increased scale and availability, is being worked on as a [roadmap item](https://github.com/kyverno/kyverno/issues/1214).
 {{% /alert %}}
 
+## Compatibility Matrix
+
+| Kyverno Version                | Kubernetes Min | Kubernetes Max |
+|--------------------------------|----------------|----------------|
+| 1.3.0                          | 1.14           | 1.20*          |
+
+\* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
+
 ## Install Kyverno using Helm
 
 Add the Kyverno Helm repository.
