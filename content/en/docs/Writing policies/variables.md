@@ -316,9 +316,9 @@ cm-array-example:
 
 Changing the `role` annotation to one of the values present in the ConfigMap, for example `tenant-admin`, allows the Deployment resource to be created.
 
-### Mixing ConfigMap with AdmissionReview data (Nesting)
+### Nested Lookups
 
-It is also possible to nest JMESPath expression inside one another when mixing data sourced from a ConfigMap and AdmissionReview. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
+It is also possible to nest JMESPath expression inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
 
 {{% alert title="Note" color="info" %}}
 Nesting JMESPath expressions is supported starting in Kyverno 1.3.0.
