@@ -316,6 +316,41 @@ cm-array-example:
 
 Changing the `role` annotation to one of the values present in the ConfigMap, for example `tenant-admin`, allows the Deployment resource to be created.
 
+### Nested Lookups
+
+It is also possible to nest JMESPath expression inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
+
+{{% alert title="Note" color="info" %}}
+Nesting JMESPath expressions is supported starting in Kyverno 1.3.0.
+{{% /alert %}}
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: resource-annotater
+spec:
+  background: false
+  rules:
+  - name: add-resource-annotations
+    context:
+    - name: LabelsCM
+      configMap:
+        name: resource-annotater-reference
+        namespace: default
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      overlay:
+        metadata:
+          annotations:
+            foo: "{{LabelsCM.data.{{ request.object.metadata.labels.app }}}}"
+```
+
+In this example, AdmissionReview data is first collected in the inner expression in the form of `{{request.object.metadata.labels.app}}` while the outer expression is built from a ConfigMap context named `LabelsCM`.
+
 ## Variables from Policy manifests
 
 As the third type of variable source, Kyverno has the ability to refer to other fields populated in a Policy manifest. We refer to these as manifest lookups. This can be a useful way of setting a value by referring to the value of another field (or multiple) without having to explicitly define it.
