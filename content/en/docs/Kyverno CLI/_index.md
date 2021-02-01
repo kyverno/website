@@ -41,6 +41,8 @@ mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 
 ## CLI Commands
 
+When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "standalone" version (binaries [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)) as opposed to the version embedded inside `kubectl`.
+
 ### Version
 
 Prints the version of Kyverno used by the CLI.
