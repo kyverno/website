@@ -9,6 +9,8 @@ Kyverno policy reports provide information about policy execution and violations
 
 Entries are added to reports whenever a resource is created which violates one or more rules where the applicable rule sets `validationFailureAction=audit`. Otherwise, when in `enforce` mode, the resource is blocked immediately upon creation and therefore no entry is created since no offending resource exists. If the created resource violates multiple rules, there will be multiple entries in the reports for the same resource. Likewise, if a resource is deleted, it will be expunged from the report simultaneously.
 
+There are two types of reports that get created and updated by Kyverno: a `ClusterPolicyReport` (for cluster-scoped resources) and a `PolicyReport` (for Namespaced resources). The contents of these reports are determined by the violating resources and not where the rule is stored. For example, if a rule is written which validates Ingress resources, because Ingress is a Namespaced resource, any violations will show up in a `PolicyReport` co-located in the same Namespace as the offending resource itself, regardless if that rule was written in a `Policy` or a `ClusterPolicy`.
+
 Kyverno uses the policy report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
 
 {{% alert title="Note" color="info" %}}
