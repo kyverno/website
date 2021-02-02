@@ -82,7 +82,10 @@ anchor = "smart"
     name = "Resources"
     weight = -99
     url = "/resources"
-
+[[menu.main]]
+    name = "Community"
+    weight = -98
+    url = "/community"
 
 [services]
 [services.googleAnalytics]

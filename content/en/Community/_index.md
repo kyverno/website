@@ -1,9 +1,7 @@
 ---
-title: "Community"
+title: Community
 linkTitle: "Community"
-weight: 90
-description: >
-  Join the Kyverno community to learn, share, and build together.
+type: docs
 ---
 
 ### Community Meetings
