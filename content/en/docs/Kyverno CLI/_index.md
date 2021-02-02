@@ -5,7 +5,7 @@ description: >
 weight: 70
 ---
 
-The Kyverno Command Line Interface (CLI) is designed to validate policies and test the behavior of applying policies to resources before adding the policy to a cluster. It can be used as a kubectl plugin and as a standalone CLI.
+The Kyverno Command Line Interface (CLI) is designed to validate policies and test the behavior of applying policies to resources before adding the policy to a cluster. It can be used as a `kubectl` plugin or as a standalone CLI.
 
 ## Installing the CLI
 
@@ -22,7 +22,7 @@ kubectl kyverno version
 
 ## Install via AUR (archlinux)
 
-You can install the Kyverno cli via your favorite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
+You can install the Kyverno CLI via your favorite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
 
 ```
 yay -S kyverno-git
@@ -41,9 +41,11 @@ mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 
 ## CLI Commands
 
+When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "standalone" version (binaries [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)) as opposed to the version embedded inside `kubectl`.
+
 ### Version
 
-Prints the version of kyverno used by the CLI.
+Prints the version of Kyverno used by the CLI.
 
 Example:
 
@@ -75,7 +77,7 @@ Example:
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
 ```
 
-Policy can also be validated with CRDs. Use -c flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
+Policy can also be validated with CRDs. Use `-c` flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
 
 Example:
 
@@ -85,7 +87,7 @@ kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFu
 
 ### Apply
 
-Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current kubectl context will be used to access the cluster.
+Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current `kubectl` context will be used to access the cluster.
 
 Displays mutate results to stdout, by default. Use the `-o <path>` flag to save mutated resources to a file or directory.
 
@@ -178,12 +180,11 @@ spec:
       resources:
         kinds:
         - Namespace
-        name: "*"
     generate:
       kind: NetworkPolicy
       name: default-deny-ingress
       namespace: "{{request.object.metadata.name}}"
-      synchronize : true
+      synchronize: true
       data:
         spec:
           # select all pods in the namespace
@@ -198,7 +199,7 @@ Resource manifest (`required_default_network_policy.yaml`):
 kind: Namespace
 apiVersion: v1
 metadata:
-    name: "devtest"
+  name: "devtest"
 ```
 
 Applying policy on resource using `--set` or `-s` flag:
