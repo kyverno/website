@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting 
 description: Processes for troubleshooting Kyverno.
-weight: 11
+weight: 110
 ---
 
 Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following points can be used to help troubleshoot Kyverno when things go wrong.
