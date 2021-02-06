@@ -36,7 +36,7 @@ helm repo update
 
 Use Helm 3.2+ to create a namespace and install Kyverno:
 ```sh
-helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
 To install non-stable releases, add the `--devel` switch to Helm
@@ -49,6 +49,10 @@ For Helm versions prior to 3.2, create a namespace and then install the Kyverno 
 kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
 ```
+
+{{% alert title="Note" color="info" %}}
+For all of the flags available during a Helm installation of Kyverno, see [here](https://github.com/kyverno/kyverno/tree/main/charts/kyverno).
+{{% /alert %}}
 
 ## Install Kyverno using YAMLs
 
