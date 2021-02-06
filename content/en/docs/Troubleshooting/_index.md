@@ -53,3 +53,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 **Solution**: In cases of very large scale, it may be required to increase the memory limit of the Kyverno Pod so it can keep track of these objects.
 
 1. Edit the Kyverno Deployment and increase the memory limit on the `kyverno` container by using the command `kubectl -n kyverno edit deploy kyverno`. Change the `resources.limits.memory` field to a larger value. Continue to monitor the memory usage by using something like the [Kubernetes metrics-server](https://github.com/kubernetes-sigs/metrics-server#installation).
+
+**Symptom**: I'm using GKE and after installing Kyverno, my cluster is either broken or I'm seeing timeouts and other issues.
+
+**Solution**: Private GKE clusters do not allow certain communications from the control planes to the workers, which Kyverno requires to receive webhooks from the API server. In order to resolve this issue, create a firewall rule which allows the control plane to speak to workers on the Kyverno TCP port which by default at this time is 9443.
