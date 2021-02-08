@@ -95,7 +95,7 @@ Here are some examples of looking up this data:
 
 `{{request.userInfo.username}}`
 
-Variables from the `AdmissionReview` can also be combined with user-defined strings to create values for messages and other fields. 
+Variables from the `AdmissionReview` can also be combined with user-defined strings to create values for messages and other fields.
 
 1. Build a name from multiple variables (type string)
 
@@ -227,7 +227,7 @@ Kyverno policies can contain variables in:
 * Rule definitions: 
   * Validation patterns
   * Validation deny rules
-  * Mutate strategic merge patches
+  * Mutate strategic merge patches (`patchesStrategicMerge`)
   * Generate resource data definitions
 
 Variables are not supported in the `match` and `exclude` elements, so that rules can be matched quickly without having to load and process data.
