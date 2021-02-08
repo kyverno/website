@@ -25,7 +25,7 @@ Kyverno automatically creates a few useful variables and makes them available wi
 
 ## Variables from policy definitions
 
-Kyverno policy definitions can refer to other fields in the policy definition. This can be a useful way of analyze and compare values without having to explicitly define them.
+Kyverno policy definitions can refer to other fields in the policy definition. This can be a useful way to analyze and compare values without having to explicitly define them.
 
 In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
 
@@ -186,7 +186,7 @@ Learn more about ConfigMap lookups and API Server calls in the [External Data So
 
 ## Nested Lookups
 
-It is also possible to nest JMESPath expression inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
+It is also possible to nest JMESPath expressions inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
 
 {{% alert title="Note" color="info" %}}
 Nesting JMESPath expressions is supported in Kyverno version 1.3.0 and higher.
