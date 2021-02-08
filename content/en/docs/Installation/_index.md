@@ -6,53 +6,76 @@ description: >
   Installation and configuration details for Kyverno using `Helm` or `kubectl`.
 ---
 
+Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running. 
+
+{{% alert title="Note" color="info" %}}
+Currently, Kyverno runs as a single replica in the `Deployment` resource. Supporting multiple replicas, for increased scale and availability, is being worked on as a [roadmap item](https://github.com/kyverno/kyverno/issues/1214).
+{{% /alert %}}
+
+## Compatibility Matrix
+
+| Kyverno Version                | Kubernetes Min | Kubernetes Max |
+|--------------------------------|----------------|----------------|
+| 1.3.0                          | 1.14           | 1.20*          |
+
+\* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
+
 ## Install Kyverno using Helm
 
-Add the Nirmata Helm repository
+Add the Kyverno Helm repository.
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
 ```
 
-Create a namespace and then install the Kyverno helm chart.
+Scan the new repository for charts.
 
 ```sh
-# Create a namespace
-kubectl create ns <namespace>
-
-# Install the Kyverno helm chart
-helm install kyverno --namespace <namespace> kyverno/kyverno
-
+helm repo update
 ```
 
-For installing in the kyverno namespace:
-
-```sh
-kubectl create ns kyverno
-
-helm install kyverno --namespace kyverno kyverno/kyverno
-```
-
-Alternatively, use Helm 3.2+ to complete both steps in a single command:
-
+Use Helm 3.2+ to create a namespace and install Kyverno:
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
 ```
 
+To install non-stable releases, add the `--devel` switch to Helm
+```sh
+helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace --devel
+```
+
+For Helm versions prior to 3.2, create a namespace and then install the Kyverno Helm chart.
+```sh
+kubectl create ns kyverno
+helm install kyverno --namespace kyverno kyverno/kyverno
+```
+
 ## Install Kyverno using YAMLs
 
-The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are 2 ways to configure the secure communications link between Kyverno and the kube-apiserver.
+If you'd rather deploy the manifest directly, simply apply the latest release file. This manifest path will always point to the latest release, including release candidates and other non-stable releases.
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+## Customize the installation of Kyverno
+
+If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
+
+The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
 
 ### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for Webhook registration.  
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno, and when done the certificate validity period is 10 years.
 
 ```sh
 ## Install Kyverno
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
-Note that the above command will install the last released (stable) version of Kyverno. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+{{% alert title="Note" color="info" %}}
+The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+{{% /alert %}}
 
 Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
 
@@ -61,88 +84,96 @@ To check the Kyverno controller status, run the command:
 ```sh
 ## Check pod status
 kubectl get pods -n <namespace>
-````
+```
 
 If the Kyverno controller is not running, you can check its status and logs for errors:
 
-````sh
+```sh
 kubectl describe pod <kyverno-pod-name> -n <namespace>
-````
+```
 
-````sh
+```sh
 kubectl logs <kyverno-pod-name> -n <namespace>
-````
+```
 
 ### Option 2: Use your own CA-signed certificate
+
+{{% alert title="Note" color="warning" %}}
+There is a known issue with this process. It is being worked on and should be available again in a future release.
+{{% /alert %}}
 
 You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
 
 #### 2.1. Generate a self-signed CA and signed certificate-key pair
 
-**Note: using a separate self-signed root CA is difficult to manage and not recommended for production use.**
+{{% alert title="Note" color="warning" %}}
+Using a separate self-signed root CA is difficult to manage and not recommended for production use.
+{{% /alert %}}
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Here are the commands to create a self-signed root CA, and generate a signed certificate and key using openssl (you can customize the certificate attributes for your deployment):
+Here are the commands to create a self-signed root CA, and generate a signed certificate and key using OpenSSL (you can customize the certificate attributes for your deployment):
 
 1. Create a self-signed CA
 
-````bash
+```bash
 openssl genrsa -out rootCA.key 4096
 openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt  -subj "/C=US/ST=test/L=test /O=test /OU=PIB/CN=*.kyverno.svc/emailAddress=test@test.com"
-````
+```
 
 2. Create a keypair
 
-````bash
+```bash
 openssl genrsa -out webhook.key 4096
 openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
-````
+```
 
-3. Create a **webhook.ext file** with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
+3. Create a `webhook.ext` file with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
 
-````
+```
 subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
-````
+```
 
 4. Sign the keypair with the CA passing in the extension
 
-````bash
+```bash
 openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out webhook.crt -days 1024 -sha256 -extfile webhook.ext
-````
+```
 
 5. Verify the contents of the certificate
 
-````bash
+```bash
  openssl x509 -in webhook.crt -text -noout
-````
+```
 
-The certificate must contain the SAN information in the X509v3 extensions section:
+The certificate must contain the SAN information in the `X509v3 extensions` section:
 
-````
+```
 X509v3 extensions:
     X509v3 Subject Alternative Name:
         DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
-````
+```
 
 #### 2.2. Configure secrets for the CA and TLS certificate-key pair
 
 You can now use the following files to create secrets:
 
-- rootCA.crt
-- webhooks.crt
-- webhooks.key
+- `rootCA.crt`
+- `webhooks.crt`
+- `webhooks.key`
 
 To create the required secrets, use the following commands (do not change the secret names):
 
-````bash
+```sh
 kubectl create ns <namespace>
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
 kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
-````
+```
 
-**NOTE: The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret**
+{{% alert title="Note" color="info" %}}
+The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret.
+{{% /alert %}}
 
 Secret | Data | Content
 ------------ | ------------- | -------------
@@ -151,27 +182,29 @@ Secret | Data | Content
 
 Kyverno uses secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
 
+This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+
 #### 2.3. Install Kyverno
 
-You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is **kyverno**):
+You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/raw/main/definitions/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
 ## Configuring Kyverno
 
 ### Permissions
 
-Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming api-requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
+Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming API requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
 
-ClusterRoles used by kyverno:
+ClusterRoles used by Kyverno:
 
-- kyverno:webhook
-- kyverno:userinfo
-- kyverno:customresources
-- kyverno:policycontroller
-- kyverno:generatecontroller
+- `kyverno:webhook`
+- `kyverno:userinfo`
+- `kyverno:customresources`
+- `kyverno:policycontroller`
+- `kyverno:generatecontroller`
 
 The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
 
@@ -218,26 +251,28 @@ subjects:
 
 To install a specific version, download `install.yaml` and then change the image tag.
 
-e.g., change image tag from `latest` to the specific tag `v1.0.0`.
->>>
-    spec:
-      containers:
-        - name: kyverno
-          # image: nirmata/kyverno:latest
-          image: nirmata/kyverno:v1.0.0
+e.g., change image tag from `latest` to the specific tag `v1.3.0`.
+
+```yaml
+spec:
+  containers:
+    - name: kyverno
+      # image: ghcr.io/kyverno/kyverno:latest
+      image: ghcr.io/kyverno/kyverno:v1.3.0
+```
 
 To install in a specific namespace replace the namespace "kyverno" with your namespace.
 
 Example:
 
-````sh
+```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: <namespace>
-````
+```
 
-````sh
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -245,45 +280,47 @@ metadata:
     app: kyverno
   name: kyverno-svc
   namespace: <namespace>
-````
+```
 
-and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where namespace is mentioned.
+and in other places (ServiceAccount, ClusterRoles, ClusterRoleBindings, ConfigMaps, Service, Deployment) where Namespace is mentioned.
 
-To run kyverno:
+Alternatively, use [Kustomize](https://kustomize.io/) to replace the Namespace.
 
-````sh
+To run Kyverno:
+
+```sh
 kubectl create -f ./install.yaml
-````
+```
 
 To check the Kyverno controller status, run the command:
 
-````sh
+```sh
 kubectl get pods -n <namespace>
-````
+```
 
 If the Kyverno controller is not running, you can check its status and logs for errors:
 
-````sh
+```sh
 kubectl describe pod <kyverno-pod-name> -n <namespace>
-````
+```
 
-````sh
-kubectl logs <kyverno-pod-name> -n <namespace>
-````
-
-Here is a script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding kubernetes secrets: [helper script](/scripts/generate-self-signed-cert-and-k8secrets.sh)
+```sh
+kubectl logs -l app=kyverno -n <namespace>
+```
 
 ### Flags
 
-1. `excludeGroupRole` : excludeGroupRole role expected string with Comma separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
-2. `excludeUsername` : excludeUsername expected string with Comma separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8Resources`: k8s resource in format [kind,namespace,name] where policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *].
+The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
+
+1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
+2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
+3. `filterK8sResources`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
 
 ### PolicyViolation access
 
-During Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a namespace admin, configure the following YAML file then apply to the cluster.
+During the Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a Namespace admin, configure the following YAML file then apply to the cluster.
 
-- Replace `metadata.namespace` with namespace of the admin
+- Replace `metadata.namespace` with Namespace of the admin
 - Configure `subjects` field to bind admin's role to the ClusterRole `policyviolation`
 
 ```yaml
@@ -312,7 +349,7 @@ subjects:
 
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not be processed can be filtered by adding a `ConfigMap` in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this `ConfigMap` is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
+The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
 
 By default we have specified Nodes, Events, APIService, and SubjectAccessReview as the kinds to be skipped in the default configuration in `install.yaml`.
 
@@ -327,4 +364,54 @@ data:
   resourceFilters: "[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][*,kyverno,*]"
 ```
 
-To modify the `ConfigMap`, either directly edit the `ConfigMap` `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the `ConfigMap` using `kubectl`.  Changes to the `ConfigMap` through `kubectl` will automatically be picked up at runtime.
+To modify the ConfigMap, either directly edit the ConfigMap `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the ConfigMap using `kubectl`.  Changes to the ConfigMap through `kubectl` will automatically be picked up at runtime.
+
+## Upgrading Kyverno
+
+Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed.
+
+### Upgrade Kyverno with YAML manifest
+
+Apply the new manifest over the existing installation.
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+### Upgrade Kyverno with Helm
+
+Kyverno can be upgraded like any other Helm chart.
+
+Scan your Helm repositories for updated charts.
+
+```sh
+helm repo update
+```
+
+Show the versions of the Kyverno chart which are available. To see pre-release charts, add the `--devel` flag to the `helm` command.
+
+```sh
+helm search repo kyverno
+```
+
+Run the upgrade command picking the target version.
+
+```sh
+helm upgrade kyverno --namespace kyverno kyverno/kyverno --version <version_number>
+```
+
+## Uninstalling Kyverno
+
+To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment and all CRDs will be removed, including any reports.
+
+### Uninstall Kyverno with YAML manifest
+
+```sh
+kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+### Uninstall Kyverno with Helm
+
+```sh
+helm uninstall kyverno --namespace kyverno kyverno/kyverno
+```

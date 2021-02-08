@@ -7,7 +7,7 @@ NETLIFY_FUNC      = $(NODE_BIN)/netlify-lambda
 # CONTAINER_ENGINE=podman make container-image
 CONTAINER_ENGINE ?= docker
 IMAGE_VERSION=$(shell scripts/hash-files.sh Dockerfile Makefile | cut -c 1-12)
-CONTAINER_IMAGE   = kubernetes-hugo:v$(HUGO_VERSION)-$(IMAGE_VERSION)
+CONTAINER_IMAGE   = kyverno-hugo:v$(HUGO_VERSION)-$(IMAGE_VERSION)
 CONTAINER_RUN     = $(CONTAINER_ENGINE) run --rm --interactive --tty --volume $(CURDIR):/src
 
 CCRED=\033[0;31m
@@ -45,18 +45,6 @@ non-production-build: ## Build the non-production site, which adds noindex heade
 
 serve: module-check ## Boot the development server.
 	hugo server --buildFuture
-
-docker-image:
-	@echo -e "$(CCRED)**** The use of docker-image is deprecated. Use container-image instead. ****$(CCEND)"
-	$(MAKE) container-image
-
-docker-build:
-	@echo -e "$(CCRED)**** The use of docker-build is deprecated. Use container-build instead. ****$(CCEND)"
-	$(MAKE) container-build
-
-docker-serve:
-	@echo -e "$(CCRED)**** The use of docker-serve is deprecated. Use container-serve instead. ****$(CCEND)"
-	$(MAKE) container-serve
 
 container-image:
 	$(CONTAINER_ENGINE) build . \
