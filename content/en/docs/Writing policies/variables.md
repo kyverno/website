@@ -150,7 +150,7 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
 
-Data fetched from external sources is stored in a per rule processing `context` that is used to evaluate variables by the policy engine. Once the data from external sources is stored in the context, it can be referenced like any other variable data. 
+Data fetched from external sources is stored in a per-rule processing `context` that is used to evaluate variables by the policy engine. Once the data from external sources is stored in the context, it can be referenced like any other variable data. 
 
 Learn more about ConfigMap lookups and API Server calls in the [External Data Sources](/docs/writing-policies/external-data-sources/) section.
 
