@@ -121,6 +121,28 @@ spec:
 Although the above snippet is useful for showing the types of matching that you can use, most policies either use one or just a couple different elements within their `match` statements.
 {{% /alert %}}
 
+### Match a Deployment deployed in a Namespace having a specific label
+
+This is an example that selects a Deployment deployed in a namespce. Where the namespace is with a label `app=connector` or `app=compute`.
+
+In the below snippet, `kinds` and `namespaceSelector` are peer/sibling elements, and so they are **AND**ed together.
+
+```yaml
+spec:
+  rules:
+    - name: check-min-replicas
+      match:
+        # AND across resources and selector
+        resources:
+          # OR inside list of kinds
+          kinds:
+          - Deployment
+          namespaceSelector:
+            matchExpressions:
+              - {key: app, operator: In, values: [connector, compute]}
+```
+
+
 ## Combining match and exclude
 
 All `match` and `exclude` conditions must be satisfied for a resource to be selected for the policy rule. In other words, the `match` and `exclude` conditions are evaluated using a logical **AND** operation. Elements in the `exclude` block follow the same specifications as those in the `match` block.
