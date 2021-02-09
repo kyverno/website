@@ -2,7 +2,7 @@
 title: Preconditions
 description: >
   Control policy rule execution based on variables.
-weight: 7
+weight: 8
 ---
 
 Preconditions allow controlling policy rule execution based on variable values.

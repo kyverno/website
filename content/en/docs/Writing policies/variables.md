@@ -1,37 +1,81 @@
 ---
-title: Variables and External Data Sources
+title: Variables
 description: >
-    Use request data, ConfigMaps, and built-in variables in policy rules.
+    Data-driven policies for reuse and intelligent decision making
 weight: 6
 ---
 
-It is sometimes necessary to refer to contents or values of other fields and objects in a given rule in order to make those rules more "intelligent" and applicable. In order to do so, Kyverno allows the use of three different types of variables which can be used in various portions of a rule. The sources of these types of variables are ConfigMap resources, [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) request data, and manifest lookups.
+Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps and the Kubernetes API Server.
 
-In order to refer to both ConfigMap data values as well as [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) request data as variables, Kyverno uses the [JMESPath](http://jmespath.org/) notation format. Using JMESPath (pronounced "James path"), values from these sources are written in the format of `{{key1.key2.key3}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
+Variables are stored as JSON and Kyverno supports using [JMESPath (JSON Match Expressions)](http://jmespath.org/) to select data and transform JSON data. With JMESPath (pronounced "james path"), values from data sources are referenced in the format of `{{key1.key2.key3}}` for example `request.object.metadata.name` to reference the name of the resource being created or modified. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
 
 {{% alert title="Note" color="info" %}}
-Variables are currently not supported on `match` or `exclude` statements within a rule.
+Variables are not allowed on `match` or `exclude` statements within a rule to allow the Kyverno engine to efficiently determine matching rules without having to evaluate variables, which can be an expensive operation.
 {{% /alert %}}
 
 
-## Variables from AdmissionReview request data
+## Pre-defined Variables
 
-Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to, for example, create a Pod, the API server sends this information to the webhooks registered to listen for the creation of Pod resources. This incoming data to a webhook is known as [`AdmissionReview`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) request data. There are four broad categories of data available in any AdmissionReview: new resource info, old resource info, user info, and operation.
+Kyverno automatically creates a few useful variables and makes them available within rules:
 
-The following `AdmissionReview` request data is available to Kyverno for use in a `rule` statement.
+1. `serviceAccountName`: the "userName" which is the last part of a service account (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
 
-- New resource: `{{request.object}}`
-- UserInfo: `{{request.userInfo}}`
-- Operation: `{{request.operation}}`
-- Old resource: `{{request.oldObject}}`
+2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
 
-The `request.object` object contains information on the request itself, for example the name, metadata, and spec of the resource.
 
-The `request.userInfo` object contains information on who/what submitted the request which includes the `groups` and `username` keys.
+## Variables from policy definitions
 
-The `request.operation` object contains the type of action being performed. Values are either `CREATE`, `UPDATE`, or `DELETE`.
+Kyverno policy definitions can refer to other fields in the policy definition. This can be a useful way to analyze and compare values without having to explicitly define them.
 
-The `request.oldObject` object is a representation of an existing resource that is being modified, commonly used during `UPDATE` operations.
+In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
+
+```yaml
+validationFailureAction: enforce
+rules:
+- name: check-tcpSocket
+  match:
+    resources:
+      kinds:
+      - Pod
+  validate:
+    message: "Port number for the livenessProbe must be less than that of the readinessProbe."
+    pattern:
+      spec:
+        ^(containers):
+        - livenessProbe:
+            tcpSocket:
+              port: "$(./../../../readinessProbe/tcpSocket/port)"
+          readinessProbe:
+            tcpSocket:
+              port: "3000"
+```
+
+In this above example, for any containers found in a Pod spec, the field `readinessProbe.tcpSocket.port` must be `3000` and the field `livenessProbe.tcpSocket.port` must be the same value. The lookup expression can be thought of as a `cd` back three levels and down into the `readinessProbe` object.
+
+Operators also work on manifest lookup variables as well so the previous snippet could be modified as such.
+
+```yaml
+- livenessProbe:
+    tcpSocket:
+      port: "$(<./../../../readinessProbe/tcpSocket/port)"
+  readinessProbe:
+    tcpSocket:
+      port: "3000"
+```
+
+In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
+
+For more information on operators see the [Operators](/docs/writing-policies/validate/#operators) section.
+
+
+## Variables from admission review requests
+
+Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to the Kubernetes API server, for example to create a Pod, the API server sends this information to the webhooks registered to listen to the creation of Pod resources. This incoming data to a webhook is passed as a [`AdmissionReview`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) object. There are four commonly used data properties available in any AdmissionReview request:
+
+- `{{request.operation}}`: the type of API action being performed (`CREATE`, `UPDATE`, `DELETE`, or `CONNECT`).
+- `{{request.object}}`: the object being created or modified. It is null for `DELETE` requests.
+- `{{request.oldObject}}`: the object being modified. It is null for `CREATE` and `CONNECT` requests.
+- `{{request.userInfo}}`: contains information on who/what submitted the request which includes the `groups` and `username` keys.
 
 Here are some examples of looking up this data:
 
@@ -56,16 +100,6 @@ Variables from the `AdmissionReview` can also be combined with user-defined stri
 1. Build a name from multiple variables (type string)
 
 `"ns-owner-{{request.object.metadata.namespace}}-{{request.userInfo.username}}-binding"`
-
-### Pre-defined Variables
-
-Kyverno automatically creates a couple useful variables and makes them available within rules:
-
-1. `serviceAccountName`: the "userName" which is the last part of a service account (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
-
-2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
-
-### Consume `AdmissionReview` data in a Policy
 
 Let's look at an example of how this AdmissionReview data can be used in Kyverno policies.
 
@@ -111,217 +145,21 @@ busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=bus
 
 In the output, we can clearly see the value of our `created-by` label is `kubernetes-admin` which, in this case, is the user who created the Pod.
 
-## Variables from ConfigMap resources
 
-A [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource in Kubernetes is often a source of configuration details which can be consumed by applications. This data can be written in multiple formats, stored in a Namespace, and accessed easily. Kyverno supports using a ConfigMap as a data source for variables, either as key/value pair data or multi-line strings. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the `ConfigMap` are always dynamic. Should the ConfigMap be updated later, subsequent policy lookups will pick up the data at that point.
+## Variables from external data sources
 
-In order to consume data from a ConfigMap in a `rule`, a `context` is required. For each `rule` you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy `rule` using JMESPath notation.
+Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
 
-### Defining a `context` for consumption of ConfigMap values
+Data fetched from external sources is stored in a per-rule processing `context` that is used to evaluate variables by the policy engine. Once the data from external sources is stored in the context, it can be referenced like any other variable data. 
 
-Consider a simple ConfigMap definition like so.
+Learn more about ConfigMap lookups and API Server calls in the [External Data Sources](/docs/writing-policies/external-data-sources/) section.
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mycmap
-  namespace: default
-data:
-  env: production
-```
+## Nested Lookups
 
-To refer to values from a ConfigMap inside a `rule`, define a `context` inside the `rule` with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below `rule` defines a `context` which references this specific ConfigMap by name.
-
-```yaml
-rules:
-  - name: example-configmap-lookup
-    # Create a context to invoke a ConfigMap object
-    context:
-    # Unique name to identify this reference to a ConfigMap
-    - name: dictionary
-      configMap:
-        # Name of the ConfigMap which will be looked up
-        name: mycmap
-        # Namespace in which this ConfigMap is stored
-        namespace: test
-```
-
-### Looking up ConfigMap values
-
-A ConfigMap that is defined in a rule's `context` can be referred to using its unique name within the context. ConfigMap values can be referenced using a JMESPath style expression:
-
-```
-{{ <context-name>.data.<key-name> }}
-```
-
-Based on the example above, we can now refer to a ConfigMap value using `{{dictionary.data.env}}`. The variable will be substituted with the value `production` during policy execution.
-
-Put into context of a full `ClusterPolicy`, referencing a ConfigMap as a variable looks like the following.
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: cm-variable-example
-  annotations:
-    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
-spec:
-    rules:
-    - name: example-configmap-lookup
-      context:
-      - name: dictionary
-        configMap:
-          name: mycmap
-          namespace: default
-      match:
-        resources:
-          kinds:
-          - Pod
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              my-environment-name: "{{dictionary.data.env}}"
-```
-
-In the above `ClusterPolicy`, a `mutate` rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
+It is also possible to nest JMESPath expressions inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
 
 {{% alert title="Note" color="info" %}}
-ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
-```
-{{ "<name>".data."<key>" }}
-```
-{{% /alert %}}
-
-
-### Handling ConfigMap Array Values
-
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. Currently, the ConfigMap value must be an array of string values in JSON format. Kyverno will parse the JSON string to a list of strings, so set operations like `In` and `NotIn` can then be applied.
-
-For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
-
-Consider a ConfigMap with the following content.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: roles-dictionary
-  namespace: default
-data:
-  allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
-```
-
-Once created, `describe` the resource to see how the array of strings is stored.
-
-```sh
-kubectl describe cm roles-dictionary
-```
-```
-Name:         roles-dictionary
-Namespace:    default
-Labels:       <none>
-Annotations:  <none>
-
-Data
-====
-allowed-roles:
-----
-["cluster-admin", "cluster-operator", "tenant-admin"]
-```
-
-From the output above, the array of strings are stored in JSON array format.
-
-{{% alert title="Note" color="info" %}}
-As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the ConfigMap data to be stored as a JSON array.
-{{% /alert %}}
-
-Now that the array data is saved in the `allowed-roles` key, here is a sample `ClusterPolicy` containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list:
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: cm-array-example
-spec:
-  validationFailureAction: enforce
-  background: false
-  rules:
-  - name: validate-role-annotation
-    context:
-      - name: roles-dictionary
-        configMap:
-          name: roles-dictionary
-          namespace: default
-    match:
-      resources:
-        kinds:
-        - Deployment
-    validate:
-      message: "The role {{ request.object.metadata.annotations.role }} is not in the allowed list of roles: {{ \"roles-dictionary\".data.\"allowed-roles\" }}."
-      deny:
-        conditions:
-        - key: "{{ request.object.metadata.annotations.role }}"
-          operator: NotIn
-          value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
-```
-
-This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`. 
-
-{{% alert title="Note" color="info" %}}
-You may also notice that this sample uses variables from both `AdmissionReview` and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
-{{% /alert %}}
-
-Once creating this sample `ClusterPolicy`, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: busybox
-  annotations:
-    role: super-user
-  labels:
-    app: busybox
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: busybox
-  template:
-    metadata:
-      labels:
-        app: busybox
-    spec:
-      containers:
-      - image: busybox:1.28
-        name: busybox
-        command: ["sleep", "9999"]
-```
-
-Submit the manifest and see how Kyverno reacts.
-
-```sh
-kubectl create -f deploy.yaml
-```
-```
-Error from server: error when creating "deploy.yaml": admission webhook "validate.kyverno.svc" denied the request:
-
-resource Deployment/default/busybox was blocked due to the following policies
-
-cm-array-example:
-  validate-role-annotation: 'The role super-user is not in the allowed list of roles: ["cluster-admin", "cluster-operator", "tenant-admin"].'
-```
-
-Changing the `role` annotation to one of the values present in the ConfigMap, for example `tenant-admin`, allows the Deployment resource to be created.
-
-### Nested Lookups
-
-It is also possible to nest JMESPath expression inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
-
-{{% alert title="Note" color="info" %}}
-Nesting JMESPath expressions is supported starting in Kyverno 1.3.0.
+Nesting JMESPath expressions is supported in Kyverno version 1.3.0 and higher.
 {{% /alert %}}
 
 ```yaml
@@ -351,48 +189,25 @@ spec:
 
 In this example, AdmissionReview data is first collected in the inner expression in the form of `{{request.object.metadata.labels.app}}` while the outer expression is built from a ConfigMap context named `LabelsCM`.
 
-## Variables from Policy manifests
+## Evaluation Order
 
-As the third type of variable source, Kyverno has the ability to refer to other fields populated in a Policy manifest. We refer to these as manifest lookups. This can be a useful way of setting a value by referring to the value of another field (or multiple) without having to explicitly define it.
+Kyverno policies can contain variables in:
+* Rule context
+* Rule preconditions
+* Rule definitions: 
+  * Validation patterns
+  * Validation deny rules
+  * Mutate strategic merge patches (`patchesStrategicMerge`)
+  * Generate resource data definitions
 
-### Referencing values in a manifest lookup
+Variables are not supported in the `match` and `exclude` elements, so that rules can be matched quickly without having to load and process data.
 
-In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
+Since variables can be nested, it is important to understand the order in which the variables are evaluated. During admission control, here is how the engine processes rules:
 
-```yaml
-validationFailureAction: enforce
-rules:
-- name: check-tcpSocket
-  match:
-    resources:
-      kinds:
-      - Pod
-  validate:
-    message: "Port number for the livenessProbe must be less than that of the readinessProbe."
-    pattern:
-      spec:
-        ^(containers):
-        - livenessProbe:
-            tcpSocket:
-              port: "$(./../../../readinessProbe/tcpSocket/port)"
-          readinessProbe:
-            tcpSocket:
-              port: "3000"
-```
+1. The set of matching rules is determined by creating a hash from the request information to retrieve all matching rules based on the rule and resource types. 
+2. Each matched rule is further processed to fully evaluate the match and retrieve conditions.
+3. The rule context is then evaluated and variables are loaded from data sources.
+4. The preconditions are then checked.
+5. The rule body is processed.
 
-In this above example, for any containers found in a Pod spec, the field `readinessProbe.tcpSocket.port` must be `3000` and the field `livenessProbe.tcpSocket.port` must be the same value. The lookup expression can be thought of as a `cd` back three levels and down into the `readinessProbe` object.
-
-Operators also work on manifest lookup variables as well so the previous snippet could be modified as such.
-
-```yaml
-- livenessProbe:
-    tcpSocket:
-      port: "$(<./../../../readinessProbe/tcpSocket/port)"
-  readinessProbe:
-    tcpSocket:
-      port: "3000"
-```
-
-In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
-
-For more information on operators see the [Operators](/docs/writing-policies/validate/#operators) section.
+This ordering makes it possible to use request data when defining the context, and context variables in preconditions. Within the context itself, each variable is evaluated in the order of definition. Hence, if required, a variable can reference a prior variable but attempts to use a subsequent definition will result in errors.
