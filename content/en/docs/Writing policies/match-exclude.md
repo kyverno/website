@@ -121,11 +121,11 @@ spec:
 Although the above snippet is useful for showing the types of matching that you can use, most policies either use one or just a couple different elements within their `match` statements.
 {{% /alert %}}
 
-### Match a Deployment deployed in a namespace having a specific label
+### Match Deployments in Namespaces with specific labels
 
-This is an example that selects a Deployment deployed in a Namespace. Where the namespace is with a label `app=connector` or `app=compute`.
+This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute`.
 
-In the below snippet, `kinds` and `namespaceSelector` are peer/sibling elements, and so they are **AND**ed together.
+Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation. 
 
 ```yaml
 spec:
@@ -139,7 +139,7 @@ spec:
           - Deployment
           namespaceSelector:
             matchExpressions:
-              - key: app 
+              - key: type 
                 operator: In
                 values: 
                 - connector
