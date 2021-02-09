@@ -152,36 +152,6 @@ Some policy decisions require access to cluster resources and data managed by ot
 
 Data fetched from external sources is stored in a per rule processing `context` that is used to evaluate variables by the policy engine. Once the data from external sources is stored in the context, it can be referenced like any other variable data. 
 
-Consider a simple ConfigMap definition like so.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mycmap
-  namespace: default
-data:
-  env: production
-```
-
-To refer to values from a ConfigMap inside a `rule`, define a `context` inside the `rule` with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below `rule` defines a `context` which references this specific ConfigMap by name.
-
-```yaml
-rules:
-  - name: example-lookup
-    # Define a context for the rule
-    context:
-    # A unique name for the ConfigMap
-    - name: dictionary
-      configMap:
-        # Name of the ConfigMap which will be looked up
-        name: some-config-map
-        # Namespace in which this ConfigMap is stored
-        namespace: some-namespace 
-```
-
-Within this rule, data from the ConfigMap can be referenced as `{{ dictionary.data.key }}` where `key` is a key defined in the config map.
-
 Learn more about ConfigMap lookups and API Server calls in the [External Data Sources](/docs/writing-policies/external-data-sources/) section.
 
 ## Nested Lookups
