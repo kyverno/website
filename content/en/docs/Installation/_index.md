@@ -22,7 +22,9 @@ Currently, Kyverno runs as a single replica in the `Deployment` resource. Suppor
 
 ## Install Kyverno using Helm
 
-Add the Kyverno Helm repository.
+Kyverno can be deployed through a Helm chart which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno). As of Kyverno 1.3.2, the Helm chart also by default installs the `default` profile of the Pod Security Standards policies available [here](https://kyverno.io/policies/pod-security/).
+
+In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
@@ -34,17 +36,20 @@ Scan the new repository for charts.
 helm repo update
 ```
 
-Use Helm 3.2+ to create a namespace and install Kyverno:
+Use Helm 3.2+ to create a Namespace and install Kyverno.
+
 ```sh
 helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-To install non-stable releases, add the `--devel` switch to Helm
+To install non-stable releases, add the `--devel` switch to Helm.
+
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace --devel
 ```
 
-For Helm versions prior to 3.2, create a namespace and then install the Kyverno Helm chart.
+For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
+
 ```sh
 kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
