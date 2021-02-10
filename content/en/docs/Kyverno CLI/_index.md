@@ -227,9 +227,15 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 
 #### Policy Report
 
-Policy reports provide information about policy execution and violations.
+Policy reports provide information about policy execution and violations. Use '--policy_report' with the apply command to generate policy report.
 
-Use '--policy_report' with the apply command to generate policy report.
+Policy report can also be generated for a live cluster. While generating policy report for a live cluster the '-r' flag is assuming a resource by specific name which is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate policy report for a live cluster use '--cluster' with '--policy_report'.
+
+Example:
+```sh
+kyverno apply policy.yaml --cluster --policy_report
+```
+Above example applies a `policy.yaml` to all resources in the cluster.
 
 Input combination:
 
