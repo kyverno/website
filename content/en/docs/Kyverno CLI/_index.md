@@ -227,19 +227,21 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 
 #### Policy Report
 
+Policy reports provide information about policy execution and violations.
+
 Use '--policy_report' with the apply command to generate policy report.
-
-
 
 Input combination:
 
+Below are the combination of inputs that can be used for generating the policy report from Kyverno CLI.
+
 | Policy        | Resource         | Cluster   | Namespace      | Interpretation                                                                           |
 | ---- |:-------------:| :---------------:| :--------:| :-------------:| :----------------------------------------------------------------------------------------| 
-| policy.yaml   | -r resource.yaml | false     |                | apply policy from file to the resource from file                                         |
-| policy.yaml   | -r resourceName  | true      |                | apply policy from file to the resource in cluster                                        |
-| policy.yaml   |                  | true      |                | apply policy from file to all the resources in cluster                                   |
-| policy.yaml   | -r resourceName  | true      | -n=namespace   | apply policy from file to the resource in cluster in mentioned namespace                 |
-| policy.yaml   |                  | true      | -n=namespace   | apply policy from file to all the resources in cluster in mentioned namespace            |
+| policy.yaml   | -r resource.yaml | false     |                | Apply policy from `policy.yaml` to the resources specified in `resource.yaml`                                         |
+| policy.yaml   | -r resourceName  | true      |                | Apply policy from `policy.yaml` to the resource with a given name in the cluster                                        |
+| policy.yaml   |                  | true      |                | Apply policy from policy.yaml to all the resources in the cluster                                   |
+| policy.yaml   | -r resourceName  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to the resource with a given name in a specific Namespace                |
+| policy.yaml   |                  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to all the resources in a specific Namespace           |
 
 
 Example:
@@ -317,39 +319,38 @@ spec:
     imagePullPolicy: IfNotPresent
 ```
 
-Case 1: Apply policy manifest on resource manifest
-
-```
+Case 1: Apply a policy manifest to multiple resource manifests
+```sh
 kyverno apply policy.yaml -r resource1.yaml -r resource2.yaml --policy_report
 ```
 
-Case 2: Apply policy manifest on cluster resource 
+Case 2: Apply a policy manifest to multiple resources in the cluster 
 
-create above resource manifest in cluster.
-```
+Create the resources by first applying manifests resource1.yaml and resource2.yaml.
+```sh
 kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report
 ```
 
-Case 3: Apply policy manifest on all resource avaliable in cluster
-```
+Case 3: Apply a policy manifest to all resources in the cluster
+```sh
 kyverno apply policy.yaml --cluster --policy_report
 ```
-This will validate all the pods avaliable in cluster.
+Given the contents of policy.yaml shown earlier, this will produce a report validating against all Pods in the cluster.
 
-Case 4: Apply policy manifest on resource avaliable in cluster under a specific namspace
-```
+Case 4: Apply a policy manifest to multiple resources by name within a specific Namespace
+```sh
 kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report -n default
 ```
 
-Case 5: Apply policy manifest on all resource avaliable in cluster under a specific namespace
-```
+Case 5: Apply a policy manifest to all resources within the default Namespace
+```sh
 kyverno apply policy.yaml --cluster --policy_report -n default
 ```
-This will validate all the pods avaliable in cluster avaliable under default namespace.
+Given the contents of policy.yaml shown earlier, this will produce a report validating all Pods within the default Namespace.
 
-On applying policy.yaml on the mentioned resources, the following report will be generated: 
+On applying `policy.yaml` to the mentioned resources, the following report will be generated: 
 
-```
+```yaml
 apiVersion: wgpolicyk8s.io/v1alpha1
 kind: ClusterPolicyReport
 metadata:
