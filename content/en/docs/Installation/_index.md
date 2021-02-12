@@ -56,7 +56,7 @@ helm install kyverno --namespace kyverno kyverno/kyverno
 ```
 
 {{% alert title="Note" color="info" %}}
-For all of the flags available during a Helm installation of Kyverno, see [here](https://github.com/kyverno/kyverno/tree/main/charts/kyverno).
+For all of the flags available during a Helm installation of Kyverno, see [here](https://github.com/kyverno/kyverno/tree/main/charts/kyverno). To disable the automatic installation of the default Pod Security Standard policies, set `podSecurityStandard` to `disabled`.
 {{% /alert %}}
 
 ## Install Kyverno using YAMLs
