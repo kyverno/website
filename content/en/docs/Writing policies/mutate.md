@@ -147,8 +147,6 @@ spec:
           - ls
 ```
 
-Note, that if the `remove` operation cannot be applied, it will be skipped with no error.
-
 {{% alert title="Note" color="warning" %}}
 Mutations using `patchesJson6902` which match on Pods are not translated to higher-level Pod controllers as noted above.
 {{% /alert %}}
