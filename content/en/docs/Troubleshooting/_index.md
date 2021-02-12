@@ -57,3 +57,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 **Symptom**: I'm using GKE and after installing Kyverno, my cluster is either broken or I'm seeing timeouts and other issues.
 
 **Solution**: Private GKE clusters do not allow certain communications from the control planes to the workers, which Kyverno requires to receive webhooks from the API server. In order to resolve this issue, create a firewall rule which allows the control plane to speak to workers on the Kyverno TCP port which by default at this time is 9443.
+
+**Symptom**: I'm an EKS user and I'm finding that resources that should be blocked by a Kyverno policy are not.
+
+**Solution**: When using EKS with a custom CNI, the Kyverno webhook cannot be reached by the API server because the control plane nodes, which cannot use a custom CNI, differ from the configuration of the worker nodes, which can. In order to resolve this, when installing Kyverno via Helm, set the `hostNetwork` option to `true`. See also [this note](https://cert-manager.io/docs/installation/compatibility/#aws-eks).
