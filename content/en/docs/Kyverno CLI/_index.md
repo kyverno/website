@@ -227,17 +227,14 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 
 #### Policy Report
 
-Policy reports provide information about policy execution and violations. Use '--policy_report' with the apply command to generate policy report.
+Policy report provide information about policy execution and violation. Use `--policy_report` with the `apply` command to generate policy report.
 
-Policy report can also be generated for a live cluster. While generating policy report for a live cluster the '-r' flag is assuming a resource by specific name which is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate policy report for a live cluster use '--cluster' with '--policy_report'.
+Policy report can also be generated for a live cluster. While generating a policy report for a live cluster the `-r` flag is assuming a resource by specific name which is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate a policy report for a live cluster use `--cluster` with `--policy_report`.
 
-Example:
 ```sh
 kyverno apply policy.yaml --cluster --policy_report
 ```
 Above example applies a `policy.yaml` to all resources in the cluster.
-
-Input combination:
 
 Below are the combination of inputs that can be used for generating the policy report from Kyverno CLI.
 
@@ -332,7 +329,7 @@ kyverno apply policy.yaml -r resource1.yaml -r resource2.yaml --policy_report
 
 Case 2: Apply a policy manifest to multiple resources in the cluster 
 
-Create the resources by first applying manifests resource1.yaml and resource2.yaml.
+Create the resources by first applying manifests `resource1.yaml` and `resource2.yaml`.
 ```sh
 kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report
 ```
@@ -352,7 +349,7 @@ Case 5: Apply a policy manifest to all resources within the default Namespace
 ```sh
 kyverno apply policy.yaml --cluster --policy_report -n default
 ```
-Given the contents of policy.yaml shown earlier, this will produce a report validating all Pods within the default Namespace.
+Given the contents of `policy.yaml` shown earlier, this will produce a report validating all Pods within the default Namespace.
 
 On applying `policy.yaml` to the mentioned resources, the following report will be generated: 
 
