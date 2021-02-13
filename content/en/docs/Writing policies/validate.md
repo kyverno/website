@@ -173,6 +173,7 @@ spec:
 | `<=`       | less than or equals to    |
 | `!`        | not equals                |
 | `|`        | logical or                |
+| `&`        | logical and               |
 
 {{% alert title="Note" color="info" %}}
 There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
