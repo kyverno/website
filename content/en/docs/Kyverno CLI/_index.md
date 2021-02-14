@@ -224,3 +224,165 @@ policies:
 ```
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
+
+#### Policy Report
+
+Policy report provide information about policy execution and violation. Use `--policy_report` with the `apply` command to generate policy report.
+
+Policy report can also be generated for a live cluster. While generating a policy report for a live cluster the `-r` flag is assuming a resource by specific name which is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate a policy report for a live cluster use `--cluster` with `--policy_report`.
+
+```sh
+kyverno apply policy.yaml --cluster --policy_report
+```
+Above example applies a `policy.yaml` to all resources in the cluster.
+
+Below are the combination of inputs that can be used for generating the policy report from Kyverno CLI.
+
+| Policy        | Resource         | Cluster   | Namespace      | Interpretation                                                                           |
+| ---- |:-------------:| :---------------:| :--------:| :-------------:| :----------------------------------------------------------------------------------------| 
+| policy.yaml   | -r resource.yaml | false     |                | Apply policy from `policy.yaml` to the resources specified in `resource.yaml`                                         |
+| policy.yaml   | -r resourceName  | true      |                | Apply policy from `policy.yaml` to the resource with a given name in the cluster                                        |
+| policy.yaml   |                  | true      |                | Apply policy from policy.yaml to all the resources in the cluster                                   |
+| policy.yaml   | -r resourceName  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to the resource with a given name in a specific Namespace                |
+| policy.yaml   |                  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to all the resources in a specific Namespace           |
+
+
+Example:
+
+Consider the following policy and resources:
+
+policy.yaml
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pod-requests-limits
+  annotations:
+    policies.kyverno.io/category: Workload Management
+    policies.kyverno.io/description: >-
+      As application workloads share cluster resources, it is important to limit resources
+      requested and consumed by each pod. It is recommended to require 'resources.requests'
+      and 'resources.limits' per pod. If a namespace level request or limit is specified,
+      defaults are automatically applied to each pod based on the 'LimitRange' configuration.
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: validate-resources
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "CPU and memory resource requests and limits are required"
+      pattern:
+        spec:
+          containers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
+```
+
+resource1.yaml
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx1
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+```
+
+resource2.yaml
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx2
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+```
+
+Case 1: Apply a policy manifest to multiple resource manifests
+```sh
+kyverno apply policy.yaml -r resource1.yaml -r resource2.yaml --policy_report
+```
+
+Case 2: Apply a policy manifest to multiple resources in the cluster 
+
+Create the resources by first applying manifests `resource1.yaml` and `resource2.yaml`.
+```sh
+kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report
+```
+
+Case 3: Apply a policy manifest to all resources in the cluster
+```sh
+kyverno apply policy.yaml --cluster --policy_report
+```
+Given the contents of policy.yaml shown earlier, this will produce a report validating against all Pods in the cluster.
+
+Case 4: Apply a policy manifest to multiple resources by name within a specific Namespace
+```sh
+kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report -n default
+```
+
+Case 5: Apply a policy manifest to all resources within the default Namespace
+```sh
+kyverno apply policy.yaml --cluster --policy_report -n default
+```
+Given the contents of `policy.yaml` shown earlier, this will produce a report validating all Pods within the default Namespace.
+
+On applying `policy.yaml` to the mentioned resources, the following report will be generated: 
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha1
+kind: ClusterPolicyReport
+metadata:
+  name: clusterpolicyreport
+results:
+- message: Validation rule 'validate-resources' succeeded.
+  policy: require-pod-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: nginx1
+    namespace: default
+  rule: validate-resources
+  scored: true
+  status: pass
+- message: 'Validation error: CPU and memory resource requests and limits are required; Validation rule validate-resources failed at path /spec/containers/0/resources/limits/'
+  policy: require-pod-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: nginx2
+    namespace: default
+  rule: validate-resources
+  scored: true
+  status: fail
+summary:
+  error: 0
+  fail: 1
+  pass: 1
+  skip: 0
+  warn: 0
+```
