@@ -14,4 +14,4 @@ If you are unable to attend a community meeting, feel free to reach out anytime 
 
 ### Contributing
 
-Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
+Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps. The project contributors use [GitHub discussions](https://github.com/kyverno/kyverno/discussions) for all implementation and project internal topics and the [GitHub Wiki](https://github.com/kyverno/kyverno/wiki) for design documents, notes on the dev environment, project guidelines and best practices.
