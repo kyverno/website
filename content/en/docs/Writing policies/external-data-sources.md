@@ -10,16 +10,14 @@ The [Variables](/docs/writing-policies/variables/) section discusses how variabl
 This section provides details on using ConfigMaps and API Calls to reference external data as variables in policies.
 
 {{% alert title="Note" color="info" %}}
-For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server. Use a separate controller to fetch data from any source and store it in a `ConfigMap` that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
+For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server. Use a separate controller to fetch data from any source and store it in a ConfigMap that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
 {{% /alert %}}
-
 
 ## Variables from ConfigMaps
 
 A [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource in Kubernetes is commonly used as a source of configuration details which can be consumed by applications. This data can be written in multiple formats, stored in a Namespace, and accessed easily. Kyverno supports using a ConfigMap as a data source for variables. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the ConfigMap are always dynamic. Should the ConfigMap be updated, subsequent policy lookups will pick up the latest data at that point.
 
 In order to consume data from a ConfigMap in a `rule`, a `context` is required. For each `rule` you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy `rule` using JMESPath notation.
-
 
 ### Looking up ConfigMap values
 
@@ -35,8 +33,8 @@ Consider a simple ConfigMap definition like so.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mycmap
-  namespace: default
+  name: some-config-map
+  namespace: some-namespace
 data:
   env: production
 ```
@@ -75,7 +73,7 @@ spec:
       - name: dictionary
         configMap:
           name: some-config-map
-          namespace: default
+          namespace: some-namespace
       match:
         resources:
           kinds:
@@ -95,7 +93,6 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 {{ "<name>".data."<key>" }}
 ```
 {{% /alert %}}
-
 
 ### Handling ConfigMap Array Values
 
@@ -120,6 +117,7 @@ Once created, `describe` the resource to see how the array of strings is stored.
 ```sh
 kubectl describe cm roles-dictionary
 ```
+
 ```
 Name:         roles-dictionary
 Namespace:    default
@@ -139,7 +137,7 @@ From the output above, the array of strings are stored in JSON array format.
 As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the ConfigMap data to be stored as a JSON array.
 {{% /alert %}}
 
-Now that the array data is saved in the `allowed-roles` key, here is a sample `ClusterPolicy` containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list:
+Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -169,7 +167,7 @@ spec:
           value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
 ```
 
-This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`. 
+This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
 
 {{% alert title="Note" color="info" %}}
 You may also notice that this sample uses variables from both `AdmissionReview` and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
@@ -207,6 +205,7 @@ Submit the manifest and see how Kyverno reacts.
 ```sh
 kubectl create -f deploy.yaml
 ```
+
 ```
 Error from server: error when creating "deploy.yaml": admission webhook "validate.kyverno.svc" denied the request:
 
@@ -218,15 +217,13 @@ cm-array-example:
 
 Changing the `role` annotation to one of the values present in the ConfigMap, for example `tenant-admin`, allows the Deployment resource to be created.
 
-
 ## Variables from Kubernetes API Server Calls
 
 Kubernetes is powered by a declarative API that allows querying and manipulating resources. Kyverno policies can use the [Kubernetes API](https://kubernetes.io/docs/reference/using-api/api-concepts/) to fetch a resource, or even collections of resource types, for use in a policy. Additionally, Kyverno allows applying [JMESPath (JSON Match Expression)](https://jmespath.org/tutorial.html) to the resource data to extract and transform values into a format that is easy to use within a policy.
 
-
 A Kyverno Kubernetes API call works just as with `kubectl` and other API clients, and can be tested using existing tools.
 
-For example, here is a command line that uses `kubectl` to fetch the list of `Pods` in a `Namespace` and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of pods:
+For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of pods:
 
 ```sh
 kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
@@ -236,39 +233,38 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
 Use `kubectl get --raw` and [`jp`](https://github.com/jmespath/jp) (the JMESPath Command Line) to test API Calls.
 {{% /alert %}}
 
-The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the namespace of the object being operated on, and then applies the same JMESPath to store the count of `Pods` in the `Namespace` in the context as the variable `podCount`. This new variable can then be used in the policy rule.
+The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. This new variable can then be used in the policy rule.
 
 ```yaml
-  rules:
-  - name: example-api-call
-    context:
-    - name: podCount
-      apiCall:
-        urlPath: "/api/v1/namespaces/{{request.namespace}}/pods"
-        jmesPath: "items | length(@)"   
+rules:
+- name: example-api-call
+  context:
+  - name: podCount
+    apiCall:
+      urlPath: "/api/v1/namespaces/{{request.namespace}}/pods"
+      jmesPath: "items | length(@)"   
 ```
 
 ### URL Paths
 
-The Kubernetes API organizes resources under groups and versions. For example, the resource type `Deployment` is available in the API Group `apps` with a version `v1`. 
+The Kubernetes API organizes resources under groups and versions. For example, the resource type `Deployment` is available in the API Group `apps` with a version `v1`.
 
 The HTTP URL paths of the API calls are based on the group, version, and resource type as follows:
 
 * `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}`: get a collection of resources
-* `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}/{NAME}`: get a resource 
+* `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}/{NAME}`: get a resource
 
-For namespaced resources, to get a specific resource by name or to get all resources in a `Namespace`, the `Namespace` name must also be provided as follows: 
+For namespaced resources, to get a specific resource by name or to get all resources in a Namespace, the Namespace name must also be provided as follows:
 
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}`: get a collection of resources in the namespace
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}/{NAME}`: get a resource in a namespace
 
-For historic resources, the Kubernetes Core API is available under `/api/v1`. For example, to query all `Namespace` resources the path `/api/v1/namespaces` is used.
+For historic resources, the Kubernetes Core API is available under `/api/v1`. For example, to query all Namespace resources the path `/api/v1/namespaces` is used.
 
 The Kubernetes API groups are defined in the [API reference documentation](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#-strong-api-groups-strong-) and can also be retrieved via the `kubectl api-resources` command shown below:
 
-
 ```sh
-λ kubectl api-resources
+$ kubectl api-resources
 NAME                              SHORTNAMES   APIGROUP                       NAMESPACED   KIND
 bindings                                                                      true         Binding
 componentstatuses                 cs                                          false        ComponentStatus
@@ -307,7 +303,6 @@ batch/v1
 
 You can use these commands together to find the URL path for resources, as shown below:
 
-
 {{% alert title="Tip" color="info" %}}
 
 To find the API group and version for a resource use `kubectl api-resources` to find the group and then `kubectl api-versions` to find the available versions.
@@ -328,14 +323,13 @@ The output of this will be `apps/v1`. Older versions of Kubernetes (prior to 1.1
 
 {{% /alert %}}
 
-
 ### Handling collections
 
 The API server response for a `HTTP GET` on a URL path that requests collections of resources will be an object with a list of items (resources).
 
-Here is an example that fetches all `Namespace` resources:
+Here is an example that fetches all Namespace resources:
 
-```
+```sh
 kubectl get --raw /api/v1/namespaces | jq
 ```
 
@@ -343,8 +337,7 @@ kubectl get --raw /api/v1/namespaces | jq
 Use [`jq`](https://stedolan.github.io/jq/) to format output for readability.  
 {{% /alert %}}
 
-
-This will return a `NamespaceList` object with a property `items` that contains the list of namespaces:
+This will return a `NamespaceList` object with a property `items` that contains the list of Namespaces:
 
 ```json
 {
@@ -390,13 +383,13 @@ This will return a `NamespaceList` object with a property `items` that contains 
       ...
 ```
 
-To process this data in JMESPath, reference the `items`. Here is an example, to extract a few metadata fields across all `Namespace` resources:
+To process this data in JMESPath, reference the `items`. Here is an example which extracts a few metadata fields across all Namespace resources:
 
 ```sh
 kubectl get --raw /api/v1/namespaces | jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
 ```
 
-This produces a new JSON list of objects with properties `name` and `creationTime`. 
+This produces a new JSON list of objects with properties `name` and `creationTime`.
 
 ```json
 [
@@ -412,7 +405,7 @@ This produces a new JSON list of objects with properties `name` and `creationTim
   ...
 ```
 
-To find an item in the list you can use JMESPath filters. For example, this command will match a namespace by its name:
+To find an item in the list you can use JMESPath filters. For example, this command will match a Namespace by its name:
 
 ```sh
  kubectl get --raw /api/v1/namespaces | jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
@@ -420,11 +413,9 @@ To find an item in the list you can use JMESPath filters. For example, this comm
 
 In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples.
 
+### Sample Policy: Limit Services of type LoadBalancer in a Namespace
 
-### Sample Policy: Limit Services of type LoadBalancer in a namespace 
-
-Here is a complete sample policy that limits each namespace to a single service of type `LoadBalancer`. 
-
+Here is a complete sample policy that limits each namespace to a single service of type `LoadBalancer`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -455,8 +446,6 @@ spec:
         - key: "{{ serviceCount }}"
           operator: GreaterThanOrEquals
           value: 1
-
 ```
 
-This sample policy retrieves the list of Services in the Namespace and stores the count of type LoadBalancer in a variable called serviceCount. A `deny` rule is used to ensure that the count cannot exceed one.
-
+This sample policy retrieves the list of Services in the Namespace and stores the count of type `LoadBalancer` in a variable called serviceCount. A `deny` rule is used to ensure that the count cannot exceed one.
