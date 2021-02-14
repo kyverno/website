@@ -8,7 +8,7 @@ The `match` and `exclude` filters control which resources policies are applied t
 
 The `match` and `exclude` clauses have the same structure and can each contain the following elements:
 
-* `resources`: select resources by name, namespaces, kinds, label selectors, and annotations.
+* `resources`: select resources by name, Namespaces, kinds, label selectors, annotations, and Namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
@@ -121,9 +121,9 @@ spec:
 Although the above snippet is useful for showing the types of matching that you can use, most policies either use one or just a couple different elements within their `match` statements.
 {{% /alert %}}
 
-### Match Deployments in Namespaces with specific labels
+### Match Deployments in Namespaces using labels
 
-This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute`.
+This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute` using a `namespaceSelector`.
 
 Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation. 
 
