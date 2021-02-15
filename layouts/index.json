@@ -1,0 +1,13 @@
+{{- $.Scratch.Add "index" slice -}}
+{{- range .Site.Pages  -}}
+  {{- $possibleRules := "" -}}
+  {{- if .Params.rules }}
+    {{- range $key, $value := (index .Params.rules 0) }}
+      {{- $possibleRules = printf "%s,%s" $possibleRules $key }}
+    {{- end }}
+    {{- $policy := index (intersect (split $possibleRules ",") site.Params.policies) 0 -}}
+    {{- $category := lower .Params.category }}
+    {{- $.Scratch.Add "index" (dict "title" .Title "body" .Params.description "link" .Permalink  "policy" $policy "category" $category  "filters" (printf "%s::%s" $policy $category)) -}}
+  {{- end }}
+{{- end -}}
+{{- jsonify (uniq ($.Scratch.Get "index")) -}}

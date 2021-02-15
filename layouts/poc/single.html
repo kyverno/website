@@ -1,0 +1,339 @@
+{{ define "main" }}
+<style>
+  .button {
+    background: #eee;
+    padding: 0.25rem 1rem;
+    border-radius: 2.5rem;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 1.5rem;
+    min-width: 7.5rem;
+    max-width: 10rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .button_filter {
+    user-select: none;
+  }
+  .hidden {
+    display: none !important;
+  }
+  .button.active {
+    background: #E77E5B;
+    color: #fff;
+  }
+  .filter {
+    width: 100%;
+    padding: 0.25rem 1.5rem;
+    position: relative;
+    cursor: pointer;
+    text-transform: capitalize;
+  }
+  .filter::before, .filter::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    transform: translateY(0.15rem);
+  }
+  .filter::before {
+    border: 2px solid #E77E5B;
+    width: 1rem;
+    height: 1rem;
+    left: 0;
+    top: 0.25rem;
+  }
+  .filter::after {
+    width: 0.5rem;
+    height: 0.5rem;
+    left: 0.25rem;
+    top: 0.5rem;
+  }
+  .filter.active::after {
+    background: #E77E5B;
+  }
+  .filter_type {
+    margin-bottom: 1rem;
+  }
+  .filter_type.passive {
+    opacity: 0.25;
+  }
+  .filters_applied {
+    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    max-width: 1024px;
+    overflow: auto;
+  }
+  .filters_results {
+    display: flex;
+    margin-bottom: -2.5rem;
+    transform: translateY(-0.5rem) translateX(-17rem);
+    align-items: center;
+  }
+  .filters_results span {
+    background: #E77E5B;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    height: 1.5rem;
+    width: 3.5rem;
+    border-radius: 1.25rem;
+    color: #fff;
+    margin-right: 0.375rem;
+    font-size: 0.84rem;
+  }
+  .policy {
+    text-decoration: none;
+    color: #343434 !important;
+    display: block;
+  }
+  .policy_filters {
+    margin-top: 2.5rem;
+  }
+  .policy_grid {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    grid-gap: 2rem;
+    max-width: 1440px;
+    margin: 6rem auto;
+    padding: 1.5rem;
+  }
+</style>
+
+{{- $policies := site.Params.policies }}
+{{- $policyFilters := .Params.policyFilters }}
+{{ $filterIDs := slice }}
+<div class="policy_grid">
+  <aside class="policy_filters">
+  {{ range $policyFilters }}
+    <div class="filter_type filter_{{ .filterID }}" data-criteria="{{ .filterID }}">
+      <h3 class="filter_title">{{ .title }}</h3>
+      {{- with .types }}
+        {{- range . }}
+          <div class="filter">{{ . }}</div>
+        {{- end}}
+      {{- else }}
+        {{- $filterIDs = append .filterID $filterIDs }}
+      {{- end }}
+    </div>
+  {{ end }}
+    <div id="policy_filters" data-filters={{ delimit $filterIDs "," }}></div>
+  </aside>
+  <div class="policy_wrap">
+    <div class="filters_results"></div>
+    <div class="filters_applied"></div>
+  </div>
+</div>
+
+<script>
+
+  /*
+    @TODOS
+    1. Make listed filters clearable
+    2. Add a clear all button
+    3. Make listed filters collapseable if they exceed a certain number.This would be help responsive issues
+
+  */
+
+  // dom lookup helpers
+  
+  function isObj(obj) {
+    return (obj && typeof obj === 'object' && obj !== null) ? true : false;
+  }
+
+  function createEl(el="div") {
+    return document.createElement(el);
+  }
+
+  function emptyEl(el) {
+    while(el.firstChild)
+    el.removeChild(el.firstChild);
+  }
+
+  function elem(selector, parent = document){
+    let elem = isObj(parent) ? parent.querySelector(selector) : false;
+    return elem ? elem : false;
+  }
+
+  function elems(selector, parent = document) {
+    let elems = isObj(parent) ? parent.querySelectorAll(selector) : [];
+    return elems.length ? elems : false;
+  }
+
+
+  // config defined values
+  const rootURL = {{ absURL "" }};
+  const pageLink = {{ .RelPermalink }};
+
+  // simple strings
+  const storedValues = "kyvernoPolicyFilters";
+  const active = "active";
+  const policyTypeQueryString = "policytypes";
+  const hidden = "hidden";
+
+  // local storage 
+  const searchParams = new URLSearchParams(window.location.search);
+  const wstorage = window.localStorage;
+  const getStoredValues = JSON.parse(wstorage.getItem(storedValues));
+  let chosenPolicies = getStoredValues ? getStoredValues.length ?  getStoredValues: [] : [];
+  chosenPolicies = findQuery().length ? findQuery().split("+") : chosenPolicies;
+  
+  // elements' lookup
+  const policyWrap = elem(".policy_grid");
+  const appliedFiltersEl = elem(".filters_applied");
+
+  // add filters on the sidebar
+  function populateFilters(data) {
+    elem("#policy_filters").dataset.filters.split(",").forEach(function(filterType){
+      let filters = new Set();
+      data.forEach(function(item){
+        filters.add(item[filterType]);
+      });
+      let filterTypeEl = elem(`.filter_${filterType}`);
+      if (filters.size >= 2) {
+        filters.forEach(function(filter){
+          let filterButton = createEl();
+          filterButton.className = "filter";
+          filterButton.textContent = filter;
+          filterTypeEl.appendChild(filterButton);
+        });
+      } else {
+        filterTypeEl.classList.add("passive");
+      }
+    });
+  }
+
+  function createPolicy(body, link, policy, title) {
+    const policyElem = document.createElement("a");
+    policyElem.className = "policy";
+    policyElem.href = link;
+    policyElem.dataset.policy = policy;
+    const policyTitle = document.createElement("h3");
+    policyTitle.textContent = title;
+    const policyBody = document.createElement("p");
+    policyBody.textContent = body;
+    policyElem.appendChild(policyTitle);
+    policyElem.appendChild(policyBody);
+    return policyElem;
+  }
+
+  function listPolicies(data) {
+    data.forEach(policy => {
+      policy = createPolicy(policy.body, policy.link, policy.filters, policy.title);
+      elem(".policy_wrap").appendChild(policy);
+    });
+  }
+  
+  function updateQuery() {
+    let queryS = "";
+    chosenPolicies.forEach((policy, index) => {
+      let p = encodeURI(policy);
+      queryS += index ? `+${p}` : p;
+    });
+
+    if ('URLSearchParams' in window) {
+      let newRelativePathQuery;
+      if(queryS.length) {
+        searchParams.set(policyTypeQueryString, queryS);
+        newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+      } else {
+        searchParams.delete(policyTypeQueryString);
+        newRelativePathQuery = window.location.pathname;
+      }
+      history.pushState(null, '', newRelativePathQuery);
+    }
+  }
+
+  function findQuery(query = policyTypeQueryString) {
+    if(searchParams.has(query)){
+      let c = searchParams.get(query);
+      return decodeURI(c);
+    }
+    return "";
+  }
+
+  function listAppliedFilters() {
+    appliedFiltersEl.innerHTML = "";
+    chosenPolicies.forEach(policy => {
+      // check if filter is listed first;
+      const id = `btn${policy.replaceAll(" ", "-").replaceAll("(", "").replaceAll(")", "")}`;
+      if(!elem(`#${id}`)) {
+        const policyEl = createEl();
+        policyEl.id = id;
+        policyEl.className = "button button_filter";
+        policyEl.textContent = policy;
+        appliedFiltersEl.appendChild(policyEl);
+      }
+    });
+  }
+
+  function filterPolicies() {
+    const policies = elems(".policy");
+    const results = elem(".filters_results");
+    let resultsTally = 0;
+    policies.forEach(policy => {
+      const applicableFilters = policy.dataset.policy.split("::");
+      let shouldList = false;
+      applicableFilters.every(filter => {
+        shouldList = chosenPolicies.includes(filter);
+        if(shouldList || !chosenPolicies.length) {
+          policy.classList.remove(hidden);
+          resultsTally += 1;
+          return false;
+        } else {
+          policy.classList.add(hidden);
+          return true;
+        }
+      });
+    });
+
+    results.innerHTML = `<span>${resultsTally}</span> Policies Found`;
+
+    elems(".filter").forEach(button => {
+      const id = button.textContent;
+      if(chosenPolicies.includes(id)) {
+      } 
+      chosenPolicies.includes(id) ? button.classList.add(active) : button.classList.remove(active);
+    });
+
+    listAppliedFilters();
+    updateQuery();
+  }
+
+  policyWrap.addEventListener("click", event => {
+    const target = event.target;
+    const isFilter = target.matches(".filter");
+    if(isFilter) {
+      const filterType = target.textContent;
+      if (chosenPolicies.includes(filterType)) {
+      chosenPolicies.forEach((value, index) => {
+        value === filterType ? chosenPolicies.splice(index, 1) : false;
+      });
+      } else {
+        chosenPolicies.push(filterType);
+      }
+      // persist filters
+      wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
+
+      filterPolicies();
+    }
+  });
+
+  window.addEventListener('load', function() { 
+    // fetch file
+    fetch(`${rootURL}index.json`)
+    .then(response => response.json())
+    .then(function(data) {
+      data = data.length ? data : [];
+      listPolicies(data);
+      // filter policies on load
+      populateFilters(data);
+      filterPolicies();
+    })
+    .catch((error) => console.error(error));
+
+  });
+
+</script>
+{{ end }}
