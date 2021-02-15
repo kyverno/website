@@ -28,6 +28,7 @@ type policyData struct {
 	Weight int
 	Policy *kyvernov1.ClusterPolicy
 	YAML   string
+	Rules   string
 	RawURL string
 	Path   string
 }
@@ -38,6 +39,7 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, weight int, rawYAML, rawURL, path
 		Weight: weight,
 		Policy: p,
 		YAML:   rawYAML,
+		Rules: rawYAML[strings.Index(rawYAML, "rules:"):len(rawYAML)],
 		RawURL: rawURL,
 		Path:   path,
 	}
