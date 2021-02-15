@@ -10,7 +10,8 @@ NODE_VERSION = "10.20.0"
 RUBY_VERSION = "2.7.1"
 
 [context.production.environment]
-HUGO_BASEURL = "https://kyverno.io/"
+# HUGO_BASEURL = "https://kyverno.io/"
+HUGO_BASEURL = "https://kyverno-ui-poc.netlify.app/"
 HUGO_ENV = "production"
 HUGO_ENABLEGITINFO = "true"
 
