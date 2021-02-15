@@ -5,6 +5,29 @@ linkTitle: Disallow SELinux
 weight: 34
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
+category: Pod Security Standards (Default)
+rules:
+  - name: seLinux
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        Setting custom SELinux options is disallowed. The fields
+        spec.securityContext.seLinuxOptions, spec.containers[*].securityContext.seLinuxOptions,
+        and spec.initContainers[*].securityContext.seLinuxOptions must be empty.
+      pattern:
+        spec:
+          =(securityContext):
+            X(seLinuxOptions): "null"
+          =(initContainers):
+          - =(securityContext):
+              X(seLinuxOptions): "null"
+          containers:
+          - =(securityContext):
+              X(seLinuxOptions): "null"
+
 ---
 
 ## Policy Definition

@@ -5,6 +5,18 @@ linkTitle: Disallow Service Type LoadBalancer
 weight: 25
 description: >
     Sample policy to restrict use of Service type LoadBalancer.
+category: Sample
+rules:
+  - name: no-LoadBalancer
+    match:
+      resources:
+        kinds:
+        - Service
+    validate:
+      message: "Service of type LoadBalancer is not allowed."
+      pattern:
+        spec:
+          type: "!LoadBalancer"
 ---
 
 ## Policy Definition

@@ -5,6 +5,22 @@ linkTitle: Disallow Secrets from Env Vars
 weight: 18
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
+category: Sample
+rules:
+  - name: secrets-not-from-env-vars
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Secrets must be mounted as volumes, not as environment variables."
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            =(env):
+            - =(valueFrom):
+                X(secretKeyRef): "null"
 ---
 
 ## Policy Definition

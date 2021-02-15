@@ -5,6 +5,22 @@ linkTitle: Require Pod Probes
 weight: 11
 description: >
     Liveness and readiness probes need to be configured to correctly manage a pods  lifecycle during deployments, restarts, and upgrades. For each pod, a periodic  `livenessProbe` is performed by the kubelet to determine if the pod's containers  are running or need to be restarted. A `readinessProbe` is used by services  and deployments to determine if the pod is ready to receive network traffic.
+category: Best Practices
+rules:
+  - name: validate-livenessProbe-readinessProbe
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Liveness and readiness probes are required."
+      pattern:
+        spec:
+          containers:
+          - livenessProbe:
+              periodSeconds: ">0"      
+            readinessProbe:
+              periodSeconds: ">0"
 ---
 
 ## Policy Definition

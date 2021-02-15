@@ -5,6 +5,18 @@ linkTitle: Require Multiple Replicas
 weight: 22
 description: >
     Sample policy that requires more than one replica for deployments.    
+category: Sample
+rules:
+    - name: deployment-has-multiple-replicas
+      match:
+        resources:
+          kinds:
+          - Deployment
+      validate:
+        message: "Deployments should have more than one replica to ensure availability."
+        pattern:
+          spec:
+            replicas: ">1"
 ---
 
 ## Policy Definition

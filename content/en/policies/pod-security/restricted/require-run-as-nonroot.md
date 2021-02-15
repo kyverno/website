@@ -5,6 +5,36 @@ linkTitle: Require Run As Non Root
 weight: 39
 description: >
     Containers must be required to run as non-root users.
+category: Pod Security Standards (Restricted)
+rules:
+  - name: check-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+        spec.containers[*].securityContext.runAsNonRoot, and
+        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.
+      anyPattern:
+      - spec:
+          securityContext:
+            runAsNonRoot: true
+          containers:
+          - =(securityContext):
+              =(runAsNonRoot): true
+          =(initContainers):
+          - =(securityContext):
+              =(runAsNonRoot): true              
+      - spec:
+          containers:
+          - securityContext:
+              runAsNonRoot: true
+          =(initContainers):
+          - securityContext:
+              runAsNonRoot: true         
+
 ---
 
 ## Policy Definition

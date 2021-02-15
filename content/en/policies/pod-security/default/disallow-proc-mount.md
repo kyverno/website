@@ -5,6 +5,28 @@ linkTitle: Require Default Proc Mount
 weight: 33
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.
+category: Pod Security Standards (Default)
+rules:
+  - name: check-proc-mount
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        Changing the proc mount from the default is not allowed. The fields
+        spec.containers[*].securityContext.procMount and
+        spec.initContainers[*].securityContext.procMount must not be changed 
+        from `Default`.
+      pattern:
+        spec:
+          =(initContainers):
+          - =(securityContext):
+              =(procMount): "Default"
+          containers:
+          - =(securityContext):
+              =(procMount): "Default"
+
 ---
 
 ## Policy Definition

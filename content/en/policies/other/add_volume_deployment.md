@@ -5,6 +5,25 @@ linkTitle: Add Volume
 weight: 16
 description: >
     Sample policy to add a volume and volumeMount. 
+category: Sample
+rules:
+  - name: add-volume
+    match:
+      resources:
+        kinds:
+        - Deployment
+    preconditions:
+    - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"
+      operator: Equals
+      value: "enabled"
+    mutate:
+      patchesJson6902: |-
+        - op: add
+          path: /spec/template/spec/volumes
+          value: [{"name": "vault-secret","emptyDir": {"medium": "Memory"}}]
+        - op: add
+          path: /spec/template/spec/containers/0/volumeMounts
+          value: [{"mountPath": "/secret","name": "vault-secret"}]
 ---
 
 ## Policy Definition

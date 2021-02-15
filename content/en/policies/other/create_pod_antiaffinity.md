@@ -5,6 +5,37 @@ linkTitle: Add Pod Anti-Affinity
 weight: 17
 description: >
     Sample policy to add Pod anti-affinity
+category: Sample
+rules:
+    - name: insert-pod-antiaffinity
+      match:
+        resources:
+          kinds:
+            - Deployment
+      preconditions:
+        # This precondition selects Pods with the label `app`
+      - key: "{{request.object.spec.template.metadata.labels.app}}"
+        operator: NotEquals
+        value: ""
+      # Mutates the Deployment resource to add fields.
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                # Add the `affinity`if not already specified.
+                +(affinity):
+                  +(podAntiAffinity):
+                    +(preferredDuringSchedulingIgnoredDuringExecution):
+                      - weight: 1
+                        podAffinityTerm:
+                          topologyKey: "kubernetes.io/hostname"
+                          labelSelector:
+                            matchExpressions:
+                            - key: app
+                              operator: In
+                              values:
+                              - "{{request.object.metadata.labels.app}}"
 ---
 
 ## Policy Definition

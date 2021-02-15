@@ -5,6 +5,28 @@ linkTitle: Deny Privilege Escalation
 weight: 37
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+category: Pod Security Standards (Restricted)
+rules:
+  - name: deny-privilege-escalation
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        Privilege escalation is disallowed. The fields
+        spec.containers[*].securityContext.allowPrivilegeEscalation, and
+        spec.initContainers[*].securityContext.allowPrivilegeEscalation must
+        be undefined or set to `false`.
+      pattern:
+        spec:
+          =(initContainers):
+          - =(securityContext):
+              =(allowPrivilegeEscalation): "false"
+          containers:
+          - =(securityContext):
+              =(allowPrivilegeEscalation): "false"
+
 ---
 
 ## Policy Definition

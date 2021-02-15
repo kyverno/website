@@ -5,6 +5,19 @@ linkTitle: Restrict Image Registries
 weight: 14
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
+category: Best Practices
+rules:
+  - name: validate-registries
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Unknown image registry."
+      pattern:
+        spec:
+          containers:
+          - image: "k8s.gcr.io/* | gcr.io/*"
 ---
 
 ## Policy Definition

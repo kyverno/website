@@ -5,6 +5,34 @@ linkTitle: Drop All Capabilities
 weight: 8
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
+category: Best Practices
+rules:
+  - name: check-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "All capabilities should be dropped with only those required added back."
+      pattern:
+        spec:
+          containers:
+          - securityContext:
+              capabilities:
+                drop: ["ALL"]
+  - name: check-init-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "All capabilities should be dropped with only those required added back."
+      pattern:
+        spec:
+          initContainers:
+          - securityContext:
+              capabilities:
+                drop: ["ALL"]
 ---
 
 ## Policy Definition

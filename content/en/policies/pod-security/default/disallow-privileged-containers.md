@@ -5,6 +5,25 @@ linkTitle: Disallow Privileged Containers
 weight: 32
 description: >
     Privileged mode disables most security mechanisms and must not be allowed.
+category: Pod Security Standards (Default)
+rules:
+  - name: priviledged-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+        and spec.initContainers[*].securityContext.privileged must not be set to true.
+      pattern:
+        spec:
+          =(initContainers):
+          - =(securityContext):
+              =(privileged): "false"          
+          containers:
+          - =(securityContext):
+              =(privileged): "false"
 ---
 
 ## Policy Definition

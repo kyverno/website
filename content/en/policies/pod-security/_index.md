@@ -3,6 +3,7 @@ type: "docs"
 title: "Pod Security"
 linkTitle: "Pod Security"
 weight: 10
+type: "policies"
 description: >
     Policies to secure Kubernetes Pods.
 ---

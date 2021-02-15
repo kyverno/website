@@ -5,6 +5,21 @@ linkTitle: Disallow Host Path
 weight: 30
 description: >
     HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.
+category: Pod Security Standards (Default)
+rules:
+  - name: host-path
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: >-
+        HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must not be set.
+      pattern:
+        spec:
+          =(volumes):
+          - X(hostPath): "null"
+
 ---
 
 ## Policy Definition
