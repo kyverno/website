@@ -34,7 +34,8 @@ metadata:
       Images from unknown registries may not be scanned and secured. 
       Requiring use of known registries helps reduce threat exposure.
 spec:
-  validationFailureAction: audit
+  background: false
+  validationFailureAction: enforce
   rules:
   - name: validate-registries
     match:
