@@ -1,13 +1,19 @@
 {{- $.Scratch.Add "index" slice -}}
-{{- range .Site.Pages  -}}
+{{- range $index, $page := .Site.Pages  -}}
   {{- $possibleRules := "" -}}
-  {{- if .Params.rules }}
-    {{- range $key, $value := (index .Params.rules 0) }}
+  {{- if $page.Params.rules }}
+    {{- range $key, $value := (index $page.Params.rules 0) }}
       {{- $possibleRules = printf "%s,%s" $possibleRules $key }}
     {{- end }}
+    {{- $version := "v1" }}
+    {{- $label := "stable" }}
+    {{- if (modBool (add $index 1) 3) }}
+      {{- $version = "v2" }}
+      {{- $label = "in development" }}
+    {{- end }}
     {{- $policy := index (intersect (split $possibleRules ",") site.Params.policies) 0 -}}
-    {{- $category := lower .Params.category }}
-    {{- $.Scratch.Add "index" (dict "title" .Title "body" .Params.description "link" .Permalink  "policy" $policy "category" $category  "filters" (printf "%s::%s" $policy $category)) -}}
+    {{- $category := lower $page.Params.category }}
+    {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $page.Params.description "link" $page.Permalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
   {{- end }}
 {{- end -}}
 {{- jsonify (uniq ($.Scratch.Get "index")) -}}
