@@ -7,8 +7,8 @@
     cursor: pointer;
     display: inline-block;
     margin-right: 1.5rem;
-    min-width: 7.5rem;
     max-width: 10rem;
+    text-align: center;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -191,7 +191,7 @@
         filters.add(item[filterType]);
       });
       let filterTypeEl = elem(`.filter_${filterType}`);
-      if (filters.size >= 2) {
+      if (filters.size >= 1) {
         filters.forEach(function(filter){
           let filterButton = createEl();
           filterButton.className = "filter";
