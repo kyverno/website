@@ -13,12 +13,6 @@ policyFilters:
     filterID: "version"
     weight: 3
   - title: "Tags/Labels"
-    filterID: "tag"
+    filterID: "label"
     weight: 4
 ---
-<!-- +++
-title = "POC"
-type = "poc"
-+++ -->
-
-<!-- no content -->
