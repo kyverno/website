@@ -167,7 +167,7 @@
   const pageLink = {{ .RelPermalink }};
   
   // simple strings
-  const storedValues = "kyvernoPolicyFilters";
+  const storedValues = "kyvernoFilters";
   const active = "active";
   const policyTypeQueryString = "policytypes";
   const hidden = "hidden";
@@ -369,7 +369,6 @@
       }
 
       // persist filters
-      wstorage.clear();
       wstorage.setItem(storedValues, JSON.stringify(obj));
       
       filterPolicies();
