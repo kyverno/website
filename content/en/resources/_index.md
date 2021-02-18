@@ -19,6 +19,8 @@ type: docs
 
 {{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
+{{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
+
 {{% /videos %}}
 
 ## Blogs
