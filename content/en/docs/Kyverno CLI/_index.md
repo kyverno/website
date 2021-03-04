@@ -311,7 +311,7 @@ namespaceSelector:
       foo.com/managed-state: managed
 ```
 
-To test the above policy use following command:
+To test the above policy use the following command:
 ```
 kyverno apply /path/to/enforce-pod-name.yaml --resource /path/to/nginx.yaml -f /path/to/value.yaml
 ```
