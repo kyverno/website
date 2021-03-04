@@ -228,6 +228,7 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 Apply policy with namespace selector:
 
 Use `--values_file` for passing a file containing namespace details.
+Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about namespace selector.
 
 ```
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
