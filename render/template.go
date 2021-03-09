@@ -1,7 +1,6 @@
 package main
 
 var policyTemplate = `---
-type: "docs"
 title: {{ .Title }}
 linkTitle: {{ .Title }}
 weight: {{ .Weight }}

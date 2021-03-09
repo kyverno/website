@@ -23,5 +23,3 @@ Then execute against the Kyverno policies repository and render markdown to the 
 ```sh
 render https://github.com/kyverno/policies/main content/en/policies/
 ```
-
-
