@@ -1,0 +1,4 @@
+{{ $functions := resources.Get "js/functions.js" | resources.ExecuteAsTemplate "js/functions.js" .  }}
+{{ $policy := resources.Get "js/policy.js" | resources.ExecuteAsTemplate "js/policy.js" .  }}
+{{- $bundle := slice $functions $policy | resources.Concat "js/policy.js" | resources.Fingerprint "sha512" }}
+<script src="{{ $bundle.Permalink }}"></script>

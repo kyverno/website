@@ -1,0 +1,13 @@
+{{ define "main" }}
+{{- partialCached "policies/styles" . }}
+<div class="policy_grid policy_page">
+  {{- partialCached "policies/sidebar" . }}
+  <div class="policy_wrap td-content">
+    <h1>{{ .Title }}</h1>
+    <div class="lead">{{ .Params.description }}</div>
+    {{ .Content }}
+    <div class="text-muted mt-5 pt-3 border-top">{{ partial "page-meta-lastmod.html" . }}</div>
+  </div>
+</div>
+{{- partialCached "policies/scripts" . }}
+{{ end }}
