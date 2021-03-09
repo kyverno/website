@@ -121,6 +121,28 @@ weight = 1
 [params]
 copyright = "The Kyverno Authors"
 policies = ["generate", "mutate", "validate"]
+
+[[params.policyFilters]]
+title = "Policy Type"
+filterID = "policytype"
+isFixed = true
+weight = 1
+
+[[params.policyFilters]]
+title = "Policy Category"
+filterID = "category"
+weight = 2
+
+[[params.policyFilters]]
+title = "Version"
+filterID = "version"
+weight = 3
+
+[[params.policyFilters]]
+title = "Tags/Labels"
+filterID = "label"
+weight = 4
+
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [params.versions] set.
 version_menu = "Releases"
