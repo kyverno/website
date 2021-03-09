@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict Volume Types
 linkTitle: Restrict Volume Types
 weight: 41

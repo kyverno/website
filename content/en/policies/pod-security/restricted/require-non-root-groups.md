@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Non Root Groups
 linkTitle: Require Non Root Groups
 weight: 38

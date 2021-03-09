@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Add Capabilities
 linkTitle: Disallow Add Capabilities
 weight: 28

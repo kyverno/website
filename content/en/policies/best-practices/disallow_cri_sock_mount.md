@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow CRI socket mounts
 linkTitle: Disallow CRI socket mounts
 weight: 4

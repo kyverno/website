@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Drop All Capabilities
 linkTitle: Drop All Capabilities
 weight: 8

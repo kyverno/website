@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict Sysctls
 linkTitle: Restrict Sysctls
 weight: 36

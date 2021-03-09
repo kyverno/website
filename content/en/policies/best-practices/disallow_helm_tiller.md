@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Helm Tiller
 linkTitle: Disallow Helm Tiller
 weight: 6

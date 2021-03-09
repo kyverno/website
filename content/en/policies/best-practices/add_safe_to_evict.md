@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Add safe-to-evict
 linkTitle: Add safe-to-evict
 weight: 3

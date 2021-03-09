@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Host Ports
 linkTitle: Disallow Host Ports
 weight: 31

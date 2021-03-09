@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict External IPs
 linkTitle: Restrict External IPs
 weight: 13

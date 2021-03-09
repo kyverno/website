@@ -1,7 +1,6 @@
 ---
 title: "Policies"
 linkTitle: "Policies"
-type: "docs"
 description: >-
     Policies that you can use for security and best practices compliance.
 ---

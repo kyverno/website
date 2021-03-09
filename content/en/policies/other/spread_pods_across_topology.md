@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Spread Pods Across Nodes
 linkTitle: Spread Pods Across Nodes
 weight: 27

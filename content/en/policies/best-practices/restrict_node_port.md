@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Node Ports
 linkTitle: Disallow Node Ports
 weight: 15

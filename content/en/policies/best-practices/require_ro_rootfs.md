@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Read-Only Root FS
 linkTitle: Require Read-Only Root FS
 weight: 12

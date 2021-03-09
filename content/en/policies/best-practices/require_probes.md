@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Pod Probes
 linkTitle: Require Pod Probes
 weight: 11

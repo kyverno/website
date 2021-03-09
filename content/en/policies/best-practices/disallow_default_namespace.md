@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Default Namespace
 linkTitle: Disallow Default Namespace
 weight: 5

@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Default Proc Mount
 linkTitle: Require Default Proc Mount
 weight: 33

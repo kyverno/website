@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict Auto-Mount of Service Account Tokens
 linkTitle: Restrict Auto-Mount of Service Account Tokens
 weight: 23

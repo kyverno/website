@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Add Network Policy
 linkTitle: Add Network Policy
 weight: 1

@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Secrets from Env Vars
 linkTitle: Disallow Secrets from Env Vars
 weight: 18

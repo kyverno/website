@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict Image Registries
 linkTitle: Restrict Image Registries
 weight: 14

@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Labels
 linkTitle: Require Labels
 weight: 9

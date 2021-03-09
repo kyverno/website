@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Deny Privilege Escalation
 linkTitle: Deny Privilege Escalation
 weight: 37

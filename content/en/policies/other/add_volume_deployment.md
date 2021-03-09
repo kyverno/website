@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Add Volume
 linkTitle: Add Volume
 weight: 16

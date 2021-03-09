@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Set imagePullPolicy
 linkTitle: Set imagePullPolicy
 weight: 20

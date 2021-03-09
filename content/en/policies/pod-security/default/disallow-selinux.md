@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow SELinux
 linkTitle: Disallow SELinux
 weight: 34

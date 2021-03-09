@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Privileged Containers
 linkTitle: Disallow Privileged Containers
 weight: 32

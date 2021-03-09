@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict AppArmor
 linkTitle: Restrict AppArmor
 weight: 35

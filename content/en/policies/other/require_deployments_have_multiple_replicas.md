@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Multiple Replicas
 linkTitle: Require Multiple Replicas
 weight: 22

@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Add Pod Anti-Affinity
 linkTitle: Add Pod Anti-Affinity
 weight: 17

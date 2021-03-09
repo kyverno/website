@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Require Run As Non Root
 linkTitle: Require Run As Non Root
 weight: 39

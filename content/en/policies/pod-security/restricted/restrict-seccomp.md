@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Restrict Seccomp
 linkTitle: Restrict Seccomp
 weight: 40

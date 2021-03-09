@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Service Type LoadBalancer
 linkTitle: Disallow Service Type LoadBalancer
 weight: 25

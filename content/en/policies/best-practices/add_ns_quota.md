@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Add Quota
 linkTitle: Add Quota
 weight: 2

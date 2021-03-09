@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Disallow Host Namespaces
 linkTitle: Disallow Host Namespaces
 weight: 29

@@ -1,5 +1,4 @@
 ---
-type: "docs"
 title: Validate User ID, Group ID, and FS Group
 linkTitle: Validate User ID, Group ID, and FS Group
 weight: 26
