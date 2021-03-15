@@ -225,6 +225,135 @@ policies:
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
+### Test
+
+Test a policy, can test multiple policy resource from repository or even an entire local folder and sub-folder containing policy resource description files with test files in a single command. 
+
+Example:
+
+```
+kyverno test  /path/to/folderContaningTestYamls
+```
+or
+
+```
+kyverno test  /path/to/githubRepository
+``` 
+
+Use the --f <fileName.yaml> flag to set filename which include testcases.
+
+Format of `test.yaml`:
+
+```yaml
+- name: test-1
+  description: "...."
+  policies:
+     - <path>
+     - <path>
+  resources:
+     - <path>
+     - <path>
+   results:
+   - policy: <name>
+     rule: <name>
+     resource: <name>
+     status: pass
+   - policy: <name>
+     rule: <name>
+     resource: <name>
+     status: fail
+    
+```
+Example:
+
+Policy manifest (`disallow_latest_tag.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      The ':latest' tag is mutable and can lead to unexpected errors if the 
+      image changes. A best practice is to use an immutable tag that maps to 
+      a specific version of an application pod.
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: require-image-tag
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "An image tag is required."  
+      pattern:
+        spec:
+          containers:
+          - image: "*:*"
+  - name: validate-image-tag
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Using a mutable image tag e.g. 'latest' is not allowed."
+      pattern:
+        spec:
+          containers:
+          - image: "!*:latest"
+```
+
+Resource manifest (`resource.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-podName
+  labels:
+    app: myapp
+spec: 
+  containers:
+  - name: nginx
+    image: nginx:1.12
+```
+
+Test manifest (`test.yaml`):
+
+```yaml
+name: disallow_latest_tag
+policies:
+  -  disallow_latest_tag.yaml
+resources:
+  -  resource.yaml
+results:
+  - policy: disallow-latest-tag
+    rule: require-image-tag
+    resource: myapp-pod
+    status: pass
+  - policy: disallow-latest-tag
+    rule: validate-image-tag
+    resource: myapp-pod
+    status: pass
+```
+
+```sh
+kyverno test <PathToDirs>
+```
+Above example applies a test on policy and resource defined in test yaml.
+
+Below the output of test command apply on the above policy and resource from Kyverno CLI.
+
+| #        | TEST                                                                    | RESULT           |
+| ---------|:-----------------------------------------------------------------------:|:-----------------| 
+| 1        |  myapp-podName with disallow-latest-tag/require-image-tag               | pass             |
+| 2        |  myapp-podName with disallow-latest-tag/validate-image-tag              | pass             | 
+
+
+
 #### Policy Report
 
 Policy report provide information about policy execution and violation. Use `--policy_report` with the `apply` command to generate policy report.
