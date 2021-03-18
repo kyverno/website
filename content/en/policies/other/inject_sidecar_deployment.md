@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Inject Sidecar Container
-linkTitle: Inject Sidecar Container
-weight: 21
+title: Inject Sidecar
+linkTitle: Inject Sidecar
+weight: 16
 description: >
     Sample policy that injects a sidecar container into Pods that match an annotation.  
 ---

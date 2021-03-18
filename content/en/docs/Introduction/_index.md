@@ -114,10 +114,10 @@ kubectl run nginx --image nginx --labels app.kubernetes.io/name=nginx
 
 This Pod configuration is compliant with the policy rules and is not blocked.
 
+Congratulations, you've just implemented a policy in your Kubernetes cluster!
+
 Clean up by deleting all cluster policies:
 
 ```sh
 kubectl delete cpol --all
 ```
-
-Congratulations, you've just implemented policy in your Kubernetes cluster!

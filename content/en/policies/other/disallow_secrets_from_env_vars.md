@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Disallow Secrets from Env Vars
-linkTitle: Disallow Secrets from Env Vars
-weight: 18
+title: Secrets Not From Env Vars
+linkTitle: Secrets Not From Env Vars
+weight: 29
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
 ---

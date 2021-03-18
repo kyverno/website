@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Disallow Service Type LoadBalancer
-linkTitle: Disallow Service Type LoadBalancer
-weight: 25
+title: No Loadbalancer Service
+linkTitle: No Loadbalancer Service
+weight: 24
 description: >
     Sample policy to restrict use of Service type LoadBalancer.
 ---
