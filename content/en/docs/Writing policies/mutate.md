@@ -435,7 +435,7 @@ spec:
       patchStrategicMerge:
         metadata:
           labels:
-            +(backup-needed): yes
+            +(backup-needed): "yes"
 ```
 
 Test the cascading mutation policy by creating a Pod using the Cassandra image.
