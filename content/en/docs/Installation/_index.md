@@ -426,6 +426,11 @@ helm uninstall kyverno --namespace kyverno kyverno/kyverno
 ```
 
 ### Clean up Webhook Configurations
+
+Kyverno by default will clean up all its webhook configurations during termination. While removing the entire manifests could result in failure of the cleanup process as it loses the permissions to delete the webhook configurations.
+
+Run the following command to manually remove `mutatingwebhookconfigurations` and `validatingwebhoookconfigurations`.
+
 ```sh
 kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg kyverno-resource-mutating-webhook-cfg kyverno-verify-mutating-webhook-cfg
 
