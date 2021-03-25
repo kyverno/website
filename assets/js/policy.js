@@ -1,10 +1,7 @@
 /*
 @TODOS
-1. Make listed filters clearable
-2. Add a clear all button
-3. Make listed filters collapseable if they exceed a certain number.This would be help responsive issues
-4. Make filtered policies shareable via query Params
-
+1. Make listed filters collapseable if they exceed a certain number.This would be help responsive issues
+2. Make filtered policies shareable via query Params
 */
 
 // config defined values
