@@ -101,6 +101,16 @@ function findQuery(query = policyTypeQueryString) {
   return "";
 }
 
+function createButton(policy, id = null){
+  const policyEl = createEl();
+  let list = "button button_filter";
+  list += (id === null) ? " button_clear" : "";
+  policyEl.id = id;
+  policyEl.className = list;
+  policyEl.textContent = policy;
+  return policyEl;
+};
+
 function listAppliedFilters() {
   appliedFiltersEl.innerHTML = "";
   chosenPolicies.forEach(policy => {
@@ -109,14 +119,15 @@ function listAppliedFilters() {
     if(policy) {
       const id = `btn${policy.replaceAll(" ", "-").replaceAll("(", "").replaceAll(")", "")}`;
       if(!elem(`#${id}`)) {
-        const policyEl = createEl();
-        policyEl.id = id;
-        policyEl.className = "button button_filter";
-        policyEl.textContent = policy;
+        const policyEl = createButton(policy, id);
         appliedFiltersEl.appendChild(policyEl);
       }
     }
   });
+  if (chosenPolicies.length > 1) {
+
+    appliedFiltersEl.appendChild(createButton("clear all"));
+  }
 }
 
 function groupBy(list, keyGetter) {
@@ -222,8 +233,30 @@ policyWrap.addEventListener("click", event => {
       window.location.href = `${rootURL}policies/`;
     }
   }
-});
 
+  const isButton = target.matches(".button");
+  if(isButton) {
+    const isClearAll = target.matches(".button_clear");
+    if(isClearAll) {
+      chosenPolicies = [];
+    } else {
+      console.log(chosenPolicies);
+      const thisPolicyType = target.textContent;
+      const remainingPolicies = [];
+      chosenPolicies.forEach((policy) => {
+        if(policy.type != thisPolicyType) {
+          remainingPolicies.push(policy);
+        };
+      });
+      chosenPolicies = remainingPolicies;
+      console.log(chosenPolicies);
+    }
+    // persist filters
+    wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
+    updateQuery();
+    filterPolicies();
+  }
+});
 
 window.addEventListener('load', function() {
   // fetch file
