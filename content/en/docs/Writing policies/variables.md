@@ -146,6 +146,46 @@ busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=bus
 In the output, we can clearly see the value of our `created-by` label is `kubernetes-admin` which, in this case, is the user who created the Pod.
 
 
+## Variables from container images
+
+Kyverno extracts image properties and make them available as variables. Whenever a new request has `containers` or `initContainers` defined, the image properties can be referenced as follows:
+
+Reference the image properties of container `my-container`:
+
+1. Reference the registry URL 
+
+`{{images.containers.\"my-container\".registry}}`
+
+2. Reference the image name
+
+`{{images.containers.\"my-container\".name}}`
+
+3. Reference the image tag
+
+`{{images.containers.\"my-container\".tag}}`
+
+4. Reference the digest
+
+`{{images.containers.\"my-container\".digest}}`
+
+Reference the image properties of initContainer `mycontainer`:
+
+1. Reference the registry URL
+
+` {{images.initContainers.mycontainer.registry}}`
+
+2. Reference the image name
+
+`{{images.initContainers.mycontainer.name}}`
+
+3.  Reference the image tag
+
+`{{images.initContainers.mycontainer.tag}}`
+
+4. Reference the digest
+
+`{{images.initContainers.mycontainer.digest}}`
+
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
