@@ -411,7 +411,7 @@ helm upgrade kyverno --namespace kyverno kyverno/kyverno --version <version_numb
 
 ## Uninstalling Kyverno
 
-To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment and all CRDs will be removed, including any reports.
+To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment, RBAC resources, and all CRDs will be removed, including any reports.
 
 ### Option 1 - Uninstall Kyverno with YAML manifest
 
@@ -427,9 +427,9 @@ helm uninstall kyverno --namespace kyverno kyverno/kyverno
 
 ### Clean up Webhook Configurations
 
-Kyverno by default will clean up all its webhook configurations during termination. While removing the entire manifests could result in failure of the cleanup process as it loses the permissions to delete the webhook configurations.
+Kyverno by default will clean up all its webhook configurations during termination. While removing the RBAC resources could result in failure of the cleanup process as it loses the permissions to delete the webhook configurations.
 
-Run the following commands to manually remove `mutatingwebhookconfigurations` and `validatingwebhoookconfigurations`.
+Regardless which uninstallation method is chosen, webhooks will need to be manually removed as the final step. Use the below commands to delete those webhook configurations.
 
 ```sh
 kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg kyverno-resource-mutating-webhook-cfg kyverno-verify-mutating-webhook-cfg
