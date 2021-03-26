@@ -107,10 +107,6 @@ kubectl logs <kyverno-pod-name> -n <namespace>
 
 ### Option 2: Use your own CA-signed certificate
 
-{{% alert title="Note" color="warning" %}}
-There is a known issue with this process. It is being worked on and should be available again in a future release.
-{{% /alert %}}
-
 You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
 
 #### 2.1. Generate a self-signed CA and signed certificate-key pair
