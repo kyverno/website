@@ -2,7 +2,7 @@
 type: "docs"
 title: Validate Probes
 linkTitle: Validate Probes
-weight: 16
+weight: 20
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.
 ---

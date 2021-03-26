@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Seccomp
 linkTitle: Restrict Seccomp
-weight: 33
+weight: 43
 description: >
     The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
 ---

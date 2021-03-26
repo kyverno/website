@@ -2,7 +2,7 @@
 type: "docs"
 title: Insert Pod Antiaffinity
 linkTitle: Insert Pod Antiaffinity
-weight: 28
+weight: 16
 description: >
     Sample policy to add Pod anti-affinity
 ---

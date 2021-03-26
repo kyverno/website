@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Apparmor Profiles
 linkTitle: Restrict Apparmor Profiles
-weight: 36
+weight: 32
 description: >
     On supported hosts, the 'runtime/default' AppArmor profile is applied by default.  The default policy should prevent overriding or disabling the policy, or restrict  overrides to an allowed set of profiles.
 ---

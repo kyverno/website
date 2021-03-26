@@ -2,7 +2,7 @@
 type: "docs"
 title: Imagepullpolicy Always
 linkTitle: Imagepullpolicy Always
-weight: 17
+weight: 21
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 ---

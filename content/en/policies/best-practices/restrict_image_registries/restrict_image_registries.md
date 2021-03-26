@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Image Registries
 linkTitle: Restrict Image Registries
-weight: 3
+weight: 2
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
 ---

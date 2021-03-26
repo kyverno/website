@@ -2,7 +2,7 @@
 type: "docs"
 title: Unique Ingress Host
 linkTitle: Unique Ingress Host
-weight: 19
+weight: 28
 description: >
     
 ---

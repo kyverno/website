@@ -225,6 +225,98 @@ policies:
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
+Apply policy with namespace selector:
+
+Use `--values_file` for passing a file containing namespace details.
+Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about namespace selector.
+
+```
+kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
+```
+
+Format of `value.yaml`:
+
+```yaml
+namespaceSelector:
+  - name: <namespace1 name>
+    labels:
+      <namespace label key>: <namespace label value>
+  - name: <namespace2 name>
+    labels:
+      <namespace label key>: <namespace label value>
+```
+
+Example:
+
+Policy manifest (`enforce-pod-name.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-pod-name
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: validate-name
+      match:
+        resources:
+          kinds:
+            - Pod
+          namespaceSelector:
+            matchExpressions:
+            - key: foo.com/managed-state
+              operator: In
+              values:
+              - managed
+      validate:
+        message: "The Pod must end with -nginx"
+        pattern:
+          metadata:
+            name: "*-nginx"
+```
+
+Resource manifest (`nginx.yaml`):
+
+```yaml
+kind: "Pod"
+apiVersion: "v1"
+metadata:
+  name: test-nginx
+  namespace: test1
+spec:
+  containers:
+  - name: "nginx"
+    image: "nginx:latest"
+```
+
+Namespace manifest (`namespace.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test1
+  labels:
+    foo.com/managed-state: managed
+```
+
+YAML file containing variables (`value.yaml`):
+
+```yaml
+namespaceSelector:
+  - name: test1
+    labels:
+      foo.com/managed-state: managed
+```
+
+To test the above policy use the following command:
+```
+kyverno apply /path/to/enforce-pod-name.yaml --resource /path/to/nginx.yaml -f /path/to/value.yaml
+```
+
+
 #### Policy Report
 
 Policy report provide information about policy execution and violation. Use `--policy_report` with the `apply` command to generate policy report.
