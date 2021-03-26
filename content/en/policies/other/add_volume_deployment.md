@@ -2,7 +2,7 @@
 type: "docs"
 title: Add Volume
 linkTitle: Add Volume
-weight: 26
+weight: 25
 description: >
     Sample policy to add a volume and volumeMount. 
 ---

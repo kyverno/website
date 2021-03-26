@@ -2,7 +2,7 @@
 type: "docs"
 title: No Loadbalancer Service
 linkTitle: No Loadbalancer Service
-weight: 24
+weight: 27
 description: >
     Sample policy to restrict use of Service type LoadBalancer.
 ---
