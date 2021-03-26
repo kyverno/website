@@ -1,4 +1,6 @@
 {{ $functions := resources.Get "js/functions.js" | resources.ExecuteAsTemplate "js/functions.js" .  }}
 {{ $policy := resources.Get "js/policy.js" | resources.ExecuteAsTemplate "js/policy.js" .  }}
-{{- $bundle := slice $functions $policy | resources.Concat "js/policy.js" | resources.Fingerprint "sha512" }}
+{{ $code := resources.Get "js/code.js" | resources.ExecuteAsTemplate "js/code.js" .  }}
+{{ $variables := resources.Get "js/variables.js" | resources.ExecuteAsTemplate "js/variables.js" .  }}
+{{- $bundle := slice $variables $functions $policy $code | resources.Concat "js/policy.js" | resources.Fingerprint "sha512" }}
 <script src="{{ $bundle.Permalink }}"></script>

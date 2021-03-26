@@ -2,7 +2,7 @@
 {{- partialCached "policies/styles" . }}
 <div class="policy_grid policy_page">
   {{- partialCached "policies/sidebar" . }}
-  <div class="policy_wrap td-content">
+  <div class="policy_wrap">
     <h1>{{ .Title }}</h1>
     <div class="lead">{{ .Params.description }}</div>
     {{ .Content }}
