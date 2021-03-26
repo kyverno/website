@@ -4,16 +4,6 @@
 2. Make filtered policies shareable via query Params
 */
 
-// config defined values
-const rootURL = '{{ absURL "" }}';
-const pageLink = '{{ .RelPermalink }}';
-
-// simple strings
-const storedValues = "kyvernoFilters";
-const active = "active";
-const policyTypeQueryString = "policytypes";
-const hidden = "hidden";
-
 // local storage 
 const searchParams = new URLSearchParams(window.location.search);
 const wstorage = window.localStorage;
@@ -227,7 +217,7 @@ policyWrap.addEventListener("click", event => {
     filterPolicies();
   
     if(!section) {
-      window.location.href = `${rootURL}policies/`;
+      window.location.href = new URL("policies", rootURL).href;
     }
   }
 
@@ -257,7 +247,7 @@ policyWrap.addEventListener("click", event => {
 
 window.addEventListener('load', function() {
   // fetch file
-  fetch(`${rootURL}index.json`)
+  fetch(new URL("index.json", rootURL).href)
   .then(response => response.json())
   .then(function(data) {
     data = data.length ? data : [];
