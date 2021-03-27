@@ -2,7 +2,7 @@
 type: "docs"
 title: Require Default Proc Mount
 linkTitle: Require Default Proc Mount
-weight: 37
+weight: 36
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.
 ---

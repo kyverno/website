@@ -2,7 +2,7 @@
 type: "docs"
 title: Require Non Root Groups
 linkTitle: Require Non Root Groups
-weight: 41
+weight: 31
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
 ---

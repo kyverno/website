@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Host Ports
 linkTitle: Disallow Host Ports
-weight: 36
+weight: 44
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
 ---

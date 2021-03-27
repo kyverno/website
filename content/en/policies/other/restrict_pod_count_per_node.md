@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Pod Count
 linkTitle: Restrict Pod Count
-weight: 23
+weight: 26
 description: >
     Sample policy to restrict pod count on node 'minikube' to be no more than 10.
 ---

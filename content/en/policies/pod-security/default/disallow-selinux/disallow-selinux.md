@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Selinux
 linkTitle: Disallow Selinux
-weight: 31
+weight: 37
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
 ---

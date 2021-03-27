@@ -2,7 +2,7 @@
 type: "docs"
 title: Spread Pods
 linkTitle: Spread Pods
-weight: 25
+weight: 28
 description: >
     Sample policy to spread pods matching a label across nodes.
 ---

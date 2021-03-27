@@ -2,7 +2,7 @@
 type: "docs"
 title: Add Ns Quota
 linkTitle: Add Ns Quota
-weight: 12
+weight: 5
 description: >
     To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
 ---

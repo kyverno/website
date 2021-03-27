@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Default Namespace
 linkTitle: Disallow Default Namespace
-weight: 14
+weight: 6
 description: >
     Kubernetes namespaces are an optional feature that provide a way to segment and  isolate cluster resources across multiple applications and users. As a best  practice, workloads should be isolated with namespaces. Namespaces should be required  and the default (empty) namespace should not be used.
 ---

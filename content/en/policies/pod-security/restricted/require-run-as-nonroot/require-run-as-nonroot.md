@@ -2,7 +2,7 @@
 type: "docs"
 title: Require Run As Non Root
 linkTitle: Require Run As Non Root
-weight: 42
+weight: 32
 description: >
     Containers must be required to run as non-root users.
 ---
