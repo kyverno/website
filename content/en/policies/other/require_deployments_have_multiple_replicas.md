@@ -1,8 +1,8 @@
 ---
 type: "docs"
-title: Require Multiple Replicas
-linkTitle: Require Multiple Replicas
-weight: 22
+title: Deployment Has Multiple Replicas
+linkTitle: Deployment Has Multiple Replicas
+weight: 21
 description: >
     Sample policy that requires more than one replica for deployments.    
 ---
