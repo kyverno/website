@@ -52,7 +52,6 @@ prism_syntax_highlighting = false
 time_format_blog = "Monday, January 02, 2006"
 time_format_default = "January 02, 2006 at 3:04 PM PST"
 
-
 [[policyFilters]]
 title = "Policy Type"
 filterID = "policytype"
