@@ -90,6 +90,19 @@ function isMatch(element, selectors) {
   }
 }
 
+function isTarget(element, selector) {
+  if(isObj(element) && selector) {
+    if(element.matches(selector)) {
+      return true;
+    } else if (element.closest(selector)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return false;
+}
+
 function closestInt(goal, collection) {
   return collection.reduce(function (prev, curr) {
     return (Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev);

@@ -194,8 +194,8 @@ function objIsInArray(obj,obj1) {
   // returns index where object was found or null
   return isEqual.length ? isEqual[0] : null;
 }
-if( policyWrap) {
-  policyWrap.addEventListener("click", event => {
+if(policyWrap) {
+  window.addEventListener("click", event => {
     let obj = chosenPolicies;
     const target = event.target;
     const isFilter = target.matches(".filter");
@@ -244,6 +244,14 @@ if( policyWrap) {
       updateQuery();
       filterPolicies();
     }
+    
+    const isToggle = isTarget(target, ".policy_toggle");
+    const filtersEl = elem(".policy_filters");
+
+    containsClass(filtersEl, active) && !isToggle && !isTarget(target, ".policy_filters") ? deleteClass(filtersEl, active) : false;
+    
+    isToggle ? pushClass(filtersEl, active) : false;
+    
   });
   
   window.addEventListener('load', function() {
