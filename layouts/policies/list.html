@@ -1,5 +1,4 @@
-{{ define "main" }}
-{{- partialCached "policies/styles" . }}
+{{- define "main" }}
 <div class="policy_grid">
   {{- partialCached "policies/sidebar" . }}
   <div class="policy_wrap">
@@ -7,5 +6,4 @@
     <div class="filters_applied"></div>
   </div>
 </div>
-{{- partialCached "policies/scripts" . }}
-{{ end }}
+{{- end }}

@@ -1,0 +1,32 @@
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+{{- $maxCodeLines := default 100 $s.codeMaxLines }}
+{{- with $p.codeMaxLines }}
+  {{- $maxCodeLines = . }}
+{{- end }}
+{{- $codeLineNumbers := default false $s.codeLineNumbers }}
+{{ with $p.codeLineNumbers }}
+  {{- $codeLineNumbers = . }}
+{{ else }}
+  {{ if eq $p.codeLineNumbers false }}
+    {{- $codeLineNumbers = false }}
+  {{ end }}
+{{ end }}
+<!doctype html>
+<html lang="{{ .Site.Language.Lang }}" class="no-js">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-{{ .Kind }}" data-code="{{ $maxCodeLines }}" data-lines="{{ $codeLineNumbers }}">
+    <header>
+      {{ partial "navbar.html" . }}
+    </header>
+    <div class="container-fluid td-default td-outer">
+      <main role="main" class="td-main">
+        {{ block "main" . }}{{ end }}
+      </main>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partialCached "scripts.html" . }}
+  </body>
+</html>
