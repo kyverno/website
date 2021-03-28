@@ -13,3 +13,7 @@ https://kyverno.io
 ## Rendering Policies to Markdown
 
 See [render](/render/README.md) folder.
+
+## Customize settings
+
+Edit the `.toml` files insed the `config/_default` dir
