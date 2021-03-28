@@ -14,6 +14,7 @@
 	--border-color: #eee;
 	--inline-color: darkgoldenrod;
 	--ease: ease;
+  --link: #3176d9;
 }
 
 .button {
@@ -182,6 +183,16 @@
     top: 50px;
     right: -3rem;
   }
+  &_wrap {
+    max-width: 750px;
+    .td-page-meta {
+      display: grid;
+      grid-gap: 0.5rem;
+    }
+  }
+  &_title {
+    color: var(--link) !important;
+  }
 }
 
 // syntax
@@ -204,9 +215,12 @@ code {
 	font-size: 15px;
 	font-weight: 400;
 	overflow-y: hidden;
-	display: block;
 	font-family: 'Monaco', monospace;
 	word-break: break-all;
+}
+
+.highlight code {
+  display: block;
 }
 
 code.noClass {
@@ -332,6 +346,7 @@ code.noClass {
 
 .k, .kc, .kd, .kn, .kp, .kr, .kt, .nt {
 	color: #6ab825;
+  color: #447fcf;
 	font-weight: 500;
 }
 

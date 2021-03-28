@@ -45,6 +45,7 @@ function createPolicy(body, link, policy, title) {
   policyElem.href = link;
   policyElem.dataset.policy = policy;
   const policyTitle = document.createElement("h3");
+  policyTitle.className = "policy_title";
   policyTitle.textContent = title;
   const policyBody = document.createElement("p");
   policyBody.textContent = body;
@@ -112,7 +113,7 @@ function listAppliedFilters() {
     }
   });
   if (chosenPolicies.length > 1) {
-
+    
     appliedFiltersEl.appendChild(createButton("clear all"));
   }
 }
@@ -193,69 +194,70 @@ function objIsInArray(obj,obj1) {
   // returns index where object was found or null
   return isEqual.length ? isEqual[0] : null;
 }
-
-policyWrap.addEventListener("click", event => {
-  let obj = chosenPolicies;
-  const target = event.target;
-  const isFilter = target.matches(".filter");
-  if(isFilter) {
-    const filterType = target.textContent;
-    let group = target.parentNode.dataset.criteria;
-    filterGroup = Object.create(null);
-    filterGroup.id = group;
-    filterGroup.type = filterType;
-    filtered = objIsInArray(obj, filterGroup);
-    if (filtered != null) {
-      obj.splice(filtered, 1);
-    } else {
-      obj.push(filterGroup);
+if( policyWrap) {
+  policyWrap.addEventListener("click", event => {
+    let obj = chosenPolicies;
+    const target = event.target;
+    const isFilter = target.matches(".filter");
+    if(isFilter) {
+      const filterType = target.textContent;
+      let group = target.parentNode.dataset.criteria;
+      filterGroup = Object.create(null);
+      filterGroup.id = group;
+      filterGroup.type = filterType;
+      filtered = objIsInArray(obj, filterGroup);
+      if (filtered != null) {
+        obj.splice(filtered, 1);
+      } else {
+        obj.push(filterGroup);
+      }
+      
+      // persist filters
+      wstorage.setItem(storedValues, JSON.stringify(obj));
+      
+      filterPolicies();
+      
+      if(!section) {
+        window.location.href = new URL("policies", rootURL).href;
+      }
     }
     
-    // persist filters
-    wstorage.setItem(storedValues, JSON.stringify(obj));
+    const isButton = target.matches(".button");
+    if(isButton) {
+      const isClearAll = target.matches(".button_clear");
+      if(isClearAll) {
+        chosenPolicies = [];
+      } else {
+        console.log(chosenPolicies);
+        const thisPolicyType = target.textContent;
+        const remainingPolicies = [];
+        chosenPolicies.forEach((policy) => {
+          if(policy.type != thisPolicyType) {
+            remainingPolicies.push(policy);
+          };
+        });
+        chosenPolicies = remainingPolicies;
+        console.log(chosenPolicies);
+      }
+      // persist filters
+      wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
+      updateQuery();
+      filterPolicies();
+    }
+  });
+  
+  window.addEventListener('load', function() {
+    // fetch file
+    fetch(new URL("index.json", rootURL).href)
+    .then(response => response.json())
+    .then(function(data) {
+      data = data.length ? data : [];
+      section ? listPolicies(data) : false;
+      // filter policies on load
+      populateFilters(data);
+      filterPolicies();
+    })
+    .catch((error) => console.error(error));
     
-    filterPolicies();
-  
-    if(!section) {
-      window.location.href = new URL("policies", rootURL).href;
-    }
-  }
-
-  const isButton = target.matches(".button");
-  if(isButton) {
-    const isClearAll = target.matches(".button_clear");
-    if(isClearAll) {
-      chosenPolicies = [];
-    } else {
-      console.log(chosenPolicies);
-      const thisPolicyType = target.textContent;
-      const remainingPolicies = [];
-      chosenPolicies.forEach((policy) => {
-        if(policy.type != thisPolicyType) {
-          remainingPolicies.push(policy);
-        };
-      });
-      chosenPolicies = remainingPolicies;
-      console.log(chosenPolicies);
-    }
-    // persist filters
-    wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
-    updateQuery();
-    filterPolicies();
-  }
-});
-
-window.addEventListener('load', function() {
-  // fetch file
-  fetch(new URL("index.json", rootURL).href)
-  .then(response => response.json())
-  .then(function(data) {
-    data = data.length ? data : [];
-    section ? listPolicies(data) : false;
-    // filter policies on load
-    populateFilters(data);
-    filterPolicies();
-  })
-  .catch((error) => console.error(error));
-  
-});
+  });
+}
