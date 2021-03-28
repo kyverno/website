@@ -37,15 +37,16 @@ const panelFrom = 'panel_from';
 const panelBox = 'panel_box';
 const fullHeight = 'initial';
 const highlightWrap = 'highlight_wrap'
+const highlight = 'highlight';
 
 function wrapOrphanedPreElements() {
   const pres = elems('pre');
   Array.from(pres).forEach(function(pre){
     const parent = pre.parentNode;
-    const isOrpaned = !containsClass(parent, 'highlight');
+    const isOrpaned = !containsClass(parent, highlight);
     if(isOrpaned) {
       const preWrapper = createEl();
-      preWrapper.className = 'highlight';
+      preWrapper.className = highlight;
       const outerWrapper = createEl();
       outerWrapper.className = highlightWrap;
       wrapEl(pre, preWrapper);
@@ -73,7 +74,7 @@ function codeBlocks() {
 function codeBlockFits(block) {
   // return false if codeblock overflows
   const blockWidth = block.offsetWidth;
-  const highlightBlockWidth = block.parentNode.parentNode.offsetWidth;
+  const highlightBlockWidth = block.closest(`.${highlight}`).offsetWidth;
   return blockWidth <= highlightBlockWidth ? true : false;
 }
 
