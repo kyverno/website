@@ -1,7 +1,10 @@
 {{ define "main" }}
 <div class="policy_grid policy_page">
-  {{- partialCached "policies/sidebar" . }}
+  <div class="mt-4">
+    {{- partialCached "policies/sidebar" . }}
+  </div>
   <div class="policy_wrap">
+    {{- partialCached "policies/toggle" . }}
     <h1>{{ .Title }}</h1>
     <div class="lead">{{ .Params.description }}</div>
     {{ .Content }}
