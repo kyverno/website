@@ -290,6 +290,9 @@ code.noClass {
 	font-family: 'Monaco', monospace;
 	padding-top: 1.5rem;
 	padding-bottom: 2rem;
+  overflow: initial;
+  display: initial;
+  margin: 0;
 }
 
 .highlight table {
