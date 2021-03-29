@@ -43,7 +43,7 @@ function wrapOrphanedPreElements() {
   const pres = elems('pre');
   Array.from(pres).forEach(function(pre){
     const parent = pre.parentNode;
-    const isOrpaned = !containsClass(parent, highlight);
+    const isOrpaned = !containsClass(parent, highlight) ;
     if(isOrpaned) {
       const preWrapper = createEl();
       preWrapper.className = highlight;
@@ -64,7 +64,7 @@ wrapOrphanedPreElements();
 function codeBlocks() {
   const markedCodeBlocks = elems('code');
   const blocks = Array.from(markedCodeBlocks).filter(function(block){
-    return hasClasses(block) && !Array.from(block.classList).includes('noClass');
+    return block.closest("pre") && !Array.from(block.classList).includes('noClass');
   }).map(function(block){
     return block
   });
@@ -106,6 +106,14 @@ const blocks = codeBlocks();
 function collapseCodeBlock(block) {
   const lines = elems('.ln', block);
   const codeLines = lines.length;
+  if(!lines) {
+    // hide lines toggle button for blocks that have no lines.
+    setTimeout(() => {
+      let panelLinesParentEl = block.closest(`.${highlightWrap}`);
+      let panelLinesEl = elem(`.${linesId}`, panelLinesParentEl);
+      pushClass(panelLinesEl, panelHide);
+    }, 2000)
+  }
   if (codeLines > maxLines) {
     const expandDot = createEl()
     pushClass(expandDot, panelExpand);
@@ -195,6 +203,7 @@ function disableCodeLineNumbers(block){
     // wrap code block in a div
     const highlightWrapper = createEl();
     highlightWrapper.className = highlightWrapId;
+
     wrapEl(highlightElement, highlightWrapper);
 
     const panel = actionPanel();
