@@ -389,20 +389,20 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources from a Git repository or a local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests.
+The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests.
 
 Example:
 
-```
+```sh
 kyverno test  /path/to/folderContaningTestYamls
 ```
 or
 
-```
+```sh
 kyverno test  /path/to/githubRepository
 ``` 
 
-Use the `--f <fileName.yaml>` flag to set filename which include testcases.
+Use the `--f <fileName.yaml>` flag to set a file name which includes test cases.
 
 Test declaration file format (`test.yaml`)
 
@@ -428,8 +428,8 @@ Test declaration file format (`test.yaml`)
 
 The test declaration consists of three parts:
 
-1. The `policies` element which lists one or more policies to be applied
-2. The `resources` element which lists one or more resources to which the policies are applied
+1. The `policies` element which lists one or more policies to be applied.
+2. The `resources` element which lists one or more resources to which the policies are applied.
 3. The `results` element which declares the expected results.
 
 The test command executes a test declaration by applying the policies to the results and comparing the results with the expected results. The test passes if the actual results match the expected results.
