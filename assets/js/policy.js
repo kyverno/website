@@ -9,7 +9,6 @@ const searchParams = new URLSearchParams(window.location.search);
 const wstorage = window.localStorage;
 const getStoredValues = JSON.parse(wstorage.getItem(storedValues));
 let initialPolicies = getStoredValues ? getStoredValues.length ?  getStoredValues: [] : [];
-// initialPolicies = findQuery().length ? findQuery().split("+") : initialPolicies;
 
 let chosenPolicies = initialPolicies;
 
@@ -26,15 +25,20 @@ function populateFilters(data) {
       filters.add(item[filterType]);
     });
     let filterTypeEl = elem(`.filter_${filterType}`);
-    if (filters.size >= 1) {
-      filters.forEach(function(filter){
-        let filterButton = createEl();
-        filterButton.className = "filter";
-        filterButton.textContent = filter;
-        filterTypeEl.appendChild(filterButton);
-      });
-    } else {
-      filterTypeEl.classList.add("passive");
+    const filterCategory = { "type": filterTypeEl.dataset.criteria, "policies": Array.from(filters) };
+    allFiltersObj.push(filterCategory);
+    
+    if(data.length >= 1) {
+      if (filters.size >= 1) {
+        filters.forEach(function(filter){
+          let filterButton = createEl();
+          filterButton.className = "filter";
+          filterButton.textContent = filter;
+          filterTypeEl.appendChild(filterButton);
+        });
+      } else {
+        filterTypeEl.classList.add("passive");
+      }
     }
   });
 }
@@ -87,6 +91,22 @@ function findQuery(query = policyTypeQueryString) {
     return decodeURI(c);
   }
   return "";
+}
+
+function sortQuery() {
+  const queryObj = findQuery().split("+");
+  let sharedFilters = [];
+  const filtersObj = allFiltersObj;
+  if(queryObj.length >= 1) {
+    queryObj.forEach(phrase => {
+      filtersObj.forEach(obj => {
+        let policiesStr = obj.policies.join(" ").toLowerCase();
+        policiesStr.includes(phrase) ? sharedFilters.push({"id": obj.type, "type": phrase}) : false;
+      });
+    });
+    // persist filters
+    chosenPolicies = sharedFilters;
+  }
 }
 
 function createButton(policy, id = null){
@@ -194,6 +214,7 @@ function objIsInArray(obj,obj1) {
   // returns index where object was found or null
   return isEqual.length ? isEqual[0] : null;
 }
+
 if(policyWrap) {
   window.addEventListener("click", event => {
     let obj = chosenPolicies;
@@ -228,7 +249,6 @@ if(policyWrap) {
       if(isClearAll) {
         chosenPolicies = [];
       } else {
-        console.log(chosenPolicies);
         const thisPolicyType = target.textContent;
         const remainingPolicies = [];
         chosenPolicies.forEach((policy) => {
@@ -237,11 +257,9 @@ if(policyWrap) {
           };
         });
         chosenPolicies = remainingPolicies;
-        console.log(chosenPolicies);
       }
       // persist filters
       wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
-      updateQuery();
       filterPolicies();
     }
     
@@ -263,6 +281,7 @@ if(policyWrap) {
       section ? listPolicies(data) : false;
       // filter policies on load
       populateFilters(data);
+      sortQuery();
       filterPolicies();
     })
     .catch((error) => console.error(error));

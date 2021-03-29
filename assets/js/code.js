@@ -264,7 +264,6 @@ function disableCodeLineNumbers(block){
 
   (function addLangLabel() {
     const blocks = codeBlocks();
-    console.log(blocks);
     blocks.forEach(function(block){
       let label = block.dataset.lang;
       label = label === 'sh' ? 'bash' : label;

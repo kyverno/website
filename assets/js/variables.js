@@ -1,11 +1,15 @@
 // global variables;
 const doc = document.documentElement;
-const toggleId = 'toggle';
-const showId = 'show';
+const toggleId = "toggle";
+const showId = "show";
 const rootURL = window.location.protocol + "//" + window.location.host;
 
 // config defined values
-const pageLink = '{{ .RelPermalink }}';
+const pageLink = "{{ .RelPermalink }}";
+const sparams = '{{ delimit site.Params.policies "," }}';
+let allFiltersObj = [];
+const policyTypeObj = { "type": "policytype", "policies": sparams.split(",") };
+allFiltersObj.push(policyTypeObj)
 
 // simple strings
 const storedValues = "kyvernoFilters";
