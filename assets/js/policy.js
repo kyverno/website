@@ -1,7 +1,6 @@
 /*
-@TODOS
-1. Make listed filters collapseable if they exceed a certain number.This would be help responsive issues
-2. Make filtered policies shareable via query Params
+@TODO
+ - Make listed filters collapseable in mobile.This would be help responsive issues
 */
 
 // local storage 
@@ -71,7 +70,7 @@ function updateQuery() {
     let p = encodeURI(policy.type);
     queryS += index ? `+${p}` : p;
   });
-  
+
   if (('URLSearchParams' in window) && queryS != undefined) {
     let newRelativePathQuery;
     if(queryS.length) {
@@ -99,13 +98,15 @@ function sortQuery() {
   const filtersObj = allFiltersObj;
   if(queryObj.length >= 1) {
     queryObj.forEach(phrase => {
-      filtersObj.forEach(obj => {
-        let policiesStr = obj.policies.join(" ").toLowerCase();
-        policiesStr.includes(phrase) ? sharedFilters.push({"id": obj.type, "type": phrase}) : false;
-      });
+      if(phrase.trim().length) {
+        filtersObj.forEach(obj => {
+          let policiesStr = obj.policies.join(" ").toLowerCase();
+          policiesStr.includes(phrase) ? sharedFilters.push({"id": obj.type, "type": phrase}) : false;
+        });
+      }
     });
     // persist filters
-    chosenPolicies = sharedFilters;
+    chosenPolicies = sharedFilters.length ? sharedFilters: chosenPolicies;
   }
 }
 
