@@ -306,6 +306,10 @@ code.noClass {
 	position: relative;
 	padding: 0 1rem;
 	margin: 2.5rem auto 1rem auto;
+  .highlight_wrap {
+    padding: 0;
+    margin: 0;
+  }
 }
 
 .highlight_wrap + .highlight_wrap {
