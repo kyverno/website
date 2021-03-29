@@ -1,19 +1,19 @@
-{{ $s := site.Params }}
+{{- $s := site.Params }}
 {{- $policies := $s.policies }}
 {{- $policyFilters := $s.policyFilters }}
-{{ $filterIDs := slice }}
+{{- $filterIDs := slice }}
 <aside class="policy_filters">
-  {{ range $policyFilters }}
+  {{- range $policyFilters }}
   <div class="filter_type filter_{{ .filterID }}" data-criteria="{{ .filterID }}">
     <h3 class="filter_title">{{ .title }}</h3>
     {{- if .isFixed }}
     {{- range $policies }}
-    <div class="filter">{{ . }}</div>
+      <div class="filter">{{ . }}</div>
     {{- end}}
     {{- else }}
-    {{- $filterIDs = append .filterID $filterIDs }}
+      {{- $filterIDs = append .filterID $filterIDs }}
     {{- end }}
   </div>
-  {{ end }}
+  {{- end }}
   <div id="policy_filters" data-filters={{ delimit $filterIDs "," }}></div>
 </aside>
