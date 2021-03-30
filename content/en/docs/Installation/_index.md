@@ -427,7 +427,7 @@ helm uninstall kyverno --namespace kyverno kyverno/kyverno
 
 ### Clean up Webhook Configurations
 
-Kyverno by default will clean up all its webhook configurations during termination. While removing the RBAC resources could result in failure of the cleanup process as it loses the permissions to delete the webhook configurations.
+Kyverno by default will try to clean up all its webhook configurations when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
 
 Regardless which uninstallation method is chosen, webhooks will need to be manually removed as the final step. Use the below commands to delete those webhook configurations.
 
