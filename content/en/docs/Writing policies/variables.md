@@ -148,25 +148,25 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 ## Variables from container images
 
-Kyverno extracts image properties and make them available as variables. Whenever a new request has `containers` or `initContainers` defined, the image properties can be referenced as follows:
+Kyverno extracts image properties and makes them available as variables. Whenever a new request has `containers` or `initContainers` defined, the image properties can be referenced as follows:
 
-Reference the image properties of container `my-container`:
+Reference the image properties of container `mycontainer`:
 
 1. Reference the registry URL 
 
-`{{images.containers.\"my-container\".registry}}`
+`{{images.containers.mycontainer.registry}}`
 
 2. Reference the image name
 
-`{{images.containers.\"my-container\".name}}`
+`{{images.containers.mycontainer.name}}`
 
 3. Reference the image tag
 
-`{{images.containers.\"my-container\".tag}}`
+`{{images.containers.mycontainer.tag}}`
 
 4. Reference the digest
 
-`{{images.containers.\"my-container\".digest}}`
+`{{images.containers.mycontainer.digest}}`
 
 Reference the image properties of initContainer `mycontainer`:
 
@@ -186,6 +186,11 @@ Reference the image properties of initContainer `mycontainer`:
 
 `{{images.initContainers.mycontainer.digest}}`
 
+{{% alert title="Note" color="info" %}}
+Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
+{{% /alert %}}
+
+You can also fetch image properties of all containers for further processing. For example, {{ images.containers.*.name }}` creates a string list of all image names.
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
