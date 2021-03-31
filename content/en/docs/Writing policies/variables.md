@@ -190,7 +190,7 @@ Reference the image properties of initContainer `mycontainer`:
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
 {{% /alert %}}
 
-You can also fetch image properties of all containers for further processing. For example, {{ images.containers.*.name }}` creates a string list of all image names.
+You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
