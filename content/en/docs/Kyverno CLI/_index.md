@@ -478,3 +478,140 @@ summary:
   skip: 0
   warn: 0
 ```
+
+### Test
+
+The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests.
+
+Example:
+
+```sh
+kyverno test  /path/to/folderContaningTestYamls
+```
+or
+
+```sh
+kyverno test  /path/to/githubRepository
+``` 
+
+Use the `--f <fileName.yaml>` flag to set a file name which includes test cases.
+
+Test declaration file format (`test.yaml`)
+
+```yaml
+- name: test-1
+  policies:
+     - <path>
+     - <path>
+  resources:
+     - <path>
+     - <path>
+   results:
+   - policy: <name>
+     rule: <name>
+     resource: <name>
+     status: pass
+   - policy: <name>
+     rule: <name>
+     resource: <name>
+     status: fail
+    
+```
+
+The test declaration consists of three parts:
+
+1. The `policies` element which lists one or more policies to be applied.
+2. The `resources` element which lists one or more resources to which the policies are applied.
+3. The `results` element which declares the expected results.
+
+The test command executes a test declaration by applying the policies to the results and comparing the results with the expected results. The test passes if the actual results match the expected results.
+
+Multiple tests can be defined in the same file using the YAML delimiter `---`.
+
+Example:
+
+Policy manifest (`disallow_latest_tag.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      The ':latest' tag is mutable and can lead to unexpected errors if the 
+      image changes. A best practice is to use an immutable tag that maps to 
+      a specific version of an application pod.
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: require-image-tag
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "An image tag is required."  
+      pattern:
+        spec:
+          containers:
+          - image: "*:*"
+  - name: validate-image-tag
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Using a mutable image tag e.g. 'latest' is not allowed."
+      pattern:
+        spec:
+          containers:
+          - image: "!*:latest"
+```
+
+Resource manifest (`resource.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-podName
+  labels:
+    app: myapp
+spec: 
+  containers:
+  - name: nginx
+    image: nginx:1.12
+```
+
+Test manifest (`test.yaml`):
+
+```yaml
+name: disallow_latest_tag
+policies:
+  -  disallow_latest_tag.yaml
+resources:
+  -  resource.yaml
+results:
+  - policy: disallow-latest-tag
+    rule: require-image-tag
+    resource: myapp-pod
+    status: pass
+  - policy: disallow-latest-tag
+    rule: validate-image-tag
+    resource: myapp-pod
+    status: pass
+```
+
+```sh
+kyverno test <PathToDirs>
+```
+The example above applies a test on the policy and the resource defined in the test YAML.
+
+
+| #        | TEST                                                                    | RESULT           |
+| ---------|:-----------------------------------------------------------------------:|:-----------------| 
+| 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
+| 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             | 
+
