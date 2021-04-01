@@ -186,7 +186,7 @@ Reference the image properties of initContainer `mycontainer`:
 
 `{{images.initContainers.mycontainer.digest}}`
 
-Kyverno by default set an empty registry to `docker.io` and an empty tag to `latest`.
+Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
 
 {{% alert title="Note" color="info" %}}
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
