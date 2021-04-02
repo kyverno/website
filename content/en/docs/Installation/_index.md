@@ -16,7 +16,8 @@ Currently, Kyverno runs as a single replica in the `Deployment` resource. Suppor
 
 | Kyverno Version                | Kubernetes Min | Kubernetes Max |
 |--------------------------------|----------------|----------------|
-| 1.3.0                          | 1.14           | 1.20*          |
+| 1.2.1                          | 1.14           | 1.17           |
+| 1.3.0                          | 1.16           | 1.20*          |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
