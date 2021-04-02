@@ -146,6 +146,53 @@ busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=bus
 In the output, we can clearly see the value of our `created-by` label is `kubernetes-admin` which, in this case, is the user who created the Pod.
 
 
+## Variables from container images
+
+Kyverno extracts image properties and makes them available as variables. Whenever a new request has `containers` or `initContainers` defined, the image properties can be referenced as follows:
+
+Reference the image properties of container `mycontainer`:
+
+1. Reference the registry URL 
+
+`{{images.containers.mycontainer.registry}}`
+
+2. Reference the image name
+
+`{{images.containers.mycontainer.name}}`
+
+3. Reference the image tag
+
+`{{images.containers.mycontainer.tag}}`
+
+4. Reference the digest
+
+`{{images.containers.mycontainer.digest}}`
+
+Reference the image properties of initContainer `mycontainer`:
+
+1. Reference the registry URL
+
+` {{images.initContainers.mycontainer.registry}}`
+
+2. Reference the image name
+
+`{{images.initContainers.mycontainer.name}}`
+
+3.  Reference the image tag
+
+`{{images.initContainers.mycontainer.tag}}`
+
+4. Reference the digest
+
+`{{images.initContainers.mycontainer.digest}}`
+
+Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
+
+{{% alert title="Note" color="info" %}}
+Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
+{{% /alert %}}
+
+You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
