@@ -15,12 +15,124 @@ For `validate` rules, the use of `patterns` is often preferable since conditiona
 
 When specifying a JMESPath expression in a `preconditions` statement which contains a special character (ex. `/` in the case of Kubernetes annotations), double quote the annotation as a literal string. Escape the double quotes with a backslash character (`\`).
 
-```yaml
+```sh
 {{request.object.spec.template.metadata.annotations.\"foo.k8s.corp.net/bar\"}}
 ```
 
 You may specify multiple statements in the `preconditions` field. The use of multiple `preconditions` statements function as a logical AND statement.
 
+## Any and All Statements
+
+You may further control how `preconditions` are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule with multiple `any` statements also being possible. For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, `preconditions` will not be satisfied and thus the rule will not be applicable.
+
+{{% alert title="Note" color="info" %}}
+`any` and `all` statements are available starting in Kyverno v1.3.4 but are optional. Users can continue to write multiple statements inside the `preconditions` field and have them evaluated as a logical AND statement.
+{{% /alert %}}
+
+For example, consider a Deployment manifest which features many different labels as follows.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox
+  labels:
+    app: busybox
+    color: red
+    animal: cow
+    food: pizza
+    car: jeep
+    env: qa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      containers:
+      - image: busybox:1.28
+        name: busybox
+        command: ["sleep", "9999"]
+```
+
+Using `any` and `all` blocks in the `preconditions` statement, it is possible to gain more granular control over when rules are evaluated. In the below sample policy, using an `any` block will allow the `preconditions` to work as a logical OR operation. This policy will only perform the validation if labels `color=blue` OR `app=busybox` are found. Because the Deployment manifest above specified `color=red`, using the `any` statement still allows the validation to occur.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: any-all-preconditions
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: any-all-rule
+    match:
+      resources:
+        kinds:
+        - Deployment
+    preconditions:
+      any:
+      - key: "{{request.object.metadata.labels.color}}"
+        operator: Equals
+        value: blue
+      - key: "{{request.object.metadata.labels.app}}"
+        operator: Equals
+        value: busybox
+    validate:
+      message: "Busybox must be used based on this label combination."
+      pattern:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: "*busybox*"
+```
+
+Adding an `all` block means that all of the statements within that block must evaluate to TRUE for the whole block to be considered TRUE. In this policy, in addition to the previous `any` conditions, it checks that all of `animal=cow` and `env=prod` but changes the validation to look for a container with name having the string `foxes` in it. Because the `any` block and `all` block evaluate to TRUE, the validation is performed, however the Deployment will fail to create because the name is still `busybox`. If one of the statements in the `all` block is changed so the value of the checked label is not among those in the Deployment, the rule will not be processed and the Deployment will be created.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: any-all-preconditions
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: any-all-rule
+    match:
+      resources:
+        kinds:
+        - Deployment
+    preconditions:
+      any:
+      - key: "{{request.object.metadata.labels.color}}"
+        operator: Equals
+        value: blue
+      - key: "{{request.object.metadata.labels.app}}"
+        operator: Equals
+        value: busybox
+      all:
+      - key: "{{request.object.metadata.labels.animal}}"
+        operator: Equals
+        value: cow
+      - key: "{{request.object.metadata.labels.env}}"
+        operator: Equals
+        value: qa
+    validate:
+      message: "Foxes must be used based on this label combination."
+      pattern:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: "*foxes*"
+```
 
 ## Operators
 
