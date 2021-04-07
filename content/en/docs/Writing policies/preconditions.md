@@ -59,7 +59,7 @@ spec:
         command: ["sleep", "9999"]
 ```
 
-Using `any` and `all` blocks in the `preconditions` statement, it is possible to gain more granular control over when rules are evaluated. In the below sample policy, using an `any` block will allow the `preconditions` to work as a logical OR operation. This policy will only perform the validation if labels `color=blue` OR `app=busybox` are found. Because the Deployment manifest above specified `color=red`, using the `any` statement still allows the validation to occur.
+By using `any` and `all` blocks in the `preconditions` statement, it is possible to gain more granular control over when rules are evaluated. In the below sample policy, using an `any` block will allow the `preconditions` to work as a logical OR operation. This policy will only perform the validation if labels `color=blue` OR `app=busybox` are found. Because the Deployment manifest above specified `color=red`, using the `any` statement still allows the validation to occur.
 
 ```yaml
 apiVersion: kyverno.io/v1
