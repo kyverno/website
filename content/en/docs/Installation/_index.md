@@ -218,7 +218,7 @@ ClusterRoles used by Kyverno:
 
 The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
 
-To get cluster wide permissions, users has to add the permissions for cluster wide resource such as (`roles, clusterroles, rolebindings, clusterrolebindings`) they need.
+To get cluster wide permissions, users must add the permissions for cluster wide resource such as `roles`,  `clusterroles`,  `rolebindings` and `clusterrolebindings` they need.
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1

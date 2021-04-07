@@ -15,7 +15,7 @@ The `match` and `exclude` clauses have the same structure and can each contain t
 
 At least one element must be specified in a `match` or `exclude` block. The `kind` attribute is optional when working with the `resources` element, but if it's not specified the policy rule will only be applicable to metadata that is common across all resource kinds.
 
-In additionally, user can specify  the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
+In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
 
 Supported formats:
 
