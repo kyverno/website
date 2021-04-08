@@ -225,3 +225,7 @@ spec:
           kinds:
             - Pod
 ```
+
+{{% alert title="Note" color="info" %}}
+Kind Pod is special for Kyverno. When one applies above rule Kyverno mutates it and adds higher level controllers like Deployment, Daemonset, Statefulset etc. See more on [Auto-Gen Rules for Pod Controllers](/docs/writing-policies/autogen/)
+{{% /alert %}}
