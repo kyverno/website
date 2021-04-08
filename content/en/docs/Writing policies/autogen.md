@@ -11,6 +11,16 @@ The auto-gen feature is only supported for validation rules with patterns and mu
 
 Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written for a Pod.
 
+Therefore when kind Pod resource filter is specified it will match:
+* Deployments
+* DaemonSets
+* StatefulSets
+* Jobs
+* CronJobs
+* standalone Pods (not managed by any higher level controller like Deployment)
+
+Pods managed by higher level controllers are not matched because it is considered to be an anti-pattern as explained above.
+
 For example, when creating a validation policy like below which checks that all images come from an internal, trusted registry, the policy applies to all resources capable of generating Pods.
 
 ```yaml
