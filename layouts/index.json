@@ -15,6 +15,7 @@
     {{/* 
       // end dummy data generation logic
       // override dummy values of $version and $label using .Params.version and .Params.label respectively 
+      // You can safely delete the dummy data generation logic
     */}}
     {{- $policy := index (intersect (split $possibleRules ",") site.Params.policies) 0 -}}
     {{- $category := lower $page.Params.category }}
