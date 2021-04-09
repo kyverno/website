@@ -21,7 +21,14 @@ type: docs
 
 {{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
 
+
+{{% /videos %}}
+
+{{% videos %}}
+
 {{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
+
+{{< youtube id="ZrOtTELNLyg" start="1033" class="video" >}}
 
 {{% /videos %}}
 
