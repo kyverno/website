@@ -1,7 +1,7 @@
 ---
 title: Kyverno CLI
 description: >
-  Test policies and validate resources outside a cluster.
+  Apply and test policies outside a cluster.
 weight: 70
 ---
 
@@ -42,48 +42,6 @@ mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 ## CLI Commands
 
 When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "standalone" version (binaries [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)) as opposed to the version embedded inside `kubectl`.
-
-### Version
-
-Prints the version of Kyverno used by the CLI.
-
-Example:
-
-```
-kyverno version
-```
-
-### Validate
-
-Validates a policy, can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
-
-Example:
-
-```
-kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies
-```
-
-Passing policy from stdin:
-
-```
-kustomize build nginx/overlays/envs/prod/ | kyverno validate -
-```
-
-Use the `-o <yaml/json>` flag to display the mutated policy.
-
-Example:
-
-```
-kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
-```
-
-Policy can also be validated with CRDs. Use `-c` flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
-
-Example:
-
-```
-kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFullOfCRDs
-```
 
 ### Apply
 
@@ -615,3 +573,46 @@ The example above applies a test on the policy and the resource defined in the t
 | 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
 | 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             | 
 
+
+
+### Validate
+
+Validates a policy, can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
+
+Example:
+
+```
+kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies
+```
+
+Passing policy from stdin:
+
+```
+kustomize build nginx/overlays/envs/prod/ | kyverno validate -
+```
+
+Use the `-o <yaml/json>` flag to display the mutated policy.
+
+Example:
+
+```
+kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
+```
+
+Policy can also be validated with CRDs. Use `-c` flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
+
+Example:
+
+```
+kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFullOfCRDs
+```
+
+### Version
+
+Prints the version of Kyverno used by the CLI.
+
+Example:
+
+```
+kyverno version
+```
