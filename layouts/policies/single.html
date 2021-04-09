@@ -9,10 +9,7 @@
     <div class="lead">{{ .Params.description }}</div>
     {{ .Content }}
     <div class="text-muted mt-5 pt-3 border-top">
-      {{ partial "page-meta-links" . }}
-    </div>
-    <div class="text-muted mt-4 pt-3 border-top">
-      {{ partial "page-meta-lastmod" . }}
+      <a href="{{ .Params.repo }}"><i class="fab fa-github fa-fw"></i> {{  T "create_policy_issue" }}</a>
     </div>
   </div>
 </div>
