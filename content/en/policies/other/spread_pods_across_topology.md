@@ -1,7 +1,8 @@
 ---
-title: Spread Pods Across Nodes
-linkTitle: Spread Pods Across Nodes
-weight: 27
+title: "Spread Pods Across Nodes"
+linkTitle: "Spread Pods Across Nodes"
+weight: 30
+repo: "https://github.com/kyverno/policies/blob/main/other/spread_pods_across_topology.yaml"
 description: >
     Sample policy to spread pods matching a label across nodes.
 category: Sample

@@ -1,7 +1,8 @@
 ---
-title: Add Volume
-linkTitle: Add Volume
+title: "Add Volume"
+linkTitle: "Add Volume"
 weight: 16
+repo: "https://github.com/kyverno/policies/blob/main/other/add_volume_deployment.yaml"
 description: >
     Sample policy to add a volume and volumeMount. 
 category: Sample

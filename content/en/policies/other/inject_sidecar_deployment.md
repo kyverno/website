@@ -1,7 +1,8 @@
 ---
-title: Inject Sidecar Container
-linkTitle: Inject Sidecar Container
+title: "Inject Sidecar Container"
+linkTitle: "Inject Sidecar Container"
 weight: 21
+repo: "https://github.com/kyverno/policies/blob/main/other/inject_sidecar_deployment.yaml"
 description: >
     Sample policy that injects a sidecar container into Pods that match an annotation.  
 category: Sample

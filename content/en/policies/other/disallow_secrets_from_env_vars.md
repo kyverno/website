@@ -1,7 +1,8 @@
 ---
-title: Disallow Secrets from Env Vars
-linkTitle: Disallow Secrets from Env Vars
+title: "Disallow Secrets from Env Vars"
+linkTitle: "Disallow Secrets from Env Vars"
 weight: 18
+repo: "https://github.com/kyverno/policies/blob/main/other/disallow_secrets_from_env_vars.yaml"
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
 category: Sample

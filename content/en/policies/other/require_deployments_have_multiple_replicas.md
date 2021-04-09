@@ -1,7 +1,8 @@
 ---
-title: Require Multiple Replicas
-linkTitle: Require Multiple Replicas
+title: "Require Multiple Replicas"
+linkTitle: "Require Multiple Replicas"
 weight: 22
+repo: "https://github.com/kyverno/policies/blob/main/other/require_deployments_have_multiple_replicas.yaml"
 description: >
     Sample policy that requires more than one replica for deployments.    
 category: Sample

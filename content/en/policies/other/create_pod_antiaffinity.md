@@ -1,7 +1,8 @@
 ---
-title: Add Pod Anti-Affinity
-linkTitle: Add Pod Anti-Affinity
+title: "Add Pod Anti-Affinity"
+linkTitle: "Add Pod Anti-Affinity"
 weight: 17
+repo: "https://github.com/kyverno/policies/blob/main/other/create_pod_antiaffinity.yaml"
 description: >
     Sample policy to add Pod anti-affinity
 category: Sample
