@@ -66,6 +66,9 @@
   position: relative;
   cursor: pointer;
   text-transform: capitalize;
+  &:empty {
+    display: none;
+  }
   &::before, &::after {
     content: "";
     position: absolute;
