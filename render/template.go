@@ -1,13 +1,14 @@
 package main
 
 var policyTemplate = `---
+{{- $annotations := .Policy.ObjectMeta.Annotations }}
 title: "{{ .Title }}"
 linkTitle: "{{ .Title }}"
 weight: {{ .Weight }}
 repo: "https://github.com/kyverno/policies/blob/main{{ .Path }}"
 description: >
-    {{ index .Policy.ObjectMeta.Annotations "policies.kyverno.io/description" }}
-category: {{ index .Policy.ObjectMeta.Annotations "policies.kyverno.io/category" }}
+    {{ index $annotations "policies.kyverno.io/description" }}
+category: {{ index $annotations "policies.kyverno.io/category" }}
 {{ .Rules }}
 ---
 
