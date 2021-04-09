@@ -2,15 +2,20 @@
 {{- range $index, $page := .Site.Pages  -}}
   {{- $possibleRules := "" -}}
   {{- if $page.Params.rules }}
-    {{- range $key, $value := (index $page.Params.rules 0) }}
-      {{- $possibleRules = printf "%s,%s" $possibleRules $key }}
-    {{- end }}
-    {{- $version := "v1" }}
-    {{- $label := "stable" }}
-    {{- if (modBool (add $index 1) 3) }}
+    {{- range $key, $value := (index $page.Params.rules 0) -}}
+      {{- $possibleRules = printf "%s,%s" $possibleRules $key -}}
+    {{- end -}}
+    {{/* // start dummy data generation logic */}}
+    {{- $version := "v1" -}}
+    {{- $label := "stable" -}}
+    {{- if (modBool (add $index 1) 3) -}}
       {{- $version = "v2" }}
       {{- $label = "in development" }}
-    {{- end }}
+    {{- end -}}
+    {{/* 
+      // end dummy data generation logic
+      // override dummy values of $version and $label using .Params.version and .Params.label respectively 
+    */}}
     {{- $policy := index (intersect (split $possibleRules ",") site.Params.policies) 0 -}}
     {{- $category := lower $page.Params.category }}
     {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $page.Params.description "link" $page.Permalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
