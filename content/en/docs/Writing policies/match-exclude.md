@@ -23,6 +23,12 @@ Supported formats:
 * `Version/Kind`
 * `Kind`
 
+To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy.
+
+These can be distinguished as:
+* `networking.k8s.io/v1/NetworkPolicy`
+* `crd.antrea.io/v1alpha1/NetworkPolicy`
+
 
 When Kyverno receives an admission controller request (i.e., a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
@@ -56,6 +62,30 @@ spec:
 ```
 
 This will now match on only Services that begin with the name "prod-" but not those which begin with "dev-" nor any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+
+In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
+
+```yaml
+spec:
+  rules:
+  - name: no-LoadBalancer
+    match:
+      resources:
+        kinds:
+        - networking.k8s.io/v1/NetworkPolicy
+```
+
+By adding the only `version` and `kind` in the `match` statements, will filter out the kind only based on version.
+
+```yaml
+spec:
+  rules:
+  - name: no-LoadBalancer
+    match:
+      resources:
+        kinds:
+        - v1/NetworkPolicy
+```
 
 Here are some other examples of `match` statements.
 
