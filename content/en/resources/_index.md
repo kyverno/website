@@ -19,12 +19,24 @@ type: docs
 
 {{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
+{{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
+
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
+
+{{< youtube id="ZrOtTELNLyg" start="1033" class="video" >}}
+
 {{% /videos %}}
 
 ## Blogs
 
 *(latest to oldest)*
 
+- [Kubernetes Policy Comparison: OPA/Gatekeeper vs Kyverno](https://neonmirrors.net/post/2021-02/kubernetes-policy-comparison-opa-gatekeeper-vs-kyverno/), February 2021
 - [Self-Service Velero Backups with Kyverno](https://nirmata.com/2021/01/24/self-service-velero-backups-with-kyverno/), January 2021
 - [Kyverno: The Swiss Army Knife of Kubernetes](https://neonmirrors.net/post/2021-01/kyverno-the-swiss-army-knife-of-kubernetes/), January 2021
 - [Auto-labeling Kubernetes resources with Kyverno](https://www.cncf.io/blog/2020/12/30/auto-labeling-kubernetes-resources-with-kyverno/), December 2020

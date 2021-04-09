@@ -8,12 +8,27 @@ The `match` and `exclude` filters control which resources policies are applied t
 
 The `match` and `exclude` clauses have the same structure and can each contain the following elements:
 
-* `resources`: select resources by name, namespaces, kinds, label selectors, and annotations.
+* `resources`: select resources by name, Namespaces, kinds, label selectors, annotations, and Namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
 At least one element must be specified in a `match` or `exclude` block. The `kind` attribute is optional when working with the `resources` element, but if it's not specified the policy rule will only be applicable to metadata that is common across all resource kinds.
+
+In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
+
+Supported formats:
+
+* `Group/Version/Kind`
+* `Version/Kind`
+* `Kind`
+
+To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy.
+
+These can be distinguished as:
+* `networking.k8s.io/v1/NetworkPolicy`
+* `crd.antrea.io/v1alpha1/NetworkPolicy`
+
 
 When Kyverno receives an admission controller request (i.e., a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
@@ -47,6 +62,30 @@ spec:
 ```
 
 This will now match on only Services that begin with the name "prod-" but not those which begin with "dev-" nor any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+
+In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
+
+```yaml
+spec:
+  rules:
+  - name: no-LoadBalancer
+    match:
+      resources:
+        kinds:
+        - networking.k8s.io/v1/NetworkPolicy
+```
+
+By adding the only `version` and `kind` in the `match` statements, will filter out the kind only based on version.
+
+```yaml
+spec:
+  rules:
+  - name: no-LoadBalancer
+    match:
+      resources:
+        kinds:
+        - v1/NetworkPolicy
+```
 
 Here are some other examples of `match` statements.
 
@@ -120,6 +159,31 @@ spec:
 {{% alert title="Note" color="info" %}}
 Although the above snippet is useful for showing the types of matching that you can use, most policies either use one or just a couple different elements within their `match` statements.
 {{% /alert %}}
+
+### Match Deployments in Namespaces using labels
+
+This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute` using a `namespaceSelector`.
+
+Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation. 
+
+```yaml
+spec:
+  rules:
+    - name: check-min-replicas
+      match:
+        # AND across resources and selector
+        resources:
+          # OR inside list of kinds
+          kinds:
+          - Deployment
+          namespaceSelector:
+            matchExpressions:
+              - key: type 
+                operator: In
+                values: 
+                - connector
+                - compute
+```
 
 ## Combining match and exclude
 

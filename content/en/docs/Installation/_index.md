@@ -16,13 +16,16 @@ Currently, Kyverno runs as a single replica in the `Deployment` resource. Suppor
 
 | Kyverno Version                | Kubernetes Min | Kubernetes Max |
 |--------------------------------|----------------|----------------|
-| 1.3.0                          | 1.14           | 1.20*          |
+| 1.2.1                          | 1.14           | 1.17           |
+| 1.3.0                          | 1.16           | 1.20*          |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
 ## Install Kyverno using Helm
 
-Add the Kyverno Helm repository.
+Kyverno can be deployed through a Helm chart which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno). As of Kyverno 1.3.2, the Helm chart also by default installs the `default` profile of the Pod Security Standards policies available [here](https://kyverno.io/policies/pod-security/).
+
+In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
@@ -34,21 +37,28 @@ Scan the new repository for charts.
 helm repo update
 ```
 
-Use Helm 3.2+ to create a namespace and install Kyverno:
+Use Helm 3.2+ to create a Namespace and install Kyverno.
+
 ```sh
-helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-To install non-stable releases, add the `--devel` switch to Helm
+To install non-stable releases, add the `--devel` switch to Helm.
+
 ```sh
 helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace --devel
 ```
 
-For Helm versions prior to 3.2, create a namespace and then install the Kyverno Helm chart.
+For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
+
 ```sh
 kubectl create ns kyverno
 helm install kyverno --namespace kyverno kyverno/kyverno
 ```
+
+{{% alert title="Note" color="info" %}}
+For all of the flags available during a Helm installation of Kyverno, see [here](https://github.com/kyverno/kyverno/tree/main/charts/kyverno). To disable the automatic installation of the default Pod Security Standard policies, set `podSecurityStandard` to `disabled`.
+{{% /alert %}}
 
 ## Install Kyverno using YAMLs
 
@@ -208,6 +218,8 @@ ClusterRoles used by Kyverno:
 
 The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
 
+To get cluster wide permissions, users must add the permissions for cluster wide resource such as `roles`,  `clusterroles`,  `rolebindings` and `clusterrolebindings` they need.
+
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -314,7 +326,9 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8sResources`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+3. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 
 ### PolicyViolation access
 
@@ -402,16 +416,28 @@ helm upgrade kyverno --namespace kyverno kyverno/kyverno --version <version_numb
 
 ## Uninstalling Kyverno
 
-To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment and all CRDs will be removed, including any reports.
+To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment, RBAC resources, and all CRDs will be removed, including any reports.
 
-### Uninstall Kyverno with YAML manifest
+### Option 1 - Uninstall Kyverno with YAML manifest
 
 ```sh
 kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
 ```
 
-### Uninstall Kyverno with Helm
+### Option 2 - Uninstall Kyverno with Helm
 
 ```sh
 helm uninstall kyverno --namespace kyverno kyverno/kyverno
+```
+
+### Clean up Webhook Configurations
+
+Kyverno by default will try to clean up all its webhook configurations when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
+
+Regardless which uninstallation method is chosen, webhooks will need to be manually removed as the final step. Use the below commands to delete those webhook configurations.
+
+```sh
+kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg kyverno-resource-mutating-webhook-cfg kyverno-verify-mutating-webhook-cfg
+
+kubectl delete validatingwebhookconfigurations kyverno-policy-validating-webhook-cfg kyverno-resource-validating-webhook-cfg
 ```
