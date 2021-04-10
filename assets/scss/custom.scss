@@ -26,10 +26,11 @@
   margin: 0 1.25rem 1.25rem 0;
   text-align: center;
   position: relative;
-  display: inline-flex;
-  justify-content: space-between;
-  align-items: center;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
   text-overflow: ellipsis;
+  padding-right: 2.1rem;
   &::after {
     content: "+";
     font-size: 0.84rem;
@@ -44,6 +45,9 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    top: 0.5rem;
+    right: 1.25rem;
   }
   &_filter {
     user-select: none;
