@@ -2,7 +2,7 @@
 type: "docs"
 title: Require Labels
 linkTitle: Require Labels
-weight: 14
+weight: 28
 description: >
     Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work interoperably, describing objects in a common manner that  all tools can understand. The recommended labels describe applications in a way that can be  queried. 
 ---

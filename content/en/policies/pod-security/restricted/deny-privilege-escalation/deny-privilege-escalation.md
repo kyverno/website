@@ -2,7 +2,7 @@
 type: "docs"
 title: Deny Privilege Escalation
 linkTitle: Deny Privilege Escalation
-weight: 35
+weight: 11
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
 ---

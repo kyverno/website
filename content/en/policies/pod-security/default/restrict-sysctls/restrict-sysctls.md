@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Sysctls
 linkTitle: Restrict Sysctls
-weight: 39
+weight: 3
 description: >
     Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
 ---
