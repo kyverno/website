@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Helm Tiller
 linkTitle: Disallow Helm Tiller
-weight: 3
+weight: 16
 description: >
     Tiller has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilge escalation as restricted users can impact other users.
 ---
