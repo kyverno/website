@@ -123,7 +123,8 @@ function createButton(policy, id = null){
 
 function listAppliedFilters() {
   appliedFiltersEl.innerHTML = "";
-  chosenPolicies.forEach(policy => {
+  console.log(chosenPolicies);
+  chosenPolicies.sort((a, b) => a.type.localeCompare(b.type)).forEach(policy => {
     // check if filter is listed first;
     policy = policy.type;
     if(policy) {
