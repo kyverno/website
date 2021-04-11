@@ -1,11 +1,21 @@
 ---
-title: "Custom Resource Definitions"
+title: "Resource Definitions"
 weight: 80
 description: >
   Custom Resource Definitions (CRDs) for Kyverno policies and other types.
 ---
 
-Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types. When operating in a Kubernetes cluster with Kyverno installed, you can always inspect Kyverno types natively using `kubectl explain`. 
+Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types.
+
+The complete Kyverno CRD reference can be viewed using this link:
+
+> **[kyverno.io/v1.ClusterPolicy](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/crd/v1/index.html#kyverno.io/v1.ClusterPolicy)**
+
+The HTML source is available in the [Kyverno GitHub repository](https://github.com/kyverno/kyverno/tree/main/docs) and generated from type definitions stored at [kyverno/kyverno/pkg/api](https://github.com/kyverno/kyverno/tree/main/pkg/api).
+
+## kubectl explain 
+
+When operating in a Kubernetes cluster with Kyverno installed, you can always inspect Kyverno types natively using `kubectl explain`. 
 
 For example, here is the definition of a Kyverno `policy.spec`:
 
@@ -38,11 +48,5 @@ FIELDS:
 ```
 
 Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
-
-The complete Kyverno CRD reference can be viewed using this link:
-
-  **[kyverno.io/v1.ClusterPolicy](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/crd/v1/index.html#kyverno.io/v1.ClusterPolicy)**
-
-The HTML source is available in the [Kyverno GitHub repository](https://github.com/kyverno/kyverno/tree/main/docs) and generated from type definitions stored at [kyverno/kyverno/pkg/api](https://github.com/kyverno/kyverno/tree/main/pkg/api).
 
 
