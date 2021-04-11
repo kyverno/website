@@ -5,7 +5,7 @@ policies = ["generate", "mutate", "validate"]
 codeMaxLines = 0 # to enable function set >= 1
 
 # disable showing line numbers by default. Switch to `true` if you'd rather have them on.
-codeLineNumbers = false
+showLineNumbers = false
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [versions] set.
