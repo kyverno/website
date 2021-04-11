@@ -26,7 +26,7 @@ Execute against the Kyverno policies repository and render markdown to the `cont
 
 To expose more data inside the generated policies markdown file, edit `template.go` file.
 
-For example, let's say you want to scrap a field called `version` and `label` from under annotations. If your policy yaml file looked like this:
+For example, let's say you want to scrape a field called `version` and `label` from under annotations. If your policy yaml file looked like this:
 
 ```yaml
 <!-- somepolicy.yaml file -->
@@ -46,7 +46,7 @@ In `template.go`, you would expose that data as follows
 ```yaml
 var policyTemplate = `---
 ...
-version: {{ index $annotations "policies.kyverno.io/description" }}
+version: {{ index $annotations "policies.kyverno.io/version" }}
 label: {{ index $annotations "policies.kyverno.io/label" }}
 ...
 ---
