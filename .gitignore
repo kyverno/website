@@ -22,3 +22,6 @@ node_modules
 
 # system files
 .DS_Store
+
+# render binary
+/render/render
