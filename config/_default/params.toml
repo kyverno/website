@@ -63,15 +63,15 @@ title = "Policy Category"
 filterID = "category"
 weight = 2
 
-[[policyFilters]]
-title = "Version"
-filterID = "version"
-weight = 3
+# [[policyFilters]]
+# title = "Version"
+# filterID = "version"
+# weight = 3
 
-[[policyFilters]]
-title = "Tags/Labels"
-filterID = "label"
-weight = 4
+# [[policyFilters]]
+# title = "Tags/Labels"
+# filterID = "label"
+# weight = 4
 
 # User interface configuration
 [ui]
