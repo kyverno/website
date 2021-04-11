@@ -9,7 +9,8 @@ const pageLink = "{{ .RelPermalink }}";
 const sparams = '{{ delimit site.Params.policies "," }}';
 let allFiltersObj = [];
 const policyTypeObj = { "type": "policytype", "policies": sparams.split(",") };
-allFiltersObj.push(policyTypeObj)
+allFiltersObj.push(policyTypeObj);
+const codeBlockConfig = JSON.parse('{{ partial "functions/getCodeConfig" . }}');
 
 // simple strings
 const storedValues = "kyvernoFilters";

@@ -29,7 +29,6 @@ function populateFilters(data) {
     
     if(data.length >= 1) {
       if (filters.size >= 1) {
-        console.log(filters);
         Array.from(filters).sort().forEach(function(filter){
           let filterButton = createEl();
           filterButton.className = "filter";
@@ -123,7 +122,6 @@ function createButton(policy, id = null){
 
 function listAppliedFilters() {
   appliedFiltersEl.innerHTML = "";
-  console.log(chosenPolicies);
   chosenPolicies.sort((a, b) => a.type.localeCompare(b.type)).forEach(policy => {
     // check if filter is listed first;
     policy = policy.type;
