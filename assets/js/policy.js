@@ -29,7 +29,8 @@ function populateFilters(data) {
     
     if(data.length >= 1) {
       if (filters.size >= 1) {
-        filters.forEach(function(filter){
+        console.log(filters);
+        Array.from(filters).sort().forEach(function(filter){
           let filterButton = createEl();
           filterButton.className = "filter";
           filterButton.textContent = filter;
@@ -279,6 +280,7 @@ if(policyWrap) {
     .then(response => response.json())
     .then(function(data) {
       data = data.length ? data : [];
+      data = data.sort((a, b) => a.title.localeCompare(b.title));
       section ? listPolicies(data) : false;
       // filter policies on load
       populateFilters(data);
