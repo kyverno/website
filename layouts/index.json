@@ -1,5 +1,5 @@
 {{- $.Scratch.Add "index" slice -}}
-{{- range $index, $page := .Site.Pages  -}}
+{{- range $index, $page := where .Site.Pages "Section" "policies" -}}
   {{- $possibleRules := "" -}}
   {{- if $page.Params.rules }}
     {{- range $key, $value := (index $page.Params.rules 0) -}}
