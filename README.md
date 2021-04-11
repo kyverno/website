@@ -17,6 +17,7 @@ See [render](/render/README.md) folder.
 ## Customize settings
 
 Edit the `.toml` files inside the `config/_default` dir
+
 ## Style and typographical conventions
 
 The Kyverno website has established several writing conventions in the interest of consistency and accuracy.
