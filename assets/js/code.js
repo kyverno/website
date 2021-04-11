@@ -157,12 +157,12 @@ function actionPanel() {
   return panel;
 }
 
-function toggleLineNumbers(elems) {
-  elems.forEach(function (elem, index) {
+function toggleLineNumbers(els = []) {
+  Array.from(els).forEach((el)  => {
     // mark the code element when there are no lines
-    modifyClass(elem, 'pre_nolines')
+    modifyClass(el, 'pre_nolines')
   });
-  restrainCodeBlockHeight(elems);
+  restrainCodeBlockHeight(els);
 }
 
 function toggleLineWrap(elem) {
