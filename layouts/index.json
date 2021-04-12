@@ -1,10 +1,9 @@
 {{- $.Scratch.Add "index" slice -}}
 {{- range $index, $page := where .Site.Pages "Section" "policies" -}}
-  {{- $possibleRules := "" -}}
-  {{- if $page.Params.rules }}
-    {{- range $key, $value := (index $page.Params.rules 0) -}}
-      {{- $possibleRules = printf "%s,%s" $possibleRules $key -}}
-    {{- end -}}
+  {{- $p := .Params -}}
+  {{- $type := "" -}}
+  {{- if $p.policyType }}
+    {{- $type = $p.policyType -}}
     {{/* // start dummy data generation logic */}}
     {{- $version := "v1" -}}
     {{- $label := "stable" -}}
@@ -17,9 +16,9 @@
       // override dummy values of $version and $label using .Params.version and .Params.label respectively 
       // You can safely delete the dummy data generation logic
     */}}
-    {{- $policy := index (intersect (split $possibleRules ",") site.Params.policies) 0 -}}
-    {{- $category := lower $page.Params.category }}
-    {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $page.Params.description "link" $page.Permalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
+    {{- $policy := index (intersect (split $type ",") site.Params.policies) 0 -}}
+    {{- $category := lower $p.category }}
+    {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $p.description "link" $page.Permalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
   {{- end }}
 {{- end -}}
 {{- jsonify (uniq ($.Scratch.Get "index")) -}}
