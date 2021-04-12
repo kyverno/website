@@ -1,12 +1,12 @@
 ---
 title: "Restrict Pod Count per Node"
 linkTitle: "Restrict Pod Count per Node"
-weight: 28
-repo: "https://github.com/kyverno/policies/blob/main/other/restrict_pod_count_per_node.yaml"
-description: >
-    Sample policy to restrict pod count on node 'minikube' to be no more than 10.
 category: Sample
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/other/restrict_pod_count_per_node.yaml"
+weight: 28
+description: >
+    Sample policy to restrict pod count on node 'minikube' to be no more than 10.
 ---
 
 ## Policy Definition

@@ -1,12 +1,12 @@
 ---
 title: "Disallow Service Type LoadBalancer"
 linkTitle: "Disallow Service Type LoadBalancer"
-weight: 27
-repo: "https://github.com/kyverno/policies/blob/main/other/restrict_loadbalancer.yaml"
-description: >
-    Sample policy to restrict use of Service type LoadBalancer.
 category: Sample
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/other/restrict_loadbalancer.yaml"
+weight: 27
+description: >
+    Sample policy to restrict use of Service type LoadBalancer.
 ---
 
 ## Policy Definition

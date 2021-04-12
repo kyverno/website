@@ -1,12 +1,12 @@
 ---
 title: "Restrict Ingress Classes"
 linkTitle: "Restrict Ingress Classes"
-weight: 25
-repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_classes.yaml"
-description: >
-    It can be useful to restrict Ingress resources to a set of known ingress classes  that are allowed in the cluster. You can customize this policy to allow ingress  classes that are configured in the cluster.
 category: Sample
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_classes.yaml"
+weight: 25
+description: >
+    It can be useful to restrict Ingress resources to a set of known ingress classes  that are allowed in the cluster. You can customize this policy to allow ingress  classes that are configured in the cluster.
 ---
 
 ## Policy Definition

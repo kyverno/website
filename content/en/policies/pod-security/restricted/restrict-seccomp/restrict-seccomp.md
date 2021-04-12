@@ -1,12 +1,12 @@
 ---
 title: "Restrict Seccomp"
 linkTitle: "Restrict Seccomp"
-weight: 45
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/restrict-seccomp/restrict-seccomp.yaml"
-description: >
-    The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
 category: Pod Security Standards (Restricted)
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/restrict-seccomp/restrict-seccomp.yaml"
+weight: 45
+description: >
+    The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
 ---
 
 ## Policy Definition

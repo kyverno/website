@@ -1,12 +1,12 @@
 ---
 title: "Add Pod Anti-Affinity"
 linkTitle: "Add Pod Anti-Affinity"
-weight: 18
-repo: "https://github.com/kyverno/policies/blob/main/other/create_pod_antiaffinity.yaml"
-description: >
-    Sample policy to add Pod anti-affinity
 category: Sample
 policyType: "mutate"
+repo: "https://github.com/kyverno/policies/blob/main/other/create_pod_antiaffinity.yaml"
+weight: 18
+description: >
+    Sample policy to add Pod anti-affinity
 ---
 
 ## Policy Definition

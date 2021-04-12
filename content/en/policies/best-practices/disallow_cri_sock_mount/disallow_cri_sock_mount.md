@@ -1,12 +1,12 @@
 ---
 title: "Disallow CRI socket mounts"
 linkTitle: "Disallow CRI socket mounts"
-weight: 4
-repo: "https://github.com/kyverno/policies/blob/main/best-practices/disallow_cri_sock_mount/disallow_cri_sock_mount.yaml"
-description: >
-    Container daemon socket bind mounts allows access to the container engine on the  node. This access can be used for privilege escalation and to manage containers  outside of Kubernetes, and hence should not be allowed.  
 category: Best Practices
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/best-practices/disallow_cri_sock_mount/disallow_cri_sock_mount.yaml"
+weight: 4
+description: >
+    Container daemon socket bind mounts allows access to the container engine on the  node. This access can be used for privilege escalation and to manage containers  outside of Kubernetes, and hence should not be allowed.  
 ---
 
 ## Policy Definition

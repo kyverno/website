@@ -1,12 +1,12 @@
 ---
 title: "Disallow Host Path"
 linkTitle: "Disallow Host Path"
-weight: 35
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-host-path/disallow-host-path.yaml"
-description: >
-    HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.
 category: Pod Security Standards (Default)
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-host-path/disallow-host-path.yaml"
+weight: 35
+description: >
+    HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.
 ---
 
 ## Policy Definition

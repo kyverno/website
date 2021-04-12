@@ -1,12 +1,12 @@
 ---
 title: "Require Limits and Requests"
 linkTitle: "Require Limits and Requests"
-weight: 10
-repo: "https://github.com/kyverno/policies/blob/main/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml"
-description: >
-    As application workloads share cluster resources, it is important to limit resources  requested and consumed by each pod. It is recommended to require 'resources.requests'  and 'resources.limits.memory' per pod. If a namespace level request or limit is specified,  defaults will automatically be applied to each pod based on the 'LimitRange' configuration.
 category: Multi-Tenancy
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml"
+weight: 10
+description: >
+    As application workloads share cluster resources, it is important to limit resources  requested and consumed by each pod. It is recommended to require 'resources.requests'  and 'resources.limits.memory' per pod. If a namespace level request or limit is specified,  defaults will automatically be applied to each pod based on the 'LimitRange' configuration.
 ---
 
 ## Policy Definition

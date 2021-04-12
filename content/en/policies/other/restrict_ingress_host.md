@@ -1,12 +1,12 @@
 ---
 title: "Unique Ingress Host"
 linkTitle: "Unique Ingress Host"
-weight: 26
-repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_host.yaml"
-description: >
-    Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 category: Sample
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_host.yaml"
+weight: 26
+description: >
+    Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 ---
 
 ## Policy Definition

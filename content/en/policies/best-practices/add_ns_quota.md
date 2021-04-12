@@ -1,12 +1,12 @@
 ---
 title: "Add Quota"
 linkTitle: "Add Quota"
-weight: 2
-repo: "https://github.com/kyverno/policies/blob/main/best-practices/add_ns_quota.yaml"
-description: >
-    To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
 category: Multi-Tenancy
 policyType: "generate"
+repo: "https://github.com/kyverno/policies/blob/main/best-practices/add_ns_quota.yaml"
+weight: 2
+description: >
+    To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
 ---
 
 ## Policy Definition

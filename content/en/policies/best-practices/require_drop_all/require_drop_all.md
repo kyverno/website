@@ -1,12 +1,12 @@
 ---
 title: "Drop All Capabilities"
 linkTitle: "Drop All Capabilities"
-weight: 8
-repo: "https://github.com/kyverno/policies/blob/main/best-practices/require_drop_all/require_drop_all.yaml"
-description: >
-    Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
 category: Best Practices
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/best-practices/require_drop_all/require_drop_all.yaml"
+weight: 8
+description: >
+    Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
 ---
 
 ## Policy Definition

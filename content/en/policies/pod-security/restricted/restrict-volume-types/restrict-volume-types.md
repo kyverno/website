@@ -1,12 +1,12 @@
 ---
 title: "Restrict Volume Types"
 linkTitle: "Restrict Volume Types"
-weight: 46
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml"
-description: >
-    In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes.
 category: Pod Security Standards (Restricted)
 policyType: "validate"
+repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml"
+weight: 46
+description: >
+    In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes.
 ---
 
 ## Policy Definition
