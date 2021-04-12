@@ -2,7 +2,7 @@
 type: "docs"
 title: Restrict Image Registries
 linkTitle: Restrict Image Registries
-weight: 22
+weight: 9
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
 ---
@@ -16,6 +16,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-image-registries
   annotations:
+    policies.kyverno.io/title: Restrict Image Registries
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: >-
       Images from unknown registries may not be scanned and secured. 

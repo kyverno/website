@@ -2,7 +2,7 @@
 type: "docs"
 title: Require Requests Limits
 linkTitle: Require Requests Limits
-weight: 29
+weight: 12
 description: >
     As application workloads share cluster resources, it is important to limit resources  requested and consumed by each pod. It is recommended to require 'resources.requests'  and 'resources.limits.memory' per pod. If a namespace level request or limit is specified,  defaults will automatically be applied to each pod based on the 'LimitRange' configuration.
 ---

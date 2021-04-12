@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Add Capabilities
 linkTitle: Disallow Add Capabilities
-weight: 10
+weight: 39
 description: >
     Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
 ---

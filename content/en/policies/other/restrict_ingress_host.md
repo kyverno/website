@@ -2,9 +2,9 @@
 type: "docs"
 title: Unique Ingress Host
 linkTitle: Unique Ingress Host
-weight: 43
+weight: 17
 description: >
-    
+    Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 ---
 
 ## Policy Definition
@@ -15,6 +15,11 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: unique-ingress-host
+  annotations:
+    policies.kyverno.io/title: Unique Ingress Host
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/description: >-
+      Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 spec:
   validationFailureAction: enforce
   background: false
@@ -34,7 +39,7 @@ spec:
           operator: Equals
           value: "CREATE"
       validate:
-        message: "the Ingress host name must be unique"
+        message: "The Ingress host name must be unique."
         deny:
           conditions:
             - key: "{{ request.object.spec.rules[].host }}"

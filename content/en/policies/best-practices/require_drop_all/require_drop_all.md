@@ -2,7 +2,7 @@
 type: "docs"
 title: Drop All Capabilities
 linkTitle: Drop All Capabilities
-weight: 17
+weight: 5
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
 ---
@@ -16,6 +16,7 @@ kind: ClusterPolicy
 metadata:
   name: drop-all-capabilities
   annotations:
+    policies.kyverno.io/title: Drop All Capabilities
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access. All 
