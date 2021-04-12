@@ -1,10 +1,7 @@
 ---
 title: "Disallow Host Ports"
-linkTitle: "Disallow Host Ports"
 category: Pod Security Standards (Default)
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-host-ports/disallow-host-ports.yaml"
-weight: 36
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
 ---

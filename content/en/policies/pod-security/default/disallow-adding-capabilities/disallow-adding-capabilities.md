@@ -1,10 +1,7 @@
 ---
 title: "Disallow Add Capabilities"
-linkTitle: "Disallow Add Capabilities"
 category: Pod Security Standards (Default)
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-adding-capabilities/disallow-adding-capabilities.yaml"
-weight: 32
 description: >
     Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
 ---

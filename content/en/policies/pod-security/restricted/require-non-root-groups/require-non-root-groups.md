@@ -1,10 +1,7 @@
 ---
 title: "Require Non Root Groups"
-linkTitle: "Require Non Root Groups"
 category: Pod Security Standards (Restricted)
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/require-non-root-groups/require-non-root-groups.yaml"
-weight: 43
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
 ---

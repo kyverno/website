@@ -1,10 +1,7 @@
 ---
 title: "Validate Probes"
-linkTitle: "Validate Probes"
 category: Sample
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/other/ensure_probes_different.yaml"
-weight: 20
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.
 ---

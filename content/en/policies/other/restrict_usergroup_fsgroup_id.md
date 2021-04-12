@@ -1,10 +1,7 @@
 ---
 title: "Validate User ID, Group ID, and FS Group"
-linkTitle: "Validate User ID, Group ID, and FS Group"
 category: Sample
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/other/restrict_usergroup_fsgroup_id.yaml"
-weight: 30
 description: >
     All processes inside the pod can be made to run with specific user and groupID  by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified  to make sure any file created in the volume with have the specified groupID.  These options can be used to validate the IDs used for user and group.
 ---

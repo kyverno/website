@@ -1,10 +1,7 @@
 ---
 title: "Disallow Host Ipc"
-linkTitle: "Disallow Host Ipc"
 category: Pod Security Standards (Default)
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-host-ipc/disallow-host-ipc.yaml"
-weight: 33
 description: >
     Sharing the host's PID namespace allows visibility of process on the host, potentially exposing process information. Sharing the host's IPC namespace allows the container process to communicate with processes on the host. To avoid pod container from having visibility to host process space, validate that 'hostPID' and 'hostIPC' are set to 'false'.
 ---

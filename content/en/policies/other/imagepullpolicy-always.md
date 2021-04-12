@@ -1,10 +1,7 @@
 ---
 title: "Set imagePullPolicy"
-linkTitle: "Set imagePullPolicy"
 category: Sample
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/other/imagepullpolicy-always.yaml"
-weight: 21
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 ---

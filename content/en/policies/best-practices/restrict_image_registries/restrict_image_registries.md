@@ -1,10 +1,7 @@
 ---
 title: "Restrict Image Registries"
-linkTitle: "Restrict Image Registries"
 category: Best Practices
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/best-practices/restrict_image_registries/restrict_image_registries.yaml"
-weight: 14
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
 ---

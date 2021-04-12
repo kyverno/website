@@ -1,10 +1,7 @@
 ---
 title: "Disallow SELinux"
-linkTitle: "Disallow SELinux"
 category: Pod Security Standards (Default)
 policyType: "validate"
-repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-selinux/disallow-selinux.yaml"
-weight: 39
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
 ---
