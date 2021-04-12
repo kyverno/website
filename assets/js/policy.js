@@ -126,7 +126,7 @@ function listAppliedFilters() {
     // check if filter is listed first;
     policy = policy.type;
     if(policy) {
-      const id = `btn${policy.replaceAll(" ", "-").replaceAll("(", "").replaceAll(")", "")}`;
+      const id = `btn${sanitizeString(policy)}`;
       if(!elem(`#${id}`)) {
         const policyEl = createButton(policy, id);
         appliedFiltersEl.appendChild(policyEl);

@@ -176,6 +176,10 @@ function parseBoolean(string) {
   }
 }
 
+function sanitizeString(str) {
+  return str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+}
+
 function loadSvg(file, parent, path = 'icons/') {
   const link = new URL(`${path}${file}.svg`, rootURL).href;
   fetch(link)
