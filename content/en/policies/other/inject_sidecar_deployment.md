@@ -1,44 +1,12 @@
 ---
 title: "Inject Sidecar Container"
 linkTitle: "Inject Sidecar Container"
-weight: 21
+weight: 22
 repo: "https://github.com/kyverno/policies/blob/main/other/inject_sidecar_deployment.yaml"
 description: >
     Sample policy that injects a sidecar container into Pods that match an annotation.  
 category: Sample
-rules:
-  - name: inject-sidecar
-    match:
-      resources:
-        kinds:
-        - Deployment
-    mutate:
-      patchStrategicMerge:
-        spec:
-          template:
-            metadata:
-              annotations:
-                (vault.hashicorp.com/agent-inject): "true"
-            spec:
-              containers:
-              - name: vault-agent
-                image: vault:1.5.4
-                imagePullPolicy: IfNotPresent
-                volumeMounts:
-                - mountPath: /vault/secrets
-                  name: vault-secret
-              initContainers:
-              - name: vault-agent-init
-                image: vault:1.5.4
-                imagePullPolicy: IfNotPresent
-                volumeMounts:
-                - mountPath: /vault/secrets
-                  name: vault-secret
-              volumes:
-              - name: vault-secret
-                emptyDir:
-                  medium: Memory
-
+policyType: "mutate"
 ---
 
 ## Policy Definition

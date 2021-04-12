@@ -1,38 +1,12 @@
 ---
 title: "Restrict Seccomp"
 linkTitle: "Restrict Seccomp"
-weight: 44
+weight: 45
 repo: "https://github.com/kyverno/policies/blob/main/pod-security/restricted/restrict-seccomp/restrict-seccomp.yaml"
 description: >
     The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
 category: Pod Security Standards (Restricted)
-rules:
-  - name: seccomp
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: >-
-        Use of custom Seccomp profiles is disallowed. The fields
-        spec.securityContext.seccompProfile.type,
-        spec.containers[*].securityContext.seccompProfile.type, and
-        spec.initContainers[*].securityContext.seccompProfile.type
-        must be unset or set to `runtime/default`.
-      pattern:
-        spec:
-          =(securityContext):
-            =(seccompProfile):
-              =(type): "runtime/default"
-          =(initContainers):
-          - =(securityContext):
-              =(seccompProfile):
-                =(type): "runtime/default"
-          containers:
-          - =(securityContext):
-              =(seccompProfile):
-                =(type): "runtime/default"
-
+policyType: "validate"
 ---
 
 ## Policy Definition

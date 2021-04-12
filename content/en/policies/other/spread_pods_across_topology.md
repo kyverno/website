@@ -1,35 +1,12 @@
 ---
 title: "Spread Pods Across Nodes"
 linkTitle: "Spread Pods Across Nodes"
-weight: 30
+weight: 31
 repo: "https://github.com/kyverno/policies/blob/main/other/spread_pods_across_topology.yaml"
 description: >
     Sample policy to spread pods matching a label across nodes.
 category: Sample
-rules:
-    - name: spread-pods-across-nodes
-      # Matches any Deployment with the label `distributed=required`
-      match:
-        resources:
-          kinds:
-          - Deployment
-          selector:
-            matchLabels:
-              distributed: required
-      # Mutates the incoming Deployment.
-      mutate:
-        patchStrategicMerge:
-          spec:
-            template:
-              spec:
-                # Adds the topologySpreadConstraints field if non-existent in the request.
-                +(topologySpreadConstraints):
-                - maxSkew: 1
-                  topologyKey: zone
-                  whenUnsatisfiable: DoNotSchedule
-                  labelSelector:
-                    matchLabels:
-                      distributed: required
+policyType: "mutate"
 ---
 
 ## Policy Definition

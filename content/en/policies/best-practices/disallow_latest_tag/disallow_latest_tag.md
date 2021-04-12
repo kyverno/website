@@ -6,29 +6,7 @@ repo: "https://github.com/kyverno/policies/blob/main/best-practices/disallow_lat
 description: >
     The ':latest' tag is mutable and can lead to unexpected errors if the  image changes. A best practice is to use an immutable tag that maps to  a specific version of an application pod.
 category: Best Practices
-rules:
-  - name: require-image-tag
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "An image tag is required."  
-      pattern:
-        spec:
-          containers:
-          - image: "*:*"
-  - name: validate-image-tag
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Using a mutable image tag e.g. 'latest' is not allowed."
-      pattern:
-        spec:
-          containers:
-          - image: "!*:latest"
+policyType: "validate"
 ---
 
 ## Policy Definition

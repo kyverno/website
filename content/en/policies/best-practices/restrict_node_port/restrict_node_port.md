@@ -1,22 +1,12 @@
 ---
-title: "Disallow Node Ports"
-linkTitle: "Disallow Node Ports"
+title: "Disallow NodePort"
+linkTitle: "Disallow NodePort"
 weight: 15
 repo: "https://github.com/kyverno/policies/blob/main/best-practices/restrict_node_port/restrict_node_port.yaml"
 description: >
     A Kubernetes service of type NodePort uses a host port to receive traffic from  any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports.  Although 'NodePort' services can be useful, their use must be limited to services  with additional upstream security checks.
 category: Best Practices
-rules:
-  - name: validate-nodeport
-    match:
-      resources:
-        kinds:
-        - Service
-    validate:
-      message: "Services of type NodePort are not allowed."
-      pattern: 
-        spec:
-          type: "!NodePort"
+policyType: "validate"
 ---
 
 ## Policy Definition

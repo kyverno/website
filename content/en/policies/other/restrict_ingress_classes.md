@@ -1,23 +1,12 @@
 ---
 title: "Restrict Ingress Classes"
 linkTitle: "Restrict Ingress Classes"
-weight: 24
+weight: 25
 repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_classes.yaml"
 description: >
     It can be useful to restrict Ingress resources to a set of known ingress classes  that are allowed in the cluster. You can customize this policy to allow ingress  classes that are configured in the cluster.
 category: Sample
-rules:
-  - name: validate-ingress
-    match:
-      resources:
-        kinds:
-        - Ingress
-    validate:
-      message: "Unknown ingress class."
-      pattern:
-        metadata:
-          annotations:
-            kubernetes.io/ingress.class: "HAProxy | nginx"
+policyType: "validate"
 ---
 
 ## Policy Definition

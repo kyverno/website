@@ -1,34 +1,12 @@
 ---
 title: "Unique Ingress Host"
 linkTitle: "Unique Ingress Host"
-weight: 25
+weight: 26
 repo: "https://github.com/kyverno/policies/blob/main/other/restrict_ingress_host.yaml"
 description: >
-    
-category: 
-rules:
-    - name: check-host
-      match:
-        resources:
-          kinds:
-            - Ingress
-      context:
-        - name: hosts
-          apiCall:
-            urlPath: "/apis/networking.k8s.io/v1beta1/ingresses"
-            jmesPath: "items[].spec.rules[].host"
-      preconditions:
-        - key: "{{ request.operation }}"
-          operator: Equals
-          value: "CREATE"
-      validate:
-        message: "the Ingress host name must be unique"
-        deny:
-          conditions:
-            - key: "{{ request.object.spec.rules[].host }}"
-              operator: In
-              value: "{{ hosts }}"
-
+    Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
+category: Sample
+policyType: "validate"
 ---
 
 ## Policy Definition

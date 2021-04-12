@@ -6,43 +6,7 @@ repo: "https://github.com/kyverno/policies/blob/main/best-practices/disallow_cri
 description: >
     Container daemon socket bind mounts allows access to the container engine on the  node. This access can be used for privilege escalation and to manage containers  outside of Kubernetes, and hence should not be allowed.  
 category: Best Practices
-rules:
-  - name: validate-docker-sock-mount
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Use of the Docker Unix socket is not allowed."
-      pattern:
-        spec:
-          =(volumes):
-            - =(hostPath):
-                path: "!/var/run/docker.sock"
-  - name: validate-containerd-sock-mount
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Use of the Containerd Unix socket is not allowed."
-      pattern:
-        spec:
-          =(volumes):
-            - =(hostPath):
-                path: "!/var/run/containerd.sock"
-  - name: validate-crio-sock-mount
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Use of the CRI-O Unix socket is not allowed."
-      pattern:
-        spec:
-          =(volumes):
-            - =(hostPath):
-                path: "!/var/run/crio.sock"                
+policyType: "validate"
 ---
 
 ## Policy Definition

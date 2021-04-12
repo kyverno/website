@@ -1,25 +1,12 @@
 ---
 title: "Set imagePullPolicy"
 linkTitle: "Set imagePullPolicy"
-weight: 20
+weight: 21
 repo: "https://github.com/kyverno/policies/blob/main/other/imagepullpolicy-always.yaml"
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 category: Sample
-rules:
-  - name: imagepullpolicy-always
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: >-
-        The imagePullPolicy must be set to `Always` when the tag `latest` is used.
-      pattern:
-        spec:
-          containers:
-          - (image): "*:latest | !*:*"
-            imagePullPolicy: "Always"
+policyType: "validate"
 ---
 
 ## Policy Definition

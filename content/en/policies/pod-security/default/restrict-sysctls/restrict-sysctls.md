@@ -1,29 +1,12 @@
 ---
 title: "Restrict Sysctls"
 linkTitle: "Restrict Sysctls"
-weight: 40
+weight: 41
 repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/restrict-sysctls/restrict-sysctls.yaml"
 description: >
     Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
 category: Pod Security Standards (Default)
-rules:
-  - name: sysctls
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: >-
-        Setting additional sysctls above the allowed type is disallowed.
-        The field spec.securityContext.sysctls must not use any other names
-        than 'kernel.shm_rmid_forced', 'net.ipv4.ip_local_port_range',
-        'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
-      pattern:
-        spec:
-          =(securityContext):
-            =(sysctls):
-            - name: "kernel.shm_rmid_forced | net.ipv4.ip_local_port_range | net.ipv4.tcp_syncookies | net.ipv4.ping_group_range"
-              value: "?*"
+policyType: "validate"
 ---
 
 ## Policy Definition

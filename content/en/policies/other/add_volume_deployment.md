@@ -1,29 +1,12 @@
 ---
-title: "Add Volume"
-linkTitle: "Add Volume"
-weight: 16
+title: "Add Volume to Deployment"
+linkTitle: "Add Volume to Deployment"
+weight: 17
 repo: "https://github.com/kyverno/policies/blob/main/other/add_volume_deployment.yaml"
 description: >
-    Sample policy to add a volume and volumeMount. 
+    Sample policy to add a volume and volumeMount to a Deployment resource. This checks for the presence of an annotation called "vault.k8s.corp.net/inject=enabled" and adds an emptyDir volume using the memory medium.
 category: Sample
-rules:
-  - name: add-volume
-    match:
-      resources:
-        kinds:
-        - Deployment
-    preconditions:
-    - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"
-      operator: Equals
-      value: "enabled"
-    mutate:
-      patchesJson6902: |-
-        - op: add
-          path: /spec/template/spec/volumes
-          value: [{"name": "vault-secret","emptyDir": {"medium": "Memory"}}]
-        - op: add
-          path: /spec/template/spec/containers/0/volumeMounts
-          value: [{"mountPath": "/secret","name": "vault-secret"}]
+policyType: "mutate"
 ---
 
 ## Policy Definition

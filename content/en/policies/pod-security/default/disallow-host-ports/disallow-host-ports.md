@@ -1,30 +1,12 @@
 ---
 title: "Disallow Host Ports"
 linkTitle: "Disallow Host Ports"
-weight: 35
+weight: 36
 repo: "https://github.com/kyverno/policies/blob/main/pod-security/default/disallow-host-ports/disallow-host-ports.yaml"
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
 category: Pod Security Standards (Default)
-rules:
-  - name: host-ports
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: >-
-        Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
-        and spec.initContainers[*].ports[*].hostPort must be empty.
-      pattern:
-        spec:
-          =(initContainers):
-          - =(ports):
-              - X(hostPort): 0
-          containers:
-          - =(ports):
-              - X(hostPort): 0
-
+policyType: "validate"
 ---
 
 ## Policy Definition

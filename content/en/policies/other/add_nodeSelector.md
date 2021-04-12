@@ -1,10 +1,12 @@
 ---
-type: "docs"
-title: Add Nodeselector
-linkTitle: Add Nodeselector
-weight: 29
+title: "Add nodeSelector"
+linkTitle: "Add nodeSelector"
+weight: 16
+repo: "https://github.com/kyverno/policies/blob/main/other/add_nodeSelector.yaml"
 description: >
     Adds the nodeSelector field to a Pod spec.
+category: Sample
+policyType: "mutate"
 ---
 
 ## Policy Definition

@@ -1,26 +1,12 @@
 ---
 title: "Disallow Secrets from Env Vars"
 linkTitle: "Disallow Secrets from Env Vars"
-weight: 18
+weight: 19
 repo: "https://github.com/kyverno/policies/blob/main/other/disallow_secrets_from_env_vars.yaml"
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
 category: Sample
-rules:
-  - name: secrets-not-from-env-vars
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Secrets must be mounted as volumes, not as environment variables."
-      pattern:
-        spec:
-          containers:
-          - name: "*"
-            =(env):
-            - =(valueFrom):
-                X(secretKeyRef): "null"
+policyType: "validate"
 ---
 
 ## Policy Definition

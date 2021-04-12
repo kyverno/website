@@ -1,22 +1,12 @@
 ---
 title: "Restrict Auto-Mount of Service Account Tokens"
 linkTitle: "Restrict Auto-Mount of Service Account Tokens"
-weight: 23
+weight: 24
 repo: "https://github.com/kyverno/policies/blob/main/other/restrict_automount_sa_token.yaml"
 description: >
     Kubernetes automatically mounts service account credentials in each pod.  The service account may be assigned roles allowing pods to access API resources.  To restrict access, opt out of auto-mounting tokens by setting  automountServiceAccountToken to false.
 category: Sample
-rules:
-  - name: validate-automountServiceAccountToken
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Auto-mounting of Service Account tokens is not allowed."
-      pattern:
-        spec:
-          automountServiceAccountToken: false
+policyType: "validate"
 ---
 
 ## Policy Definition
