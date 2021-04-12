@@ -2,7 +2,7 @@
 type: "docs"
 title: Disallow Host Namespaces
 linkTitle: Disallow Host Namespaces
-weight: 1
+weight: 35
 description: >
     Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces.
 ---

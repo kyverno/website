@@ -2,9 +2,9 @@
 type: "docs"
 title: Require Labels
 linkTitle: Require Labels
-weight: 28
+weight: 1
 description: >
-    Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work interoperably, describing objects in a common manner that  all tools can understand. The recommended labels describe applications in a way that can be  queried. 
+    Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that  all tools can understand. The recommended labels describe applications in a way that can be  queried. 
 ---
 
 ## Policy Definition
@@ -16,10 +16,11 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
   annotations:
+    policies.kyverno.io/title: Require Labels
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: >-
       Define and use labels that identify semantic attributes of your application or Deployment.
-      A common set of labels allows tools to work interoperably, describing objects in a common manner that 
+      A common set of labels allows tools to work collaboratively, describing objects in a common manner that 
       all tools can understand. The recommended labels describe applications in a way that can be 
       queried. 
 spec:
