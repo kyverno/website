@@ -3,6 +3,8 @@
 {{- $policyFilters := $s.policyFilters }}
 {{- $filterIDs := slice }}
 <aside class="policy_filters">
+  <h3 class="policy_filter">Policies</h3>
+  <a href="/policies/pod-security/" class="filter_link">Pod Security</a>
   {{- range $policyFilters }}
   <div class="filter_type filter_{{ .filterID }}" data-criteria="{{ .filterID }}">
     <h3 class="filter_title">{{ .title }}</h3>

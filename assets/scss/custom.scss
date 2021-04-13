@@ -95,6 +95,12 @@
   &.active::after {
     background: var(--theme);
   }
+  &_link {
+    display: grid;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    color: inherit;
+  }
   &_type {
     margin-bottom: 1rem;
   }

@@ -1,7 +1,7 @@
 +++
 description = "Policies to secure Kubernetes Pods."
 title = "Pod Security"
-type = "docs"
+type = "policies"
 url = "/policies/pod-security/"
 +++
 
