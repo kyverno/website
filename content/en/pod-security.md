@@ -5,7 +5,7 @@ type = "policies"
 url = "/policies/pod-security/"
 +++
 
-Policies based on <a href="https://kubernetes.io/docs/concepts/security/pod-security-standards/" target="_blank">Kubernetes Pod Security Standards</a>. To apply all pod security policies (recommended) [install Kyverno](/docs/installation/) and [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/), then run:
+Policies based on [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/). To apply all pod security policies (recommended) [install Kyverno](/docs/installation/) and [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/), then run:
 
 ```sh
 kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply -f -
@@ -14,3 +14,13 @@ kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply
 {{% alert title="Note" color="info" %}}
 The upstream `kustomize` should be used to apply customizations in these policies, available [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/). In many cases the version of `kustomize` built-in to `kubectl` will not work.
 {{% /alert %}}
+
+Pod Security Standard policies are broken down into two groups, Default and Restricted. To locate and inspect policies individually in these groups, use the filter at the left.
+
+## Default
+
+Minimally restrictive policies to prevent known privilege escalations.
+
+## Restricted
+
+Heavily restricted policies following current Pod hardening best practices.
