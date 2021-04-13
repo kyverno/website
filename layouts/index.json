@@ -18,7 +18,7 @@
     */}}
     {{- $policy := index (intersect (split $type ",") site.Params.policies) 0 -}}
     {{- $category := lower $p.category }}
-    {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $p.description "link" $page.Permalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
+    {{- $.Scratch.Add "index" (dict "title" $page.Title "body" $p.description "link" $page.RelPermalink  "policy" $policy "category" $category  "version" $version "label" $label "filters" (printf "%s::%s::%s::%s" $policy $category $version $label)) -}}
   {{- end }}
 {{- end -}}
 {{- jsonify (uniq ($.Scratch.Get "index")) -}}
