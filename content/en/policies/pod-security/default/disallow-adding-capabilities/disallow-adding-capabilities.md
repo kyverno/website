@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Disallow Add Capabilities
-linkTitle: Disallow Add Capabilities
-weight: 39
+title: "Disallow Add Capabilities"
+category: Pod Security Standards (Default)
+policyType: "validate"
 description: >
     Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
 ---

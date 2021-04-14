@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Imagepullpolicy Always
-linkTitle: Imagepullpolicy Always
-weight: 21
+title: "Set imagePullPolicy"
+category: Sample
+policyType: "validate"
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 ---

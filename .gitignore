@@ -18,4 +18,13 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 /public
+node_modules
 
+# system files
+.DS_Store
+
+# render binary
+/render/render
+
+# Hugo related files
+/resources

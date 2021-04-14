@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Require Labels
-linkTitle: Require Labels
-weight: 1
+title: "Require Labels"
+category: Best Practices
+policyType: "validate"
 description: >
     Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that  all tools can understand. The recommended labels describe applications in a way that can be  queried. 
 ---

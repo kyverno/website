@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Validate Probes
-linkTitle: Validate Probes
-weight: 26
+title: "Validate Probes"
+category: Sample
+policyType: "validate"
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.
 ---

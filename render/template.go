@@ -1,12 +1,12 @@
 package main
 
 var policyTemplate = `---
-type: "docs"
-title: {{ .Title }}
-linkTitle: {{ .Title }}
-weight: {{ .Weight }}
+{{- $annotations := .Policy.ObjectMeta.Annotations }}
+title: "{{ .Title }}"
+category: {{ index $annotations "policies.kyverno.io/category" }}
+policyType: "{{ .Type }}"
 description: >
-    {{ index .Policy.ObjectMeta.Annotations "policies.kyverno.io/description" }}
+    {{ index $annotations "policies.kyverno.io/description" }}
 ---
 
 ## Policy Definition

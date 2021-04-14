@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Disallow Selinux
-linkTitle: Disallow Selinux
-weight: 33
+title: "Disallow SELinux"
+category: Pod Security Standards (Default)
+policyType: "validate"
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
 ---

@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Unique Ingress Host
-linkTitle: Unique Ingress Host
-weight: 17
+title: "Unique Ingress Host"
+category: Sample
+policyType: "validate"
 description: >
     Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 ---

@@ -3,10 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-git/go-billy/v5/memfs"
-	kyvernov1 "github.com/kyverno/kyverno/pkg/api/kyverno/v1"
 	"io/ioutil"
-	"k8s.io/apimachinery/pkg/util/yaml"
 	"log"
 	"net/url"
 	"os"
@@ -14,6 +11,10 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/go-git/go-billy/v5/memfs"
+	kyvernov1 "github.com/kyverno/kyverno/pkg/api/kyverno/v1"
+	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
 type gitInfo struct {
@@ -28,8 +29,29 @@ type policyData struct {
 	Weight int
 	Policy *kyvernov1.ClusterPolicy
 	YAML   string
+	Type   string
 	RawURL string
 	Path   string
+}
+
+func stringContains(rawString string, substring string) bool {
+	hasString := strings.Index(rawString, substring)
+	
+	if hasString >= 0 {
+		return true
+	}
+	return false
+}
+
+func getPolicyType(yaml string) string {
+	policyTypes := []string{"generate", "mutate", "validate"}
+	if stringContains(yaml, policyTypes[0]) {
+		return policyTypes[0]
+	} else if stringContains(yaml, policyTypes[1]) {
+		return policyTypes[1]
+	} else {
+		return policyTypes[2]
+	}
 }
 
 func newPolicyData(p *kyvernov1.ClusterPolicy, weight int, rawYAML, rawURL, path string) *policyData {
@@ -38,6 +60,7 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, weight int, rawYAML, rawURL, path
 		Weight: weight,
 		Policy: p,
 		YAML:   rawYAML,
+		Type: getPolicyType(rawYAML),
 		RawURL: rawURL,
 		Path:   path,
 	}
