@@ -350,7 +350,7 @@ You can use `match` and `exclude` to select when the rule should be applied and 
 When using a `deny` statement, `validationFailureAction` must be set to `enforce` to block the request.
 {{% /alert %}}
 
-Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables.
+Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables. `deny` statements can similarly use `any` and `all` blocks like those available to `preconditions`.
 
 In addition to admission review request data, user information, and built-in variables, `deny` rules and preconditions can also operate on ConfigMap data, and in the future data from API server lookups, etc.
 
