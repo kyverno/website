@@ -23,7 +23,7 @@ You may specify multiple statements in the `preconditions` field. The use of mul
 
 ## Any and All Statements
 
-You may further control how `preconditions` are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule with multiple `any` statements also being possible. For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, `preconditions` will not be satisfied and thus the rule will not be applicable.
+You may further control how `preconditions` are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule with multiple `any` statements also being possible (multiple `all` statements would be redundant). For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, `preconditions` will not be satisfied and thus the rule will not be applicable.
 
 {{% alert title="Note" color="info" %}}
 `any` and `all` statements are available starting in Kyverno v1.3.4 but are optional. Users can continue to write multiple statements inside the `preconditions` field and have them evaluated as a logical AND statement.
