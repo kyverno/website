@@ -169,6 +169,12 @@ JSON Patch uses [JSON Pointer](http://jsonpatch.com/#json-pointer) to reference 
   value: "8200"
 ```
 
+Some other capabilities of the `patchesJson6902` method include:
+
+* Adding non-existent paths
+* Adding non-existent arrays
+* Adding an element to the end of an array (use negative index `-1`)
+
 ## Strategic Merge Patch
 
 The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
