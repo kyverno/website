@@ -96,11 +96,30 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 
 ### Handling ConfigMap Array Values
 
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. Currently, the ConfigMap value must be an array of string values in JSON format. Kyverno will parse the JSON string to a list of strings, so set operations like `In` and `NotIn` can then be applied.
+In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. You have the choice of storing those array values in either YAML format within a block scalar or JSON-encoded content.
+
+{{% alert title="Note" color="info" %}}
+Storing array values in a YAML block scalar requires Kyverno 1.3.5+. Also, when storing array values as YAML, use the `|-` block style indicator with the "strip" block chomping indicator. See [this site](https://yaml-multiline.info/) for more information on multi-line YAML.
+{{% /alert %}}
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
-Consider a ConfigMap with the following content.
+Consider a ConfigMap with the following content written as a YAML multi-line value.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: roles-dictionary
+  namespace: default
+data:
+  allowed-roles: |-
+    cluster-admin
+    cluster-operator
+    tenant-admin
+```
+
+Or this as a JSON-encoded value.
 
 ```yaml
 apiVersion: v1
@@ -111,27 +130,6 @@ metadata:
 data:
   allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 ```
-
-Once created, `describe` the resource to see how the array of strings is stored.
-
-```sh
-kubectl describe cm roles-dictionary
-```
-
-```
-Name:         roles-dictionary
-Namespace:    default
-Labels:       <none>
-Annotations:  <none>
-
-Data
-====
-allowed-roles:
-----
-["cluster-admin", "cluster-operator", "tenant-admin"]
-```
-
-From the output above, the array of strings are stored in JSON array format.
 
 {{% alert title="Note" color="info" %}}
 As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the ConfigMap data to be stored as a JSON array.
