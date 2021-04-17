@@ -22,6 +22,7 @@ Kyverno automatically creates a few useful variables and makes them available wi
 
 2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
 
+3. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) 
 
 ## Variables from policy definitions
 
@@ -148,43 +149,64 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 ## Variables from container images
 
-Kyverno extracts image properties and makes them available as variables. Whenever a new request has `containers` or `initContainers` defined, the image properties can be referenced as follows:
+Kyverno extracts image data from the admission review request and makes this available as a variable names `images` of type `map` in the rule context. Here is an example: 
 
-Reference the image properties of container `mycontainer`:
+```json
+{
+  "containers": {
+    "tomcat": {
+      "registry": "https://ghcr.io",
+      "name": "tomcat",
+      "tag": "9"
+    }
+  },
+  "initContainers": {
+    "tomcat": {
+      "registry": "https://ghcr.io",
+      "name": "vault",
+      "tag": "v3"
+    }
+  }
+}
+```
+
+Whenever an admission review request has `containers` or `initContainers` defined, the `images` variable can be referenced as shown in the examples below:
+
+Reference the image properties of container `tomcat`:
 
 1. Reference the registry URL 
 
-`{{images.containers.mycontainer.registry}}`
+`{{images.containers.tomcat.registry}}`
 
 2. Reference the image name
 
-`{{images.containers.mycontainer.name}}`
+`{{images.containers.tomcat.name}}`
 
 3. Reference the image tag
 
-`{{images.containers.mycontainer.tag}}`
+`{{images.containers.tomcat.tag}}`
 
 4. Reference the digest
 
-`{{images.containers.mycontainer.digest}}`
+`{{images.containers.tomcat.digest}}`
 
-Reference the image properties of initContainer `mycontainer`:
+Reference the image properties of initContainer `vault`:
 
 1. Reference the registry URL
 
-` {{images.initContainers.mycontainer.registry}}`
+` {{images.initContainers.vault.registry}}`
 
 2. Reference the image name
 
-`{{images.initContainers.mycontainer.name}}`
+`{{images.initContainers.vault.name}}`
 
 3.  Reference the image tag
 
-`{{images.initContainers.mycontainer.tag}}`
+`{{images.initContainers.vault.tag}}`
 
 4. Reference the digest
 
-`{{images.initContainers.mycontainer.digest}}`
+`{{images.initContainers.vault.digest}}`
 
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
 
@@ -193,6 +215,8 @@ Note that certain characters must be escaped for JMESPath processing (ex. `-` in
 {{% /alert %}}
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
+
+
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
