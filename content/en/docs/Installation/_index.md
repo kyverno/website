@@ -363,9 +363,13 @@ subjects:
 
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of `Node` in any namespace and with any name will be ignored.
+The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
 
-By default we have specified Nodes, Events, APIService, and SubjectAccessReview as the kinds to be skipped in the default configuration in `install.yaml`.
+```
+[Pod,foo-system,redis*]
+```
+
+By default a number of kinds are skipped in the default configuration including Nodes, Events, APIService, SubjectAccessReview, and more.
 
 ```yaml
 apiVersion: v1

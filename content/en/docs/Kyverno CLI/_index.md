@@ -47,6 +47,10 @@ When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recomm
 
 Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current `kubectl` context will be used to access the cluster.
 
+{{% alert title="Note" color="info" %}}
+Kyverno CLI in both `apply` and `validate` commands supports files from URLs both as policies and resources.
+{{% /alert %}}
+
 Displays mutate results to stdout, by default. Use the `-o <path>` flag to save mutated resources to a file or directory.
 
 Apply to a resource:
