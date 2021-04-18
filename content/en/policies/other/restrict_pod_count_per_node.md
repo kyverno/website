@@ -1,7 +1,8 @@
 ---
-title: "Restrict Pod Count per Node"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: Restrict Pod Count
+linkTitle: Restrict Pod Count
+weight: 29
 description: >
     Sample policy to restrict pod count on node 'minikube' to be no more than 10.
 ---
@@ -17,6 +18,8 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict Pod Count per Node
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.3.2
     policies.kyverno.io/description: >-
       Sample policy to restrict pod count on node 'minikube' to be no more than 10.
     # pod-policies.kyverno.io/autogen-controllers: None

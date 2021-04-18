@@ -1,7 +1,8 @@
 ---
-title: "Disallow Default Namespace"
-category: Multi-Tenancy
-policyType: "validate"
+type: "docs"
+title: Disallow Default Namespace
+linkTitle: Disallow Default Namespace
+weight: 4
 description: >
     Kubernetes namespaces are an optional feature that provide a way to segment and  isolate cluster resources across multiple applications and users. As a best  practice, workloads should be isolated with namespaces. Namespaces should be required  and the default (empty) namespace should not be used.
 ---
@@ -18,6 +19,7 @@ metadata:
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/title: Disallow Default Namespace
     policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Kubernetes namespaces are an optional feature that provide a way to segment and 
       isolate cluster resources across multiple applications and users. As a best 

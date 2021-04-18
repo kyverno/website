@@ -1,7 +1,8 @@
 ---
-title: "Validate User ID, Group ID, and FS Group"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: Validate Userid Groupid Fsgroup
+linkTitle: Validate Userid Groupid Fsgroup
+weight: 31
 description: >
     All processes inside the pod can be made to run with specific user and groupID  by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified  to make sure any file created in the volume with have the specified groupID.  These options can be used to validate the IDs used for user and group.
 ---
@@ -17,6 +18,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Validate User ID, Group ID, and FS Group 
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       All processes inside the pod can be made to run with specific user and groupID 
       by setting 'runAsUser' and 'runAsGroup' respectively. 'fsGroup' can be specified 

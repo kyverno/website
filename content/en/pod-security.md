@@ -15,9 +15,9 @@ kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply
 The upstream `kustomize` should be used to apply customizations in these policies, available [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/). In many cases the version of `kustomize` built-in to `kubectl` will not work.
 {{% /alert %}}
 
-Pod Security Standard policies are broken down into two groups, Default and Restricted. To locate and inspect policies individually in these groups, use the filter at the left.
+Pod Security Standard policies are broken down into two groups, Baseline and Restricted. To locate and inspect policies individually in these groups, use the filter at the left.
 
-## Default
+## Baseline
 
 Minimally restrictive policies to prevent known privilege escalations.
 

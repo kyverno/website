@@ -1,7 +1,8 @@
 ---
-title: "Add Network Policy"
-category: Multi-Tenancy
-policyType: "generate"
+type: "docs"
+title: Add Networkpolicy
+linkTitle: Add Networkpolicy
+weight: 14
 description: >
     By default, Kubernetes allows communications across all pods within a cluster.  Network policies and, a CNI that supports network policies, must be used to restrict  communications. A default NetworkPolicy should be configured for each namespace to  default deny all ingress and egress traffic to the pods in the namespace. Application  teams can then configure additional NetworkPolicy resources to allow desired traffic  to application pods from select sources.
 ---

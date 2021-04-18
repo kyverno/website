@@ -1,7 +1,8 @@
 ---
-title: "Unique Ingress Host"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: Unique Ingress Host
+linkTitle: Unique Ingress Host
+weight: 23
 description: >
     Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 ---
@@ -17,6 +18,8 @@ metadata:
   annotations:
     policies.kyverno.io/title: Unique Ingress Host
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.3.2
     policies.kyverno.io/description: >-
       Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.
 spec:

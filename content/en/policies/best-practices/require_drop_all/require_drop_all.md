@@ -1,7 +1,8 @@
 ---
-title: "Drop All Capabilities"
-category: Best Practices
-policyType: "validate"
+type: "docs"
+title: Drop All Capabilities
+linkTitle: Drop All Capabilities
+weight: 5
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
 ---
@@ -17,6 +18,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Drop All Capabilities
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access. All 
       capabilities should be dropped from a pod, with only those required added back.
@@ -36,17 +38,8 @@ spec:
           - securityContext:
               capabilities:
                 drop: ["ALL"]
-  - name: check-init-containers
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "All capabilities should be dropped with only those required added back."
-      pattern:
-        spec:
-          initContainers:
-          - securityContext:
-              capabilities:
+          =(initContainers):
+          - =(securityContext):
+              (capabilities):
                 drop: ["ALL"]
 ```

@@ -1,7 +1,8 @@
 ---
-title: "Set imagePullPolicy"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: Imagepullpolicy Always
+linkTitle: Imagepullpolicy Always
+weight: 32
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 ---
@@ -17,6 +18,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Set imagePullPolicy
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 spec:

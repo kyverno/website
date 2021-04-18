@@ -1,7 +1,8 @@
 ---
-title: "Add Pod Anti-Affinity"
-category: Sample
-policyType: "mutate"
+type: "docs"
+title: Insert Pod Antiaffinity
+linkTitle: Insert Pod Antiaffinity
+weight: 25
 description: >
     Sample policy to add Pod anti-affinity
 ---

@@ -1,13 +1,14 @@
 ---
-title: "Require Default Proc Mount"
-category: Pod Security Standards (Default)
-policyType: "validate"
+type: "docs"
+title: Require Default Proc Mount
+linkTitle: Require Default Proc Mount
+weight: 47
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//pod-security/default/disallow-proc-mount/disallow-proc-mount.yaml" target="-blank">/pod-security/default/disallow-proc-mount/disallow-proc-mount.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-proc-mount/disallow-proc-mount.yaml" target="-blank">/pod-security/baseline/disallow-proc-mount/disallow-proc-mount.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -15,7 +16,8 @@ kind: ClusterPolicy
 metadata:
   name: require-default-proc-mount
   annotations:
-    policies.kyverno.io/category: Pod Security Standards (Default)
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       The default /proc masks are set up to reduce attack surface and should be required.
 spec:

@@ -1,7 +1,8 @@
 ---
-title: "Restrict Image Registries"
-category: Best Practices
-policyType: "validate"
+type: "docs"
+title: Restrict Image Registries
+linkTitle: Restrict Image Registries
+weight: 2
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
 ---
@@ -17,6 +18,8 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict Image Registries
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.3.0
     policies.kyverno.io/description: >-
       Images from unknown registries may not be scanned and secured. 
       Requiring use of known registries helps reduce threat exposure.

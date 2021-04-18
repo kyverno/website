@@ -1,7 +1,8 @@
 ---
-title: "Require Run As Non Root"
-category: Pod Security Standards (Restricted)
-policyType: "validate"
+type: "docs"
+title: Require Run As Non Root
+linkTitle: Require Run As Non Root
+weight: 37
 description: >
     Containers must be required to run as non-root users.
 ---
@@ -16,6 +17,7 @@ metadata:
   name: require-run-as-non-root
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: Containers must be required to run as non-root users.
 spec:
   background: true

@@ -1,7 +1,8 @@
 ---
-title: "Disallow Service Type LoadBalancer"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: No Loadbalancer Service
+linkTitle: No Loadbalancer Service
+weight: 34
 description: >
     Sample policy to restrict use of Service type LoadBalancer.
 ---
@@ -16,7 +17,8 @@ metadata:
   name: no-loadbalancer-service
   annotations:
     policies.kyverno.io/title: Disallow Service Type LoadBalancer
-    policies.kyverno.io/category: Sample 
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Sample policy to restrict use of Service type LoadBalancer.
 spec:

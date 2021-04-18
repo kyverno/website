@@ -1,7 +1,8 @@
 ---
-title: "Validate Probes"
-category: Sample
-policyType: "validate"
+type: "docs"
+title: Validate Probes
+linkTitle: Validate Probes
+weight: 26
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.
 ---
@@ -19,6 +20,7 @@ metadata:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet  
     policies.kyverno.io/title: Validate Probes
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Sample policy to check that liveness and readiness probes are not set to the same values.
 spec:

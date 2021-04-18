@@ -1,7 +1,8 @@
 ---
-title: "Add Quota"
-category: Multi-Tenancy
-policyType: "generate"
+type: "docs"
+title: Add Ns Quota
+linkTitle: Add Ns Quota
+weight: 3
 description: >
     To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
 ---
