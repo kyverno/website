@@ -16,7 +16,7 @@ spec:
 
 Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to scan existing resources and find if they match any `validate` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
 
-By default, background scanning occurs every 15 minutes and is not currently configurable.
+By default, background scanning occurs every hour and can be configured via the [background-scan](content/en/docs/Installation/_index.md/#flags) flag.
 
 {{% alert title="Note" color="info" %}}
 Kyverno does not mutate existing resources to prevent inadvertent changes to workloads.
