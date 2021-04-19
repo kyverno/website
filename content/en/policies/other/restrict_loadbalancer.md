@@ -16,7 +16,8 @@ metadata:
   name: no-loadbalancer-service
   annotations:
     policies.kyverno.io/title: Disallow Service Type LoadBalancer
-    policies.kyverno.io/category: Sample 
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       Sample policy to restrict use of Service type LoadBalancer.
 spec:
