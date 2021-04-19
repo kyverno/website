@@ -26,7 +26,6 @@ type gitInfo struct {
 
 type policyData struct {
 	Title  string
-	Weight int
 	Policy *kyvernov1.ClusterPolicy
 	YAML   string
 	Type   string
@@ -36,7 +35,7 @@ type policyData struct {
 
 func stringContains(rawString string, substring string) bool {
 	hasString := strings.Index(rawString, substring)
-	
+
 	if hasString >= 0 {
 		return true
 	}
@@ -54,13 +53,12 @@ func getPolicyType(yaml string) string {
 	}
 }
 
-func newPolicyData(p *kyvernov1.ClusterPolicy, weight int, rawYAML, rawURL, path string) *policyData {
+func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *policyData {
 	return &policyData{
 		Title:  buildTitle(p),
-		Weight: weight,
 		Policy: p,
 		YAML:   rawYAML,
-		Type: getPolicyType(rawYAML),
+		Type:   getPolicyType(rawYAML),
 		RawURL: rawURL,
 		Path:   path,
 	}
@@ -100,7 +98,6 @@ func render(git *gitInfo, outdir string) error {
 		return fmt.Errorf("failed to parse template: %v", err)
 	}
 
-	weight := 1
 	for _, yamlFilePath := range yamls {
 		file, err := fs.Open(yamlFilePath)
 		if err != nil {
@@ -121,12 +118,11 @@ func render(git *gitInfo, outdir string) error {
 
 		policy := &kyvernov1.ClusterPolicy{}
 		if err := json.Unmarshal(policyBytes, policy); err != nil {
-			log.Printf("failed to decode policy: %v", err)
+			log.Printf("failed to decode file %s: %v", yamlFilePath, err)
 			continue
 		}
 
 		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy") {
-			log.Printf("%s is not a Policy or a ClusterPolicy", yamlFilePath)
 			continue
 		}
 
@@ -134,7 +130,7 @@ func render(git *gitInfo, outdir string) error {
 		pathElems := []string{git.owner, git.repo, "raw", git.branch, relPath}
 		rawURL := "https://github.com/" + strings.Join(pathElems, "/")
 
-		pd := newPolicyData(policy, weight, string(bytes), rawURL, relPath)
+		pd := newPolicyData(policy, string(bytes), rawURL, relPath)
 		outFile, err := createOutFile(filepath.Dir(yamlFilePath), outdir, filepath.Base(file.Name()))
 		if err != nil {
 			return err
@@ -146,7 +142,6 @@ func render(git *gitInfo, outdir string) error {
 		}
 
 		log.Printf("rendered %s", outFile.Name())
-		weight++
 	}
 
 	return nil

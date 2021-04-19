@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Spread Pods
-linkTitle: Spread Pods
-weight: 17
+title: "Spread Pods Across Nodes"
+category: Sample
+policyType: "mutate"
 description: >
     Sample policy to spread pods matching a label across nodes.
 ---

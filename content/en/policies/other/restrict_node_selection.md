@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Restrict Node Selection
-linkTitle: Restrict Node Selection
-weight: 35
+title: "Restrict node selection"
+category: Sample
+policyType: "validate"
 description: >
     This policy prevents users from targeting specific nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields in a Pod spec.     
 ---

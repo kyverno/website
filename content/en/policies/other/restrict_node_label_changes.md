@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Protect Node Label Foo
-linkTitle: Protect Node Label Foo
-weight: 24
+title: "Restrict node label changes"
+category: Sample
+policyType: "validate"
 description: >
     This policy prevents changes or deletions to label called `foo` on cluster nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0.
 ---

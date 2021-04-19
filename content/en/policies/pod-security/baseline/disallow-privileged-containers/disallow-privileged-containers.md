@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Disallow Privileged Containers
-linkTitle: Disallow Privileged Containers
-weight: 42
+title: "Disallow Privileged Containers"
+category: Pod Security Standards (Baseline)
+policyType: "validate"
 description: >
     Privileged mode disables most security mechanisms and must not be allowed.
 ---

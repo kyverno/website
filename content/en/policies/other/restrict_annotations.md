@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Restrict Annotations
-linkTitle: Restrict Annotations
-weight: 27
+title: "Restrict Annotations"
+category: Sample
+policyType: "validate"
 description: >
     This example policy prevents the use of an annotation beginning with a common key name (in this case "fluxcd.io/"). This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation.
 ---

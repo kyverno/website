@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Restrict Controlplane Scheduling
-linkTitle: Restrict Controlplane Scheduling
-weight: 28
+title: "Restrict control plane scheduling"
+category: Sample
+policyType: "validate"
 description: >
     This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key "node-role.kubernetes.io/master".   
 ---

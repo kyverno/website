@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Restrict Image Registries
-linkTitle: Restrict Image Registries
-weight: 2
+title: "Restrict Image Registries"
+category: Best Practices
+policyType: "validate"
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
 ---

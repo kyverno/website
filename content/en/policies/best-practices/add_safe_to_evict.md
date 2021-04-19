@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Add Safe To Evict
-linkTitle: Add Safe To Evict
-weight: 8
+title: "Add safe-to-evict"
+category: Best Practices
+policyType: "mutate"
 description: >
     The Kubernetes cluster autoscaler does not evict pods that use hostPath  or emptyDir volumes. To allow eviction of these pods, the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to pods. 
 ---

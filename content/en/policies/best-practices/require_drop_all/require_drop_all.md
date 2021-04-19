@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Drop All Capabilities
-linkTitle: Drop All Capabilities
-weight: 5
+title: "Drop All Capabilities"
+category: Best Practices
+policyType: "validate"
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
 ---

@@ -1,8 +1,7 @@
 ---
-type: "docs"
-title: Require Non Root Groups
-linkTitle: Require Non Root Groups
-weight: 36
+title: "Require Non Root Groups"
+category: Pod Security Standards (Restricted)
+policyType: "validate"
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
 ---
