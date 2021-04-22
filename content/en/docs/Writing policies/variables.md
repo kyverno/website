@@ -161,7 +161,7 @@ Kyverno extracts image data from the admission review request and makes this ava
     }
   },
   "initContainers": {
-    "tomcat": {
+    "vault": {
       "registry": "https://ghcr.io",
       "name": "vault",
       "tag": "v3"
