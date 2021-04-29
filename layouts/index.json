@@ -9,7 +9,8 @@
       "link" $page.RelPermalink 
       "policy" $policy
       "category" .Params.category 
-      "filters" (printf "%s::%s" $policy .Params.category)
+      "version" .Params.version
+      "filters" (printf "%s::%s::%s" $policy .Params.category .Params.version)
     ) -}}
   {{- end }}
 {{- end -}}
