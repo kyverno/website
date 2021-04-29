@@ -1,6 +1,7 @@
 ---
 title: "Set imagePullPolicy"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.

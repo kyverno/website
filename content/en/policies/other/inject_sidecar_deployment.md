@@ -1,6 +1,7 @@
 ---
 title: "Inject Sidecar Container"
 category: Sample
+version: 
 policyType: "mutate"
 description: >
     Sample policy that injects a sidecar container into Pods that match an annotation.  

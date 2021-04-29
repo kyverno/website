@@ -1,6 +1,7 @@
 ---
 title: "Restrict Seccomp"
 category: Pod Security Standards (Restricted)
+version: 
 policyType: "validate"
 description: >
     The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.

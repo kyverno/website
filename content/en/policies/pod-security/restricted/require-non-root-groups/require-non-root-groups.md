@@ -1,6 +1,7 @@
 ---
 title: "Require Non Root Groups"
 category: Pod Security Standards (Restricted)
+version: 
 policyType: "validate"
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
@@ -64,11 +65,11 @@ spec:
             - Pod
       validate:
         message: >-
-          Changing of file system groups is not allowed. The field	
-          spec.securityContext.fsGroup must not be defined.
+          Changing to root group ID is disallowed. The field
+          spec.securityContext.fsGroup must be empty or greater than zero.
         pattern:
           spec:
             =(securityContext):
-              X(fsGroup): "*"
+              =(fsGroup): ">0"
 
 ```

@@ -1,6 +1,7 @@
 ---
 title: "Validate Probes"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.

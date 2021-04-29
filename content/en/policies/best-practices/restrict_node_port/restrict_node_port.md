@@ -1,6 +1,7 @@
 ---
 title: "Disallow NodePort"
 category: Best Practices
+version: 
 policyType: "validate"
 description: >
     A Kubernetes service of type NodePort uses a host port to receive traffic from  any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports.  Although 'NodePort' services can be useful, their use must be limited to services  with additional upstream security checks.

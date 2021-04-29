@@ -1,6 +1,7 @@
 ---
 title: "Deny Privilege Escalation"
 category: Pod Security Standards (Restricted)
+version: 
 policyType: "validate"
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.

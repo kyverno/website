@@ -1,6 +1,7 @@
 ---
 title: "Disallow Host Path"
 category: Pod Security Standards (Baseline)
+version: 
 policyType: "validate"
 description: >
     HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.

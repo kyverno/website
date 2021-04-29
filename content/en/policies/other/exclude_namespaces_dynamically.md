@@ -1,6 +1,7 @@
 ---
 title: "Exclude Namespaces Dynamically"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Policy which illustrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
