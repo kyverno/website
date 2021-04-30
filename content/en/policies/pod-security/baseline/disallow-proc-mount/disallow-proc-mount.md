@@ -1,6 +1,7 @@
 ---
 title: "Require Default Proc Mount"
 category: Pod Security Standards (Baseline)
+version: 
 policyType: "validate"
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.

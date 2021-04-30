@@ -63,15 +63,10 @@ title = "Policy Category"
 filterID = "category"
 weight = 2
 
-# [[policyFilters]]
-# title = "Version"
-# filterID = "version"
-# weight = 3
-
-# [[policyFilters]]
-# title = "Tags/Labels"
-# filterID = "label"
-# weight = 4
+[[policyFilters]]
+title = "Minimum Version" # title on the UI
+filterID = "version" # key you used inside index.json 
+weight = 3
 
 # User interface configuration
 [ui]

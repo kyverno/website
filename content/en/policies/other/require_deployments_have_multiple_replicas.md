@@ -1,6 +1,7 @@
 ---
 title: "Require Multiple Replicas"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Sample policy that requires more than one replica for deployments.    

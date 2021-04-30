@@ -1,6 +1,7 @@
 ---
 title: "Add Quota"
 category: Multi-Tenancy
+version: 
 policyType: "generate"
 description: >
     To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.

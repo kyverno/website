@@ -1,6 +1,7 @@
 ---
 title: "Require Images Use Checksums"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Use of a SHA checksum when pulling an image is often preferable because tags are mutable and can be overwritten. This policy checks to ensure that all images use SHA checksums rather than tags.

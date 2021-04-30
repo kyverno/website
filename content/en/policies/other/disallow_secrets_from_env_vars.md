@@ -1,6 +1,7 @@
 ---
 title: "Disallow Secrets from Env Vars"
 category: Sample
+version: 
 policyType: "validate"
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
