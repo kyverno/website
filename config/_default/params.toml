@@ -64,7 +64,7 @@ filterID = "category"
 weight = 2
 
 [[policyFilters]]
-title = "Min Version" # title on the UI
+title = "Minimum Version" # title on the UI
 filterID = "version" # key you used inside index.json 
 weight = 3
 
