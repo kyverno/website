@@ -1,5 +1,8 @@
 {{ $cover := .HasShortcode "blocks/cover" }}
-<nav class="js-navbar-scroll navbar navbar-expand navbar-dark {{ if $cover}} td-navbar-cover {{ end }}flex-column flex-md-row td-navbar">
+
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark {{ if $cover}} td-navbar-cover {{ end }}flex-column flex-md-row td-navbar" style="top: 40px;">
+	<a href="https://github.com/kyverno/kyverno/" target="_blank" class="d-block fixed-top px-3 py-2 bg-secondary text-center text-bold text-dark">⭐️ If you like Kyverno, give it a star on GitHub! ⭐️</a>
+
 	<a class="navbar-brand" href="{{ .Site.Home.RelPermalink }}">
 		<span class="navbar-logo">{{ with resources.Get "icons/logo.svg" }}{{ ( . | minify).Content | safeHTML }} {{ end }}</span><span class="brand-name text-uppercase font-weight-bold">{{ .Site.Title }}</span>
 	</a>
