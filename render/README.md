@@ -63,6 +63,23 @@ After this step you will need to make edits in two other locations:
 
 Ensure that the `version` & `label` key-value pairs are included in the json index. `../layouts/index.json`
 
+For example, in this block:
+
+```
+    {{- $.Scratch.Add "index" (dict 
+      "title" $page.Title
+      "body" .Params.description
+      "link" $page.RelPermalink 
+      "policy" $policy
+      "category" .Params.category 
+      "version" .Params.version
+      "subject" .Params.subject
+      "filters" (printf "%s::%s::%s::%s" $policy .Params.category .Params.version .Params.subject)
+    ) -}}
+```
+
+Follow the pattern and duplicate the "subject" line. In the "filters" line, add an additional `::%s` and then the `.Params.<foo>` entry. This adds the entry to the filter and matches the returned results.
+
 ### Update policyFilters entries
 
 Ensure that `version` & `label` that you used under the [extend](#extend) step are listed as a `filterID` as follows:
@@ -81,3 +98,4 @@ filterID = "label"
 weight = 4
 ...
 ```
+The `weight` parameter controls the ordering of the filters on the page. Higher number equals further down on the page.
