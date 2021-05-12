@@ -2,6 +2,7 @@
 title: "Restrict Pod Count per Node"
 category: Sample
 version: 1.3.2
+subject: Pod
 policyType: "validate"
 description: >
     Sample policy to restrict pod count on node 'minikube' to be no more than 10.
@@ -19,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict Pod Count per Node
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.3.2
     policies.kyverno.io/description: >-
       Sample policy to restrict pod count on node 'minikube' to be no more than 10.

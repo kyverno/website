@@ -2,6 +2,7 @@
 title: "Require Default Proc Mount"
 category: Pod Security Standards (Baseline)
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     The default /proc masks are set up to reduce attack surface and should be required.
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The default /proc masks are set up to reduce attack surface and should be required.
 spec:

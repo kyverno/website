@@ -2,6 +2,7 @@
 title: "Disallow Host Path"
 category: Pod Security Standards (Baseline)
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     HostPath volumes let pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed.
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       HostPath volumes let pods use host directories and volumes in containers.
       Using host resources can be used to access shared data or escalate privileges

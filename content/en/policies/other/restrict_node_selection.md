@@ -2,6 +2,7 @@
 title: "Restrict node selection"
 category: Sample
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     This policy prevents users from targeting specific nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields in a Pod spec.     
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict node selection
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       This policy prevents users from targeting specific nodes
       for scheduling of Pods by prohibiting the use of the `nodeSelector`
