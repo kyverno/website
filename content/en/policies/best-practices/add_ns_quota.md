@@ -2,6 +2,7 @@
 title: "Add Quota"
 category: Multi-Tenancy
 version: 
+subject: ResourceQuota, LimitRange
 policyType: "generate"
 description: >
     To limit the number of objects, as well as the total amount of compute that  may be consumed by a single namespace, create a default resource quota for  each namespace.
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Add Quota
     policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/subject: ResourceQuota, LimitRange
     policies.kyverno.io/description: >-
       To limit the number of objects, as well as the total amount of compute that 
       may be consumed by a single namespace, create a default resource quota for 

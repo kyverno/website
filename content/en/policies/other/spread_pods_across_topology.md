@@ -2,6 +2,7 @@
 title: "Spread Pods Across Nodes"
 category: Sample
 version: 
+subject: Deployment, Pod
 policyType: "mutate"
 description: >
     Sample policy to spread pods matching a label across nodes.
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Spread Pods Across Nodes 
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Deployment, Pod
     policies.kyverno.io/description: >-
       Sample policy to spread pods matching a label across nodes.
 spec:

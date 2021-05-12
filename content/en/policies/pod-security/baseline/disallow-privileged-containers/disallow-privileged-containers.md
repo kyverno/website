@@ -2,6 +2,7 @@
 title: "Disallow Privileged Containers"
 category: Pod Security Standards (Baseline)
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     Privileged mode disables most security mechanisms and must not be allowed.
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Privileged mode disables most security mechanisms and must not be allowed.
 spec:

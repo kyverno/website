@@ -2,6 +2,7 @@
 title: "Add Pod Anti-Affinity"
 category: Sample
 version: 
+subject: Deployment, Pod
 policyType: "mutate"
 description: >
     Sample policy to add Pod anti-affinity
@@ -18,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Add Pod Anti-Affinity
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Deployment, Pod
     policies.kyverno.io/description: >-
       Sample policy to add Pod anti-affinity
 spec:

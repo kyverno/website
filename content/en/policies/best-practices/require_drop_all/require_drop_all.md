@@ -2,6 +2,7 @@
 title: "Drop All Capabilities"
 category: Best Practices
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     Capabilities permit privileged actions without giving full root access. All  capabilities should be dropped from a pod, with only those required added back.
@@ -19,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Drop All Capabilities
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access. All 
       capabilities should be dropped from a pod, with only those required added back.

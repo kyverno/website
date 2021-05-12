@@ -2,6 +2,7 @@
 title: "Set imagePullPolicy"
 category: Sample
 version: 
+subject: Pod
 policyType: "validate"
 description: >
     Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
@@ -19,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Set imagePullPolicy
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Sample policy that sets imagePullPolicy to "Always" when the "latest" tag is used.
 spec:
