@@ -18,10 +18,17 @@ const section = elem(".td-section");
 
 // add filters on the sidebar
 function createFilterButton(filter, parent) {
-  let filterButton = createEl();
-  filterButton.className = "filter";
-  filterButton.textContent = filter.trim();
-  parent.appendChild(filterButton);
+  const id = "filter";
+  const label = filter.trim();
+  const buttonAlreadyExists = Array.from(elems(`.${id}`, parent)).filter(button => {
+    return button.textContent.toLowerCase() === label.toLowerCase();
+  });
+  if(buttonAlreadyExists.length < 1) {
+    let filterButton = createEl();
+    filterButton.className = id;
+    filterButton.textContent = label;
+    parent.appendChild(filterButton);
+  }
 }
 
 function populateFilters(data) {
