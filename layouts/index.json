@@ -11,7 +11,7 @@
       "category" .Params.category 
       "version" .Params.version
       "subject" .Params.subject
-      "filters" (printf "%s::%s::%s" $policy .Params.category .Params.version .Params.subject)
+      "filters" (printf "%s::%s::%s::%s" $policy .Params.category .Params.version .Params.subject)
     ) -}}
   {{- end }}
 {{- end -}}
