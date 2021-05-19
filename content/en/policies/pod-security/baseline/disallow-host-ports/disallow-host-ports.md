@@ -1,7 +1,6 @@
 ---
 title: "Disallow Host Ports"
 category: Pod Security Standards (Baseline)
-version: 
 policyType: "validate"
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list.

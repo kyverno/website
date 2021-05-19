@@ -1,7 +1,6 @@
 ---
 title: "Restrict Auto-Mount of Service Account Tokens"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     Kubernetes automatically mounts service account credentials in each pod.  The service account may be assigned roles allowing pods to access API resources.  To restrict access, opt out of auto-mounting tokens by setting  automountServiceAccountToken to false.
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Kubernetes automatically mounts service account credentials in each pod. 
       The service account may be assigned roles allowing pods to access API resources. 

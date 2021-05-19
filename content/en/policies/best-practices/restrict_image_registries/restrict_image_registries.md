@@ -1,7 +1,6 @@
 ---
 title: "Restrict Image Registries"
 category: Best Practices
-version: 1.3.0
 policyType: "validate"
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.
@@ -20,6 +19,7 @@ metadata:
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.3.0
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Images from unknown registries may not be scanned and secured. 
       Requiring use of known registries helps reduce threat exposure.

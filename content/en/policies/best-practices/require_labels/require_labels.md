@@ -1,7 +1,6 @@
 ---
 title: "Require Labels"
 category: Best Practices
-version: 
 policyType: "validate"
 description: >
     Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that  all tools can understand. The recommended labels describe applications in a way that can be  queried. 
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Require Labels
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod, Label
     policies.kyverno.io/description: >-
       Define and use labels that identify semantic attributes of your application or Deployment.
       A common set of labels allows tools to work collaboratively, describing objects in a common manner that 

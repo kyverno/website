@@ -1,7 +1,6 @@
 ---
 title: "Add Labels"
 category: Sample
-version: 
 policyType: "mutate"
 description: >
     Simple mutation which adds a label `foo=bar` to different resource kinds.
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Add Labels
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Label
     policies.kyverno.io/description: >-
       Simple mutation which adds a label `foo=bar` to different resource kinds.
 spec:

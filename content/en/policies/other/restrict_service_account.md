@@ -1,7 +1,6 @@
 ---
 title: "Restrict Service Account"
 category: Sample
-version: 1.3.5
 policyType: "validate"
 description: >
     Restrict Pod resources to use a known service account can be useful to ensure workload identity. This policy uses a ConfigMap resource as an external data source to map service accounts to images. Example: 'sa-name: ["registry/image-name"]'
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Restrict Service Account
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.3.5
     policies.kyverno.io/description: >-
       Restrict Pod resources to use a known service account can be useful to

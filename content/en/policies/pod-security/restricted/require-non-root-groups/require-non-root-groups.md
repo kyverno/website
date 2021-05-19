@@ -1,7 +1,6 @@
 ---
 title: "Require Non Root Groups"
 category: Pod Security Standards (Restricted)
-version: 
 policyType: "validate"
 description: >
     Containers should be forbidden from running with a root primary or supplementary GID.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Containers should be forbidden from running with a root primary or supplementary GID.
 spec:

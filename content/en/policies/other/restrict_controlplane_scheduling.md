@@ -1,7 +1,6 @@
 ---
 title: "Restrict control plane scheduling"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key "node-role.kubernetes.io/master".   
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict control plane scheduling
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       This policy prevents users from setting a toleration
       in a Pod spec which allows running on control plane nodes

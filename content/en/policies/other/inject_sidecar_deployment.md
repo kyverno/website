@@ -1,7 +1,6 @@
 ---
 title: "Inject Sidecar Container"
 category: Sample
-version: 
 policyType: "mutate"
 description: >
     Sample policy that injects a sidecar container into Pods that match an annotation.  
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Inject Sidecar Container
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Sample policy that injects a sidecar container into Pods that match an annotation.  
 spec:

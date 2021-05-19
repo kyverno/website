@@ -1,7 +1,6 @@
 ---
 title: "Disallow Secrets from Env Vars"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Disallow Secrets from Env Vars
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod, Secret
     policies.kyverno.io/description: >-
       Sample policy to disallow using secrets from environment variables 
       which are visible in resource definitions. 

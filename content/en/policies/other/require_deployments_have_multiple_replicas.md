@@ -1,7 +1,6 @@
 ---
 title: "Require Multiple Replicas"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     Sample policy that requires more than one replica for deployments.    
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Require Multiple Replicas
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Deployment
     policies.kyverno.io/description: >-
       Sample policy that requires more than one replica for deployments.    
 spec:

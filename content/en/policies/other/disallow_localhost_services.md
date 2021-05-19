@@ -1,7 +1,6 @@
 ---
 title: "Disallow Localhost ExternalName Services"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This sample policy blocks Services of type ExternalName if the externalName field refers to localhost.
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Disallow Localhost ExternalName Services
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
       A Service of type ExternalName which points back to localhost can potentially be used to exploit
       vulnerabilities in some Ingress controllers. This sample policy blocks Services of type ExternalName

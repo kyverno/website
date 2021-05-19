@@ -1,7 +1,6 @@
 ---
 title: "Disallow Add Capabilities"
 category: Pod Security Standards (Baseline)
-version: 
 policyType: "validate"
 description: >
     Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access.
       Adding capabilities beyond the default set must not be allowed.

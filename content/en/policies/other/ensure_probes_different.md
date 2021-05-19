@@ -1,7 +1,6 @@
 ---
 title: "Validate Probes"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     Sample policy to check that liveness and readiness probes are not set to the same values.
@@ -21,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Validate Probes
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Sample policy to check that liveness and readiness probes are not set to the same values.
 spec:

@@ -1,7 +1,6 @@
 ---
 title: "Disallow SELinux"
 category: Pod Security Standards (Baseline)
-version: 
 policyType: "validate"
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Disallow SELinux
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       SELinux options can be used to escalate privileges and should not be allowed.
 spec:

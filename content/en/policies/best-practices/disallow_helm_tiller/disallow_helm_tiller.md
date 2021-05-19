@@ -1,7 +1,6 @@
 ---
 title: "Disallow Helm Tiller"
 category: Sample
-version: 
 policyType: "validate"
 description: >
     Tiller has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users.
@@ -19,6 +18,7 @@ metadata:
     policies.kyverno.io/title: Disallow Helm Tiller
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Tiller has known security challenges. It requires administrative privileges and acts as a shared
       resource accessible to any authenticated user. Tiller can lead to privilege escalation as

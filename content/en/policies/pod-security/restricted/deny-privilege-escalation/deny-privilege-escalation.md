@@ -1,7 +1,6 @@
 ---
 title: "Deny Privilege Escalation"
 category: Pod Security Standards (Restricted)
-version: 
 policyType: "validate"
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
 spec:

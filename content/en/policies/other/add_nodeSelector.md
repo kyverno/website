@@ -1,7 +1,6 @@
 ---
 title: "Add nodeSelector"
 category: Sample
-version: 
 policyType: "mutate"
 description: >
     Adds the nodeSelector field to a Pod spec.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Add nodeSelector
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Adds the nodeSelector field to a Pod spec.
 spec:

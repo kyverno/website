@@ -1,7 +1,6 @@
 ---
 title: "Disallow Host Namespaces"
 category: Pod Security Standards (Baseline)
-version: 
 policyType: "validate"
 description: >
     Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces.
@@ -18,6 +17,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Host namespaces (Process ID namespace, Inter-Process Communication namespace, and
       network namespace) allow access to shared information and can be used to elevate
