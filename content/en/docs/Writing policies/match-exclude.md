@@ -13,7 +13,7 @@ The `match` and `exclude` clauses have the same structure and can each contain t
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
-At least one element must be specified in a `match` or `exclude` block. The `kind` attribute is optional when working with the `resources` element, but if it's not specified the policy rule will only be applicable to metadata that is common across all resource kinds.
+At least one element must be specified in a `match.resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.resources.kinds` field.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
 
