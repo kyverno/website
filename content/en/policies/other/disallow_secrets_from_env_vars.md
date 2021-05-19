@@ -1,6 +1,8 @@
 ---
 title: "Disallow Secrets from Env Vars"
 category: Sample
+version: 
+subject: Pod, Secret
 policyType: "validate"
 description: >
     Sample policy to disallow using secrets from environment variables  which are visible in resource definitions. 

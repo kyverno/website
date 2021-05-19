@@ -17,23 +17,41 @@ const appliedFiltersEl = elem(".filters_applied");
 const section = elem(".td-section");
 
 // add filters on the sidebar
+function createFilterButton(filter, parent) {
+  const id = "filter";
+  const label = filter.trim();
+  const buttonAlreadyExists = Array.from(elems(`.${id}`, parent)).filter(button => {
+    return button.textContent.toLowerCase() === label.toLowerCase();
+  });
+  if(buttonAlreadyExists.length < 1) {
+    let filterButton = createEl();
+    filterButton.className = id;
+    filterButton.textContent = label;
+    parent.appendChild(filterButton);
+  }
+}
+
 function populateFilters(data) {
   elem("#policy_filters").dataset.filters.split(",").forEach(function(filterType){
     let filters = new Set();
     data.forEach(function(item){
-      filters.add(item[filterType]);
+      item[filterType] ? filters.add(item[filterType]) : false;
     });
     let filterTypeEl = elem(`.filter_${filterType}`);
     const filterCategory = { "type": filterTypeEl.dataset.criteria, "policies": Array.from(filters) };
     allFiltersObj.push(filterCategory);
-    
+
     if(data.length >= 1) {
       if (filters.size >= 1) {
         Array.from(filters).sort().forEach(function(filter){
-          let filterButton = createEl();
-          filterButton.className = "filter";
-          filterButton.textContent = filter;
-          filterTypeEl.appendChild(filterButton);
+          let actualFilters = filter.split(",");
+          if(actualFilters.length > 1) {
+            actualFilters.forEach(filter => {
+              createFilterButton(filter, filterTypeEl);
+            })
+          } else {
+            createFilterButton(filter, filterTypeEl);
+          }
         });
       } else {
         filterTypeEl.classList.add("passive");
@@ -46,6 +64,7 @@ function createPolicy(body, link, policy, title) {
   const policyElem = document.createElement("a");
   policyElem.className = "policy";
   policyElem.href = link;
+  policy = policy.replaceAll(", ", "::").replaceAll(" ,", "::").replaceAll(",", "::");
   policyElem.dataset.policy = policy;
   const policyTitle = document.createElement("h3");
   policyTitle.className = "policy_title";

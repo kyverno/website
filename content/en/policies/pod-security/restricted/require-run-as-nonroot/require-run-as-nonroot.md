@@ -1,6 +1,8 @@
 ---
 title: "Require Run As Non Root"
 category: Pod Security Standards (Restricted)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Containers must be required to run as non-root users.

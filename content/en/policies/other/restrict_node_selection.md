@@ -1,6 +1,8 @@
 ---
 title: "Restrict node selection"
 category: Sample
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     This policy prevents users from targeting specific nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields in a Pod spec.     

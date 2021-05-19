@@ -1,6 +1,8 @@
 ---
 title: "Block Updates and Deletes"
 category: Sample
+version: 
+subject: RBAC
 policyType: "validate"
 description: >
     Kubernetes RBAC allows for controls on kinds of resources or those with specific names. This policy restricts updates and deletes to any resource that contains the label `protected="true"` unless by a cluster-admin and thus functions as a more granular option to Kubernetes RBAC. 

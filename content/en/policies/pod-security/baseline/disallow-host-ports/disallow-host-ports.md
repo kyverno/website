@@ -1,6 +1,8 @@
 ---
 title: "Disallow Host Ports"
 category: Pod Security Standards (Baseline)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.

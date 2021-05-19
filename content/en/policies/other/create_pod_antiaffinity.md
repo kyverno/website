@@ -1,6 +1,8 @@
 ---
 title: "Add Pod Anti-Affinity"
 category: Sample
+version: 
+subject: Deployment, Pod
 policyType: "mutate"
 description: >
     Sample policy to add Pod anti-affinity

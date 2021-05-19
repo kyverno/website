@@ -1,6 +1,8 @@
 ---
 title: "Restrict Service Account"
 category: Sample
+version: 1.3.5
+subject: Pod
 policyType: "validate"
 description: >
     Restrict Pod resources to use a known service account can be useful to ensure workload identity. This policy uses a ConfigMap resource as an external data source to map service accounts to images. Example: 'sa-name: ["registry/image-name"]'

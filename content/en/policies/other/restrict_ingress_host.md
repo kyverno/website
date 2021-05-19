@@ -1,6 +1,8 @@
 ---
 title: "Unique Ingress Host"
 category: Sample
+version: 1.3.2
+subject: Ingress
 policyType: "validate"
 description: >
     Checks an incoming Ingress resource to ensure its hosts are unique to the cluster.

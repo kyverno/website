@@ -1,6 +1,8 @@
 ---
 title: "Replace Image Registry"
 category: Sample
+version: 1.3.6
+subject: Pod
 policyType: "mutate"
 description: >
     Rather than blocking Pods which come from outside registries, it is also possible to mutate them so the pulls are directed to approved registries. This sample policy mutates all images either in the form 'image:tag' or 'registry.corp.com/image:tag' to be prefaced with `myregistry.corp.com/`.

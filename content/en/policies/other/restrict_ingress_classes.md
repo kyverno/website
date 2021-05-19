@@ -1,6 +1,8 @@
 ---
 title: "Restrict Ingress Classes"
 category: Sample
+version: 
+subject: Ingress
 policyType: "validate"
 description: >
     It can be useful to restrict Ingress resources to a set of known ingress classes  that are allowed in the cluster. You can customize this policy to allow ingress  classes that are configured in the cluster.

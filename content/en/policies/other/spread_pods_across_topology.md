@@ -1,6 +1,8 @@
 ---
 title: "Spread Pods Across Nodes"
 category: Sample
+version: 
+subject: Deployment, Pod
 policyType: "mutate"
 description: >
     Sample policy to spread pods matching a label across nodes.

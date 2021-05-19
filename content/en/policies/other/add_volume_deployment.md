@@ -1,6 +1,8 @@
 ---
 title: "Add Volume to Deployment"
 category: Sample
+version: 
+subject: Deployment, Volume
 policyType: "mutate"
 description: >
     Sample policy to add a volume and volumeMount to a Deployment resource. This checks for the presence of an annotation called "vault.k8s.corp.net/inject=enabled" and adds an emptyDir volume using the memory medium.

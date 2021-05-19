@@ -1,6 +1,8 @@
 ---
 title: "Disallow Host Namespaces"
 category: Pod Security Standards (Baseline)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces.

@@ -1,6 +1,8 @@
 ---
 title: "Disallow Host Ipc"
 category: Pod Security Standards (Baseline)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Sharing the host's PID namespace allows visibility of process on the host, potentially exposing process information. Sharing the host's IPC namespace allows the container process to communicate with processes on the host. To avoid pod container from having visibility to host process space, validate that 'hostPID' and 'hostIPC' are set to 'false'.

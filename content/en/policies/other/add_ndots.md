@@ -1,6 +1,8 @@
 ---
 title: "Add ndots"
 category: Sample
+version: 
+subject: Pod
 policyType: "mutate"
 description: >
     The ndots value controls where DNS lookups are first performed in a cluster and needs to be set to a lower value than the default of 5 in some cases. This sample policy mutates all Pods to add the ndots option with a value of 1.

@@ -1,6 +1,8 @@
 ---
 title: "Restrict Pod Count per Node"
 category: Sample
+version: 1.3.2
+subject: Pod
 policyType: "validate"
 description: >
     Sample policy to restrict pod count on node 'minikube' to be no more than 10.

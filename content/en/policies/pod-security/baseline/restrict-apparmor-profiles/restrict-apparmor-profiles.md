@@ -1,6 +1,8 @@
 ---
 title: "Restrict AppArmor"
 category: Pod Security Standards (Baseline)
+version: 1.3.0
+subject: Pod, Annotation
 policyType: "validate"
 description: >
     On supported hosts, the 'runtime/default' AppArmor profile is applied by default.  The default policy should prevent overriding or disabling the policy, or restrict  overrides to an allowed set of profiles.

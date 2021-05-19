@@ -1,6 +1,8 @@
 ---
 title: "Add Labels"
 category: Sample
+version: 
+subject: Label
 policyType: "mutate"
 description: >
     Simple mutation which adds a label `foo=bar` to different resource kinds.

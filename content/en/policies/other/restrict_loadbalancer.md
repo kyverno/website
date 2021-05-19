@@ -1,6 +1,8 @@
 ---
 title: "Disallow Service Type LoadBalancer"
 category: Sample
+version: 
+subject: Service
 policyType: "validate"
 description: >
     Sample policy to restrict use of Service type LoadBalancer.

@@ -68,6 +68,11 @@ title = "Minimum Version" # title on the UI
 filterID = "version" # key you used inside index.json 
 weight = 3
 
+[[policyFilters]]
+title = "Subject" # title on the UI
+filterID = "subject" # key you used inside index.json 
+weight = 4
+
 # User interface configuration
 [ui]
 

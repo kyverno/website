@@ -1,6 +1,8 @@
 ---
 title: "Restrict Image Registries"
 category: Best Practices
+version: 1.3.0
+subject: Pod
 policyType: "validate"
 description: >
     Images from unknown registries may not be scanned and secured.  Requiring use of known registries helps reduce threat exposure.

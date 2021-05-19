@@ -1,6 +1,8 @@
 ---
 title: "Disallow Helm Tiller"
 category: Sample
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Tiller has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users.

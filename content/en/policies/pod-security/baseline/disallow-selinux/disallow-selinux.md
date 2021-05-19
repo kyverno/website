@@ -1,6 +1,8 @@
 ---
 title: "Disallow SELinux"
 category: Pod Security Standards (Baseline)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     SELinux options can be used to escalate privileges and should not be allowed.

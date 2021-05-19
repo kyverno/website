@@ -1,6 +1,8 @@
 ---
 title: "Add nodeSelector"
 category: Sample
+version: 
+subject: Pod
 policyType: "mutate"
 description: >
     Adds the nodeSelector field to a Pod spec.

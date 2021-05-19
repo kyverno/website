@@ -1,6 +1,8 @@
 ---
 title: "Disallow Add Capabilities"
 category: Pod Security Standards (Baseline)
+version: 
+subject: Pod
 policyType: "validate"
 description: >
     Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
