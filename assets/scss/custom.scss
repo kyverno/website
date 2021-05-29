@@ -151,7 +151,7 @@
     grid-template-columns: 6rem 1fr;
     grid-gap: 1rem;
     @media screen and (max-width: 557px) { 
-      margin-top: -4rem;
+      margin-top: -2rem;
     }
   }
   &_filters {
@@ -165,6 +165,7 @@
       bottom: 1.5rem;
       padding: 1rem;
       border-radius: 0.5rem;
+      overflow-y: auto;
       &.active {
         box-shadow: 0 1rem 4rem rgba(0,0,0,0.08);
         transform: translateX(0);
@@ -204,7 +205,7 @@
   &_page {
     margin-top: 6rem;
     @media screen and (max-width: 557px) {
-      margin-top: -4rem;
+      margin-top: -2rem;
     }
   }
   &_toggle {
