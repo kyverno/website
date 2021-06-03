@@ -52,4 +52,4 @@ service:
 
 The above configuration will allow Kyverno's metrics to be exposed at port 8000 of any host/node of the cluster.
 
-## Metrics
+## Metrics and a ready-to-use Grafana Dashboard
