@@ -20,14 +20,14 @@ When operating in a Kubernetes cluster with Kyverno installed, you can always in
 For example, here is the definition of a Kyverno `policy.spec`:
 
 ```shell
-λ kubectl explain policy.spec
+kubectl explain policy.spec
 KIND:     Policy
 VERSION:  kyverno.io/v1
 
 RESOURCE: spec <Object>
 
 DESCRIPTION:
-     Spec defines policy behaviors and contains one or rules.
+     Spec defines policy behaviors and contains one or more rules.
 
 FIELDS:
    background   <boolean>
