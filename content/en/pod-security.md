@@ -136,7 +136,7 @@ Heavily restricted policies following current Pod hardening best practices.
     </tr>
 </table>
 
-Apply the Restricted Pod Security policies (included Baseline policies) using:
+Apply the Restricted Pod Security policies (includes all Baseline policies) using:
 
 ```sh
 kustomize build https://github.com/kyverno/policies/pod-security/restricted | kubectl apply -f -
