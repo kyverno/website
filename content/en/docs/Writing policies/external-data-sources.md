@@ -99,7 +99,7 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. You have the choice of storing those array values in either YAML format within a block scalar or JSON-encoded content.
 
 {{% alert title="Note" color="info" %}}
-Storing array values in a YAML block scalar requires Kyverno 1.3.5+. Also, when storing array values as YAML, use the `|-` block style indicator with the "strip" block chomping indicator. See [this site](https://yaml-multiline.info/) for more information on multi-line YAML.
+Storing array values in a YAML block scalar requires Kyverno 1.3.5+. Also, when storing array values as YAML, use the `|-` block style indicator with the "strip" block chomping indicator. See [this site](https://yaml-multiline.info/) for more information on multi-line YAML. When using arrays in this fashion, a minimum of two are required to form an array. A single value will produce an error. Ensure there are no spaces added to the end of the strings in these block scalars.
 {{% /alert %}}
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.

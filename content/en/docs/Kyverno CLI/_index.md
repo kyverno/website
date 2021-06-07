@@ -86,7 +86,11 @@ Use the `--set` flag to pass the values for variables in a policy while applying
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `--values_file` for applying multiple policies on multiple resources and pass a file containing variables and its values.
+Use `--values_file` for applying multiple policies on multiple resources and pass a file containing variables and its values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
+
+{{% alert title="Note" color="info" %}}
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](https://kyverno.io/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
+{{% /alert %}}
 
 ```
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
