@@ -18,7 +18,16 @@ CCEND=\033[0m
 help: ## Show this help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-module-check:
+npm-dependencies-install: ## Install the required npm dependencies backing the website, only if they haven't been installed yet
+	@if [ ! -d "node_modules" ]; then npm install; else echo "npm dependencies already found to be installed. To re-install, run make npm-dependencies-force-install"; fi
+
+npm-dependencies-purge: ## Purge all the npm dependencies installed under this project
+	@rm -rf node_modules
+
+npm-dependencies-force-install: ## Install the required npm dependencies backing the website even if they already were installed
+	@npm install
+
+module-check: npm-dependencies-install
 	@git submodule status --recursive | awk '/^[+-]/ {printf "\033[31mWARNING\033[0m Submodule not initialized: \033[34m%s\033[0m\n",$$2}' 1>&2
 
 all: build ## Build site with production settings and put deliverables in ./public
@@ -44,7 +53,7 @@ non-production-build: ## Build the non-production site, which adds noindex heade
 	hugo --enableGitInfo
 
 serve: module-check ## Boot the development server.
-	hugo server --buildFuture
+	hugo server --buildFuture --watch=false
 
 container-image:
 	$(CONTAINER_ENGINE) build . \
