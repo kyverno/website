@@ -1,5 +1,5 @@
 ---
-title: Monitoring Kyverno With Prometheus Metrics
+title: Monitoring Kyverno
 description: Monitor the activities associated with the Kyverno policies applied over your cluster with a good set of Prometheus-compliant metrics
 weight: 45
 ---

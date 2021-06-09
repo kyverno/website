@@ -1,6 +1,6 @@
 ---
-title: "Bonus: A ready-to-use Grafana dashboard depicting insights from Kyverno metrics" 
-description: This dashboard can directly imported in your Grafana portal in a matter of few clicks and can be helpful in providing a great set of generic insights around Kyverno deployed over your cluster.
+title: "Grafana Dashboard" 
+description: A ready-to-use dashboard depicting insights from Kyverno metrics.
 weight: 2
 ---
 
