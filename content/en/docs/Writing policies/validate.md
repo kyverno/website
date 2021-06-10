@@ -165,6 +165,8 @@ spec:
 
 ### Operators
 
+Operators in the following support list values as of Kyverno 1.3.6 in addition to scalar values.
+
 | Operator   | Meaning                   |
 |------------|---------------------------|
 | `>`        | greater than              |
@@ -172,7 +174,7 @@ spec:
 | `>=`       | greater than or equals to |
 | `<=`       | less than or equals to    |
 | `!`        | not equals                |
-| `|`        | logical or                |
+| `\|`       | logical or                |
 | `&`        | logical and               |
 
 {{% alert title="Note" color="info" %}}
