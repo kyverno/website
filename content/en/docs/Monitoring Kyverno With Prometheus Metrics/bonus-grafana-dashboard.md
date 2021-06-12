@@ -1,7 +1,7 @@
 ---
 title: "Grafana Dashboard" 
 description: A ready-to-use dashboard depicting insights from Kyverno metrics.
-weight: 2
+weight: 60
 ---
 
 ## Setup

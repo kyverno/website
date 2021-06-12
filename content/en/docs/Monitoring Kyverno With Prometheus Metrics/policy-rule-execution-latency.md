@@ -1,8 +1,12 @@
 ---
-title: kyverno_policy_rule_execution_latency_milliseconds
+title: Rule execution latency
 description: This metric can be used to track the latencies associated with the execution/processing of the individual rules whenever they evaluate incoming resource requests or execute background scans.
-weight: 2
+weight: 30
 ---
+
+**Metric Name**
+
+kyverno_policy_rule_execution_latency_milliseconds
 
 **Metric Value**
 

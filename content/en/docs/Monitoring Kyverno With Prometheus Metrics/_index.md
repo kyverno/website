@@ -1,7 +1,7 @@
 ---
 title: Monitoring Kyverno
-description: Monitor the activities associated with the Kyverno policies applied over your cluster with a good set of Prometheus-compliant metrics
-weight: 45
+description: Monitor the activities associated with the Kyverno policies applied over your cluster with Prometheus-compliant metrics.
+weight: 65
 ---
 
 ## Introduction
@@ -12,21 +12,19 @@ Alongside this, providing a non-rigid granularity of monitoring the above target
 
 ## Installation and Setup
 
-Whenever you install Kyverno via helm, a service called `kyverno-svc` gets created as well inside the `kyverno` namespace and this service ends up exposing the metrics at its port no. 8000.
+Whenever you install Kyverno via helm, a service called `kyverno-svc-metrics` gets created inside the `kyverno` namespace and this service ends up exposing the metrics at its port number 8000.
 
 ```sh
 $ values.yaml
 
 ...
-service:
-  port: 443
+metricsService:
+  create: true
   type: ClusterIP
-  # Only used if service.type is NodePort
-  nodePort:
   ## Kyverno's metrics server will be exposed at this port
-  metricsPort: 8000
+  port: 8000
   ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
-  metricsNodePort: 8000
+  nodePort:
   ## Provide any additional annotations which may be required. This can be used to
   ## set the LoadBalancer service type to internal only.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
@@ -36,20 +34,41 @@ service:
 ```
 
 By default, the service type is going to be `ClusterIP` meaning that the metrics would be only capable of being scraped by a Prometheus server sitting inside the cluster. <br>
-But speculatively, in majority of the cases, the Prometheus server would be kept outside the cluster as an isolated component. In those kinds of scenarios, you would want the `kyverno-svc` service to be publicly exposed so as to expose the metrics (available at port 8000) to your Prometheus server sitting outside the cluster.<br>
+But speculatively, in majority of the cases, the Prometheus server would be kept outside the cluster as an isolated component. In those kinds of scenarios, you would want the `kyverno-svc-metrics` service to be publicly exposed so as to expose the metrics (available at port 8000) to your Prometheus server sitting outside the cluster.<br>
 
-To do so, either you can expose the `kyverno-svc` service as NodePort or LoadBalancer.
-That can be done via the `values.yaml` file itself which is provided at the time of helm installation.
-
+Hence, to expose your `kyverno-svc-metrics` service publicly as `NodePort` at host's/node's port number 8000, you can configure your values.yaml before helm installation as described below:
 ```sh
 ...
-service:
+metricsService:
+  create: true
   type: NodePort
-  metricsPort: 8000
-  metricsNodePort: 8000
+  ## Kyverno's metrics server will be exposed at this port
+  port: 8000
+  ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
+  nodePort: 8000
+  ## Provide any additional annotations which may be required. This can be used to
+  ## set the LoadBalancer service type to internal only.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ##
+  annotations: {}
 ...
 ```
-
-The above configuration will allow Kyverno's metrics to be exposed at port 8000 of any host/node of the cluster.
+Or, if you want to expose your `kyverno-svc-metrics` service publicly as `LoadBalancer`, you can configure your values.yaml before helm installation as described below:
+```sh
+...
+metricsService:
+  create: true
+  type: LoadBalancer
+  ## Kyverno's metrics server will be exposed at this port
+  port: 8000
+  ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
+  nodePort: 
+  ## Provide any additional annotations which may be required. This can be used to
+  ## set the LoadBalancer service type to internal only.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ##
+  annotations: {}
+...
+```
 
 ## Metrics and a ready-to-use Grafana Dashboard

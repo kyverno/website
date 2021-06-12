@@ -1,8 +1,12 @@
 ---
-title: kyverno_policy_rule_info_total
+title: Information around Policies and Rules
 description: This metric can be used to track the number of policies as well as rules present in the cluster which are currently active and even the ones which are not currently active but were created in the past.
-weight: 2
+weight: 10
 ---
+
+**Metric Name**
+
+kyverno_policy_rule_info_total
 
 **Metric Value**
 

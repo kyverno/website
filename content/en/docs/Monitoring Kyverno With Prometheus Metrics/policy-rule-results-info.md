@@ -1,8 +1,12 @@
 ---
-title: kyverno_policy_rule_results_info
+title: Information around results of Rule/Policy executions
 description: This metric can be used to track the results associated with the rule executing as a part of incoming resource requests and even background scans.
-weight: 2
+weight: 20
 ---
+
+**Metric Name**
+
+kyverno_policy_rule_results_info
 
 **Metric Value**
 

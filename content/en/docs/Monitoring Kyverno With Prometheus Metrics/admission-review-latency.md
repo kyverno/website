@@ -1,8 +1,12 @@
 ---
-title: kyverno_admission_review_latency_milliseconds
+title: Admission Review Latency
 description: This metric can be used to track the end-to-end latencies associated with the entire individual admission review, corresponding to the incoming resource request triggering a bunch of policies and rules.
-weight: 2
+weight: 40
 ---
+
+**Metric Name**
+
+kyverno_admission_review_latency_milliseconds
 
 **Metric Value**
 

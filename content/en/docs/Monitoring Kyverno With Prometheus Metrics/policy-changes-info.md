@@ -1,8 +1,12 @@
 ---
-title: kyverno_policy_changes_info
+title: Information around Policy-level changes
 description: This metric can be used to track the history of all the Kyverno policies-related changes such as policy creations, updations and deletions.
-weight: 2
+weight: 50
 ---
+
+**Metric Name**
+
+kyverno_policy_changes_info
 
 **Metric Value**
 
