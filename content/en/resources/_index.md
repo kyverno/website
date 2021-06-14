@@ -8,25 +8,29 @@ type: docs
 
 {{% videos %}}
 
+{{< youtube id="DREjzfTzNpA" start="0" class="video" >}}
+
 {{< youtube id="DW2u6LhNMh0" start="116" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
 
 {{< youtube id="ZE4Zu9WQET4" start="1621" class="video" >}}
 
+{{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
 {{% /videos %}}
 
 {{% videos %}}
-
-{{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
 {{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
 
+{{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
 
 {{% /videos %}}
 
 {{% videos %}}
-
-{{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
 
 {{< youtube id="ZrOtTELNLyg" start="633" class="video" >}}
 
