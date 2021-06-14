@@ -117,10 +117,10 @@ enable = false
 	icon = "fab fa-twitter"
   desc = "Follow Kyverno on Twitter for the latest news!"
 [[links.user]]
-	name = "Kyverno slack channel"
-	url = "https://kubernetes.slack.com/"
+	name = "Kyverno channel on the Kubernetes slack"
+	url = "https://slack.k8s.io/#kyverno"
 	icon = "fab fa-slack"
-  desc = "Kyverno slack channel"
+  desc = "Kyverno channel on the Kubernetes slack"
 [[links.user]]
 	name = "Kyverno mailing list"
 	url = "https://groups.google.com/g/kyverno"
