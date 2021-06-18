@@ -77,4 +77,4 @@ metricsService:
 ...
 ```
 
-## Metrics and Dashbpard
+## Metrics and Dashboard
