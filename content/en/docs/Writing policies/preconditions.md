@@ -142,6 +142,10 @@ The following operators are currently supported for precondition evaluation:
 - NotEquals
 - In
 - NotIn
+- GreaterThan
+- GreaterThanOrEquals
+- LessThan
+- LessThanOrEquals
 
 The set operators, `In` and `NotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] In ["str1", "str2", "str3"]). In this case `In` checks if **all** the strings part of the key are in the value set (i.e. key is a subset of value) and `NotIn` checks if **any** of the strings part of the key is **not** in the value set (i.e. key is not a subset of value). Sets of other types are currently not supported.
 
