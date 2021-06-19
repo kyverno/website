@@ -1,5 +1,5 @@
 ---
-title: Information around Policy-level changes
+title: Policy Change Counts
 description: This metric can be used to track the history of all the Kyverno policies-related changes such as policy creations, updations and deletions.
 weight: 50
 ---

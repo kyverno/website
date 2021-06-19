@@ -1,10 +1,12 @@
 ---
 title: "Grafana Dashboard" 
-description: A ready-to-use dashboard depicting insights from Kyverno metrics.
+description: A ready-to-use dashboard for Kyverno metrics.
 weight: 60
 ---
 
-## Setup
+## Grafana Dashboard
+
+### Setup
 
 * Download the dashboard's JSON and save it in `kyverno-dashboard.json`
 

@@ -1,5 +1,5 @@
 ---
-title: Information around Policies and Rules
+title: Policies and Rule Counts
 description: This metric can be used to track the number of policies as well as rules present in the cluster which are currently active and even the ones which are not currently active but were created in the past.
 weight: 10
 ---

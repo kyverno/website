@@ -1,5 +1,5 @@
 ---
-title: Information around results of Rule/Policy executions
+title: Policy and Rule Execution
 description: This metric can be used to track the results associated with the rule executing as a part of incoming resource requests and even background scans.
 weight: 20
 ---
