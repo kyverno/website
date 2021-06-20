@@ -486,7 +486,7 @@ The test declaration consists of three parts:
 2. The `resources` element which lists one or more resources to which the policies are applied.
 3. The `results` element which declares the expected results.
 
-The test command executes a test declaration by applying the policies to the results and comparing the results with the expected results. The test passes if the actual results match the expected results.
+The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
 
 Multiple tests can be defined in the same file using the YAML delimiter `---`.
 
