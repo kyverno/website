@@ -36,7 +36,7 @@ When Kyverno receives an admission controller request (i.e., a validation or mut
 
 In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
 
-In this snippet, the `match` statement matches on any and all resources that have the kind Service. It does not take any other criteria into consideration, only that it be of kind Service.
+In this snippet, the `match` statement matches on all resources that have the kind Service. It does not take any other criteria into consideration, only that it be of kind Service.
 
 ```yaml
 spec:
