@@ -50,6 +50,10 @@ kubectl get clusterpolicyreport -A
 `cpolr` is the short name for `clusterpolicyreport`.
 {{% /alert %}}
 
+{{% alert title="Note" color="info" %}}
+If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as a warning rather than failure.
+{{% /alert %}}
+
 ## Viewing policy violations
 
 Since the report provides information on all rule and resource execution, finding policy violations requires an additional filter.
