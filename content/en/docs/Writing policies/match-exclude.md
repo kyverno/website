@@ -238,8 +238,8 @@ spec:
     - name: match-criticals-except-given-rbac
       match:
         resources:
-	        kinds:
-	        - Pod
+          kind:
+          - Pod
           selector:
             matchLabels:
               app: critical
