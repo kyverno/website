@@ -5,18 +5,20 @@ description: >
 weight: 60
 ---
 
-Kyverno policy reports provide information about policy execution and violations. Kyverno creates policy reports for each Namespace and a single cluster-level report for cluster resources.
+Kyverno policy reports are Kubernetes resources that provide information about policy results, including violations. Kyverno creates policy reports for each Namespace and a single cluster-level report for cluster resources.
 
-Entries are added to reports whenever a resource is created which violates one or more rules where the applicable rule sets `validationFailureAction=audit`. Otherwise, when in `enforce` mode, the resource is blocked immediately upon creation and therefore no entry is created since no offending resource exists. If the created resource violates multiple rules, there will be multiple entries in the reports for the same resource. Likewise, if a resource is deleted, it will be expunged from the report simultaneously.
+Result entries are added to reports whenever a resource is created which violates one or more rules where the applicable rule sets `validationFailureAction=audit`. Otherwise, when in `enforce` mode, the resource is blocked immediately upon creation and therefore no entry is created since no offending resource exists. If the created resource violates multiple rules, there will be multiple entries in the reports for the same resource. Likewise, if a resource is deleted, it will be expunged from the report simultaneously.
 
 There are two types of reports that get created and updated by Kyverno: a `ClusterPolicyReport` (for cluster-scoped resources) and a `PolicyReport` (for Namespaced resources). The contents of these reports are determined by the violating resources and not where the rule is stored. For example, if a rule is written which validates Ingress resources, because Ingress is a Namespaced resource, any violations will show up in a `PolicyReport` co-located in the same Namespace as the offending resource itself, regardless if that rule was written in a `Policy` or a `ClusterPolicy`.
 
 Kyverno uses the policy report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
 
 {{% alert title="Note" color="info" %}}
-Policy reports are available in Kyverno 1.3.0+. If you are using an older version you can view policy violations using:
-    `kubectl get polv -A`
+Policy reports show policy results for current resources in the cluster. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring-kyverno-with-prometheus-metrics/policy-rule-results-info/).
+{{% /alert %}}
 
+{{% alert title="Note" color="info" %}}
+Policy reports are available in Kyverno 1.3.0+. For older (1.2.x) versions, you can use `kubectl get polv -A` to view policy violations.
 {{% /alert %}}
 
 ## Viewing policy report summaries
@@ -24,14 +26,10 @@ Policy reports are available in Kyverno 1.3.0+. If you are using an older versio
 You can view a summary of the namespaced policy report using the following command:
 
 ```sh
-kubectl get policyreport -A
+kubectl get policyreport --all
 ```
 
-{{% alert title="Tip" color="info" %}}
-`polr` is the short name for `policyreport`.
-{{% /alert %}}
-
-For example, here are the policy reports for a small test cluster:
+For example, here are the policy reports for a small test cluster (`polr` is the shortname for `policyreports`):
 
 ```sh
 $ kubectl get polr -A
@@ -47,12 +45,14 @@ kubectl get clusterpolicyreport -A
 ```
 
 {{% alert title="Tip" color="info" %}}
-`cpolr` is the short name for `clusterpolicyreport`.
+For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/fjogeleit/policy-reporter#readme).
 {{% /alert %}}
+
 
 {{% alert title="Note" color="info" %}}
 If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as warnings rather than failures. By default, it is set to `"true"` and policy violations are reported as failures.
 {{% /alert %}}
+
 
 ## Viewing policy violations
 
