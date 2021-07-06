@@ -8,7 +8,7 @@ The `match` and `exclude` filters control which resources policies are applied t
 
 The `match` and `exclude` clauses have the same structure and can each contain the following elements:
 
-* `resources`: select resources by name, Namespaces, kinds, label selectors, annotations, and Namespace selectors.
+* `resources`: select resources by names, namespaces, kinds, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
@@ -48,7 +48,7 @@ spec:
         - Service
 ```
 
-By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.name` field, the previous `match` statement can further filter out Services that begin with the text "prod-".
+By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
 
 ```yaml
 spec:
@@ -56,12 +56,16 @@ spec:
   - name: no-LoadBalancer
     match:
       resources:
-        name: "prod-*"
+        names: ["prod-*", "staging"]
         kinds:
         - Service
 ```
 
-This will now match on only Services that begin with the name "prod-" but not those which begin with "dev-" nor any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+This will now match on only Services that begin with the name "prod-" **OR** have the name "staging" but not those which begin with "dev-" or any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+
+{{% alert title="Note" color="info" %}}
+Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in the future releases.
+{{% /alert %}}
 
 In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
 
@@ -134,8 +138,8 @@ spec:
           kinds: # Required, list of kinds
           - Deployment
           - StatefulSet
-          # Optional resource name. Supports wildcards (* and ?)
-          name: "mongo*"
+          # Optional resource names. Supports wildcards (* and ?)
+          names: ["mongo*", "postgres*"]
           # Optional list of namespaces. Supports wildcards (* and ?)
           namespaces:
           - "dev*"
