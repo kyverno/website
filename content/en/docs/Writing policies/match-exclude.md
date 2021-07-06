@@ -56,7 +56,9 @@ spec:
   - name: no-LoadBalancer
     match:
       resources:
-        names: ["prod-*", "staging"]
+        names: 
+        - "prod-*"
+        - "staging"
         kinds:
         - Service
 ```
@@ -64,7 +66,7 @@ spec:
 This will now match on only Services that begin with the name "prod-" **OR** have the name "staging" but not those which begin with "dev-" or any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
 
 {{% alert title="Note" color="info" %}}
-Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in the future releases.
+Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in a future release.
 {{% /alert %}}
 
 In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
@@ -139,7 +141,9 @@ spec:
           - Deployment
           - StatefulSet
           # Optional resource names. Supports wildcards (* and ?)
-          names: ["mongo*", "postgres*"]
+          names: 
+          - "mongo*"
+          - "postgres*"
           # Optional list of namespaces. Supports wildcards (* and ?)
           namespaces:
           - "dev*"
