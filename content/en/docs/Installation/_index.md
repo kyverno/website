@@ -6,10 +6,10 @@ description: >
   Installation and configuration details for Kyverno using `Helm` or `kubectl`.
 ---
 
-Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running. 
+Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running.
 
 {{% alert title="Note" color="info" %}}
-Currently, Kyverno runs as a single replica in the `Deployment` resource. Supporting multiple replicas, for increased scale and availability, is being worked on as a [roadmap item](https://github.com/kyverno/kyverno/issues/1214).
+As of v1.4.0, Kyverno supports multiple replicas for increased scale and availability.
 {{% /alert %}}
 
 ## Compatibility Matrix
