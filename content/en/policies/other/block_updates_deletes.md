@@ -5,7 +5,7 @@ version:
 subject: RBAC
 policyType: "validate"
 description: >
-    Kubernetes RBAC allows for controls on kinds of resources or those with specific names. This policy restricts updates and deletes to any resource that contains the label `protected="true"` unless by a cluster-admin and thus functions as a more granular option to Kubernetes RBAC. 
+    Kubernetes RBAC allows for controls on kinds of resources or those with specific names. This policy restricts updates and deletes to any Service resource that contains the label `protected="true"` unless by a cluster-admin and thus functions as a more granular option to Kubernetes RBAC. 
 ---
 
 ## Policy Definition
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/description: >-
       Kubernetes RBAC allows for controls on kinds of resources or those
       with specific names. This policy restricts updates and deletes to any
-      resource that contains the label `protected="true"` unless by
+      Service resource that contains the label `protected="true"` unless by
       a cluster-admin and thus functions as a more granular option to
       Kubernetes RBAC. 
 spec:
@@ -33,6 +33,8 @@ spec:
   - name: block-updates-deletes
     match:
       resources:
+        kind:
+        - Service
         selector:
           matchLabels:
             protected: "true"   

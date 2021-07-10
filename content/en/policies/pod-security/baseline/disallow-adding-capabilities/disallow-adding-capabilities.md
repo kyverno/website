@@ -42,10 +42,10 @@ spec:
             containers:
               - =(securityContext):
                   =(capabilities):
-                    X(add): null
+                    X(add): "null"
             =(initContainers):
               - =(securityContext):
                   =(capabilities):
-                    X(add): null
+                    X(add): "null"
 
 ```
