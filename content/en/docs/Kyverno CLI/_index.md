@@ -542,7 +542,7 @@ Resource manifest (`resource.yaml`):
 apiVersion: v1
 kind: Pod
 metadata:
-  name: myapp-podName
+  name: myapp-pod
   labels:
     app: myapp
 spec: 
