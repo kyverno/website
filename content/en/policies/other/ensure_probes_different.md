@@ -40,7 +40,7 @@ spec:
         message: "Liveness and readiness probes cannot be the same."
         deny:
           conditions:
-          - key: "{{ request.object.spec.template.spec.containers[?readinessProbe!=livenessProbe] | length(@) }}"
-            operator: NotEquals
+          - key: "{{ request.object.spec.template.spec.containers[?readinessProbe==livenessProbe] | length(@) }}"
+            operator: GreaterThan
             value: "0"
 ```
