@@ -1,8 +1,8 @@
 ---
-title: "Check Deprecated Apis"
+title: "Check deprecated APIs"
 category: Best Practices
 version: 
-subject: 
+subject: Kubernetes APIs
 policyType: "validate"
 description: >
     Kubernetes APIs are sometimes deprecated and removed after a few releases.  As a best practice older API versions should be replaced with newer versions.  This policy validates for APIs that are deprecated or scheduled for removal.
@@ -17,7 +17,9 @@ kind: ClusterPolicy
 metadata:
   name: check-deprecated-apis
   annotations:
+    policies.kyverno.io/title: Check deprecated APIs
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/subject: Kubernetes APIs
     policies.kyverno.io/description: >-
       Kubernetes APIs are sometimes deprecated and removed after a few releases. 
       As a best practice older API versions should be replaced with newer versions. 
