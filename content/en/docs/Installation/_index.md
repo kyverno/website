@@ -74,6 +74,7 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 The picture below shows shows a typical Kyverno installation:
 
 <img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
+<br/><br/>
 
 If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
 
