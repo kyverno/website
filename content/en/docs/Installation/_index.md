@@ -71,6 +71,11 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 
 ## Customize the installation of Kyverno
 
+The picture below shows shows a typical Kyverno installation:
+
+<img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
+<br/><br/>
+
 If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
 
 The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.

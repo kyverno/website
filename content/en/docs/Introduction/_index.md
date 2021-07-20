@@ -31,6 +31,13 @@ Mutating policies can be written as overlays (similar to [Kustomize](https://kub
 
 Policy enforcement is captured using Kubernetes events. Kyverno also reports policy violations for existing resources.
 
+The picture below shows the high-level architecture for Kyverno:
+
+<img src="/images/kyverno-architecture.png" alt="Kyverno Architecture" width="80%"/>
+<br/><br/>
+
+An high availability installation of Kyverno can run multiple replicas, and each replica of Kyverno will have multiple controllers that perform different functions. The `Webhook` handles `AdmissionReview` requests from the Kubernetes API server, and its `Monitor` component creates and manages required configurations. The `PolicyController` watches policy resources and initiates background scans based on the configured scan interval. The `GenerateController` manages the lifecycle of generated resources. 
+
 ## Quick Start
 
 This section will help you install Kyverno and create your first policy. 
