@@ -1,5 +1,5 @@
 ---
-title: Monitoring Kyverno
+title: Monitoring
 description: Monitor Kyverno policy metrics with Prometheus
 weight: 65
 ---
