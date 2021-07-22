@@ -149,6 +149,22 @@ The following operators are currently supported for precondition evaluation:
 
 The set operators, `In` and `NotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] In ["str1", "str2", "str3"]). In this case `In` checks if **all** the strings part of the key are in the value set (i.e. key is a subset of value) and `NotIn` checks if **any** of the strings part of the key is **not** in the value set (i.e. key is not a subset of value). Sets of other types are currently not supported.
 
+## Wildcard Matches
+
+String values support the use of wildcards to allow for partial matches. The following example matches on pods that have a container using a `bash` image.
+
+```yaml
+  - name: match-on-image
+    match:
+      resources:
+        kinds:
+        - Pods
+    preconditions:
+    - key: "{{request.object.spec.template.spec.containers.image}}"
+      operator: Equals
+      value: "bash:*"
+```
+
 ## Matching requests without a service account
 
 In this example, the rule is only applied to requests from service accounts (i.e. when the `{{serviceAccountName}}` is not empty).
