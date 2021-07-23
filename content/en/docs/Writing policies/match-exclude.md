@@ -161,7 +161,8 @@ spec:
         # Optional roles to be matched
         roles:
         # Optional clusterroles to be matched
-        clusterroles: cluster-admin
+        clusterRoles: 
+        - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -210,7 +211,7 @@ spec:
         kinds:
         - Pod
     exclude:
-      clusterroles:
+      clusterRoles:
       - cluster-admin
 ```
 
