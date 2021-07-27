@@ -45,7 +45,7 @@ kubectl get clusterpolicyreport -A
 ```
 
 {{% alert title="Tip" color="info" %}}
-For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/fjogeleit/policy-reporter#readme).
+For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
 {{% /alert %}}
 
 
