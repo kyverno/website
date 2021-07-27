@@ -112,6 +112,11 @@ enable = false
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
 
 [[links.user]]
+	name ="Kyverno GitHub repository"
+	url = "https://github.com/kyverno/kyverno/"
+	icon = "fab fa-github"
+  desc = "Kyverno GitHub"
+[[links.user]]
 	name ="Follow Kyverno on Twitter"
 	url = "https://twitter.com/kyverno"
 	icon = "fab fa-twitter"
