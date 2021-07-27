@@ -12,9 +12,9 @@ Image verification is an **preview** feature. It is not ready for production usa
 
 The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image. The policy rule check fails if the image signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
-The rule also mutates matching images to add the `image digest` if a digest is not already specified. Using an image digest has the benefit of making images references immutable. This helps ensure that the expected version of the image is being run, for example the exact version that was scanned and verified by a vulnerability detection tool.
+The rule also mutates matching images to add the `image digest` if a digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the expected version of the image is being run, for example, the version that was scanned and verified by a vulnerability detection tool.
 
-The `imageVerify` rule executes as part of the mutation webhook after mutation rules are applied, but before the validation webhook is invoked.
+The `imageVerify` rule executes as part of the mutation webhook as the applying policy may insert the image digest. The `imageVerify` rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
 
 The `imageVerify` rule can be combined with [auto-gen](docs/writing-policies/autogen/) so that policy rule checks are applied to pod controllers.
 
@@ -54,7 +54,7 @@ pod/signed created
 
 The deployed pod will be mutated to use the image digest.
 
-Attempting to run an unsigned image will produce an policy error as follows:
+Attempting to run an unsigned image will produce a policy error as follows:
 
 ```sh
 kubectl run unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
@@ -67,7 +67,7 @@ check-image:
     signature not found'
 ```
 
-Similary, attempting to run an image which matches the specified rule but is signed with a different key will produce an error:
+Similarly, attempting to run an image which matches the specified rule but is signed with a different key will produce an error:
 
 ```sh
 kubectl run signed-other --image=ghcr.io/kyverno/test-verify-image:signed-by-someone-else
@@ -82,13 +82,13 @@ check-image:
 
 ## Signing images
 
-To sign images install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. 
+To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. 
 
 ```sh
 cosign generate-key-pair
 ```
 
-Next use the `cosign sign` command and specifying the private key in the `-key` command line argument. 
+Next, use the `cosign sign` command and specifying the private key in the `-key` command line argument. 
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
@@ -106,7 +106,7 @@ Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-sta
 
 ## Using private registries
 
-To use a private registry you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
+To use a private registry, you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
 
 1. Configure the image pull secret:
 
@@ -145,4 +145,4 @@ spec:
 
 1. Some registry calls can take a few seconds to complete. Hence, the webhook timeout should be set to a higher number such as 15 seconds.
 
-2. Prometheus metrics and the Kyverno CLI, are currently not supported. Check the [Kyverno GitHub](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.
+2. Prometheus metrics and the Kyverno CLI are currently not supported. Check the [Kyverno GitHub](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.
