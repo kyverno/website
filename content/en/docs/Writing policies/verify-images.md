@@ -5,18 +5,18 @@ weight: 3
 ---
 
 {{% alert title="Note" color="warning" %}}
-Image verification is an **preview** feature. It is not ready for production usage and will likely change. 
+Image verification is an **alpha** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
 The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image. The policy rule check fails if the image signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
-The rule also mutates matching images to add the `image digest` if a digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the expected version of the image is being run, for example, the version that was scanned and verified by a vulnerability detection tool.
+The rule also mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier) if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
 
 The `imageVerify` rule executes as part of the mutation webhook as the applying policy may insert the image digest. The `imageVerify` rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
 
-The `imageVerify` rule can be combined with [auto-gen](docs/writing-policies/autogen/) so that policy rule checks are applied to pod controllers.
+The `imageVerify` rule can be combined with [auto-gen](docs/writing-policies/autogen/) so that policy rule checks are applied to Pod controllers.
 
 Here is a sample image verification policy:
 
@@ -43,7 +43,7 @@ spec:
           -----END PUBLIC KEY-----
 ```
 
-This policy will validate that all images that match `ghcr.io/kyverno/test-verify-image:*` are signed with specified key.
+This policy will validate that all images that match `ghcr.io/kyverno/test-verify-image:*` are signed with the specified key.
 
 A signed image can be run as follows:
 
@@ -52,7 +52,7 @@ kubectl run signed --image=ghcr.io/kyverno/test-verify-image:signed
 pod/signed created
 ```
 
-The deployed pod will be mutated to use the image digest.
+The deployed Pod will be mutated to use the image digest.
 
 Attempting to run an unsigned image will produce a policy error as follows:
 
