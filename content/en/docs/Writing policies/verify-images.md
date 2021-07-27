@@ -5,14 +5,16 @@ weight: 3
 ---
 
 {{% alert title="Note" color="warning" %}}
-Image verification is a **preview** feature. It is not ready for production usage and will likely change before a general availabilty (GA) release.
+Image verification is an **preview** feature. It is not ready for production usage and will likely change. 
 {{% /alert %}}
+
+[Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
 The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image. The policy rule check fails if the image signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
-The rule also mutates the image to add the `image digest` if a digest is not already specified. Using a image digest has the benefit of making images references immutable. This hekos ensure that the expected version of the image is being run, for example the version that was scanned and verified by a vulnerability detection tool.
+The rule also mutates matching images to add the `image digest` if a digest is not already specified. Using an image digest has the benefit of making images references immutable. This helps ensure that the expected version of the image is being run, for example the exact version that was scanned and verified by a vulnerability detection tool.
 
-The `imageVerify` rule executes as part of the mutation webhook, after mutation rules are applied, but before the validation webhook is invoked. 
+The `imageVerify` rule executes as part of the mutation webhook after mutation rules are applied, but before the validation webhook is invoked.
 
 The `imageVerify` rule can be combined with [auto-gen](docs/writing-policies/autogen/) so that policy rule checks are applied to pod controllers.
 
@@ -33,7 +35,7 @@ spec:
           kinds:
             - Pod
       verifyImages:
-      - image: "ghcr.io/jimbugwadia/*"
+      - image: "ghcr.io/kyverno/test-image-verify:*"
         key: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
@@ -41,14 +43,13 @@ spec:
           -----END PUBLIC KEY-----
 ```
 
-This policy will validate that all images from the `ghcr.io/jimbugwadia` registry are signed with specified key.
-
+This policy will validate that all images that match `ghcr.io/kyverno/test-verify-image:*` are signed with specified key.
 
 A signed image can be run as follows:
 
 ```sh
-kubectl run pause --image ghcr.io/jimbugwadia/pause
-pod/pause created
+kubectl run signed --image=ghcr.io/kyverno/test-verify-image:signed
+pod/signed created
 ```
 
 The deployed pod will be mutated to use the image digest.
@@ -56,33 +57,52 @@ The deployed pod will be mutated to use the image digest.
 Attempting to run an unsigned image will produce an policy error as follows:
 
 ```sh
-kubectl run pause-unsigned --image ghcr.io/jimbugwadia/pause-unsigned
+kubectl run unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
 Error from server: admission webhook "mutate.kyverno.svc" denied the request:
 
-resource Pod/default/pause-unsigned was blocked due to the following policies
+resource Pod/default/unsigned was blocked due to the following policies
 
 check-image:
-  check-image: 'image verification failed for ghcr.io/jimbugwadia/pause-unsigned:latest:
+  check-image: 'image verification failed for ghcr.io/kyverno/test-verify-image:unsigned:
     signature not found'
 ```
 
 Similary, attempting to run an image which matches the specified rule but is signed with a different key will produce an error:
 
 ```sh
-kubectl run pause2 --image ghcr.io/jimbugwadia/pause2
+kubectl run signed-other --image=ghcr.io/kyverno/test-verify-image:signed-by-someone-else
 Error from server: admission webhook "mutate.kyverno.svc" denied the request:
 
-resource Pod/default/pause2 was blocked due to the following policies
+resource Pod/default/signed-other was blocked due to the following policies
 
 check-image:
-  check-image: 'image verification failed for ghcr.io/jimbugwadia/pause2:latest: invalid
-    signature'
+  check-image: 'image verification failed for ghcr.io/kyverno/test-verify-image:signed-by-someone-else:
+    invalid signature'
 ```
-
 
 ## Signing images
 
-To sign images install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. Next use the `cosign sign` command and specifying the private key in the `-key` command line argument. This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign -verify` command.
+To sign images install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. 
+
+```sh
+cosign generate-key-pair
+```
+
+Next use the `cosign sign` command and specifying the private key in the `-key` command line argument. 
+
+```sh
+# ${IMAGE} is REPOSITORY/PATH/NAME:TAG
+cosign sign -key cosign.key ${IMAGE}
+```
+
+This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign -verify` command.
+
+```sh
+cosign verify -key cosign.pub ${IMAGE}
+```
+
+Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for details.
+
 
 ## Using private registries
 
