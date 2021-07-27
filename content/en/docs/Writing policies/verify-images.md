@@ -106,6 +106,8 @@ Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-sta
 
 ## Using private registries
 
+
+
 To use a private registry, you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
 
 1. Configure the image pull secret:
