@@ -296,7 +296,7 @@ split(str string, sep string) []string
 regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
-label_match(object, object) bool
+label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
