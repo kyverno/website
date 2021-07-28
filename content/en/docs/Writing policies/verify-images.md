@@ -101,12 +101,13 @@ This command will sign your image and publish the signature to the OCI registry.
 cosign verify -key cosign.pub ${IMAGE}
 ```
 
-Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for details.
-
+Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for usage details and [OCI registry support](https://github.com/sigstore/cosign#registry-support).
 
 ## Using private registries
 
+{{% alert title="Tip" color="info" %}}
 
+{{% /alert %}}
 
 To use a private registry, you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
 
