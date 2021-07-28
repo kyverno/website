@@ -40,6 +40,8 @@ helm repo update
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
+Use any Helm release name with Kyverno 1.4.2+. Prior versions must use `kyverno` as the release name.
+
 ```sh
 helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
