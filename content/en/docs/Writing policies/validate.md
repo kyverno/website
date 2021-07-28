@@ -297,11 +297,11 @@ Contrast this existence anchor, which checks for at least one instance, with a [
 
 This snippet above instead states that *every* entry in the array of containers, regardless of name, must have the `image` set to `nginx:latest`.
 
-#### `anyPattern` - logical OR across multiple validation patterns
+### anyPattern
 
 In some cases, content can be defined at different levels. For example, a security context can be defined at the Pod or Container level. The validation rule should pass if either one of the conditions is met.
 
-The `anyPattern` tag can be used to check if any one of the patterns in the list match.
+The `anyPattern` tag is a logical OR across multiple validation patterns and can be used to check if any one of the patterns in the list match.
 
 {{% alert title="Note" color="info" %}}
 Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be declared in the same rule.
@@ -341,6 +341,22 @@ spec:
             securityContext:
               runAsNonRoot: true
 ```
+
+The `anyPattern` method is best suited for validation cases which do not use a negated condition. In the above example, only one of the `spec` contents must be valid. The same is true of negated conditions, however in the below example, this is slightly more difficult to reason about in that when negated, the `anyPattern` option allows any resource to pass so long as it doesn't have at least one of the patterns.
+
+```yaml
+validate:
+  message: Cannot use Flux v1 annotation.
+  anyPattern:
+  - metadata:
+      =(annotations):
+        X(fluxcd.io/*): "*?"
+  - metadata:
+      =(annotations):
+        X(flux.weave.works/*): "*?"
+```
+
+If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weave.works/` may be present", then this would need two separate rules to express as including either one would mean the other is valid and therefore the resource is allowed.
 
 ## Deny rules
 
