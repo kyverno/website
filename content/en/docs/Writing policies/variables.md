@@ -21,7 +21,15 @@ Kyverno automatically creates a few useful variables and makes them available wi
 
 2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
 
-3. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) for more information.
+3. `request.roles`: a list of roles stored in an array the given account may have. For example, `["foo:dave"]`.
+
+4. `request.clusterRoles`: a list of cluster roles stored in an array. For example, `["dave-admin","system:basic-user","system:discovery","system:public-info-viewer"]`
+
+5. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) for more information.
+
+{{% alert title="Note" color="warning" %}}
+One of either `request.roles` or `request.clusterRoles` will be substituted as variables but not both.
+{{% /alert %}}
 
 ## Variables from policy definitions
 
