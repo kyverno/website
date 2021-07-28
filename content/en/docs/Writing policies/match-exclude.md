@@ -108,7 +108,7 @@ spec:
   rules:
     - name: match-critical-app
       match:
-        # AND across resources and selector
+        # AND across kinds and namespaceSelector
         resources:
           # OR inside list of kinds
           kinds:
