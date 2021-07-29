@@ -6,7 +6,8 @@ https://kyverno.io
 
 * This site makes use of the [Docsy](https://docsy.dev) theme.
   [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
-* `git clone https://github.com/kyverno/website kyverno-website/ --recurse-submodules`
+* Create a fork of the Kyverno website repository to your GitHub account.
+* `git clone https://github.com/{GITHUB-ID}/website kyverno-website/ --recurse-submodules`
 * `cd kyverno-website`
 * `hugo server -v`
 
@@ -31,3 +32,28 @@ Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mut
 * Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
 * Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
 * Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
+
+## Managing Release Versions
+
+Here are the rules for managing release versions:
+
+1. All fixes and feature changes go to the `main` (we may in a few rare cases make fixes to prior versions of the documentation.) The main branch can be accessed at `https://main.kyverno.io`.
+
+2. When a new release is ready for GA, a new release branch is created (see steps below). Release branches are named `release-{major}-{minor}-{patch}` for example `release-1-4-2`. The release branch can be accessed using the `{branch}.nirmata.io` and the latest release is available at `kyverno.io`.
+
+### Creating a release branch
+
+To create a new release branch:
+
+1. Create and push the branch using `git checkout -b release-{major}-{minor}-{patch}` or via [GitHub](https://github.com/kyverno/website/branches).
+
+2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release.
+
+In the `main` branch:
+
+1. Update the versions list in [config.toml](/config/_default/config.toml) to add the next release.
+
+2. Update `version_menu` and `version` in [params].toml(/config/_default/config.toml) for the next release.
+
+3. Create a PR.
+
