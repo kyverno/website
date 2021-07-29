@@ -20,6 +20,8 @@ When using a `generate` rule, the origin resource can be either an existing reso
 Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
 {{% /alert %}}
 
+Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generatecontroller` and add or update the rules to cover the resources and verbs needed.
+
 ## Generate a ConfigMap using inline data
 
 This policy sets the Zookeeper and Kafka connection strings for all namespaces based upon a ConfigMap defined within the rule itself. Notice that this rule has the `generate.data` object defined in which case the rule will create a new ConfigMap called `zk-kafka-address` using the data specified in the rule's manifest.
@@ -98,11 +100,11 @@ spec:
 
 ## Generating Bindings
 
-In order for Kyverno to generate a new RoleBinding or ClusterRoleBinding resource, its service account must first be bound to the same Role or ClusterRole which you're attempting to generate. If this is not done, Kubernetes blocks the request because it sees a possible privilege escalation attempt from the Kyverno service account. This is not a Kyverno function but rather how Kubernetes RBAC is designed to work.
+In order for Kyverno to generate a new RoleBinding or ClusterRoleBinding resource, its ServiceAccount must first be bound to the same Role or ClusterRole which you're attempting to generate. If this is not done, Kubernetes blocks the request because it sees a possible privilege escalation attempt from the Kyverno ServiceAccount. This is not a Kyverno function but rather how Kubernetes RBAC is designed to work.
 
-For example, if you wish to write a `generate` rule which creates a new RoleBinding resource granting some user the `admin` role over a new Namespace, the Kyverno service account must have a ClusterRoleBinding in place for that same `admin` role.
+For example, if you wish to write a `generate` rule which creates a new RoleBinding resource granting some user the `admin` role over a new Namespace, the Kyverno ServiceAccount must have a ClusterRoleBinding in place for that same `admin` role.
 
-Create a new ClusterRoleBinding for the Kyverno service account by default called `kyverno-service-account`.
+Create a new ClusterRoleBinding for the Kyverno ServiceAccount by default called `kyverno`.
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -115,11 +117,11 @@ roleRef:
   name: admin
 subjects:
 - kind: ServiceAccount
-  name: kyverno-service-account
+  name: kyverno
   namespace: kyverno
 ```
 
-Now, create a `generate` rule as you normally would which assigns a test user named `steven` to the `admin` ClusterRole for a new Namespace. The built-in ClusterRole named `admin` in this rule must match the ClusterRole granted to the Kyverno service account in the previous ClusterRoleBinding.
+Now, create a `generate` rule as you normally would which assigns a test user named `steven` to the `admin` ClusterRole for a new Namespace. The built-in ClusterRole named `admin` in this rule must match the ClusterRole granted to the Kyverno ServiceAccount in the previous ClusterRoleBinding.
 
 ```yaml
 apiVersion: kyverno.io/v1

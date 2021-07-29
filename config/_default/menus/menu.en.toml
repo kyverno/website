@@ -4,23 +4,24 @@
   name = "About Kyverno"
   weight = -103
   url = "#td-block-1"
+
 [[main]]
   name = "Documentation"
   weight = -102
   url = "/docs"
+
 [[main]]
   name = "Policies"
   weight = -101
   url = "/policies"
-[[main]]
-  name = "GitHub"
-  weight = -100
-  url = "https://github.com/kyverno/kyverno/"
+
 [[main]]
   name = "Resources"
   weight = -99
   url = "/resources"
+
 [[main]]
   name = "Community"
   weight = -98
   url = "/community"
+

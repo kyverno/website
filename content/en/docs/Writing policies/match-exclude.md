@@ -108,7 +108,7 @@ spec:
   rules:
     - name: match-critical-app
       match:
-        # AND across resources and selector
+        # AND across kinds and namespaceSelector
         resources:
           # OR inside list of kinds
           kinds:
@@ -161,7 +161,8 @@ spec:
         # Optional roles to be matched
         roles:
         # Optional clusterroles to be matched
-        clusterroles: cluster-admin
+        clusterRoles: 
+        - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -210,7 +211,7 @@ spec:
         kinds:
         - Pod
     exclude:
-      clusterroles:
+      clusterRoles:
       - cluster-admin
 ```
 

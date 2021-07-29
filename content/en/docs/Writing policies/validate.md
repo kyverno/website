@@ -4,7 +4,7 @@ description: Check resource configurations for policy compliance.
 weight: 4
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`enforce`) or noted in a policy report (`audit`). Validation rules in `audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`enforce`) or noted in a policy report (`audit`). Validation rules in `audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -190,7 +190,7 @@ Anchors allow conditional processing (i.e. "if-then-else") and other logical che
 | Conditional | ()  | If tag with the given value (including child elements) is specified, then peer elements will be processed. <br/>e.g. If image has tag latest then imagePullPolicy cannot be IfNotPresent. <br/>&nbsp;&nbsp;&nbsp;&nbsp;(image): "*:latest" <br>&nbsp;&nbsp;&nbsp;&nbsp;imagePullPolicy: "!IfNotPresent"<br/>                                             |
 | Equality    | =() | If tag is specified, then processing continues. For tags with scalar values, the value must match. For tags with child elements, the child element is further evaluated as a validation pattern.  <br/>e.g. If hostPath is defined then the path cannot be /var/lib<br/>&nbsp;&nbsp;&nbsp;&nbsp;=(hostPath):<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: "!/var/lib"<br/>                                                                                  |
 | Existence   | ^() | Works on the list/array type only. If at least one element in the list satisfies the pattern. In contrast, a conditional anchor would validate that all elements in the list match the pattern. <br/>e.g. At least one container with image nginx:latest must exist. <br/>&nbsp;&nbsp;&nbsp;&nbsp;^(containers):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- image: nginx:latest<br/>  |
-| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/>|
+| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated (use exclamation point to negate a value). The value should ideally be set to `null`. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/>|
 
 #### Anchors and child elements: Conditional and Equality
 
@@ -297,11 +297,11 @@ Contrast this existence anchor, which checks for at least one instance, with a [
 
 This snippet above instead states that *every* entry in the array of containers, regardless of name, must have the `image` set to `nginx:latest`.
 
-#### `anyPattern` - logical OR across multiple validation patterns
+### anyPattern
 
 In some cases, content can be defined at different levels. For example, a security context can be defined at the Pod or Container level. The validation rule should pass if either one of the conditions is met.
 
-The `anyPattern` tag can be used to check if any one of the patterns in the list match.
+The `anyPattern` tag is a logical OR across multiple validation patterns and can be used to check if any one of the patterns in the list match.
 
 {{% alert title="Note" color="info" %}}
 Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be declared in the same rule.
@@ -341,6 +341,22 @@ spec:
             securityContext:
               runAsNonRoot: true
 ```
+
+The `anyPattern` method is best suited for validation cases which do not use a negated condition. In the above example, only one of the `spec` contents must be valid. The same is true of negated conditions, however in the below example, this is slightly more difficult to reason about in that when negated, the `anyPattern` option allows any resource to pass so long as it doesn't have at least one of the patterns.
+
+```yaml
+validate:
+  message: Cannot use Flux v1 annotation.
+  anyPattern:
+  - metadata:
+      =(annotations):
+        X(fluxcd.io/*): "*?"
+  - metadata:
+      =(annotations):
+        X(flux.weave.works/*): "*?"
+```
+
+If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weave.works/` may be present", then this would need two separate rules to express as including either one would mean the other is valid and therefore the resource is allowed.
 
 ## Deny rules
 
