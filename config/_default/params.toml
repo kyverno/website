@@ -23,7 +23,7 @@ version = "v1.4.1"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://release-1-4-1.kyverno.io"
+url_latest_version = "https://kyverno.io"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/kyverno/website"
