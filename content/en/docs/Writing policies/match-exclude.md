@@ -1,5 +1,5 @@
 ---
-title: Selecting Resources
+title: Select Resources
 description: Use `match` and `exclude` to filter and select resources.
 weight: 2
 ---
