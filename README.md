@@ -6,7 +6,7 @@ https://kyverno.io
 
 * This site makes use of the [Docsy](https://docsy.dev) theme.
   [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
-* Create a fork of the Kyverno website repository to your GitHub account.
+* Create a [fork](https://movi.hashnode.dev/how-to-successfully-fork-clone-signoff-and-make-a-pull-request-ckdyt03sy06utjas18lx1cjer) of the Kyverno website repository to your GitHub account. You will later created a PR (pull request using this fork.)
 * `git clone https://github.com/{GITHUB-ID}/website kyverno-website/ --recurse-submodules`
 * `cd kyverno-website`
 * `hugo server -v`
@@ -53,7 +53,15 @@ In the `main` branch:
 
 1. Update the versions list in [config.toml](/config/_default/config.toml) to add the next release.
 
-2. Update `version_menu` and `version` in [params].toml(/config/_default/config.toml) for the next release.
+2. Update `version_menu` and `version` in [params.toml](/config/_default/params.toml) for the next release.
 
 3. Create a PR.
 
+#### Submitting a PR to multiple release branches
+
+Ideally all changes will go to `main` and then be promoted to a release branch. However, ocassionally we will need to fix documentation issues for already released versions. For such cases, a PR must be created for each release branch.
+
+There are several ways to create multiple PRs, but here is one easy flow:
+1. Create a PR for the `main` branch, as usual.
+2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`.
+3. Submit PRs for each release branch.
