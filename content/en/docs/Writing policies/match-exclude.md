@@ -8,12 +8,24 @@ The `match` and `exclude` filters control which resources policies are applied t
 
 The `match` and `exclude` clauses have the same structure and can each contain the following elements:
 
+* `any`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **OR** operation while choosing resources
+* `all`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **AND** operation while choosing resources
+
+## Resource Filters
+
+The following resource filters can be specified under an `any` or `all` clause.
+
 * `resources`: select resources by names, namespaces, kinds, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
-At least one element must be specified in a `match.resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.resources.kinds` field.
+
+{{% alert title="Note" color="info" %}}
+Specifying resource filters directly under match and exclude has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
+{{% /alert %}}
+
+At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.(any/all).resources.kinds` field.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
 
@@ -36,16 +48,24 @@ When Kyverno receives an admission controller request (i.e., a validation or mut
 
 In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
 
-In this snippet, the `match` statement matches on all resources that have the kind Service. It does not take any other criteria into consideration, only that it be of kind Service.
+In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Pod with name "mongodb" **OR** have the kind Pod and are being created in the "prod" namespace. 
 
 ```yaml
 spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds: 
+          - Service
+          names: 
+          - "staging"
+      - resources:
+          kinds: 
+          - Service
+          namespaces:
+          - "prod"
 ```
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
@@ -55,15 +75,22 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        names: 
-        - "prod-*"
-        - "staging"
-        kinds:
-        - Service
+      any:
+      - resources:
+          names: 
+          - "prod-*"
+          - "staging"
+          kinds:
+          - Service
+      - resources:
+          kinds:
+          - Service
+          subjects:
+          - kind: User
+            name: dave
 ```
 
-This will now match on only Services that begin with the name "prod-" **OR** have the name "staging" but not those which begin with "dev-" or any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
 
 {{% alert title="Note" color="info" %}}
 Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in a future release.
@@ -76,9 +103,10 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - networking.k8s.io/v1/NetworkPolicy
+      all:
+      - resources:
+          kinds:
+          - networking.k8s.io/v1/NetworkPolicy
 ```
 
 By adding the only `version` and `kind` in the `match` statements, will filter out the kind only based on version.
@@ -88,9 +116,10 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - v1/NetworkPolicy
+      all:
+      - resources:
+          kinds:
+          - v1/NetworkPolicy
 ```
 
 Here are some other examples of `match` statements.
@@ -108,8 +137,9 @@ spec:
   rules:
     - name: match-critical-app
       match:
-        # AND across kinds and namespaceSelector
-        resources:
+        all:
+          # AND across kinds and namespaceSelector
+        - resources:
           # OR inside list of kinds
           kinds:
           - Deployment
@@ -136,33 +166,34 @@ spec:
     - name: "check-pod-controller-labels"
       # Each rule matches specific resource described by "match" field.
       match:
-        resources:
-          kinds: # Required, list of kinds
-          - Deployment
-          - StatefulSet
-          # Optional resource names. Supports wildcards (* and ?)
-          names: 
-          - "mongo*"
-          - "postgres*"
-          # Optional list of namespaces. Supports wildcards (* and ?)
-          namespaces:
-          - "dev*"
-          - test
-          # Optional label selectors. Values support wildcards (* and ?)
-          selector:
+        all:
+        - resources:
+            kinds: # Required, list of kinds
+            - Deployment
+            - StatefulSet
+            # Optional resource names. Supports wildcards (* and ?)
+            names: 
+            - "mongo*"
+            - "postgres*"
+            # Optional list of namespaces. Supports wildcards (* and ?)
+            namespaces:
+            - "dev*"
+            - test
+            # Optional label selectors. Values support wildcards (* and ?)
+            selector:
               matchLabels:
-                  app: mongodb
+                app: mongodb
               matchExpressions:
-                  - {key: tier, operator: In, values: [database]}
-        # Optional users or service accounts to be matched
-        subjects:
-        - kind: User
-          name: mary@somecorp.com
-        # Optional roles to be matched
-        roles:
-        # Optional clusterroles to be matched
-        clusterRoles: 
-        - cluster-admin
+                - {key: tier, operator: In, values: [database]}
+            # Optional users or service accounts to be matched
+          subjects:
+          - kind: User
+            name: mary@somecorp.com
+          # Optional roles to be matched
+          roles:
+          # Optional clusterroles to be matched
+          clusterRoles: 
+          - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -180,18 +211,19 @@ spec:
   rules:
     - name: check-min-replicas
       match:
-        # AND across resources and selector
-        resources:
+        all:
+          # AND across resources and selector
+        - resources:
           # OR inside list of kinds
           kinds:
           - Deployment
           namespaceSelector:
             matchExpressions:
-              - key: type 
-                operator: In
-                values: 
-                - connector
-                - compute
+            - key: type 
+              operator: In
+              values: 
+              - connector
+              - compute
 ```
 
 ## Combining match and exclude
@@ -207,12 +239,14 @@ spec:
   rules:
     name: match-pods-except-cluster-admin
     match:
-      resources:
-        kinds:
-        - Pod
+      all:
+      - resources:
+          kinds:
+          - Pod
     exclude:
-      clusterRoles:
-      - cluster-admin
+      all:
+      - clusterRoles:
+        - cluster-admin
 ```
 
 ### Exclude `kube-system` namespace
@@ -228,13 +262,15 @@ spec:
   rules:
     name: match-pods-except-admin
     match:
-      resources:
-        kinds:
-        - Pod
+      all:
+      - resources:
+          kinds:
+          - Pod
     exclude:
-      resources:
-        namespaces:
-        - kube-system
+      all:
+      - resources:
+          namespaces:
+          - kube-system
 ```
 
 ### Match a label and exclude users and roles
@@ -246,18 +282,20 @@ spec:
   rules:
     - name: match-criticals-except-given-rbac
       match:
-        resources:
-          kind:
-          - Pod
-          selector:
-            matchLabels:
-              app: critical
+        all:
+        - resources:
+            kind:
+            - Pod
+            selector:
+              matchLabels:
+                app: critical
       exclude:
-        clusterRoles:
-        - cluster-admin
-        subjects:
-        - kind: User
-          name: John
+        all:
+        - clusterRoles:
+          - cluster-admin
+          subjects:
+          - kind: User
+            name: John
 ```
 
 ### Match all Pods using annotations
@@ -269,9 +307,10 @@ spec:
   rules:
     - name: match-pod-annotations
       match:
-        resources:
-          annotations:
-            imageregistry: "https://hub.docker.com/"
-          kinds:
-            - Pod
+        all:
+        - resources:
+            annotations:
+              imageregistry: "https://hub.docker.com/"
+            kinds:
+              - Pod
 ```
