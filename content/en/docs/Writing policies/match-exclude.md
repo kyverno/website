@@ -6,7 +6,7 @@ weight: 2
 
 The `match` and `exclude` filters control which resources policies are applied to.
 
-The `match` and `exclude` clauses have the same structure and can each contain the following elements:
+The `match` and `exclude` clauses have the same structure and can each contain **only one** the two elements:
 
 * `any`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **OR** operation while choosing resources
 * `all`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **AND** operation while choosing resources
@@ -103,10 +103,9 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      all:
-      - resources:
-          kinds:
-          - networking.k8s.io/v1/NetworkPolicy
+      resources:
+        kinds:
+        - networking.k8s.io/v1/NetworkPolicy
 ```
 
 By adding the only `version` and `kind` in the `match` statements, will filter out the kind only based on version.
@@ -116,10 +115,9 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      all:
-      - resources:
-          kinds:
-          - v1/NetworkPolicy
+      resources:
+        kinds:
+        - v1/NetworkPolicy
 ```
 
 Here are some other examples of `match` statements.
@@ -137,9 +135,8 @@ spec:
   rules:
     - name: match-critical-app
       match:
-        all:
-          # AND across kinds and namespaceSelector
-        - resources:
+        # AND across kinds and namespaceSelector
+        resources:
           # OR inside list of kinds
           kinds:
           - Deployment
@@ -166,34 +163,33 @@ spec:
     - name: "check-pod-controller-labels"
       # Each rule matches specific resource described by "match" field.
       match:
-        all:
-        - resources:
-            kinds: # Required, list of kinds
-            - Deployment
-            - StatefulSet
-            # Optional resource names. Supports wildcards (* and ?)
-            names: 
-            - "mongo*"
-            - "postgres*"
-            # Optional list of namespaces. Supports wildcards (* and ?)
-            namespaces:
-            - "dev*"
-            - test
-            # Optional label selectors. Values support wildcards (* and ?)
-            selector:
+        resources:
+          kinds: # Required, list of kinds
+          - Deployment
+          - StatefulSet
+          # Optional resource names. Supports wildcards (* and ?)
+          names: 
+          - "mongo*"
+          - "postgres*"
+          # Optional list of namespaces. Supports wildcards (* and ?)
+          namespaces:
+          - "dev*"
+          - test
+          # Optional label selectors. Values support wildcards (* and ?)
+          selector:
               matchLabels:
-                app: mongodb
+                  app: mongodb
               matchExpressions:
-                - {key: tier, operator: In, values: [database]}
-            # Optional users or service accounts to be matched
-          subjects:
-          - kind: User
-            name: mary@somecorp.com
-          # Optional roles to be matched
-          roles:
-          # Optional clusterroles to be matched
-          clusterRoles: 
-          - cluster-admin
+                  - {key: tier, operator: In, values: [database]}
+        # Optional users or service accounts to be matched
+        subjects:
+        - kind: User
+          name: mary@somecorp.com
+        # Optional roles to be matched
+        roles:
+        # Optional clusterroles to be matched
+        clusterRoles: 
+        - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -211,19 +207,18 @@ spec:
   rules:
     - name: check-min-replicas
       match:
-        all:
-          # AND across resources and selector
-        - resources:
+        # AND across resources and selector
+        resources:
           # OR inside list of kinds
           kinds:
           - Deployment
           namespaceSelector:
             matchExpressions:
-            - key: type 
-              operator: In
-              values: 
-              - connector
-              - compute
+              - key: type 
+                operator: In
+                values: 
+                - connector
+                - compute
 ```
 
 ## Combining match and exclude
@@ -239,14 +234,12 @@ spec:
   rules:
     name: match-pods-except-cluster-admin
     match:
-      all:
-      - resources:
-          kinds:
-          - Pod
+      resources:
+        kinds:
+        - Pod
     exclude:
-      all:
-      - clusterRoles:
-        - cluster-admin
+      clusterRoles:
+      - cluster-admin
 ```
 
 ### Exclude `kube-system` namespace
@@ -262,15 +255,13 @@ spec:
   rules:
     name: match-pods-except-admin
     match:
-      all:
-      - resources:
-          kinds:
-          - Pod
+      resources:
+        kinds:
+        - Pod
     exclude:
-      all:
-      - resources:
-          namespaces:
-          - kube-system
+      resources:
+        namespaces:
+        - kube-system
 ```
 
 ### Match a label and exclude users and roles
@@ -282,20 +273,18 @@ spec:
   rules:
     - name: match-criticals-except-given-rbac
       match:
-        all:
-        - resources:
-            kind:
-            - Pod
-            selector:
-              matchLabels:
-                app: critical
+        resources:
+          kind:
+          - Pod
+          selector:
+            matchLabels:
+              app: critical
       exclude:
-        all:
-        - clusterRoles:
-          - cluster-admin
-          subjects:
-          - kind: User
-            name: John
+        clusterRoles:
+        - cluster-admin
+        subjects:
+        - kind: User
+          name: John
 ```
 
 ### Match all Pods using annotations
@@ -307,10 +296,9 @@ spec:
   rules:
     - name: match-pod-annotations
       match:
-        all:
-        - resources:
-            annotations:
-              imageregistry: "https://hub.docker.com/"
-            kinds:
-              - Pod
+        resources:
+          annotations:
+            imageregistry: "https://hub.docker.com/"
+          kinds:
+            - Pod
 ```
