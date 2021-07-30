@@ -6,7 +6,7 @@ weight: 2
 
 The `match` and `exclude` filters control which resources policies are applied to.
 
-The `match` and `exclude` clauses have the same structure and can each contain **only one** the two elements:
+The `match` and `exclude` clauses have the same structure and can each contain **only one** of the two elements:
 
 * `any`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **OR** operation while choosing resources
 * `all`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **AND** operation while choosing resources
