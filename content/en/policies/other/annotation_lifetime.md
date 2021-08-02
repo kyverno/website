@@ -25,7 +25,7 @@ metadata:
       Pod lifetime annotation can be no greater than 8 hours.
 spec:
   background: false
-  validationFailureAction: enforce
+  validationFailureAction: audit
   rules:
   - name: pods-lifetime
     match:
