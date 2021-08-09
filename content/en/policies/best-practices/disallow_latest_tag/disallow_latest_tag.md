@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    The ':latest' tag is mutable and can lead to unexpected errors if the  image changes. A best practice is to use an immutable tag that maps to  a specific version of an application pod.
+    The ':latest' tag is mutable and can lead to unexpected errors if the  image changes. A best practice is to use an immutable tag that maps to  a specific version of an application Pod. This policy validates that the image specifies a tag and that it is not called `latest`.
 ---
 
 ## Policy Definition
@@ -24,7 +24,8 @@ metadata:
     policies.kyverno.io/description: >-
       The ':latest' tag is mutable and can lead to unexpected errors if the 
       image changes. A best practice is to use an immutable tag that maps to 
-      a specific version of an application pod.
+      a specific version of an application Pod. This policy validates that the image
+      specifies a tag and that it is not called `latest`.
 spec:
   validationFailureAction: audit
   rules:

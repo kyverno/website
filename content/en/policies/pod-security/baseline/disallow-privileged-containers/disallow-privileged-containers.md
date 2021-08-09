@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Privileged mode disables most security mechanisms and must not be allowed.
+    Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.
 ---
 
 ## Policy Definition
@@ -21,7 +21,8 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Privileged mode disables most security mechanisms and must not be allowed.
+      Privileged mode disables most security mechanisms and must not be allowed. This policy
+      ensures Pods do not call for privileged mode.
 spec:
   validationFailureAction: audit
   background: true
