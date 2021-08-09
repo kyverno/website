@@ -332,5 +332,5 @@ summary:
 ```
 
 {{% alert title="Note" color="info" %}}
-By default, Kyverno's configuration filters out certain key system-level Namespaces from showing in a ClusterPolicyReport in order to eliminate background noise. This can be changed by editing the Kyverno ConfigMap called `init-config` and adjusting the `resourceFilters` entry. For more information, see the [Resource Filters section](https://kyverno.io/docs/installation/#resource-filters) in the [Installation guide](https://kyverno.io/docs/installation/).
+By default, Kyverno's configuration filters out certain key system-level Namespaces from showing in a ClusterPolicyReport in order to eliminate background noise. This can be changed by editing the Kyverno ConfigMap and adjusting the `resourceFilters` entry. For more information, see the [Resource Filters section](https://kyverno.io/docs/installation/#resource-filters) in the [Installation guide](https://kyverno.io/docs/installation/).
 {{% /alert %}}
