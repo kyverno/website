@@ -5,7 +5,7 @@ version: 1.3.5
 subject: Pod
 policyType: "validate"
 description: >
-    Some registries, both public and private, require credentials in order to pull images from them. This sample policy checks those images and if they come from a registry other than ghcr.io or quay.io an `imagePullSecret` is required.
+    Some registries, both public and private, require credentials in order to pull images from them. This policy checks those images and if they come from a registry other than ghcr.io or quay.io an `imagePullSecret` is required.
 ---
 
 ## Policy Definition
@@ -23,10 +23,10 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Some registries, both public and private, require credentials in order to pull images
-      from them. This sample policy checks those images and if they come from a registry
+      from them. This policy checks those images and if they come from a registry
       other than ghcr.io or quay.io an `imagePullSecret` is required.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   rules:
   - name: check-for-image-pull-secrets
     match:

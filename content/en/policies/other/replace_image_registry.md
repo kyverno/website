@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Pod
 policyType: "mutate"
 description: >
-    Rather than blocking Pods which come from outside registries, it is also possible to mutate them so the pulls are directed to approved registries. This sample policy mutates all images either in the form 'image:tag' or 'registry.corp.com/image:tag' to be prefaced with `myregistry.corp.com/`.
+    Rather than blocking Pods which come from outside registries, it is also possible to mutate them so the pulls are directed to approved registries. In some cases, those registries may function as pull-through proxies and can fetch the image if not cached. This policy policy mutates all images either in the form 'image:tag' or 'registry.corp.com/image:tag' to be prefaced with `myregistry.corp.com/`.
 ---
 
 ## Policy Definition
@@ -25,7 +25,9 @@ metadata:
     policies.kyverno.io/description: >-
       Rather than blocking Pods which come from outside registries,
       it is also possible to mutate them so the pulls are directed to
-      approved registries. This sample policy mutates all images either
+      approved registries. In some cases, those registries may function as
+      pull-through proxies and can fetch the image if not cached.
+      This policy policy mutates all images either
       in the form 'image:tag' or 'registry.corp.com/image:tag' to be prefaced
       with `myregistry.corp.com/`.
 spec:
@@ -42,5 +44,5 @@ spec:
             containers:
             - (name): "*"
               image: |-
-                {{ regex_replace_all('(.*)\/', '{{@}}', 'myregistry.corp.com/') }}
+                {{ regex_replace_all('^[^/]+', '{{@}}', 'myregistry.corp.com') }}
 ```

@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
+    The runtime default seccomp profile must be required, or only specific additional profiles should be allowed. This policy ensures that only the `runtime/default` is used as a `type`.
 ---
 
 ## Policy Definition
@@ -23,7 +23,8 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The runtime default seccomp profile must be required, or only specific
-      additional profiles should be allowed.
+      additional profiles should be allowed. This policy ensures that only the
+      `runtime/default` is used as a `type`.
 spec:
   background: true
   validationFailureAction: audit

@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed.
+    Capabilities permit privileged actions without giving full root access. Adding capabilities beyond the default set must not be allowed. This policy ensures users cannot add any additional capabilities to a Pod.
 ---
 
 ## Policy Definition
@@ -22,7 +22,8 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access.
-      Adding capabilities beyond the default set must not be allowed.
+      Adding capabilities beyond the default set must not be allowed. This policy
+      ensures users cannot add any additional capabilities to a Pod.
 spec:
   validationFailureAction: audit
   background: true
