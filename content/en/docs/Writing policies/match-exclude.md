@@ -6,14 +6,26 @@ weight: 2
 
 The `match` and `exclude` filters control which resources policies are applied to.
 
-The `match` and `exclude` clauses have the same structure and can each contain the following elements:
+The `match` and `exclude` clauses have the same structure and can each contain **only one** of the two elements:
+
+* `any`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **OR** operation while choosing resources
+* `all`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **AND** operation while choosing resources
+
+## Resource Filters
+
+The following resource filters can be specified under an `any` or `all` clause.
 
 * `resources`: select resources by names, namespaces, kinds, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
-At least one element must be specified in a `match.resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.resources.kinds` field.
+
+{{% alert title="Note" color="info" %}}
+Specifying resource filters directly under match and exclude has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
+{{% /alert %}}
+
+At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.(any/all).resources.kinds` field.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
 
@@ -36,16 +48,24 @@ When Kyverno receives an admission controller request (i.e., a validation or mut
 
 In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
 
-In this snippet, the `match` statement matches on all resources that have the kind Service. It does not take any other criteria into consideration, only that it be of kind Service.
+In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Pod with name "mongodb" **OR** have the kind Pod and are being created in the "prod" namespace. 
 
 ```yaml
 spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds: 
+          - Service
+          names: 
+          - "staging"
+      - resources:
+          kinds: 
+          - Service
+          namespaces:
+          - "prod"
 ```
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
@@ -55,15 +75,22 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        names: 
-        - "prod-*"
-        - "staging"
-        kinds:
-        - Service
+      any:
+      - resources:
+          names: 
+          - "prod-*"
+          - "staging"
+          kinds:
+          - Service
+      - resources:
+          kinds:
+          - Service
+          subjects:
+          - kind: User
+            name: dave
 ```
 
-This will now match on only Services that begin with the name "prod-" **OR** have the name "staging" but not those which begin with "dev-" or any other prefix. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
 
 {{% alert title="Note" color="info" %}}
 Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in a future release.
