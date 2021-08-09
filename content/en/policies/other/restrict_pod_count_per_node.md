@@ -5,7 +5,7 @@ version: 1.3.2
 subject: Pod
 policyType: "validate"
 description: >
-    Sample policy to restrict pod count on node 'minikube' to be no more than 10.
+    Sometimes Kubernetes Nodes may have a maximum number of Pods they can accommodate due to resources outside CPU and memory such as licensing, or in some development cases. This policy restricts Pod count on a Node named `minikube` to be no more than 10.
 ---
 
 ## Policy Definition
@@ -23,7 +23,9 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.3.2
     policies.kyverno.io/description: >-
-      Sample policy to restrict pod count on node 'minikube' to be no more than 10.
+      Sometimes Kubernetes Nodes may have a maximum number of Pods they can accommodate due to
+      resources outside CPU and memory such as licensing, or in some
+      development cases. This policy restricts Pod count on a Node named `minikube` to be no more than 10.
     # pod-policies.kyverno.io/autogen-controllers: None
 spec:
   validationFailureAction: audit
@@ -44,10 +46,10 @@ spec:
           operator: Equals
           value: "CREATE"
       validate:
-        message: "restrict pod counts to be no more than 12 on node minikube"
+        message: "A maximum of 10 Pods are allowed on the Node `minikube`"
         deny:
           conditions:
             - key: "{{ podcounts }}"
-              operator: GreaterThanOrEquals
+              operator: GreaterThan
               value: 10
 ```
