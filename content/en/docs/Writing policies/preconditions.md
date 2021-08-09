@@ -153,7 +153,7 @@ The following operators are currently supported for precondition evaluation:
 
 The set operators, `In` and `NotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] In ["str1", "str2", "str3"]). In this case `In` checks if **all** the strings part of the key are in the value set (i.e. key is a subset of value) and `NotIn` checks if **any** of the strings part of the key is **not** in the value set (i.e. key is not a subset of value). Sets of other types are currently not supported.
 
-The duration operators are can be used for things such as validating an annotation that is a duration unit. Duration operators expect numeric key or value as seconds or as a string that is a valid Go time duration, eg: "1h". The string units supported are `s` (second), `m` (minute) and `h` (hour).  Full details on supported duration strings are covered by <a href="https://pkg.go.dev/time#ParseDuration" target="-blank">time.ParseDuration</a>.
+The duration operators can be used for things such as validating an annotation that is a duration unit. Duration operators expect numeric key or value as seconds or as a string that is a valid Go time duration, eg: "1h". The string units supported are `s` (second), `m` (minute) and `h` (hour).  Full details on supported duration strings are covered by <a href="https://pkg.go.dev/time#ParseDuration" target="-blank">time.ParseDuration</a>.
 
 ## Wildcard Matches
 

@@ -5,6 +5,8 @@ version: 1.4.2
 subject: Pod
 policyType: "validate"
 description: >
+    This validation is valuable when annotations are used to define durations,
+    such as to ensure a pod lifetime annotation does not exceed some site specific max threshold.
     Pod lifetime annotation can be no greater than 8 hours.
 ---
 
