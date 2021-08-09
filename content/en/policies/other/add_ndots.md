@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "mutate"
 description: >
-    The ndots value controls where DNS lookups are first performed in a cluster and needs to be set to a lower value than the default of 5 in some cases. This sample policy mutates all Pods to add the ndots option with a value of 1.
+    The ndots value controls where DNS lookups are first performed in a cluster and needs to be set to a lower value than the default of 5 in some cases. This policy mutates all Pods to add the ndots option with a value of 1.
 ---
 
 ## Policy Definition
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/description: >-
       The ndots value controls where DNS lookups are first performed in a cluster
       and needs to be set to a lower value than the default of 5 in some cases.
-      This sample policy mutates all Pods to add the ndots option with a value of 1.
+      This policy mutates all Pods to add the ndots option with a value of 1.
 spec:
   background: false
   rules:

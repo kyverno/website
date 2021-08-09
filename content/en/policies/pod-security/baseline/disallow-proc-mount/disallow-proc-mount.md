@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    The default /proc masks are set up to reduce attack surface and should be required.
+    The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified.
 ---
 
 ## Policy Definition
@@ -21,7 +21,8 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      The default /proc masks are set up to reduce attack surface and should be required.
+      The default /proc masks are set up to reduce attack surface and should be required. This policy
+      ensures nothing but the default procMount can be specified.
 spec:
   validationFailureAction: audit
   background: true
