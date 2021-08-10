@@ -5,7 +5,7 @@ version:
 subject: Deployment, Pod
 policyType: "mutate"
 description: >
-    Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.
+    Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.
 ---
 
 ## Policy Definition
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/description: >-
       Deployments to a Kubernetes cluster with multiple availability zones often need to
       distribute those replicas to align with those zones to ensure site-level failures
-      do not impact availability. This policy policy matches Deployments with the label
+      do not impact availability. This policy matches Deployments with the label
       `distributed=required` and mutates them to spread Pods across zones.
 spec:
   rules:
