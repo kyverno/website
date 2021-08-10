@@ -1,17 +1,15 @@
 ---
-title: "Enforce annotation lifetime"
+title: "Enforce pod duration"
 category: Sample
 version: 1.4.2
 subject: Pod
 policyType: "validate"
 description: >
-    This validation is valuable when annotations are used to define durations,
-    such as to ensure a pod lifetime annotation does not exceed some site specific max threshold.
-    Pod lifetime annotation can be no greater than 8 hours.
+    This validation is valuable when annotations are used to define durations, such as to ensure a Pod lifetime annotation does not exceed some site specific max threshold. Pod lifetime annotation can be no greater than 8 hours.
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/pod_lifetime_annotation/policy.yaml" target="-blank">/other/pod_lifetime_annotation/policy.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/pod_lifetime_annotation/enforce_pod_duration.yaml" target="-blank">/other/pod_lifetime_annotation/enforce_pod_duration.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -25,7 +23,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       This validation is valuable when annotations are used to define durations,
-      such as to ensure a pod lifetime annotation does not exceed some site specific max threshold.
+      such as to ensure a Pod lifetime annotation does not exceed some site specific max threshold.
       Pod lifetime annotation can be no greater than 8 hours.
 spec:
   background: false
@@ -43,5 +41,4 @@ spec:
         - key: "{{ request.object.metadata.annotations.\"pod.kubernetes.io/lifetime\" }}"
           operator: DurationGreaterThan
           value: "8h"
-
 ```
