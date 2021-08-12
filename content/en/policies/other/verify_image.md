@@ -5,7 +5,7 @@ version: 1.4.2
 subject: Pod
 policyType: "validate"
 description: >
-    Using the Cosign project, OCI images may be signed to ensure supply chain security is maintained. Those signatures can be verified before pulling into a cluster. This policy checks the signature of an image repo called ghcr.io/kyverno/test-image-verify to ensure it has been signed by verifying its signature against the provided public key. This policy serves as an illustration for how to configure a similar rule and will require replacing with your image(s) and keys.
+    Using the Cosign project, OCI images may be signed to ensure supply chain security is maintained. Those signatures can be verified before pulling into a cluster. This policy checks the signature of an image repo called ghcr.io/kyverno/test-verify-image to ensure it has been signed by verifying its signature against the provided public key. This policy serves as an illustration for how to configure a similar rule and will require replacing with your image(s) and keys.
 ---
 
 ## Policy Definition
@@ -26,7 +26,7 @@ metadata:
       Using the Cosign project, OCI images may be signed to ensure supply chain
       security is maintained. Those signatures can be verified before pulling into
       a cluster. This policy checks the signature of an image repo called
-      ghcr.io/kyverno/test-image-verify to ensure it has been signed by verifying
+      ghcr.io/kyverno/test-verify-image to ensure it has been signed by verifying
       its signature against the provided public key. This policy serves as an illustration for
       how to configure a similar rule and will require replacing with your image(s) and keys.
 spec:
@@ -39,7 +39,7 @@ spec:
           kinds:
             - Pod
       verifyImages:
-      - image: "ghcr.io/kyverno/test-image-verify:*"
+      - image: "ghcr.io/kyverno/test-verify-image:*"
         key: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM

@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Certificate
 policyType: "validate"
 description: >
-    Some applications will not accept certificates containing more than a single name. Additionally, having a single certificate name multiple potentially increases overhead and complexity. This policy ensures that each certificate request contains only one DNS name entry.
+    Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.
 ---
 
 ## Policy Definition
@@ -24,8 +24,7 @@ metadata:
     policies.kyverno.io/subject: Certificate
     policies.kyverno.io/description: >-
       Some applications will not accept certificates containing more than a single name.
-      Additionally, having a single certificate name multiple potentially increases
-      overhead and complexity. This policy ensures that each certificate request contains
+      This policy ensures that each certificate request contains
       only one DNS name entry.
 spec:
   validationFailureAction: audit
