@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Certificate
 policyType: "validate"
 description: >
-    Ensures that each certificate request contains only one DNS name entry.
+    Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.
 ---
 
 ## Policy Definition
@@ -23,7 +23,9 @@ metadata:
     policies.kyverno.io/minversion: 1.3.6
     policies.kyverno.io/subject: Certificate
     policies.kyverno.io/description: >-
-      Ensures that each certificate request contains only one DNS name entry.
+      Some applications will not accept certificates containing more than a single name.
+      This policy ensures that each certificate request contains
+      only one DNS name entry.
 spec:
   validationFailureAction: audit
   background: false

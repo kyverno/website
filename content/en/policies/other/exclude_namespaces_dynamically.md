@@ -5,7 +5,7 @@ version:
 subject: Namespace, Pod
 policyType: "validate"
 description: >
-    Policy which illustrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
+    It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
 ---
 
 ## Policy Definition
@@ -22,11 +22,12 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace, Pod
     policies.kyverno.io/description: >-
-      Policy which illustrates how to dynamically look up an allow list of Namespaces from a ConfigMap
+      It's common where policy lookups need to consider a mapping to many possible values rather than a
+      static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap
       where the ConfigMap stores an array of strings. This policy validates that any Pods created
       outside of the list of Namespaces have the label `foo` applied.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   background: false
   rules:
   - name: exclude-namespaces-dynamically
