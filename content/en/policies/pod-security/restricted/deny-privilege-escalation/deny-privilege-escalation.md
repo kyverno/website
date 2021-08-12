@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+    Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` fields are either undefined or set to `false`.
 ---
 
 ## Policy Definition
@@ -22,6 +22,8 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+      This policy ensures the `allowPrivilegeEscalation` fields are either undefined
+      or set to `false`.
 spec:
   background: true
   validationFailureAction: audit

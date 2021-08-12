@@ -45,7 +45,12 @@ kubectl get clusterpolicyreport -A
 ```
 
 {{% alert title="Tip" color="info" %}}
-For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/fjogeleit/policy-reporter#readme).
+For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
+{{% /alert %}}
+
+
+{{% alert title="Note" color="info" %}}
+If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as warnings rather than failures. By default, it is set to `"true"` and policy violations are reported as failures.
 {{% /alert %}}
 
 

@@ -9,7 +9,7 @@ showLineNumbers = false
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [versions] set.
-version_menu = "Releases"
+version_menu = "v1.4.2"
 
 # Flag used in the "version-banner" partial to decide whether to display a 
 # banner on every page indicating that this is an archived version of the docs.
@@ -19,7 +19,7 @@ archived_version = false
 # The version number for the version of the docs represented in this doc set.
 # Used in the "version-banner" partial to display a version number for the 
 # current doc set.
-version = "0.0"
+version = "v1.4.2"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
@@ -111,6 +111,11 @@ enable = false
 [links]
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
 
+[[links.user]]
+	name ="Kyverno GitHub repository"
+	url = "https://github.com/kyverno/kyverno/"
+	icon = "fab fa-github"
+  desc = "Kyverno GitHub"
 [[links.user]]
 	name ="Follow Kyverno on Twitter"
 	url = "https://twitter.com/kyverno"

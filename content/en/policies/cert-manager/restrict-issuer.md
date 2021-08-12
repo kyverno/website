@@ -5,7 +5,7 @@ version:
 subject: Certificate
 policyType: "validate"
 description: >
-    Ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
+    Certificates for trusted domains should always be steered to a controlled issuer to ensure the chain of trust is appropriate for that application. Users may otherwise be able to create their own issuers and sign certificates for other domains. This policy ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
 ---
 
 ## Policy Definition
@@ -22,7 +22,10 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Certificate
     policies.kyverno.io/description: >-
-      Ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
+      Certificates for trusted domains should always be steered to a controlled issuer to
+      ensure the chain of trust is appropriate for that application. Users may otherwise be
+      able to create their own issuers and sign certificates for other domains. This policy
+      ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
 spec:
   validationFailureAction: audit
   background: false
