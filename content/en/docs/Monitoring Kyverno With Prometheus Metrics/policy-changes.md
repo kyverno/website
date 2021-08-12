@@ -6,11 +6,11 @@ weight: 50
 
 **Metric Name**
 
-kyverno_policy_changes_info
+kyverno_policy_changes_total
 
 **Metric Value**
 
-1 - Constant value serving no purpose
+Counter - An only-increasing integer representing the total number of policy-level changes associated with a metric sample.
 
 ## Use cases
 
@@ -32,10 +32,10 @@ kyverno_policy_changes_info
 ## Useful Queries
 
 * Tracking the number of cluster policies with audit mode which were created in the last 60 minutes:<br>
-`count(kyverno_policy_changes_info{policy_type="cluster", policy_change_type="create", policy_validation_mode="audit"}[60m])`
+`sum(increase(kyverno_policy_changes_total{policy_type="cluster", policy_change_type="create", policy_validation_mode="audit"}[60m]))`
 
 * Listing down all the namespaced Policies which were deleted in the “default" namespace in the last 5 minutes:<br>
-`kyverno_policy_changes_info{policy_type="namespaced", policy_namespace="default", policy_change_type="delete"}[5m]`
+`kyverno_policy_changes_total{policy_type="namespaced", policy_namespace="default", policy_change_type="delete"}[5m]`
 
 * Track the number of changes which happened with a cluster policy named “sample-policy":<br>
-`count(kyverno_policy_changes_info{policy_type="cluster", policy_name="sample-policy"})`
+`sum(kyverno_policy_changes_total{policy_type="cluster", policy_name="sample-policy"})`
