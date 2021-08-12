@@ -6,11 +6,11 @@ weight: 40
 
 **Metric Name**
 
-kyverno_admission_review_latency_milliseconds
+kyverno_admission_review_duration_seconds
 
 **Metric Value**
 
-A float value representing the latency of the admission review in milliseconds.
+Histogram - A float value representing the latency of the admission review in seconds.
 
 ## Use cases
 
@@ -21,23 +21,18 @@ A float value representing the latency of the admission review in milliseconds.
 
 | Label                        | Allowed Values                                         | Description                                                                       |
 | ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| cluster\_policies\_count     |                                                        | Number of cluster policies which got executed under this admission review.        |
-| namespaced\_policies\_count  |                                                        | Number of namespaced policies which got executed under this admission review.     |
-| validate\_rules\_count       |                                                        | Number of validate rules which got executed under this admission review.          |
-| mutate\_rules\_count         |                                                        | Number of mutate rules which got executed under this admission review.            |
-| generate\_rules\_count       |                                                        | Number of generate rules which got executed under this admission review.          |
 | resource\_name               |                                                        | Name of the resource which is being evaluated as a part of this admission review. |
 | resource\_kind               | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                             |
 | resource\_namespace          |                                                        | Namspace in which this resource lies                                              |
-| resource\_request\_operation | "create", "update", "delete"                           | If the requested resource is being created, updated or deleted.                   |
+| resource\_request\_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                   |
 
 ## Useful Queries
 
 * Average latency associated with the admission reviews triggered by incoming resource requests, grouped by the resource:<br> 
-`avg(kyverno_admission_review_latency_milliseconds{}) by (resource_type)`
+`avg(kyverno_admission_review_duration_seconds{}) by (resource_type)`
 
 * Maximum latency associated with the admission reviews triggered by incoming pod requests over last 24 hours:<br>
-`max(kyverno_admission_review_latency_milliseconds{resource_type="Pod"}[24h])`
+`max(kyverno_admission_review_duration_seconds{resource_type="Pod"}[24h])`
 
 * Listing the admission request which consumed maximum amount of latency in the last 60 minutes:<br> 
-`max(kyverno_admission_review_latency_milliseconds{}[60m])`
+`max(kyverno_admission_review_duration_seconds{}[60m])`
