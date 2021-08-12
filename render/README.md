@@ -98,4 +98,5 @@ filterID = "label"
 weight = 4
 ...
 ```
+
 The `weight` parameter controls the ordering of the filters on the page. Higher number equals further down on the page.
