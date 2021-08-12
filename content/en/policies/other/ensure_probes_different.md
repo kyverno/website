@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Pod
 policyType: "validate"
 description: >
-    Sample policy to check that liveness and readiness probes are not equal.
+    Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal.
 ---
 
 ## Policy Definition
@@ -24,9 +24,11 @@ metadata:
     policies.kyverno.io/minversion: 1.3.6
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Sample policy to check that liveness and readiness probes are not equal.
+      Liveness and readiness probes accomplish different goals, and setting both to the same
+      is an anti-pattern and often results in app problems in the future. This policy
+      checks that liveness and readiness probes are not equal.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   background: false
   rules:
     - name: validate-probes

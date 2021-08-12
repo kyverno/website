@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "mutate"
 description: >
-    Adds the nodeSelector field to a Pod spec.
+    The nodeSelector field uses labels to select the node on which a Pod can be scheduled. This can be useful when Pods have specific needs that only certain nodes in a cluster can provide. This policy adds the nodeSelector field to a Pod spec and configures it with labels `foo` and `color`.
 ---
 
 ## Policy Definition
@@ -21,7 +21,9 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Adds the nodeSelector field to a Pod spec.
+      The nodeSelector field uses labels to select the node on which a Pod can be scheduled.
+      This can be useful when Pods have specific needs that only certain nodes in a cluster can provide.
+      This policy adds the nodeSelector field to a Pod spec and configures it with labels `foo` and `color`.
 spec:
   background: false
   rules:

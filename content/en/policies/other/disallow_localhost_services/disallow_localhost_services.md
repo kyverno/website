@@ -5,7 +5,7 @@ version:
 subject: Service
 policyType: "validate"
 description: >
-    A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This sample policy blocks Services of type ExternalName if the externalName field refers to localhost.
+    A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.
 ---
 
 ## Policy Definition
@@ -23,10 +23,10 @@ metadata:
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
       A Service of type ExternalName which points back to localhost can potentially be used to exploit
-      vulnerabilities in some Ingress controllers. This sample policy blocks Services of type ExternalName
+      vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName
       if the externalName field refers to localhost.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   rules:
   - name: no-localhost-service
     match:

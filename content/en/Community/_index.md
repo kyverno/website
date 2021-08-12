@@ -4,7 +4,11 @@ linkTitle: "Community"
 type: docs
 ---
 
-## Kyverno Slack Channel
+## GitHub
+
+The [Kyverno source code](https://github.com/kyverno/kyverno/) and project artifacts are managed on GitHub in the [Kyverno](https://github.com/kyverno) organization.
+
+## Slack Channel
 
 Join the Kubernetes slack workspace at [https://slack.k8s.io/](https://slack.k8s.io/) and then search for the [#kyverno](https://slack.k8s.io/#kyverno) channel. 
 
@@ -14,14 +18,14 @@ If you already have access to the Kubernetes slack workspace simply select `sign
 
 To attend our community meetings, join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the agenda and meeting notes (feel free to suggest topics!)
 
-### Kyverno Users Meeting
+### End Users Meeting
 
 This is a monthly meeting for Kyverno community meeting for new feature demos and roadmap discussions: 
 * Monthly on the third Wed at 9:00 AM PST
 * [Agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#)
 
 
-### Kyverno Contributors Meeting
+### Contributors Meeting
 
 This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
 * Weekly every Thu at 9:00 AM PST

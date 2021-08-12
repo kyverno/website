@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
+    Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node. This policy ensures that only those "safe" subsets can be specified in a Pod.
 ---
 
 ## Policy Definition
@@ -25,6 +25,8 @@ metadata:
       host, and should be disallowed except for an allowed "safe" subset. A
       sysctl is considered safe if it is namespaced in the container or the
       Pod, and it is isolated from other Pods or processes on the same Node.
+      This policy ensures that only those "safe" subsets can be specified in
+      a Pod.
 spec:
   validationFailureAction: audit
   background: true
