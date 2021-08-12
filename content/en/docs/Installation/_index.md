@@ -339,9 +339,9 @@ The following flags are used to control the behavior of Kyverno and must be set 
 5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
 
-### PolicyViolation access
+### Policy Report access
 
-During the Kyverno installation, it creates a ClusterRole `kyverno:policyviolations` which has the `list,get,watch` operations on resource `policyviolations`. To grant access to a Namespace admin, configure the following YAML file then apply to the cluster.
+During the Kyverno installation, it creates a ClusterRole `kyverno:admin-policyreport` which has permission to perform all operations on resources `policyreport` and `clusterpolicyreport`. To grant access to a Namespace admin, configure the following YAML file then apply to the cluster.
 
 - Replace `metadata.namespace` with Namespace of the admin
 - Configure `subjects` field to bind admin's role to the ClusterRole `policyviolation`
@@ -356,7 +356,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: policyviolation
+  name: kyverno:admin-policyreport
 subjects:
 # configure below to access policy violation for the namespace admin
 - kind: ServiceAccount
@@ -372,7 +372,7 @@ subjects:
 
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `init-config` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
+The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
 
 ```
 [Pod,foo-system,redis*]
@@ -384,14 +384,29 @@ By default a number of kinds are skipped in the default configuration including 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: init-config
+  name: kyverno
   namespace: kyverno
 data:
   # resource types to be skipped by kyverno policy engine
-  resourceFilters: "[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][*,kyverno,*]"
+  resourceFilters: '[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][SelfSubjectAccessReview,*,*][*,kyverno,*][Binding,*,*][ReplicaSet,*,*][ReportChangeRequest,*,*][ClusterReportChangeRequest,*,*]'
 ```
 
-To modify the ConfigMap, either directly edit the ConfigMap `init-config` in the default configuration inside `install.yaml` and redeploy it or modify the ConfigMap using `kubectl`.  Changes to the ConfigMap through `kubectl` will automatically be picked up at runtime.
+To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the default configuration inside `install.yaml` and redeploy it or modify the ConfigMap using `kubectl`.  Changes to the ConfigMap through `kubectl` will automatically be picked up at runtime.
+
+### Webhooks
+
+By default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+
+```yaml
+apiVersion: v1
+data:
+  resourceFilters: '[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][SelfSubjectAccessReview,*,*][*,kyverno,*][Binding,*,*][ReplicaSet,*,*][ReportChangeRequest,*,*][ClusterReportChangeRequest,*,*]'
+  webhooks: '[{"namespaceSelector":{"matchExpressions":[{"key":"environment","operator":"In","values":["prod"]}]}}]'
+kind: ConfigMap
+metadata:
+  name: kyverno
+  namespace: kyverno
+```
 
 ## Upgrading Kyverno
 
