@@ -309,3 +309,13 @@ if(policyWrap) {
     
   });
 }
+
+(function goBack() {
+    let backBtn = elem('.button_back');
+    let history = window.history;
+    if (backBtn) {
+      backBtn.addEventListener('click', function(){
+        history.back();
+      });
+    }
+  })();

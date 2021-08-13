@@ -213,6 +213,22 @@
     @media screen and (max-width: 557px) {
       margin-top: -2rem;
     }
+    .button_back {
+      position: absolute;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      transform: translateY(-1.5rem);
+      &::after, &::before {
+        display: none;
+      }
+      @media screen and (min-width: 769px) {
+        right: 1rem;
+        transform: none;
+      }
+    }
+    .policy_toggle {
+      transform: translateY(-2rem);
+    }
   }
   &_toggle {
     position: relative;
