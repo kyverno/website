@@ -221,7 +221,7 @@ function filterPolicies(obj=chosenPolicies) {
   
   section ? listAppliedFilters() : false;
   
-  updateQuery();
+  !elem('.policy_page') ? updateQuery() : false;
 }
 
 function objIsInArray(obj,obj1) {
