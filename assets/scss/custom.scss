@@ -223,36 +223,21 @@
     display: none;
     @media screen and (max-width: 768px) {
       display: flex;
-      // align-items: center;
       min-height: 1rem;
-    }
-    span {
-      width: 1rem;
-      height: 0.6rem;
-      left: 0;
-      top: 0.2rem;
-      bottom: 0.2rem;
-      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      flex-flow: column;
-      transform-origin: 50% 50%;
-      transform: rotate(180deg);
-      &, &::before, &::after {
-        position: absolute;
-        border-bottom: 2px solid var(--theme);
-      }
-      &::before, &::after {
-        content: "";
-        height: 2px;
-      }
-      &::before {
-        width: 0.33rem;
-      }
-      &::after {
-        width: 0.67rem;
-        top: 50%;
-      }
+      position: absolute;
+      right: 1.5rem;
+      height: 3rem;
+      width: 3rem;
+      justify-content: center;
+      transform: translateY(-1rem);
+      z-index: 5;
+    }
+    &_icon {
+      stroke: var(--dark);
+      height: 1.67rem;
+      width: 1.67rem;
+      margin-right: 0.2rem;
     }
   }
   &_wrap {
