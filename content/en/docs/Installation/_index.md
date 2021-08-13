@@ -457,15 +457,3 @@ kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ```sh
 helm uninstall kyverno --namespace kyverno kyverno/kyverno
 ```
-
-### Clean up Webhook Configurations
-
-Kyverno by default will try to clean up all its webhook configurations when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
-
-Regardless which uninstallation method is chosen, webhooks will need to be manually removed as the final step. Use the below commands to delete those webhook configurations.
-
-```sh
-kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg kyverno-resource-mutating-webhook-cfg kyverno-verify-mutating-webhook-cfg
-
-kubectl delete validatingwebhookconfigurations kyverno-policy-validating-webhook-cfg kyverno-resource-validating-webhook-cfg
-```
