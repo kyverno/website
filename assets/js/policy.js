@@ -288,7 +288,7 @@ if(policyWrap) {
 
     containsClass(filtersEl, active) && !isToggle && !isTarget(target, ".policy_filters") ? deleteClass(filtersEl, active) : false;
     
-    isToggle ? pushClass(filtersEl, active) : false;
+    isToggle ? modifyClass(filtersEl, active) : false;
     
   });
   
