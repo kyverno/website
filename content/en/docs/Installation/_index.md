@@ -40,7 +40,7 @@ helm repo update
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
-Beginning with Helm 1.5.0, the Kyverno CRDs must be added seperately and before Kyverno is installed.
+Beginning with Kyverno 1.4.2, Kyverno Helm chart v2.0.2, the Kyverno CRDs must be added seperately and before Kyverno is installed.
 
 ```sh
 helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace
@@ -452,17 +452,30 @@ helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_numb
 ```
 
 {{% alert title="Note" color="warning" %}}
-Upgrading to Kyverno 1.5.0+ from a version prior to 1.5.0 will require extra steps.
-The step to remove CRDs will cause all Kyverno policies to get removed, so they must be added back
-after the upgrade.
+Upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps.
+The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken.
 {{% /alert %}}
 
-Below are the steps to upgrade Kyverno to 1.5.0 from 1.4.2. The upgrade to 1.5.0+ requires first removing the old CRDs and letting the Helm chart install the CRDs.
+Below are the steps to upgrade Kyverno to 1.4.2 from a version prior to 1.4.2. The upgrade to 1.4.2+ requires first removing the old CRDs and letting the Helm chart install the CRDs.
+
+First take a backup of all cluster policies
+
+```sh
+kubectl get clusterpolicy -A -o yaml > kyverno-policies.yaml
+```
+
+Perform the upgrade
 
 ```sh
 kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/v1.4.2/charts/kyverno/crds/crds.yaml
 helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
 helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+```
+
+Restore Kyverno cluster policies
+
+```sh
+kubectl apply -f kyverno-policies.yaml
 ```
 
 ## Uninstalling Kyverno
