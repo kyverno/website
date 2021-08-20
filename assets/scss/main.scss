@@ -60,7 +60,8 @@ footer {
 
 .videos {
   display: flex;
+  flex-wrap: wrap;
 }
 .videos > .video {
-  margin-right: 1.5rem;
+  margin: 1rem;
 }
