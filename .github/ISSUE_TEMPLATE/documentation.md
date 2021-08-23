@@ -19,4 +19,4 @@ assignees: ''
 <!-- Add any other context or screenshots about the feature request here. -->
 ---
 **Contributor Resources**
-- [Contributing Guidelines](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md)
+- [Contributing Guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md)
