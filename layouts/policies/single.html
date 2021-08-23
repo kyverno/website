@@ -4,6 +4,7 @@
     {{- partialCached "policies/sidebar" . }}
   </div>
   <div class="policy_wrap">
+    {{- partialCached "back-button" (dict "label" "All Policies") }}
     {{- partialCached "policies/toggle" . }}
     <h1>{{ .Title }}</h1>
     <div class="lead">{{ .Params.description }}</div>
