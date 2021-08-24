@@ -4,7 +4,7 @@ description: Create additional resources based on resource creation or updates.
 weight: 5
 ---
 
-A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new role bindings or network policies for a namespace.
+A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new RoleBindings or NetworkPolicies for a Namespace.
 
 The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource. It is also possible to match or exclude API requests based on subjects, roles, etc.
 
@@ -17,7 +17,7 @@ As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified
 When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a ConfigMap or Secret, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
 
 {{% alert title="Caution" color="warning" %}}
-Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
+Deleting the policy containing a `generate` rule with a `data` object and `synchronize=true` will cause immediate deletion of the downstream generated resources. Policies containing a `clone` object are not subject to this behavior.
 {{% /alert %}}
 
 Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generatecontroller` and add or update the rules to cover the resources and verbs needed.
