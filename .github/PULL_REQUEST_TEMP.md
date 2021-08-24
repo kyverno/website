@@ -22,13 +22,11 @@ Add the milestone label by commenting `/milestone 1.2.3`.
 
 > Uncomment only one ` /kind <>` line, hit enter to put that in a new line, and remove leading white spaces from that line:
 >
-> /kind api-change
-> /kind bug
-> /kind cleanup
-> /kind design
+> 
 > /kind documentation
-> /kind failing-test
-> /kind feature
+> /kind sample-policies
+> /kind js-css-hugo
+> /kind versioning
 -->
 
 ## Proposed Changes
@@ -47,8 +45,7 @@ them, don't hesitate to ask. We're here to help! This is simply a reminder of wh
 -->
 
 - [] I have read the [contributing guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md).
-- [] I have added tests that prove my fix is effective or that my feature works.
-- [] I have added or changed [the documentation](https://github.com/kyverno/website) in this PR:
+- [] I have inspected the website preview for accuracy.
 - [] I have read the [PR documentation guide](https://github.com/kyverno/kyverno/blob/main/.github/pr_documentation.md) and followed the process including adding proof manifests to this PR.
 - [] I have signed off my issue [Contributing guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md)
 ## Further Comments
