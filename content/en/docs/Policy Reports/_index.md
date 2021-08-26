@@ -26,7 +26,7 @@ Policy reports are available in Kyverno 1.3.0+. For older (1.2.x) versions, you 
 You can view a summary of the namespaced policy report using the following command:
 
 ```sh
-kubectl get policyreport --all
+kubectl get policyreport -A
 ```
 
 For example, here are the policy reports for a small test cluster (`polr` is the shortname for `policyreports`):
@@ -41,18 +41,16 @@ flux-system   polr-ns-flux-system   135    5      0      0       0      28h
 Similarly, you can view the cluster-wide report using:
 
 ```sh
-kubectl get clusterpolicyreport -A
+kubectl get clusterpolicyreport
 ```
 
 {{% alert title="Tip" color="info" %}}
 For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
 {{% /alert %}}
 
-
 {{% alert title="Note" color="info" %}}
 If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as warnings rather than failures. By default, it is set to `"true"` and policy violations are reported as failures.
 {{% /alert %}}
-
 
 ## Viewing policy violations
 
