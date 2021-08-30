@@ -18,6 +18,7 @@
   "homepage": "https://github.com/kyverno/website#readme",
   "devDependencies": {
     "autoprefixer": "^9.8.6",
+    "hugo-extended": "^0.87.0",
     "postcss-cli": "^7.1.2"
   }
 }
