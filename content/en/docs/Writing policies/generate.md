@@ -188,6 +188,39 @@ spec:
           - Egress
 ```
 
+## Linking resources with ownerReferences
+
+In some cases, a triggering (source) resource and generated (downstream) resource need to share the same lifecycle. That is, when the triggering resource is deleted so too should the generated resource. This is valuable because some resources are only needed in the presence of another, for example a Service of type `LoadBalancer` necessitating the need for a specific network policy in some CNI plug-ins. While Kyverno will not take care of this task internally, Kubernetes can by setting the `ownerReferences` field in the generated resource. With the below example, when the generated ConfigMap specifies the `metadata.ownerReferences[]` object and defines the following fields including `uid`, which references the triggering Service resource, an owner-dependent relationship is formed. Later, if the Service is deleted, the ConfigMap will be as well. See the [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/#owner-references-in-object-specifications) for more details including an important caveat around the scoping of these references. Specifically, Namespaced resources cannot be the owners of cluster-scoped resources, and cross-namespace references are also disallowed.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: demo-ownerref
+spec:
+  background: false
+  rules:
+  - name: demo-ownerref-svc-cm
+    match:
+      resources:
+        kinds:
+        - Service
+    generate:
+      kind: ConfigMap
+      name: "{{request.object.metadata.name}}-gen-cm"
+      namespace: "{{request.object.metadata.namespace}}"
+      synchronize: false
+      data:
+        metadata:
+          ownerReferences:
+          - apiVersion: v1
+            kind: Service
+            name: "{{request.object.metadata.name}}"
+            uid: "{{request.object.metadata.uid}}"
+        data:
+          foo: bar
+```
+
 ## Generating resources into existing namespaces
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
