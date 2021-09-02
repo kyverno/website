@@ -20,14 +20,13 @@ The following resource filters can be specified under an `any` or `all` clause.
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
-
 {{% alert title="Note" color="info" %}}
-Specifying resource filters directly under match and exclude has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
+Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
 {{% /alert %}}
 
 At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.(any/all).resources.kinds` field.
 
-In addition, a user may specify the `group` and `apiVersion` with a kind in the match / exclude declarations for a policy rule.
+In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
 
 Supported formats:
 
@@ -41,14 +40,13 @@ These can be distinguished as:
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-
 When Kyverno receives an admission controller request (i.e., a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
 
 In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
 
-In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Pod with name "mongodb" **OR** have the kind Pod and are being created in the "prod" namespace. 
+In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Service with name "staging" **OR** have the kind Service and are being created in the "prod" Namespace.
 
 ```yaml
 spec:
@@ -108,7 +106,7 @@ spec:
         - networking.k8s.io/v1/NetworkPolicy
 ```
 
-By adding the only `version` and `kind` in the `match` statements, will filter out the kind only based on version.
+By specifying the `kind` in `version/kind` format, only specific versions of the resource kind will be matched.
 
 ```yaml
 spec:
@@ -268,6 +266,10 @@ spec:
 
 The following example matches all resources with label `app=critical` excluding the resources created by ClusterRole `cluster-admin` **OR** by the user `John`.
 
+{{% alert title="Note" color="info" %}}
+Since `roles` and `clusterRoles` are built internally by Kyverno from AdmissionReview contents, rules which contain either of these must define `background: false` since the AdmissionReview payload is not available in background mode.
+{{% /alert %}}
+
 ```yaml
 spec:
   rules:
@@ -285,6 +287,33 @@ spec:
         subjects:
         - kind: User
           name: John
+```
+
+### Match a label and exclude users
+
+A variation on the above sample, this snippet uses `any` and `all` statements to exclude multiple users.
+
+```yaml
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: match-criticals-except-given-users
+      match:
+        all:
+        - resources:
+            kinds:
+            - Pod
+            selector:
+              matchLabels:
+                app: critical
+      exclude:
+        any:
+        - subjects:
+          - kind: User
+            name: susan
+          - kind: User
+            name: dave
 ```
 
 ### Match all Pods using annotations
