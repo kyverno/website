@@ -2,10 +2,10 @@
 **Note:** With Helm installed Kyverno, upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps. Please refer to the official doc for the upgrade.
 
 ### Changed
-- Add DurationOperator to handle duration comparison operations (#2213)
-- Add special variable substitution logic for preconditions (#1930)
-- Support disallow pod exec operation [(#2146)]()
-- Metrics re-design to deal with cardinality explosion (#2121)
+- Add DurationOperator to handle duration comparison operations [(#2213)](https://github.com/kyverno/kyverno/issues/2213)
+- Add special variable substitution logic for preconditions [(#1930)](https://github.com/kyverno/kyverno/pull/1930)
+- Support disallow pod exec operation [(#2146)](https://github.com/kyverno/kyverno/issues/2213)
+- Metrics re-design to deal with cardinality explosion [(#2121)](https://github.com/kyverno/kyverno/issues/2121)
 - 
 ### Bug Fixes
 - Fix removing `engineresponses` variable from Kyverno CLI, as it is not used by the policy report.[(#2252)](https://github.com/kyverno/kyverno/pull/2252)
@@ -55,7 +55,7 @@ For HA, currently recommended minimum replicas is 3.
 - fix operator matching with spacing [(#1946)](https://github.com/kyverno/kyverno/pull/1946)
 - Update e2e tests to latest kind and Kubernetes versions [(#1973)](https://github.com/kyverno/kyverno/pull/1974)
 
-
+<!-- 
 ## Kyverno v1.3.6
 **Notes**
 ### Changed
@@ -121,4 +121,4 @@ For HA, currently recommended minimum replicas is 3.
 - 
 - 
 - 
-## Kyverno v1.2.0
+## Kyverno v1.2.0 -->
