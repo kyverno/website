@@ -42,6 +42,7 @@ type: docs
 
 *(latest to oldest)*
 
+- [Simplify Kubernetes Cluster Management with Kyverno](https://movi.hashnode.dev/simplify-kubernetes-cluster-management-with-kyverno-ckt6yxjqy0duy95s14groe7h4), September 2021
 - [Understanding Kyverno Policies](https://medium.com/@shubhampalriwala/understanding-kyverno-policies-7e2d8651d7b1), August 2021
 - [Policy for Kubernetes Custom Resources](https://neonmirrors.net/post/2021-06/policy-k8s-customresources/), June 2021
 - [Mirroring environments with gitops and Kyverno](https://gimlet.io/blog/mirroring-environments-with-gitops-and-kyverno/), April 2021
