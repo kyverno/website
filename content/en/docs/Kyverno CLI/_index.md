@@ -180,7 +180,7 @@ YAML file containing variables (`value.yaml`):
 
 ```yaml
 policies:
-  - name: default-deny-ingress
+  - name: add-networkpolicy
     resources:
       - name: devtest
         values:
