@@ -1,7 +1,7 @@
 ---
 title: Releases 
 linkTitle: "Releases"
-weight: 45
+weight: 120
 description: Kyverno Release Notes.
 ---
 
@@ -37,7 +37,7 @@ description: Kyverno Release Notes.
 - adding support for policies.kyverno.io/scored annotation [(#1976)](https://github.com/kyverno/kyverno/pull/1976)
 
 ## Kyverno v1.4.0
-**Note:** there was a selector app: kyverno added to the Deployment of the Kyverno Helm chart, it could impact the upgrade process as the selector field cannot be modified during an upgrade. This selector will be removed in 1.4.1, you can comment it out during the upgrade. Thanks to @andriktr for reporting the issue.
+**Note:** there was a selector app: kyverno added to the Deployment of the Kyverno Helm chart, it could impact the upgrade process as the selector field cannot be modified during an upgrade. This selector will be removed in 1.4.1, you can comment it out during the upgrade. Thanks to [@andriktr](https://github.com/andriktr?tab=overview&from=2021-07-01&to=2021-07-31) for reporting the issue.
 For HA, currently recommended minimum replicas is 3.
 
 ### Changed
