@@ -7,9 +7,15 @@ description: >
 ---
 
 ## Configure Kyverno in HA mode
+To install Kyverno in HA using Helm Chart.
+  
+  **NOTE:** Due to some cmplexities accompanied with running 2 replicas, the recommended replica counts for HA is at least 3.
 
+``` 
+helm install kyverno kyverno/kyverno --create-namespace --set=replicaCount=3 
+```
 ## How HA works in Kyverno
-
+This section provides details on how Kyverno handles HA scenario.
 - ### Module - Webhook Server
   Webhook server is where Kyverno receives and processes admission requests. This controller does not require a leader-election. When Kyverno runs multiple instances, the Service will distribute the admission requests across different instances. 
 
