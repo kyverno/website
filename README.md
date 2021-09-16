@@ -2,6 +2,12 @@
 
 Source for: https://kyverno.io
 
+## contributor
+<a href="https://github.com/kyverno/website/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=kyverno/website" />
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
 ## Contributing
 
 This site makes use of the [Docsy](https://docsy.dev) theme and [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
