@@ -216,32 +216,32 @@ Format of `value.yaml`:
 
 ```yaml
 policies:
-    - name: <policy1 name>
-      resources:
-          - name: <resource1 name>
-            values:
-                <variable1 in policy1>: <value>
-                <variable2 in policy1>: <value>
-          - name: <resource2 name>
-            values:
-                <variable1 in policy1>: <value>
-                <variable2 in policy1>: <value>
-    - name: <policy2 name>
-      resources:
-          - name: <resource1 name>
-            values:
-                <variable1 in policy2>: <value>
-                <variable2 in policy2>: <value>
-          - name: <resource2 name>
-            values:
-                <variable1 in policy2>: <value>
-                <variable2 in policy2>: <value>
+  - name: <policy1 name>
+    resources:
+      - name: <resource1 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+      - name: <resource2 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+  - name: <policy2 name>
+    resources:
+      - name: <resource1 name>
+      values:
+        <variable1 in policy2>: <value>
+        <variable2 in policy2>: <value>
+      - name: <resource2 name>
+      values:
+        <variable1 in policy2>: <value>
+        <variable2 in policy2>: <value>
 globalValues:
-    <global variable1>: <value>
-    <global variable2>: <value>
+  <global variable1>: <value>
+  <global variable2>: <value>
 ```
 
-In case of same identifier, the inner values take precedence over global values. See the pod `test-global-prod` in the following example.
+If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the pod `test-global-prod` in the following example.
 
 Example:
 
@@ -251,23 +251,23 @@ Policy manifest (`add_dev_pod.yaml`):
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-    name: cm-globalval-example
+  name: cm-globalval-example
 spec:
-    validationFailureAction: enforce
-    background: false
-    rules:
-        - name: validate-mode
-          match:
-              resources:
-                  kinds:
-                      - Pod
-          validate:
-              message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
-              deny:
-                  conditions:
-                      - key: "{{ request.mode }}"
-                        operator: NotEquals
-                        value: dev
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-mode
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
+        deny:
+          conditions:
+            - key: "{{ request.mode }}"
+            operator: NotEquals
+            value: dev
 ```
 
 Resource manifest (`dev_prod_pod.yaml`):
@@ -276,33 +276,33 @@ Resource manifest (`dev_prod_pod.yaml`):
 apiVersion: v1
 kind: Pod
 metadata:
-    name: test-global-prod
+  name: test-global-prod
 spec:
-    containers:
-        - name: nginx
-          image: nginx:latest
+  containers:
+    - name: nginx
+      image: nginx:latest
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-    name: test-global-dev
+  name: test-global-dev
 spec:
-    containers:
-        - name: nginx
-          image: nginx:1.12
+  containers:
+    - name: nginx
+      image: nginx:1.12
 ```
 
 YAML file containing variables (`value.yaml`):
 
 ```yaml
 policies:
-    - name: cm-globalval-example
-      resources:
-          - name: test-global-prod
-            values:
-                request.mode: prod
+  - name: cm-globalval-example
+    resources:
+      - name: test-global-prod
+      values:
+        request.mode: prod
 globalValues:
-    request.mode: dev
+  request.mode: dev
 ```
 
 ```sh
