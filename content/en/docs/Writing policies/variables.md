@@ -305,6 +305,11 @@ regex_replace_all(regex string, src string|number, replace string|number) string
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+add(number, number) number
+subtract(number, number) number
+multiply(number, number) number
+divide(number, number) number (divisor must be non zero)
+modulo(number, number) number (divisor must be non-zero, arguments must be integers)
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
