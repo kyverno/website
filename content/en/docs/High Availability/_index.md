@@ -1,7 +1,7 @@
 ---
 title: "High Availability"
 linkTitle: "High Availability"
-weight: 70
+weight: 170
 description: >
   Learn how to configure High Availability in Kyverno
 ---
