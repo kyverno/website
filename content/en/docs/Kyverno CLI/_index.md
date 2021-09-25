@@ -219,23 +219,23 @@ policies:
   - name: <policy1 name>
     resources:
       - name: <resource1 name>
-      values:
-        <variable1 in policy1>: <value>
-        <variable2 in policy1>: <value>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
       - name: <resource2 name>
-      values:
-        <variable1 in policy1>: <value>
-        <variable2 in policy1>: <value>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
   - name: <policy2 name>
     resources:
       - name: <resource1 name>
-      values:
-        <variable1 in policy2>: <value>
-        <variable2 in policy2>: <value>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
       - name: <resource2 name>
-      values:
-        <variable1 in policy2>: <value>
-        <variable2 in policy2>: <value>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
 globalValues:
   <global variable1>: <value>
   <global variable2>: <value>
@@ -266,8 +266,8 @@ spec:
         deny:
           conditions:
             - key: "{{ request.mode }}"
-            operator: NotEquals
-            value: dev
+              operator: NotEquals
+              value: dev
 ```
 
 Resource manifest (`dev_prod_pod.yaml`):
@@ -299,8 +299,8 @@ policies:
   - name: cm-globalval-example
     resources:
       - name: test-global-prod
-      values:
-        request.mode: prod
+        values:
+          request.mode: prod
 globalValues:
   request.mode: dev
 ```
