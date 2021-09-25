@@ -59,13 +59,13 @@ Since the report provides information on all rule and resource execution, findin
 Here is a command to view policy violations for the `default` namespace:
 
 ```sh
-kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
+kubectl describe polr polr-ns-default | grep "Result: \+fail" -B10
 ```
 
 Running this in the test cluster shows two containers without `runAsNotRoot: true`.
 
 ```sh
-$ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
+$ kubectl describe polr polr-ns-default | grep "Result: \+fail" -B10
   Message:        validation error: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot, spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot must be `true`. Rule check-containers[0] failed at path /spec/securityContext/runAsNonRoot/. Rule check-containers[1] failed at path /spec/containers/0/securityContext/.
   Policy:         require-run-as-non-root
   Resources:
@@ -76,7 +76,7 @@ $ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
     UID:          1caec743-faed-4d5a-90f7-5f4630febd58
   Rule:           check-containers
   Scored:         true
-  Status:         fail
+  Result:         fail
 --
   Message:        validation error: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot, spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot must be `true`. Rule check-containers[0] failed at path /spec/securityContext/runAsNonRoot/. Rule check-containers[1] failed at path /spec/containers/0/securityContext/.
   Policy:         require-run-as-non-root
@@ -88,13 +88,13 @@ $ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
     UID:          b98bdfb7-10e0-467f-a51c-ac8b75dc2e95
   Rule:           check-containers
   Scored:         true
-  Status:         fail
+  Result:         fail
 ```
 
 To view all namespaced violations in a cluster use:
 
 ```sh
-kubectl describe polr -A | grep -i "status: \+fail" -B10
+kubectl describe polr -A | grep -i "Result: \+fail" -B10
 ```
 
 ## Example: Trigger a PolicyReport
