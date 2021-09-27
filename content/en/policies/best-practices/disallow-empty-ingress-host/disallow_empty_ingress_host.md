@@ -1,11 +1,11 @@
 ---
-title: "Disallow Empty Ingress Host"
-category: 
+title: "Disallow empty Ingress host"
+category: Best Practices
 version: 
-subject: 
+subject: Ingress
 policyType: "validate"
 description: >
-    
+    An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.
 ---
 
 ## Policy Definition
@@ -16,6 +16,15 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: disallow-empty-ingress-host
+  annotations:
+    policies.kyverno.io/title: Disallow empty Ingress host
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/description: >-
+      An ingress resource needs to define an actual host name
+      in order to be valid. This policy ensures that there is a
+      hostname for each rule defined.
 spec:
   validationFailureAction: enforce
   background: false
