@@ -35,7 +35,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "Images must use checksums rather than tags."  
+      message: "Images must use checksums rather than tags."
       pattern:
         spec:
           containers:

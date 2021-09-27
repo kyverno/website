@@ -28,8 +28,8 @@ metadata:
       be applied consistently. This policy checks all Pods to ensure they have
       no more than four containers.
 spec:
-  background: false
   validationFailureAction: audit
+  background: false
   rules:
   - name: limit-containers-per-pod-controllers
     match:
@@ -88,4 +88,5 @@ spec:
           - key: "{{request.object.spec.jobTemplate.spec.template.spec.containers[] | length(@)}}"
             operator: GreaterThan
             value: "4"
+
 ```

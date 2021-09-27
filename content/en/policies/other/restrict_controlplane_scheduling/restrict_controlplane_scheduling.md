@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable because it takes away resources from the control plane components and can represent a possible security threat vector. This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key `node-role.kubernetes.io/master`.   
+    Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable because it takes away resources from the control plane components and can represent a possible security threat vector. This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key `node-role.kubernetes.io/master`.
 ---
 
 ## Policy Definition
@@ -25,10 +25,10 @@ metadata:
       because it takes away resources from the control plane components and can represent
       a possible security threat vector. This policy prevents users from setting a toleration
       in a Pod spec which allows running on control plane nodes
-      with the taint key `node-role.kubernetes.io/master`.   
+      with the taint key `node-role.kubernetes.io/master`.
 spec:
   validationFailureAction: audit
-  background: false
+  background: true
   rules:
   - name: restrict-controlplane-scheduling-master
     match:

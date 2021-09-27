@@ -71,5 +71,4 @@ spec:
           operator: NotEquals
           value: 0
 
-
 ```

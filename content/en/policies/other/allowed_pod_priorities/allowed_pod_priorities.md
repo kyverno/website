@@ -30,7 +30,7 @@ metadata:
       among them, the Pod is blocked.
 spec:
   validationFailureAction: audit
-  background: false
+  background: true
   rules:
   - name: validate-pod-priority
     context:
@@ -92,4 +92,5 @@ spec:
         - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
           operator: NotIn
           value:  "{{ podprioritydict.data.{{request.object.metadata.namespace}} }}"
+
 ```

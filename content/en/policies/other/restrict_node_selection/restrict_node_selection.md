@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    The Kubernetes scheduler uses complex logic to determine the optimal placement for new Pods. Users who have access to set certain fields in a Pod spec may sidestep this logic which in many cases is undesirable. This policy prevents users from targeting specific Nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields.     
+    The Kubernetes scheduler uses complex logic to determine the optimal placement for new Pods. Users who have access to set certain fields in a Pod spec may sidestep this logic which in many cases is undesirable. This policy prevents users from targeting specific Nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields.
 ---
 
 ## Policy Definition
@@ -25,10 +25,10 @@ metadata:
       for new Pods. Users who have access to set certain fields in a Pod spec
       may sidestep this logic which in many cases is undesirable. This policy
       prevents users from targeting specific Nodes for scheduling of Pods by
-      prohibiting the use of the `nodeSelector` and `nodeName` fields.     
+      prohibiting the use of the `nodeSelector` and `nodeName` fields.
 spec:
   validationFailureAction: audit
-  background: false
+  background: true
   rules:
   - name: restrict-nodeselector
     match:

@@ -37,7 +37,7 @@ spec:
         - Service
         selector:
           matchLabels:
-            protected: "true"   
+            protected: "true"
     exclude:
       clusterRoles:
       - cluster-admin
@@ -47,7 +47,7 @@ spec:
         conditions:
           - key: "{{request.operation}}"
             operator: In
-            value: 
+            value:
             - DELETE
             - UPDATE
 ```
