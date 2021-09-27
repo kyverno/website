@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//cert-manager/restrict-issuer.yaml" target="-blank">/cert-manager/restrict-issuer.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//cert-manager/restrict-issuer/restrict-issuer.yaml" target="-blank">/cert-manager/restrict-issuer/restrict-issuer.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -28,7 +28,7 @@ metadata:
       ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
 spec:
   validationFailureAction: audit
-  background: false
+  background: true
   rules:
   - name: restrict-corp-cert-issuer
     match:

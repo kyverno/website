@@ -27,7 +27,7 @@ metadata:
       This policy blocks Pod exec commands to containers named `nginx` in Pods starting
       with name `myapp-maintenance`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: enforce
   background: false
   rules:
   - name: deny-nginx-exec-in-myapp-maintenance

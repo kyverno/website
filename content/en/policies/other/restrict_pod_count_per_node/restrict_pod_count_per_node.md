@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_pod_count_per_node.yaml" target="-blank">/other/restrict_pod_count_per_node.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_pod_count_per_node/restrict_pod_count_per_node.yaml" target="-blank">/other/restrict_pod_count_per_node/restrict_pod_count_per_node.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -31,25 +31,25 @@ spec:
   validationFailureAction: audit
   background: false
   rules:
-    - name: restrict-pod-count
-      match:
-        resources:
-          kinds:
-            - Pod
-      context:
-        - name: podcounts
-          apiCall:
-            urlPath: "/api/v1/pods"
-            jmesPath: "items[?spec.nodeName=='minikube'] | length(@)"
-      preconditions:
-        - key: "{{ request.operation }}"
-          operator: Equals
-          value: "CREATE"
-      validate:
-        message: "A maximum of 10 Pods are allowed on the Node `minikube`"
-        deny:
-          conditions:
-            - key: "{{ podcounts }}"
-              operator: GreaterThan
-              value: 10
+  - name: restrict-pod-count
+    match:
+      resources:
+        kinds:
+          - Pod
+    context:
+    - name: podcounts
+      apiCall:
+        urlPath: "/api/v1/pods"
+        jmesPath: "items[?spec.nodeName=='minikube'] | length(@)"
+    preconditions:
+    - key: "{{ request.operation }}"
+      operator: Equals
+      value: "CREATE"
+    validate:
+      message: "A maximum of 10 Pods are allowed on the Node `minikube`"
+      deny:
+        conditions:
+        - key: "{{ podcounts }}"
+          operator: GreaterThan
+          value: 10
 ```

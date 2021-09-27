@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/allowed_pod_priorities.yaml" target="-blank">/other/allowed_pod_priorities.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/allowed_pod_priorities/allowed_pod_priorities.yaml" target="-blank">/other/allowed_pod_priorities/allowed_pod_priorities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -92,5 +92,4 @@ spec:
         - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
           operator: NotIn
           value:  "{{ podprioritydict.data.{{request.object.metadata.namespace}} }}"
-
 ```

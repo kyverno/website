@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/require_image_checksum.yaml" target="-blank">/other/require_image_checksum.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/require_image_checksum/require_image_checksum.yaml" target="-blank">/other/require_image_checksum/require_image_checksum.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

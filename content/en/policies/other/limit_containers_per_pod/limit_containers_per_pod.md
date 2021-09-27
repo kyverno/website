@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/limit_containers_per_pod.yaml" target="-blank">/other/limit_containers_per_pod.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/limit_containers_per_pod/limit_containers_per_pod.yaml" target="-blank">/other/limit_containers_per_pod/limit_containers_per_pod.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -88,5 +88,4 @@ spec:
           - key: "{{request.object.spec.jobTemplate.spec.template.spec.containers[] | length(@)}}"
             operator: GreaterThan
             value: "4"
-
 ```

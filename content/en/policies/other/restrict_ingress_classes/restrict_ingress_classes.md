@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_ingress_classes.yaml" target="-blank">/other/restrict_ingress_classes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_ingress_classes/restrict_ingress_classes.yaml" target="-blank">/other/restrict_ingress_classes/restrict_ingress_classes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

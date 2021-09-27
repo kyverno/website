@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_ingress_host.yaml" target="-blank">/other/restrict_ingress_host.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_ingress_host/restrict_ingress_host.yaml" target="-blank">/other/restrict_ingress_host/restrict_ingress_host.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -45,14 +45,11 @@ spec:
         - key: "{{ request.operation }}"
           operator: Equals
           value: CREATE
-        any:
-        - key: "{{ request.object.spec.rules[].host }}"
-          operator: In
-          value: "{{ hosts }}"
-        - key: "{{ request.object.spec.rules[].host }}"
-          operator: NotIn
-          value: "{{ hosts }}"
       validate:
         message: "The Ingress host name must be unique."
-        deny: {}
+        deny: 
+          conditions: 
+            - key: "{{ request.object.spec.rules[].host }}"
+              operator: In
+              value: "{{ hosts }}"
 ```

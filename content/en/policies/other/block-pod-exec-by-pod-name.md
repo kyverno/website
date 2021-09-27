@@ -27,7 +27,7 @@ metadata:
       This policy blocks Pod exec commands to Pods beginning with the name
       `myapp-maintenance-`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: enforce
   background: false
   rules:
   - name: deny-exec-myapp-maintenance
