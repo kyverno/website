@@ -11,7 +11,7 @@ weight: 60
 * Download the dashboard's JSON and save it in `kyverno-dashboard.json`
 
 ```sh
-curl https://raw.githubusercontent.com/kyverno/kyverno/main/dashboard/grafana/dashboard.json -o kyverno-dashboard.json
+curl https://raw.githubusercontent.com/kyverno/grafana-dashboard/master/grafana/dashboard.json -o kyverno-dashboard.json
 ```
 
 * Open your Grafana portal and go to the option of importing a dashboard.
