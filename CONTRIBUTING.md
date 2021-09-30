@@ -1,6 +1,7 @@
 # How to Contribute
-We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
-The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://app.slack.com/client/T09NY5SBT/CLGR9BJU9). 
+We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!.
+
+ 
 We'd love to accept your patches and contributions to this project. There are
 just a few small guidelines you need to follow.
 
@@ -28,48 +29,80 @@ information on using pull requests.
 This project follows
 [Google's Open Source Community Guidelines](https://opensource.google.com/conduct/).
 
+## Ways You Can Contribute
+   - [Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#report-issues)
+   - [Submit Pull Requests](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#submit-pull-requests)
+   - [Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#fix-or-improve-documentation) 
+   - [Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#join-our-community-meetings) 
+### Report issues
+   - Report potential bugs
+   - Request a feature
+   - Request a sample policy
 
-## Ways you can contribute
-- Report potential bugs
-- Request a feature
-- Request a sample policy
-- Join our community meetings
-- Submit a PR for [open issues](https://github.com/kyverno/website/issues)
-- Fix or improve documentation
+### Submit Pull Requests
+#### Setup local development environments 
+-  Please refer to [README](https://github.com/kyverno/website#readme) for local setup.
+####  Submit a PR for [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 
-Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
+### Fix or Improve Documentation
+   - [Kyverno Docs](https://github.com/kyverno/website)
+   #### Get started
 
-## Contribution Steps
-Head over to project repository on github and click the "Fork" button. With the forked copy, you can try new ideas and implement changes to the project.
+Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
 
-**Clone the repository to your device:**
+ -  **Clone the repository to your device:**
 
-Get the link of your forked repository, paste it in your device terminal and clone it using the command.
+To clone this repository, copy the link of below, paste it in your device terminal and replace the *YOUR-GITHUB-ID* with your Github ID.
 
-```git clone https://hostname/YOUR-USERNAME/YOUR-REPOSITORY```
+```
+$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
 
- **Create a branch:** 
+```
+
+Then navigate to the local folder and build the website for local viewing of changes using this command:
+
+```
+cd kyverno-website
+
+hugo server -v
+```
+ - **Create a branch:** 
 
  Create a new brach and navigate to the branch using this command.
 
- ```git checkout -b <new-branch>```
+ ```
+ $ git checkout -b <new-branch>
+ ```
 
  Great, its time to start hacking, You can now go ahead to make all the changes you want.
 
 
- **Stage, Commit and Push changes:**
+ - **Stage, Commit and Push changes:**
 
  Now that we have implemented the required changes, use the command below to stage the changes and commit them
 
- ```git add .```
+ ```
+ $ git add .
+ ```
 
- ```git commit -s -m "Commit message"```
+ ```
+ $ git commit -s -m "Commit message"
+ ```
 
  The -s signifies that you have signed off the the commit.
 
  Go ahead and push your changes to github using this command.
  
- ``` git push ```
+ ``` 
+ $ git push 
+ ```
+
+
+Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
+
+
+### Join Our Community Meetings
+ The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://app.slack.com/client/T09NY5SBT/CLGR9BJU9). 
  
 ## Developer Certificate of Origin (DCO) Sign off
 
