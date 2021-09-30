@@ -7,7 +7,9 @@ description: Kyverno Release Notes.
 
 ## Kyverno v1.4.3
 **Notes**
+Helm - helm upgrade command will be sufficient to upgrade.
 
+Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/installation/#upgrading-kyverno).
 ### Changed
 ### Bug Fixes
 - Fix policy gets blocked with 1.4.3-rc1 if any/all is defined in match block [(#2388)](https://github.com/kyverno/kyverno/pull/2388)
