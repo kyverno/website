@@ -1,5 +1,5 @@
 # How to Contribute
-We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!.
+We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
 
  
 We'd love to accept your patches and contributions to this project. There are
@@ -50,7 +50,7 @@ This project follows
 
 Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
 
- -  **Clone the repository to your device:**
+ 1.  **Clone the repository to your device:**
 
 To clone this repository, copy the link of below, paste it in your device terminal and replace the *YOUR-GITHUB-ID* with your Github ID.
 
@@ -59,14 +59,14 @@ $ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recur
 
 ```
 
-Then navigate to the local folder and build the website for local viewing of changes using this command:
+ 2. Then navigate to the local folder and build the website for local viewing of changes using this command:
 
 ```
 cd kyverno-website
 
 hugo server -v
 ```
- - **Create a branch:** 
+ 3. **Create a branch:** 
 
  Create a new brach and navigate to the branch using this command.
 
@@ -77,9 +77,9 @@ hugo server -v
  Great, its time to start hacking, You can now go ahead to make all the changes you want.
 
 
- - **Stage, Commit and Push changes:**
+ 4. **Stage, Commit and Push changes:**
 
- Now that we have implemented the required changes, use the command below to stage the changes and commit them
+ Now that we have implemented the required changes, use the command below to stage the changes and commit them.
 
  ```
  $ git add .
