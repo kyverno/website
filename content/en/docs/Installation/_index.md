@@ -346,6 +346,7 @@ The following flags are used to control the behavior of Kyverno and must be set 
 4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
 5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+7. `autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Policy Report access
 

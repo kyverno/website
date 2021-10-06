@@ -13,7 +13,6 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Use `kubectl explain` to explain and explore the various parts and fields of a Kyverno policy. It works just like on native Kubernetes resources!
 
   ```sh
-  kubectl explain policy.spec.rules.validate
   KIND:     Policy
   VERSION:  kyverno.io/v1
 
@@ -28,7 +27,10 @@ These are some tips and tricks you can use when putting together your Kyverno po
       patterns must be satisfied for the validation rule to succeed.
 
     deny <Object>
-      Deny defines conditions to fail the validation rule.
+      Deny defines conditions used to pass or fail a validation rule.
+
+    foreach      <Object>
+      ForEach applies policy rule checks to nested elements.
 
     message      <string>
       Message specifies a custom message to be displayed on failure.
