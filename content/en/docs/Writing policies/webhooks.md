@@ -4,7 +4,7 @@ description: Manage webhook configurations dynamically.
 weight: 2
 ---
 
-From Kyverno 1.5.0, the `mutatingWebhookConfiguration` and the `validatingWebhookConfiguration` are registered and managed dynamically based on the configured policies. Prior to this version, Kyverno uses a wildcard webhook that allows it to receive all resources and make policy decisions. With the auto-configuration, Kyverno only receives the selected resources to reduce unnecessary admission requests being forwarded to Kyverno. This feature is enabled by default in 1.5.0 and can be turned off by flag `--autoUpdateWebhooks=false`.
+From Kyverno 1.5.0, the `mutatingWebhookConfiguration` and the `validatingWebhookConfiguration` are registered and managed dynamically based on the configured policies. Prior to this version, Kyverno uses a wildcard webhook that allows it to receive all resources and make policy decisions. With the auto-configuration, Kyverno only receives the selected resources to reduce unnecessary admission requests being forwarded to Kyverno. This feature is enabled by default in 1.5.0 and can be turned off by flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that allows all resources and with `FailurePolicy` set to `Ignore`.
 
 ## Configurable Fields
 
