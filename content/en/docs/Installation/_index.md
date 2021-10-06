@@ -346,6 +346,15 @@ The following flags are used to control the behavior of Kyverno and must be set 
 4. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
 5. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+7. `kubeconfig`: specifies path to a kubeconfig. Only required if out-of-cluster.
+8. `serverIP`: specifies IP address where Kyverno controller runs. Only required if out-of-cluster.
+9. `profile`: setting this flag to 'true' will enable profiling.
+10. `profile-port`: specifies port to enable profiling at, defaults to 6060.
+11. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to "false".
+12. `metrics-port`: specifies the port to expose prometheus metrics, default to port 8000.
+13. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
+14. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+15. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
 
 ### Policy Report access
 
