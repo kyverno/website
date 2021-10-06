@@ -32,7 +32,7 @@ kyverno_policy_rule_info_total
 | policy\_namespace        |                                  | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-"                         |
 | rule\_name               |                                  | Name of the rule, in the above policy, which is evaluating in this situation                                                                      |
 | rule\_type               | "validate", "mutate", "generate" | Rule's behaviour type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules |
-| status\_ready            | "true", "false"                  | Readiness of the policy. When ready, the policy is able to serve the admission request
+| status\_ready            | "true", "false"                  | Readiness of the policy. When ready, the policy is able to serve admission requests
 
 ## Useful Queries
 
