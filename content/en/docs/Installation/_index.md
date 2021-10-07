@@ -404,7 +404,10 @@ To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the def
 
 ### Webhooks
 
-By default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+Starting with Kyverno 1.5.0, the webhooks are managed dynamically based on the configured policies, see [Dynamic Webhook Configurations]((/docs/writing-policies/webhooks/)) for details. Disable auto-update by setting flag `--autoUpdateWebhooks=false` to manually configure `namespaceSelector` and other fields.
+
+Prior to 1.5.0, by default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+
 
 ```yaml
 apiVersion: v1
