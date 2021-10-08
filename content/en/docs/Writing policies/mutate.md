@@ -485,3 +485,51 @@ Labels:       backup-needed=no
               type=database
 <snip>
 ```
+
+## foreach
+
+The `foreach` declaration simplifies mutation of sub-elements in resource declarations, for example Containers in a Pod. 
+
+A `foreach` must contain a `list` attribute that defines the list of elements it processes and a `patchStrategicMerge` declaration. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+
+```yaml
+list: request.object.spec.containers
+patchStrategicMerge:
+  spec:
+    containers:
+       ...
+```
+
+When a `foreach` is processed, the Kyverno engine will expand fetch the list of elements specified by `list`.
+
+A variable `element` is added to the processing context on each interation. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.name` withing a `foreach`.
+
+Each `foreach` declaration can optionally contain the following declarations:
+- [Context](https://kyverno.io/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
+- [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+
+Here is a complete example that mutates the image registry address to a trusted registry:
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-imagess
+spec:
+  rules:
+  - name: update-registry
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      foreach:
+        list: "request.object.spec.containers"
+        # NOTE: this does not handle initContainer. This limitation will be  
+        # addressed by https://github.com/kyverno/kyverno/issues/2505.           
+        patchStrategicMerge:
+          spec:
+            containers:
+              name: "{{ element.name }}"           
+              image: "{{ registry.io/{{images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}} }}"
+```
