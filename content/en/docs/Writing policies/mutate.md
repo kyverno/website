@@ -530,8 +530,8 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              name: "{{ element.name }}"           
+            - name: "{{ element.name }}"           
               image: "{{ registry.io/{{images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}} }}"
 ```
 
-Note that the `patchStrategicMerge` is applied to the `request.object` (or the `request.oldObject` for `DELETE` requests). Hence, the patch needs to begin with `spec`.
+Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`.
