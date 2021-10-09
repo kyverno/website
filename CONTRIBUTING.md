@@ -1,85 +1,84 @@
 # How to Contribute
-We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
+ We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
 
  
-We'd love to accept your patches and contributions to this project. There are
-just a few small guidelines you need to follow.
+ We'd love to accept your patches and contributions to this project. There are just a few small guidelines you need to follow.
 
 ## Contributor License Agreement
 
-Contributions to this project must be accompanied by a Contributor License
-Agreement. You (or your employer) retain the copyright to your contribution;
-this simply gives us permission to use and redistribute your contributions as
-part of the project. Head over to <https://cla.developers.google.com/> to see
-your current agreements on file or to sign a new one.
+ Contributions to this project must be accompanied by a Contributor License
+ Agreement. You (or your employer) retain the copyright to your contribution;
+ this simply gives us permission to use and redistribute your contributions as
+ part of the project. Head over to <https://cla.developers.google.com/> to see your current agreements on file or to sign a new one.
 
-You generally only need to submit a CLA once, so if you've already submitted one
-(even if it was for a different project), you probably don't need to do it
-again.
+ You generally only need to submit a CLA once, so if you've already submitted one
+ (even if it was for a different project), you probably don't need to do it
+ again.
 
 ## Code reviews
 
-All submissions, including submissions by project members, require review. We
-use GitHub pull requests for this purpose. Consult
-[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
-information on using pull requests.
+ All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
 
 ## Community Guidelines
 
-This project follows
-[Google's Open Source Community Guidelines](https://opensource.google.com/conduct/).
+ This project follows[Google's Open Source Community Guidelines](https://opensource.google.com/conduct/).
+
+## Code of conduct
+ Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 ## Ways You Can Contribute
-   - [Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#report-issues)
-   - [Submit Pull Requests](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#submit-pull-requests)
-   - [Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#fix-or-improve-documentation) 
-   - [Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#join-our-community-meetings) 
-### Report issues
-   - Report potential bugs
-   - Request a feature
-   - Request a sample policy
+  If you wish to contribute to this project, follow these steps below:
+ - Step 1: [Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-1-report-issues)
+ - Step 2: [Submit a Pull Request](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-2-submit-pull-requests)
+ - Step 3: [Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-3-fix-or-improve-documentation) 
+ - Step 4: [Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-4-join-our-community-meetings) 
 
-### Submit Pull Requests
-#### Setup local development environments 
--  Please refer to [README](https://github.com/kyverno/website#readme) for local setup.
-####  Submit a PR for [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+### Step 1: Report issues
+ If you see a bug or want to add new features  please create an [issue](https://github.com/kyverno/kyverno/issues/new/choose).
+  - Report potential bugs
+  - Request a feature
+  - Request a sample policy
 
-### Fix or Improve Documentation
-   - [Kyverno Docs](https://github.com/kyverno/website)
-   #### Get started
+### Step 2: Submit a Pull Request
 
-Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
+ Find an [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
+ 1. **Fork the Kyverno repo:**
 
- 1.  **Clone the repository to your device:**
+   Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
 
-To clone this repository, copy the link of below, paste it in your device terminal and replace the *YOUR-GITHUB-ID* with your Github ID.
+ 2. **Clone the repository to your device:**
 
-```
-$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
-
-```
-
- 2. Then navigate to the local folder and build the website for local viewing of changes using this command:
-
-```
-cd kyverno-website
-
-hugo server -v
-```
- 3. **Create a branch:** 
-
- Create a new brach and navigate to the branch using this command.
+  To clone this repository, copy the link of below, paste it in your device terminal and replace the *YOUR-GITHUB-ID* with your Github ID.
 
  ```
- $ git checkout -b <new-branch>
+ $ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+
  ```
+3. **Create a branch:** 
 
- Great, its time to start hacking, You can now go ahead to make all the changes you want.
+  Create a new brach and navigate to the branch using this command.
+
+  ```
+  $ git checkout -b <new-branch>
+  ```
+
+ Great, it's time to start hacking. You can now go ahead to make all the changes you want.
+
+ 4. **Setup local development environments**
+   
+  Then navigate to the local folder and build the website for local viewing of changes using this command:
+
+ ```sh
+
+ cd kyverno-website
 
 
- 4. **Stage, Commit and Push changes:**
+ hugo server -v
 
- Now that we have implemented the required changes, use the command below to stage the changes and commit them.
+ ```
+ 5. **Stage, Commit and Push changes:**
+
+  Now that we have implemented the required changes, use the command below to stage the changes and commit them.
 
  ```
  $ git add .
@@ -96,13 +95,13 @@ hugo server -v
  ``` 
  $ git push 
  ```
+  
+### Step 3: Fix or Improve Documentation
+   - [Kyverno Docs](https://github.com/kyverno/website)
 
 
-Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
-
-
-### Join Our Community Meetings
- The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://app.slack.com/client/T09NY5SBT/CLGR9BJU9). 
+### Step 4: Join Our Community Meetings
+ The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://slack.k8s.io/#kyverno). 
  
 ## Developer Certificate of Origin (DCO) Sign off
 
