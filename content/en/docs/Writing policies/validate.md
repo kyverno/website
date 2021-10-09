@@ -515,3 +515,5 @@ spec:
           image: "trusted-registry.io/*"
 ```
 
+Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
+
