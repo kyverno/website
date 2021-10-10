@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/block_updates_deletes.yaml" target="-blank">/other/block_updates_deletes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/block_updates_deletes/block_updates_deletes.yaml" target="-blank">/other/block_updates_deletes/block_updates_deletes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

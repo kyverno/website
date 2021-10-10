@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add-imagepullsecrets.yaml" target="-blank">/other/add-imagepullsecrets.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add-imagepullsecrets/add-imagepullsecrets.yaml" target="-blank">/other/add-imagepullsecrets/add-imagepullsecrets.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

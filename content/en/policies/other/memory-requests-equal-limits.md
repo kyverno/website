@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/memory-requests-equal-limits.yaml" target="-blank">/other/memory-requests-equal-limits.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/memory-requests-equal-limits/memory-requests-equal-limits.yaml" target="-blank">/other/memory-requests-equal-limits/memory-requests-equal-limits.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

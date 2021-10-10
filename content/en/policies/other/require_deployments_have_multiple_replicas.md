@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/require_deployments_have_multiple_replicas.yaml" target="-blank">/other/require_deployments_have_multiple_replicas.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/require_deployments_have_multiple_replicas/require_deployments_have_multiple_replicas.yaml" target="-blank">/other/require_deployments_have_multiple_replicas/require_deployments_have_multiple_replicas.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

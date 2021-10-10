@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add-default-securitycontext.yaml" target="-blank">/other/add-default-securitycontext.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add-default-securitycontext/add-default-securitycontext.yaml" target="-blank">/other/add-default-securitycontext/add-default-securitycontext.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

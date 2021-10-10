@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_controlplane_scheduling.yaml" target="-blank">/other/restrict_controlplane_scheduling.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_controlplane_scheduling/restrict_controlplane_scheduling.yaml" target="-blank">/other/restrict_controlplane_scheduling/restrict_controlplane_scheduling.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_pod_count_per_node.yaml" target="-blank">/other/restrict_pod_count_per_node.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_pod_count_per_node/restrict_pod_count_per_node.yaml" target="-blank">/other/restrict_pod_count_per_node/restrict_pod_count_per_node.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

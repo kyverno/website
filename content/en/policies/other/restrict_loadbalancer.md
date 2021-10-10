@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_loadbalancer.yaml" target="-blank">/other/restrict_loadbalancer.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/restrict_loadbalancer/restrict_loadbalancer.yaml" target="-blank">/other/restrict_loadbalancer/restrict_loadbalancer.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
