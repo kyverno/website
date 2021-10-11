@@ -55,8 +55,12 @@ id = ""
 
 [[params.versions]]
   version = "v1.4.2"
-  url = "https://kyverno.io"
+  url = "https://release-1-4-2.kyverno.io"
 
 [[params.versions]]
   version = "v1.4.1"
   url = "https://release-1-4-1.kyverno.io"
+
+[[params.versions]]
+  version = "main"
+  url = "https://main.kyverno.io"  
