@@ -52,6 +52,11 @@ id = ""
   home = ["HTML","RSS","JSON"]
 
 # Add your release versions here
+
+[[params.versions]]
+  version = "v1.4.3"
+  url = "https://release-1-4-3.kyverno.io/"
+
 [[params.versions]]
   version = "v1.4.2"
   url = "https://release-1-4-2.kyverno.io/"
