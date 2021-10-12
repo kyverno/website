@@ -56,7 +56,7 @@
  ```
 3. **Create a branch:** 
 
-  Create a new brach and navigate to the branch using this command.
+  Create a new branch and navigate to the branch using this command.
 
   ```
   $ git checkout -b <new-branch>

@@ -1,7 +1,7 @@
 ---
 title: Releases 
 linkTitle: "Releases"
-weight: 120
+weight: 1230
 description: Kyverno Release Notes.
 ---
 
