@@ -23,7 +23,7 @@ Deleting the policy containing a `generate` rule with a `data` object and `synch
 Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generatecontroller` and add or update the rules to cover the resources and verbs needed.
 
 {{% alert title="Note" color="info" %}}
-For generating a custom resource using generate policy, it is necessary to set the resource apiVersion i.e `cpol.generate.apiVersion` and kind i.e `cpol.generate.kind`.
+When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion` and kind (ex., `spec.generate.kind`).
 {{% /alert %}}
 
 ## Generate a ConfigMap using inline data
