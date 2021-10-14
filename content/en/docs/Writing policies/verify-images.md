@@ -5,12 +5,18 @@ weight: 3
 ---
 
 {{% alert title="Note" color="warning" %}}
-Image verification is an **alpha** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+Image verification is an **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
-The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image. The policy rule check fails if the image signature is not found in the OCI registry, or if the image was not signed using the specified key.
+The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and attestations stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image or attestations. 
+
+## Verifying Image Signatures
+
+Container images can be signed during the build phase of a CI/CD pipeline using Cosign. An image can be signed with multiple signatures, for example at the organtization level and at the project level.
+
+The policy rule check fails if the signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
 The rule also mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier) if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
 
@@ -28,6 +34,8 @@ metadata:
 spec:
   validationFailureAction: enforce
   background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
   rules:
     - name: check-image
       match:
@@ -80,7 +88,7 @@ check-image:
     invalid signature'
 ```
 
-## Signing images
+### Signing images
 
 To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. 
 
@@ -103,7 +111,7 @@ cosign verify -key cosign.pub ${IMAGE}
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for usage details and [OCI registry support](https://github.com/sigstore/cosign#registry-support).
 
-## Using private registries
+### Using private registries
 
 To use a private registry, you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
 
@@ -140,8 +148,135 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
+### Using a signature repository
+
+To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule specify the repository for each image:
+
+```yaml
+
+...
+
+verifyImages:
+- image: "ghcr.io/kyverno/test-verify-image:*"
+  repository: "registry.io/signatures"
+  key: |-
+    -----BEGIN PUBLIC KEY-----
+    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+    5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+    -----END PUBLIC KEY-----
+
+...
+
+```
+
+
+## Verifying Image Attestations
+
+Container image signatures prove that the image was signed by the holder of a matching private key. However, signtures do not provide additional data and intent that frameworks like [SLSA (Supply chain Levels for Software Artifacts)](https://security.googleblog.com/2021/06/introducing-slsa-end-to-end-framework.html) reqire. 
+
+An attestation is metadata attached to a software artifacts like images. Signed attestations provide verifiable information required for SLSA. 
+
+The [in-toto attestation format](https://github.com/in-toto/attestation) provides a flexible scheme for metadata such as repository and build environment details, vulerabilty scan reports, test results, code review reports, or any other information that is used to verify image integrity. Each attestion contains a signed statement with a `predicateType` and a `predicate`. Here is an example derived from the in-toto site:
+
+```json
+{
+  "payloadType": "https://example.com/CodeReview/v1",
+  "payload": {
+    "_type": "https://in-toto.io/Statement/v0.1",
+    "predicateType": "https://example.com/CodeReview/v1",
+    "subject": [
+      {
+        "name": "registry.io/org/app",
+        "digest": {
+          "sha256": "b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105"
+        }
+      }
+    ],
+    "predicate": {
+      "author": "alice@example.com",
+      "repo": {
+        "branch": "main",
+        "type": "git",
+        "uri": "https://git-repo.com/org/app"
+      },
+      "reviewers": [
+        "bob@example.com"
+      ]
+    }
+  },
+  "signatures": [
+    {
+      "keyid": "",
+      "sig": "MEYCIQDtJYN8dq9RACVUYljdn6t/BBONrSaR8NDpB+56YdcQqAIhAKRgiQIFvGyQERJJYjq2+6Jq2tkVbFpQMXPU0Zu8Gu1S"
+    }
+  ]
+}
+```
+
+The `imageVerify` rule can contain one or more attestation checks that verify the contents of the `predicate`. Here is an example that verifies the repository URI, the branch, and the reviewers.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: attest-code-review
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+    - name: attest
+      match:
+        resources:
+          kinds:
+            - Pod
+      verifyImages:
+      - image: "registry.io/org/*"
+        key: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHMmDjK65krAyDaGaeyWNzgvIu155
+          JI50B2vezCw8+3CVeE0lJTL5dbL3OP98Za0oAEBJcOxky8Riy/XcmfKZbw==
+          -----END PUBLIC KEY-----
+        attestations:
+          - predicateType: https://example.com/CodeReview/v1
+            conditions:
+              - all:
+                - key: "{{ repo.uri }}"
+                  operator: Equals
+                  value: "https://git-repo.com/org/app"            
+                - key: "{{ repo.branch }}"
+                  operator: Equals
+                  value: "main"
+                - key: "{{ reviewers }}"
+                  operator: In
+                  value: ["ana@example.com", "bob@example.com"]
+```
+
+The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/writing-policies/preconditions/#any-and-all-statements) to the predicate.
+
+Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations.
+
+### Signing attestations
+
+To sign attestations, use the `cosign attest` command. 
+
+```sh
+# ${IMAGE} is REPOSITORY/PATH/NAME:TAG
+cosign attest -key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
+```
+
+This command will sign your attestions and publish them to the OCI registry. You can verify the attestions using the `cosign verify-attestation` command.
+
+```sh
+cosign verify-attestation -key cosign.pub ${IMAGE}
+```
+
+Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for additional details including [OCI registry support](https://github.com/sigstore/cosign#registry-support).
+
+
 ## Known Issues
 
-1. Some registry calls can take a few seconds to complete. Hence, the webhook timeout should be set to a higher number such as 15 seconds.
-
-2. Prometheus metrics and the Kyverno CLI are currently not supported. Check the [Kyverno GitHub](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.
+1. Prometheus metrics and the Kyverno CLI are currently not supported. Check the [Kyverno GitHub](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.

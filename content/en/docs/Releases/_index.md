@@ -72,6 +72,7 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 - Support disallow pod exec operation [(#2146)](https://github.com/kyverno/kyverno/issues/2213)
 - Metrics re-design to deal with cardinality explosion [(#2121)](https://github.com/kyverno/kyverno/issues/2121)
  
+
 ### Bug Fixes
 - Fix removing `engineresponses` variable from Kyverno CLI, as it is not used by the policy report.[(#2252)](https://github.com/kyverno/kyverno/pull/2252)
 - Fix Updating cli comment for skipping `request.object.*` variables[(#2242)](https://github.com/kyverno/kyverno/pull/2242) 
@@ -84,6 +85,8 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 
 ## Kyverno v1.4.1
 **Note:** To upgrade from 1.4.0, you will need to manually remove the selector app: kyverno from the Deployment or delete the Deployment and then upgrade to 1.4.1.
+
+## main
 ### Bug Fixes
 - Integrate LitmusChaos - Pod Memory Hog experiment [(#2014)](https://github.com/kyverno/kyverno/pull/2014)
 - Fix replacing pod security standard from default to baseline [(#1977)](https://github.com/kyverno/kyverno/pull/1977)
@@ -95,7 +98,9 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 - adding support for policies.kyverno.io/scored annotation [(#1976)](https://github.com/kyverno/kyverno/pull/1976)
 
 ## Kyverno v1.4.0
+
 **Note:** there was a selector app: kyverno added to the Deployment of the Kyverno Helm chart, it could impact the upgrade process as the selector field cannot be modified during an upgrade. This selector will be removed in 1.4.1, you can comment it out during the upgrade. Thanks to [@andriktr](https://github.com/andriktr?tab=overview&from=2021-07-01&to=2021-07-31) for reporting the issue.
+
 For HA, currently recommended minimum replicas is 3.
 
 ### Changed
@@ -116,6 +121,7 @@ For HA, currently recommended minimum replicas is 3.
 - Add e2e test cases for generate policy flow [(#1951)](https://github.com/kyverno/kyverno/pull/1951)
 - fix operator matching with spacing [(#1946)](https://github.com/kyverno/kyverno/pull/1946)
 - Update e2e tests to latest kind and Kubernetes versions [(#1973)](https://github.com/kyverno/kyverno/pull/1974)
+
 
 ## Kyverno v1.3.6
 ### Changed
