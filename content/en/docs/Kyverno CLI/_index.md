@@ -216,6 +216,107 @@ policies:
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
+Value files also support global values, which can be passed to all resources the policy is being applied to.
+
+Format of `value.yaml`:
+
+```yaml
+policies:
+  - name: <policy1 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+  - name: <policy2 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+globalValues:
+  <global variable1>: <value>
+  <global variable2>: <value>
+```
+
+If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the pod `test-global-prod` in the following example.
+
+Example:
+
+Policy manifest (`add_dev_pod.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cm-globalval-example
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-mode
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
+        deny:
+          conditions:
+            - key: "{{ request.mode }}"
+              operator: NotEquals
+              value: dev
+```
+
+Resource manifest (`dev_prod_pod.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-prod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-dev
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.12
+```
+
+YAML file containing variables (`value.yaml`):
+
+```yaml
+policies:
+  - name: cm-globalval-example
+    resources:
+      - name: test-global-prod
+        values:
+          request.mode: prod
+globalValues:
+  request.mode: dev
+```
+
+```sh
+kyverno apply /path/to/add_dev_pod.yaml --resource /path/to/dev_prod_pod.yaml -f /path/to/value.yaml
+```
+
+The pod `test-global-dev` passes the validation, and `test-global-prod` fails.
+
 Apply a policy with the Namespace selector:
 
 Use `--values-file` or `-f` for passing a file containing Namespace details.
