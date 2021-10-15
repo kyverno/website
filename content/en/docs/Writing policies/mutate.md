@@ -221,6 +221,7 @@ The mutate overlay rules support two types of anchors:
 |--------------------|----- |----------------------------------------------------- |
 | Conditional        | ()   | Use the tag and value as an "if" condition           |
 | Add if not present | +()  | Add the tag value if the tag is not already present  |
+| Global             | <()  | Add the pattern when the global anchor is true       |
 
 The **anchors** values support **wildcards**:
 
@@ -287,6 +288,52 @@ spec:
         spec:
           volumes:
           - (emptyDir): {}
+```
+
+### Global Anchor
+
+Similar to validate rules, mutate rules can use the global anchor. When a global anchor is used, the condition inside the anchor, when true, means the rest of the pattern will be applied regardless of how it may relate to the global anchor.
+
+For example, the below policy will add an imagePullSecret called `my-secret` to any Pod if it has a container image beginning with `corp.reg.com`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-imagepullsecrets
+spec:
+  rules:
+  - name: add-imagepullsecret
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchStrategicMerge:
+        spec:
+          containers:
+          - <(image): "corp.reg.com/*"
+          imagePullSecrets:
+          - name: my-secret
+```
+
+The below Pod meets this criteria and so the imagePullSecret called `my-secret` is added.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: web
+      image: corp.reg.com/nginx
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
 ```
 
 ### Anchor processing flow

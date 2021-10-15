@@ -187,10 +187,11 @@ Anchors allow conditional processing (i.e. "if-then-else") and other logical che
 
 | Anchor     | Tag | Behavior                                                                                                                                                                                                                                     |
 |-------------|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Conditional | ()  | If tag with the given value (including child elements) is specified, then peer elements will be processed. <br/>e.g. If image has tag latest then imagePullPolicy cannot be IfNotPresent. <br/>&nbsp;&nbsp;&nbsp;&nbsp;(image): "*:latest" <br>&nbsp;&nbsp;&nbsp;&nbsp;imagePullPolicy: "!IfNotPresent"<br/>                                             |
-| Equality    | =() | If tag is specified, then processing continues. For tags with scalar values, the value must match. For tags with child elements, the child element is further evaluated as a validation pattern.  <br/>e.g. If hostPath is defined then the path cannot be /var/lib<br/>&nbsp;&nbsp;&nbsp;&nbsp;=(hostPath):<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: "!/var/lib"<br/>                                                                                  |
-| Existence   | ^() | Works on the list/array type only. If at least one element in the list satisfies the pattern. In contrast, a conditional anchor would validate that all elements in the list match the pattern. <br/>e.g. At least one container with image nginx:latest must exist. <br/>&nbsp;&nbsp;&nbsp;&nbsp;^(containers):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- image: nginx:latest<br/>  |
-| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated (use exclamation point to negate a value). The value should ideally be set to `null`. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/>|
+| Conditional | ()  | If tag with the given value (including child elements) is specified, then peer elements will be processed. <br/>e.g. If image has tag latest then imagePullPolicy cannot be IfNotPresent. <br/>&nbsp;&nbsp;&nbsp;&nbsp;(image): "*:latest" <br>&nbsp;&nbsp;&nbsp;&nbsp;imagePullPolicy: "!IfNotPresent"<br/> |
+| Equality    | =() | If tag is specified, then processing continues. For tags with scalar values, the value must match. For tags with child elements, the child element is further evaluated as a validation pattern.  <br/>e.g. If hostPath is defined then the path cannot be /var/lib<br/>&nbsp;&nbsp;&nbsp;&nbsp;=(hostPath):<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: "!/var/lib"<br/> |
+| Existence   | ^() | Works on the list/array type only. If at least one element in the list satisfies the pattern. In contrast, a conditional anchor would validate that all elements in the list match the pattern. <br/>e.g. At least one container with image nginx:latest must exist. <br/>&nbsp;&nbsp;&nbsp;&nbsp;^(containers):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- image: nginx:latest<br/> |
+| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated (use exclamation point to negate a value). The value should ideally be set to `null`. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/> |
+| Global      | <() | The content of this condition, if false, will cause the entire rule to be skipped. Valid for both validate and strategic merge patches. |
 
 #### Anchors and child elements: Conditional and Equality
 
@@ -257,7 +258,6 @@ This is read as "If a hostPath volume exists, then the path must not be equal to
 In both of these examples, the validation rule merely checks for the existence of a `hostPath` volume definition. It does not validate whether a container is actually consuming the volume.
 {{% /alert %}}
 
-
 #### Existence anchor: At Least One
 
 The existence anchor is used to check that, in a list of elements, at least one element exists that matches the pattern. This is done by using the `^()` notation for the field. The existence anchor only works on array/list type data.
@@ -296,6 +296,57 @@ Contrast this existence anchor, which checks for at least one instance, with a [
 ```
 
 This snippet above instead states that *every* entry in the array of containers, regardless of name, must have the `image` set to `nginx:latest`.
+
+#### Global Anchor
+
+The global anchor, new in Kyverno 1.4.3, is a way to use a condition anywhere in a resource to base a decision. If the condition enclosed in the global anchor is true, the rest of the rule must apply. If the condition enclosed in the global anchor is false, the rule is skipped.
+
+In this example, a container image coming from a registry called `corp.reg.com` is required to mount an imagePullSecret called `my-registry-secret`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sample
+spec:
+  validationFailureAction: enforce
+  rules:
+  - name: check-container-image
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: Images coming from corp.reg.com must use the correct imagePullSecret.
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            <(image): "corp.reg.com/*"
+          imagePullSecrets:
+          - name: my-registry-secret
+```
+
+The below Pod has a single container which meets the global anchor's specifications, but the rest of the pattern does not match. The Pod is therefore blocked.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: web
+      image: corp.reg.com/nginx
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+  imagePullSecrets:
+  - name: other-secret
+```
 
 ### anyPattern
 
