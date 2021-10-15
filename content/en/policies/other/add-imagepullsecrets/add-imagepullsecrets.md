@@ -1,7 +1,7 @@
 ---
 title: "Add imagePullSecrets"
 category: Sample
-version: 
+version: 1.4.3
 subject: Pod
 policyType: "mutate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add-imagepullsecrets.yaml" target="-blank">/other/add-imagepullsecrets.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add-imagepullsecrets/add-imagepullsecrets.yaml" target="-blank">/other/add-imagepullsecrets/add-imagepullsecrets.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add imagePullSecrets
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.4.3
     policies.kyverno.io/description: >-
       Images coming from certain registries require authentication in order to pull them,
       and the kubelet uses this information in the form of an imagePullSecret to pull
@@ -37,7 +38,7 @@ spec:
       patchStrategicMerge:
         spec:
           containers:
-          - (image): "corp.reg.com/*"
+          - <(image): "corp.reg.com/*"
           imagePullSecrets:
           - name: my-secret
 ```

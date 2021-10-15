@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/replace_image_registry.yaml" target="-blank">/other/replace_image_registry.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/replace_image_registry/replace_image_registry.yaml" target="-blank">/other/replace_image_registry/replace_image_registry.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -31,6 +31,7 @@ metadata:
       in the form 'image:tag' or 'registry.corp.com/image:tag' to be prefaced
       with `myregistry.corp.com/`.
 spec:
+  background: false
   rules:
     - name: replace-image-registry
       match:
