@@ -221,7 +221,7 @@ Kubernetes is powered by a declarative API that allows querying and manipulating
 
 A Kyverno Kubernetes API call works just as with `kubectl` and other API clients, and can be tested using existing tools.
 
-For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of pods:
+For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of Pods:
 
 ```sh
 kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
@@ -231,7 +231,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
 Use `kubectl get --raw` and [`jp`](https://github.com/jmespath/jp) (the JMESPath Command Line) to test API Calls.
 {{% /alert %}}
 
-The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. This new variable can then be used in the policy rule.
+The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
 
 ```yaml
 rules:
