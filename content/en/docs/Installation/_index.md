@@ -40,31 +40,29 @@ helm repo update
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
-Beginning with Kyverno 1.4.2, Kyverno Helm chart v2.0.2, the Kyverno CRDs must be added seperately and before Kyverno is installed.
-
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-Use Kyverno 1.4.2+ to create a customizable Helm release name while installing Kyverno. Before Kyverno 1.4.2, the Helm release name must be Kyverno.
+Beginning with Kyverno 1.5.0, Kyverno Helm chart v2.1.0, the Kyverno policies must be added seperately and after Kyverno is installed.
 
 ```sh
-helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 To install non-stable releases, add the `--devel` switch to Helm.
 
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace --devel
-helm install kyverno kyverno/kyverno --namespace kyverno --devel
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace --devel
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --devel
 ```
 
 For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
 
 ```sh
 kubectl create namespace kyverno
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno
 helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -455,29 +453,30 @@ helm search repo kyverno
 Run the upgrade command picking the target version.
 
 ```sh
-helm upgrade kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
 helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm upgrade kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 {{% alert title="Note" color="warning" %}}
-Upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps.
-The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken.
+Upgrading to Kyverno 1.5.0+ (Helm chart v2.1.0) from a version between 1.4.2 to 1.4.3 (Helm chart `>=v2.0.2 <v2.1.0`) will require extra steps.
+The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken of policies not added by Helm.
 {{% /alert %}}
 
-Below are the steps to upgrade Kyverno to 1.4.2 from a version prior to 1.4.2. The upgrade to 1.4.2+ requires first removing the old CRDs and letting the Helm chart install the CRDs.
+Below are the steps to upgrade Kyverno to 1.5.0 from 1.4.3. The upgrade to 1.5.0+ requires first removing the old CRDs chart.
 
-First take a backup of all cluster policies
+First take a backup of all cluster policies not added by Helm:
 
 ```sh
-kubectl get clusterpolicy -A -o yaml > kyverno-policies.yaml
+kubectl get clusterpolicy -l app.kubernetes.io/managed-by!=Helm -A -o yaml > kyverno-policies.yaml
 ```
 
 Perform the upgrade
 
 ```sh
-kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/v1.4.2/charts/kyverno/crds/crds.yaml
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
-helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm uninstall kyverno --namespace kyverno
+helm uninstall kyverno-crds --namespace kyverno
+helm install kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 Restore Kyverno cluster policies
@@ -499,8 +498,8 @@ kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ### Option 2 - Uninstall Kyverno with Helm
 
 ```sh
+helm uninstall kyverno-policies kyverno/kyverno-policies --namespace kyverno
 helm uninstall kyverno kyverno/kyverno --namespace kyverno
-helm uninstall kyverno-crds kyverno/kyverno-crds --namespace kyverno
 ```
 
 ### Clean up Webhook Configurations
