@@ -46,7 +46,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Ensure the resource you're matching and the spec definition align. For example, if writing a `mutate` rule which matches on a Deployment, the spec of what is being mutated needs to also align to a Deployment which may be different from, for example, a Pod. When copying-and-pasting from other rules, remember to check the spec.
 
 * Check Kyverno logs when designing rules if the desired result is not achieved:
-  ```
+  ```sh
   kubectl -n <kyverno_namespace> logs -l app=kyverno
   ```
 
@@ -60,11 +60,15 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 * The choice between using a `pattern` statement or a `deny` statement depends largely on the data you need to consider; `pattern` works on incoming (new) objects while `deny` can additionally work on variable data such as the API operation (CREATE, UPDATE, etc.), old object data, and ConfigMap data.
 
+* In some less common cases, Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. In these cases add `spec.schemaValidation: false` to your policy to tell Kyverno to skip validation. This is similar to passing the `--validate` flag to `kubectl`.
+
 ## Mutate
 
 * When writing policies which perform [cascading mutations](/docs/writing-policies/mutate/#mutate-rule-ordering-cascading), rule ordering matters. All rules which perform cascading mutations should be in the same policy definition and ordered top to bottom to ensure consistent results.
 
 * Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](/docs/writing-policies/mutate/#rfc-6902-jsonpatch) method.
+
+* Just like in `validate` rules, in some less common cases Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. In mutate rules, Kyverno will internally try to generate a patch to see if the policy would be valid. In these cases add `spec.schemaValidation: false` to your policy to tell Kyverno to skip validation. This is similar to passing the `--validate` flag to `kubectl`.
 
 ## Generate
 
