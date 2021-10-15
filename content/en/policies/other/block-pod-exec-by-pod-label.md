@@ -26,7 +26,7 @@ metadata:
       be useful for troubleshooting purposes, it could represent an attack vector and is discouraged.
       This policy blocks Pod exec commands to Pods having the label `exec=false`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: enforce
   background: false
   rules:
   - name: deny-exec-by-label
@@ -38,7 +38,7 @@ spec:
     - name: podexeclabel
       apiCall:
         urlPath: "/api/v1/namespaces/{{request.namespace}}/pods/{{request.name}}"
-        jmesPath: "metadata.labels.exec"   
+        jmesPath: "metadata.labels.exec"
     preconditions:
     - key: "{{ request.operation }}"
       operator: Equals

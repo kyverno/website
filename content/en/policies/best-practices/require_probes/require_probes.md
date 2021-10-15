@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Liveness and readiness probes need to be configured to correctly manage a Pod's  lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic  `livenessProbe` is performed by the kubelet to determine if the Pod's containers  are running or need to be restarted. A `readinessProbe` is used by Services  and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have liveness and readiness probes by ensuring the `periodSeconds` field is greater than zero.
+    Liveness and readiness probes need to be configured to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod's containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have liveness and readiness probes by ensuring the `periodSeconds` field is greater than zero.
 ---
 
 ## Policy Definition
@@ -23,15 +23,16 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Liveness and readiness probes need to be configured to correctly manage a Pod's 
-      lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic 
-      `livenessProbe` is performed by the kubelet to determine if the Pod's containers 
-      are running or need to be restarted. A `readinessProbe` is used by Services 
+      Liveness and readiness probes need to be configured to correctly manage a Pod's
+      lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic
+      `livenessProbe` is performed by the kubelet to determine if the Pod's containers
+      are running or need to be restarted. A `readinessProbe` is used by Services
       and Deployments to determine if the Pod is ready to receive network traffic.
       This policy validates that all containers have liveness and readiness probes by
       ensuring the `periodSeconds` field is greater than zero.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
   - name: validate-livenessProbe-readinessProbe
     match:
@@ -44,7 +45,7 @@ spec:
         spec:
           containers:
           - livenessProbe:
-              periodSeconds: ">0"      
+              periodSeconds: ">0"
             readinessProbe:
               periodSeconds: ">0"
 ```

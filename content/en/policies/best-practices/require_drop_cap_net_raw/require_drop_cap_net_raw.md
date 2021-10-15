@@ -1,7 +1,7 @@
 ---
 title: "Drop CAP_NET_RAW"
 category: Best Practices
-version: 
+version: 1.4.3
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Drop CAP_NET_RAW
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.4.3
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
@@ -29,6 +30,7 @@ metadata:
       ability.
 spec:
   validationFailureAction: audit
+  background: false
   rules:
   - name: drop-cap-net-raw
     match:
@@ -36,15 +38,16 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "The capability CAP_NET_RAW must be explicitly dropped."
-      pattern:
-        spec:
-          containers:
-          - securityContext:
-              capabilities:
-                drop: ["CAP_NET_RAW"]
-          =(initContainers):
-          - securityContext:
-              capabilities:
-                drop: ["CAP_NET_RAW"]
+      message: The capability CAP_NET_RAW or NET_RAW must be explicitly dropped.
+      deny:
+        conditions:
+          any:
+          # Get all the entries in each initContainers and containers drop[] array and ensures that every instance contains NET_RAW. If not, deny the request.
+          # backticks around false statement (in the key) implies a JSON object and so the value must not be in quotes or is interpreted as a string.
+          - key: "{{request.object.spec.[containers, initContainers][].securityContext.capabilities.drop.contains(@, 'NET_RAW') | !contains(@, `false`)}}"
+            operator: Equals
+            value: false
+          - key: "{{request.object.spec.[containers, initContainers][].securityContext.capabilities.drop.contains(@, 'CAP_NET_RAW') | !contains(@, `false`)}}"
+            operator: Equals
+            value: false
 ```

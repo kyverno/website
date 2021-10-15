@@ -29,6 +29,7 @@ metadata:
       containing the name `tiller`.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
     - name: validate-helm-tiller
       match:

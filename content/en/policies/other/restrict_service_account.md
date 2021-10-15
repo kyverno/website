@@ -5,7 +5,7 @@ version: 1.3.5
 subject: Pod
 policyType: "validate"
 description: >
-    Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example:  'sa-name: ["registry/image-name"]'
+    Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example: 'sa-name: ["registry/image-name"]'
 ---
 
 ## Policy Definition
@@ -27,11 +27,11 @@ metadata:
       restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to
       ensure applications in those Pods do not have more privileges than they should.
       This policy verifies that in the `staging` Namespace the ServiceAccount being
-      specified is matched based on the image and name of the container. For example: 
+      specified is matched based on the image and name of the container. For example:
       'sa-name: ["registry/image-name"]'
 spec:
-  background: false
   validationFailureAction: audit
+  background: true
   rules:
   - name: validate-service-account
     context:
@@ -51,6 +51,6 @@ spec:
         conditions:
         - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
           operator: NotIn
-          value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}" 
+          value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
 
 ```
