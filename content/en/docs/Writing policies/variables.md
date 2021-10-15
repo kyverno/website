@@ -295,7 +295,6 @@ In addition to the list of [built-in functions JMESPath](https://jmespath.org/sp
 base64_decode(string) string
 base64_encode(string) string
 compare(string, string) bool
-contains(string, string) bool
 equal_fold(string, string) bool
 replace(str string, old string, new string, n float64) string
 replace_all(str string, old string, new string) string
