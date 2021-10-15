@@ -18,7 +18,7 @@ As of v1.4.0, Kyverno supports multiple replicas for increased scale and availab
 |--------------------------------|----------------|----------------|
 | 1.2.1                          | 1.14           | 1.17           |
 | 1.3.0                          | 1.16           | 1.20*          |
-| 1.4.0                          | 1.16           | 1.21           |
+| 1.4.x                          | 1.16           | 1.21           |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
@@ -73,10 +73,18 @@ For all of the flags available during a Helm installation of Kyverno, see [here]
 
 ## Install Kyverno using YAMLs
 
-If you'd rather deploy the manifest directly, simply apply the latest release file. This manifest path will always point to the latest release, including release candidates and other non-stable releases.
+If you'd rather deploy the manifest directly, simply apply the release file. 
+
+This manifest path will always point to the latest main branch.
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+You can also pull from a release branch to install the stable releases including release candidates.
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
 ```
 
 ## Customize the installation of Kyverno
