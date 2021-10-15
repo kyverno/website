@@ -292,6 +292,8 @@ This ordering makes it possible to use request data when defining the context, a
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
 ```
+base64_decode(string) string
+base64_encode(string) string
 compare(string, string) bool
 contains(string, string) bool
 equal_fold(string, string) bool
