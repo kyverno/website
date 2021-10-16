@@ -362,34 +362,39 @@ Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: check-root-user
+  name: require-run-as-non-root
 spec:
+  background: true
   validationFailureAction: enforce
-  background: false
   rules:
-  - name: check-root-user
-    exclude:
-      resources:
-        namespaces:
-        - kube-system
+  - name: check-containers
     match:
       resources:
         kinds:
         - Pod
     validate:
-      message: "Root user is not allowed. Set runAsNonRoot to true."
+      message: >-
+        Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+        spec.containers[*].securityContext.runAsNonRoot, and
+        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.        
       anyPattern:
-      # Checks for `runAsNonRoot` on the Pod.
+      # spec.securityContext.runAsNonRoot must be set to true. If containers and/or initContainers exist which declare a securityContext field, those must have runAsNonRoot also set to true.
       - spec:
           securityContext:
             runAsNonRoot: true
-      # Checks for `runAsNonRoot` on every container.
+          containers:
+          - =(securityContext):
+              =(runAsNonRoot): true
+          =(initContainers):
+          - =(securityContext):
+              =(runAsNonRoot): true
+      # All containers and initContainers must define (not optional) runAsNonRoot=true.
       - spec:
           containers:
-          # The `name` field here is not specifically required but rather used
-          # as a visual aid for instructional purposes.
-          - name: "*"
-            securityContext:
+          - securityContext:
+              runAsNonRoot: true
+          =(initContainers):
+          - securityContext:
               runAsNonRoot: true
 ```
 
