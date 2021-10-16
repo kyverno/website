@@ -342,7 +342,7 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs -l app=kyverno -n <namespace>
 ```
 
-### Flags
+### ConfigMap Flags
 
 The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
 
@@ -350,8 +350,14 @@ The following flags are used to control the behavior of Kyverno and must be set 
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
 4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+5. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+
+### Container Flags
+
+The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
+
+1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
+2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
 
 ### Policy Report access
 
