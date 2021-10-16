@@ -358,6 +358,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 
 1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
 2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
+3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds.
 
 ### Policy Report access
 
