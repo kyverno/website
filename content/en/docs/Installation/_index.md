@@ -338,21 +338,24 @@ kubectl logs -l app=kyverno -n <namespace>
 
 ### Flags
 
-The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap or Kyverno args.
+The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
 
-1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
-2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
-4. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-7. `profile`: setting this flag to 'true' will enable profiling.
-8. `profilePort`: specifies port to enable profiling at, defaults to 6060.
-9. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to "false".
-10. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
-11. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
-12. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-13. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
+1. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+2. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
+3. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
+4. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+
+The following flags are used to control the behavior of Kyverno and must be set in the Kyverno args.
+
+1. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+2. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
+3. `profile`: setting this flag to 'true' will enable profiling.
+4. `profilePort`: specifies port to enable profiling at, defaults to 6060.
+5. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to "false".
+6. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
+7. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
+8. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
 
 ### Policy Report access
 
