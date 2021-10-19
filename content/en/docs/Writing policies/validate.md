@@ -475,7 +475,7 @@ list: request.object.spec.containers
 
 When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing.
 
-A variable `element` is added to the processing context on each interation. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.name` withing a `foreach`.
+A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 The following child declarations are permitted in a `foreach`:
 - [Patterns](/docs/writing-policies/validate/#patterns)
