@@ -36,15 +36,31 @@ FIELDS:
      to "false" if the policy rule uses variables that are only available in the
      admission review request (e.g. user name).
 
+   failurePolicy        <string>
+     FailurePolicy defines how unrecognized errors from the admission endpoint
+     are handled. Rules within the same policy share the same failure behavior.
+     Allowed values are Ignore or Fail. Defaults to Fail.
+
    rules        <[]Object>
      Rules is a list of Rule instances. A Policy contains multiple rules and
      each rule can validate, mutate, or generate resources.
+
+   schemaValidation     <boolean>
+     SchemaValidation skips policy validation checks. Optional. The default
+     value is set to "true", it must be set to "false" to disable the validation
+     checks.
 
    validationFailureAction      <string>
      ValidationFailureAction controls if a validation policy rule failure should
      disallow the admission review request (enforce), or allow (audit) the
      admission review request and report an error in a policy report. Optional.
      The default value is "audit".
+
+   webhookTimeoutSeconds        <integer>
+     WebhookTimeoutSeconds specifies the webhook timeout for this policy. After
+     the timeout passes, the admission request will fail based on the failure
+     policy. The default timeout is 10s, the value must be between 1 and 30
+     seconds.
 ```
 
 Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
