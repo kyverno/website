@@ -465,7 +465,9 @@ spec:
 
 The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod. 
 
-A `foreach` must contain a `list` attribute that defines the list of elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
+
+Each `foreach` entry must contain a `list` attribute that defines the sub-elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
 
 ```yaml
 list: request.object.spec.containers
@@ -482,7 +484,7 @@ The following child declarations are permitted in a `foreach`:
 
 
 In addition, each `foreach` declaration can contain the following declarations:
-- [Context](https://kyverno.io/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
+- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
 - [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -508,9 +510,10 @@ spec:
     validate:
       message: "unknown registry"  
       foreach:
-        # NOTE: this does not handle initContainer. This limitation will be  
-        # addressed by https://github.com/kyverno/kyverno/issues/2505.
-        list: "request.object.spec.containers"
+      - list: "request.object.spec.initContainers"
+        pattern:
+          image: "trusted-registry.io/*"      
+      - list: "request.object.spec.containers"
         pattern:
           image: "trusted-registry.io/*"
 ```
