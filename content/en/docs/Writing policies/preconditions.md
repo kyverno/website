@@ -155,6 +155,31 @@ The set operators, `In` and `NotIn` support a set of strings as the value (e.g. 
 
 The duration operators can be used for things such as validating an annotation that is a duration unit. Duration operators expect numeric key or value as seconds or as a string that is a valid Go time duration, eg: "1h". The string units supported are `s` (second), `m` (minute) and `h` (hour).  Full details on supported duration strings are covered by <a href="https://pkg.go.dev/time#ParseDuration" target="-blank">time.ParseDuration</a>.
 
+The `GreaterThan`, `GreaterThanOrEquals`, `LessThan` and `LessThanOrEquals` operators can also be used with Kubernetes resource quantities. Any value handled by <a href="https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#ParseQuantity" target="_blank">resource.ParseQuantity</a> can be used, this includes comparing values that have different scales.
+
+Example:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: resource-quantities
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: memory-limit
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      any:
+      - key: "{{request.object.spec.containers[*].resources.requests.memory}}"
+        operator: LessThan
+        value: 1Gi
+```
+
 ## Wildcard Matches
 
 String values support the use of wildcards to allow for partial matches. The following example matches on pods that have a container using a `bash` image.
