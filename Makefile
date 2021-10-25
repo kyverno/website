@@ -65,4 +65,7 @@ container-build: module-check ## Build the website locally using a container
 	$(CONTAINER_RUN) $(CONTAINER_IMAGE) hugo --minify
 
 container-serve: module-check ## Serve the website locally, from a container
+	mkdir -p resources
+	chmod a+w resources
 	$(CONTAINER_RUN) --mount type=tmpfs,destination=/src/resources,tmpfs-mode=0777 -p 1313:1313 $(CONTAINER_IMAGE) hugo server --buildFuture --bind 0.0.0.0
+
