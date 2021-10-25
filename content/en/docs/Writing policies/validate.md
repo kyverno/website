@@ -521,7 +521,9 @@ spec:
 
 The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod.
 
-A `foreach` must contain a `list` attribute that defines the list of elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
+
+Each `foreach` entry must contain a `list` attribute that defines the sub-elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
 
 ```yaml
 list: request.object.spec.containers
@@ -529,7 +531,7 @@ list: request.object.spec.containers
 
 When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing.
 
-A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.name` withing a `foreach`.
+A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 The following child declarations are permitted in a `foreach`:
 
@@ -565,9 +567,10 @@ spec:
     validate:
       message: "unknown registry"  
       foreach:
-        # NOTE: this does not handle initContainer. This limitation will be  
-        # addressed by https://github.com/kyverno/kyverno/issues/2505.
-        list: "request.object.spec.containers"
+      - list: "request.object.spec.initContainers"
+        pattern:
+          image: "trusted-registry.io/*"      
+      - list: "request.object.spec.containers"
         pattern:
           image: "trusted-registry.io/*"
 ```
