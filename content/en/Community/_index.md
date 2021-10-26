@@ -43,3 +43,10 @@ We love hearing from our community!
 Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps. 
 
 The project contributors use [GitHub discussions](https://github.com/kyverno/kyverno/discussions) for all implementation and project internal topics and the [GitHub Wiki](https://github.com/kyverno/kyverno/wiki) for design documents, notes on the dev environment, project guidelines and best practices.
+
+## Join Kyverno Adopters
+Kyverno is currently a CNCF sandbox project and as a requirement by the CNCF, every sandbox project requires a minimum of three adopters along with other specifications in order graduate to the next maturity level [incubation level](https://github.com/cncf/toc/blob/main/process/graduation_criteria.adoc).
+ 
+The goal of this adopters program is to take Kyverno from a [CNCF](https://www.cncf.io/) sandbox project to a CNCF incubator project. We hope to achieve this by getting the existing and new adopters of kyverno to share their stories with CNCF. Adopters who join this project will be added to the [Adopters List](https://github.com/kyverno/kyverno/blob/main/ADOPTERS.md).
+ 
+To participate, kindly fill out this [form](https://docs.google.com/forms/d/e/1FAIpQLSeMJxbK6eQ-MpsbaXZ3GKp8NEz9F932keL2pwznI1JIfi7Iqw/viewform) (It will take 5 mins of your time).
