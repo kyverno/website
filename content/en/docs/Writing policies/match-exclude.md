@@ -37,6 +37,7 @@ Supported formats:
 To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy.
 
 These can be distinguished as:
+
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
@@ -117,6 +118,40 @@ spec:
         kinds:
         - v1/NetworkPolicy
 ```
+
+As of Kyverno 1.5.0, wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster.
+
+In the below policy, all resource kinds are checked for the existence of a label having key `app.kubernetes.io/name`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: audit
+  background: false
+  rules:
+  - name: check-for-labels
+    match:
+      resources:
+        kinds:
+        - "*"
+    preconditions:
+    - key: "{{ request.operation }}"
+      operator: Equals
+      value: CREATE
+    validate:
+      message: "The label `app.kubernetes.io/name` is required."
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/name: "?*"
+```
+
+{{% alert title="Note" color="info" %}}
+Keep in mind that when matching on all kinds (`*`) the policy you write must be applicable across all of them. Typical uses for this type of wildcard matching are elements within the `metadata` object.
+{{% /alert %}}
 
 Here are some other examples of `match` statements.
 

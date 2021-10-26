@@ -79,7 +79,7 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 ## Validation Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed.
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
 
 ## Patterns
 
@@ -187,10 +187,11 @@ Anchors allow conditional processing (i.e. "if-then-else") and other logical che
 
 | Anchor     | Tag | Behavior                                                                                                                                                                                                                                     |
 |-------------|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Conditional | ()  | If tag with the given value (including child elements) is specified, then peer elements will be processed. <br/>e.g. If image has tag latest then imagePullPolicy cannot be IfNotPresent. <br/>&nbsp;&nbsp;&nbsp;&nbsp;(image): "*:latest" <br>&nbsp;&nbsp;&nbsp;&nbsp;imagePullPolicy: "!IfNotPresent"<br/>                                             |
-| Equality    | =() | If tag is specified, then processing continues. For tags with scalar values, the value must match. For tags with child elements, the child element is further evaluated as a validation pattern.  <br/>e.g. If hostPath is defined then the path cannot be /var/lib<br/>&nbsp;&nbsp;&nbsp;&nbsp;=(hostPath):<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: "!/var/lib"<br/>                                                                                  |
-| Existence   | ^() | Works on the list/array type only. If at least one element in the list satisfies the pattern. In contrast, a conditional anchor would validate that all elements in the list match the pattern. <br/>e.g. At least one container with image nginx:latest must exist. <br/>&nbsp;&nbsp;&nbsp;&nbsp;^(containers):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- image: nginx:latest<br/>  |
-| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated (use exclamation point to negate a value). The value should ideally be set to `null`. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/>|
+| Conditional | ()  | If tag with the given value (including child elements) is specified, then peer elements will be processed. <br/>e.g. If image has tag latest then imagePullPolicy cannot be IfNotPresent. <br/>&nbsp;&nbsp;&nbsp;&nbsp;(image): "*:latest" <br>&nbsp;&nbsp;&nbsp;&nbsp;imagePullPolicy: "!IfNotPresent"<br/> |
+| Equality    | =() | If tag is specified, then processing continues. For tags with scalar values, the value must match. For tags with child elements, the child element is further evaluated as a validation pattern.  <br/>e.g. If hostPath is defined then the path cannot be /var/lib<br/>&nbsp;&nbsp;&nbsp;&nbsp;=(hostPath):<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: "!/var/lib"<br/> |
+| Existence   | ^() | Works on the list/array type only. If at least one element in the list satisfies the pattern. In contrast, a conditional anchor would validate that all elements in the list match the pattern. <br/>e.g. At least one container with image nginx:latest must exist. <br/>&nbsp;&nbsp;&nbsp;&nbsp;^(containers):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- image: nginx:latest<br/> |
+| Negation    | X() | The tag cannot be specified. The value of the tag is not evaluated (use exclamation point to negate a value). The value should ideally be set to `null`. <br/>e.g. Hostpath tag cannot be defined.<br/>&nbsp;&nbsp;&nbsp;&nbsp;X(hostPath):<br/> |
+| Global      | <() | The content of this condition, if false, will cause the entire rule to be skipped. Valid for both validate and strategic merge patches. |
 
 #### Anchors and child elements: Conditional and Equality
 
@@ -257,7 +258,6 @@ This is read as "If a hostPath volume exists, then the path must not be equal to
 In both of these examples, the validation rule merely checks for the existence of a `hostPath` volume definition. It does not validate whether a container is actually consuming the volume.
 {{% /alert %}}
 
-
 #### Existence anchor: At Least One
 
 The existence anchor is used to check that, in a list of elements, at least one element exists that matches the pattern. This is done by using the `^()` notation for the field. The existence anchor only works on array/list type data.
@@ -297,6 +297,57 @@ Contrast this existence anchor, which checks for at least one instance, with a [
 
 This snippet above instead states that *every* entry in the array of containers, regardless of name, must have the `image` set to `nginx:latest`.
 
+#### Global Anchor
+
+The global anchor, new in Kyverno 1.4.3, is a way to use a condition anywhere in a resource to base a decision. If the condition enclosed in the global anchor is true, the rest of the rule must apply. If the condition enclosed in the global anchor is false, the rule is skipped.
+
+In this example, a container image coming from a registry called `corp.reg.com` is required to mount an imagePullSecret called `my-registry-secret`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sample
+spec:
+  validationFailureAction: enforce
+  rules:
+  - name: check-container-image
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: Images coming from corp.reg.com must use the correct imagePullSecret.
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            <(image): "corp.reg.com/*"
+          imagePullSecrets:
+          - name: my-registry-secret
+```
+
+The below Pod has a single container which meets the global anchor's specifications, but the rest of the pattern does not match. The Pod is therefore blocked.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: web
+      image: corp.reg.com/nginx
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+  imagePullSecrets:
+  - name: other-secret
+```
+
 ### anyPattern
 
 In some cases, content can be defined at different levels. For example, a security context can be defined at the Pod or Container level. The validation rule should pass if either one of the conditions is met.
@@ -311,34 +362,39 @@ Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: check-root-user
+  name: require-run-as-non-root
 spec:
+  background: true
   validationFailureAction: enforce
-  background: false
   rules:
-  - name: check-root-user
-    exclude:
-      resources:
-        namespaces:
-        - kube-system
+  - name: check-containers
     match:
       resources:
         kinds:
         - Pod
     validate:
-      message: "Root user is not allowed. Set runAsNonRoot to true."
+      message: >-
+        Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+        spec.containers[*].securityContext.runAsNonRoot, and
+        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.        
       anyPattern:
-      # Checks for `runAsNonRoot` on the Pod.
+      # spec.securityContext.runAsNonRoot must be set to true. If containers and/or initContainers exist which declare a securityContext field, those must have runAsNonRoot also set to true.
       - spec:
           securityContext:
             runAsNonRoot: true
-      # Checks for `runAsNonRoot` on every container.
+          containers:
+          - =(securityContext):
+              =(runAsNonRoot): true
+          =(initContainers):
+          - =(securityContext):
+              =(runAsNonRoot): true
+      # All containers and initContainers must define (not optional) runAsNonRoot=true.
       - spec:
           containers:
-          # The `name` field here is not specifically required but rather used
-          # as a visual aid for instructional purposes.
-          - name: "*"
-            securityContext:
+          - securityContext:
+              runAsNonRoot: true
+          =(initContainers):
+          - securityContext:
               runAsNonRoot: true
 ```
 
@@ -463,7 +519,7 @@ spec:
 
 ## foreach
 
-The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod. 
+The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod.
 
 A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
 
@@ -478,12 +534,13 @@ When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMES
 A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 The following child declarations are permitted in a `foreach`:
+
 - [Patterns](/docs/writing-policies/validate/#patterns)
 - [AnyPatterns](/docs/writing-policies/validate/#anypattern)
 - [Deny](/docs/writing-policies/validate/#deny-rules)
 
-
 In addition, each `foreach` declaration can contain the following declarations:
+
 - [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
 - [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
 
@@ -519,4 +576,3 @@ spec:
 ```
 
 Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
-
