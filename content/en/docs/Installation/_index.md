@@ -18,7 +18,7 @@ As of v1.4.0, Kyverno supports multiple replicas for increased scale and availab
 |--------------------------------|----------------|----------------|
 | 1.2.1                          | 1.14           | 1.17           |
 | 1.3.0                          | 1.16           | 1.20*          |
-| 1.4.0                          | 1.16           | 1.21           |
+| 1.4.x                          | 1.16           | 1.21           |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
@@ -40,31 +40,29 @@ helm repo update
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
-Beginning with Kyverno 1.4.2, Kyverno Helm chart v2.0.2, the Kyverno CRDs must be added seperately and before Kyverno is installed.
-
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-Use Kyverno 1.4.2+ to create a customizable Helm release name while installing Kyverno. Before Kyverno 1.4.2, the Helm release name must be Kyverno.
+Beginning with Kyverno 1.5.0, Kyverno Helm chart v2.1.0, the Kyverno policies must be added seperately and after Kyverno is installed.
 
 ```sh
-helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 To install non-stable releases, add the `--devel` switch to Helm.
 
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace --devel
-helm install kyverno kyverno/kyverno --namespace kyverno --devel
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace --devel
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --devel
 ```
 
 For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
 
 ```sh
 kubectl create namespace kyverno
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno
 helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -73,10 +71,18 @@ For all of the flags available during a Helm installation of Kyverno, see [here]
 
 ## Install Kyverno using YAMLs
 
-If you'd rather deploy the manifest directly, simply apply the latest release file. This manifest path will always point to the latest release, including release candidates and other non-stable releases.
+If you'd rather deploy the manifest directly, simply apply the release file. 
+
+This manifest path will always point to the latest main branch.
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+You can also pull from a release branch to install the stable releases including release candidates.
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
 ```
 
 ## Customize the installation of Kyverno
@@ -346,6 +352,7 @@ The following flags are used to control the behavior of Kyverno and must be set 
 4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
 5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+7. `autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Policy Report access
 
@@ -403,7 +410,10 @@ To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the def
 
 ### Webhooks
 
-By default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+Starting with Kyverno 1.5.0, the webhooks are managed dynamically based on the configured policies, see [Dynamic Webhook Configurations](/docs/writing-policies/webhooks/) for details. Disable auto-update by setting flag `--autoUpdateWebhooks=false` to manually configure `namespaceSelector` and other fields.
+
+Prior to 1.5.0, by default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+
 
 ```yaml
 apiVersion: v1
@@ -447,29 +457,30 @@ helm search repo kyverno
 Run the upgrade command picking the target version.
 
 ```sh
-helm upgrade kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
 helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm upgrade kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 {{% alert title="Note" color="warning" %}}
-Upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps.
-The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken.
+Upgrading to Kyverno 1.5.0+ (Helm chart v2.1.0) from a version between 1.4.2 to 1.4.3 (Helm chart `>=v2.0.2 <v2.1.0`) will require extra steps.
+The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken of policies not added by Helm.
 {{% /alert %}}
 
-Below are the steps to upgrade Kyverno to 1.4.2 from a version prior to 1.4.2. The upgrade to 1.4.2+ requires first removing the old CRDs and letting the Helm chart install the CRDs.
+Below are the steps to upgrade Kyverno to 1.5.0 from 1.4.3. The upgrade to 1.5.0+ requires first removing the old CRDs chart.
 
-First take a backup of all cluster policies
+First take a backup of all cluster policies not added by Helm:
 
 ```sh
-kubectl get clusterpolicy -A -o yaml > kyverno-policies.yaml
+kubectl get clusterpolicy -l app.kubernetes.io/managed-by!=Helm -A -o yaml > kyverno-policies.yaml
 ```
 
 Perform the upgrade
 
 ```sh
-kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/v1.4.2/charts/kyverno/crds/crds.yaml
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
-helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm uninstall kyverno --namespace kyverno
+helm uninstall kyverno-crds --namespace kyverno
+helm install kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 Restore Kyverno cluster policies
@@ -491,8 +502,8 @@ kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ### Option 2 - Uninstall Kyverno with Helm
 
 ```sh
+helm uninstall kyverno-policies kyverno/kyverno-policies --namespace kyverno
 helm uninstall kyverno kyverno/kyverno --namespace kyverno
-helm uninstall kyverno-crds kyverno/kyverno-crds --namespace kyverno
 ```
 
 ### Clean up Webhook Configurations

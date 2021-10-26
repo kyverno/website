@@ -460,3 +460,63 @@ spec:
       message: "Changing default network policies is not allowed."
       deny: {}
 ```
+
+## foreach
+
+The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod. 
+
+A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
+
+Each `foreach` entry must contain a `list` attribute that defines the sub-elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+
+```yaml
+list: request.object.spec.containers
+```
+
+When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing.
+
+A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
+
+The following child declarations are permitted in a `foreach`:
+- [Patterns](/docs/writing-policies/validate/#patterns)
+- [AnyPatterns](/docs/writing-policies/validate/#anypattern)
+- [Deny](/docs/writing-policies/validate/#deny-rules)
+
+
+In addition, each `foreach` declaration can contain the following declarations:
+- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
+- [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+
+Here is a complete example to enforce that all container images are from a trusted registry:
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-images
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: check-registry
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      - key: "{{request.type}}"
+        operator: NotEquals
+        value: "DELETE"
+    validate:
+      message: "unknown registry"  
+      foreach:
+      - list: "request.object.spec.initContainers"
+        pattern:
+          image: "trusted-registry.io/*"      
+      - list: "request.object.spec.containers"
+        pattern:
+          image: "trusted-registry.io/*"
+```
+
+Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
+

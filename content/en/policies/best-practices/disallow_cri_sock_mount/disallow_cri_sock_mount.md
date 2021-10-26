@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Container daemon socket bind mounts allows access to the container engine on the  node. This access can be used for privilege escalation and to manage containers  outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
+    Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
 ---
 
 ## Policy Definition
@@ -22,12 +22,13 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Container daemon socket bind mounts allows access to the container engine on the 
-      node. This access can be used for privilege escalation and to manage containers 
+      Container daemon socket bind mounts allows access to the container engine on the
+      node. This access can be used for privilege escalation and to manage containers
       outside of Kubernetes, and hence should not be allowed. This policy validates that
       the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
   - name: validate-docker-sock-mount
     match:
@@ -64,5 +65,5 @@ spec:
         spec:
           =(volumes):
             - =(hostPath):
-                path: "!/var/run/crio.sock"                
+                path: "!/var/run/crio.sock"
 ```

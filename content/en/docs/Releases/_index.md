@@ -1,9 +1,67 @@
 ---
 title: Releases 
 linkTitle: "Releases"
-weight: 120
+weight: 130
 description: Kyverno Release Notes.
 ---
+
+## Kyverno v1.4.3
+**Notes**
+Helm - helm upgrade command will be sufficient to upgrade.
+
+Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/installation/#upgrading-kyverno).
+### Changed
+### Bug Fixes
+- Fix policy gets blocked with 1.4.3-rc1 if any/all is defined in match block [(#2388)](https://github.com/kyverno/kyverno/pull/2388)
+- Fix upgrade issue from 1.4.2 to 1.4.3-rc1 [(#2387)](https://github.com/kyverno/kyverno/pull/2387).
+- Fix Added back `V1alpha1` policy report resources [(#2377)](https://github.com/kyverno/kyverno/pull/2377).
+- Check Any and All ResourceFilters during policymutation [{#2373)](https://github.com/kyverno/kyverno/pull/2373).
+- Handling autogen test cases | CLI [(#2367)](https://github.com/kyverno/kyverno/pull/2367).
+- Fix supports gvk in CLI for policies applied on cluster [#2364](https://github.com/kyverno/kyverno/pull/2364).
+- Fix added condition for all/any for match | CLI [#2370](https://github.com/kyverno/kyverno/pull/2370).
+- Fix removed contains function [#2346](https://github.com/kyverno/kyverno/pull/2346).
+- Kyverno CLI `apply` command improvement [#2342](https://github.com/kyverno/kyverno/pull/2342).
+- Fix removed: resource_name label which is exposed as a part of Kyverno's metrics[#2351](https://github.com/kyverno/kyverno/pull/2351).
+- Fix added test case for non zero index patches with `patchesJson6902` [#2339](https://github.com/kyverno/kyverno/pull/2339).
+- Fix removed contains function [#2346](https://github.com/kyverno/kyverno/pull/2346).
+- Clean up formatting in mutate test file [#2338](https://github.com/kyverno/kyverno/pull/2338).
+- Add test case for non zero index patches with patchesJson6902 [#2339](https://github.com/kyverno/kyverno/pull/2339).
+- Adding ownerRef with namespace for Kyverno managed webhook configurations [#2263](https://github.com/kyverno/kyverno/pull/2263)
+- Add Support for previous test file structure [#2329](https://github.com/kyverno/kyverno/pull/2329).
+- Substitute vars in map keys [#2344](https://github.com/kyverno/kyverno/pull/2344).
+- Bug fix background scan issue for any/all in match/exclude [#2381](https://github.com/kyverno/kyverno/pull/2381).
+- Test cmd update [#5](https://github.com/NoSkillGirl/kyverno/pull/5), [#6](https://github.com/NoSkillGirl/kyverno/pull/6).
+- Bug fix | CLI panic | Context policy validation [#2336](https://github.com/kyverno/kyverno/pull/2336).
+- Fixed networkPolicy customization [#2334](https://github.com/kyverno/kyverno/pull/2334).
+- Fix remove `ownerReferences` when cloning resources to other namespace. [#2298](https://github.com/kyverno/kyverno/pull/2298).
+- Cleanup kustomizations [#2274](https://github.com/kyverno/kyverno/pull/2274).
+- Fixed precondition logic for mutating policies [#2271](https://github.com/kyverno/kyverno/pull/2271).
+- Support for metrics configuration, periodic metrics cleanup and selective namespace whitelisting and blacklisting with respect to metrics registration [#2288](https://github.com/kyverno/kyverno/pull/2288).
+- Fix updated cosign [#2369](https://github.com/kyverno/kyverno/pull/2369).
+- Only release Helm charts on tags [#2281](https://github.com/kyverno/kyverno/pull/2281).
+- Adding ownerRef with namespace [#2263](https://github.com/kyverno/kyverno/pull/2263).
+- Added labels to helm templates [#2265](https://github.com/kyverno/kyverno/pull/2265).
+- Support GVK format is case sensitive [#2261](https://github.com/kyverno/kyverno/pull/2261).
+- Block scalars for value files [#2380](https://github.com/kyverno/kyverno/pull/2380).
+- Added test case using new variant of this policy with preconditions [#2255](https://github.com/kyverno/kyverno/pull/2255).
+- Make Kyverno CRDs a seperate Helm chart capable of being updated/deleted [#2218](https://github.com/kyverno/kyverno/pull/2218).
+- Update PolicyReport CRDs to wgpolicyk8s.io/v1alpha2 [#1825](https://github.com/kyverno/kyverno/pull/2218).
+- Implement global anchor [#2311](https://github.com/kyverno/kyverno/pull/2311).
+- Fix allowing users to skip policy validation when mutating resources [#2365](https://github.com/kyverno/kyverno/pull/2365).
+- Validation for generate loops and support ClusterPolicy/Policy in match block [#2275](https://github.com/kyverno/kyverno/pull/2275).
+- Added condition for resource sync [#2247](https://github.com/kyverno/kyverno/pull/2247).
+- Fix added check for the forward slash [#2270](https://github.com/kyverno/kyverno/pull/2270).
+- Resolving variables from the resource passed | CLI [#2180](https://github.com/kyverno/kyverno/pull/2180).
+- Fix updated kyverno deployment strategy [#2006](https://github.com/kyverno/kyverno/pull/2006).
+- Fix added pod anti-affinity to Kyverno [#1985](https://github.com/kyverno/kyverno/pull/1985).
+- Fix add new test; remove unnecessary anchors [#2217](https://github.com/kyverno/kyverno/pull/2217).
+- Make Kyverno CRDs a seperate Helm chart capable of being updated/deleted [#2218](https://github.com/kyverno/kyverno/issues/2211).
+- Only release Helm charts on tags [#2281](https://github.com/kyverno/kyverno/issues/2264).
+- Remove contains function [#2346](https://github.com/kyverno/kyverno/pull/2346).
+- Bug fix background scan issue for any/all in match/exclude [#2381](https://github.com/kyverno/kyverno/pull/2381).
+- Updated kyverno deployment strategy [#2006](https://github.com/kyverno/kyverno/pull/2006).
+- Update anti-affinity to the soft limit [#2441](https://github.com/kyverno/kyverno/pull/2441).
+- Fix added pod anti-affinity to Kyverno [#1985](https://github.com/kyverno/kyverno/pull/1985).
 
 ## Kyverno v1.4.2
 **Note:** With Helm installed Kyverno, upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps. Please refer to the official doc for the upgrade.
@@ -14,6 +72,7 @@ description: Kyverno Release Notes.
 - Support disallow pod exec operation [(#2146)](https://github.com/kyverno/kyverno/issues/2213)
 - Metrics re-design to deal with cardinality explosion [(#2121)](https://github.com/kyverno/kyverno/issues/2121)
  
+
 ### Bug Fixes
 - Fix removing `engineresponses` variable from Kyverno CLI, as it is not used by the policy report.[(#2252)](https://github.com/kyverno/kyverno/pull/2252)
 - Fix Updating cli comment for skipping `request.object.*` variables[(#2242)](https://github.com/kyverno/kyverno/pull/2242) 
@@ -26,6 +85,8 @@ description: Kyverno Release Notes.
 
 ## Kyverno v1.4.1
 **Note:** To upgrade from 1.4.0, you will need to manually remove the selector app: kyverno from the Deployment or delete the Deployment and then upgrade to 1.4.1.
+
+## main
 ### Bug Fixes
 - Integrate LitmusChaos - Pod Memory Hog experiment [(#2014)](https://github.com/kyverno/kyverno/pull/2014)
 - Fix replacing pod security standard from default to baseline [(#1977)](https://github.com/kyverno/kyverno/pull/1977)
@@ -37,7 +98,9 @@ description: Kyverno Release Notes.
 - adding support for policies.kyverno.io/scored annotation [(#1976)](https://github.com/kyverno/kyverno/pull/1976)
 
 ## Kyverno v1.4.0
+
 **Note:** there was a selector app: kyverno added to the Deployment of the Kyverno Helm chart, it could impact the upgrade process as the selector field cannot be modified during an upgrade. This selector will be removed in 1.4.1, you can comment it out during the upgrade. Thanks to [@andriktr](https://github.com/andriktr?tab=overview&from=2021-07-01&to=2021-07-31) for reporting the issue.
+
 For HA, currently recommended minimum replicas is 3.
 
 ### Changed
@@ -58,6 +121,7 @@ For HA, currently recommended minimum replicas is 3.
 - Add e2e test cases for generate policy flow [(#1951)](https://github.com/kyverno/kyverno/pull/1951)
 - fix operator matching with spacing [(#1946)](https://github.com/kyverno/kyverno/pull/1946)
 - Update e2e tests to latest kind and Kubernetes versions [(#1973)](https://github.com/kyverno/kyverno/pull/1974)
+
 
 ## Kyverno v1.3.6
 ### Changed

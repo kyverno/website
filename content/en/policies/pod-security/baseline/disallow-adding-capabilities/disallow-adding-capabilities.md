@@ -36,7 +36,7 @@ spec:
       validate:
         message: >-
           Adding of additional capabilities beyond the default set is not allowed.
-          The fields spec.containers[*].securityContext.capabilities.add and 
+          The fields spec.containers[*].securityContext.capabilities.add and
           spec.initContainers[*].securityContext.capabilities.add must be empty.
         pattern:
           spec:

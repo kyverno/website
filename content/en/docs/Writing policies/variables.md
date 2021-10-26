@@ -292,6 +292,8 @@ This ordering makes it possible to use request data when defining the context, a
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
 ```
+base64_decode(string) string
+base64_encode(string) string
 compare(string, string) bool
 contains(string, string) bool
 equal_fold(string, string) bool
@@ -305,6 +307,11 @@ regex_replace_all(regex string, src string|number, replace string|number) string
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+add(number, number) number
+subtract(number, number) number
+multiply(number, number) number
+divide(number, number) number (divisor must be non zero)
+modulo(number, number) number (divisor must be non-zero, arguments must be integers)
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
