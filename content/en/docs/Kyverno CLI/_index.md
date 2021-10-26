@@ -115,30 +115,36 @@ When passing ConfigMap array data into the values file, the data must be formatt
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
 ```
 
-Format of `value.yaml`:
+Format of `value.yaml` with all possible fields:
 
 ```yaml
 policies:
   - name: <policy1 name>
+    rules:
+    - name: <rule1 name>
+      values:
+        <context variable1 in policy1 rule1>: <value>
+        <context variable2 in policy1 rule1>: <value>
+    - name: <rule2 name>
+      values:
+        <context variable1 in policy1 rule2>: <value>
+        <context variable2 in policy1 rule2>: <value>
     resources:
-      - name: <resource1 name>
-        values:
-          <variable1 in policy1>: <value>
-          <variable2 in policy1>: <value>
-      - name: <resource2 name>
-        values:
-          <variable1 in policy1>: <value>
-          <variable2 in policy1>: <value>
-  - name: <policy2 name>
-    resources:
-      - name: <resource1 name>
-        values:
-          <variable1 in policy2>: <value>
-          <variable2 in policy2>: <value>
-      - name: <resource2 name>
-        values:
-          <variable1 in policy2>: <value>
-          <variable2 in policy2>: <value>
+    - name: <resource1 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+    - name: <resource2 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+namespaceSelector:
+- name: <namespace1 name>
+labels:
+  <label key>: <label value>
+- name: <namespace2 name>
+labels:
+  <label key>: <label value>
 ```
 
 Example:
@@ -187,7 +193,7 @@ metadata:
   name: devtest
 ```
 
-Apply a policy to a resource using the `--set` or `-s` flag:
+Apply a policy to a resource using the `--set` or `-s` flag to pass a variable directly:
 
 ```sh
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -s request.object.metadata.name=devtest
@@ -210,9 +216,110 @@ policies:
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
+Value files also support global values, which can be passed to all resources the policy is being applied to.
+
+Format of `value.yaml`:
+
+```yaml
+policies:
+  - name: <policy1 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+  - name: <policy2 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+globalValues:
+  <global variable1>: <value>
+  <global variable2>: <value>
+```
+
+If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the pod `test-global-prod` in the following example.
+
+Example:
+
+Policy manifest (`add_dev_pod.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cm-globalval-example
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-mode
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
+        deny:
+          conditions:
+            - key: "{{ request.mode }}"
+              operator: NotEquals
+              value: dev
+```
+
+Resource manifest (`dev_prod_pod.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-prod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-dev
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.12
+```
+
+YAML file containing variables (`value.yaml`):
+
+```yaml
+policies:
+  - name: cm-globalval-example
+    resources:
+      - name: test-global-prod
+        values:
+          request.mode: prod
+globalValues:
+  request.mode: dev
+```
+
+```sh
+kyverno apply /path/to/add_dev_pod.yaml --resource /path/to/dev_prod_pod.yaml -f /path/to/value.yaml
+```
+
+The pod `test-global-dev` passes the validation, and `test-global-prod` fails.
+
 Apply a policy with the Namespace selector:
 
-Use `--values-file` for passing a file containing Namespace details.
+Use `--values-file` or `-f` for passing a file containing Namespace details.
 Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selector.
 
 ```sh
@@ -300,6 +407,68 @@ To test the above policy, use the following command:
 
 ```sh
 kyverno apply /path/to/enforce-pod-name.yaml --resource /path/to/nginx.yaml -f /path/to/value.yaml
+```
+
+Apply a resource to a policy which uses a context variable:
+
+Use `--values-file` or `-f` for passing a file containing the context variable.
+
+```sh
+kyverno apply /path/to/policy1.yaml --resource /path/to/resource1.yaml -f /path/to/value.yaml
+```
+
+`policy1.yaml`
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cm-variable-example
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: example-configmap-lookup
+      context:
+      - name: dictionary
+        configMap:
+          name: mycmap
+          namespace: default
+      match:
+        resources:
+          kinds:
+          - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              my-environment-name: "{{dictionary.data.env}}"
+```
+
+`resource1.yaml`
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-config-test
+spec:
+  containers:
+  - image: nginx:latest
+    name: test-nginx
+```
+
+`value.yaml`
+
+```yaml
+policies:
+  - name: cm-variable-example
+    rules:
+      - name: example-configmap-lookup
+        values:
+          dictionary.data.env: dev1
 ```
 
 #### Policy Report
@@ -476,7 +645,7 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported.
+The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
 
 Run tests on a set of local files:
 
@@ -508,14 +677,16 @@ results:
 - policy: <name>
   rule: <name>
   resource: <name>
-  status: pass
+  kind: <kind>
+  result: pass
 - policy: <name>
   rule: <name>
   resource: <name>
-  status: fail
+  kind: <kind>
+  result: fail
 ```
 
-If needing to pass variables, a `variables.yaml` file can be defined with the following format. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
+If needing to pass variables, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
 
 ```yaml
 policies:
@@ -611,11 +782,13 @@ results:
   - policy: disallow-latest-tag
     rule: require-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
 ```
 
 ```sh

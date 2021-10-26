@@ -77,4 +77,36 @@ metricsService:
 ...
 ```
 
+## Configuring the metrics
+
+While installing Kyverno via Helm, you have also have the opportunity to tweak and configure the metrics which you need to be exposed.
+
+* You can configure only certain amount of namespaces for which you want the metrics to be exported by configuring which namespaces you want to be "included" or/and "excluded" while exposing the metrics. This configuration is useful in situations where you might want to exclude the exposure of Kyverno metrics for certain futile namespaces like test namespaces which you might be dealing with on a regular basis. At the same time, you can include certain namespaces if you want to monitor Kyverno-related activity for only a certain critical namespaces.
+Exporting only the right amount of namespaces as opposed to exposing all namespaces can end up substantially reducing the memory footprint of Kyverno's metrics exporter.
+```sh
+...
+config:
+  metricsConfig:
+    namespaces: {
+      "include": [],
+      "exclude": []
+    }
+  # 'namespaces.include': list of namespaces to capture metrics for. Default: all namespaces included.
+  # 'namespaces.exclude': list of namespaces to NOT capture metrics for. Default: [], none of the namespaces excluded.
+...
+```
+> "exclude" takes precedence over "include", in case a namespace is provided both under "include" and "exclude".
+
+* You can also configure a metrics refresh interval which cleans up the metrics registry and all the associated metrics of Kyverno's metric exporter at a certain moment, hence, cleaning up and resetting the memory footprint associated with Kyverno's metric exporter. This configuration is useful in situations where you might end up facing a periodic need of resetting and cleaning up the metric exporter of Kyverno to tone down the memory footprint associated with it.<br>
+Although, Kyverno tries to minimise the cardinality associated with the metrics it exposes, yet it still exposes certain labels with a slightly more cardinality than other labels such as `policy_name` and `resource_namespace`. And in case of dealing with extremely huge number of namespaces/policies, the memory footprint of Kyverno's metrics exporter might become heavy. Hence, this configuration would prove to be handy in those kinds of situations.
+```sh
+...
+config:
+  # rate at which metrics should reset so as to clean up the memory footprint of kyverno metrics, if you might be expecting high memory footprint of Kyverno's metrics.
+  metricsRefreshInterval: 24h 
+  #Default: 0, no refresh of metrics
+...
+```
+> You still would not lose your previous metrics as your metrics get persisted in your Prometheus backend.
+
 ## Metrics and Dashboard

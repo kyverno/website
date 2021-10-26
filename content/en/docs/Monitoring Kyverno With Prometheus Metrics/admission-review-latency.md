@@ -21,7 +21,6 @@ Histogram - A float value representing the latency of the admission review in se
 
 | Label                        | Allowed Values                                         | Description                                                                       |
 | ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| resource\_name               |                                                        | Name of the resource which is being evaluated as a part of this admission review. |
 | resource\_kind               | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                             |
 | resource\_namespace          |                                                        | Namspace in which this resource lies                                              |
 | resource\_request\_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                   |

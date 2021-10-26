@@ -24,8 +24,8 @@ metadata:
       Containers must be required to run as non-root users. This policy ensures
       `runAsNonRoot` is set to `true`.
 spec:
-  background: true
   validationFailureAction: audit
+  background: true
   rules:
   - name: check-containers
     match:
@@ -46,13 +46,13 @@ spec:
               =(runAsNonRoot): true
           =(initContainers):
           - =(securityContext):
-              =(runAsNonRoot): true              
+              =(runAsNonRoot): true
       - spec:
           containers:
           - securityContext:
               runAsNonRoot: true
           =(initContainers):
           - securityContext:
-              runAsNonRoot: true         
+              runAsNonRoot: true
 
 ```

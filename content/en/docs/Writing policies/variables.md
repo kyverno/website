@@ -75,6 +75,104 @@ In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than
 
 For more information on operators see the [Operators](/docs/writing-policies/validate/#operators) section.
 
+## Escaping Variables
+
+In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, as of Kyverno 1.5.0 these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values.
+
+In the below policy, the value of `OTEL_RESOURCE_ATTRIBUTES` contains references to other environment variables which will be quoted literally as, for example, `$(POD_NAMESPACE)`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: add-otel-resource-env
+spec:
+  background: false
+  rules:
+  - name: imbue-pod-spec
+    match:
+      resources:
+        kinds:
+        - v1/Pod
+    mutate:
+      patchStrategicMerge:
+        spec:
+          containers:
+          - (name): "?*"
+            env:
+            - name: NODE_NAME
+              value: "mutated_name"
+            - name: POD_IP_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: >-
+                k8s.namespace.name=\$(POD_NAMESPACE),
+                k8s.node.name=\$(NODE_NAME),
+                k8s.pod.name=\$(POD_NAME),
+                k8s.pod.primary_ip_address=\$(POD_IP_ADDRESS),
+                k8s.pod.service_account.name=\$(POD_SERVICE_ACCOUNT),
+                rule_applied=$(./../../../../../../../../name)
+```
+
+Using a Pod definition as below, this can be tested.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-env-vars
+spec:
+  containers:
+  - name: test-container
+    image: busybox
+    command: ["sh", "-c"]
+    args:
+    - while true; do
+      echo -en '\n';
+      printenv OTEL_RESOURCE_ATTRIBUTES;
+      sleep 10;
+      done;
+    env:
+    - name: NODE_NAME
+      value: "node_name"
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: POD_IP_ADDRESS
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+  restartPolicy: Never
+```
+
+The result of the mutation of this Pod with respect to the `OTEL_RESOURCE_ATTRIBUTES` environment variable will be as follows.
+
+```yaml
+- name: OTEL_RESOURCE_ATTRIBUTES
+      value: k8s.namespace.name=$(POD_NAMESPACE), k8s.node.name=$(NODE_NAME), k8s.pod.name=$(POD_NAME),
+        k8s.pod.primary_ip_address=$(POD_IP_ADDRESS), k8s.pod.service_account.name=$(POD_SERVICE_ACCOUNT),
+        rule_applied=imbue-pod-spec
+```
+
 ## Variables from admission review requests
 
 Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to the Kubernetes API server, for example to create a Pod, the API server sends this information to the webhooks registered to listen to the creation of Pod resources. This incoming data to a webhook is passed as a [`AdmissionReview`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) object. There are four commonly used data properties available in any AdmissionReview request:
@@ -292,8 +390,9 @@ This ordering makes it possible to use request data when defining the context, a
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
 ```
+base64_decode(string) string
+base64_encode(string) string
 compare(string, string) bool
-contains(string, string) bool
 equal_fold(string, string) bool
 replace(str string, old string, new string, n float64) string
 replace_all(str string, old string, new string) string
@@ -305,6 +404,11 @@ regex_replace_all(regex string, src string|number, replace string|number) string
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+add(number, number) number
+subtract(number, number) number
+multiply(number, number) number
+divide(number, number) number (divisor must be non zero)
+modulo(number, number) number (divisor must be non-zero, arguments must be integers)
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.

@@ -25,8 +25,8 @@ metadata:
       limits usage of non-core volume types to those defined through PersistentVolumes.
       This policy blocks a number of different non-core volume types as named.
 spec:
-  background: true
   validationFailureAction: audit
+  background: true
   rules:
   - name: restricted-vol-gcePersistentDisk
     match:
