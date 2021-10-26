@@ -5,7 +5,7 @@ version:
 subject: Kubernetes APIs
 policyType: "validate"
 description: >
-    Kubernetes APIs are sometimes deprecated and removed after a few releases.  As a best practice, older API versions should be replaced with newer versions.  This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.
+    Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.
 ---
 
 ## Policy Definition
@@ -21,13 +21,14 @@ metadata:
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/subject: Kubernetes APIs
     policies.kyverno.io/description: >-
-      Kubernetes APIs are sometimes deprecated and removed after a few releases. 
-      As a best practice, older API versions should be replaced with newer versions. 
+      Kubernetes APIs are sometimes deprecated and removed after a few releases.
+      As a best practice, older API versions should be replaced with newer versions.
       This policy validates for APIs that are deprecated or scheduled for removal.
       Note that checking for some of these resources may require modifying the Kyverno
       ConfigMap to remove filters.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
   - name: validate-v1-22-removals
     match:
@@ -40,7 +41,7 @@ spec:
         - authentication.k8s.io/v1beta1/TokenReview
         - authorization.k8s.io/v1beta1/SubjectAccessReview
         - authorization.k8s.io/v1beta1/LocalSubjectAccessReview
-        - authorization.k8s.io/v1beta1/SelfSubjectAccessReview 
+        - authorization.k8s.io/v1beta1/SelfSubjectAccessReview
         - certificates.k8s.io/v1beta1/CertificateSigningRequest
         - coordination.k8s.io/v1beta1/Lease
         - extensions/v1beta1/Ingress
@@ -57,7 +58,7 @@ spec:
         - storage.k8s.io/v1beta1/VolumeAttachment
     validate:
       message: >-
-        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.22. 
+        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.22.
         See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
       deny: {}
   - name: validate-v1-25-removals
@@ -72,7 +73,7 @@ spec:
         - node.k8s.io/v1beta1/RuntimeClass
     validate:
       message: >-
-        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.25. 
+        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.25.
         See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
       deny: {}
 

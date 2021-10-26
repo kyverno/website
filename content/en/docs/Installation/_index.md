@@ -18,7 +18,7 @@ As of v1.4.0, Kyverno supports multiple replicas for increased scale and availab
 |--------------------------------|----------------|----------------|
 | 1.2.1                          | 1.14           | 1.17           |
 | 1.3.0                          | 1.16           | 1.20*          |
-| 1.4.0                          | 1.16           | 1.21           |
+| 1.4.x                          | 1.16           | 1.21           |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
@@ -40,31 +40,29 @@ helm repo update
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
-Beginning with Kyverno 1.4.2, Kyverno Helm chart v2.0.2, the Kyverno CRDs must be added seperately and before Kyverno is installed.
-
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-Use Kyverno 1.4.2+ to create a customizable Helm release name while installing Kyverno. Before Kyverno 1.4.2, the Helm release name must be Kyverno.
+Beginning with Kyverno 1.5.0, Kyverno Helm chart v2.1.0, the Kyverno policies must be added seperately and after Kyverno is installed.
 
 ```sh
-helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 To install non-stable releases, add the `--devel` switch to Helm.
 
 ```sh
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --create-namespace --devel
-helm install kyverno kyverno/kyverno --namespace kyverno --devel
+helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace --devel
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --devel
 ```
 
 For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
 
 ```sh
 kubectl create namespace kyverno
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno
 helm install kyverno kyverno/kyverno --namespace kyverno
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -73,10 +71,18 @@ For all of the flags available during a Helm installation of Kyverno, see [here]
 
 ## Install Kyverno using YAMLs
 
-If you'd rather deploy the manifest directly, simply apply the latest release file. This manifest path will always point to the latest release, including release candidates and other non-stable releases.
+If you'd rather deploy the manifest directly, simply apply the release file. 
+
+This manifest path will always point to the latest main branch.
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+```
+
+You can also pull from a release branch to install the stable releases including release candidates.
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
 ```
 
 ## Verifying Kyverno image signatures using Cosign
@@ -379,16 +385,24 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs -l app=kyverno -n <namespace>
 ```
 
-### Flags
+### ConfigMap Flags
 
 The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
-4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+
+### Container Flags
+
+The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
+
+1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
+2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
+3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds. This is deprecated in Kyverno 1.5.0.
+4. `--gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+5. `--generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+6. `--autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Policy Report access
 
@@ -421,9 +435,23 @@ subjects:
 #   name:
 ```
 
+### Webhooks
+
+Starting with Kyverno 1.5.0, the `mutatingWebhookConfiguration` and the `validatingWebhookConfiguration` resources are registered and managed dynamically based on the configured policies. Prior to 1.5.0, Kyverno uses a wildcard webhook that allowed it to receive admission requests for all resources. With the webhook auto-configuration feature, Kyverno now only receives admission requests for select resources, hence preventing unnecessary admission requests being forwarded to Kyverno.
+
+Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configuration options](/docs/writing-policies/policy-settings/) allow granular control of webhook settings. By default, policies will be configured to "fail-closed" (i.e. the admission request will fail if the webhook invocation has an unexpected error or a timeout) unless the `failurePolicy` is set to `Ignore`.
+
+This feature is enabled by default in 1.5.0+ but can be turned off by flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forwards admission requests for all resources and with `FailurePolicy` set to `Ignore`.
+
+The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/webhooks/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations. 
+
+Prior to 1.5.0, by default, the Kyverno webhook will process all API server requests for all Namespaces and the policy application was filtered using Resource Filters and Namespace Selectors discussed below:
+
 ### Resource Filters
 
-The admission webhook checks if a policy is applicable on all admission requests. The Kubernetes kinds that are not processed can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
+**NOTE:** In 1.5.0+ resource filters are only used when the `autoUpdateWebhooks` flag is set to `false`.
+
+The Kubernetes kinds that should be ignored by policies can be filtered by adding a ConfigMap in namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
 
 ```
 [Pod,foo-system,redis*]
@@ -444,9 +472,12 @@ data:
 
 To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the default configuration inside `install.yaml` and redeploy it or modify the ConfigMap using `kubectl`.  Changes to the ConfigMap through `kubectl` will automatically be picked up at runtime.
 
-### Webhooks
+### Namespace Selectors
 
-By default, the Kyverno webhook will process all API server call-backs from all Namespaces. In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+**NOTE:** In 1.5.0+ namespace selectors are only used when the `autoUpdateWebhooks` flag is set to `false`.
+
+In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+
 
 ```yaml
 apiVersion: v1
@@ -490,29 +521,30 @@ helm search repo kyverno
 Run the upgrade command picking the target version.
 
 ```sh
-helm upgrade kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
 helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm upgrade kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 {{% alert title="Note" color="warning" %}}
-Upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps.
-The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken.
+Upgrading to Kyverno 1.5.0+ (Helm chart v2.1.0) from a version between 1.4.2 to 1.4.3 (Helm chart `>=v2.0.2 <v2.1.0`) will require extra steps.
+The step to remove CRDs will cause all Kyverno policies to get removed, so a backup must be taken of policies not added by Helm.
 {{% /alert %}}
 
-Below are the steps to upgrade Kyverno to 1.4.2 from a version prior to 1.4.2. The upgrade to 1.4.2+ requires first removing the old CRDs and letting the Helm chart install the CRDs.
+Below are the steps to upgrade Kyverno to 1.5.0 from 1.4.3. The upgrade to 1.5.0+ requires first removing the old CRDs chart.
 
-First take a backup of all cluster policies
+First take a backup of all cluster policies not added by Helm:
 
 ```sh
-kubectl get clusterpolicy -A -o yaml > kyverno-policies.yaml
+kubectl get clusterpolicy -l app.kubernetes.io/managed-by!=Helm -A -o yaml > kyverno-policies.yaml
 ```
 
 Perform the upgrade
 
 ```sh
-kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/v1.4.2/charts/kyverno/crds/crds.yaml
-helm install kyverno-crds kyverno/kyverno-crds --namespace kyverno --version <version_number>
-helm upgrade kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm uninstall kyverno --namespace kyverno
+helm uninstall kyverno-crds --namespace kyverno
+helm install kyverno kyverno/kyverno --namespace kyverno --version <version_number>
+helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno --version <version_number>
 ```
 
 Restore Kyverno cluster policies
@@ -534,8 +566,8 @@ kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/definit
 ### Option 2 - Uninstall Kyverno with Helm
 
 ```sh
+helm uninstall kyverno-policies kyverno/kyverno-policies --namespace kyverno
 helm uninstall kyverno kyverno/kyverno --namespace kyverno
-helm uninstall kyverno-crds kyverno/kyverno-crds --namespace kyverno
 ```
 
 ### Clean up Webhook Configurations
