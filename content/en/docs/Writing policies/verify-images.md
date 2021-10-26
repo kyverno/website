@@ -100,13 +100,13 @@ Next, use the `cosign sign` command and specifying the private key in the `-key`
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
-cosign sign -key cosign.key ${IMAGE}
+cosign sign --key cosign.key ${IMAGE}
 ```
 
 This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign -verify` command.
 
 ```sh
-cosign verify -key cosign.pub ${IMAGE}
+cosign verify --key cosign.pub ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for usage details and [OCI registry support](https://github.com/sigstore/cosign#registry-support).
@@ -264,13 +264,13 @@ To sign attestations, use the `cosign attest` command.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
-cosign attest -key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
+cosign attest --key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
 ```
 
 This command will sign your attestations and publish them to the OCI registry. You can verify the attestations using the `cosign verify-attestation` command.
 
 ```sh
-cosign verify-attestation -key cosign.pub ${IMAGE}
+cosign verify-attestation --key cosign.pub ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for additional details including [OCI registry support](https://github.com/sigstore/cosign#registry-support).
