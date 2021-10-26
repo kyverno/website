@@ -349,9 +349,6 @@ The following flags are used to control the behavior of Kyverno and must be set 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
-4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-6. `autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Container Flags
 
@@ -359,7 +356,10 @@ The following flags can also be used to control the advanced behavior of Kyverno
 
 1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
 2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
-3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds.
+3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds. This is deprecated in Kyverno 1.5.0.
+4. `--gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+5. `--generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+6. `--autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Policy Report access
 

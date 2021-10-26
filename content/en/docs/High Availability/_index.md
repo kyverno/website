@@ -28,8 +28,6 @@ For `mutate` and `validate` enforce policies, Kyverno returns the decision along
 
 Since the report will be reconciled when Kyverno restarts, there’s no need to drain this queue on shutdown. If the process is terminated, we need to complete pending requests / drain the queue and then shutdown Kyverno gracefully.
 
-The remaining components (listed below) will need to enable leader election to support HA, we will use this library [client-go/tools/leaderelection](https://pkg.go.dev/k8s.io/client-go/tools/leaderelection) to enable it.
-
 The library is used by kube-controller-manager, kube-scheduler, etc. Notice that this library does not guarantee that only one client is acting as a leader (a.k.a. fencing), so we have to design in a way that even if the same process gets executed twice, the results are consistent.
 
 #### Module - Webhook Register / Webhook Monitor / Certificate Renewer
