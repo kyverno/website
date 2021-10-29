@@ -177,9 +177,14 @@ Operators in the following support list values as of Kyverno 1.3.6 in addition t
 | `\|`       | logical or                |
 | `&`        | logical and               |
 | `-`        | within a range            |
+| `!-`       | outside a range           |
 
 {{% alert title="Note" color="info" %}}
-The `-` operator provides an easier way of validation the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing `value >= a & value <= b`.
+The `-` operator provides an easier way of validating the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing the `value >= a & value <= b`.
+{{% /alert %}}
+
+{{% alert title="Note" color="info" %}}
+The `!-` operator provides an easier way of validating the value in question falls outside a closed interval `[a,b]`. Thus, constructing the `a!-b` condition is equivalent of writing the `value < a | value > b`.
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
