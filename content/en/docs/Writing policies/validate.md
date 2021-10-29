@@ -67,7 +67,7 @@ Save the above manifest as `ns.yaml` and try to create it with your sample `Clus
 
 ```sh
 $ kubectl create -f ns.yaml
-Error from server: error when creating "ns.yaml": admission webhook "validate.kyverno.svc" denied the request: 
+Error from server: error when creating "ns.yaml": admission webhook "validate.kyverno.svc" denied the request:
 
 resource Namespace//prod-bus-app1 was blocked due to the following policies
 
@@ -176,6 +176,11 @@ Operators in the following support list values as of Kyverno 1.3.6 in addition t
 | `!`        | not equals                |
 | `\|`       | logical or                |
 | `&`        | logical and               |
+| `-`        | within a range            |
+
+{{% alert title="Note" color="info" %}}
+The `-` operator provides an easier way of validation the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing `value >= a & value <= b`.
+{{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
 There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
@@ -541,7 +546,7 @@ The following child declarations are permitted in a `foreach`:
 
 In addition, each `foreach` declaration can contain the following declarations:
 
-- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
+- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
 - [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
 
 Here is a complete example to enforce that all container images are from a trusted registry:
