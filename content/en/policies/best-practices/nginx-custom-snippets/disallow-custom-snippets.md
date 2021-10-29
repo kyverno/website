@@ -1,7 +1,6 @@
 ---
 title: "Disallow Custom Snippets"
 category: Best Practices
-version: 
 subject: ConfigMap, Ingress
 policyType: "validate"
 description: >
@@ -50,5 +49,4 @@ spec:
           metadata:
             =(annotations):
               X(*-snippets): "?*"
-
 ```
