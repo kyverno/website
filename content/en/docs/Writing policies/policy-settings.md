@@ -10,15 +10,12 @@ A [policy](/docs/kyverno-policies/) contains one or more rules, and the followin
 
 * **background**: controls if rules are applied to existing resources during a background scan. Defaults to "true".
 
-* **schemaValidation**: controls whether policy validation checks are applied. Defaults to "true".
+* **schemaValidation**: controls whether policy validation checks are applied. Defaults to "true". Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. Can occur on either validate or mutate policies. Set to "false" to skip.
 
-* **failurePolicy**: defines the API server behavior if the webjook fails to respond, Allowed values are "Ignore" or "Fail". Defaults to "Fail".
+* **failurePolicy**: defines the API server behavior if the webhook fails to respond, Allowed values are "Ignore" or "Fail". Defaults to "Fail".
 
 * **webhookTimeoutSeconds**: specifies the maximum time in seconds allowed to apply this policy. The default timeout is 10s. The value must be between 1 and 30 seconds.
-
 
 {{% alert title="Tip" color="info" %}}
 Use `kubectl explain policy.spec` for command-line help on the policy schema.
 {{% /alert %}}
-
-

@@ -10,11 +10,11 @@ Image verification is an **beta** feature. It is not ready for production usage 
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
-The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and attestations stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image or attestations. 
+The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and attestations stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image or attestations.
 
 ## Verifying Image Signatures
 
-Container images can be signed during the build phase of a CI/CD pipeline using Cosign. An image can be signed with multiple signatures, for example at the organtization level and at the project level.
+Container images can be signed during the build phase of a CI/CD pipeline using Cosign. An image can be signed with multiple signatures, for example at the organization level and at the project level.
 
 The policy rule check fails if the signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
@@ -90,23 +90,23 @@ check-image:
 
 ### Signing images
 
-To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair. 
+To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair.
 
 ```sh
 cosign generate-key-pair
 ```
 
-Next, use the `cosign sign` command and specifying the private key in the `-key` command line argument. 
+Next, use the `cosign sign` command and specifying the private key in the `-key` command line argument.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
-cosign sign -key cosign.key ${IMAGE}
+cosign sign --key cosign.key ${IMAGE}
 ```
 
 This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign -verify` command.
 
 ```sh
-cosign verify -key cosign.pub ${IMAGE}
+cosign verify --key cosign.pub ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for usage details and [OCI registry support](https://github.com/sigstore/cosign#registry-support).
@@ -169,14 +169,13 @@ verifyImages:
 
 ```
 
-
 ## Verifying Image Attestations
 
-Container image signatures prove that the image was signed by the holder of a matching private key. However, signtures do not provide additional data and intent that frameworks like [SLSA (Supply chain Levels for Software Artifacts)](https://security.googleblog.com/2021/06/introducing-slsa-end-to-end-framework.html) reqire. 
+Container image signatures prove that the image was signed by the holder of a matching private key. However, signatures do not provide additional data and intent that frameworks like [SLSA (Supply chain Levels for Software Artifacts)](https://security.googleblog.com/2021/06/introducing-slsa-end-to-end-framework.html) require.
 
-An attestation is metadata attached to a software artifacts like images. Signed attestations provide verifiable information required for SLSA. 
+An attestation is metadata attached to software artifacts like images. Signed attestations provide verifiable information required for SLSA.
 
-The [in-toto attestation format](https://github.com/in-toto/attestation) provides a flexible scheme for metadata such as repository and build environment details, vulerabilty scan reports, test results, code review reports, or any other information that is used to verify image integrity. Each attestion contains a signed statement with a `predicateType` and a `predicate`. Here is an example derived from the in-toto site:
+The [in-toto attestation format](https://github.com/in-toto/attestation) provides a flexible scheme for metadata such as repository and build environment details, vulnerability scan reports, test results, code review reports, or any other information that is used to verify image integrity. Each attestation contains a signed statement with a `predicateType` and a `predicate`. Here is an example derived from the in-toto site:
 
 ```json
 {
@@ -261,21 +260,20 @@ Each `verifyImages` rule can be used to verify signatures or attestations, but n
 
 ### Signing attestations
 
-To sign attestations, use the `cosign attest` command. 
+To sign attestations, use the `cosign attest` command.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
-cosign attest -key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
+cosign attest --key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
 ```
 
-This command will sign your attestions and publish them to the OCI registry. You can verify the attestions using the `cosign verify-attestation` command.
+This command will sign your attestations and publish them to the OCI registry. You can verify the attestations using the `cosign verify-attestation` command.
 
 ```sh
-cosign verify-attestation -key cosign.pub ${IMAGE}
+cosign verify-attestation --key cosign.pub ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for additional details including [OCI registry support](https://github.com/sigstore/cosign#registry-support).
-
 
 ## Known Issues
 
