@@ -85,6 +85,49 @@ You can also pull from a release branch to install the stable releases including
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
 ```
 
+## Verifying Kyverno image signatures using Cosign
+Kyverno container images are signed using [Cosign](https://github.com/sigstore/cosign). To verify the container image, download the [organization public key](https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named cosign.pub and then:
+
+1. Install the [Cosign command line interface](https://github.com/sigstore/cosign#installation)
+
+2. Configure the Kyverno signature repository:
+
+```sh
+export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
+```
+
+3. Verify the image:
+
+```sh
+cosign verify -key cosign.pub ghcr.io/kyverno/kyverno:latest
+```
+
+If the container image was properly signed, the output should be similar to:
+
+```sh
+Verification for kyverno/kyverno:latest --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - The signatures were verified against the specified public key
+  - Any certificates were verified against the Fulcio roots.
+[{"critical":{"identity":{"docker-reference":"ghcr.io/kyverno/kyverno"},"image":{"docker-manifest-digest":"sha256:a847df12e2c1cab19af9d1bb34e599cb56cf57639c7d5c958a4bb568c1dad8f6"},"type":"cosign container image signature"},"optional":null}]
+```
+
+All 3 of Kyverno images can be verified: `kyvernopre`, `kyverno`, and `kyverno-cli`.
+
+## Download the Software Bill of Materials
+An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download the SBOM for a specific version, install the [Cosign command line interface](https://github.com/sigstore/cosign#installation) and run:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest
+```
+
+To save the SBOM to a file, run the following command:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest > kyverno.sbom.json
+```
+
 ## Customize the installation of Kyverno
 
 The picture below shows shows a typical Kyverno installation:
