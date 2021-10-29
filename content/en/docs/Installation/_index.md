@@ -85,6 +85,49 @@ You can also pull from a release branch to install the stable releases including
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
 ```
 
+## Verifying Kyverno image signatures using Cosign
+Kyverno container images are signed using [Cosign](https://github.com/sigstore/cosign). To verify the container image, download the [organization public key](https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named cosign.pub and then:
+
+1. Install the [Cosign command line interface](https://github.com/sigstore/cosign#installation)
+
+2. Configure the Kyverno signature repository:
+
+```sh
+export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
+```
+
+3. Verify the image:
+
+```sh
+cosign verify -key cosign.pub ghcr.io/kyverno/kyverno:latest
+```
+
+If the container image was properly signed, the output should be similar to:
+
+```sh
+Verification for kyverno/kyverno:latest --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - The signatures were verified against the specified public key
+  - Any certificates were verified against the Fulcio roots.
+[{"critical":{"identity":{"docker-reference":"ghcr.io/kyverno/kyverno"},"image":{"docker-manifest-digest":"sha256:a847df12e2c1cab19af9d1bb34e599cb56cf57639c7d5c958a4bb568c1dad8f6"},"type":"cosign container image signature"},"optional":null}]
+```
+
+All 3 of Kyverno images can be verified: `kyvernopre`, `kyverno`, and `kyverno-cli`.
+
+## Download the Software Bill of Materials
+An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download the SBOM for a specific version, install the [Cosign command line interface](https://github.com/sigstore/cosign#installation) and run:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest
+```
+
+To save the SBOM to a file, run the following command:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest > kyverno.sbom.json
+```
+
 ## Customize the installation of Kyverno
 
 The picture below shows shows a typical Kyverno installation:
@@ -342,17 +385,24 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 kubectl logs -l app=kyverno -n <namespace>
 ```
 
-### Flags
+### ConfigMap Flags
 
 The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `filterK8sResources`(deprecated): Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
-4. `gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `background-scan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-6. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-7. `autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
+3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+
+### Container Flags
+
+The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
+
+1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
+2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
+3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds. This is deprecated in Kyverno 1.5.0.
+4. `--gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+5. `--generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+6. `--autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
 
 ### Policy Report access
 
