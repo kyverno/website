@@ -76,7 +76,7 @@ If you'd rather deploy the manifest directly, simply apply the release file.
 This manifest path will always point to the latest main branch.
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 You can also pull from a release branch to install the stable releases including release candidates.
@@ -145,7 +145,7 @@ Kyverno can automatically generate a new self-signed Certificate Authority (CA) 
 
 ```sh
 ## Install Kyverno
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -264,7 +264,7 @@ This process has been automated for you with a simple script that generates a se
 You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 ## Configuring Kyverno

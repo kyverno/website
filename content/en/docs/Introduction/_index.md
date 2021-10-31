@@ -52,7 +52,7 @@ You have the option of installing Kyverno directly from the latest release manif
 To install Kyverno using the latest release manifest (which may be a pre-release):
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 You can also install Kyverno using a Helm chart:
