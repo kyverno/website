@@ -645,7 +645,7 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported.
+The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
 
 Run tests on a set of local files:
 
@@ -677,11 +677,13 @@ results:
 - policy: <name>
   rule: <name>
   resource: <name>
-  status: pass
+  kind: <kind>
+  result: pass
 - policy: <name>
   rule: <name>
   resource: <name>
-  status: fail
+  kind: <kind>
+  result: fail
 ```
 
 If needing to pass variables, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
@@ -780,11 +782,13 @@ results:
   - policy: disallow-latest-tag
     rule: require-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
 ```
 
 ```sh
