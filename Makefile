@@ -55,14 +55,17 @@ non-production-build: ## Build the non-production site, which adds noindex heade
 serve: module-check ## Boot the development server.
 	hugo server --buildFuture --watch=false
 
-container-image:
+container-image: ## Create a container image with tooling to build/serve the website locally
 	$(CONTAINER_ENGINE) build . \
 		--network=host \
 		--tag $(CONTAINER_IMAGE) \
 		--build-arg HUGO_VERSION=$(HUGO_VERSION)
 
-container-build: module-check
+container-build: module-check ## Build the website locally using a container
 	$(CONTAINER_RUN) $(CONTAINER_IMAGE) hugo --minify
 
-container-serve: module-check
+container-serve: module-check ## Serve the website locally, from a container
+	mkdir -p resources
+	chmod a+w resources
 	$(CONTAINER_RUN) --mount type=tmpfs,destination=/src/resources,tmpfs-mode=0777 -p 1313:1313 $(CONTAINER_IMAGE) hugo server --buildFuture --bind 0.0.0.0
+
