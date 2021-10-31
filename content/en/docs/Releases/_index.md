@@ -5,6 +5,58 @@ weight: 130
 description: Kyverno Release Notes
 ---
 
+## Kyverno v1.5.1
+
+### Bug Fixes
+
+- Updates Kyverno base image to use Go 1.17.2 to address [CVE-2021-29923](https://nvd.nist.gov/vuln/detail/CVE-2021-29923).
+
+## Kyverno v1.5.0
+
+### New
+
+- Dynamic webhooks. Admission webhooks are now built dynamically based on the source of Kyverno policies. Introduces a new `status.ready` field in a policy to indicate when it's ready to serve.
+- `foreach` in both validate and mutate policies.
+- Configurable failure mode with a new `failurePolicy` field (either `Ignore` or `Fail`) so policies can now be customized based on the response desired.
+- Kyverno CLI `test` command now handles mutate policies
+- Cosign attestations to the `verifyImages` rule type.
+- New JMESPath functions `base64_encode` and `base64_decode`
+- Support for wildcards (`*`) in match/exclude blocks
+- [See more](https://github.com/kyverno/kyverno/releases)
+
+### Changed
+
+- CRDs are now back in the main `kyverno` chart while the Pod Security Policies are in a new chart called `kyverno-policies`.
+- To add a consistent style in flag names the following flags have been deprecated: `webhooktimeout`, `gen-workers`, `disable-metrics`, `background-scan`, `auto-update-webhooks`, `profile-port`, `metrics-port`. These will be removed in 1.6.0. The new flags are `webhookTimeout`, `genWorkers`, `disableMetrics`, `backgroundScan`, `autoUpdateWebhooks`, `profilePort`, and `metricsPort`.
+- Move Grafana dashboard to its own repo
+- [See more](https://github.com/kyverno/kyverno/releases)
+
+### Bug Fixes
+
+- Autogen-controllers does not work with "any" rules #2337
+- Use patchesJson6902 where path contains a non-zero index number causes validation failure #2100
+- CLI apply command - not filtering the resources from cluster #2417
+- Kyverno ConfigMap name not consistent in Helm/Docs and install.yaml #2347
+- Fixing helm chart documentation inconsistency #2419
+- Create/Update policy failing with custom JMESPath #2409
+- GenerateRequests are not cleaned up #2332
+- NetworkPolicy: from should be an array of objects #2423
+- Kyverno misinterprets pod spec environment variable placeholders as references #2413
+- CLI | skipped policy message is displayed even if variable is passed #2445
+- Update minio to address vulnerabilities #1953
+- No warning about background mode when using any / all in match or exclude blocks #2300
+- Flaky unit test #2406
+- Generating a Kyverno Policy throws error "Policy is unstructured" #2155
+- Network policy is not getting generated on creation of a pod #2095
+- Namespace generate policy fails with request.operation precondition #2226
+- Fix any/all matching logic in the background controller #2386
+- Run code-generator for 1.5 schema changes #2465
+- Generate policies with no Namespace field #2333
+- Excluding clusterRoles does not work if nested under any or all #2301
+- Fix auto-gen for validate.foreach #2464
+- "Auto-gen rules for pod controllers" fails when matching kind is "v1/Pod" #2415
+- Set Namespace environment variable for initContainer #2499
+
 ## Kyverno v1.4.3
 
 **Notes**
