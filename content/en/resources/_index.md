@@ -40,10 +40,13 @@ type: docs
 
 ## Blogs
 
-*(latest to oldest)*
+(latest to oldest)
 
+- [K8s policy with Kyverno](https://www.blakyaks.com/resources/k8s-policy-with-kyverno), October 2021
+- [Kyverno - A Kubernetes native policy manager (Policy as Code)](https://blog.mimacom.com/kyverno/), September 2021
 - [Simplify Kubernetes Cluster Management with Kyverno](https://movi.hashnode.dev/simplify-kubernetes-cluster-management-with-kyverno-ckt6yxjqy0duy95s14groe7h4), September 2021
 - [Understanding Kyverno Policies](https://medium.com/@shubhampalriwala/understanding-kyverno-policies-7e2d8651d7b1), August 2021
+- [Secure provisioning of LoadBalancer Services on Kubernetes using Kyverno](https://lambda.grofers.com/secure-provisioning-of-loadbalancer-services-on-kubernetes-using-kyverno-2cdf5e30d296), July 2021
 - [Policy for Kubernetes Custom Resources](https://neonmirrors.net/post/2021-06/policy-k8s-customresources/), June 2021
 - [Mirroring environments with gitops and Kyverno](https://gimlet.io/blog/mirroring-environments-with-gitops-and-kyverno/), April 2021
 - [Kubernetes Policy Comparison: OPA/Gatekeeper vs Kyverno](https://neonmirrors.net/post/2021-02/kubernetes-policy-comparison-opa-gatekeeper-vs-kyverno/), February 2021
@@ -62,6 +65,10 @@ type: docs
 
 ## Presentations
 
+- [Kubernetes Philly, October 2021 - Kubernetes Policy Management with Kyverno](https://www.youtube.com/watch?v=Am7mvIQWx4E), October 2021
+- [Cloud Native Live: SLSA with Cosign and Kyverno to secure software delivery](https://www.cncf.io/online-programs/cloud-native-live-slsa-with-cosign-and-kyverno-to-secure-software-delivery/), October 2021
+- [KubeCon 2021 US - Kyverno Office Hours](https://docs.google.com/presentation/d/1mw09tclej3lQAWzebhXCXS2z2q9j4Edf/), October 2021
+- [SecurityCon 2021](https://docs.google.com/presentation/d/1l2ROwl3VGk-6h-jHNA0eP1el7fK8NRM6/edit?usp=sharing&ouid=112353473651856718940&rtpof=true&sd=true), October 2021
 - [Multi-Tenancy WG - Namespaces-as-a-Service with Kyverno and HNC](https://youtu.be/xICR6Zxs7js?t=464), Jan 2021
 - [CNCF Webinar - Keep Your Clusters Safe and Healthy](https://www.cncf.io/webinars/how-to-keep-your-clusters-safe-and-healthy/), May 2020
 - [VMware Code Meetup Video](https://www.youtube.com/watch?v=mgEmTvLytb0), April 2020
