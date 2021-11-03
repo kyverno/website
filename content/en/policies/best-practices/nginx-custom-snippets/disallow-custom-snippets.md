@@ -48,5 +48,6 @@ spec:
         pattern:
           metadata:
             =(annotations):
-              X(*-snippets): "?*"
+              X(*-snippet): "?*"
+
 ```

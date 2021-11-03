@@ -492,37 +492,40 @@ When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMES
 A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 Each `foreach` declaration can optionally contain the following declarations:
-- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration. 
-- [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
 
-Here is a complete example that mutates the image registry address to a trusted registry:
+* [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
+* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+
+Here is a complete example that mutates the image to prepend the address of a trusted registry:
 
 ```yaml
 apiVersion : kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: mutate-images
+  name: prepend-registry
 spec:
+  background: false
   rules:
-  - name: update-registry
+  - name: prepend-registry-containers
     match:
       resources:
         kinds:
         - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
     mutate:
       foreach:
-      - list: "request.object.spec.initContainers"         
+      - list: "request.object.spec.containers"
         patchStrategicMerge:
           spec:
             containers:
             - name: "{{ element.name }}"           
-              image: "{{ registry.io/{{images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}} }}"      
-      - list: "request.object.spec.containers"         
-        patchStrategicMerge:
-          spec:
-            containers:
-            - name: "{{ element.name }}"           
-              image: "{{ registry.io/{{images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}} }}"
+              image: "registry.io/{{ images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}}"
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`.
