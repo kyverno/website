@@ -217,12 +217,14 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 ```
 
 On applying the above policy to the mentioned resources, the following output will be generated:
+
 ```sh
 Applying 1 policy to 1 resource... 
 (Total number of result count may vary as the policy is mutated by Kyverno. To check the mutated policy please try with log level 5)
 
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
+
 The summary count is based on the number of rules applied on the number of resources.
 
 Value files also support global values, which can be passed to all resources the policy is being applied to.
