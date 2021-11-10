@@ -26,6 +26,18 @@ Kubernetes has many default resource types even before considering CustomResourc
 When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion` and kind (ex., `spec.generate.kind`).
 {{% /alert %}}
 
+To get the details and status of generated resource check the details of generate request. The following command will give the list of generate requests.
+
+```sh
+kubectl get generaterequests.kyverno.io -A
+```
+
+Generate request status can have four values:
+`Completed` - the generate request controller created resources defined in the policy
+`Failed` - the generate request controller failed to process the rules
+`Pending` - the request is yet to be processed or resource has not been created
+`Skip` - the generate request controller has skipped the creation of resource
+
 ## Generate a ConfigMap using inline data
 
 This policy sets the Zookeeper and Kafka connection strings for all namespaces based upon a ConfigMap defined within the rule itself. Notice that this rule has the `generate.data` object defined in which case the rule will create a new ConfigMap called `zk-kafka-address` using the data specified in the rule's manifest.
