@@ -9,10 +9,14 @@ RUN apk add --no-cache \
     rsync \
     build-base \
     libc6-compat \
-    npm && \
-    npm install -G autoprefixer postcss-cli
+    npm
 
-ARG HUGO_VERSION
+ARG HUGO_VERSION 
+WORKDIR /src
+
+RUN npm install postcss-cli
+RUN npm install autoprefixer
+RUN npm install
 
 RUN mkdir -p /usr/local/src && \
     cd /usr/local/src && \
@@ -21,8 +25,8 @@ RUN mkdir -p /usr/local/src && \
     addgroup -Sg 1000 hugo && \
     adduser -Sg hugo -u 1000 -h /src hugo
 
-WORKDIR /src
 
 USER hugo:hugo
+
 
 EXPOSE 1313
