@@ -27,7 +27,7 @@
 
 
 [[main]]
-  name = "Supports"
+  name = "Support"
   weight = -90
-  url = "/supports"
+  url = "/support"
 
