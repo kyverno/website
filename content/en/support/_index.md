@@ -1,6 +1,6 @@
 ---
-title: "Supports"
-linkTitle: "Supports"
+title: "Support"
+linkTitle: "Support"
 description: "Commercial Products and Services for Kyverno"
 type: docs
 ---
