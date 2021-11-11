@@ -1,9 +1,11 @@
 ---
-title: "Commercial Products and Services for Kyverno"
+title: "Supports"
 linkTitle: "Supports"
-description: "Below is a list of companies that offer commercial products and services for Kyverno."
+description: "Commercial Products and Services for Kyverno"
 type: docs
 ---
+
+Below is a list of companies that offer commercial products and services for Kyverno.
 
 ## Nirmata
 
