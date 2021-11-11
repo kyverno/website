@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 title: "Support"
 linkTitle: "Support"
 description: "Commercial Products and Services for Kyverno"
