@@ -40,7 +40,7 @@ Counter - An only-increasing integer representing the number of results/executio
 ## Useful Queries
 
 * Tracking the total number of rules which failed in the 24 hours in "default" namespace grouped by their rule types (validate, mutate, generate):<br>
-`sum(increase(kyverno_policy_results_total{policy_namespace="default"}[24h])) by (rule_type)`
+`sum(increase(kyverno_policy_results_total{policy_namespace="default", rule_result="fail"}[24h])) by (rule_type)`
 
 * Tracking the per-minute rate of the number of rule executions triggered by incoming Pod requests over the cluster:<br>
 `rate(kyverno_policy_results_total{resource_kind="Pod", rule_execution_cause="admission_request"}[1m])*60`
