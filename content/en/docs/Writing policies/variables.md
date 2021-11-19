@@ -403,6 +403,7 @@ split(str string, sep string) []string
 regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
+pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
 add(number, number) number
 subtract(number, number) number
