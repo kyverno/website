@@ -10,14 +10,14 @@ description: >
 
 Kyverno (Greek for "govern") is a policy engine designed specifically for Kubernetes. Some of its many features include:
 
-* policies as Kubernetes resources (no new language to learn!)
-* validate, mutate, or generate any resource
-* match resources using label selectors and wildcards
-* validate and mutate using overlays (like Kustomize!)
-* synchronize configurations across namespaces
-* block non-conformant resources using admission controls, or report policy violations
-* test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
-* manage policies as code using familiar tools like `git` and `kustomize`
+- policies as Kubernetes resources (no new language to learn!)
+- validate, mutate, or generate any resource
+- match resources using label selectors and wildcards
+- validate and mutate using overlays (like Kustomize!)
+- synchronize configurations across namespaces
+- block non-conformant resources using admission controls, or report policy violations
+- test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
+- manage policies as code using familiar tools like `git` and `kustomize`
 
 Kyverno allows cluster administrators to manage environment specific configurations independently of workload configurations and enforce configuration best practices for their clusters. Kyverno can be used to scan existing workloads for best practices, or can be used to enforce best practices by blocking or mutating API requests.
 
@@ -36,11 +36,11 @@ The picture below shows the high-level architecture for Kyverno:
 <img src="/images/kyverno-architecture.png" alt="Kyverno Architecture" width="80%"/>
 <br/><br/>
 
-An high availability installation of Kyverno can run multiple replicas, and each replica of Kyverno will have multiple controllers that perform different functions. The `Webhook` handles `AdmissionReview` requests from the Kubernetes API server, and its `Monitor` component creates and manages required configurations. The `PolicyController` watches policy resources and initiates background scans based on the configured scan interval. The `GenerateController` manages the lifecycle of generated resources. 
+An high availability installation of Kyverno can run multiple replicas, and each replica of Kyverno will have multiple controllers that perform different functions. The `Webhook` handles `AdmissionReview` requests from the Kubernetes API server, and its `Monitor` component creates and manages required configurations. The `PolicyController` watches policy resources and initiates background scans based on the configured scan interval. The `GenerateController` manages the lifecycle of generated resources.
 
 ## Quick Start
 
-This section will help you install Kyverno and create your first policy. 
+This section will help you install Kyverno and create your first policy.
 
 {{% alert title="Note" color="info" %}}
 Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
