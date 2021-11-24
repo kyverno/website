@@ -46,7 +46,7 @@ Project members are continuously active contributors in the project. They can ha
 
 - Create pull requests for code changes.
 - Respond to reviews from maintainers on pull requests.
-- Attend community and workgroup meetings.
+- Attend community and [project meetups](https://groups.google.com/g/kyverno)..
 - Register for mailing lists.
 - Always tries to find ways to help.
 - Actively contributing to 1 or more subprojects.
@@ -94,14 +94,14 @@ Maintainers are the technical authority for a subproject. They MUST have demonst
 - Holds good knowledge in helping others achieve their goals.
 - Understands the workflow of the Issues and Pull Requests.
 - Makes consistent contributions to the Kyverno project-
-- Consistently scheduling and participating in Kyerno meetups.
+- Consistently scheduling and participating in [Kyerno meetups](https://groups.google.com/g/kyverno).
 - Holds knowledge and interest that aligns with the overall project goals, specifications and design principles of the Kyverno project.
 - Makes contributions that are considered notable.
 - Creates at least 10 PR.
 - Creates at least 5 issues.
 - Drops at least 10 comments or reviews
 - Ability to help troubleshoot and resolve user issues.
-- Has taken the Kyverno Certification, or demonstrated sound understanding of Kyverno.
+- Has taken the [Kyverno Free Certification](https://learn.nirmata.com/explore), or demonstrated sound understanding of Kyverno.
 
 **Responsibilities & Privileges**
 

@@ -1,6 +1,3 @@
-▶ git submodule
- a053131a4ebf6a59e4e8834a42368e248d98c01d themes/docsy (heads/master)
- 
-[submodule "themes/docsy"]
+ [submodule "themes/docsy"]
     path = themes/docsy
     url = https://github.com/google/docsy
