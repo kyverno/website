@@ -22,15 +22,15 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 
 This is a monthly meeting for Kyverno community meeting for new feature demos and road map discussions:
 
-* Monthly on the third Wednesday at 9:00 AM PST
-* [Agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#)
+- Monthly on the third Wednesday at 9:00 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#)
 
 ### Contributors Meeting
 
 This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
 
-* Weekly every Thursday at 9:00 AM PST
-* [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
+- Weekly every Thursday at 9:00 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
 
 ## Get in touch
 
@@ -40,7 +40,7 @@ We love hearing from our community!
 
 ## Contributing
 
-Thanks for your interest in contributing!  We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
+Thanks for your interest in contributing! We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
 
 The project contributors use [GitHub discussions](https://github.com/kyverno/kyverno/discussions) for all implementation and project internal topics and the [GitHub Wiki](https://github.com/kyverno/kyverno/wiki) for design documents, notes on the dev environment, project guidelines and best practices.
 
