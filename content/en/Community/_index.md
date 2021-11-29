@@ -84,7 +84,6 @@ These are persons who have full access to the project, including sensitive and d
 | Contributors | active contributor in the community. reviewer of PRs                  | made at least five contributions to the project & appointed by 2 approvers or maintainers.    | [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), Github Org members.                                     |
 | Approver     | assist maintainers Review & approve contributions                     | highly experienced and active reviewer + contributor to a subproject.                         | Maintainers & [CODEOWNERS](https://help.github.com/en/articles/about-code-owners).                                           |
 | Maintainer   | monitor project growth, set direction and priorities for a subproject | highly experienced and active reviewer + Kyverno Certification + Voted by Kyverno maintainers | Voted in by the Kyverno maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners) & Repository owner. |
-| Owner        |                                                                       |                                                                                               | Not opposed by any project owner.                                                                                            |
 
 ### Contributor
 
