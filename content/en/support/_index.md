@@ -13,7 +13,7 @@ Below is a list of companies that offer commercial products and services for Kyv
 
 ### Services
 
-BlakYaks are a Nirmata partner that design and deploy Kyverno-managed policies to address the full range of customers Kubernetes policy requirements, whilst leveraging industry best practice throughout.  Engagements start with assessments and end with full policy engine adoption into existing or new cloud-native platforms.
+BlakYaks provide consulting services to design and deploy Kyverno-managed policies to address the full range of customers Kubernetes policy requirements, whilst leveraging industry best practice throughout.  Engagements start with assessments and end with full policy engine adoption into existing or new cloud-native platforms.
 
 ## Nirmata
 
