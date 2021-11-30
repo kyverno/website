@@ -55,9 +55,9 @@ To participate, kindly fill out this [form](https://docs.google.com/forms/d/e/1F
 
 ### Project Governance
 
-This document identifies the role and responsibilities for the Kyverno community members. It also highlights the requirements for anyone who is looking to take on leadership roles in the Kyverno project.
+This document highlights the role and responsibilities for the Kyverno community members. It also outlines the requirements for anyone who is looking to take on leadership roles in the Kyverno project.
 
-In order to perform any actions on the Kyverno Github repositories, contributors should have certain access to GitHub, such as creating a pull request in a repository or changing an organization's billing settings, a contributor must have sufficient access to the relevant account or resource.
+In order to perform any actions on the Kyverno Github repositories, contributors should have certain access to GitHub, such as creating a pull request in a repository or changing an organization's billing settings, a contributor must have sufficient access to the relevant account or resource. 
 
 **Note:** Please make sure to read and observe our [Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
@@ -65,7 +65,7 @@ In order to perform any actions on the Kyverno Github repositories, contributors
 
 **Contributors**:
 
-These are active contributors who have made multiple contributions to the project; by authoring PRs, reviewing issues/PRs or participate in community discussions on slack/mailing list.
+These are active contributors who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests or participate in community discussions on slack/mailing list. 
 
 **Approver**:
 
@@ -73,11 +73,11 @@ These are active contributors who have good experience and knowledge of the proj
 
 **Maintainer**:
 
-They are approvers who have shown good technical judgement in feature design/development in the past. Has overall knowledge of the project and features in the project. These role is for project managers who are expected to manage the repository without access to sensitive or destructive actions.
+They are approvers who have shown good technical judgement in feature design/development in the past. Has overall knowledge of the project and features in the project. Can read, clone, and push to this repository. They can also manage issues, pull requests, and some repository settings.
 
 **Admin**:
 
-These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository.
+These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository. Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators.
 
 | Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -132,7 +132,7 @@ While code review is focused on code quality and correctness, approval is focuse
 
 ### Maintainer
 
-Maintainers are the technical authority for a subproject. They MUST have demonstrated both good judgement and responsibility towards the health of that subproject. Maintainers MUST set technical direction and make or approve design decisions for their subproject - either directly or through delegation of these responsibilities.
+[Maintainers](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization#repository-access-for-each-permission-level) are the technical authority for a subproject. They MUST have demonstrated both good judgement and responsibility towards the health of that subproject. Maintainers MUST set technical direction and make or approve design decisions for their subproject - either directly or through delegation of these responsibilities.
 
 **Checklist before becoming a Project Maintainer:**
 
@@ -159,9 +159,9 @@ The following responsibilities apply to the subproject for which one would be an
 - Tests are passing reliably (i.e. not flaky) and are fixed when they fail
   Mentor and guide approvers, reviewers, and contributors in the Kyverno subproject.
 - Actively participates in the processes for discussion and decision making in the project.
-- Merge a pull request.
-- Make and approve technical design decisions for the subproject.
-- Define milestones and releases.
+- Merges pull requests and helps prepare patch releases.
+- Makes and approves technical design decisions for the subproject.
+- Defines milestones and releases.
 - Decides on when PRs are merged to control the release scope.
-- Work with other maintainers to maintain the project's overall health and success holistically.
-- Receive a Kyverno Maintainer Badge on Credly.
+- Works with other maintainers to maintain the project's overall health and success holistically.
+- Receives a Kyverno Maintainer Badge on Credly.
