@@ -38,6 +38,12 @@ type: docs
 
 {{% /videos %}}
 
+{{% videos %}}
+
+{{< youtube id="i_pemoAGEc8" start="0" class="video" >}}
+
+{{% /videos %}}
+
 ## Blogs
 
 (latest to oldest)
