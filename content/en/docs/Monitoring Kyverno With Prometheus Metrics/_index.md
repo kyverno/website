@@ -12,7 +12,7 @@ In addition, providing flexible monitoring of targets from the rule level or pol
 
 ## Installation and Setup
 
-When you install Kyverno via Helm, a service called `kyverno-svc-metrics` gets created inside the `kyverno` namespace and this service exposes metrics om port 8000.
+When you install Kyverno via Helm, a service called `kyverno-svc-metrics` gets created inside the `kyverno` namespace and this service exposes metrics on port 8000.
 
 ```sh
 $ values.yaml
@@ -33,9 +33,9 @@ metricsService:
 ...
 ```
 
-By default, the service type is going to be `ClusterIP` meaning that the metrics would be only capable of being scraped by a Prometheus server sitting inside the cluster. <br>
+By default, the service type is going to be `ClusterIP` meaning that metrics can only be scraped by a Prometheus server sitting inside the cluster. <br>
 
-In many cases, the Prometheus server may be outside the workload cluster as an shared service. In those scenarios, you will want the `kyverno-svc-metrics` service to be publicly exposed so as to expose the metrics (available at port 8000) to your Prometheus server sitting outside the cluster.<br>
+In many cases, the Prometheus server may be outside the workload cluster as a shared service. In such scenarios, you will want the `kyverno-svc-metrics` service to be publicly exposed so as to expose the metrics (available at port 8000) to your Prometheus server sitting outside the cluster.<br>
 
 Services can be exposed to external clients via an Ingress, or using `LoadBalancer` or `NodePort` service types. 
 
