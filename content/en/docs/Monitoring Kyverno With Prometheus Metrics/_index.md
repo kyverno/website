@@ -98,7 +98,7 @@ config:
 > "exclude" takes precedence over "include", in case a namespace is provided both under "include" and "exclude".
 
 * You can also configure a metrics refresh interval which cleans up the metrics registry and all the associated metrics of Kyverno's metric exporter at a certain moment, hence, cleaning up and resetting the memory footprint associated with Kyverno's metric exporter. This configuration is useful in situations where you might end up facing a periodic need of resetting and cleaning up the metric exporter of Kyverno to tone down the memory footprint associated with it.<br>
-Although, Kyverno tries to minimise the cardinality associated with the metrics it exposes, yet it still exposes certain labels with a slightly more cardinality than other labels such as `policy_name` and `resource_namespace`. And in case of dealing with extremely huge number of namespaces/policies, the memory footprint of Kyverno's metrics exporter might become heavy. Hence, this configuration would prove to be handy in those kinds of situations.
+Although Kyverno tries to minimize the cardinality associated with the metrics it exposes, it still exposes certain labels with a slightly higher cardinality than other labels such as `policy_name` and `resource_namespace`. This configuration would be useful in scenarios involving large numbers of namespaces/policies, since these resources have a large memory footprint.
 ```sh
 ...
 config:
