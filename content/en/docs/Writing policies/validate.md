@@ -416,7 +416,7 @@ If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weav
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions. A `deny` condition is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
+In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
 
 You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
 

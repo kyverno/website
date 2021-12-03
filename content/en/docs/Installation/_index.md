@@ -44,7 +44,7 @@ Use Helm 3.2+ to create a Namespace and install Kyverno.
 helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-Beginning with Kyverno 1.5.0, Kyverno Helm chart v2.1.0, the Kyverno policies must be added seperately and after Kyverno is installed.
+Beginning with Kyverno 1.5.0, Kyverno Helm chart v2.1.0, the Kyverno policies must be added separately and after Kyverno is installed.
 
 ```sh
 helm install kyverno-policies kyverno/kyverno-policies --namespace kyverno
@@ -71,18 +71,63 @@ For all of the flags available during a Helm installation of Kyverno, see [here]
 
 ## Install Kyverno using YAMLs
 
-If you'd rather deploy the manifest directly, simply apply the release file. 
+If you'd rather deploy the manifest directly, simply apply the release file.
 
 This manifest path will always point to the latest main branch.
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 You can also pull from a release branch to install the stable releases including release candidates.
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.5/definitions/release/install.yaml
+```
+
+## Verifying Kyverno image signatures using Cosign
+
+Kyverno container images are signed using [Cosign](https://github.com/sigstore/cosign). To verify the container image, download the [organization public key](https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named cosign.pub and then:
+
+1. Install the [Cosign command line interface](https://github.com/sigstore/cosign#installation)
+
+2. Configure the Kyverno signature repository:
+
+```sh
+export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
+```
+
+3. Verify the image:
+
+```sh
+cosign verify -key cosign.pub ghcr.io/kyverno/kyverno:latest
+```
+
+If the container image was properly signed, the output should be similar to:
+
+```sh
+Verification for kyverno/kyverno:latest --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - The signatures were verified against the specified public key
+  - Any certificates were verified against the Fulcio roots.
+[{"critical":{"identity":{"docker-reference":"ghcr.io/kyverno/kyverno"},"image":{"docker-manifest-digest":"sha256:a847df12e2c1cab19af9d1bb34e599cb56cf57639c7d5c958a4bb568c1dad8f6"},"type":"cosign container image signature"},"optional":null}]
+```
+
+All 3 of Kyverno images can be verified: `kyvernopre`, `kyverno`, and `kyverno-cli`.
+
+## Download the Software Bill of Materials
+
+An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download the SBOM for a specific version, install the [Cosign command line interface](https://github.com/sigstore/cosign#installation) and run:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest
+```
+
+To save the SBOM to a file, run the following command:
+
+```sh
+cosign download sbom ghcr.io/kyverno/sbom:latest > kyverno.sbom.json
 ```
 
 ## Customize the installation of Kyverno
@@ -98,11 +143,11 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 ### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno, and when done the certificate validity period is 10 years.
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno.
 
 ```sh
 ## Install Kyverno
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -221,7 +266,7 @@ This process has been automated for you with a simple script that generates a se
 You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/definitions/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
 ```
 
 ## Configuring Kyverno
@@ -405,7 +450,7 @@ Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configurat
 
 This feature is enabled by default in 1.5.0+ but can be turned off by flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forwards admission requests for all resources and with `FailurePolicy` set to `Ignore`.
 
-The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/webhooks/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations. 
+The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/webhooks/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations.
 
 Prior to 1.5.0, by default, the Kyverno webhook will process all API server requests for all Namespaces and the policy application was filtered using Resource Filters and Namespace Selectors discussed below:
 
@@ -439,7 +484,6 @@ To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the def
 **NOTE:** In 1.5.0+ namespace selectors are only used when the `autoUpdateWebhooks` flag is set to `false`.
 
 In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
-
 
 ```yaml
 apiVersion: v1
