@@ -450,7 +450,7 @@ Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configurat
 
 This feature is enabled by default in 1.5.0+ but can be turned off by flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forwards admission requests for all resources and with `FailurePolicy` set to `Ignore`.
 
-The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/webhooks/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations.
+The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/policy-settings/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations.
 
 Prior to 1.5.0, by default, the Kyverno webhook will process all API server requests for all Namespaces and the policy application was filtered using Resource Filters and Namespace Selectors discussed below:
 
