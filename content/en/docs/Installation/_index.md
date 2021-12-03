@@ -394,6 +394,7 @@ The following flags are used to control the behavior of Kyverno and must be set 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+4. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
 
 ### Container Flags
 
@@ -408,8 +409,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
 9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
-10. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-11. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 
 ### Policy Report access
 
