@@ -61,11 +61,11 @@ In order to perform any actions on the Kyverno Github repositories, contributors
 
 **Note:** Please make sure to read and observe our [Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
-### Leadership Roles
+### Project Roles
 
 **Contributors**:
 
-These are active contributors who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests or participate in community discussions on slack/mailing list. 
+These are active contributors who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests or or participating in community discussions on Slack or the mailing list. 
 
 **Approver**:
 
@@ -108,9 +108,7 @@ Project members are continuously active contributors in the project. They can ha
 
 ### Approver
 
-Code approvers are able to both review and approve code contributions, as well as help maintainers, triage issues and do project management.
-
-While code review is focused on code quality and correctness, approval is focused on holistic acceptance of a contribution including backwards/forwards compatibility, adhering to API and flag conventions, subtle performance and correctness issues, interactions with other parts of the system. Approvers are encouraged to be active participants in project meetings, chat rooms, and other discussion forums.
+Approvers are contributors those who will provide active review and feedback on the Kyverno codebase. While code review is focused on code quality and correctness, approval is focused on holistic acceptance of a contribution including backwards/forwards compatibility, adhering to API and flag conventions, subtle performance and correctness issues, interactions with other parts of the system. Approvers are encouraged to be active participants in project meetings, chat rooms, and other discussion forums.
 
 **Checklist before becoming an Approver**
 
@@ -157,7 +155,7 @@ The following responsibilities apply to the subproject for which one would be an
 - Tracks and ensures adequate health of the subprojects they are in charge of.
 - Adequate test coverage to confidently release
 - Tests are passing reliably (i.e. not flaky) and are fixed when they fail
-  Mentor and guide approvers, reviewers, and contributors in the Kyverno subproject.
+  Mentors and guides approvers, reviewers, and contributors in the Kyverno subproject.
 - Actively participates in the processes for discussion and decision making in the project.
 - Merges pull requests and helps prepare patch releases.
 - Makes and approves technical design decisions for the subproject.

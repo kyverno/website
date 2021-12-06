@@ -1,7 +1,6 @@
 # How to Contribute
 
-We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
-
+We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!.
 We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
 
 ## Contributor License Agreement
@@ -10,7 +9,6 @@ Contributions to this project must be accompanied by a Contributor License
 Agreement. Project authors will retain the copyright to your contribution;
 this simply gives us permission to use and redistribute your contributions as
 part of the project. Head over to <https://identity.linuxfoundation.org/projects/cncf> to see your current agreements on file or to sign a new one.
-
 You generally only need to submit a CLA once, so if you've already submitted one
 (even if it was for a different project), you probably don't need to do it
 again.
@@ -46,15 +44,15 @@ If you see a bug or want to add new features please create an [issue](https://gi
 
 ### Submit a Pull Request
 
-Find an [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
+Find [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
 
 1.  **Fork the Kyverno repo:**
 
-Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
+Head over to project repository on GitHub and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
 
 2.  **Clone the repository to your device:**
 
-To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your Github ID.
+To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your GitHub ID.
 
 ```
 $ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
@@ -98,7 +96,7 @@ $ git commit -s -m "Commit message"
 
 The -s signifies that you have signed off the the commit.
 
-Go ahead and push your changes to github using this command.
+Go ahead and push your changes to GitHub using this command.
 
 ```
 $ git push
