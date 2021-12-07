@@ -139,194 +139,8 @@ The picture below shows shows a typical Kyverno installation:
 
 If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
 
-The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
 
-### Option 1: Auto-generate a self-signed CA and certificate
-
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno.
-
-```sh
-## Install Kyverno
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
-```
-
-{{% alert title="Note" color="info" %}}
-The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
-{{% /alert %}}
-
-Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
-
-To check the Kyverno controller status, run the command:
-
-```sh
-## Check pod status
-kubectl get pods -n <namespace>
-```
-
-If the Kyverno controller is not running, you can check its status and logs for errors:
-
-```sh
-kubectl describe pod <kyverno-pod-name> -n <namespace>
-```
-
-```sh
-kubectl logs <kyverno-pod-name> -n <namespace>
-```
-
-### Option 2: Use your own CA-signed certificate
-
-{{% alert title="Note" color="warning" %}}
-There is a known issue with this process. It is being worked on and should be available again in a future release.
-{{% /alert %}}
-
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
-
-#### 2.1. Generate a self-signed CA and signed certificate-key pair
-
-{{% alert title="Note" color="warning" %}}
-Using a separate self-signed root CA is difficult to manage and not recommended for production use.
-{{% /alert %}}
-
-If you already have a CA and a signed certificate, you can directly proceed to Step 2.
-
-Here are the commands to create a self-signed root CA, and generate a signed certificate and key using OpenSSL (you can customize the certificate attributes for your deployment):
-
-1. Create a self-signed CA
-
-```bash
-openssl genrsa -out rootCA.key 4096
-openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt  -subj "/C=US/ST=test/L=test /O=test /OU=PIB/CN=*.kyverno.svc/emailAddress=test@test.com"
-```
-
-2. Create a keypair
-
-```bash
-openssl genrsa -out webhook.key 4096
-openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
-```
-
-3. Create a `webhook.ext` file with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
-
-```
-subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
-```
-
-4. Sign the keypair with the CA passing in the extension
-
-```bash
-openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out webhook.crt -days 1024 -sha256 -extfile webhook.ext
-```
-
-5. Verify the contents of the certificate
-
-```bash
- openssl x509 -in webhook.crt -text -noout
-```
-
-The certificate must contain the SAN information in the `X509v3 extensions` section:
-
-```
-X509v3 extensions:
-    X509v3 Subject Alternative Name:
-        DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
-```
-
-#### 2.2. Configure secrets for the CA and TLS certificate-key pair
-
-You can now use the following files to create secrets:
-
-- `rootCA.crt`
-- `webhooks.crt`
-- `webhooks.key`
-
-To create the required secrets, use the following commands (do not change the secret names):
-
-```sh
-kubectl create ns <namespace>
-kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
-kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
-```
-
-{{% alert title="Note" color="info" %}}
-The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret.
-{{% /alert %}}
-
-Secret | Data | Content
------------- | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | rootCA.crt | root CA used to sign the certificate
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | tls.key & tls.crt  | key and signed certificate
-
-Kyverno uses secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
-
-This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
-
-#### 2.3. Install Kyverno
-
-You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
-
-```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
-```
-
-## Configuring Kyverno
-
-### Permissions
-
-Kyverno, in `foreground` mode, leverages admission webhooks to manage incoming API requests, and `background` mode applies the policies on existing resources. It uses ServiceAccount `kyverno-service-account`, which is bound to multiple ClusterRoles, which defines the default resources and operations that are permitted.
-
-ClusterRoles used by Kyverno:
-
-- `kyverno:webhook`
-- `kyverno:userinfo`
-- `kyverno:customresources`
-- `kyverno:policycontroller`
-- `kyverno:generatecontroller`
-
-The `generate` rule creates a new resource, and to allow Kyverno to create resources the Kyverno ClusterRole needs permissions to create/update/delete. This can be done by adding the resource to the ClusterRole `kyverno:generatecontroller` used by Kyverno or by creating a new ClusterRole and a ClusterRoleBinding to Kyverno's default ServiceAccount.
-
-To get cluster wide permissions, users must add the permissions for cluster wide resource such as `roles`,  `clusterroles`,  `rolebindings` and `clusterrolebindings` they need.
-
-```yaml
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: kyverno:generatecontroller
-rules:
-- apiGroups:
-  - "*"
-  resources:
-  - namespaces
-  - networkpolicies
-  - secrets
-  - configmaps
-  - resourcequotas
-  - limitranges
-  - ResourceA # new Resource to be generated
-  - ResourceB
-  verbs:
-  - create # generate new resources
-  - get # check the contents of exiting resources
-  - update # update existing resource, if required configuration defined in policy is not present
-  - delete # clean-up, if the generate trigger resource is deleted
-```
-
-```yaml
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: kyverno-admin-generate
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: kyverno:generatecontroller # clusterRole defined above, to manage generated resources
-subjects:
-- kind: ServiceAccount
-  name: kyverno-service-account # default kyverno serviceAccount
-  namespace: kyverno
-```
-
-### Version
+### Installing a specific version
 
 To install a specific version, download `install.yaml` and then change the image tag.
 
@@ -385,6 +199,222 @@ kubectl describe pod <kyverno-pod-name> -n <namespace>
 
 ```sh
 kubectl logs -l app=kyverno -n <namespace>
+```
+
+
+### Certificate Management
+
+The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
+
+#### Option 1: Auto-generate a self-signed CA and certificate
+
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno.
+
+```sh
+## Install Kyverno
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
+```
+
+{{% alert title="Note" color="info" %}}
+The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
+{{% /alert %}}
+
+Also, by default Kyverno is installed in the "kyverno" namespace. To install it in a different namespace, you can edit `install.yaml` and update the namespace.
+
+To check the Kyverno controller status, run the command:
+
+```sh
+## Check pod status
+kubectl get pods -n <namespace>
+```
+
+If the Kyverno controller is not running, you can check its status and logs for errors:
+
+```sh
+kubectl describe pod <kyverno-pod-name> -n <namespace>
+```
+
+```sh
+kubectl logs <kyverno-pod-name> -n <namespace>
+```
+
+#### Option 2: Use your own CA-signed certificate
+
+{{% alert title="Note" color="warning" %}}
+There is a known issue with this process. It is being worked on and should be available again in a future release.
+{{% /alert %}}
+
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes secrets in your cluster. If Kyverno finds these secrets, it uses them. Otherwise it will request the kube-controller-manager to generate a certificate (see Option 1 above).
+
+##### 2.1. Generate a self-signed CA and signed certificate-key pair
+
+{{% alert title="Note" color="warning" %}}
+Using a separate self-signed root CA is difficult to manage and not recommended for production use.
+{{% /alert %}}
+
+If you already have a CA and a signed certificate, you can directly proceed to Step 2.
+
+Here are the commands to create a self-signed root CA, and generate a signed certificate and key using OpenSSL (you can customize the certificate attributes for your deployment):
+
+1. Create a self-signed CA
+
+```bash
+openssl genrsa -out rootCA.key 4096
+openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt  -subj "/C=US/ST=test/L=test /O=test /OU=PIB/CN=*.kyverno.svc/emailAddress=test@test.com"
+```
+
+2. Create a keypair
+
+```bash
+openssl genrsa -out webhook.key 4096
+openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
+```
+
+3. Create a `webhook.ext` file with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
+
+```
+subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
+```
+
+4. Sign the keypair with the CA passing in the extension
+
+```bash
+openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out webhook.crt -days 1024 -sha256 -extfile webhook.ext
+```
+
+5. Verify the contents of the certificate
+
+```bash
+ openssl x509 -in webhook.crt -text -noout
+```
+
+The certificate must contain the SAN information in the `X509v3 extensions` section:
+
+```
+X509v3 extensions:
+    X509v3 Subject Alternative Name:
+        DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
+```
+
+##### 2.2. Configure secrets for the CA and TLS certificate-key pair
+
+You can now use the following files to create secrets:
+
+- `rootCA.crt`
+- `webhooks.crt`
+- `webhooks.key`
+
+To create the required secrets, use the following commands (do not change the secret names):
+
+```sh
+kubectl create ns <namespace>
+kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
+kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
+kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+```
+
+{{% alert title="Note" color="info" %}}
+The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret.
+{{% /alert %}}
+
+Secret | Data | Content
+------------ | ------------- | -------------
+`kyverno-svc.kyverno.svc.kyverno-tls-pair` | rootCA.crt | root CA used to sign the certificate
+`kyverno-svc.kyverno.svc.kyverno-tls-ca` | tls.key & tls.crt  | key and signed certificate
+
+Kyverno uses secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
+
+This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+
+##### 2.3. Install Kyverno
+
+You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
+
+```sh
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
+```
+
+### Roles and Permissions
+
+Kyverno creates several roles and role-bindings, some of which need to be customized to allow access to sensitive cluster-wide resources. 
+
+#### Roles
+
+Kyverno creates the following roles that are bound to the `kyverno-service-account`:
+
+{{% alert title="Tip" color="info" %}}
+Use `"kubectl get clusterroles,roles -A | grep kyverno"` to view all Kyverno roles. 
+{{% /alert %}}
+
+**Cluster Roles**
+
+The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all namespaces: 
+
+- `kyverno:policies`: manage policy custom resources
+- `kyverno:view`: view all resources
+- `kyverno:mutate`: update resources via mutate policy rules
+- `kyverno:generate`: create, update, and delete resources via generate policy rules
+- `kyverno:events`: create, update, and delete events for policy results
+- `kyverno:userinfo`: query cluster-wide roles and role-binding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with role information.
+
+For each `ClusterRole` a `ClusterRoleBinding` with the same name as the `ClusterRole` is used to bind the permissions to the `kyverno-service-account`.
+
+**Namespaced Roles**
+
+The following `Roles` provide Kyverno with permissions to manage select resources in the Kyverno namespace: 
+
+- `kyverno:leaderelection`: manage leases for leader election across replicas
+- `kyverno:webhook`: manage webhook configurations in the Kyverno namespace.
+
+For each `Role` a `RoleBinding` with the same name as the `Role` is used to bind the permissions to the `kyverno-service-account`.
+
+**Role aggregators**
+
+The following `ClusterRoles` are used to extend the default `admin` role with permissions to view and manage policy resources via [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
+
+- `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
+- `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
+- `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
+
+
+#### Customizing Permissions
+
+The default `kyverno:view`, `kyverno:generate`, and `kyverno:mutate` roles can be customized. 
+
+For example, if a CustomResource is added to the cluster the configured roles can be extended to allow Kyverno permissions to generate and/or mutate the new resource type. Or, new ClusterRole/Role and ClusterRoleBinding/RoleBinding pairs can be created and mapped to the Kyverno service account.
+
+This sample configuration provides Kyverno additional permissions to generate `clusterroles` and `clusterrolebindings`:
+
+```yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: kyverno:generate-roles
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - clusterroles
+  - clusterrolebindings
+  verbs:
+  - create
+  - update
+  - delete
+  - list
+  - get
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kyverno:generate-roles
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno:generate-roles
+subjects:
+- kind: ServiceAccount
+  name: kyverno-service-account
 ```
 
 ### ConfigMap Flags

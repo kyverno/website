@@ -25,13 +25,8 @@
   weight = -98
   url = "/community"
 
-
 [[main]]
   name = "Support"
   weight = -90
   url = "/support"
 
-[[main]]
-  name = "Security"
-  weight = -90
-  url = "/security"
