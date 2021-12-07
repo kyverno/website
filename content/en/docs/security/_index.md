@@ -120,7 +120,7 @@ Use `"kubectl get clusterroles,roles -A | grep kyverno"` to view all Kyverno rol
 
 The Kyverno RBAC configurations are described in the [installation section](/docs/installation/#roles-and-permissions). 
 
-It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view`, `kyverno:generate`, and `kyverno:mutate` roles can be customized to match your requirements.
+It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
 ### Webhooks
 

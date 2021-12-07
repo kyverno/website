@@ -340,7 +340,13 @@ Kyverno creates several roles and role-bindings, some of which need to be custom
 
 #### Roles
 
-Kyverno creates the following roles that are bound to the `kyverno-service-account`:
+Kyverno requires the following permissions:
+* create and update select resources in its namespace (e.g. `Lease` used for leader elections) and some cluster-wide resources (e.g. `ValidatingWebhookConfiguration` used for registering and managing webhooks).
+* create, update, delete, get, list, and watch Kyverno custom resources such as `ClusterPolicy`.
+* view, list, and watch resources to apply validation policy rules during background scans. 
+* create, update, delete, get, list, and watch resources managed via [generate policy](/docs/writing-policies/generate/) rules.
+
+Kyverno creates the following roles that are bound to the `kyverno-service-account`
 
 {{% alert title="Tip" color="info" %}}
 Use `"kubectl get clusterroles,roles -A | grep kyverno"` to view all Kyverno roles. 
@@ -352,7 +358,6 @@ The following `ClusterRoles` provide Kyverno with permissions to policies and ot
 
 - `kyverno:policies`: manage policy custom resources
 - `kyverno:view`: view all resources
-- `kyverno:mutate`: update resources via mutate policy rules
 - `kyverno:generate`: create, update, and delete resources via generate policy rules
 - `kyverno:events`: create, update, and delete events for policy results
 - `kyverno:userinfo`: query cluster-wide roles and role-binding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with role information.
@@ -379,7 +384,7 @@ The following `ClusterRoles` are used to extend the default `admin` role with pe
 
 #### Customizing Permissions
 
-The default `kyverno:view`, `kyverno:generate`, and `kyverno:mutate` roles can be customized. 
+The default `kyverno:view` and `kyverno:generate` can be customized. 
 
 For example, if a CustomResource is added to the cluster the configured roles can be extended to allow Kyverno permissions to generate and/or mutate the new resource type. Or, new ClusterRole/Role and ClusterRoleBinding/RoleBinding pairs can be created and mapped to the Kyverno service account.
 
