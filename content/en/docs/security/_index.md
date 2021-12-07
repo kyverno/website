@@ -115,7 +115,7 @@ The following pod security best practices are followed for all Kyverno container
 
 Use the following command to view all Kyverno roles:
 ```sh
-Use `"kubectl get clusterroles,roles -A | grep kyverno"` to view all Kyverno roles. 
+kubectl get clusterroles,roles -A | grep kyverno
 ```
 
 The Kyverno RBAC configurations are described in the [installation section](/docs/installation/#roles-and-permissions). 
