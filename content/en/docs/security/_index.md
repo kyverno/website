@@ -10,13 +10,13 @@ Kyverno serves an admission controller and is a critical component of the Kubern
 
 Security vulnerabilities are best handled swiftly and discretely with the goal of minimizing the total time users remain vulnerable to exploits.
 
-If find or suspect a vulnerability please send an email to the security group at kyverno-security@googlegroups.com with the following information:
+If you find or suspect a vulnerability, please email the security group at kyverno-security@googlegroups.com with the following information:
 - description of the problem
 - precise and detailed steps (include screenshots) that created the problem
 - the affected version(s)
 - any known mitigations
 
-Kyverno security response team will send an initial acknowledgement of the disclosure in 3-5 working days. Once the vulnerability and mitigation are confirmed, the team will plan to release any necessary changes based on the severity and complexity. Additional details on the security policy and processes are available in the Kyverno [git repo](https://github.com/kyverno/kyverno/blob/main/SECURITY.md).
+The Kyverno security response team will send an initial acknowledgement of the disclosure in 3-5 working days. Once the vulnerability and mitigation are confirmed, the team will plan to release any necessary changes based on the severity and complexity. Additional details on the security policy and processes are available in the Kyverno [git repo](https://github.com/kyverno/kyverno/blob/main/SECURITY.md).
 
 ## Contact Us
 
@@ -32,7 +32,11 @@ All security related issues are labeled as `security` and can be viewed with thi
 
 ## Release Artifacts
 
-With every release, Kyverno uploads the following artifacts:
+The Kyverno container images are available at:
+
+  https://github.com/orgs/kyverno/packages?repo_name=kyverno
+
+With each release, the following artifacts are uploaded:
 - checksums.txt
 - kyverno-cli_v<version_number>_darwin_x86_64.tar.gz
 - kyverno-cli_v<version_number>_linux_x86_64.tar.gz
@@ -41,9 +45,9 @@ With every release, Kyverno uploads the following artifacts:
 - Source code (tar.gz)
 
 
-## Verifying Kyverno Images
+## Verifying Kyverno Container Images
 
-Kyverno container images are signed using Cosign. To verify the container image, download the organization public key (https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named cosign.pub and then:
+Kyverno container images are signed using Cosign. To verify the container image, download the organization public key (https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named `cosign.pub` and then:
 
 1. Install Cosign
 2. Configure the Kyverno signature repository:
@@ -69,11 +73,11 @@ The following checks were performed on each of these signatures:
 [{"critical":{"identity":{"docker-reference":"ghcr.io/kyverno/kyverno"},"image":{"docker-manifest-digest":"sha256:a847df12e2c1cab19af9d1bb34e599cb56cf57639c7d5c958a4bb568c1dad8f6"},"type":"cosign container image signature"},"optional":null}]
 ```
 
-All 3 of Kyverno images can be verified: `kyvernopre`, `kyverno`, and `kyverno-cli`.
+All three Kyverno images can be verified.
 
 ## Fetching the SBOM for Kyverno
 
-An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download the SBOM for a specific version, install cosign and run:
+An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download and verify the SBOM for a specific version, install Cosign and run:
 
 ```sh
 cosign download sbom ghcr.io/kyverno/sbom:latest
@@ -96,13 +100,13 @@ The Kyverno Helm Chart is available via the [ArtifactHub page](https://artifacth
 
 ## Threat Model
 
-The Kubernetes SIG Security team has defined an [Admission Control Threat Model](https://docs.google.com/document/d/1tQTZ6wrD2udbUGL7xhc3SRxqyTvS8FQUlL59KHYHcY8/edit#heading=h.bx94h7ux7k41). It is highly recommended to understand the identified threats and available mitigations.
+The [Kubernetes SIG Security](https://github.com/kubernetes/community/tree/master/sig-security) team has defined an [Admission Control Threat Model](https://docs.google.com/document/d/1tQTZ6wrD2udbUGL7xhc3SRxqyTvS8FQUlL59KHYHcY8/edit#heading=h.bx94h7ux7k41). It is highly recommended to understand the identified threats and available mitigations.
 
 The following sections discuss related best practices for Kyverno:
 
 ### Pod security
 
-The following pod security best practices are followed for all Kyverno containers:
+The following Pod security best practices are followed for all Kyverno containers:
 * `runAsNonRoot` is set to `true`
 * `privileged` is set to `false`
 * `allowPrivilegeEscalation` is set to `false`
@@ -140,7 +144,7 @@ Kyverno creates the following validating webhook configurations:
 
 #### Webhook Failure Mode
 
-Kyverno policies are configured to `fail-closed` by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
+Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
 
 #### Webhook authentication and encryption
 
@@ -150,8 +154,8 @@ By default, Kyverno automatically generates and manage TLS certificates used for
 
 The Kyverno community manages a set of [sample policies](/policies/).
 
-At a minimum, the [pod security](/policies/pod-security/) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
+At a minimum, the [Pod Security Standards](/policies/pod-security/) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
 
 ### Securing policies
 
-Kyverno policies can be used to mutate and generate configurations, and access to policies should be protected using RBAC.
+Kyverno policies can be used to mutate and generate namespaced and cluster-wide resources. Hence, policies should be treated as critical resources and access to policies should be protected using RBAC.
