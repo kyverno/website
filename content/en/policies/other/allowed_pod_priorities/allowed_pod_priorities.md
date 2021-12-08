@@ -48,12 +48,12 @@ spec:
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.template.spec.priorityClassName }} is not in the list
-        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.object.metadata.namespace}} }}.
+        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
         - key: "{{ request.object.spec.template.spec.priorityClassName }}"
           operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.object.metadata.namespace}} }}"
+          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-pods
     context:
       - name: podprioritydict
@@ -67,12 +67,12 @@ spec:
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list
-        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.object.metadata.namespace}} }}.
+        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
         - key: "{{ request.object.spec.priorityClassName }}"
           operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.object.metadata.namespace}} }}"
+          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-cronjob
     context:
       - name: podprioritydict
@@ -86,11 +86,11 @@ spec:
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }} is not in the list
-        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.object.metadata.namespace}} }}.
+        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
         - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
           operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.object.metadata.namespace}} }}"
+          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
 
 ```
