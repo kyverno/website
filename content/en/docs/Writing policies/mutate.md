@@ -249,7 +249,7 @@ spec:
         kinds :
           - Endpoints
     mutate:
-      overlay:
+      patchStrategicMerge:
         subsets:
         - ports:
           - (name): "secure*"
@@ -281,7 +281,7 @@ spec:
         kinds:
         - Pod
     mutate:
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
