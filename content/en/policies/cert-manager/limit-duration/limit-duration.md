@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Certificate
 policyType: "validate"
 description: >
-    k8s managed non-letsencrypt certificates have to be renewed in every 100day
+    Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.
 ---
 
 ## Policy Definition
@@ -22,9 +22,10 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.3.6
     policies.kyverno.io/subject: Certificate
-    policies.kyverno.io/description: k8s managed non-letsencrypt certificates have to be renewed in every 100day
+    policies.kyverno.io/description: >-
+      Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: audit
   background: false
   rules:
   - name: certificate-duration-max-100days 
@@ -47,4 +48,5 @@ spec:
         - key: "{{ max( [ to_number(regex_replace_all('h.*',request.object.spec.duration,'')), to_number('2400') ] ) }}"
           operator: NotEquals
           value: 2400
+
 ```

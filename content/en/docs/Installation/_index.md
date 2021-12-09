@@ -375,17 +375,22 @@ The following flags are used to control the behavior of Kyverno and must be set 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
 3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
+4. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
 
 ### Container Flags
 
 The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
 
 1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose.
-2. `--background-scan`: The interval (like 30s, 15m, 12h) for background processing resulting in policy report entries. Default is set to 1h.
-3. `--webhookTimeout`: Sets the timeout for a webhook response from Kyverno. Value is in seconds. This is deprecated in Kyverno 1.5.0.
-4. `--gen-workers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-5. `--generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-6. `--autoUpdateWebhooks`: auto-configuration of the webhooks based on installed policies. Default is set to "true".
+2. `profile`: setting this flag to 'true' will enable profiling.
+3. `profilePort`: specifies port to enable profiling at, defaults to 6060.
+4. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
+5. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
+6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to "false".
+7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
+8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
+9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
+10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 
 ### Policy Report access
 
@@ -426,7 +431,7 @@ Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configurat
 
 This feature is enabled by default in 1.5.0+ but can be turned off by flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forwards admission requests for all resources and with `FailurePolicy` set to `Ignore`.
 
-The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/webhooks/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations.
+The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configuration fields](/docs/writing-policies/policy-settings/) allow per-policy settings which are automatically aggregated and used to register the required set of webhook configurations.
 
 Prior to 1.5.0, by default, the Kyverno webhook will process all API server requests for all Namespaces and the policy application was filtered using Resource Filters and Namespace Selectors discussed below:
 
