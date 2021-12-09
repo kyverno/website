@@ -181,6 +181,7 @@ Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made 
 - `{{request.object}}`: the object being created or modified. It is null for `DELETE` requests.
 - `{{request.oldObject}}`: the object being modified. It is null for `CREATE` and `CONNECT` requests.
 - `{{request.userInfo}}`: contains information on who/what submitted the request which includes the `groups` and `username` keys.
+- `{{request.namespace}}`: the Namespace of the object subject to the operation.
 
 Here are some examples of looking up this data:
 
@@ -204,7 +205,7 @@ Variables from the `AdmissionReview` can also be combined with user-defined stri
 
 1. Build a name from multiple variables (type string)
 
-`"ns-owner-{{request.object.metadata.namespace}}-{{request.userInfo.username}}-binding"`
+`"ns-owner-{{request.namespace}}-{{request.userInfo.username}}-binding"`
 
 Let's look at an example of how this AdmissionReview data can be used in Kyverno policies.
 

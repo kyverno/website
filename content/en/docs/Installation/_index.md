@@ -19,6 +19,7 @@ As of v1.4.0, Kyverno supports multiple replicas for increased scale and availab
 | 1.2.1                          | 1.14           | 1.17           |
 | 1.3.0                          | 1.16           | 1.20*          |
 | 1.4.x                          | 1.16           | 1.21           |
+| 1.5.x                          | 1.16           | 1.21           |
 
 \* Kyverno CLI 1.3.0 supports up to Kubernetes 1.18.
 
