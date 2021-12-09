@@ -431,7 +431,7 @@ spec:
     context:
     - name: serviceCount
       apiCall:
-        urlPath: "/api/v1/namespaces/{{ request.object.metadata.namespace }}/services"
+        urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
     preconditions:
     - key: "{{ request.operation }}"
