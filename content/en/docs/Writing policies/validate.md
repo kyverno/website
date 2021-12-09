@@ -561,9 +561,9 @@ spec:
         kinds:
         - Pod
     preconditions:
-      - key: "{{request.type}}"
+      - key: "{{request.operation}}"
         operator: NotEquals
-        value: "DELETE"
+        value: DELETE
     validate:
       message: "unknown registry"  
       foreach:
