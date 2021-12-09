@@ -20,6 +20,7 @@ For more details on Kyverno releases, please see the [releases page](https://git
 - Kyverno policies are now applied to Pod controllers and again to managed Pods preventing some circumvention scenarios.
 - Installing Kyverno from Helm allows CRD management to be disabled.
 - in-toto-golang punched up to v0.3.3 to fix CVE-2021-41087.
+- imagePullSecrets are now refreshed in `verifyImages` rules.
 
 ### Bug Fixes
 
