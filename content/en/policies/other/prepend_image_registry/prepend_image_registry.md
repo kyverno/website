@@ -52,7 +52,7 @@ spec:
           spec:
             containers:
             - name: "{{ element.name }}"           
-              image: "registry.io/{{ images.containers.{{element.name}}.path}}:{{images.containers.{{element.name}}.tag}}"
+              image: registry.io/{{ images.containers."{{element.name}}".path}}:{{images.containers."{{element.name}}".tag}}
   - name: prepend-registry-initcontainers
     match:
       resources:
@@ -72,6 +72,6 @@ spec:
           spec:
             initContainers:
             - name: "{{ element.name }}"           
-              image: "registry.io/{{ images.initContainers.{{element.name}}.path}}:{{images.initContainers.{{element.name}}.tag}}"
+              image: registry.io/{{ images.initContainers."{{element.name}}".path}}:{{images.initContainers."{{element.name}}".tag}}
 
 ```
