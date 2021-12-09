@@ -442,7 +442,7 @@ spec:
       deny:
         conditions:
         - key: "{{ serviceCount }}"
-          operator: GreaterThanOrEquals
+          operator: GreaterThan
           value: 1
 ```
 
