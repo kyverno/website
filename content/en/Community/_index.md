@@ -142,10 +142,10 @@ Approvers are contributors those who will provide active review and feedback on 
 - Consistently scheduling and participating in [Kyerno meetups](https://groups.google.com/g/kyverno).
 - Holds knowledge and interest that aligns with the overall project goals, specifications and design principles of the Kyverno project.
 - Makes contributions that are considered notable.
-- Creates at least 10 PR.
+- Creates at least 10 PRs.
 - Creates at least 5 issues.
-- Drops at least 10 comments or reviews
-- Ability to help troubleshoot and resolve user issues.
+- Provides at least 10 comments or reviews
+- Demonstrate ability to help troubleshoot and resolve user issues.
 - Has taken the [Kyverno Free Certification](https://learn.nirmata.com/explore), or demonstrated sound understanding of Kyverno.
 
 **Responsibilities & Privileges**
@@ -153,7 +153,7 @@ Approvers are contributors those who will provide active review and feedback on 
 The following responsibilities apply to the subproject for which one would be an owner.
 
 - Tracks and ensures adequate health of the subprojects they are in charge of.
-- Adequate test coverage to confidently release
+- Ensures adequate test coverage to confidently release
 - Tests are passing reliably (i.e. not flaky) and are fixed when they fail
   Mentors and guides approvers, reviewers, and contributors in the Kyverno subproject.
 - Actively participates in the processes for discussion and decision making in the project.
