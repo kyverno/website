@@ -212,7 +212,7 @@ spec:
     generate:
       kind: ConfigMap
       name: "{{request.object.metadata.name}}-gen-cm"
-      namespace: "{{request.object.metadata.namespace}}"
+      namespace: "{{request.namespace}}"
       synchronize: false
       data:
         metadata:
