@@ -7,12 +7,14 @@ description: Kyverno Release Notes
 
 ## Kyverno v1.5.1
 
+26 Oct 2021
+
 ### Bug Fixes
 
 - Updates Kyverno base image to use Go 1.17.2 to address [CVE-2021-29923](https://nvd.nist.gov/vuln/detail/CVE-2021-29923).
 
 ## Kyverno v1.5.0
-
+20 Oct 2021
 ### New
 
 - Dynamic webhooks. Admission webhooks are now built dynamically based on the source of Kyverno policies. Introduces a new `status.ready` field in a policy to indicate when it's ready to serve.
@@ -58,7 +60,7 @@ description: Kyverno Release Notes
 - Set Namespace environment variable for initContainer #2499
 
 ## Kyverno v1.4.3
-
+16 Sep 2021
 **Notes**
 Helm - helm upgrade command will be sufficient to upgrade.
 
@@ -120,7 +122,7 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 - Fix added pod anti-affinity to Kyverno [#1985](https://github.com/kyverno/kyverno/pull/1985).
 
 ## Kyverno v1.4.2
-
+11 Aug 2021
 **Note:** With Helm installed Kyverno, upgrading to Kyverno 1.4.2+ (Helm chart v2.0.2) from a version prior to 1.4.2 (Helm chart v2.0.2) will require extra steps. Please refer to the official doc for the upgrade.
 
 ### Changed
@@ -142,7 +144,7 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 - Configurable success events on policies & resources. Generating failure events on policies by default. [(#1939)](https://github.com/kyverno/kyverno/pull/1939)
 
 ## Kyverno v1.4.1
-
+24 Jun 2021
 **Note:** To upgrade from 1.4.0, you will need to manually remove the selector app: kyverno from the Deployment or delete the Deployment and then upgrade to 1.4.1.
 
 ## main
@@ -159,7 +161,7 @@ Check more upgrade information at [Upgrading Kyverno](https://kyverno.io/docs/in
 - adding support for policies.kyverno.io/scored annotation [(#1976)](https://github.com/kyverno/kyverno/pull/1976)
 
 ## Kyverno v1.4.0
-
+18 Jun 2021
 **Note:** there was a selector app: kyverno added to the Deployment of the Kyverno Helm chart, it could impact the upgrade process as the selector field cannot be modified during an upgrade. This selector will be removed in 1.4.1, you can comment it out during the upgrade. Thanks to [@andriktr](https://github.com/andriktr?tab=overview&from=2021-07-01&to=2021-07-31) for reporting the issue.
 
 For HA, currently recommended minimum replicas is 3.
@@ -187,7 +189,7 @@ For HA, currently recommended minimum replicas is 3.
 - Update e2e tests to latest kind and Kubernetes versions [(#1973)](https://github.com/kyverno/kyverno/pull/1974)
 
 ## Kyverno v1.3.6
-
+17 May 2021
 ### Changed
 
 - Added validation check for ensuring the existence of only 'any'/'all' [(#1791)](https://github.com/kyverno/kyverno/pull/1791).
@@ -217,7 +219,7 @@ For HA, currently recommended minimum replicas is 3.
 - JMESPath custom functions [(#1772)](https://github.com/kyverno/kyverno/pull/1772).
 
 ## Kyverno v1.3.5
-
+16 Apr 2021
 ### Changed
 
 - Helm chart should support envVars with sane default [(#1715)](https://github.com/kyverno/kyverno/pull/1715).
@@ -274,7 +276,7 @@ For HA, currently recommended minimum replicas is 3.
 - Add Images info to variables context [(#1725)](https://github.com/kyverno/kyverno/pull/1725).
 
 ## Kyverno v1.3.4
-
+05 Mar 2021
 ### Changed
 
 - Support for logical operations over conditions and selectors over `conditions` and `preconditions` [(#1604)](https://github.com/kyverno/kyverno/pull/1604).
@@ -297,7 +299,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fix Extends match / exclude to use apiGroup and apiVersion [(#1656)](https://github.com/kyverno/kyverno/pull/1656).
 
 ## Kyverno v1.3.3
-
+16 Feb 2021
 ### Bug Fixes
 
 - fix gofmt check over the existing github workflows [(#1553)](https://github.com/kyverno/kyverno/pull/1553).
@@ -306,7 +308,7 @@ For HA, currently recommended minimum replicas is 3.
 - fix restricting empty value from passing through the validation checks [(#1574)](https://github.com/kyverno/kyverno/pull/1574).
 
 ## Kyverno v1.3.2
-
+09 Feb 2021
 ### Changed
 
 - Validation of 'value' field under 'deny.conditions' in the rule object [(#1510)](https://github.com/kyverno/kyverno/pull/1510).
@@ -336,14 +338,14 @@ For HA, currently recommended minimum replicas is 3.
 - Valid resource is blocked by namespace selector [(#1558)](https://github.com/kyverno/kyverno/pull/1558)
 
 ## Kyverno v1.3.1
-
+19 Jan 2021
 ### Bug Fixes
 
 - Fix support nested JMESPATH var substitution [(#1471)](https://github.com/kyverno/kyverno/pull/1471).
 - Remove unnecessary JSON patches; fixes strategicMergePatch for tolerations [(#1478)](https://github.com/kyverno/kyverno/pull/1478).
 
 ## Kyverno v1.3.0
-
+12 Jan 2021
 ### Bug Fixes
 
 - Fix handle anchors for wildcard annotations [(#1458)](https://github.com/kyverno/kyverno/pull/1458).
@@ -405,7 +407,7 @@ For HA, currently recommended minimum replicas is 3.
 - added validation for openapi_v3 [(#1095)](https://github.com/kyverno/kyverno/pull/1095).
 
 ## Kyverno v1.2.1
-
+22 Oct 2020
 ### Bug Fixes
 
 - Fix mutation failure should not block resource creation [(#633)](https://github.com/kyverno/kyverno/pull/633).
@@ -421,7 +423,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fixed panic while applying policy on cluster [(#1195)](https://github.com/kyverno/kyverno/pull/1195).
 
 ## Kyverno v1.2.0
-
+08 Oct 2020
 ### Changed
 
 - Feature/configmaps var 724 [(#1118)](https://github.com/kyverno/kyverno/pull/1118).
@@ -445,7 +447,7 @@ For HA, currently recommended minimum replicas is 3.
 - Update installation guides [(#1167)](https://github.com/kyverno/kyverno/pull/1167)
 
 ## Kyverno v1.1.12
-
+18 Sep 2020
 ### Bug Fixes
 
 - Bugfix policymutation [(#1119)](https://github.com/kyverno/kyverno/pull/1119).
@@ -461,7 +463,7 @@ For HA, currently recommended minimum replicas is 3.
 - Bugfix policymutation [(#1119)](https://github.com/kyverno/kyverno/pull/1119).
 
 ## Kyverno v1.1.11
-
+10 Sep 2020
 ### Bug Fixes
 
 - Fixed return [(#1102)](https://github.com/kyverno/kyverno/pull/1102)
@@ -486,7 +488,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fix rResolved conditional anchor issue and added validation to pattern labels [(#1060)](https://github.com/kyverno/kyverno/pull/1060).
 
 ## Kyverno v1.1.10
-
+21 Aug 2020
 ### Bug Fixes
 
 - Kyverno-cli and helm release step added in workflow [(#1043)](https://github.com/kyverno/kyverno/pull/1043).
@@ -508,7 +510,7 @@ For HA, currently recommended minimum replicas is 3.
 - Supporting annotations in match/exclude [(#1045)](https://github.com/kyverno/kyverno/pull/1045).
 
 ## Kyverno v1.1.9
-
+11 Aug 2020
 ### Changes
 
 - Feature/api version 852 [(#1028)](https://github.com/kyverno/kyverno/pull/1028)
@@ -535,7 +537,7 @@ For HA, currently recommended minimum replicas is 3.
 - Generate request is not cleaned up after delete the generate policy [(#1036)](https://github.com/kyverno/kyverno/pull/1036).
 
 ## Kyverno v1.1.8
-
+21 Jul 2020
 ### Bug Fixes
 
 - Fix removed mutated policy [(#1010)](https://github.com/kyverno/kyverno/pull/1010).
@@ -548,7 +550,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fix added api docs generator and docs html file [(#1009)](https://github.com/kyverno/kyverno/pull/1009).
 
 ## Kyverno v1.1.7
-
+15 Jul 2020
 ### Changes
 
 - Feature/new operators [(#947)](https://github.com/kyverno/kyverno/pull/947).
@@ -572,7 +574,7 @@ For HA, currently recommended minimum replicas is 3.
 - Synchronize data for generated resources [(#933)](https://github.com/kyverno/kyverno/pull/933).
 
 ## Kyverno v1.1.6
-
+05 Jun 2020
 ### Changes
 
 - Added goreleaser for managing lifecycle of kyverno plugin [(#851)](https://github.com/kyverno/kyverno/pull/851).
@@ -610,7 +612,7 @@ For HA, currently recommended minimum replicas is 3.
 - Update helm chart docs [(#913)](https://github.com/kyverno/kyverno/pull/913).
 
 ## Kyverno v1.1.5
-
+28 Apr 2020
 ### Bug Fixes
 
 - kyverno CLI [(#737)](https://github.com/kyverno/kyverno/pull/737)
@@ -628,7 +630,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fixed crd sync panic [(#784)](https://github.com/kyverno/kyverno/pull/784).
 
 ## Kyverno v1.1.4
-
+14 Mar 2020
 ### Bug Fixes
 
 - Add rules to disallow default namespace for pod controllers. [(#735)](https://github.com/kyverno/kyverno/pull/735).
@@ -637,7 +639,7 @@ For HA, currently recommended minimum replicas is 3.
 - if match/resource/kinds is empty, then policy can only deal with metadata of a resource [(#726)](https://github.com/kyverno/kyverno/pull/726).
 
 ## Kyverno v1.1.3
-
+22 Feb 2020
 ### Bug Fixes
 
 - Fix added `runValidationInMutatingWebhook` flag - v3 [(#654)](https://github.com/kyverno/kyverno/pull/654)
@@ -648,7 +650,7 @@ For HA, currently recommended minimum replicas is 3.
 - Fix updated docs [(#675)](https://github.com/kyverno/kyverno/pull/675).
 
 ## Kyverno v1.1.2
-
+20 Jan 2020
 ### Bug Fixes
 
 - Mutation failure should not block resource creation [(#633)](https://github.com/kyverno/kyverno/pull/633)
@@ -657,7 +659,7 @@ For HA, currently recommended minimum replicas is 3.
 - Support nested variable resolution [(#728)](https://github.com/kyverno/kyverno/pull/728)
 
 ## Kyverno v1.1.1
-
+17 Jan 2020
 ### Changes
 
 - Feature [(#594)](https://github.com/kyverno/kyverno/pull/594).
@@ -671,7 +673,7 @@ For HA, currently recommended minimum replicas is 3.
 - Check for multiple variables in a expression & serviceAccount variables [(#610)](https://github.com/kyverno/kyverno/pull/610).
 
 ## Kyverno v1.1.0
-
+11 Jan 2020
 ### Changes
 
 - Feature [(#503)](https://github.com/kyverno/kyverno/pull/503)
@@ -698,7 +700,7 @@ For HA, currently recommended minimum replicas is 3.
 - Added anchors for omitempty tag [(#584)](https://github.com/kyverno/kyverno/pull/584).
 
 ## Kyverno v1.0.0
-
+05 Dec 2019
 **NOTE:** It is recommended to deploy the stable release v1.1.1.
 
 ### Bug Fixes

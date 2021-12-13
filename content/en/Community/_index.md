@@ -52,20 +52,26 @@ The goal of this adopters program is to gather real-world usage examples and hel
 
 To participate, kindly fill out this [form](https://docs.google.com/forms/d/e/1FAIpQLSeMJxbK6eQ-MpsbaXZ3GKp8NEz9F932keL2pwznI1JIfi7Iqw/viewform) (It will take 5 mins of your time).
 
-
 ### Project Governance
 
 This document highlights the role and responsibilities for the Kyverno community members. It also outlines the requirements for anyone who is looking to take on leadership roles in the Kyverno project.
 
-In order to perform any actions on the Kyverno Github repositories, contributors should have certain access to GitHub, such as creating a pull request in a repository or changing an organization's billing settings, a contributor must have sufficient access to the relevant account or resource. 
+In order to perform any actions on the Kyverno Github repositories, contributors should have certain access to GitHub, such as creating a pull request in a repository or changing an organization's billing settings, a contributor must have sufficient access to the relevant account or resource.
 
 **Note:** Please make sure to read and observe our [Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
 ### Project Roles
 
+The roles used in this document are custom roles mapped according to the [GitHub](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization) roles and responsibilities.
+
+- Contributor -> Triage
+- Approver -> Write
+- Maintainer -> Maintain
+- Admin -> Admin
+
 **Contributors**:
 
-These are active contributors who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests or or participating in community discussions on Slack or the mailing list. 
+These are active contributors who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests or or participating in community discussions on Slack or the mailing list.
 
 **Approver**:
 
