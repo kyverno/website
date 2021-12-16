@@ -28,3 +28,4 @@ node_modules
 
 # Hugo related files
 /resources
+.hugo_build.lock
