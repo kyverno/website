@@ -160,6 +160,14 @@ Here are some other examples of `match` statements.
 This is an example that selects a Deployment **OR** a StatefulSet with a label `app=critical`.
 
 Condition checks inside the `resources` block follow the logic "**AND across types but an OR within list types**". For example, if a rule match contains a list of kinds and a list of namespaces, the rule will be evaluated if the request contains any one (OR) of the kinds AND any one (OR) of the namespaces. Conditions inside `clusterRoles`, `roles`, and `subjects` are always evaluated using a logical OR operation, as each request can only have a single instance of these values.
+Also match label selector support wildcard in key or value.
+Supported formats:
+
+* `*`
+* `*pattern*`
+* `*pattern`
+* `pattern*`
+* `patte*rn`
 
 In the below snippet, `kinds` and `selector` are peer/sibling elements, and so they are **AND**ed together.
 
