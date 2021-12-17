@@ -5,6 +5,43 @@ weight: 130
 description: Kyverno Release Notes
 ---
 
+For more details on Kyverno releases, please see the [releases page](https://github.com/kyverno/kyverno/releases) on the GitHub repository.
+
+## Kyverno v1.5.2
+
+### New
+
+- Braces can be escaped in variables.
+- Existing operators now support resource quantities (size, time).
+
+### Changed
+
+- Signatures and SBOM for Kyverno images are now stored in different repositories.
+- Kyverno policies are now applied to Pod controllers and again to managed Pods preventing some circumvention scenarios.
+- Installing Kyverno from Helm allows CRD management to be disabled.
+- in-toto-golang punched up to v0.3.3 to fix CVE-2021-41087.
+- imagePullSecrets are now refreshed in `verifyImages` rules.
+
+### Bug Fixes
+
+- The `{{images}}` variable works as it should and other variable fixes.
+- Policies with PreConditions are marked as "failed" in the metrics.
+- RuleResult label to be correctly populated while registering respective metrics.
+- Fix deepCopy functions.
+- Fix Kyverno uninstallation problem with some policies.
+- Pre-built image vars not resolving in the test command with mutate rules using `foreach`.
+- Handle reports with missing result property.
+- Hard-coded ClusterRoleName in OwnerRef breaks when Kyverno Helm Chart name is unique.
+- When uninstalling Kyverno Helm chart Pods are stuck in "terminating" state indefinitely.
+- Verify-image attestation signature is not checked.
+- Kyverno initContainer fails to start when external.metrics.k8s.io/v1beta1 returns empty array for resources.
+- Installing Kyverno as Helm dependency fails when trying to use CRD.
+- Fix Kyverno panics.
+- Fix profiling issues.
+- Performance and stability improvements.
+- Fix package vulnerabilities.
+- Change ClusterRole kyverno:webhook labels.
+
 ## Kyverno v1.5.1
 
 26 Oct 2021
