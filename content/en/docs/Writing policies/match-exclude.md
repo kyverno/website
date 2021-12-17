@@ -120,14 +120,19 @@ spec:
 ```
 
 As of Kyverno 1.5.0, wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster.
-Also, Wildcard supported at pol.spec.match.resources.selector.matchLabels in key as well as value of labels.
+Also, Selector labels supported Wildcard `(* or ?)` for key as well as value on following paths.
+* `pol.spec.match.resources.selector.matchLabels`
+* `pol.spec.exclude.resources.selector.matchLabels`
+* `pol.spec.match.any.resources.selector.matchLabels`
+* `pol.spec.match.all.resources.selector.matchLabels`
+
 Supported formats:
 
 * `*`
 * `*pattern*`
 * `*pattern`
-* `pattern*`
-* `patte*rn`
+* `pattern?`
+* `patte?rn`
 
 In the below policy, all resource kinds are checked for the existence of a label having key `app.kubernetes.io/name`.
 
