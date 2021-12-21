@@ -125,6 +125,8 @@ Selector labels support wildcards `(* or ?)` for keys as well as values in the f
 * `exclude.resources.selector.matchLabels`
 * `match.any.resources.selector.matchLabels`
 * `match.all.resources.selector.matchLabels`
+* `exclude.any.resources.selector.matchLabels`
+* `exclude.all.resources.selector.matchLabels`
 
 Supported formats:
 
