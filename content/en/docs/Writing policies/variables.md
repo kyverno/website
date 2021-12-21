@@ -410,6 +410,7 @@ subtract(number, number) number
 multiply(number, number) number
 divide(number, number) number (divisor must be non zero)
 modulo(number, number) number (divisor must be non-zero, arguments must be integers)
+truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
