@@ -92,4 +92,4 @@ There are several ways to create multiple PRs, but here is one easy flow:
 
 ## Customize other settings
 
-Edit the `.toml` files inside the `config/_default` directory.
+Edit the `.toml` files inside the `config/_default` directory..
