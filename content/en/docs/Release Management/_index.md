@@ -38,7 +38,7 @@ This is the version when you make backwards-compatible bug fixes. The patch rele
 
 Kyverno uses GitHub tags to manage versions. New releases and release candidates are published using the wildcard tag `v<major>.<minor>.<patch>*`.
 
-The dev images are pushed with tag `<major>.<minor>.dev-<git hash>`. You can find published dev images for a specific commit via the GitHub workflow named [image](https://github.com/kyverno/kyverno/actions/workflows/image.yaml). For example, this [job](https://github.com/kyverno/kyverno/runs/4579160206?check_suite_focus=true) pushed images with tag `1.6-dev-7-gff99d92f` for PR [#2856](https://github.com/kyverno/kyverno/pull/2856).
+The dev images are pushed with tag `<major>.<minor>.dev-N-<git hash>`. You can find published dev images for a specific commit via the GitHub workflow named [image](https://github.com/kyverno/kyverno/actions/workflows/image.yaml). For example, this [job](https://github.com/kyverno/kyverno/runs/4579160206?check_suite_focus=true) pushed images with tag `1.6-dev-7-gff99d92f` for PR [#2856](https://github.com/kyverno/kyverno/pull/2856).
 
 To test with the latest images for different release branches, the images are pushed with `<major>.<minor>-dev-latest`.
 
