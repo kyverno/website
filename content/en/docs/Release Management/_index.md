@@ -50,6 +50,3 @@ To test with the latest images for different release branches, the images are pu
 - PRs are labeled with milestone labels, for maintainers to cherry-pick to patch branches.
 - For any critical fixes that need to be included in a patch release, the PR should always merge to main and then cherry-pick to release branch. The milestone label is important here for tracking.
 - During PR review, the Assignee filter is used to indicate the reviewer.
-  image
-
-![MarineGEO circle logo](assets/assignee-filter.png "MarineGEO logo")
