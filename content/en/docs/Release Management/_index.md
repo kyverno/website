@@ -16,19 +16,19 @@ Kyverno simplifies Kubernetes configuration management using policies for securi
 
 Kyverno uses the [Semantic Versioning](https://semver.org/) scheme. Kyverno v1.0.0 was released in Dec 2019. This project follows a given version number MAJOR.MINOR.PATCH.
 
-### MAJOR release
+#### MAJOR release
 
 This is the version when you make incompatible API changes.
 
 - Low frequency and required e.g. once a year
 
-### MINOR release
+#### MINOR release
 
 This is the version when you add functionality in a backwards-compatible manner. Since Kyverno is a fast growing project, having a major release approximately every three months helps to manage project progress.
 
 - Roughly every 3 months
 
-### PATCH release
+#### PATCH release
 
 This is the version when you make backwards-compatible bug fixes. The patch release contains the critical fixes.
 
@@ -45,9 +45,11 @@ To test with the latest images for different release branches, the images are pu
 ### Notes
 
 - Branches for new releases follow the naming SemVer naming convention, for example release v1.5.2.
-- Close to any release, all PRs for that release will be cherry picked to the.
+- Close to any release, all PRs for that release will be cherry picked to the branch specific to the release.
 - Issues are always added to milestones for releases.
 - PRs are labeled with milestone labels, for maintainers to cherry-pick to patch branches.
 - For any critical fixes that need to be included in a patch release, the PR should always merge to main and then cherry-pick to release branch. The milestone label is important here for tracking.
 - During PR review, the Assignee filter is used to indicate the reviewer.
   image
+
+![MarineGEO circle logo](assets/assignee-filter.png "MarineGEO logo")
