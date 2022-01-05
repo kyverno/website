@@ -77,7 +77,7 @@ If you'd rather deploy the manifest directly, simply apply the release file.
 This manifest path will always point to the latest main branch.
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
 ```
 
 You can also pull from a release branch to install the stable releases including release candidates.
