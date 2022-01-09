@@ -410,7 +410,7 @@ subtract(number, number) number
 multiply(number, number) number
 divide(number, number) number (divisor must be non zero)
 modulo(number, number) number (divisor must be non-zero, arguments must be integers)
-to_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
+parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
