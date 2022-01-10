@@ -22,7 +22,7 @@ Policy reports show policy results for current resources in the cluster. For inf
 Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
 
 `pass`: The resource was applicable to a rule and the pattern passed evaluation.
-`skip`: Preconditions were not satisfied (if applicable) in a rule and so further processing was not performed. Non-resolved variables are substituted with `""` to allow existence checks to succeed.
+`skip`: Preconditions were not satisfied (if applicable) in a rule and so further processing was not performed.
 `fail`: The resource failed the pattern evaluation.
 `warn`: The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`.
 `error`: Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).
