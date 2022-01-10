@@ -17,9 +17,15 @@ Kyverno uses the policy report schema published by the [Kubernetes Policy WG](ht
 Policy reports show policy results for current resources in the cluster. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring-kyverno-with-prometheus-metrics/policy-rule-results-info/).
 {{% /alert %}}
 
-{{% alert title="Note" color="info" %}}
-Policy reports are available in Kyverno 1.3.0+. For older (1.2.x) versions, you can use `kubectl get polv -A` to view policy violations.
-{{% /alert %}}
+## Report result logic
+
+Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
+
+`pass`: The resource was applicable to a rule and the pattern passed evaluation.
+`skip`: Preconditions were not satisfied (if applicable) in a rule and so further processing was not performed. Non-resolved variables are substituted with `""` to allow existence checks to succeed.
+`fail`: The resource failed the pattern evaluation.
+`warn`: The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`.
+`error`: Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).
 
 ## Viewing policy report summaries
 
@@ -56,7 +62,7 @@ If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your p
 
 Since the report provides information on all rule and resource execution, finding policy violations requires an additional filter.
 
-Here is a command to view policy violations for the `default` namespace:
+Here is a command to view policy violations for the `default` Namespace:
 
 ```sh
 kubectl describe polr polr-ns-default | grep "Result: \+fail" -B10
