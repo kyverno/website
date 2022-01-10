@@ -525,7 +525,7 @@ spec:
           spec:
             containers:
             - name: "{{ element.name }}"           
-              image: registry.io/{{ images.containers."{{element.name}}".path}}:{{images.containers."{{element.name}}".tag}}
+              image: registry.io/{{ images.containers."{{element.name}}".name}}:{{images.containers."{{element.name}}".tag}}
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
