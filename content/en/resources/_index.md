@@ -8,6 +8,22 @@ type: docs
 
 {{% videos %}}
 
+{{< youtube id="Y3m6cYS3ytM" start="0" class="video" >}}
+
+{{< youtube id="AmJUFH7n33c" start="0" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="k98BVmemp_0" start="0" class="video" >}}
+
+{{< youtube id="Am7mvIQWx4E" start="0" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
 {{< youtube id="9gSrRNmmKBc" start="0" class="video" >}}
 
 {{< youtube id="DREjzfTzNpA" start="0" class="video" >}}
@@ -49,8 +65,13 @@ type: docs
 ## Blogs
 
 (latest to oldest)
-
+- [Securing Kubernetes with Kyverno](https://cloudyuga.guru/hands_on_lab/kyverno-introduction/), January 2022
+- [No! You shall not pass! Kyverno’s here!](https://medium.com/@ul_Timate/no-you-shall-not-pass-kyvernos-here-def1d376a4f8), December 2021
+- [Admission Controller for Secure Supply Chain Verification - Kyverno](https://boxboat.com/2021/12/06/secure-supply-chains-kyverno/), December 2021
+- [Enforcing Policy as Code using Kyverno in Kubernetes](https://dev.to/aws-builders/enforcing-policy-as-code-using-kyverno-in-kubernetes-3epk), October 2021
 - [K8s policy with Kyverno](https://www.blakyaks.com/resources/k8s-policy-with-kyverno), October 2021
+- [A Zero Trust Approach for Securing the Supply Chain of Microservices Packaged as Container Images](https://gkovan.medium.com/a-zero-trust-approach-for-securing-the-supply-chain-of-microservices-packaged-as-container-images-89d2f5b7293b), September 2021
+- [Automate Your Security Practices and Policies on OpenShift With Kyverno](https://cloud.redhat.com/blog/automate-your-security-practices-and-policies-on-openshift-with-kyverno), September 2021
 - [Kyverno - A Kubernetes native policy manager (Policy as Code)](https://blog.mimacom.com/kyverno/), September 2021
 - [Simplify Kubernetes Cluster Management with Kyverno](https://movi.hashnode.dev/simplify-kubernetes-cluster-management-with-kyverno-ckt6yxjqy0duy95s14groe7h4), September 2021
 - [Understanding Kyverno Policies](https://medium.com/@shubhampalriwala/understanding-kyverno-policies-7e2d8651d7b1), August 2021
