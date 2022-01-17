@@ -182,7 +182,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 *  [Mitigation ID 3 - Webhook authenticates callers](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-3---webhook-authenticates-callers)
 
-    By default, Kyverno generates a CA and X.509 certificates for the webhook registration. As custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate).  
+     By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 
 ### [Threat ID 3 - Attacker exploits misconfiguration of webhook to bypass](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-3---attacker-exploits-misconfiguration-of-webhook-to-bypass)
@@ -229,7 +229,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-     By default, Kyverno generates a CA and X.509 certificates for the webhook registration. As custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate).  
+     By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 
 ### [Threat ID 9 - Attacker steals traffic from the webhook via spoofing](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-9---attacker-steals-traffic-from-the-webhook-via-spoofing)
@@ -239,7 +239,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-     By default, Kyverno generates a CA and X.509 certificates for the webhook registration. As custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate).  
+     By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### [Threat ID 10 - Abusing a mutation rule to create a privileged container](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-10---abusing-a-mutation-rule-to-create-a-privileged-container)
 
