@@ -18,7 +18,7 @@ You can use [Krew](https://github.com/kubernetes-sigs/krew) to install the Kyver
 kubectl krew install kyverno
 
 # test the Kyverno CLI
-kubectl kyverno version  
+kubectl kyverno version
 ```
 
 ### Install via AUR (archlinux)
@@ -81,7 +81,7 @@ Apply a mutation policy to a specific resource:
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml
 
-applying 1 policy to 1 resource... 
+applying 1 policy to 1 resource...
 
 mutate policy <policy_name> applied to <resource_name>:
 <final mutated resource output>
@@ -219,10 +219,10 @@ kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_defa
 On applying the above policy to the mentioned resources, the following output will be generated:
 
 ```sh
-Applying 1 policy to 1 resource... 
+Applying 1 policy to 1 resource...
 (Total number of result count may vary as the policy is mutated by Kyverno. To check the mutated policy please try with log level 5)
 
-pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
+pass: 1, fail: 0, warn: 0, error: 0, skip: 0
 ```
 
 The summary count is based on the number of rules applied on the number of resources.
@@ -687,12 +687,17 @@ variables: variables.yaml
 results:
 - policy: <name>
   rule: <name>
-  resource: <name>
+# We can define resource as a list to verify single policy-rule combination against multiple resources
+  resource:
+  - <name>
+  - <name>
   kind: <kind>
   result: pass
 - policy: <name>
   rule: <name>
-  resource: <name>
+  resource:
+  - <name>
+  - <name>
   kind: <kind>
   result: fail
 ```
@@ -736,8 +741,8 @@ metadata:
   annotations:
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: >-
-      The ':latest' tag is mutable and can lead to unexpected errors if the 
-      image changes. A best practice is to use an immutable tag that maps to 
+      The ':latest' tag is mutable and can lead to unexpected errors if the
+      image changes. A best practice is to use an immutable tag that maps to
       a specific version of an application pod.
 spec:
   validationFailureAction: audit
@@ -748,7 +753,7 @@ spec:
         kinds:
         - Pod
     validate:
-      message: "An image tag is required."  
+      message: "An image tag is required."
       pattern:
         spec:
           containers:
@@ -775,7 +780,7 @@ metadata:
   name: myapp-pod
   labels:
     app: myapp
-spec: 
+spec:
   containers:
   - name: nginx
     image: nginx:1.12
@@ -792,12 +797,14 @@ resources:
 results:
   - policy: disallow-latest-tag
     rule: require-image-tag
-    resource: myapp-pod
+    resource:
+    - myapp-pod
     kind: Pod
     result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
-    resource: myapp-pod
+    resource:
+    - myapp-pod
     kind: Pod
     result: pass
 ```
