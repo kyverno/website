@@ -416,8 +416,8 @@ subtract(duration|number, duration|number) duration (returns duration if any of 
 multiply(number, number) number
 multiply(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity)
 multiply(duration|number, duration|number) duration (returns duration if any of the parameters is a duration)
-divide(quantity|number, quantity|number) quantity|number (returns quantity if exactly of the parameters is a quantity, else a number; the divisor must be non-zero)
-divide(duration|number, duration|number) duration|number (returns duration if exactly of the parameters is a duration, else a number; the divisor must be non-zero)
+divide(quantity|number, quantity|number) quantity|number (returns quantity if exactly one of the parameters is a quantity, else a number; the divisor must be non-zero)
+divide(duration|number, duration|number) duration|number (returns duration if exactly one of the parameters is a duration, else a number; the divisor must be non-zero)
 modulo(number, number) number
 modulo(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity; the divisor must be non-zero)
 modulo(duration|number, duration|number) duration (returns duration if any of the parameters is a duration; the divisor must be non-zero)
