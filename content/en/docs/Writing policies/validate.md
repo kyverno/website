@@ -81,6 +81,40 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
 
+## Validation Failure Action Overrides
+
+Using `validationFailureActionOverrides`, we can specify which actions to apply per Namespace. This attribute is only available for Cluster Policies.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-label-app
+spec:
+  validationFailureAction: audit
+  validationFailureActionOverrides:
+    - action: enforce
+      namespaces:
+        - default
+    - action: audit
+      namespaces:
+        - test
+  rules:
+    - name: check-label-app
+      match:
+        resources:
+          kinds:
+          - Pod
+      validate:
+        message: "The label `app` is required."
+        pattern:
+          metadata:
+            labels:
+              app: "?*"
+```
+
+In the above policy, for Namespace `default`, validation failure action is set to `enforce` and for Namespace `test`, it's set to `audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
+
 ## Patterns
 
 A validation rule which checks resource data is defined as an overlay pattern that provides the desired configuration. Resource configurations must match fields and expressions defined in the pattern to pass the validation rule. The following rules are followed when processing the overlay pattern:
