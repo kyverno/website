@@ -406,11 +406,21 @@ regex_replace_all_literal(regex string, src string|number, replace string|number
 regex_match(string, string|number) bool
 pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+
 add(number, number) number
+add(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity)
+add(duration|number, duration|number) duration (returns duration if any of the parameters is a duration)
 subtract(number, number) number
+subtract(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity)
+subtract(duration|number, duration|number) duration (returns duration if any of the parameters is a duration)
 multiply(number, number) number
-divide(number, number) number (divisor must be non zero)
-modulo(number, number) number (divisor must be non-zero, arguments must be integers)
+multiply(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity)
+multiply(duration|number, duration|number) duration (returns duration if any of the parameters is a duration)
+divide(quantity|number, quantity|number) quantity|number (returns quantity if exactly of the parameters is a quantity, else a number; the divisor must be non-zero)
+divide(duration|number, duration|number) duration|number (returns duration if exactly of the parameters is a duration, else a number; the divisor must be non-zero)
+modulo(number, number) number
+modulo(quantity|number, quantity|number) quantity (returns quantity if any of the parameters is a quantity; the divisor must be non-zero)
+modulo(duration|number, duration|number) duration (returns duration if any of the parameters is a duration; the divisor must be non-zero)
 path_canonicalize(string) string
 parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
 truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
