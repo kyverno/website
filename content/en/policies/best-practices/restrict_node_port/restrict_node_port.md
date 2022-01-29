@@ -5,7 +5,7 @@ version:
 subject: Service
 policyType: "validate"
 description: >
-    A Kubernetes service of type NodePort uses a host port to receive traffic from  any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports.  Although 'NodePort' services can be useful, their use must be limited to services  with additional upstream security checks.
+    A Kubernetes Service of type NodePort uses a host port to receive traffic from any source. A NetworkPolicy cannot be used to control traffic to host ports. Although NodePort Services can be useful, their use must be limited to Services with additional upstream security checks. This policy validates that any new Services do not use the `NodePort` type.
 ---
 
 ## Policy Definition
@@ -22,11 +22,14 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
-      A Kubernetes service of type NodePort uses a host port to receive traffic from 
-      any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports. 
-      Although 'NodePort' services can be useful, their use must be limited to services 
-      with additional upstream security checks.
+      A Kubernetes Service of type NodePort uses a host port to receive traffic from
+      any source. A NetworkPolicy cannot be used to control traffic to host ports.
+      Although NodePort Services can be useful, their use must be limited to Services
+      with additional upstream security checks. This policy validates that any new Services
+      do not use the `NodePort` type.
 spec:
+  validationFailureAction: audit
+  background: true
   rules:
   - name: validate-nodeport
     match:
@@ -35,7 +38,7 @@ spec:
         - Service
     validate:
       message: "Services of type NodePort are not allowed."
-      pattern: 
+      pattern:
         spec:
           type: "!NodePort"
 ```

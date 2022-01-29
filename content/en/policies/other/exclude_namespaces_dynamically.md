@@ -5,7 +5,7 @@ version:
 subject: Namespace, Pod
 policyType: "validate"
 description: >
-    Policy which illustrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
+    It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
 ---
 
 ## Policy Definition
@@ -22,12 +22,13 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace, Pod
     policies.kyverno.io/description: >-
-      Policy which illustrates how to dynamically look up an allow list of Namespaces from a ConfigMap
+      It's common where policy lookups need to consider a mapping to many possible values rather than a
+      static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap
       where the ConfigMap stores an array of strings. This policy validates that any Pods created
       outside of the list of Namespaces have the label `foo` applied.
 spec:
-  validationFailureAction: enforce
-  background: false
+  validationFailureAction: audit
+  background: true
   rules:
   - name: exclude-namespaces-dynamically
     context:
@@ -42,12 +43,12 @@ spec:
         kinds:
         - Pod
     preconditions:
-    - key: "{{request.object.metadata.namespace}}"
+    - key: "{{request.namespace}}"
       operator: NotIn
       value: "{{namespacefilters.data.exclude}}"
     validate:
       message: >
-        Creating Pods in the {{request.object.metadata.namespace}} namespace,
+        Creating Pods in the {{request.namespace}} namespace,
         which is not in the excluded list of namespaces {{ namespacefilters.data.exclude }},
         is forbidden unless it carries the label `foo`.
       pattern:

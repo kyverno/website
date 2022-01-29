@@ -4,7 +4,7 @@ description: Create additional resources based on resource creation or updates.
 weight: 5
 ---
 
-A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new role bindings or network policies for a namespace.
+A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new RoleBindings or NetworkPolicies for a Namespace.
 
 The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource. It is also possible to match or exclude API requests based on subjects, roles, etc.
 
@@ -17,10 +17,14 @@ As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified
 When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a ConfigMap or Secret, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
 
 {{% alert title="Caution" color="warning" %}}
-Deleting the policy containing a `generate` rule with `synchronize=true` will cause immediate deletion of the downstream generated resources.
+Deleting the policy containing a `generate` rule with a `data` object and `synchronize=true` will cause immediate deletion of the downstream generated resources. Policies containing a `clone` object are not subject to this behavior.
 {{% /alert %}}
 
 Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generatecontroller` and add or update the rules to cover the resources and verbs needed.
+
+{{% alert title="Note" color="info" %}}
+When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion` and kind (ex., `spec.generate.kind`).
+{{% /alert %}}
 
 ## Generate a ConfigMap using inline data
 
@@ -186,6 +190,39 @@ spec:
           policyTypes:
           - Ingress
           - Egress
+```
+
+## Linking resources with ownerReferences
+
+In some cases, a triggering (source) resource and generated (downstream) resource need to share the same lifecycle. That is, when the triggering resource is deleted so too should the generated resource. This is valuable because some resources are only needed in the presence of another, for example a Service of type `LoadBalancer` necessitating the need for a specific network policy in some CNI plug-ins. While Kyverno will not take care of this task internally, Kubernetes can by setting the `ownerReferences` field in the generated resource. With the below example, when the generated ConfigMap specifies the `metadata.ownerReferences[]` object and defines the following fields including `uid`, which references the triggering Service resource, an owner-dependent relationship is formed. Later, if the Service is deleted, the ConfigMap will be as well. See the [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/#owner-references-in-object-specifications) for more details including an important caveat around the scoping of these references. Specifically, Namespaced resources cannot be the owners of cluster-scoped resources, and cross-namespace references are also disallowed.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: demo-ownerref
+spec:
+  background: false
+  rules:
+  - name: demo-ownerref-svc-cm
+    match:
+      resources:
+        kinds:
+        - Service
+    generate:
+      kind: ConfigMap
+      name: "{{request.object.metadata.name}}-gen-cm"
+      namespace: "{{request.namespace}}"
+      synchronize: false
+      data:
+        metadata:
+          ownerReferences:
+          - apiVersion: v1
+            kind: Service
+            name: "{{request.object.metadata.name}}"
+            uid: "{{request.object.metadata.uid}}"
+        data:
+          foo: bar
 ```
 
 ## Generating resources into existing namespaces

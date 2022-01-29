@@ -1,7 +1,9 @@
 {{- define "main" }}
 <div class="policy_grid">
   {{- partialCached "policies/sidebar" . }}
-  <div class="policy_wrap"></div>
+  <div class="policy_wrap">
+    {{ .Content }}
+  </div>
   <div>
     <div class="policy_actions">
       {{- partialCached "policies/toggle" . }}

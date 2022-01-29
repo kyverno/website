@@ -2,10 +2,10 @@
 title: "Restrict Service Account"
 category: Sample
 version: 1.3.5
-subject: Pod
+subject: Pod,ServiceAccount
 policyType: "validate"
 description: >
-    Restrict Pod resources to use a known service account can be useful to ensure workload identity. This policy uses a ConfigMap resource as an external data source to map service accounts to images. Example: 'sa-name: ["registry/image-name"]'
+    Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example: 'sa-name: ["registry/image-name"]'
 ---
 
 ## Policy Definition
@@ -20,16 +20,18 @@ metadata:
     policies.kyverno.io/title: Restrict Service Account
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/subject: Pod,ServiceAccount
     policies.kyverno.io/minversion: 1.3.5
     policies.kyverno.io/description: >-
-      Restrict Pod resources to use a known service account can be useful to
-      ensure workload identity. This policy uses a ConfigMap resource as an
-      external data source to map service accounts to images.
-      Example: 'sa-name: ["registry/image-name"]'
+      Users may be able to specify any ServiceAccount which exists in their Namespace without
+      restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to
+      ensure applications in those Pods do not have more privileges than they should.
+      This policy verifies that in the `staging` Namespace the ServiceAccount being
+      specified is matched based on the image and name of the container. For example:
+      'sa-name: ["registry/image-name"]'
 spec:
-  background: false
-  validationFailureAction: enforce
+  validationFailureAction: audit
+  background: true
   rules:
   - name: validate-service-account
     context:
@@ -49,6 +51,6 @@ spec:
         conditions:
         - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
           operator: NotIn
-          value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}" 
+          value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
 
 ```

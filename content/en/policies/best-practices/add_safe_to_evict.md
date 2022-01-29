@@ -1,11 +1,11 @@
 ---
-title: "Add safe-to-evict"
-category: Best Practices
-version: 
-subject: Pod
+title: "Add Safe To Evict"
+category: Workload Management
+version: 1.4.3
+subject: Pod,Annotation
 policyType: "mutate"
 description: >
-    The Kubernetes cluster autoscaler does not evict pods that use hostPath  or emptyDir volumes. To allow eviction of these pods, the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to pods. 
+    The Kubernetes cluster autoscaler does not evict pods that  use hostPath or emptyDir volumes. To allow eviction of these pods, the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to the pods. 
 ---
 
 ## Policy Definition
@@ -14,43 +14,44 @@ description: >
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
-metadata: 
+metadata:
   name: add-safe-to-evict
   annotations:
-    policies.kyverno.io/title: Add safe-to-evict 
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/category: Workload Management
+    policies.kyverno.io/subject: Pod,Annotation
+    policies.kyverno.io/minversion: 1.4.3
     policies.kyverno.io/description: >-
-      The Kubernetes cluster autoscaler does not evict pods that use hostPath 
-      or emptyDir volumes. To allow eviction of these pods, the annotation 
-      cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to pods. 
+      The Kubernetes cluster autoscaler does not evict pods that 
+      use hostPath or emptyDir volumes. To allow eviction of these pods, the annotation 
+      cluster-autoscaler.kubernetes.io/safe-to-evict=true must be added to the pods. 
 spec: 
   rules: 
   - name: annotate-empty-dir
-    match: 
-      resources: 
-        kinds: 
+    match:
+      resources:
+        kinds:
         - Pod
-    mutate: 
+    mutate:
       patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
         spec:          
           volumes: 
-          - (emptyDir): {}
+          - <(emptyDir): {}
   - name: annotate-host-path
-    match: 
-      resources: 
-        kinds: 
+    match:
+      resources:
+        kinds:
         - Pod
-    mutate: 
+    mutate:
       patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
         spec:          
           volumes: 
-          - (hostPath):
-              path: "*"
+          - hostPath:
+              <(path): "*"
+
 ```

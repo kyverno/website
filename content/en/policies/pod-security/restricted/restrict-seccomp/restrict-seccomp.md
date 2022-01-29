@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    The runtime default seccomp profile must be required, or only specific additional profiles should be allowed.
+    The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is not set or  set to `RuntimeDefault` or `Localhost`.
 ---
 
 ## Policy Definition
@@ -22,13 +22,14 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      The runtime default seccomp profile must be required, or only specific
-      additional profiles should be allowed.
+      The seccomp profile must not be explicitly set to Unconfined. This policy, 
+      requiring Kubernetes v1.19 or later, ensures that seccomp is not set or 
+      set to `RuntimeDefault` or `Localhost`.
 spec:
   background: true
-  validationFailureAction: audit
+  validationFailureAction: enforce
   rules:
-  - name: seccomp
+  - name: restrict-seccomp
     match:
       resources:
         kinds:
@@ -37,21 +38,25 @@ spec:
       message: >-
         Use of custom Seccomp profiles is disallowed. The fields
         spec.securityContext.seccompProfile.type,
-        spec.containers[*].securityContext.seccompProfile.type, and
-        spec.initContainers[*].securityContext.seccompProfile.type
-        must be unset or set to `runtime/default`.
+        spec.containers[*].securityContext.seccompProfile.type,
+        spec.initContainers[*].securityContext.seccompProfile.type, and
+        spec.ephemeralContainers[*].securityContext.seccompProfile.type
+        must not be set, or set to `RuntimeDefault` or `Localhost`.
       pattern:
-        spec:
-          =(securityContext):
+       spec:
+        =(securityContext):
+          =(seccompProfile):
+            type: "RuntimeDefault | Localhost"      
+        containers:
+        - =(securityContext):
             =(seccompProfile):
-              =(type): "runtime/default"
-          =(initContainers):
-          - =(securityContext):
-              =(seccompProfile):
-                =(type): "runtime/default"
-          containers:
-          - =(securityContext):
-              =(seccompProfile):
-                =(type): "runtime/default"
-
+              type: "RuntimeDefault | Localhost"
+        =(initContainers):
+        - =(securityContext):
+            =(seccompProfile):
+              type: "RuntimeDefault | Localhost"
+        =(ephemeralContainers):
+        - =(securityContext):
+            =(seccompProfile):
+              type: "RuntimeDefault | Localhost"
 ```

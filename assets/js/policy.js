@@ -221,7 +221,7 @@ function filterPolicies(obj=chosenPolicies) {
   
   section ? listAppliedFilters() : false;
   
-  updateQuery();
+  !elem('.policy_page') ? updateQuery() : false;
 }
 
 function objIsInArray(obj,obj1) {
@@ -288,7 +288,7 @@ if(policyWrap) {
 
     containsClass(filtersEl, active) && !isToggle && !isTarget(target, ".policy_filters") ? deleteClass(filtersEl, active) : false;
     
-    isToggle ? pushClass(filtersEl, active) : false;
+    isToggle ? modifyClass(filtersEl, active) : false;
     
   });
   
@@ -309,3 +309,13 @@ if(policyWrap) {
     
   });
 }
+
+(function goBack() {
+    let backBtn = elem('.button_back');
+    let history = window.history;
+    if (backBtn) {
+      backBtn.addEventListener('click', function(){
+        history.back();
+      });
+    }
+  })();

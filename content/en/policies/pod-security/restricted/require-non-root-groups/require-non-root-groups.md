@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Pod
 policyType: "validate"
 description: >
-    Containers should be forbidden from running with a root primary or supplementary GID.
+    Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root).
 ---
 
 ## Policy Definition
@@ -23,9 +23,11 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Containers should be forbidden from running with a root primary or supplementary GID.
+      This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number
+      greater than zero (i.e., non root).
 spec:
-  background: true
   validationFailureAction: audit
+  background: true
   rules:
     - name: check-runasgroup
       match:
@@ -34,9 +36,9 @@ spec:
             - Pod
       validate:
         message: >-
-          Running with root group IDs is disallowed. The fields	
-          spec.securityContext.runAsGroup, spec.containers[*].securityContext.runAsGroup,	
-          and spec.initContainers[*].securityContext.runAsGroup must be empty	
+          Running with root group IDs is disallowed. The fields
+          spec.securityContext.runAsGroup, spec.containers[*].securityContext.runAsGroup,
+          and spec.initContainers[*].securityContext.runAsGroup must be empty
           or greater than zero.
         pattern:
           spec:
@@ -55,7 +57,7 @@ spec:
             - Pod
       validate:
         message: >-
-          Adding of supplemental group IDs is not allowed. The field	
+          Adding of supplemental group IDs is not allowed. The field
           spec.securityContext.supplementalGroups must not be defined.
         pattern:
           spec:

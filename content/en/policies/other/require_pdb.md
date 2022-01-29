@@ -5,7 +5,7 @@ version: 1.3.6
 subject: Deployment, PodDisruptionBudget
 policyType: "validate"
 description: >
-    PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This sample policy checks all incoming Deployments to ensure they have a matching, preexisting PodDisruptionBudget.
+    PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This policy checks all incoming Deployments to ensure they have a matching, preexisting PodDisruptionBudget.
 ---
 
 ## Policy Definition
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/subject: Deployment, PodDisruptionBudget
     policies.kyverno.io/description: >-
       PodDisruptionBudget resources are useful to ensuring minimum availability
-      is maintained at all times. This sample policy checks all incoming Deployments
+      is maintained at all times. This policy checks all incoming Deployments
       to ensure they have a matching, preexisting PodDisruptionBudget.
 spec:
   validationFailureAction: audit

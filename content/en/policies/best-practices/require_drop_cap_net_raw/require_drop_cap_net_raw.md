@@ -1,0 +1,135 @@
+---
+title: "Drop CAP_NET_RAW"
+category: Best Practices
+version: 1.5.0
+subject: Pod
+policyType: "validate"
+description: >
+    Capabilities permit privileged actions without giving full root access. The CAP_NET_RAW capability, enabled by default, allows processes in a container to forge packets and bind to any interface potentially leading to MitM attacks. This policy ensures that all containers explicitly drop the CAP_NET_RAW ability.      
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml" target="-blank">/best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml</a>
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: drop-cap-net-raw
+  annotations:
+    policies.kyverno.io/title: Drop CAP_NET_RAW
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Capabilities permit privileged actions without giving full root access. The
+      CAP_NET_RAW capability, enabled by default, allows processes in a container to
+      forge packets and bind to any interface potentially leading to MitM attacks.
+      This policy ensures that all containers explicitly drop the CAP_NET_RAW
+      ability.      
+spec:
+  validationFailureAction: audit
+  background: false
+  rules:
+  # Checks initContainers and containers to ensure they all specify a securityContext.capabilities.drop section
+  - name: check-for-drop-initcontainers
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+      - key: "{{ request.object.spec.initContainers[] | length(@) }}"
+        operator: GreaterThanOrEquals
+        value: 1
+    validate:
+      message: All initContainers must specify the securityContext.capabilities.drop section.
+      deny:
+        conditions:
+          any:
+          # Deny if every initContainer in the Pod doesn't specify the `drop[]` array (doesn't exist)
+          - key: "{{request.object.spec.initContainers[].securityContext.capabilities.drop | length(@) }}"
+            operator: NotEquals
+            value: "{{request.object.spec.initContainers[] | length(@) }}"
+  # Checks containers to ensure they all specify a securityContext.capabilities.drop section
+  - name: check-for-drop-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    validate:
+      message: All containers must specify the securityContext.capabilities.drop section.
+      deny:
+        conditions:
+          any:
+          # Deny if every container in the Pod doesn't specify the `drop[]` array (doesn't exist)
+          - key: "{{request.object.spec.containers[].securityContext.capabilities.drop | length(@) }}"
+            operator: NotEquals
+            value: "{{request.object.spec.containers[] | length(@) }}"
+  # Checks initContainers to ensure they drop CAP_NET_RAW
+  - name: drop-cap-net-raw-initcontainers
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+      # Check if initContainers even exist in the Pod
+      - key: "{{ request.object.spec.initContainers[] | length(@) }}"
+        operator: GreaterThanOrEquals
+        value: 1
+    validate:
+      message: The capability CAP_NET_RAW must be explicitly dropped.
+      foreach:
+      - list: "request.object.spec.initContainers[].securityContext.capabilities"
+        deny:
+          conditions:
+            any:
+            # Loop over the `drop[]` array in each container looking for `CAP_NET_RAW` or `NET_RAW` and deny if not found
+            - key: "{{ element.drop  | contains(@, 'CAP_NET_RAW') || contains(@, 'NET_RAW') }}"
+              operator: Equals
+              value: false
+  # Checks containers to ensure they drop CAP_NET_RAW
+  - name: drop-cap-net-raw-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    validate:
+      message: The capability CAP_NET_RAW must be explicitly dropped.
+      foreach:
+      - list: "request.object.spec.containers[].securityContext.capabilities"
+        deny:
+          conditions:
+            any:
+            # Loop over the `drop[]` array in each container looking for `CAP_NET_RAW` or `NET_RAW` and deny if not found
+            - key: "{{ element.drop  | contains(@, 'CAP_NET_RAW') || contains(@, 'NET_RAW') }}"
+              operator: Equals
+              value: false
+
+```

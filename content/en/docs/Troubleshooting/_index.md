@@ -40,6 +40,20 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
     pod "busybox" deleted
     ```
 
+4. For `validate` policies, ensure that `validationFailureAction` is set to `enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
+
+5. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
+
+**Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?
+
+**Solution**: Follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling. Additionally, gather how many ConfigMap and Secret resources exist in your cluster by running the following command:
+
+```sh
+kubectl get cm,secret -A | wc -l
+```
+
+After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
+
 **Symptom**: Kyverno is working for some policies but not others. How can I see what's going on?
 
 **Solution**: The first thing is to check the logs from the Kyverno Pod to see if it describes why a policy or rule isn't working.

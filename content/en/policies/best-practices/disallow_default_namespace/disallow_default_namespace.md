@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Kubernetes namespaces are an optional feature that provide a way to segment and  isolate cluster resources across multiple applications and users. As a best  practice, workloads should be isolated with namespaces. Namespaces should be required  and the default (empty) namespace should not be used.
+    Kubernetes Namespaces are an optional feature that provide a way to segment and isolate cluster resources across multiple applications and users. As a best practice, workloads should be isolated with Namespaces. Namespaces should be required and the default (empty) Namespace should not be used. This policy validates that Pods specify a Namespace name other than `default`.
 ---
 
 ## Policy Definition
@@ -23,12 +23,14 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Kubernetes namespaces are an optional feature that provide a way to segment and 
-      isolate cluster resources across multiple applications and users. As a best 
-      practice, workloads should be isolated with namespaces. Namespaces should be required 
-      and the default (empty) namespace should not be used.
+      Kubernetes Namespaces are an optional feature that provide a way to segment and
+      isolate cluster resources across multiple applications and users. As a best
+      practice, workloads should be isolated with Namespaces. Namespaces should be required
+      and the default (empty) Namespace should not be used. This policy validates that Pods
+      specify a Namespace name other than `default`.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
   - name: validate-namespace
     match:

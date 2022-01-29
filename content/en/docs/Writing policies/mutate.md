@@ -209,67 +209,7 @@ spec:
 
 Note that when using `patchStrategicMerge` to mutate the `pod.spec.containers[]` array, the `name` key must be specified as a conditional anchor (i.e., `(name): "*"`) in order for the merge to occur on other fields.
 
-## Mutate Overlay
-
-A mutation overlay describes the desired form of resource. The existing resource values are replaced with the values specified in the overlay. If a value is specified in the overlay but not present in the target resource, then it will be added to the resource.
-
-The overlay cannot be used to delete values in a resource: use **patches** for this purpose.
-
-The following mutation overlay will add (or replace) the memory request and limit to 10Gi for every Pod with a label `memory=high`:
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: policy-change-memory-limit
-spec:
-  rules:
-  - name: "Set memory to 10Gi"
-    match:
-      resources:
-        kinds:
-        - Pod
-        selector:
-          matchLabels:
-            memory: high
-    mutate:
-      overlay:
-        spec:
-          containers:
-          # The wildcard * will match all containers. This `name` field is not specifically required
-          # but is included for instructional purposes.
-          - (name): "*"
-            resources:
-              requests:
-                memory: "10Gi"
-              limits:
-                memory: "10Gi"
-```
-
-### Working with lists
-
-Applying overlays to a list type is fairly straightforward: new items will be added to the list unless they already exist. For example, the next overlay will add the IP "192.168.10.172" to all addresses in all Endpoints:
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: policy-endpoints
-spec:
-  rules:
-  - name: "Add IP to subsets"
-    match:
-      resources:
-        kinds:
-        - Endpoints
-    mutate:
-      overlay:
-        subsets:
-        - addresses:
-          - ip: 192.168.42.172
-```
-
-### Conditional logic using anchors
+## Conditional logic using anchors
 
 Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/writing-policies/validate/#anchors) for more general information on conditionals.
 
@@ -281,6 +221,7 @@ The mutate overlay rules support two types of anchors:
 |--------------------|----- |----------------------------------------------------- |
 | Conditional        | ()   | Use the tag and value as an "if" condition           |
 | Add if not present | +()  | Add the tag value if the tag is not already present  |
+| Global             | <()  | Add the pattern when the global anchor is true       |
 
 The **anchors** values support **wildcards**:
 
@@ -289,7 +230,7 @@ The **anchors** values support **wildcards**:
 
 Note that conditional anchors are only supported with the `overlay` and `patchStrategicMerge` mutation methods.
 
-#### Conditional anchor
+### Conditional anchor
 
 A conditional anchor evaluates to `true` if the anchor tag exists and if the value matches the specified value. Processing stops if a tag does not exist or when the value does not match. Once processing stops, any child elements or any remaining siblings in a list will not be processed.
 
@@ -308,7 +249,7 @@ spec:
         kinds :
           - Endpoints
     mutate:
-      overlay:
+      patchStrategicMerge:
         subsets:
         - ports:
           - (name): "secure*"
@@ -340,7 +281,7 @@ spec:
         kinds:
         - Pod
     mutate:
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
@@ -349,7 +290,53 @@ spec:
           - (emptyDir): {}
 ```
 
-#### Anchor processing flow
+### Global Anchor
+
+Similar to validate rules, mutate rules can use the global anchor. When a global anchor is used, the condition inside the anchor, when true, means the rest of the pattern will be applied regardless of how it may relate to the global anchor.
+
+For example, the below policy will add an imagePullSecret called `my-secret` to any Pod if it has a container image beginning with `corp.reg.com`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-imagepullsecrets
+spec:
+  rules:
+  - name: add-imagepullsecret
+    match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchStrategicMerge:
+        spec:
+          containers:
+          - <(image): "corp.reg.com/*"
+          imagePullSecrets:
+          - name: my-secret
+```
+
+The below Pod meets this criteria and so the imagePullSecret called `my-secret` is added.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: web
+      image: corp.reg.com/nginx
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP
+```
+
+### Anchor processing flow
 
 The anchor processing behavior for mutate conditions is as follows:
 
@@ -485,3 +472,60 @@ Labels:       backup-needed=no
               type=database
 <snip>
 ```
+
+## foreach
+
+A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
+
+A `foreach` must contain a `list` attribute that defines the list of elements it processes and a `patchStrategicMerge` declaration. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+
+```yaml
+list: request.object.spec.containers
+patchStrategicMerge:
+  spec:
+    containers:
+       ...
+```
+
+When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing.
+
+A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
+
+Each `foreach` declaration can optionally contain the following declarations:
+
+* [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
+* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+
+Here is a complete example that mutates the image to prepend the address of a trusted registry:
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: prepend-registry
+spec:
+  background: false
+  rules:
+  - name: prepend-registry-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    mutate:
+      foreach:
+      - list: "request.object.spec.containers"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - name: "{{ element.name }}"           
+              image: registry.io/{{ images.containers."{{element.name}}".name}}:{{images.containers."{{element.name}}".tag}}
+```
+
+Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.

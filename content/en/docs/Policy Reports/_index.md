@@ -17,16 +17,22 @@ Kyverno uses the policy report schema published by the [Kubernetes Policy WG](ht
 Policy reports show policy results for current resources in the cluster. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring-kyverno-with-prometheus-metrics/policy-rule-results-info/).
 {{% /alert %}}
 
-{{% alert title="Note" color="info" %}}
-Policy reports are available in Kyverno 1.3.0+. For older (1.2.x) versions, you can use `kubectl get polv -A` to view policy violations.
-{{% /alert %}}
+## Report result logic
+
+Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
+
+`pass`: The resource was applicable to a rule and the pattern passed evaluation.
+`skip`: Preconditions were not satisfied (if applicable) in a rule and so further processing was not performed.
+`fail`: The resource failed the pattern evaluation.
+`warn`: The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`.
+`error`: Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).
 
 ## Viewing policy report summaries
 
 You can view a summary of the namespaced policy report using the following command:
 
 ```sh
-kubectl get policyreport --all
+kubectl get policyreport -A
 ```
 
 For example, here are the policy reports for a small test cluster (`polr` is the shortname for `policyreports`):
@@ -41,33 +47,31 @@ flux-system   polr-ns-flux-system   135    5      0      0       0      28h
 Similarly, you can view the cluster-wide report using:
 
 ```sh
-kubectl get clusterpolicyreport -A
+kubectl get clusterpolicyreport
 ```
 
 {{% alert title="Tip" color="info" %}}
 For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
 {{% /alert %}}
 
-
 {{% alert title="Note" color="info" %}}
 If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as warnings rather than failures. By default, it is set to `"true"` and policy violations are reported as failures.
 {{% /alert %}}
-
 
 ## Viewing policy violations
 
 Since the report provides information on all rule and resource execution, finding policy violations requires an additional filter.
 
-Here is a command to view policy violations for the `default` namespace:
+Here is a command to view policy violations for the `default` Namespace:
 
 ```sh
-kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
+kubectl describe polr polr-ns-default | grep "Result: \+fail" -B10
 ```
 
 Running this in the test cluster shows two containers without `runAsNotRoot: true`.
 
 ```sh
-$ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
+$ kubectl describe polr polr-ns-default | grep "Result: \+fail" -B10
   Message:        validation error: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot, spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot must be `true`. Rule check-containers[0] failed at path /spec/securityContext/runAsNonRoot/. Rule check-containers[1] failed at path /spec/containers/0/securityContext/.
   Policy:         require-run-as-non-root
   Resources:
@@ -78,7 +82,7 @@ $ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
     UID:          1caec743-faed-4d5a-90f7-5f4630febd58
   Rule:           check-containers
   Scored:         true
-  Status:         fail
+  Result:         fail
 --
   Message:        validation error: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot, spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot must be `true`. Rule check-containers[0] failed at path /spec/securityContext/runAsNonRoot/. Rule check-containers[1] failed at path /spec/containers/0/securityContext/.
   Policy:         require-run-as-non-root
@@ -90,13 +94,13 @@ $ kubectl describe polr polr-ns-default | grep "Status: \+fail" -B10
     UID:          b98bdfb7-10e0-467f-a51c-ac8b75dc2e95
   Rule:           check-containers
   Scored:         true
-  Status:         fail
+  Result:         fail
 ```
 
 To view all namespaced violations in a cluster use:
 
 ```sh
-kubectl describe polr -A | grep -i "status: \+fail" -B10
+kubectl describe polr -A | grep -i "Result: \+fail" -B10
 ```
 
 ## Example: Trigger a PolicyReport
@@ -332,5 +336,5 @@ summary:
 ```
 
 {{% alert title="Note" color="info" %}}
-By default, Kyverno's configuration filters out certain key system-level Namespaces from showing in a ClusterPolicyReport in order to eliminate background noise. This can be changed by editing the Kyverno ConfigMap called `init-config` and adjusting the `resourceFilters` entry. For more information, see the [Resource Filters section](https://kyverno.io/docs/installation/#resource-filters) in the [Installation guide](https://kyverno.io/docs/installation/).
+By default, Kyverno's configuration filters out certain key system-level Namespaces from showing in a ClusterPolicyReport in order to eliminate background noise. This can be changed by editing the Kyverno ConfigMap and adjusting the `resourceFilters` entry. For more information, see the [Resource Filters section](https://kyverno.io/docs/installation/#resource-filters) in the [Installation guide](https://kyverno.io/docs/installation/).
 {{% /alert %}}

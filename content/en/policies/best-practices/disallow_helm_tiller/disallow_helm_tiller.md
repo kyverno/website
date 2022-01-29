@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Tiller has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users.
+    Tiller, found in Helm v2, has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users. It is recommend to use Helm v3+ which does not contain Tiller for these reasons. This policy validates that there is not an image containing the name `tiller`.
 ---
 
 ## Policy Definition
@@ -22,11 +22,14 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      Tiller has known security challenges. It requires administrative privileges and acts as a shared
+      Tiller, found in Helm v2, has known security challenges. It requires administrative privileges and acts as a shared
       resource accessible to any authenticated user. Tiller can lead to privilege escalation as
-      restricted users can impact other users.
+      restricted users can impact other users. It is recommend to use Helm v3+ which does not contain
+      Tiller for these reasons. This policy validates that there is not an image
+      containing the name `tiller`.
 spec:
   validationFailureAction: audit
+  background: true
   rules:
     - name: validate-helm-tiller
       match:

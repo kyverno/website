@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces.
+    Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are set to `false`.
 ---
 
 ## Policy Definition
@@ -23,7 +23,8 @@ metadata:
     policies.kyverno.io/description: >-
       Host namespaces (Process ID namespace, Inter-Process Communication namespace, and
       network namespace) allow access to shared information and can be used to elevate
-      privileges. Pods should not be allowed access to host namespaces.
+      privileges. Pods should not be allowed access to host namespaces. This policy ensures
+      fields which make use of these host namespaces are set to `false`.
 spec:
   validationFailureAction: audit
   background: true

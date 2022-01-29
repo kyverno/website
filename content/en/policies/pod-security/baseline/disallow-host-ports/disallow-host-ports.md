@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list.
+    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` fields are empty.
 ---
 
 ## Policy Definition
@@ -22,7 +22,8 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
-      allowed, or at minimum restricted to a known list.
+      allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
+      fields are empty.
 spec:
   validationFailureAction: audit
   background: true

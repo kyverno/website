@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "validate"
 description: >
-    Containers must be required to run as non-root users.
+    Containers must be required to run as non-root users. This policy ensures `runAsNonRoot` is set to `true`.
 ---
 
 ## Policy Definition
@@ -20,10 +20,12 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: Containers must be required to run as non-root users.
+    policies.kyverno.io/description: >-
+      Containers must be required to run as non-root users. This policy ensures
+      `runAsNonRoot` is set to `true`.
 spec:
-  background: true
   validationFailureAction: audit
+  background: true
   rules:
   - name: check-containers
     match:
@@ -44,13 +46,13 @@ spec:
               =(runAsNonRoot): true
           =(initContainers):
           - =(securityContext):
-              =(runAsNonRoot): true              
+              =(runAsNonRoot): true
       - spec:
           containers:
           - securityContext:
               runAsNonRoot: true
           =(initContainers):
           - securityContext:
-              runAsNonRoot: true         
+              runAsNonRoot: true
 
 ```

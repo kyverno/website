@@ -5,121 +5,146 @@ description: >
 weight: 70
 ---
 
-The Kyverno Command Line Interface (CLI) is designed to validate policies and test the behavior of applying policies to resources before adding the policy to a cluster. It can be used as a `kubectl` plugin or as a standalone CLI.
+The Kyverno Command Line Interface (CLI) is designed to validate and test policy behavior to resources prior to adding them to a cluster. The CLI can be used in CI/CD pipelines to assist with the resource authoring process to ensure they conform to standards prior to them being deployed. It can be used as a `kubectl` plugin or as a standalone CLI.
 
-## Installing the CLI
+## Building and Installing the CLI
+
+### Install via Krew
 
 You can use [Krew](https://github.com/kubernetes-sigs/krew) to install the Kyverno CLI:
 
-```bash
+```sh
 # Install Kyverno CLI using kubectl krew plugin manager
 kubectl krew install kyverno
 
 # test the Kyverno CLI
 kubectl kyverno version  
-
 ```
 
-## Install via AUR (archlinux)
+### Install via AUR (archlinux)
 
 You can install the Kyverno CLI via your favorite AUR helper (e.g. [yay](https://github.com/Jguer/yay))
 
-```
+```sh
 yay -S kyverno-git
 ```
 
-## Building the CLI
+### Building the CLI from source
 
-You can also build the CLI binary from the Git repository, and then move the binary into a directory in your PATH.
+You can also build the CLI binary from the Git repository (requires Go).
 
-```bash
-git clone https://github.com/kyverno/kyverno.git
-cd github.com/kyverno/kyverno
+```sh
+git clone https://github.com/kyverno/kyverno
+cd kyverno
 make cli
 mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 ```
 
 ## CLI Commands
 
-When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "standalone" version (binaries [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)) as opposed to the version embedded inside `kubectl`.
+When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "[standalone](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)" version as opposed to the version embedded inside `kubectl`.
 
 ### Apply
 
-Applies policies on resources, and supports applying multiple policies on multiple resources in a single command. The command also supports applying the given policies to an entire cluster. The current `kubectl` context will be used to access the cluster.
+The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster.
 
 {{% alert title="Note" color="info" %}}
 Kyverno CLI in both `apply` and `validate` commands supports files from URLs both as policies and resources.
 {{% /alert %}}
 
-Displays mutate results to stdout, by default. Use the `-o <path>` flag to save mutated resources to a file or directory.
-
 Apply to a resource:
-```
+
+```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml
 ```
 
-Apply to all matching resources in a cluster:
-```
-kyverno apply /path/to/policy.yaml --cluster > policy-results.txt
+Apply a policy to all matching resources in a cluster based on the current `kubectl` context:
+
+```sh
+kyverno apply /path/to/policy.yaml --cluster
 ```
 
 The resources can also be passed from stdin:
-```
+
+```sh
 kustomize build nginx/overlays/envs/prod/ | kyverno apply /path/to/policy.yaml --resource -
 ```
 
 Apply multiple policies to multiple resources:
-```
+
+```sh
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --cluster
 ```
 
-Saving the mutated resource in a file/directory:
-```
-kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o <file path/directory path>
+Apply a mutation policy to a specific resource:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml
+
+applying 1 policy to 1 resource... 
+
+mutate policy <policy_name> applied to <resource_name>:
+<final mutated resource output>
 ```
 
-Apply policy with variables:
+Save the mutated resource to a file:
 
-Use the `--set` flag to pass the values for variables in a policy while applying on a resource.
-
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o newresource.yaml
 ```
+
+Save the mutated resource to a directory:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o foo/
+```
+
+Apply a policy containing variables using the `--set` or `-s` flag to pass in the values. Variables that begin with `{{request.object}}` normally do not need to be specified as these will be read from the resource.
+
+```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `--values_file` for applying multiple policies on multiple resources and pass a file containing variables and its values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
+Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
 
 {{% alert title="Note" color="info" %}}
 When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](https://kyverno.io/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
 {{% /alert %}}
 
-```
+```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
 ```
 
-Format of `value.yaml`:
+Format of `value.yaml` with all possible fields:
 
 ```yaml
 policies:
   - name: <policy1 name>
+    rules:
+    - name: <rule1 name>
+      values:
+        <context variable1 in policy1 rule1>: <value>
+        <context variable2 in policy1 rule1>: <value>
+    - name: <rule2 name>
+      values:
+        <context variable1 in policy1 rule2>: <value>
+        <context variable2 in policy1 rule2>: <value>
     resources:
-      - name: <resource1 name>
-        values:
-          <variable1 in policy1>: <value>
-          <variable2 in policy1>: <value>
-      - name: <resource2 name>
-        values:
-          <variable1 in policy1>: <value>
-          <variable2 in policy1>: <value>
-  - name: <policy2 name>
-    resources:
-      - name: <resource1 name>
-        values:
-          <variable1 in policy2>: <value>
-          <variable2 in policy2>: <value>
-      - name: <resource2 name>
-        values:
-          <variable1 in policy2>: <value>
-          <variable2 in policy2>: <value>
+    - name: <resource1 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+    - name: <resource2 name>
+      values:
+        <variable1 in policy1>: <value>
+        <variable2 in policy1>: <value>
+namespaceSelector:
+- name: <namespace1 name>
+labels:
+  <label key>: <label value>
+- name: <namespace2 name>
+labels:
+  <label key>: <label value>
 ```
 
 Example:
@@ -165,38 +190,150 @@ Resource manifest (`required_default_network_policy.yaml`):
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: "devtest"
+  name: devtest
 ```
 
-Applying policy on resource using `--set` or `-s` flag:
+Apply a policy to a resource using the `--set` or `-s` flag to pass a variable directly:
 
-```
+```sh
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -s request.object.metadata.name=devtest
 ```
 
-Applying policy on resource using `--values_file` or `-f` flag:
+Apply a policy to a resource using the `--values-file` or `-f` flag:
 
 YAML file containing variables (`value.yaml`):
 
 ```yaml
 policies:
-  - name: default-deny-ingress
+  - name: add-networkpolicy
     resources:
       - name: devtest
         values:
           request.namespace: devtest
 ```
 
-```
+```sh
 kyverno apply /path/to/add_network_policy.yaml --resource /path/to/required_default_network_policy.yaml -f /path/to/value.yaml
 ```
 
-Apply policy with namespace selector:
+On applying the above policy to the mentioned resources, the following output will be generated:
 
-Use `--values_file` for passing a file containing namespace details.
-Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about namespace selector.
+```sh
+Applying 1 policy to 1 resource... 
+(Total number of result count may vary as the policy is mutated by Kyverno. To check the mutated policy please try with log level 5)
 
+pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
+
+The summary count is based on the number of rules applied on the number of resources.
+
+Value files also support global values, which can be passed to all resources the policy is being applied to.
+
+Format of `value.yaml`:
+
+```yaml
+policies:
+  - name: <policy1 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy1>: <value>
+          <variable2 in policy1>: <value>
+  - name: <policy2 name>
+    resources:
+      - name: <resource1 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+      - name: <resource2 name>
+        values:
+          <variable1 in policy2>: <value>
+          <variable2 in policy2>: <value>
+globalValues:
+  <global variable1>: <value>
+  <global variable2>: <value>
+```
+
+If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the pod `test-global-prod` in the following example.
+
+Example:
+
+Policy manifest (`add_dev_pod.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cm-globalval-example
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-mode
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
+        deny:
+          conditions:
+            - key: "{{ request.mode }}"
+              operator: NotEquals
+              value: dev
+```
+
+Resource manifest (`dev_prod_pod.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-prod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-global-dev
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.12
+```
+
+YAML file containing variables (`value.yaml`):
+
+```yaml
+policies:
+  - name: cm-globalval-example
+    resources:
+      - name: test-global-prod
+        values:
+          request.mode: prod
+globalValues:
+  request.mode: dev
+```
+
+```sh
+kyverno apply /path/to/add_dev_pod.yaml --resource /path/to/dev_prod_pod.yaml -f /path/to/value.yaml
+```
+
+The pod `test-global-dev` passes the validation, and `test-global-prod` fails.
+
+Apply a policy with the Namespace selector:
+
+Use `--values-file` or `-f` for passing a file containing Namespace details.
+Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selector.
+
+```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
 ```
 
@@ -246,15 +383,15 @@ spec:
 Resource manifest (`nginx.yaml`):
 
 ```yaml
-kind: "Pod"
-apiVersion: "v1"
+kind: Pod
+apiVersion: v1
 metadata:
   name: test-nginx
   namespace: test1
 spec:
   containers:
-  - name: "nginx"
-    image: "nginx:latest"
+  - name: nginx
+    image: nginx:latest
 ```
 
 Namespace manifest (`namespace.yaml`):
@@ -277,39 +414,102 @@ namespaceSelector:
       foo.com/managed-state: managed
 ```
 
-To test the above policy use the following command:
-```
+To test the above policy, use the following command:
+
+```sh
 kyverno apply /path/to/enforce-pod-name.yaml --resource /path/to/nginx.yaml -f /path/to/value.yaml
 ```
 
+Apply a resource to a policy which uses a context variable:
+
+Use `--values-file` or `-f` for passing a file containing the context variable.
+
+```sh
+kyverno apply /path/to/policy1.yaml --resource /path/to/resource1.yaml -f /path/to/value.yaml
+```
+
+`policy1.yaml`
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cm-variable-example
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: example-configmap-lookup
+      context:
+      - name: dictionary
+        configMap:
+          name: mycmap
+          namespace: default
+      match:
+        resources:
+          kinds:
+          - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              my-environment-name: "{{dictionary.data.env}}"
+```
+
+`resource1.yaml`
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-config-test
+spec:
+  containers:
+  - image: nginx:latest
+    name: test-nginx
+```
+
+`value.yaml`
+
+```yaml
+policies:
+  - name: cm-variable-example
+    rules:
+      - name: example-configmap-lookup
+        values:
+          dictionary.data.env: dev1
+```
 
 #### Policy Report
 
-Policy report provide information about policy execution and violation. Use `--policy_report` with the `apply` command to generate policy report.
+Policy reports provide information about policy execution and violations. Use `--policy-report` with the `apply` command to generate a policy report for `validate` policies. `mutate` and `generate` policies do not trigger policy reports.
 
-Policy report can also be generated for a live cluster. While generating a policy report for a live cluster the `-r` flag is assuming a resource by specific name which is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate a policy report for a live cluster use `--cluster` with `--policy_report`.
+Policy reports can also be generated for a live cluster. While generating a policy report for a live cluster the `-r` flag, which declares a resource, is assumed to be globally unique. And it doesn't support naming the resource type (ex., Pod/foo when the cluster contains resources of different types with the same name). To generate a policy report for a live cluster use `--cluster` with `--policy-report`.
 
 ```sh
-kyverno apply policy.yaml --cluster --policy_report
+kyverno apply policy.yaml --cluster --policy-report
 ```
+
 Above example applies a `policy.yaml` to all resources in the cluster.
 
-Below are the combination of inputs that can be used for generating the policy report from Kyverno CLI.
+Below are the combination of inputs that can be used for generating the policy report from the Kyverno CLI.
 
 | Policy        | Resource         | Cluster   | Namespace      | Interpretation                                                                           |
-| ---- |:-------------:| :---------------:| :--------:| :-------------:| :----------------------------------------------------------------------------------------| 
-| policy.yaml   | -r resource.yaml | false     |                | Apply policy from `policy.yaml` to the resources specified in `resource.yaml`                                         |
-| policy.yaml   | -r resourceName  | true      |                | Apply policy from `policy.yaml` to the resource with a given name in the cluster                                        |
-| policy.yaml   |                  | true      |                | Apply policy from policy.yaml to all the resources in the cluster                                   |
-| policy.yaml   | -r resourceName  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to the resource with a given name in a specific Namespace                |
-| policy.yaml   |                  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to all the resources in a specific Namespace           |
-
+| ---- |:-------------:| :---------------:| :--------:| :-------------:| :----------------------------------------------------------------------------------------|
+| policy.yaml   | -r resource.yaml | false     |                | Apply policy from `policy.yaml` to the resources specified in `resource.yaml` |
+| policy.yaml   | -r resourceName  | true      |                | Apply policy from `policy.yaml` to the resource with a given name in the cluster |
+| policy.yaml   |                  | true      |                | Apply policy from policy.yaml to all the resources in the cluster |
+| policy.yaml   | -r resourceName  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to the resource with a given name in a specific Namespace |
+| policy.yaml   |                  | true      | -n=namespaceName   | Apply policy from `policy.yaml` to all the resources in a specific Namespace |
 
 Example:
 
 Consider the following policy and resources:
 
-policy.yaml
+`policy.yaml`
+
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -343,7 +543,8 @@ spec:
                 memory: "?*"
 ```
 
-resource1.yaml
+`resource1.yaml`
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -365,7 +566,8 @@ spec:
         cpu: "500m"
 ```
 
-resource2.yaml
+`resource2.yaml`
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -381,35 +583,42 @@ spec:
 ```
 
 Case 1: Apply a policy manifest to multiple resource manifests
+
 ```sh
-kyverno apply policy.yaml -r resource1.yaml -r resource2.yaml --policy_report
+kyverno apply policy.yaml -r resource1.yaml -r resource2.yaml --policy-report
 ```
 
-Case 2: Apply a policy manifest to multiple resources in the cluster 
+Case 2: Apply a policy manifest to multiple resources in the cluster
 
 Create the resources by first applying manifests `resource1.yaml` and `resource2.yaml`.
+
 ```sh
-kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report
+kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy-report
 ```
 
 Case 3: Apply a policy manifest to all resources in the cluster
+
 ```sh
-kyverno apply policy.yaml --cluster --policy_report
+kyverno apply policy.yaml --cluster --policy-report
 ```
+
 Given the contents of policy.yaml shown earlier, this will produce a report validating against all Pods in the cluster.
 
 Case 4: Apply a policy manifest to multiple resources by name within a specific Namespace
+
 ```sh
-kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy_report -n default
+kyverno apply policy.yaml -r nginx1 -r nginx2 --cluster --policy-report -n default
 ```
 
 Case 5: Apply a policy manifest to all resources within the default Namespace
+
 ```sh
-kyverno apply policy.yaml --cluster --policy_report -n default
+kyverno apply policy.yaml --cluster --policy-report -n default
 ```
+
 Given the contents of `policy.yaml` shown earlier, this will produce a report validating all Pods within the default Namespace.
 
-On applying `policy.yaml` to the mentioned resources, the following report will be generated: 
+On applying `policy.yaml` to the mentioned resources, the following report will be generated:
 
 ```yaml
 apiVersion: wgpolicyk8s.io/v1alpha1
@@ -447,52 +656,73 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests.
+The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
 
-Example:
+Run tests on a set of local files:
 
 ```sh
-kyverno test  /path/to/folderContaningTestYamls
+kyverno test /path/to/folderContainingTestYamls
 ```
-or
+
+Run tests on a Git repo:
 
 ```sh
-kyverno test  /path/to/githubRepository
-``` 
+kyverno test https://github.com/kyverno/policies/main
+```
 
-Use the `--f <fileName.yaml>` flag to set a file name which includes test cases.
+Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `test.yaml`.
 
-Test declaration file format (`test.yaml`)
+The test declaration file format must be of the following format.
 
 ```yaml
-- name: test-1
-  policies:
-     - <path>
-     - <path>
-  resources:
-     - <path>
-     - <path>
-   results:
-   - policy: <name>
-     rule: <name>
-     resource: <name>
-     status: pass
-   - policy: <name>
-     rule: <name>
-     resource: <name>
-     status: fail
-    
+name: mytests
+policies:
+  - <path/to/policy.yaml>
+  - <path/to/policy.yaml>
+resources:
+  - <path/to/resource.yaml>
+  - <path/to/resource.yaml>
+# optional file for declaring variables. see below for example.
+variables: variables.yaml
+results:
+- policy: <name>
+  rule: <name>
+  resource: <name>
+  kind: <kind>
+  result: pass
+- policy: <name>
+  rule: <name>
+  resource: <name>
+  kind: <kind>
+  result: fail
 ```
 
-The test declaration consists of three parts:
+If needing to pass variables, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
+
+```yaml
+policies:
+  - name: exclude-namespaces-example
+    rules:
+      - name: exclude-namespaces-dynamically
+        values:
+          namespacefilters.data.exclude: asdf
+    resources:
+      - name: nonroot-pod
+        values:
+          namespacefilters.data.exclude: foo
+      - name: root-pod
+        values:
+          namespacefilters.data.exclude: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
+```
+
+The test declaration consists of three (optionally four) parts:
 
 1. The `policies` element which lists one or more policies to be applied.
 2. The `resources` element which lists one or more resources to which the policies are applied.
 3. The `results` element which declares the expected results.
+4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
 
 The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
-
-Multiple tests can be defined in the same file using the YAML delimiter `---`.
 
 Example:
 
@@ -563,39 +793,39 @@ results:
   - policy: disallow-latest-tag
     rule: require-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
     resource: myapp-pod
-    status: pass
+    kind: Pod
+    result: pass
 ```
 
 ```sh
 kyverno test <PathToDirs>
 ```
+
 The example above applies a test on the policy and the resource defined in the test YAML.
 
-
 | #        | TEST                                                                    | RESULT           |
-| ---------|:-----------------------------------------------------------------------:|:-----------------| 
+| ---------|:-----------------------------------------------------------------------:|:-----------------|
 | 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
-| 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             | 
-
-
+| 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             |
 
 ### Validate
 
-Validates a policy, can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
+The `validate` command validates that a policy is syntactically valid. It can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
 
 Example:
 
-```
+```sh
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies
 ```
 
 Passing policy from stdin:
 
-```
+```sh
 kustomize build nginx/overlays/envs/prod/ | kyverno validate -
 ```
 
@@ -603,15 +833,15 @@ Use the `-o <yaml/json>` flag to display the mutated policy.
 
 Example:
 
-```
+```sh
 kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
 ```
 
-Policy can also be validated with CRDs. Use `-c` flag to pass the CRD, can pass multiple CRD files or even an entire folder containing CRDs.
+Policy can also be validated with CRDs. Use the `-c` flag to pass the CRD. You can pass multiple CRD files or even an entire folder containing CRDs.
 
 Example:
 
-```
+```sh
 kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFullOfCRDs
 ```
 
@@ -621,6 +851,9 @@ Prints the version of Kyverno used by the CLI.
 
 Example:
 
-```
+```sh
 kyverno version
+Version: 1.4.2
+Time: 2021-08-11T20:09:26Z
+Git commit ID: fb6e0f18ea89c9b60c604e5135f38040fafbc1e4
 ```
