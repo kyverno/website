@@ -38,8 +38,9 @@ spec:
       message: "Pod lifetime exceeds limit of 8h"
       deny:
         conditions:
-        - key: "{{ request.object.metadata.annotations.\"pod.kubernetes.io/lifetime\" }}"
-          operator: GreaterThan
-          value: "8h"
+          any:
+          - key: "{{ request.object.metadata.annotations.\"pod.kubernetes.io/lifetime\" }}"
+            operator: GreaterThan
+            value: "8h"
 
 ```

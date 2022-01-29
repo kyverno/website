@@ -48,7 +48,8 @@ spec:
       message: "There is no corresponding PodDisruptionBudget found for this Deployment."
       deny:
         conditions:
-        - key: "{{pdb_count}}"
-          operator: LessThan
-          value: 1
+          any:
+          - key: "{{pdb_count}}"
+            operator: LessThan
+            value: 1
 ```

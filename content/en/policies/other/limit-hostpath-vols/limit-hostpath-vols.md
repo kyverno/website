@@ -54,7 +54,8 @@ spec:
       - list: "request.object.spec.volumes[?hostPath].hostPath"
         deny:
           conditions:
-          - key: "{{ element.path  | to_string(@) | split(@, '/') | [1] }}"
-            operator: NotEquals
-            value: data
+            any:
+            - key: "{{ element.path  | to_string(@) | split(@, '/') | [1] }}"
+              operator: NotEquals
+              value: data
 ```

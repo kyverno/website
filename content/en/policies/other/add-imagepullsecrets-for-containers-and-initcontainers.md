@@ -39,8 +39,8 @@ spec:
       any:
       - key: "corp.reg.com"
         operator: In
-        value: "{{ images.initContainers.*.registry }}"
-      - key: "corp.reg.com"          
+        value: "{{ images.initContainers.*.registry || `[]` }}"
+      - key: "corp.reg.com/*"          
         operator: In
         value: "{{ images.containers.*.registry }}"
     mutate:
