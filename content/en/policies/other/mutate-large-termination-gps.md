@@ -35,6 +35,7 @@ spec:
           kinds:
             - Pod
       preconditions:
+        all:
         - key: "{{request.object.spec.terminationGracePeriodSeconds}}"
           operator: GreaterThan
           value: 50   # maximum tGPS allowed by cluster admin

@@ -49,7 +49,8 @@ spec:
       message: "Every Deployment requires a matching NetworkPolicy."
       deny:
         conditions:
-        - key: "{{policies_count}}"
-          operator: LessThan
-          value: 1
+          any:
+          - key: "{{policies_count}}"
+            operator: LessThan
+            value: 1
 ```

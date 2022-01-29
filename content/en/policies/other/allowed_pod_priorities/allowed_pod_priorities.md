@@ -51,9 +51,10 @@ spec:
         of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
-        - key: "{{ request.object.spec.template.spec.priorityClassName }}"
-          operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
+          any:
+          - key: "{{ request.object.spec.template.spec.priorityClassName }}"
+            operator: NotIn
+            value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-pods
     context:
       - name: podprioritydict
@@ -70,9 +71,10 @@ spec:
         of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
-        - key: "{{ request.object.spec.priorityClassName }}"
-          operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
+          any:
+          - key: "{{ request.object.spec.priorityClassName }}"
+            operator: NotIn
+            value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-cronjob
     context:
       - name: podprioritydict
@@ -89,8 +91,9 @@ spec:
         of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.{{request.namespace}} }}.
       deny:
         conditions:
-        - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
-          operator: NotIn
-          value:  "{{ podprioritydict.data.{{request.namespace}} }}"
+          any:
+          - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
+            operator: NotIn
+            value:  "{{ podprioritydict.data.{{request.namespace}} }}"
 
 ```
