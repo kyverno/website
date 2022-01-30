@@ -1,10 +1,42 @@
 ---
 title: Troubleshooting 
-description: Processes for troubleshooting Kyverno.
+description: Processes for troubleshooting and recovery of Kyverno.
 weight: 110
 ---
 
-Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following points can be used to help troubleshoot Kyverno when things go wrong.
+Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following sections can be used to help troubleshoot and recover when things go wrong.
+
+## API server is blocked
+
+**Symptom**: Kyverno pods are not running and the API server is timing out due to webhook timeouts. This can happen if the Kyverno pods are not gracefully terminated, or if there is a cluster outage, and policies were configure to [fail-closed](/docs/writing-policies/policy-settings/).
+
+**Solution**: Delete the Kyverno validating and mutating webhook configurations and then restart Kyverno.
+
+1. Delete the validating and mutating webhook configurations that instruct the API server to forward requests to Kyverno:
+
+```sh
+kubectl delete validatingwebhookconfiguration kyverno-resource-validating-webhook-cfg
+kubectl delete  mutatingwebhookconfiguration kyverno-resource-mutating-webhook-cfg
+```
+
+Note that these two webhook configurations are used for resources, and other Kyverno webhooks are for internal operations and typically do not need to be deleted.
+
+2. Restart Kyverno
+
+Either delete the Kyverno pods or scale then down and then up. For example, for an installation with 3 replicas use:
+
+```sh
+kubectl scale deploy kyverno -n kyverno --replicas 0
+kubectl scale deploy kyverno -n kyverno --replicas 3
+```
+
+3. Consider excluding namespaces
+
+Use [namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system namespaces. Note that this configuration bypasses all policy checks on select namespaces, and may violate security best practices.
+
+
+## Policies not applied
+
 
 **Symptom**: My policies are created but nothing seems to happen when I create a resource that should trigger them.
 
@@ -44,6 +76,9 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 5. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
 
+
+## Kyverno consumes a lot of resources
+
 **Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?
 
 **Solution**: Follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling. Additionally, gather how many ConfigMap and Secret resources exist in your cluster by running the following command:
@@ -54,6 +89,9 @@ kubectl get cm,secret -A | wc -l
 
 After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
 
+
+## Policies are partially applied
+
 **Symptom**: Kyverno is working for some policies but not others. How can I see what's going on?
 
 **Solution**: The first thing is to check the logs from the Kyverno Pod to see if it describes why a policy or rule isn't working.
@@ -62,15 +100,23 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 2. If no helpful information is being displayed at the default logging level, increase the level of verbosity by editing the Kyverno Deployment. To edit the Deployment, assuming Kyverno was installed into the default Namespace, use the command `kubectl -n kyverno edit deploy kyverno`. Find the `args` section for the container named `kyverno` and change the `-v=2` switch to `-v=6`. This will increase the logging level to its highest. Take care to revert this back to `-v=2` once troubleshooting steps are concluded.
 
+
+## Kyverno exits
+
 **Symptom**: I have a large cluster with many objects and many Kyverno policies. Kyverno is seen to sometimes crash.
 
 **Solution**: In cases of very large scale, it may be required to increase the memory limit of the Kyverno Pod so it can keep track of these objects.
 
 1. Edit the Kyverno Deployment and increase the memory limit on the `kyverno` container by using the command `kubectl -n kyverno edit deploy kyverno`. Change the `resources.limits.memory` field to a larger value. Continue to monitor the memory usage by using something like the [Kubernetes metrics-server](https://github.com/kubernetes-sigs/metrics-server#installation).
 
+
+## Kyverno fails on GKE
+
 **Symptom**: I'm using GKE and after installing Kyverno, my cluster is either broken or I'm seeing timeouts and other issues.
 
 **Solution**: Private GKE clusters do not allow certain communications from the control planes to the workers, which Kyverno requires to receive webhooks from the API server. In order to resolve this issue, create a firewall rule which allows the control plane to speak to workers on the Kyverno TCP port which by default at this time is 9443.
+
+## Kyverno fails on EKS
 
 **Symptom**: I'm an EKS user and I'm finding that resources that should be blocked by a Kyverno policy are not.
 
