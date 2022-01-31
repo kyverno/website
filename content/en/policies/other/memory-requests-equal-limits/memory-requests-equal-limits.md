@@ -43,9 +43,10 @@ spec:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:
         conditions:
-        - key: "{{ request.object.spec.template.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
-          operator: NotEquals
-          value: 0
+          any:
+          - key: "{{ request.object.spec.template.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
+            operator: NotEquals
+            value: 0
   - name: memory-requests-equal-limits-pod
     match:
       resources:
@@ -55,9 +56,10 @@ spec:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:
         conditions:
-        - key: "{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
-          operator: NotEquals
-          value: 0
+          any:
+          - key: "{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
+            operator: NotEquals
+            value: 0
   - name: memory-requests-equal-limits-cronjob
     match:
       resources:
@@ -67,8 +69,9 @@ spec:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:
         conditions:
-        - key: "{{ request.object.spec.jobTemplate.spec.template.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
-          operator: NotEquals
-          value: 0
+          any:
+          - key: "{{ request.object.spec.jobTemplate.spec.template.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
+            operator: NotEquals
+            value: 0
 
 ```

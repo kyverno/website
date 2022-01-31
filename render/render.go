@@ -43,13 +43,19 @@ func stringContains(rawString string, substring string) bool {
 }
 
 func getPolicyType(yaml string) string {
-	policyTypes := []string{"generate", "mutate", "validate"}
-	if stringContains(yaml, policyTypes[0]) {
-		return policyTypes[0]
-	} else if stringContains(yaml, policyTypes[1]) {
-		return policyTypes[1]
+	generate := "generate"
+	mutate := "mutate"
+	validate := "validate"
+	verifyImages := "verifyImages"
+
+	if stringContains(yaml, generate) {
+		return generate
+	} else if stringContains(yaml, mutate) {
+		return mutate
+	} else if stringContains(yaml, validate) {
+		return validate
 	} else {
-		return policyTypes[2]
+		return verifyImages
 	}
 }
 

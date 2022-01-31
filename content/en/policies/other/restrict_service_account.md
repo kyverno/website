@@ -2,7 +2,7 @@
 title: "Restrict Service Account"
 category: Sample
 version: 1.3.5
-subject: Pod
+subject: Pod,ServiceAccount
 policyType: "validate"
 description: >
     Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example: 'sa-name: ["registry/image-name"]'
@@ -20,7 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict Service Account
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/subject: Pod,ServiceAccount
     policies.kyverno.io/minversion: 1.3.5
     policies.kyverno.io/description: >-
       Users may be able to specify any ServiceAccount which exists in their Namespace without
@@ -49,8 +49,9 @@ spec:
       message: "Invalid service account {{ request.object.spec.serviceAccountName }} for image {{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
       deny:
         conditions:
-        - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
-          operator: NotIn
-          value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
+          any:
+          - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
+            operator: NotIn
+            value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
 
 ```

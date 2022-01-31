@@ -37,9 +37,9 @@ spec:
         - Pod
     preconditions:
       any:
-      - key: "corp.reg.com/*"
+      - key: "corp.reg.com"
         operator: In
-        value: "{{ images.initContainers.*.registry }}"
+        value: "{{ images.initContainers.*.registry || `[]` }}"
       - key: "corp.reg.com/*"          
         operator: In
         value: "{{ images.containers.*.registry }}"
@@ -48,4 +48,5 @@ spec:
         spec:
           imagePullSecrets:
           - name: my-secret
+
 ```

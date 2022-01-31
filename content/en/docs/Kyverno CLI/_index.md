@@ -664,12 +664,37 @@ Run tests on a set of local files:
 kyverno test /path/to/folderContainingTestYamls
 ```
 
-Run tests on a Git repo:
+##### Run tests on a Git repo:
+
+Testing on an entire repo by specifying branch name within repo URL:
 
 ```sh
-kyverno test https://github.com/kyverno/policies/main
+kyverno test https://github.com/<ORG>/<REPO>/<BRANCH>
+```
+Example:
+```sh
+kyverno test https://github.com/kyverno/policies/release-1.5
 ```
 
+{{% alert title="Note" color="info" %}}
+If `<BRANCH>` is not provided in this case, the default branch is assumed to be `main`.
+{{% /alert %}}
+
+Testing on a specific directory of the repo by specifying the directory within repo URL, and the branch with `--git-branch` flag _(shorthand `-b`)_:
+
+```sh
+kyverno test https://github.com/<ORG>/<REPO>/<DIR> --git-branch <BRANCH>
+```
+Example:
+```sh
+kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-branch release-1.5
+```
+
+{{% alert title="Note" color="info" %}}
+While providing `<DIR>` within the repo URL, it is necessary to provide the branch using the `--git-branch` or `-b` flag, even if it is `main`.
+{{% /alert %}}
+
+\
 Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `test.yaml`.
 
 The test declaration file format must be of the following format.
