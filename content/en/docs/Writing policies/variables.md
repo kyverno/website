@@ -411,6 +411,7 @@ subtract(number, number) number
 multiply(number, number) number
 divide(number, number) number (divisor must be non zero)
 modulo(number, number) number (divisor must be non-zero, arguments must be integers)
+parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
 truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
 ```
 
