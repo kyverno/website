@@ -111,6 +111,10 @@ require-labels:
     Validation rule autogen-check-for-labels failed at path /spec/template/metadata/labels/app.kubernetes.io/name/'
 ```
 
+{{% alert title="Note" color="info" %}}
+Kyverno may be configured to exclude system namespaces like `kube-system` and the `kyverno` namespace. Make sure you run the test pod in a user defined namespace, or the `default` namespace.
+{{% /alert %}}
+
 Although the ClusterPolicy matches on Pods, Kyverno intelligently applies this to all sources capable of generating Pods by default, including the Deployment above.
 
 Create a Pod with the required label. For example, using this command:
