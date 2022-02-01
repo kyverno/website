@@ -141,7 +141,11 @@ The following operators are currently supported for precondition evaluation:
 - Equals
 - NotEquals
 - In
+- AnyIn
+- AllIn
 - NotIn
+- AnyNotIn
+- AllNotIn
 - GreaterThan
 - GreaterThanOrEquals
 - LessThan
@@ -151,7 +155,7 @@ The following operators are currently supported for precondition evaluation:
 - DurationLessThan
 - DurationLessThanOrEquals
 
-The set operators, `In` and `NotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] In ["str1", "str2", "str3"]). In this case `In` checks if **all** the strings part of the key are in the value set (i.e. key is a subset of value) and `NotIn` checks if **any** of the strings part of the key is **not** in the value set (i.e. key is not a subset of value). Sets of other types are currently not supported.
+The set operators, `In`, `AnyIn`, `AllIn`, `NotIn`, `AnyNotIn` and `AllNotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] AllIn ["str1", "str2", "str3"]). In this case `AllIn` checks if **all** of the strings part of the key are in the value set (i.e. key is a subset of value), `AnyIn` checks if **any** of the strings part of the key are in the value set (i.e. one or more common elements in key and value), `AllNotIn` checks if **all** of the strings part of the key is **not** in the value set (i.e. no common elements in key and value) and `AnyNotIn` checks if **any** of the strings part of the key is **not** in the value set (i.e. key is not a subset of value). Sets of other types are currently not supported. Old operators `In` and `NotIn` work like `AllIn` and `AnyNotIn`, these are now deprecated.
 
 The duration operators can be used for things such as validating an annotation that is a duration unit. Duration operators expect numeric key or value as seconds or as a string that is a valid Go time duration, eg: "1h". The string units supported are `s` (second), `m` (minute) and `h` (hour).  Full details on supported duration strings are covered by [time.ParseDuration](https://pkg.go.dev/time#ParseDuration).
 

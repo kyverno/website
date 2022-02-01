@@ -1,108 +1,115 @@
 # How to Contribute
- We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!
 
- 
- We'd love to accept your patches and contributions to this project. There are just a few small guidelines you need to follow.
+We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!.
+We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
 
 ## Contributor License Agreement
 
- Contributions to this project must be accompanied by a Contributor License
- Agreement. You (or your employer) retain the copyright to your contribution;
- this simply gives us permission to use and redistribute your contributions as
- part of the project. Head over to <https://cla.developers.google.com/> to see your current agreements on file or to sign a new one.
-
- You generally only need to submit a CLA once, so if you've already submitted one
- (even if it was for a different project), you probably don't need to do it
- again.
+Contributions to this project must be accompanied by a Contributor License
+Agreement. Project authors will retain the copyright to your contribution;
+this simply gives us permission to use and redistribute your contributions as
+part of the project. Head over to <https://identity.linuxfoundation.org/projects/cncf> to see your current agreements on file or to sign a new one.
+You generally only need to submit a CLA once, so if you've already submitted one
+(even if it was for a different project), you probably don't need to do it
+again.
 
 ## Code reviews
 
- All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
+All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
 
 ## Community Guidelines
 
- This project follows[Google's Open Source Community Guidelines](https://opensource.google.com/conduct/).
+This project follows[CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
 ## Code of conduct
- Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
 
-## Ways You Can Contribute
-  If you wish to contribute to this project, follow these steps below:
- - Step 1: [Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-1-report-issues)
- - Step 2: [Submit a Pull Request](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-2-submit-pull-requests)
- - Step 3: [Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-3-fix-or-improve-documentation) 
- - Step 4: [Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#step-4-join-our-community-meetings) 
+Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
 
-### Step 1: Report issues
- If you see a bug or want to add new features  please create an [issue](https://github.com/kyverno/kyverno/issues/new/choose).
-  - Report potential bugs
-  - Request a feature
-  - Request a sample policy
+## Ways You Can Contribute/Engage
 
-### Step 2: Submit a Pull Request
+If you wish to contribute to this project, follow these steps below:
 
- Find an [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
- 1. **Fork the Kyverno repo:**
+[Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#report-issues)
+[Submit a Pull Request](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#submit-pull-requests)
+[Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#fix-or-improve-documentation)
+[Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#join-our-community-meetings)
 
-   Head over to project repository on github and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
+### Report issues
 
- 2. **Clone the repository to your device:**
+If you see a bug or want to add new features please create an [issue](https://github.com/kyverno/kyverno/issues/new/choose).
 
-  To clone this repository, copy the link of below, paste it in your device terminal and replace the *YOUR-GITHUB-ID* with your Github ID.
+- Report potential bugs
+- Request a feature
+- Request a sample policy
 
- ```
- $ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+### Submit a Pull Request
 
- ```
-3. **Create a branch:** 
+Find [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
 
-  Create a new branch and navigate to the branch using this command.
+1.  **Fork the Kyverno repo:**
 
-  ```
-  $ git checkout -b <new-branch>
-  ```
+Head over to project repository on GitHub and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
 
- Great, it's time to start hacking. You can now go ahead to make all the changes you want.
+2.  **Clone the repository to your device:**
 
- 4. **Setup local development environments**
-   
-  Then navigate to the local folder and build the website for local viewing of changes using this command:
+To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your GitHub ID.
 
- ```sh
+```
+$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
 
- cd kyverno-website
+```
 
+3. **Create a branch:**
 
- hugo server -v
+Create a new branch and navigate to the branch using this command.
 
- ```
- 5. **Stage, Commit and Push changes:**
+```
+$ git checkout -b <new-branch>
+```
 
-  Now that we have implemented the required changes, use the command below to stage the changes and commit them.
+Great, it's time to start hacking. You can now go ahead to make all the changes you want.
 
- ```
- $ git add .
- ```
+4.  **Setup local development environments**
 
- ```
- $ git commit -s -m "Commit message"
- ```
+Then navigate to the local folder and build the website for local viewing of changes using this command:
 
- The -s signifies that you have signed off the the commit.
+```sh
 
- Go ahead and push your changes to github using this command.
- 
- ``` 
- $ git push 
- ```
-  
-### Step 3: Fix or Improve Documentation
-   - [Kyverno Docs](https://github.com/kyverno/website)
+cd kyverno-website
 
 
-### Step 4: Join Our Community Meetings
- The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://slack.k8s.io/#kyverno). 
- 
+hugo server -v
+
+```
+
+5.  **Stage, Commit and Push changes:**
+
+Now that we have implemented the required changes, use the command below to stage the changes and commit them.
+
+```
+$ git add .
+```
+
+```
+$ git commit -s -m "Commit message"
+```
+
+The -s signifies that you have signed off the the commit.
+
+Go ahead and push your changes to GitHub using this command.
+
+```
+$ git push
+```
+
+### Fix or Improve Documentation
+
+- [Kyverno Docs](https://github.com/kyverno/website)
+
+### Join Our Community Meetings
+
+The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://slack.k8s.io/#kyverno).
+
 ## Developer Certificate of Origin (DCO) Sign off
 
 For contributors to certify that they wrote or otherwise have the right to submit the code they are contributing to the project, we are requiring everyone to acknowledge this by signing their work.
@@ -114,11 +121,13 @@ Signed-off-by: Random J Developer <random@developer.example.org>
 ```
 
 This can easily be done with the `-s` command line option to append this automatically to your commit message.
+
 ```
 $ git commit -s -m 'This is my commit message'
 ```
 
 By doing this you state that you can certify the following (https://developercertificate.org/):
+
 ```
 Developer Certificate of Origin
 Version 1.1

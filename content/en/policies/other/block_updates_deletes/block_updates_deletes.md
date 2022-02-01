@@ -45,9 +45,10 @@ spec:
       message: "This resource is protected and changes are not allowed. Please seek a cluster-admin."
       deny:
         conditions:
-          - key: "{{request.operation}}"
-            operator: In
-            value:
-            - DELETE
-            - UPDATE
+          any:
+            - key: "{{request.operation}}"
+              operator: In
+              value:
+              - DELETE
+              - UPDATE
 ```

@@ -2,12 +2,14 @@
 
 Source for: https://kyverno.io
 
-## contributor
+## Contributors
+
 <a href="https://github.com/kyverno/website/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=kyverno/website" />
 </a>
 
 Made with [contributors-img](https://contrib.rocks).
+
 ## Contributing
 
 This site makes use of the [Docsy](https://docsy.dev) theme and [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
@@ -86,6 +88,7 @@ In the `main` branch:
 Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. For such cases, a PR must be created for each release branch. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
 
 There are several ways to create multiple PRs, but here is one easy flow:
+
 1. Create a PR for the `main` branch, as usual.
 2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
 3. Submit PRs for each release branch.

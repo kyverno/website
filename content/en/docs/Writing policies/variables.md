@@ -77,7 +77,7 @@ For more information on operators see the [Operators](/docs/writing-policies/val
 
 ## Escaping Variables
 
-In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, as of Kyverno 1.5.0 these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values.
+In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, as of Kyverno 1.5.0 these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values. Variables written in JMESPath notation can also be escaped using the same syntax, for example `\{{ request.object.metadata.name }}`.
 
 In the below policy, the value of `OTEL_RESOURCE_ATTRIBUTES` contains references to other environment variables which will be quoted literally as, for example, `$(POD_NAMESPACE)`.
 
@@ -181,6 +181,7 @@ Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made 
 - `{{request.object}}`: the object being created or modified. It is null for `DELETE` requests.
 - `{{request.oldObject}}`: the object being modified. It is null for `CREATE` and `CONNECT` requests.
 - `{{request.userInfo}}`: contains information on who/what submitted the request which includes the `groups` and `username` keys.
+- `{{request.namespace}}`: the Namespace of the object subject to the operation.
 
 Here are some examples of looking up this data:
 
@@ -204,7 +205,7 @@ Variables from the `AdmissionReview` can also be combined with user-defined stri
 
 1. Build a name from multiple variables (type string)
 
-`"ns-owner-{{request.object.metadata.namespace}}-{{request.userInfo.username}}-binding"`
+`"ns-owner-{{request.namespace}}-{{request.userInfo.username}}-binding"`
 
 Let's look at an example of how this AdmissionReview data can be used in Kyverno policies.
 
@@ -403,6 +404,7 @@ split(str string, sep string) []string
 regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 regex_match(string, string|number) bool
+pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
 add(number, number) number
 subtract(number, number) number
@@ -410,6 +412,8 @@ multiply(number, number) number
 divide(number, number) number (divisor must be non zero)
 modulo(number, number) number (divisor must be non-zero, arguments must be integers)
 path_canonicalize(string) string
+parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
+truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
 ```
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.

@@ -25,7 +25,6 @@
   weight = -98
   url = "/community"
 
-
 [[main]]
   name = "Support"
   weight = -90
