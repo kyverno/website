@@ -123,6 +123,19 @@ kubectl get clusterroles,roles -A | grep kyverno
 ```
 It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
+### Networking
+
+Kyverno network traffic is encrypted and should be restricted using network policies or similar constructs.
+
+By default, a Kyverno installation does not configure network policies (see [GitHub issue](https://github.com/kyverno/kyverno/issues/2917)). The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) has a `networkPolicy.enabled` option to enable a network policy. 
+
+Kyverno requires the following network communications to be allowed:
+* ingress traffic to port 9443 from the API server
+* ingress traffic to port 9443 from the host for health checks
+* ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors.
+* egress traffic to the API server if the [API Call](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) feature is used.
+* egress (HTTPS) traffic to OCI registries if [image verification](/docs/writing-policies/verify-images/) policy rules are configured.
+
 ### Webhooks
 
 Use the following command to view all Kyverno roles:
@@ -348,9 +361,4 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 9 - Strictly control external system access](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-9---strictly-control-external-system-access)
 
-    By default, a Kyverno installation does not configure network policies (see [GitHub issue](https://github.com/kyverno/kyverno/issues/2917)). The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) has a `networkPolicy.enabled` option to enable a network policy. Kyverno requires the following network communications to be allowed:
-    * ingress traffic to port 9443 from the API server
-    * ingress traffic to port 9443 from the host for health checks
-    * ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors.
-    * egress traffic to the API server if the [API Call](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) feature is used.
-    * egress (HTTPS) traffic to OCI registries if [image verification](/docs/writing-policies/verify-images/) policy rules are configured.
+    See [Networking](/docs/security/#networking) for details on securing networking communications for Kyverno.
