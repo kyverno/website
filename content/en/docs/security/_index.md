@@ -123,6 +123,19 @@ kubectl get clusterroles,roles -A | grep kyverno
 ```
 It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
+### Networking
+
+Kyverno network traffic is encrypted and should be restricted using network policies or similar constructs.
+
+By default, a Kyverno installation does not configure network policies (see [GitHub issue](https://github.com/kyverno/kyverno/issues/2917)). The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) has a `networkPolicy.enabled` option to enable a network policy. 
+
+Kyverno requires the following network communications to be allowed:
+* ingress traffic to port 9443 from the API server
+* ingress traffic to port 9443 from the host for health checks
+* ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors.
+* egress traffic to the API server if the [API Call](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) feature is used.
+* egress (HTTPS) traffic to OCI registries if [image verification](/docs/writing-policies/verify-images/) policy rules are configured.
+
 ### Webhooks
 
 Use the following command to view all Kyverno roles:
@@ -163,7 +176,9 @@ The [Kubernetes SIG Security](https://github.com/kubernetes/community/tree/maste
 
 The sections below list each threat, mitigation, and provide Kyverno specific details. 
 
-### [Threat ID 1 - Attacker floods webhook with traffic preventing its operations](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-1---attacker-floods-webhook-with-traffic-preventing-its-operations)
+### Threat ID 1 - Attacker floods webhook with traffic preventing its operations
+
+[Threat Model Link]((https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-1---attacker-floods-webhook-with-traffic-preventing-its-operations)) 
 
 **Mitigation:**
 
@@ -172,7 +187,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
   Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
 
 
-### [Threat ID 2 - Attacker passes workloads which require complex processing causing timeouts](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model)
+### Threat ID 2 - Attacker passes workloads which require complex processing causing timeouts
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model)
 
 **Mitigations:**
 
@@ -185,7 +202,10 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
       By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 
-### [Threat ID 3 - Attacker exploits misconfiguration of webhook to bypass](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-3---attacker-exploits-misconfiguration-of-webhook-to-bypass)
+### Threat ID 3 - Attacker exploits misconfiguration of webhook to bypass
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-3---attacker-exploits-misconfiguration-of-webhook-to-bypass)
+
 
 **Mitigation:**
 
@@ -193,7 +213,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
     Kyverno automatically generates webhook configurations based on the configured policy set. This ensures that webhooks are always updates and minimally configured.
 
-### [Threat ID 4 - Attacker has rights to delete or modify the k8s webhook object](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-4---attacker-has-rights-to-delete-or-modify-the-k8s-webhook-object)
+### Threat ID 4 - Attacker has rights to delete or modify the k8s webhook object
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-4---attacker-has-rights-to-delete-or-modify-the-k8s-webhook-object)
 
 **Mitigation:**
 
@@ -201,7 +223,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
     Kyverno RBAC configurations are described in the [installation section](/docs/installation/#roles-and-permissions). The `kyverno:webhook` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
-### [Threat ID 5 - Attacker gets access to valid credentials for the webhook](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-5---attacker-gets-access-to-valid-credentials-for-the-webhook)
+### Threat ID 5 - Attacker gets access to valid credentials for the webhook
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-5---attacker-gets-access-to-valid-credentials-for-the-webhook)
 
 **Mitigation:**
 
@@ -209,13 +233,17 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
   Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
 
-### [Threat ID 6 - Attacker gains access to a cluster admin credential](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-6---attacker-gains-access-to-a-cluster-admin-credential)
+### Threat ID 6 - Attacker gains access to a cluster admin credential
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-6---attacker-gains-access-to-a-cluster-admin-credential)
 
 **Mitigation**
 
   **N/A**
 
-### [Threat ID 7 - Attacker sniffs traffic on the container network](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-7---attacker-sniffs-traffic-on-the-container-network)
+### Threat ID 7 - Attacker sniffs traffic on the container network
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-7---attacker-sniffs-traffic-on-the-container-network)
 
 **Mitigation**
 
@@ -223,7 +251,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
   Kyverno uses HTTPS for all webhook traffic.
 
-### [Threat ID 8 - Attacker carries out a MITM attack on the webhook](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-8---attacker-carries-out-a-mitm-attack-on-the-webhook)
+### Threat ID 8 - Attacker carries out a MITM attack on the webhook
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-8---attacker-carries-out-a-mitm-attack-on-the-webhook)
 
 **Mitigation**
 
@@ -232,8 +262,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
      By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 
-### [Threat ID 9 - Attacker steals traffic from the webhook via spoofing](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-9---attacker-steals-traffic-from-the-webhook-via-spoofing)
+### Threat ID 9 - Attacker steals traffic from the webhook via spoofing
 
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-9---attacker-steals-traffic-from-the-webhook-via-spoofing)
 
 **Mitigation**
 
@@ -241,7 +272,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
      By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
-### [Threat ID 10 - Abusing a mutation rule to create a privileged container](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-10---abusing-a-mutation-rule-to-create-a-privileged-container)
+### Threat ID 10 - Abusing a mutation rule to create a privileged container
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-10---abusing-a-mutation-rule-to-create-a-privileged-container)
 
 **Mitigation**
 
@@ -249,7 +282,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
      Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continious delivery pipeline. 
 
-### [Threat ID 11 - Attacker deploys workloads to namespaces that are exempt from admission control](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-11---attacker-deploys-workloads-to-namespaces-that-are-exempt-from-admission-control)
+### Threat ID 11 - Attacker deploys workloads to namespaces that are exempt from admission control
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-11---attacker-deploys-workloads-to-namespaces-that-are-exempt-from-admission-control)
 
 **Mitigation**
 
@@ -259,7 +294,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
      Kyverno does not exempt any namespaces by default. It allows configuration of exempt namespaces via a [ConfigMap](https://kyverno.io/docs/installation/#configmap-flags).
 
-### [Threat ID 12 - Block rule can be bypassed due to missing match (e.g. missing initcontainers)](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-12---block-rule-can-be-bypassed-due-to-missing-match-eg-missing-initcontainers)
+### Threat ID 12 - Block rule can be bypassed due to missing match (e.g. missing initcontainers)
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-12---block-rule-can-be-bypassed-due-to-missing-match-eg-missing-initcontainers)
 
 **Mitigation**
 
@@ -269,13 +306,17 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 ### [Threat ID 13 - Attacker exploits bad string matching on a blocklist to bypass rules](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-13---attacker-exploits-bad-string-matching-on-a-blocklist-to-bypass-rules)
 
+[Threat Model Link]()
+
 **Mitigation**
 
 * [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
      Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continious delivery pipeline. 
 
-### [Threat ID 14 - Attacker uses new/old features of the Kubernetes API which have no rules](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-14---attacker-uses-newold-features-of-the-kubernetes-api-which-have-no-rules)
+### Threat ID 14 - Attacker uses new/old features of the Kubernetes API which have no rules
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-14---attacker-uses-newold-features-of-the-kubernetes-api-which-have-no-rules)
 
 **Mitigation**
 
@@ -283,7 +324,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
      Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continious delivery pipeline.
 
-### [Threat ID 15 - Attacker deploys privileged container to node running Webhook controller](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-15---attacker-deploys-privileged-container-to-node-running-webhook-controller)
+### Threat ID 15 - Attacker deploys privileged container to node running Webhook controller
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-15---attacker-deploys-privileged-container-to-node-running-webhook-controller)
 
 **Mitigation**
 
@@ -292,7 +335,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
     The Kyverno [policy library](/policies/) contains policies to restrict container privileges and restrict access to host resources. The pod security and best practices policies are highly recommended.
 
 
-### [Threat ID 16 - Attacker mounts a privileged node hostpath allowing modification of Webhook controller configuration](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-16---attacker-mounts-a-privileged-node-hostpath-allowing-modification-of-webhook-controller-configuration)
+### Threat ID 16 - Attacker mounts a privileged node hostpath allowing modification of Webhook controller configuration
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-16---attacker-mounts-a-privileged-node-hostpath-allowing-modification-of-webhook-controller-configuration)
 
 **Mitigation**
 
@@ -300,22 +345,20 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
     The Kyverno [policy library](/policies/) contains policies to restrict container privileges and restrict access to host resources. The pod security and best practices policies are highly recommended.
 
-### [Threat ID 17 - Attacker has privileged SSH access to cluster node running admission webhook](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-17---attacker-has-privileged-ssh-access-to-cluster-node-running-admission-webhook)
+### Threat ID 17 - Attacker has privileged SSH access to cluster node running admission webhook
+
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-17---attacker-has-privileged-ssh-access-to-cluster-node-running-admission-webhook)
 
 **Mitigation**
 
   **N/A**
 
-### [Threat ID 18 - Attacker uses policies to send confidential data from admission requests to external systems](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-18---attacker-uses-policies-to-send-confidential-data-from-admission-requests-to-external-systems)
+### Threat ID 18 - Attacker uses policies to send confidential data from admission requests to external systems
 
+[Threat Model Link](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#threat-id-18---attacker-uses-policies-to-send-confidential-data-from-admission-requests-to-external-systems)
 
 **Mitigation**
 
 * [Mitigation ID 9 - Strictly control external system access](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-9---strictly-control-external-system-access)
 
-    By default, a Kyverno installation does not configure network policies (see [GitHub issue](https://github.com/kyverno/kyverno/issues/2917)). The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) has a `networkPolicy.enabled` option to enable a network policy. Kyverno requires the following network communications to be allowed:
-    * ingress traffic to port 9443 from the API server
-    * ingress traffic to port 9443 from the host for health checks
-    * ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors.
-    * egress traffic to the API server if the [API Call](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) feature is used.
-    * egress (HTTPS) traffic to OCI registries if [image verification](/docs/writing-policies/verify-images/) policy rules are configured.
+    See [Networking](/docs/security/#networking) for details on securing networking communications for Kyverno.
