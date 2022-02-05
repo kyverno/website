@@ -93,8 +93,8 @@ metadata:
 spec:
   validationFailureAction: audit
   validationFailureActionOverrides:
-    - action: enforce
-      namespaces:
+    - action: enforce     # Action to apply
+      namespaces:       # List of affected namespaces
         - default
     - action: audit
       namespaces:
