@@ -1,6 +1,6 @@
 ---
 title: "Add Safe To Evict"
-category: Workload Management
+category: Other
 version: 1.4.3
 subject: Pod,Annotation
 policyType: "mutate"
@@ -17,7 +17,7 @@ kind: ClusterPolicy
 metadata:
   name: add-safe-to-evict
   annotations:
-    policies.kyverno.io/category: Workload Management
+    policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod,Annotation
     policies.kyverno.io/minversion: 1.4.3
     policies.kyverno.io/description: >-

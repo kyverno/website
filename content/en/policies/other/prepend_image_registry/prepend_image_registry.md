@@ -65,6 +65,9 @@ spec:
         value:
         - CREATE
         - UPDATE
+      - key: "{{ request.object.spec.initContainers[] || '' | length(@) }}"
+        operator: GreaterThanOrEquals
+        value: 1
     mutate:
       foreach:
       - list: "request.object.spec.initContainers"

@@ -1,5 +1,5 @@
 ---
-title: "Verify Image"
+title: "Verify Image GCP KMS"
 category: Sample
 version: 1.4.2
 subject: Pod
@@ -9,15 +9,15 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/verify_image.yaml" target="-blank">/other/verify_image.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/verify_image_gcpkms.yaml" target="-blank">/other/verify_image_gcpkms.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: verify-image
+  name: verify-image-gcpkms
   annotations:
-    policies.kyverno.io/title: Verify Image
+    policies.kyverno.io/title: Verify Image GCP KMS
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
@@ -36,14 +36,11 @@ spec:
     - name: verify-image
       match:
         any:
-        - resources:
+          resources:
             kinds:
-              - Pod
+            - Pod
       verifyImages:
         - image: "ghcr.io/kyverno/test-verify-image:*"
-          key: |-
-            -----BEGIN PUBLIC KEY-----
-            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-            5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-            -----END PUBLIC KEY-----
+          key: gcpkms://projects/someproject/locations/us-central1/keyRings/foo/cryptoKeys/bug/versions/1
+
 ```
