@@ -390,6 +390,10 @@ This ordering makes it possible to use request data when defining the context, a
 
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
+{{% alert title="Note" color="info" %}}
+The JMESPath arithmetic functions work for Scalars, Resource Quantities and Durations. If the input is a Scalar, we enclose it in backticks, so the parameter is treated as a number. The Resource Quantities and Durations are enclosed in single quotes and passed as strings.
+{{% /alert %}}
+
 ```
 base64_decode(string) string
 base64_encode(string) string
@@ -406,11 +410,21 @@ regex_replace_all_literal(regex string, src string|number, replace string|number
 regex_match(string, string|number) bool
 pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+
 add(number, number) number
+add(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+add(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
 subtract(number, number) number
+subtract(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+subtract(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
 multiply(number, number) number
-divide(number, number) number (divisor must be non zero)
-modulo(number, number) number (divisor must be non-zero, arguments must be integers)
+multiply(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+multiply(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
+divide(quantity|number, quantity|number) quantity|number (returns a quantity if exactly one of the parameters is a quantity, else a number; the divisor must be non-zero)
+divide(duration|number, duration|number) duration|number (returns a duration if exactly one of the parameters is a duration, else a number; the divisor must be non-zero)
+modulo(number, number) number
+modulo(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity; the divisor must be non-zero)
+modulo(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration; the divisor must be non-zero)
 path_canonicalize(string) string
 parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
 truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
