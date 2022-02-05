@@ -390,6 +390,10 @@ This ordering makes it possible to use request data when defining the context, a
 
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
+{{% alert title="Note" color="info" %}}
+The JMESPath arithmetic functions work for Scalars, Resource Quantities and Durations. If the input is a Scalar, we enclose it in backticks, so the parameter is treated as a number. The Resource Quantities and Durations are enclosed in single quotes and passed as strings.
+{{% /alert %}}
+
 ```
 base64_decode(string) string
 base64_encode(string) string
