@@ -671,7 +671,9 @@ Testing on an entire repo by specifying branch name within repo URL:
 ```sh
 kyverno test https://github.com/<ORG>/<REPO>/<BRANCH>
 ```
+
 Example:
+
 ```sh
 kyverno test https://github.com/kyverno/policies/release-1.5
 ```
@@ -685,7 +687,9 @@ Testing on a specific directory of the repo by specifying the directory within r
 ```sh
 kyverno test https://github.com/<ORG>/<REPO>/<DIR> --git-branch <BRANCH>
 ```
+
 Example:
+
 ```sh
 kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-branch release-1.5
 ```
@@ -694,8 +698,7 @@ kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-b
 While providing `<DIR>` within the repo URL, it is necessary to provide the branch using the `--git-branch` or `-b` flag, even if it is `main`.
 {{% /alert %}}
 
-\
-Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `test.yaml`.
+Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `kyverno-test.yaml`. The previous file name of `test.yaml` is deprecated.
 
 The test declaration file format must be of the following format.
 
@@ -806,7 +809,7 @@ spec:
     image: nginx:1.12
 ```
 
-Test manifest (`test.yaml`):
+Test manifest (`kyverno-test.yaml`):
 
 ```yaml
 name: disallow_latest_tag

@@ -7,7 +7,7 @@ weight: 6
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps and the Kubernetes API Server.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/)(pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. Beginning with Kyverno v1.4.2, any non-resolved variable will be considered an empty string. This applies only to `preconditions` and `deny.conditions` blocks.
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/)(pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
 
 {{% alert title="Note" color="info" %}}
 Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
@@ -311,6 +311,8 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.digest}}`
 
+This same pattern and image variable arrangement also works for ephemeral containers.
+
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
 
 {{% alert title="Note" color="info" %}}
@@ -390,27 +392,35 @@ This ordering makes it possible to use request data when defining the context, a
 
 In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
 
-{{% alert title="Note" color="info" %}}
-The JMESPath arithmetic functions work for Scalars, Resource Quantities and Durations. If the input is a Scalar, we enclose it in backticks, so the parameter is treated as a number. The Resource Quantities and Durations are enclosed in single quotes and passed as strings.
-{{% /alert %}}
+### General
 
-```
+```sh
 base64_decode(string) string
 base64_encode(string) string
 compare(string, string) bool
 equal_fold(string, string) bool
+label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function)
+parse_yaml(string) any
+path_canonicalize(string) string
+pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
+regex_match(string, string|number) bool
+regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
+regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 replace(str string, old string, new string, n float64) string
 replace_all(str string, old string, new string) string
+semver_compare(string, string) bool (Use operators [>, <, etc] with string inputs for comparison logic)
+split(str string, sep string) []string
+time_since(<layout>, <time1>, <time2>) string (all inputs as string)
 to_upper(string) string
 to_lower(string) string
 trim(str string, cutset string) string
-split(str string, sep string) []string
-regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_match(string, string|number) bool
-pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
-label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
+```
 
+### Arithmetic
+
+```sh
 add(number, number) number
 add(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
 add(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
@@ -425,11 +435,12 @@ divide(duration|number, duration|number) duration|number (returns a duration if 
 modulo(number, number) number
 modulo(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity; the divisor must be non-zero)
 modulo(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration; the divisor must be non-zero)
-path_canonicalize(string) string
-parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function) 
-truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
 ```
+
+{{% alert title="Note" color="info" %}}
+The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.
+{{% /alert %}}
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
 
-To find examples of some of these functions in action, see the [Kyverno policies library](https://kyverno.io/policies/).
+To find examples of some of these functions in action, see the [Kyverno policies library](/policies/).

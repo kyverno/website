@@ -7,27 +7,25 @@ weight: 120
 
 ## Release Notes and Assets
 
-Release notes and are available on GitHub at:
-
-    https://github.com/kyverno/kyverno/releases
+Release notes and are available on GitHub at https://github.com/kyverno/kyverno/releases
 
 ## Release Management
 
-This section provides guidelines on release timelines and release branch maintainence.
+This section provides guidelines on release timelines and release branch maintenance.
 
 ### Release Timelines
 
-Kyverno uses the [Semantic Versioning](https://semver.org/) scheme. Kyverno v1.0.0 was released in Dec 2019. This project follows a given version number MAJOR.MINOR.PATCH.
+Kyverno uses the [Semantic Versioning](https://semver.org/) scheme. Kyverno v1.0.0 was released in December 2019. This project follows a given version number MAJOR.MINOR.PATCH.
 
 #### MAJOR release
 
-Major releases contain large features, design and architectural changes, and may you include incompatible API changes.
+Major releases contain large features, design and architectural changes, and may include incompatible API changes.
 
 - Low frequency and required e.g. once a year
 
 #### MINOR release
 
-Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control-plane, having a major release approximately every three months helps balance speed and stability.
+Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every three months helps balance speed and stability.
 
 - Roughly every 3 months
 
@@ -48,8 +46,9 @@ To test with the latest images for different release branches, the images are pu
 ### Branches and PRs
 
 Release branches and PRs are managed as follows:
+
 - All changes are always first committed to `main`.
-- Branches are created for each major or minor release. 
+- Branches are created for each major or minor release.
 - The branch name will contain the version, for example `release-1.5`.
 - Patch releases are created from a release branch.
 - For critical fixes that need to be included in a patch release, PRs should always be first merged to main and then cherry-picked to the release branch. The milestone label is important here for tracking.

@@ -4,13 +4,13 @@ description: Check image signatures and add digests
 weight: 3
 ---
 
-{{% alert title="Note" color="warning" %}}
-Image verification is an **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+{{% alert title="Warning" color="warning" %}}
+Image verification is a **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
-The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and attestations stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image or attestations.
+The Kyverno `verifyImages` rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures, attestations and more stored in an OCI registry. The rule matches an image reference (wildcards are supported) and specifies a public key to be used to verify the signed image or attestations. Background scanning is also supported with this rule type which means reports will show related entries.
 
 ## Verifying Image Signatures
 
@@ -39,9 +39,10 @@ spec:
   rules:
     - name: check-image
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       verifyImages:
       - image: "ghcr.io/kyverno/test-verify-image:*"
         key: |-
@@ -225,13 +226,14 @@ spec:
   validationFailureAction: enforce
   background: false
   webhookTimeoutSeconds: 30
-  failurePolicy: Fail
+  failurePolicy: fail
   rules:
     - name: attest
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       verifyImages:
       - image: "registry.io/org/*"
         key: |-
@@ -274,6 +276,38 @@ cosign verify-attestation --key cosign.pub ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for additional details including [OCI registry support](https://github.com/sigstore/cosign#registry-support).
+
+## Verifying Image Annotations
+
+Cosign has the ability to add annotations when signing and image, and Kyverno can be used to verify these annotations with the `verifyImage.annotations` field. For example, this policy checks for the annotation of `sig: original`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image
+spec:
+  validationFailureAction: enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: fail
+  rules:
+    - name: check-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - image: "ghcr.io/kyverno/test-verify-image:*"
+        key: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+        annotations:
+          sig: "original"
+```
 
 ## Known Issues
 

@@ -396,11 +396,12 @@ The following flags can also be used to control the advanced behavior of Kyverno
 3. `profilePort`: specifies port to enable profiling at, defaults to 6060.
 4. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
 5. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to "false".
+6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to 'false'.
 7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
-9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to "true".
+9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
 10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 
 ### Policy Report access
 

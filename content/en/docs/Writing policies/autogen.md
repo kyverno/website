@@ -5,10 +5,6 @@ description: >
 weight: 9
 ---
 
-{{% alert title="Note" color="info" %}}
-The auto-gen feature is only supported for validation rules with patterns and mutation rules with overlay or patch strategic merge. Deny rules and generate rules are not supported.
-{{% /alert %}}
-
 Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written for a Pod.
 
 For example, when creating a validation policy like below which checks that all images come from an internal, trusted registry, the policy applies to all resources capable of generating Pods.
@@ -23,9 +19,10 @@ spec:
   rules:
   - name: validate-registries
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Images may only come from our internal enterprise registry."
       pattern:
@@ -37,38 +34,56 @@ spec:
 Once the policy is created, these other resources can be shown in auto-generated rules which Kyverno adds to the policy.
 
 ```yaml
-    Match:
-      Resources:
-        Kinds:
-          DaemonSet
-          Deployment
-          Job
-          StatefulSet
-    Name:  autogen-validate-registries
-    Validate:
-      Message:  Images may only come from our internal enterprise registry.
-      Pattern:
-        Spec:
-          Template:
-            Spec:
-              Containers:
-                Image:  registry.domain.com/*
-    Match:
-      Resources:
-        Kinds:
-          CronJob
-    Name:  autogen-cronjob-validate-registries
-    Validate:
-      Message:  Images may only come from our internal enterprise registry.
-      Pattern:
-        Spec:
-          Job Template:
-            Spec:
-              Template:
-                Spec:
-                  Containers:
-                    Image:    registry.domain.com/*
-  Validation Failure Action:  enforce
+spec:
+  background: true
+  failurePolicy: Fail
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-registries
+    validate:
+      message: Images may only come from our internal enterprise registry.
+      pattern:
+        spec:
+          containers:
+          - image: registry.domain.com/*
+  - match:
+      any:
+      - resources:
+          kinds:
+          - DaemonSet
+          - Deployment
+          - Job
+          - StatefulSet
+    name: autogen-validate-registries
+    validate:
+      message: Images may only come from our internal enterprise registry.
+      pattern:
+        spec:
+          template:
+            spec:
+              containers:
+              - image: registry.domain.com/*
+  - match:
+      any:
+      - resources:
+          kinds:
+          - CronJob
+    name: autogen-cronjob-validate-registries
+    validate:
+      message: Images may only come from our internal enterprise registry.
+      pattern:
+        spec:
+          jobTemplate:
+            spec:
+              template:
+                spec:
+                  containers:
+                  - image: registry.domain.com/*
+  validationFailureAction: enforce
 ```
 
 This auto-generation behavior is controlled by the `pod-policies.kyverno.io/autogen-controllers` annotation.
