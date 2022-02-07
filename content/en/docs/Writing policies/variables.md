@@ -390,7 +390,7 @@ This ordering makes it possible to use request data when defining the context, a
 
 ## JMESPath custom functions
 
-In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
+In addition to the list of [built-in functions](https://jmespath.org/specification.html#builtin-functions) JMESPath offers, Kyverno augments these by adding several others which makes it even easier to craft Kyverno policies.
 
 ### General
 
