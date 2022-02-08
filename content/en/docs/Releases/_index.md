@@ -7,7 +7,7 @@ weight: 120
 
 ## Release Notes and Assets
 
-Release notes and are available on GitHub at https://github.com/kyverno/kyverno/releases
+Release notes are available on GitHub at https://github.com/kyverno/kyverno/releases
 
 ## Release Management
 

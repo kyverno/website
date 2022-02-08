@@ -37,7 +37,7 @@ A generate request status can have one of four values:
 `Completed`: the generate request controller created resources defined in the policy
 `Failed`: the generate request controller failed to process the rules
 `Pending`: the request is yet to be processed or the resource has not been created
-`Skip`: the generate request controller has skipped the creation of resource
+`Skip`: marked when triggering the generate policy by adding a label/annotation to the existing resource, while the selector is not defined in the policy itself.
 
 ## Generate a ConfigMap using inline data
 
