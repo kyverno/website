@@ -5,13 +5,9 @@ description: >
 weight: 3
 ---
 
-A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch, a strategic merge patch, or as an overlay pattern.
+A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch or a strategic merge patch.
 
-{{% alert title="Note" color="warning" %}}
-Overlay and patches methods are currently deprecated and scheduled for removal in Kyverno 1.5. Please use the [patch strategic merge](#strategic-merge-patch) or [RFC 6902 JSON Patch](#rfc-6902-jsonpatch) methods from now forward.
-{{% /alert %}}
-
-By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Using an `overlay` is convenient for describing the desired state of the resource. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
+By using a `patch` in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A `strategic merge patch` is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
 
@@ -26,11 +22,12 @@ spec:
   rules:
     - name: set-image-pull-policy
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       mutate:
-        overlay:
+        patchStrategicMerge:
           spec:
             containers:
               # match images which end with :latest
@@ -64,10 +61,12 @@ spec:
   rules:
     - name: pCM1
       match:
-        resources:
-          name: "config-game"
-          kinds:
-          - ConfigMap
+        any:
+        - resources:
+            names:
+              - config-game
+            kinds:
+              - ConfigMap
       mutate:
         patchesJson6902: |-
           - path: "/data/ship.properties"
@@ -91,10 +90,12 @@ spec:
   rules:
     - name: pCM1
       match:
-        resources:
-          name: "config-game"
-          kinds:
-          - ConfigMap
+        any:
+        - resources:
+            names:
+              - config-game
+            kinds:
+            - ConfigMap
       mutate:
         patchesJson6902: |-
           - path: "/data"
@@ -113,9 +114,10 @@ spec:
   rules:
     - name: "Remove unwanted label"
       match:
-        resources:
-          kinds:
-          - Secret
+        any:
+        - resources:
+            kinds:
+            - Secret
       mutate:
         patchesJson6902: |-
           - path: "/metadata/labels/purpose"
@@ -133,9 +135,10 @@ spec:
   rules:
   - name: insert-container
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchesJson6902: |-
         - op: add
@@ -190,9 +193,10 @@ spec:
   rules:
   - name: set-image-pull-policy-add-command
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -245,9 +249,10 @@ spec:
   rules:
   - name: "Set port"
     match:
-      resources:
-        kinds :
-          - Endpoints
+      any:
+      - resources:
+          kinds :
+            - Endpoints
     mutate:
       patchStrategicMerge:
         subsets:
@@ -277,9 +282,10 @@ spec:
   rules:
   - name: "annotate-empty-dir"
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -287,7 +293,7 @@ spec:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
         spec:
           volumes:
-          - (emptyDir): {}
+          - <(emptyDir): {}
 ```
 
 ### Global Anchor
@@ -305,9 +311,10 @@ spec:
   rules:
   - name: add-imagepullsecret
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:
@@ -359,9 +366,10 @@ spec:
   rules:
     - name: assign-type-database
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       mutate:
         patchStrategicMerge:
           metadata:
@@ -383,12 +391,13 @@ spec:
   rules:
     - name: assign-backup-database
       match:
-        resources:
-          kinds:
-            - Pod
-          selector:
-            matchLabels:
-              type: database
+        any:
+        - resources:
+            kinds:
+              - Pod
+            selector:
+              matchLabels:
+                type: database
       mutate:
         patchStrategicMerge:
           metadata:
@@ -407,9 +416,10 @@ spec:
   rules:
   - name: assign-type-database
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -420,12 +430,13 @@ spec:
           - (image): "*cassandra* | *mongo*"
   - name: assign-backup-database
     match:
-      resources:
-        kinds:
-        - Pod
-        selector:
-          matchLabels:
-            type: database
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              type: database
     mutate:
       patchStrategicMerge:
         metadata:
@@ -477,14 +488,14 @@ Labels:       backup-needed=no
 
 A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
 
-A `foreach` must contain a `list` attribute that defines the list of elements it processes and a `patchStrategicMerge` declaration. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+A `foreach` must contain a `list` attribute that defines the list of elements it processes and either a `patchStrategicMerge` or `patchesJson6902` declaration. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
 
 ```yaml
 list: request.object.spec.containers
 patchStrategicMerge:
   spec:
     containers:
-       ...
+      ...
 ```
 
 When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing.
@@ -496,7 +507,36 @@ Each `foreach` declaration can optionally contain the following declarations:
 * [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
 * [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
 
-Here is a complete example that mutates the image to prepend the address of a trusted registry:
+For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: foreach-json-patch
+spec:
+  rules:
+    - name: add-security-context
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      preconditions:
+        any:
+        - key: "{{ request.operation }}"
+          operator: Equals
+          value: CREATE
+      mutate:
+        foreach: 
+        - list: "request.object.spec.containers"
+          patchesJson6902: |-
+            - path: /spec/containers/{{elementIndex}}/securityContext
+              op: add
+              value: {"runAsNonRoot" : true}
+```
+
+For a complete example of the `patchStrategicMerge` method that mutates the image to prepend the address of a trusted registry, see below.
 
 ```yaml
 apiVersion : kyverno.io/v1
@@ -508,9 +548,10 @@ spec:
   rules:
   - name: prepend-registry-containers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.operation}}"

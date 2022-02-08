@@ -199,7 +199,7 @@ spec:
 
 ### Operators
 
-Operators in the following support list values as of Kyverno 1.3.6 in addition to scalar values.
+Operators in the following support list values as of Kyverno 1.3.6 in addition to scalar values. Many of these operators also support checking of durations (ex., 12h) and semver (ex., 1.4.1).
 
 | Operator   | Meaning                   |
 |------------|---------------------------|
@@ -563,7 +563,7 @@ spec:
 
 ## foreach
 
-The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example Containers in a Pod.
+The `foreach` declaration simplifies validation of sub-elements in resource declarations, for example containers in a Pod.
 
 A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
 
@@ -587,6 +587,7 @@ In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
 - [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+- elementScope: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
 
@@ -601,10 +602,12 @@ spec:
   rules:
   - name: check-registry
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
+      any:
       - key: "{{request.operation}}"
         operator: NotEquals
         value: DELETE

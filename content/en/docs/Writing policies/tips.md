@@ -48,9 +48,12 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Ensure the resource you're matching and the spec definition align. For example, if writing a `mutate` rule which matches on a Deployment, the spec of what is being mutated needs to also align to a Deployment which may be different from, for example, a Pod. When copying-and-pasting from other rules, remember to check the spec.
 
 * Check Kyverno logs when designing rules if the desired result is not achieved:
-  ```sh
-  kubectl -n <kyverno_namespace> logs -l app=kyverno
-  ```
+
+```sh
+kubectl -n <kyverno_namespace> logs <pod_name>
+```
+
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4.
 
 ## Validate
 

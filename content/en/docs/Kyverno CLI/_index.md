@@ -671,7 +671,9 @@ Testing on an entire repo by specifying branch name within repo URL:
 ```sh
 kyverno test https://github.com/<ORG>/<REPO>/<BRANCH>
 ```
+
 Example:
+
 ```sh
 kyverno test https://github.com/kyverno/policies/release-1.5
 ```
@@ -685,7 +687,9 @@ Testing on a specific directory of the repo by specifying the directory within r
 ```sh
 kyverno test https://github.com/<ORG>/<REPO>/<DIR> --git-branch <BRANCH>
 ```
+
 Example:
+
 ```sh
 kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-branch release-1.5
 ```
@@ -694,8 +698,7 @@ kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-b
 While providing `<DIR>` within the repo URL, it is necessary to provide the branch using the `--git-branch` or `-b` flag, even if it is `main`.
 {{% /alert %}}
 
-\
-Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `test.yaml`.
+Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `kyverno-test.yaml`. The previous file name of `test.yaml` is deprecated.
 
 The test declaration file format must be of the following format.
 
@@ -806,7 +809,7 @@ spec:
     image: nginx:1.12
 ```
 
-Test manifest (`test.yaml`):
+Test manifest (`kyverno-test.yaml`):
 
 ```yaml
 name: disallow_latest_tag
@@ -864,10 +867,86 @@ kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFull
 
 Policy can also be validated with CRDs. Use the `-c` flag to pass the CRD. You can pass multiple CRD files or even an entire folder containing CRDs.
 
+### Jp
+
+The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
+
 Example:
 
+List available Kyverno custom JMESPath filters.
+
 ```sh
-kyverno validate /path/to/policy1.yaml -c /path/to/crd.yaml -c /path/to/folderFullOfCRDs
+$ kyverno jp -l
+add(any, any) any
+base64_decode(string) string
+base64_encode(string) string
+compare(string, string) bool
+<output abbreviated>
+```
+
+Test a custom JMESPath filter using stdin inputs.
+
+```sh
+$ echo '{"foo": "BAR"}' | kyverno jp 'to_lower(foo)'
+"bar"
+```
+
+Test a custom JMESPath filter using an input JSON file.
+
+```sh
+$ cat foo
+{"foo": "this-is-a-dashed-string"}
+
+$ kyverno jp -f foo "split(foo, '-')"
+[
+  "this",
+  "is",
+  "a",
+  "dashed",
+  "string"
+]
+```
+
+Test a custom JMESPath filter as well as an upstream JMESPath filter.
+
+```sh
+$ kyverno jp -f foo "split(foo, '-') | length(@)"
+5
+```
+
+Test a custom JMESPath filter using an expression from a file.
+
+```sh
+$ cat add
+add(`1`,`2`)
+
+$ echo {} | kyverno jp -e add
+3
+```
+
+Test upstream JMESPath functionality using an input JSON file and show cleaned output.
+
+```sh
+$ cat pod.json
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "mypod",
+    "namespace": "foo"
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "busybox",
+        "image": "busybox"
+      }
+    ]
+  }
+}
+
+$ kyverno jp -f pod.json 'spec.containers[0].name' -u
+busybox
 ```
 
 ### Version
