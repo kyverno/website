@@ -895,9 +895,9 @@ Test a custom JMESPath filter using an input JSON file.
 
 ```sh
 $ cat foo
-{"foo": "this-is-a-dashed-string"}
+{"bar": "this-is-a-dashed-string"}
 
-$ kyverno jp -f foo "split(foo, '-')"
+$ kyverno jp -f foo "split(bar, '-')"
 [
   "this",
   "is",
@@ -910,7 +910,7 @@ $ kyverno jp -f foo "split(foo, '-')"
 Test a custom JMESPath filter as well as an upstream JMESPath filter.
 
 ```sh
-$ kyverno jp -f foo "split(foo, '-') | length(@)"
+$ kyverno jp -f foo "split(bar, '-') | length(@)"
 5
 ```
 
