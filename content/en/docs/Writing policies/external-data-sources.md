@@ -7,7 +7,7 @@ weight: 7
 
 The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [`context`](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.
 
-This section provides details on using ConfigMaps and API calls to reference external data as variables in policies.
+This section provides details on using ConfigMaps, API calls, and image registries to reference external data as variables in policies.
 
 {{% alert title="Note" color="info" %}}
 For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server and image registries. Use a separate controller to fetch data from any source and store it in a ConfigMap that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
