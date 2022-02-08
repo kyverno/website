@@ -4,13 +4,13 @@ description: The JSON query language behind Kyverno.
 weight: 12
 ---
 
-{{% alert title="Warning" color="warning" %}}
-This page is under construction.
-{{% /alert %}}
+{{% pageinfo color="warning" %}}
+This page is currently under construction.
+{{% /pageinfo %}}
 
 [JMESPath](https://jmespath.org/) (pronounced "James path") is a JSON query language created by James Saryerwinnie and is the language that Kyverno supports to perform more complex selections of fields and values and also manipulation thereof by using one or more [filters](https://jmespath.org/specification.html#filter-expressions). If you're familiar with `kubectl` and Kubernetes already, this might ring a bell in that it's similar to [JSONPath](https://github.com/json-path/JsonPath). JMESPath can be used almost anywhere in Kyverno although is an optional component depending on the type and complexity of a Kyverno policy or rule that is being written. While many policies can be written with simple overlay patterns, others require more detailed selection and transformation. The latter is where JMESPath is useful.
 
-While the complete specifications of JMESPath can be read on the official site's [specifications page](https://jmespath.org/specification.html), much of the specifics may not apply to Kubernetes use cases and further can be rather thick reading. This page serves as an easier guide and tutorial on how to learn and harness JMESPath for Kubernetes resources for use in crafting Kyverno policies.
+While the complete specifications of JMESPath can be read on the official site's [specifications page](https://jmespath.org/specification.html), much of the specifics may not apply to Kubernetes use cases and further can be rather thick reading. This page serves as an easier guide and tutorial on how to learn and harness JMESPath for Kubernetes resources for use in crafting Kyverno policies. It should not be a replacement for the official JMESPath documentation but simply a use case specific guide to augment the already comprehensive literature.
 
 ## Getting Set Up
 
@@ -175,4 +175,135 @@ As can be seen, the full Pod is represented along with other metadata surroundin
 
 These AdmissionReview resources serve as the most common source of data when building JMESPath expressions, specifically `request.object`. For the other data properties which can be consumed via an AdmissionReview resource, refer back to the [variables page](/docs/writing-policies/variables/#variables-from-admission-review-requests).
 
+## Formatting
+
+Because there are various types of values in differing fields, there are differing ways values must be supplied to JMESPath expressions as inputs in order to generate not only a valid expression but produce the output desired. Specifying values in the correct format is key to this success. Values which are supported but need to be differentiated in formatting are numbers (i.e., an integer like `6` or a floating point like `6.7`), a quantity (i.e., a number with a unit of measure like `6Mi`), a duration (i.e., a number with a unit of time like `6h`), a [semver](https://semver.org/) (i.e., a version number like `1.2.3`), and others. Because Kyverno (and therefore most custom JMESPath filters built for Kyverno) is designed for Kubernetes, it is Kubernetes aware. Therefore, specifying \`6\` as an input to a filter is not the same as specifying \'6\' where the former is interpreted as "the number six" and latter as "six bytes". The _types_ which map to the possible values are either JSON or string. In JMESPath, these are [literal expression](https://jmespath.org/specification.html#literal-expressions) and [raw string literals](https://jmespath.org/specification.html#raw-string-literals). Use the table below to find how to format the type of value which should be supplied.
+
+| Value Type   | Input Type | JMESPath Type | Formatting |
+|--------------|------------|---------------|------------|
+| Number       | Integer    | Literal       | backticks  |
+| Quantity     | String     | Raw           | quotes     |
+| Duration     | String     | Raw           | quotes     |
+| Labels (map) | Object     | Literal       | backticks  |
+
+Paths in a JMESPath expression may also need escaping or literal quoting depending on the contents. For example, in a ResourceQuota the following schema elements may be present:
+
+```yaml
+spec:
+  hard:
+    limits.memory: 3750Mi
+    requests.cpu: "5"
+```
+
+To represent the `limits.memory` field in a JMESPath expression requires literal quoting of the key in order to avoid being interpreted as child nodes `limits` and `memory`. The expression would then be `{{ spec.hard.\"limits.memory\" }}`. A similar approach is needed when individual keys contain special characters, for example a dash (`-`). Quoting and then escaping is similarly needed there, ex., `{{ images.containers.\"my-container\".tag }}`.
+
 ## Custom Filters
+
+In addition to the filters available in the upstream JMESPath library which Kyverno uses, there are also many new and custom filters developed for Kyverno's use found nowhere else. These filters augment the already robust capabilities of JMESPath to bring new functionality and capabilities which help solve common use cases in running Kubernetes. The filters endemic to Kyverno can be used in addition to any of those found in the upstream JMESPath library used by Kyverno and do not represent replaced or removed functionality.
+
+For instructions on how to test these filters in a standalone method (i.e., outside of Kyverno policy), see the [documentation](/docs/kyverno-cli/#jp) on the `kyverno jp` subcommand.
+
+Information on each subcommand, its inputs and output, and specific usage instructions can be found below along with helpful and common use cases that have been identified.
+
+### Add
+
+<details><summary>Expand</summary>
+<p>
+
+The `add()` filter very simply adds two values and produces a sum. The official JMESPath library does not include most basic arithmetic operators such as add, subtract, multiply, and divide, the exception being `sum()` as documented [here](https://jmespath.org/specification.html#sum). While `sum()` is useful in that it accepts an array of integers as an input, `add()` is useful as a simplified filter when only two individual values need to be summed. Note that `add()` here is different from the `length()` [filter](https://jmespath.org/specification.html#length) which is used to obtain a _count_ of a certain number of items. Use `add()` instead when you have values of two fields you wish to add together.
+
+`add()` is also value-aware (based on the formatting used for the inputs) and is capable of adding numbers, quantities, and durations without any form of unit conversion.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| Number             | Number             | Number   |
+| Quantity or Number | Quantity or Number | Quantity |
+| Duration or Number | Duration or Number | Duration |
+<br>
+
+**Example:** This policy denies a Pod if any of its containers which specify memory requests and limits exceed 200Mi.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: add-demo
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: In
+        value: ["CREATE","UPDATE"]
+    validate:
+      message: "The total memory defined in requests and limits must not exceed 200Mi."
+      foreach:
+      - list: "request.object.spec.containers"
+        deny:
+          conditions:
+            any:
+            - key: "{{ add('{{ element.resources.requests.memory || `0` }}', '{{ element.resources.limits.memory || `0` }}') }}"
+              operator: GreaterThan
+              value: 200Mi
+```
+
+</p>
+</details>
+
+### Base64_decode
+
+### Base64_encode
+
+### Compare
+
+### Divide
+
+### Equal_fold
+
+### Label_match
+
+### Modulo
+
+### Multiply
+
+### Parse_json
+
+### Parse_yaml
+
+### Path_canonicalize
+
+### Pattern_match
+
+### Regex_match
+
+### Regex_replace_all
+
+### Regex_replace_all_literal
+
+### Replace
+
+### Replace_all
+
+### Semver_compare
+
+### Split
+
+### Subtract
+
+### Time_since
+
+### To_lower
+
+### To_upper
+
+### Trim
+
+### Truncate
