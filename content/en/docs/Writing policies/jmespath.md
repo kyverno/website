@@ -81,7 +81,7 @@ spec:
 
 **Outgoing Pod**
 
-```yaml
+```yaml {hl_lines=[5,6]}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -94,7 +94,7 @@ spec:
     image: busybox
 ```
 
-Notice that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, as you might guess, the label would be `appns: bar`. And this is a nice segue into AdmissionReview resources.
+Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, as you might guess, the label would be `appns: bar`. And this is a nice segue into AdmissionReview resources.
 
 {{% alert title="Remember" color="primary" %}}
 JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only works when fed with a JSON-encoded document. Although most work with Kubernetes resources using YAML, the API server will convert this to JSON internally and use that format when storing and sending objects to webhooks like Kyverno. This is why the program `yq` will be invaluable when building the correct expression based upon Kubernetes manifests written in YAML.
@@ -197,6 +197,16 @@ spec:
 
 To represent the `limits.memory` field in a JMESPath expression requires literal quoting of the key in order to avoid being interpreted as child nodes `limits` and `memory`. The expression would then be `{{ spec.hard.\"limits.memory\" }}`. A similar approach is needed when individual keys contain special characters, for example a dash (`-`). Quoting and then escaping is similarly needed there, ex., `{{ images.containers.\"my-container\".tag }}`.
 
+## Useful Patterns
+
+When developing policies for Kubernetes resources, there are several patterns which are common where JMESPath can be useful. This section attempts to capture example patterns that have been observed through real world use cases and how to write JMESPath for them.
+
+### Flattening Arrays
+
+### Non-Existence Checks
+
+It is common for a JMESPath expression to name a specific field so that its value may be acted upon. For example, in the [basics section](#basics) above, the label `appns` is written to a Pod via a mutate rule which does not contain it or is set to a different value. A Kyverno validate rule which exists to check the value of that label or any other field is commonplace. Because the schema for many Kubernetes resources is flexible in that many fields are optional, policy rules must contend with the scenario in which a matching resource does not contain the field being checked. When using JMESPath to check the value of such a field, a simple expression might be written `{{request.object.metadata.labels.appns}}`. If a resource is submitted which either does not contain any labels at all or does not contain a label with the specified key then the expression cannot be evaluated. An error is likely to result similar to `JMESPath query failed: Unknown key "labels" in path`. In these types of cases, the JMESPath expression should use a non-existence check in the form of the [OR expression](https://jmespath.org/specification.html#or-expressions) followed by a "default" value if the field does not exist. The resulting full expression which will correctly evaluate is `{{request.object.metadata.labels.appns || ''}}`. This expression reads, "take the value of the key request.object.metadata.labels.appns or, if it does not exist, set it to an empty string". Note that the value on the right side may need to be customized given the ultimate use of the value expected to be produced. This non-existence pattern can be used in almost any JMESPath expression to mitigate scenarios in which the initial query may be invalid.
+
 ## Custom Filters
 
 In addition to the filters available in the upstream JMESPath library which Kyverno uses, there are also many new and custom filters developed for Kyverno's use found nowhere else. These filters augment the already robust capabilities of JMESPath to bring new functionality and capabilities which help solve common use cases in running Kubernetes. The filters endemic to Kyverno can be used in addition to any of those found in the upstream JMESPath library used by Kyverno and do not represent replaced or removed functionality.
@@ -220,8 +230,12 @@ The `add()` filter very simply adds two values and produces a sum. The official 
 | Quantity or Number | Quantity or Number | Quantity |
 | Duration or Number | Duration or Number | Duration |
 <br>
+Some specific behaviors to note:
 
-**Example:** This policy denies a Pod if any of its containers which specify memory requests and limits exceed 200Mi.
+* If a duration ('1h') and a number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
+* Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
+
+**Example:** This policy denies a Pod if any of its containers specify memory requests and limits in excess of 200Mi.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -259,6 +273,26 @@ spec:
 </details>
 
 ### Base64_decode
+
+<details><summary>Expand</summary>
+<p>
+
+The `base64_decode()` filter takes in a base64-encoded string and produces the decoded output similar to the tool and command `base64 --decode`.
+
+| Input 1 | Output   |
+|---------|----------|
+| String  | String   |
+<br>
+Some specific behaviors to note:
+
+* Base64-encoded strings with newline characters will be printed back with them inline.
+
+**Example:** TBD
+
+
+</p>
+</details>
+
 
 ### Base64_encode
 
