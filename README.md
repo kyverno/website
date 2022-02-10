@@ -83,6 +83,8 @@ In the `main` branch:
 
 3. Create a PR.
 
+4. Clear the Netlify cache!
+
 #### Submitting a PR to multiple release branches
 
 Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. For such cases, a PR must be created for each release branch. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
