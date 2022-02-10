@@ -201,6 +201,108 @@ When developing policies for Kubernetes resources, there are several patterns wh
 
 ### Flattening Arrays
 
+In many Kubernetes resources, arrays of both objects and strings are very common. For example, in Pod resources, `spec.containers[]` is an array of objects where each object in the array may optionally specify `args[]` which is an array of strings. Policy very often must be able to peer into these arrays and match a given pattern with enough flexibility to implement a sufficiently advanced level of control. The JMESPath [flatten operator](https://jmespath.org/specification.html#flatten-operator) can help to simplify these checks so writing Kyverno policy becomes less verbose and require fewer rules.
+
+Pods may contain multiple containers and in different locations in the Pod spec tree, for example `ephemeralContainers[]`, `initContainers[]`, and `containers[]`. Regardless of where the container occurs, a container is still a container. And although it's possible to name each location in the spec individually, this produces rule or expression sprawl. It is often more efficient to collect all the containers together in a single query for processing. Consider the example Pod below.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  initContainers:
+  - name: redis
+    image: redis
+  containers:
+  - name: busybox
+    image: busybox
+  - name: nginx
+    image: nginx
+```
+
+Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression after using `yq` to output it as a JSON document then piped into the [Kyverno CLI](/docs/kyverno-cli/#jp).
+
+```sh
+$ yq e pod.yaml -o json | kyverno jp "spec.containers[]"
+[
+  {
+    "image": "busybox",
+    "name": "busybox"
+  },
+  {
+    "image": "nginx",
+    "name": "nginx"
+  }
+]
+```
+
+The above output shows the return of an array of objects as expected where each object is the container. But by using a [multi-select list](https://jmespath.org/specification.html#multiselect-list), the `initContainer[]` array may also be parsed.
+
+```sh
+$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers]"
+[
+  [
+    {
+      "image": "redis",
+      "name": "redis"
+    }
+  ],
+  [
+    {
+      "image": "busybox",
+      "name": "busybox"
+    },
+    {
+      "image": "nginx",
+      "name": "nginx"
+    }
+  ]
+]
+```
+
+In the above, a multi-select list `spec.[initContainers, containers]` "wraps" the results of both `initContainers[]` and `containers[]` in parent array thereby producing an array consisting of multiple arrays. By using the [flatten operator](https://jmespath.org/specification.html#flatten-operator), these results can be collapsed into just a single array.
+
+```sh
+$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][]"
+[
+  {
+    "image": "redis",
+    "name": "redis"
+  },
+  {
+    "image": "busybox",
+    "name": "busybox"
+  },
+  {
+    "image": "nginx",
+    "name": "nginx"
+  }
+]
+```
+
+With just a single array in which all containers, regardless of where they are, occur in a single hierarchy, it becomes easier to process the data for relevant fields and take action. For example, if you wished to write a policy which forbid using the image named `busybox` in a Pod, by flattening all containers it becomes easier to isolate just the `image` field. Because it does not matter where `busybox` may be found, if found the entire Pod must be rejected. Therefore, while loops or other methods may work, a more efficient method is to simply gather all containers across the Pod and flatten them.
+
+```sh
+$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][].image"
+[
+  "redis",
+  "busybox",
+  "nginx"
+]
+```
+
+With all of the images stored in a simple array, the values can be parsed much easier and just one expression written to contain the necessary logic.
+
+```yaml
+deny:
+  conditions:
+    any:
+    - key: busybox
+      operator: AnyIn
+      value: "{{request.object.spec.[initContainers, containers][].image}}"
+```
+
 ### Non-Existence Checks
 
 It is common for a JMESPath expression to name a specific field so that its value may be acted upon. For example, in the [basics section](#basics) above, the label `appns` is written to a Pod via a mutate rule which does not contain it or is set to a different value. A Kyverno validate rule which exists to check the value of that label or any other field is commonplace. Because the schema for many Kubernetes resources is flexible in that many fields are optional, policy rules must contend with the scenario in which a matching resource does not contain the field being checked. When using JMESPath to check the value of such a field, a simple expression might be written `{{request.object.metadata.labels.appns}}`. If a resource is submitted which either does not contain any labels at all or does not contain a label with the specified key then the expression cannot be evaluated. An error is likely to result similar to `JMESPath query failed: Unknown key "labels" in path`. In these types of cases, the JMESPath expression should use a non-existence check in the form of the [OR expression](https://jmespath.org/specification.html#or-expressions) followed by a "default" value if the field does not exist. The resulting full expression which will correctly evaluate is `{{request.object.metadata.labels.appns || ''}}`. This expression reads, "take the value of the key request.object.metadata.labels.appns or, if it does not exist, set it to an empty string". Note that the value on the right side may need to be customized given the ultimate use of the value expected to be produced. This non-existence pattern can be used in almost any JMESPath expression to mitigate scenarios in which the initial query may be invalid.
