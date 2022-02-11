@@ -377,7 +377,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `base64_decode()` filter takes in a base64-encoded string and produces the decoded output similar to the tool and command `base64 --decode`.
+The `base64_decode()` filter takes in a base64-encoded string and produces the decoded output similar to the tool and command `base64 --decode`. This can be useful when working with Kubernetes Secrets and deciphering their values in order to take action on them in a policy.
 
 | Input 1 | Output   |
 |---------|----------|
@@ -387,8 +387,47 @@ Some specific behaviors to note:
 
 * Base64-encoded strings with newline characters will be printed back with them inline.
 
-**Example:** TBD
+**Example:** This policy checks every container, initContainer, and ephemeralContainer in a Pod and decodes a Secret having the path `data.license` to ensure it does not refer to a prohibited license key.
 
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: base64-decode-demo
+spec:
+  background: false
+  validationFailureAction: enforce
+  rules:
+  - name: base64-decode-demo
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      all:
+      - key: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef || '' | length(@) }}"
+        operator: GreaterThanOrEquals
+        value: 1
+      - key: "{{request.operation}}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: This license key may not be consumed by a Secret.
+      foreach:
+      - list: "request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef"
+        context:
+        - name: status
+          apiCall:
+            jmesPath: "data.license"
+            urlPath: "/api/v1/namespaces/{{request.namespace}}/secrets/{{element.name}}"
+        deny:
+          conditions:
+            any:
+            - key: "{{ status | base64_decode(@) }}"
+              operator: Equals
+              value: W0247-4RXD3-6TW0F-0FD63-64EFD-38180
+```
 
 </p>
 </details>
