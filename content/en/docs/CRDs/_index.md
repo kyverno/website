@@ -1,26 +1,23 @@
 ---
 title: "Resource Definitions"
 weight: 80
-description: >
+description: >-
   Custom Resource Definitions (CRDs) for Kyverno policies and other types.
 ---
 
 Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types.
 
-The complete Kyverno CRD reference can be viewed using this link:
-
-> **[kyverno.io/v1.ClusterPolicy](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/crd/v1/index.html#kyverno.io/v1.ClusterPolicy)**
+The complete kyverno.io/v1.ClusterPolicy CRD reference can be viewed [here](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/crd/v1/index.html#kyverno.io/v1.ClusterPolicy).
 
 The HTML source is available in the [Kyverno GitHub repository](https://github.com/kyverno/kyverno/tree/main/docs) and generated from type definitions stored at [kyverno/kyverno/pkg/api](https://github.com/kyverno/kyverno/tree/main/pkg/api).
 
-## kubectl explain 
+## kubectl explain
 
-When operating in a Kubernetes cluster with Kyverno installed, you can always inspect Kyverno types natively using `kubectl explain`. 
+When operating in a Kubernetes cluster with Kyverno installed, you can always inspect Kyverno types natively using `kubectl explain`.
 
-For example, here is the definition of a Kyverno `policy.spec`:
+For example, this is the definition of a Kyverno Policy resource at `policy.spec`:
 
 ```shell
-kubectl explain policy.spec
 KIND:     Policy
 VERSION:  kyverno.io/v1
 
@@ -56,13 +53,17 @@ FIELDS:
      admission review request and report an error in a policy report. Optional.
      The default value is "audit".
 
+   validationFailureActionOverrides     <[]Object>
+     ValidationFailureActionOverrides is a Cluter Policy attribute that
+     specifies ValidationFailureAction namespace-wise. It overrides
+     ValidationFailureAction for the specified namespaces.
+
    webhookTimeoutSeconds        <integer>
-     WebhookTimeoutSeconds specifies the webhook timeout for this policy. After
-     the timeout passes, the admission request will fail based on the failure
+     WebhookTimeoutSeconds specifies the maximum time in seconds allowed to
+     apply this policy. After the configured time expires, the admission request
+     may fail, or may simply ignore the policy results, based on the failure
      policy. The default timeout is 10s, the value must be between 1 and 30
      seconds.
 ```
 
-Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
-
-
+Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
