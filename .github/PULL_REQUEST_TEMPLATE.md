@@ -10,25 +10,6 @@ chance substantial changes will be requested or that the changes will be rejecte
 You can discuss changes with maintainers in the [Kyverno Slack Channel](https://kubernetes.slack.com/).
 -->
 
-## Milestone of this PR
-<!--
-
-Add the milestone label by commenting `/milestone 1.2.3`.
-
--->
-## What type of PR is this
-
-<!--
-
-> Uncomment only one ` /kind <>` line, hit enter to put that in a new line, and remove leading white spaces from that line:
->
-> 
-> /kind documentation
-> /kind sample-policies
-> /kind js-css-hugo
-> /kind versioning
--->
-
 ## Proposed Changes
 
 <!--
@@ -44,13 +25,6 @@ Put an `x` in the boxes that apply. You can also fill these out after creating t
 them, don't hesitate to ask. We're here to help! This is simply a reminder of what we are going to look for before merging your code.
 -->
 
-- [] I have read the [contributing guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md).
+- [] I have read the [contributing guidelines](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md).
 - [] I have inspected the website preview for accuracy.
-- [] I have read the [PR documentation guide](https://github.com/kyverno/kyverno/blob/main/.github/pr_documentation.md) and followed the process including adding proof manifests to this PR.
-- [] I have signed off my issue [Contributing guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md)
-## Further Comments
-
-<!--
-If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution
-you did and what alternatives you considered, etc...
--->
+- [] I have signed off my issue.
