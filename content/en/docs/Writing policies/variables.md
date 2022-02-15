@@ -7,7 +7,7 @@ weight: 6
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps and the Kubernetes API Server.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/)(pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
 
 {{% alert title="Note" color="info" %}}
 Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
