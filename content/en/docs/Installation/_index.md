@@ -193,10 +193,6 @@ kubectl logs -l app.kubernetes.io/name=kyverno -n <namespace>
 
 #### Option 2: Use your own CA-signed certificate
 
-{{% alert title="Note" color="warning" %}}
-There is a known issue with this process. It is being worked on and should be available again in a future release.
-{{% /alert %}}
-
 You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above).
 
 ##### 2.1. Generate a self-signed CA and signed certificate-key pair
@@ -207,43 +203,31 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Here are the commands to create a self-signed root CA, and generate a signed certificate and key using OpenSSL (you can customize the certificate attributes for your deployment):
+Below is a process which shows how to create a self-signed root CA, and generate a signed certificate and key using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 
-```bash
-openssl genrsa -out rootCA.key 4096
-openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt  -subj "/C=US/ST=test/L=test /O=test /OU=PIB/CN=*.kyverno.svc/emailAddress=test@test.com"
+```sh
+step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password
 ```
 
-2. Create a keypair
+2. Generate a leaf certificate with a five-year expiration
 
-```bash
-openssl genrsa -out webhook.key 4096
-openssl req -new -key webhook.key -out webhook.csr  -subj "/C=US/ST=test /L=test /O=test /OU=PIB/CN=kyverno-svc.kyverno.svc/emailAddress=test@test.com"
+```sh
+step certificate create kyverno-svc tls.crt tls.key --profile leaf \
+            --ca rootCA.crt --ca-key rootCA.key \
+            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h --insecure --no-password
 ```
 
-3. Create a `webhook.ext` file with the Subject Alternate Names (SAN) to use. This is required with Kubernetes 1.19+ and Go 1.15+.
+3. Verify the contents of the certificate
 
-```
-subjectAltName = DNS:kyverno-svc,DNS:kyverno-svc.kyverno,DNS:kyverno-svc.kyverno.svc
-```
-
-4. Sign the keypair with the CA passing in the extension
-
-```bash
-openssl x509 -req -in webhook.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out webhook.crt -days 1024 -sha256 -extfile webhook.ext
-```
-
-5. Verify the contents of the certificate
-
-```bash
-openssl x509 -in webhook.crt -text -noout
+```sh
+step certificate inspect tls.crt --short
 ```
 
 The certificate must contain the SAN information in the `X509v3 extensions` section:
 
-```
+```sh
 X509v3 extensions:
     X509v3 Subject Alternative Name:
         DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
@@ -254,16 +238,17 @@ X509v3 extensions:
 You can now use the following files to create Secrets:
 
 - `rootCA.crt`
-- `webhooks.crt`
-- `webhooks.key`
+- `tls.crt`
+- `tls.key`
 
 To create the required Secrets, use the following commands (do not change the Secret names):
 
 ```sh
 kubectl create ns <namespace>
-kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=webhook.crt --key=webhook.key -n <namespace>
+kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
 kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-ca self-signed-cert=true -n <namespace>
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -272,20 +257,16 @@ The annotation on the TLS pair secret is used by Kyverno to identify the use of 
 
 Secret | Data | Content
 ------------ | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | rootCA.crt | root CA used to sign the certificate
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | tls.key & tls.crt  | key and signed certificate
+`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
+`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
 
-Kyverno uses secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
+Kyverno uses Secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
 
 This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
 ##### 2.3. Install Kyverno
 
-You can now install Kyverno by downloading and updating `install.yaml`, or using the command below (assumes that the namespace is "kyverno"):
-
-```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
-```
+You can now install Kyverno by selecting one of the available methods from the [installation section above](/docs/installation/#compatibility-matrix).
 
 ### Roles and Permissions
 
