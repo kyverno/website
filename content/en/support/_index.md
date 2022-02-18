@@ -9,7 +9,7 @@ Below is a list of companies that offer commercial products and services for Kyv
 
 ## BlakYaks
 
-[BlakYaks](https://blakyaks.com) are a Microsoft Gold Partner speeding up enterprise container platform adoption, specialising in Azure, DevOps and cloud-native. We focus on building and managing enterprise-grade Azure, container, PaaS, and serverless platforms solutions that are secure, compliant and software-defined.
+[BlakYaks](https://blakyaks.com) are a Microsoft Gold Partner speeding up enterprise container platform adoption, specializing in Azure, DevOps, and cloud-native. BlakYaks focuses on building and managing enterprise-grade Azure, container, PaaS, and serverless platforms solutions that are secure, compliant, and software-defined.
 
 ### Services
 
