@@ -114,7 +114,7 @@ Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-sta
 
 ### Using private registries
 
-To use a private registry, you must create an image pull secret in the Kyverno namespace and specify the secret name as an argument for the Kyverno deployment:
+To use a private registry, you must create an image pull secret in the Kyverno Namespace and specify the Secret name as an argument for the Kyverno Deployment:
 
 1. Configure the image pull secret:
 
@@ -123,7 +123,7 @@ kubectl create secret docker-registry regcred --docker-server=<your-registry-ser
 -n kyverno
 ```
 
-2. Update the Kyverno deployment to add the `--imagePullSecrets=regcred` argument:
+2. Update the Kyverno Deployment to add the `--imagePullSecrets=regcred` argument:
 
 ```yaml
 apiVersion: apps/v1
@@ -151,7 +151,7 @@ spec:
 
 ### Using a signature repository
 
-To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule specify the repository for each image:
+To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
 
 ```yaml
 
@@ -311,4 +311,4 @@ spec:
 
 ## Known Issues
 
-1. Prometheus metrics and the Kyverno CLI are currently not supported. Check the [Kyverno GitHub](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.
+1. Prometheus metrics and the Kyverno CLI are currently not supported. Check the [Kyverno GitHub repo](https://github.com/kyverno/kyverno/labels/imageVerify) for a complete list of pending issues.

@@ -41,7 +41,7 @@ These can be distinguished as:
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-When Kyverno receives an admission controller request (i.e., a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
+When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
 
@@ -102,9 +102,10 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - networking.k8s.io/v1/NetworkPolicy
+      any:
+      - resources:
+          kinds:
+          - networking.k8s.io/v1/NetworkPolicy
 ```
 
 By specifying the `kind` in `version/kind` format, only specific versions of the resource kind will be matched.
@@ -114,13 +115,15 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - v1/NetworkPolicy
+      any:
+      - resources:
+          kinds:
+          - v1/NetworkPolicy
 ```
 
 As of Kyverno 1.5.0, wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster.
 Selector labels support wildcards `(* or ?)` for keys as well as values in the following paths.
+
 * `match.resources.selector.matchLabels`
 * `exclude.resources.selector.matchLabels`
 * `match.any.resources.selector.matchLabels`
@@ -149,13 +152,15 @@ spec:
   rules:
   - name: check-for-labels
     match:
-      resources:
-        kinds:
-        - "*"
+      any:
+      - resources:
+          kinds:
+          - "*"
     preconditions:
-    - key: "{{ request.operation }}"
-      operator: Equals
-      value: CREATE
+      any:
+      - key: "{{ request.operation }}"
+        operator: Equals
+        value: CREATE
     validate:
       message: "The label `app.kubernetes.io/name` is required."
       pattern:
@@ -183,15 +188,16 @@ spec:
   rules:
     - name: match-critical-app
       match:
+        any:
         # AND across kinds and namespaceSelector
-        resources:
-          # OR inside list of kinds
-          kinds:
-          - Deployment
-          - StatefulSet
-          selector:
-            matchLabels:
-              app: critical
+        - resources:
+            # OR inside list of kinds
+            kinds:
+            - Deployment
+            - StatefulSet
+            selector:
+              matchLabels:
+                app: critical
 ```
 
 This pattern can be leveraged to produce very fine-grained control over the selection of resources, for example the snippet as shown below which combines `match` elements that include `resources`, `subjects`, `roles`, and `clusterRoles`.
@@ -255,18 +261,19 @@ spec:
   rules:
     - name: check-min-replicas
       match:
+        any:
         # AND across resources and selector
-        resources:
-          # OR inside list of kinds
-          kinds:
-          - Deployment
-          namespaceSelector:
-            matchExpressions:
-              - key: type 
-                operator: In
-                values: 
-                - connector
-                - compute
+        - resources:
+            # OR inside list of kinds
+            kinds:
+            - Deployment
+            namespaceSelector:
+              matchExpressions:
+                - key: type 
+                  operator: In
+                  values: 
+                  - connector
+                  - compute
 ```
 
 ## Combining match and exclude
@@ -282,12 +289,14 @@ spec:
   rules:
     name: match-pods-except-cluster-admin
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     exclude:
-      clusterRoles:
-      - cluster-admin
+      any:
+      - clusterRoles:
+        - cluster-admin
 ```
 
 ### Exclude `kube-system` namespace
@@ -303,13 +312,15 @@ spec:
   rules:
     name: match-pods-except-admin
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     exclude:
-      resources:
-        namespaces:
-        - kube-system
+      any:
+      - resources:
+          namespaces:
+          - kube-system
 ```
 
 ### Match a label and exclude users and roles
@@ -325,18 +336,20 @@ spec:
   rules:
     - name: match-criticals-except-given-rbac
       match:
-        resources:
-          kind:
-          - Pod
-          selector:
-            matchLabels:
-              app: critical
+        any:
+        - resources:
+            kind:
+            - Pod
+            selector:
+              matchLabels:
+                app: critical
       exclude:
-        clusterRoles:
-        - cluster-admin
-        subjects:
-        - kind: User
-          name: John
+        any:
+        - clusterRoles:
+          - cluster-admin
+        - subjects:
+          - kind: User
+            name: John
 ```
 
 ### Match a label and exclude users
@@ -375,9 +388,10 @@ spec:
   rules:
     - name: match-pod-annotations
       match:
-        resources:
-          annotations:
-            imageregistry: "https://hub.docker.com/"
-          kinds:
-            - Pod
+        any:
+        - resources:
+            annotations:
+              imageregistry: "https://hub.docker.com/"
+            kinds:
+              - Pod
 ```

@@ -195,6 +195,8 @@ spec:
 
 To represent the `limits.memory` field in a JMESPath expression requires literal quoting of the key in order to avoid being interpreted as child nodes `limits` and `memory`. The expression would then be `{{ spec.hard.\"limits.memory\" }}`. A similar approach is needed when individual keys contain special characters, for example a dash (`-`). Quoting and then escaping is similarly needed there, ex., `{{ images.containers.\"my-container\".tag }}`.
 
+Quoting of an overall JMESPath expression can also impact how it is evaluated. For fields which only contain a JMESPath expression (ex., `key: "{{ request.object.spec.template.spec.containers[].image | contains(@, 'nginx') }}"`) it is important to use double quotes on the outer expression (as shown) and single quotes for input fields of type string. Even if no JMESPath filters are used, any expression should be wrapped in double quotes to avoid unintended evaluation.
+
 ## Useful Patterns
 
 When developing policies for Kubernetes resources, there are several patterns which are common where JMESPath can be useful. This section attempts to capture example patterns that have been observed through real world use cases and how to write JMESPath for them.

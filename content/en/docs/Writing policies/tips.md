@@ -8,7 +8,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 ## General
 
-* Need more examples or struggling to see a practical use case? Remember to check out the extensive community samples library for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
+* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
 
 * Use `kubectl explain` to explain and explore the various parts and fields of a Kyverno policy. It works just like on native Kubernetes resources!
 
@@ -59,7 +59,7 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 ## Validate
 
-* When developing your `validate` policies, it's easiest to set `validationFailureAction: enforce` so when testing you can see the results immediately without having to look at report.
+* When developing your `validate` policies, it's easiest to set `validationFailureAction: enforce` so when testing you can see the results immediately without having to look at a report.
 
 * Before deploying into production, ensure you have `validationFailureAction: audit` so the policy doesn't have unintended consequences.
 
