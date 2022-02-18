@@ -8,4 +8,4 @@ description: >
 
 The [Kyverno CLI `test` command](/docs/kyverno-cli/#test) can be used to test if a policy is behaving as expected.
 
-Please refer to the [`test` command documentation](/docs/kyverno-cli/#test) for details. You can also find examples in the [sample policies repository](https://github.com/kyverno/policies/tree/main/pod-security/tests).
+Please refer to the [`test` command documentation](/docs/kyverno-cli/#test) for details. You can also find examples in the [sample policies repo](https://github.com/kyverno/policies).

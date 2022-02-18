@@ -67,7 +67,7 @@ helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update
 
 # Install the Kyverno Helm chart into a new namespace called "kyverno"
-helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, generate, and verify image configurations. The policy attribute `validationFailureAction` is set to `enforce` to block API requests that are non-compliant (using the default value `audit` will report violations but not block requests.)
