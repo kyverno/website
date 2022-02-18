@@ -5,7 +5,7 @@ description: >
 weight: 8
 ---
 
-Preconditions allow controlling policy rule execution based on variable values.
+Preconditions allow controlling policy rule execution by building expressions based on variable values.
 
 While `match` and `exclude` allow filtering requests based on resource and user information, `preconditions` can be used to define custom filters for more granular control of when a rule should be applied.
 
@@ -13,21 +13,17 @@ The primary use case for `preconditions` is in `mutate` or `generate` rules when
 
 For `validate` rules, the use of `patterns` is often preferable since conditionals can be used.
 
-When specifying a JMESPath expression in a `preconditions` statement which contains a special character (ex. `/` in the case of Kubernetes annotations), double quote the annotation as a literal string. Escape the double quotes with a backslash character (`\`).
+When specifying a JMESPath expression in a `preconditions` statement which contains a special character (ex. `/` in the case of Kubernetes annotations), double quote the annotation as a literal string. Escape the double quotes with a backslash character (`\`). For more detailed information on writing JMESPath expressions for use in `preconditions`, see the JMESPath page [here](/docs/writing-policies/jmespath/).
 
 ```sh
 {{request.object.spec.template.metadata.annotations.\"foo.k8s.corp.net/bar\"}}
 ```
 
-You may specify multiple statements in the `preconditions` field. The use of multiple `preconditions` statements function as a logical AND statement.
+You may specify multiple statements in the `preconditions` field and controlling how they operate by using `any` and `all` statements.
 
 ## Any and All Statements
 
 You may further control how `preconditions` are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule with multiple `any` statements also being possible (multiple `all` statements would be redundant). For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, `preconditions` will not be satisfied and thus the rule will not be applicable.
-
-{{% alert title="Note" color="info" %}}
-`any` and `all` statements are available starting in Kyverno v1.3.4 but are optional. Users can continue to write multiple statements inside the `preconditions` field and have them evaluated as a logical AND statement.
-{{% /alert %}}
 
 For example, consider a Deployment manifest which features many different labels as follows.
 
@@ -77,10 +73,10 @@ spec:
         - Deployment
     preconditions:
       any:
-      - key: "{{request.object.metadata.labels.color}}"
+      - key: "{{ request.object.metadata.labels.color || '' }}"
         operator: Equals
         value: blue
-      - key: "{{request.object.metadata.labels.app}}"
+      - key: "{{ request.object.metadata.labels.app || '' }}"
         operator: Equals
         value: busybox
     validate:
@@ -92,6 +88,10 @@ spec:
               containers:
               - name: "*busybox*"
 ```
+
+{{% alert title="Note" color="info" %}}
+These `preconditions` use a JMESPath syntax for non-existence checks, see the JMESPath page [here](/docs/writing-policies/jmespath/#non-existence-checks) for details.
+{{% /alert %}}
 
 Adding an `all` block means that all of the statements within that block must evaluate to TRUE for the whole block to be considered TRUE. In this policy, in addition to the previous `any` conditions, it checks that all of `animal=cow` and `env=prod` but changes the validation to look for a container with name having the string `foxes` in it. Because the `any` block and `all` block evaluate to TRUE, the validation is performed, however the Deployment will fail to create because the name is still `busybox`. If one of the statements in the `all` block is changed so the value of the checked label is not among those in the Deployment, the rule will not be processed and the Deployment will be created.
 
@@ -106,22 +106,23 @@ spec:
   rules:
   - name: any-all-rule
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     preconditions:
       any:
-      - key: "{{request.object.metadata.labels.color}}"
+      - key: "{{ request.object.metadata.labels.color || '' }}"
         operator: Equals
         value: blue
-      - key: "{{request.object.metadata.labels.app}}"
+      - key: "{{ request.object.metadata.labels.app || '' }}"
         operator: Equals
         value: busybox
       all:
-      - key: "{{request.object.metadata.labels.animal}}"
+      - key: "{{ request.object.metadata.labels.animal || '' }}"
         operator: Equals
         value: cow
-      - key: "{{request.object.metadata.labels.env}}"
+      - key: "{{ request.object.metadata.labels.env || '' }}"
         operator: Equals
         value: qa
     validate:
@@ -174,9 +175,10 @@ spec:
   rules:
   - name: memory-limit
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       any:
       - key: "{{request.object.spec.containers[*].resources.requests.memory}}"
@@ -186,48 +188,54 @@ spec:
 
 ## Wildcard Matches
 
-String values support the use of wildcards to allow for partial matches. The following example matches on pods that have a container using a `bash` image.
+String values support the use of wildcards to allow for partial matches. The following example matches on Pods that have a container using a `bash` image.
 
 ```yaml
   - name: match-on-image
     match:
-      resources:
-        kinds:
-        - Pods
+      any:
+      - resources:
+          kinds:
+          - Pods
     preconditions:
-    - key: "{{request.object.spec.template.spec.containers.image}}"
-      operator: Equals
-      value: "bash:*"
+      any:
+      - key: "{{request.object.spec.template.spec.containers.image}}"
+        operator: Equals
+        value: "bash:*"
 ```
 
 ## Matching requests without a service account
 
-In this example, the rule is only applied to requests from service accounts (i.e. when the `{{serviceAccountName}}` is not empty).
+In this example, the rule is only applied to requests from ServiceAccounts (i.e. when the `{{serviceAccountName}}` is not empty).
 
 ```yaml
   - name: generate-owner-role
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     preconditions:
-    - key: "{{serviceAccountName}}"
-      operator: NotEquals
-      value: ""
+      any:
+      - key: "{{serviceAccountName}}"
+        operator: NotEquals
+        value: ""
 ```
 
 ## Matching requests from specific service accounts
 
-In this example, the rule is only applied to requests from a service account with name `build-default` and `build-base`.
+In this example, the rule is only applied to requests from a ServiceAccount with name `build-default` and `build-base`.
 
 ```yaml
   - name: generate-default-build-role
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     preconditions:
-    - key: "{{serviceAccountName}}"
-      operator: In
-      value: ["build-default", "build-base"]
+      any:
+      - key: "{{serviceAccountName}}"
+        operator: AnyIn
+        value: ["build-default", "build-base"]
 ```
