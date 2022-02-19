@@ -8,7 +8,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 ## API server is blocked
 
-**Symptom**: Kyverno pods are not running and the API server is timing out due to webhook timeouts. This can happen if the Kyverno pods are not gracefully terminated, or if there is a cluster outage, and policies were configure to [fail-closed](/docs/writing-policies/policy-settings/).
+**Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. This can happen if the Kyverno Pods are not gracefully terminated, or if there is a cluster outage, and policies were configure to [fail-closed](/docs/writing-policies/policy-settings/).
 
 **Solution**: Delete the Kyverno validating and mutating webhook configurations and then restart Kyverno.
 
@@ -19,11 +19,11 @@ kubectl delete validatingwebhookconfiguration kyverno-resource-validating-webhoo
 kubectl delete  mutatingwebhookconfiguration kyverno-resource-mutating-webhook-cfg
 ```
 
-Note that these two webhook configurations are used for resources, and other Kyverno webhooks are for internal operations and typically do not need to be deleted.
+Note that these two webhook configurations are used for resources. Other Kyverno webhooks are for internal operations and typically do not need to be deleted.
 
 2. Restart Kyverno
 
-Either delete the Kyverno pods or scale then down and then up. For example, for an installation with 3 replicas use:
+Either delete the Kyverno Pods or scale the Deployment down to zero and then up. For example, for an installation with three replicas use:
 
 ```sh
 kubectl scale deploy kyverno -n kyverno --replicas 0
@@ -32,11 +32,9 @@ kubectl scale deploy kyverno -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system namespaces. Note that this configuration bypasses all policy checks on select namespaces, and may violate security best practices.
-
+Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces, and may violate security best practices.
 
 ## Policies not applied
-
 
 **Symptom**: My policies are created but nothing seems to happen when I create a resource that should trigger them.
 
@@ -76,7 +74,6 @@ Use [namespace selectors](/docs/installation/#namespace-selectors) to filter req
 
 5. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
 
-
 ## Kyverno consumes a lot of resources
 
 **Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?
@@ -89,7 +86,6 @@ kubectl get cm,secret -A | wc -l
 
 After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
 
-
 ## Policies are partially applied
 
 **Symptom**: Kyverno is working for some policies but not others. How can I see what's going on?
@@ -98,8 +94,7 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 1. Check the Pod logs from Kyverno. Assuming Kyverno was installed into the default Namespace called `kyverno` use the command `kubectl -n kyverno logs <kyverno_pod_name>` to show the logs. To watch the logs live, add the `-f` switch for the "follow" option.
 
-2. If no helpful information is being displayed at the default logging level, increase the level of verbosity by editing the Kyverno Deployment. To edit the Deployment, assuming Kyverno was installed into the default Namespace, use the command `kubectl -n kyverno edit deploy kyverno`. Find the `args` section for the container named `kyverno` and change the `-v=2` switch to `-v=6`. This will increase the logging level to its highest. Take care to revert this back to `-v=2` once troubleshooting steps are concluded.
-
+2. If no helpful information is being displayed at the default logging level, increase the level of verbosity by editing the Kyverno Deployment. To edit the Deployment, assuming Kyverno was installed into the default Namespace, use the command `kubectl -n kyverno edit deploy kyverno`. Find the `args` section for the container named `kyverno` and either add the `-v` switch or increase to a higher level. The flag `-v=6` will increase the logging level to its highest. Take care to revert this change once troubleshooting steps are concluded.
 
 ## Kyverno exits
 
@@ -109,12 +104,11 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 1. Edit the Kyverno Deployment and increase the memory limit on the `kyverno` container by using the command `kubectl -n kyverno edit deploy kyverno`. Change the `resources.limits.memory` field to a larger value. Continue to monitor the memory usage by using something like the [Kubernetes metrics-server](https://github.com/kubernetes-sigs/metrics-server#installation).
 
-
 ## Kyverno fails on GKE
 
 **Symptom**: I'm using GKE and after installing Kyverno, my cluster is either broken or I'm seeing timeouts and other issues.
 
-**Solution**: Private GKE clusters do not allow certain communications from the control planes to the workers, which Kyverno requires to receive webhooks from the API server. In order to resolve this issue, create a firewall rule which allows the control plane to speak to workers on the Kyverno TCP port which by default at this time is 9443.
+**Solution**: Private GKE clusters do not allow certain communications from the control planes to the workers, which Kyverno requires to receive webhooks from the API server. In order to resolve this issue, create a firewall rule which allows the control plane to speak to workers on the Kyverno TCP port which, by default at this time, is 9443.
 
 ## Kyverno fails on EKS
 

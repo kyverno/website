@@ -1,6 +1,7 @@
 ---
 title: Policies and Rules
-description: Learn how Kyverno policies and rules work.
+description: >-
+    Learn how Kyverno policies and rules work.
 weight: 45
 ---
 

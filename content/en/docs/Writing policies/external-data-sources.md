@@ -75,9 +75,10 @@ spec:
           name: some-config-map
           namespace: some-namespace
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       mutate:
         patchStrategicMerge:
           metadata:
@@ -92,6 +93,7 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 ```
 {{ "<name>".data."<key>" }}
 ```
+See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting concerns.
 {{% /alert %}}
 
 ### Handling ConfigMap Array Values
@@ -153,16 +155,18 @@ spec:
           name: roles-dictionary
           namespace: default
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     validate:
       message: "The role {{ request.object.metadata.annotations.role }} is not in the allowed list of roles: {{ \"roles-dictionary\".data.\"allowed-roles\" }}."
       deny:
         conditions:
-        - key: "{{ request.object.metadata.annotations.role }}"
-          operator: NotIn
-          value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
+          any:
+          - key: "{{ request.object.metadata.annotations.role }}"
+            operator: NotIn
+            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
 ```
 
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
@@ -204,7 +208,7 @@ Submit the manifest and see how Kyverno reacts.
 kubectl create -f deploy.yaml
 ```
 
-```
+```sh
 Error from server: error when creating "deploy.yaml": admission webhook "validate.kyverno.svc" denied the request:
 
 resource Deployment/default/busybox was blocked due to the following policies
@@ -221,14 +225,14 @@ Kubernetes is powered by a declarative API that allows querying and manipulating
 
 A Kyverno Kubernetes API call works just as with `kubectl` and other API clients, and can be tested using existing tools.
 
-For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of Pods:
+For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to `kyverno jp` which counts the number of Pods:
 
 ```sh
-kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
+kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp "items | length(@)"
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and [`jp`](https://github.com/jmespath/jp) (the JMESPath Command Line) to test API Calls.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API Calls.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -383,7 +387,7 @@ This will return a `NamespaceList` object with a property `items` that contains 
 To process this data in JMESPath, reference the `items`. Here is an example which extracts a few metadata fields across all Namespace resources:
 
 ```sh
-kubectl get --raw /api/v1/namespaces | jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
 ```
 
 This produces a new JSON list of objects with properties `name` and `creationTime`.
@@ -404,10 +408,10 @@ This produces a new JSON list of objects with properties `name` and `creationTim
 To find an item in the list you can use JMESPath filters. For example, this command will match a Namespace by its name:
 
 ```sh
-kubectl get --raw /api/v1/namespaces | jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
 ```
 
-In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples.
+In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno JMESPath page [here](/docs/writing-policies/jmespath/).
 
 ### Sample Policy: Limit Services of type LoadBalancer in a Namespace
 
@@ -423,25 +427,28 @@ spec:
   rules:
   - name: limit-lb-svc
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     context:
     - name: serviceCount
       apiCall:
         urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
     preconditions:
-    - key: "{{ request.operation }}"
-      operator: Equals
-      value: CREATE
+      any:
+      - key: "{{ request.operation }}"
+        operator: Equals
+        value: CREATE
     validate:
       message: "Only one LoadBalancer service is allowed per namespace"
       deny:
         conditions:
-        - key: "{{ serviceCount }}"
-          operator: GreaterThan
-          value: 1
+          any:
+          - key: "{{ serviceCount }}"
+            operator: GreaterThan
+            value: 1
 ```
 
 This sample policy retrieves the list of Services in the Namespace and stores the count of type `LoadBalancer` in a variable called serviceCount. A `deny` rule is used to ensure that the count cannot exceed one.

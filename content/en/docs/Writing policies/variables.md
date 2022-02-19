@@ -5,9 +5,9 @@ description: >
 weight: 6
 ---
 
-Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps and the Kubernetes API Server.
+Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/)(pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule.
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/).
 
 {{% alert title="Note" color="info" %}}
 Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
@@ -42,9 +42,10 @@ validationFailureAction: enforce
 rules:
 - name: check-tcpSocket
   match:
-    resources:
-      kinds:
-      - Pod
+    any:
+    - resources:
+        kinds:
+        - Pod
   validate:
     message: "Port number for the livenessProbe must be less than that of the readinessProbe."
     pattern:
@@ -91,9 +92,10 @@ spec:
   rules:
   - name: imbue-pod-spec
     match:
-      resources:
-        kinds:
-        - v1/Pod
+      any:
+      - resources:
+          kinds:
+          - v1/Pod
     mutate:
       patchStrategicMerge:
         spec:
@@ -221,9 +223,10 @@ spec:
   rules:
   - name: who-created-this
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -316,7 +319,7 @@ This same pattern and image variable arrangement also works for ephemeral contai
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
 
 {{% alert title="Note" color="info" %}}
-Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
+Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](/docs/writing-policies/jmespath/#formatting).
 {{% /alert %}}
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
@@ -333,10 +336,6 @@ Learn more about ConfigMap lookups and API Server calls in the [External Data So
 
 It is also possible to nest JMESPath expressions inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
 
-{{% alert title="Note" color="info" %}}
-Nesting JMESPath expressions is supported in Kyverno version 1.3.0 and higher.
-{{% /alert %}}
-
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -352,11 +351,12 @@ spec:
         name: resource-annotater-reference
         namespace: default
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             foo: "{{LabelsCM.data.{{ request.object.metadata.labels.app }}}}"
@@ -443,4 +443,4 @@ The JMESPath arithmetic functions work for scalars (ex., 10), resource quantitie
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
 
-To find examples of some of these functions in action, see the [Kyverno policies library](/policies/).
+To find examples of some of these functions in action, see the [Kyverno policies library](/policies/). And for more complete information along with samples for each custom filter, see the JMESPath page [here](/docs/writing-policies/jmespath/).

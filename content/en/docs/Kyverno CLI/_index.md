@@ -29,6 +29,14 @@ You can install the Kyverno CLI via your favorite AUR helper (e.g. [yay](https:/
 yay -S kyverno-git
 ```
 
+### Install via Homebrew
+
+The Kyverno CLI can also be installed with [Homebrew](https://brew.sh/) as a [formula](https://formulae.brew.sh/formula/kyverno#default).
+
+```sh
+brew install kyverno
+```
+
 ### Building the CLI from source
 
 You can also build the CLI binary from the Git repository (requires Go).
@@ -108,7 +116,7 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <vari
 Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
 
 {{% alert title="Note" color="info" %}}
-When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](https://kyverno.io/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
 {{% /alert %}}
 
 ```sh
@@ -168,9 +176,10 @@ spec:
   rules:
   - name: default-deny-ingress
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       kind: NetworkPolicy
       name: default-deny-ingress
@@ -258,7 +267,7 @@ globalValues:
   <global variable2>: <value>
 ```
 
-If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the pod `test-global-prod` in the following example.
+If a resource-specific value and a global value have the same variable name, the resource value takes precedence over the global value. See the Pod `test-global-prod` in the following example.
 
 Example:
 
@@ -275,9 +284,10 @@ spec:
   rules:
     - name: validate-mode
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       validate:
         message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
         deny:
@@ -326,12 +336,12 @@ globalValues:
 kyverno apply /path/to/add_dev_pod.yaml --resource /path/to/dev_prod_pod.yaml -f /path/to/value.yaml
 ```
 
-The pod `test-global-dev` passes the validation, and `test-global-prod` fails.
+The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
 Use `--values-file` or `-f` for passing a file containing Namespace details.
-Check [here](https://kyverno.io/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selector.
+Check [here](/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -364,9 +374,10 @@ spec:
   rules:
     - name: validate-name
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
           namespaceSelector:
             matchExpressions:
             - key: foo.com/managed-state
@@ -448,9 +459,10 @@ spec:
           name: mycmap
           namespace: default
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       mutate:
         patchStrategicMerge:
           metadata:
@@ -496,8 +508,8 @@ Above example applies a `policy.yaml` to all resources in the cluster.
 
 Below are the combination of inputs that can be used for generating the policy report from the Kyverno CLI.
 
-| Policy        | Resource         | Cluster   | Namespace      | Interpretation                                                                           |
-| ---- |:-------------:| :---------------:| :--------:| :-------------:| :----------------------------------------------------------------------------------------|
+| Policy        | Resource         | Cluster   | Namespace      | Interpretation |
+| ------------- |:----------------:| :--------:| :-------------:| :-------------:|
 | policy.yaml   | -r resource.yaml | false     |                | Apply policy from `policy.yaml` to the resources specified in `resource.yaml` |
 | policy.yaml   | -r resourceName  | true      |                | Apply policy from `policy.yaml` to the resource with a given name in the cluster |
 | policy.yaml   |                  | true      |                | Apply policy from policy.yaml to all the resources in the cluster |
@@ -527,9 +539,10 @@ spec:
   rules:
   - name: validate-resources
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "CPU and memory resource requests and limits are required"
       pattern:
@@ -664,7 +677,7 @@ Run tests on a set of local files:
 kyverno test /path/to/folderContainingTestYamls
 ```
 
-##### Run tests on a Git repo:
+#### Run tests on a Git repo:
 
 Testing on an entire repo by specifying branch name within repo URL:
 
@@ -772,9 +785,10 @@ spec:
   rules:
   - name: require-image-tag
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "An image tag is required."  
       pattern:
@@ -783,9 +797,10 @@ spec:
           - image: "*:*"
   - name: validate-image-tag
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Using a mutable image tag e.g. 'latest' is not allowed."
       pattern:
@@ -836,8 +851,8 @@ kyverno test <PathToDirs>
 
 The example above applies a test on the policy and the resource defined in the test YAML.
 
-| #        | TEST                                                                    | RESULT           |
-| ---------|:-----------------------------------------------------------------------:|:-----------------|
+| #        | TEST                                                                  | RESULT           |
+| ---------|:---------------------------------------------------------------------:|:-----------------|
 | 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
 | 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             |
 
@@ -949,15 +964,17 @@ $ kyverno jp -f pod.json 'spec.containers[0].name' -u
 busybox
 ```
 
+For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/writing-policies/jmespath/).
+
 ### Version
 
-Prints the version of Kyverno used by the CLI.
+Prints the version of Kyverno CLI.
 
 Example:
 
 ```sh
-kyverno version
-Version: 1.4.2
-Time: 2021-08-11T20:09:26Z
-Git commit ID: fb6e0f18ea89c9b60c604e5135f38040fafbc1e4
+$ kyverno version
+Version: 1.6.0
+Time: 2022-02-08T07:49:45Z
+Git commit ID: 5b4d4c266353981a559fe210b4e85100fa3bf397
 ```
