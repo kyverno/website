@@ -12,9 +12,11 @@ Kyverno (Greek for "govern") is a policy engine designed specifically for Kubern
 
 * policies as Kubernetes resources (no new language to learn!)
 * validate, mutate, or generate any resource
+* verify container images for software supply chain security
+* inspect image metadata
 * match resources using label selectors and wildcards
 * validate and mutate using overlays (like Kustomize!)
-* synchronize configurations across namespaces
+* synchronize configurations across Namespaces
 * block non-conformant resources using admission controls, or report policy violations
 * test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
 * manage policies as code using familiar tools like `git` and `kustomize`
@@ -36,23 +38,23 @@ The picture below shows the high-level architecture for Kyverno:
 <img src="/images/kyverno-architecture.png" alt="Kyverno Architecture" width="80%"/>
 <br/><br/>
 
-An high availability installation of Kyverno can run multiple replicas, and each replica of Kyverno will have multiple controllers that perform different functions. The `Webhook` handles `AdmissionReview` requests from the Kubernetes API server, and its `Monitor` component creates and manages required configurations. The `PolicyController` watches policy resources and initiates background scans based on the configured scan interval. The `GenerateController` manages the lifecycle of generated resources. 
+An high availability installation of Kyverno can run multiple replicas, and each replica of Kyverno will have multiple controllers that perform different functions. The `Webhook` handles `AdmissionReview` requests from the Kubernetes API server, and its `Monitor` component creates and manages required configurations. The `PolicyController` watches policy resources and initiates background scans based on the configured scan interval. The `GenerateController` manages the lifecycle of generated resources.
 
 ## Quick Start
 
-This section will help you install Kyverno and create your first policy. 
+This section will help you install Kyverno and create your first policy.
 
 {{% alert title="Note" color="info" %}}
-Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
+Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts. Check the [compatibility matrix](/docs/installation/#compatibility-matrix) to ensure your version of Kubernetes is supported.
 To check the version, enter `kubectl version`.
 {{% /alert %}}
 
-You have the option of installing Kyverno directly from the latest release manifest, or using Helm.
+You have the option of installing Kyverno directly from the latest release manifest or using Helm.
 
 To install Kyverno using the latest release manifest (which may be a pre-release):
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
 ```
 
 You can also install Kyverno using a Helm chart:
@@ -65,10 +67,10 @@ helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update
 
 # Install the Kyverno Helm chart into a new namespace called "kyverno"
-helm install kyverno --namespace kyverno kyverno/kyverno --create-namespace
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, and generate configurations. The policy attribute `validationFailureAction` is set to `enforce` to block API requests that are non-compliant (using the default value `audit` will report violations but not block requests.)
+Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, generate, and verify image configurations. The policy attribute `validationFailureAction` is set to `enforce` to block API requests that are non-compliant (using the default value `audit` will report violations but not block requests.)
 
 ```yaml
 kubectl create -f- << EOF
@@ -81,9 +83,10 @@ spec:
   rules:
   - name: check-for-labels
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "label 'app.kubernetes.io/name' is required"
       pattern:
@@ -102,17 +105,17 @@ kubectl create deployment nginx --image=nginx
 You should see an error:
 
 ```sh
-Error from server: admission webhook "nirmata.kyverno.resource.validating-webhook" denied the request:
+error: failed to create deployment: admission webhook "validate.kyverno.svc-fail" denied the request: 
 
 resource Deployment/default/nginx was blocked due to the following policies
 
 require-labels:
-  autogen-check-for-labels: 'Validation error: label `app.kubernetes.io/name` is required;
-    Validation rule autogen-check-for-labels failed at path /spec/template/metadata/labels/app.kubernetes.io/name/'
+  autogen-check-for-labels: 'validation error: label ''app.kubernetes.io/name'' is
+    required. Rule autogen-check-for-labels failed at path /spec/template/metadata/labels/app.kubernetes.io/name/'
 ```
 
 {{% alert title="Note" color="info" %}}
-Kyverno may be configured to exclude system namespaces like `kube-system` and the `kyverno` namespace. Make sure you run the test pod in a user defined namespace, or the `default` namespace.
+Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace.
 {{% /alert %}}
 
 Although the ClusterPolicy matches on Pods, Kyverno intelligently applies this to all sources capable of generating Pods by default, including the Deployment above.
@@ -123,7 +126,7 @@ Create a Pod with the required label. For example, using this command:
 kubectl run nginx --image nginx --labels app.kubernetes.io/name=nginx
 ```
 
-This Pod configuration is compliant with the policy rules and is not blocked.
+This Pod configuration is compliant with the policy and is not blocked.
 
 Congratulations, you've just implemented a policy in your Kubernetes cluster!
 

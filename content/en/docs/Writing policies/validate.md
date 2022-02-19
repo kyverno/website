@@ -4,7 +4,7 @@ description: Check resource configurations for policy compliance.
 weight: 4
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`enforce`) or noted in a policy report (`audit`). Validation rules in `audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`enforce`) or noted in a [policy report](/docs/policy-reports/) (`audit`). Validation rules in `audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -27,9 +27,10 @@ spec:
   - name: require-ns-purpose-label
     # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
     validate:
       # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
@@ -83,7 +84,7 @@ The `validationFailureAction` attribute controls admission control behaviors for
 
 ## Validation Failure Action Overrides
 
-Using `validationFailureActionOverrides`, we can specify which actions to apply per Namespace. This attribute is only available for Cluster Policies.
+Using `validationFailureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -102,9 +103,10 @@ spec:
   rules:
     - name: check-label-app
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       validate:
         message: "The label `app` is required."
         pattern:
@@ -113,7 +115,7 @@ spec:
               app: "?*"
 ```
 
-In the above policy, for Namespace `default`, validation failure action is set to `enforce` and for Namespace `test`, it's set to `audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
+In the above policy, for Namespace `default`, `validationFailureAction` is set to `enforce` and for Namespace `test`, it's set to `audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
 
 ## Patterns
 
@@ -147,9 +149,10 @@ spec:
   rules:
   - name: check-container-resources
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "All containers must have CPU and memory resource requests and limits defined."
       pattern:
@@ -182,11 +185,12 @@ spec:
   rules:
     - name: check-label-app
       match:
-        resources:
-          kinds:
-          - Deployment
-          - StatefulSet
-          - DaemonSet
+        any:
+        - resources:
+            kinds:
+            - Deployment
+            - StatefulSet
+            - DaemonSet
       validate:
         message: "The label `app` is required."
         pattern:
@@ -254,9 +258,10 @@ spec:
   rules:
   - name: conditional-anchor-dockersock
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`."
       pattern:
@@ -284,9 +289,10 @@ spec:
   rules:
   - name: equality-anchor-no-dockersock
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "If a hostPath volume exists, it must not be set to `/var/run/docker.sock`."
       pattern:
@@ -318,9 +324,10 @@ spec:
   rules:
   - name: existence-anchor-at-least-one-nginx
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "At least one container must use the image `nginx:latest`."
       pattern:
@@ -357,9 +364,10 @@ spec:
   rules:
   - name: check-container-image
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: Images coming from corp.reg.com must use the correct imagePullSecret.
       pattern:
@@ -413,9 +421,10 @@ spec:
   rules:
   - name: check-containers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
@@ -458,9 +467,13 @@ validate:
 
 If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weave.works/` may be present", then this would need two separate rules to express as including either one would mean the other is valid and therefore the resource is allowed.
 
+{{% alert title="Note" color="info" %}}
+Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern` in the v1.23 release requires v1.23.3 at a minimum.
+{{% /alert %}}
+
 ## Deny rules
 
-In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
+In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions written as expressions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
 
 You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
 
@@ -470,7 +483,7 @@ When using a `deny` statement, `validationFailureAction` must be set to `enforce
 
 Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables. `deny` statements can similarly use `any` and `all` blocks like those available to `preconditions`.
 
-In addition to admission review request data, user information, and built-in variables, `deny` rules and preconditions can also operate on ConfigMap data, and in the future data from API server lookups, etc.
+In addition to admission review request data, user information, and built-in variables, `deny` rules and preconditions can also operate on ConfigMap data, data from API server lookups, etc.
 
 ### Deny DELETE requests based on labels
 
@@ -487,26 +500,28 @@ spec:
   rules:
   - name: block-deletes-for-kyverno-resources
     match:
-      resources:
-        selector:
-          matchLabels:
-            app.kubernetes.io/managed-by: kyverno
+      any:
+      - resources:
+          selector:
+            matchLabels:
+              app.kubernetes.io/managed-by: kyverno
     exclude:
-      clusterRoles:
-      - cluster-admin
+      any:
+      - clusterRoles:
+        - cluster-admin
     validate:
       message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
       deny:
         conditions:
-        - key: "{{request.operation}}"
-          operator: In
-          value:
-          - DELETE
+          any:
+          - key: "{{request.operation}}"
+            operator: Equals
+            value: DELETE
 ```
 
 ### Block changes to a custom resource
 
-This policy denies admission review requests for updates or deletes to a custom resource, unless the request is from a specific service account or matches specified roles.
+This policy denies admission review requests for updates or deletes to a custom resource, unless the request is from a specific ServiceAccount or matches specified Roles.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -519,16 +534,18 @@ spec:
   rules:
   - name: block-updates-to-custom-resource
     match:
-      resources:
-        kinds:
-        - SomeCustomResource
+      any:
+      - resources:
+          kinds:
+          - SomeCustomResource
     exclude:
-      subjects:
-      - kind: ServiceAccount
-        name: custom-controller
-      clusterRoles:
-      - custom-controller:*
-      - cluster-admin
+      any:
+      - subjects:
+        - kind: ServiceAccount
+          name: custom-controller
+      - clusterRoles:
+        - custom-controller:*
+        - cluster-admin
     validate:
       message: "Modifying or deleting this custom resource is forbidden."
       deny: {}
@@ -549,13 +566,15 @@ spec:
   rules:
   - name: deny-netpol-changes
     match:
-      resources:
-        kinds:
-        - NetworkPolicy
-        name: "*-default"
+      any:
+      - resources:
+          kinds:
+          - NetworkPolicy
+          name: "*-default"
     exclude:
-      clusterRoles:
-      - cluster-admin
+      any:
+      - clusterRoles:
+        - cluster-admin
     validate:
       message: "Changing default network policies is not allowed."
       deny: {}
@@ -567,7 +586,7 @@ The `foreach` declaration simplifies validation of sub-elements in resource decl
 
 A `foreach` declaration can contain multiple entries to process different sub-elements e.g. one to process a list of containers and another to process the list of initContainers in a Pod.
 
-Each `foreach` entry must contain a `list` attribute that defines the sub-elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
+Each `foreach` entry must contain a `list` attribute, written as a JMESPath expression without braces, that defines the sub-elements it processes. For example, iterating over the list of containers in a Pod is performed using this `list` declaration:
 
 ```yaml
 list: request.object.spec.containers
