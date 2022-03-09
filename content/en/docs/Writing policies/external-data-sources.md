@@ -455,7 +455,34 @@ This sample policy retrieves the list of Services in the Namespace and stores th
 
 ## Variables from Image Registries
 
-A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource. For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
+A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource. 
+
+For example, if you have are using the `imageRegistry` like so - 
+
+```yaml
+context: 
+- name: imageData
+  imageRegistry: 
+    reference: "ghcr.io/kyverno/kyverno"
+```
+
+the output `imageData` variable will have a structure which looks like -
+
+```json
+{
+    "image":         "ghcr.io/kyverno/kyverno",
+    "resolvedImage": "ghcr.io/kyverno/kyverno@sha256:17bfcdf276ce2cec0236e069f0ad6b3536c653c73dbeba59405334c0d3b51ecb",
+    "registry":      "ghcr.io",
+    "repository":    "kyverno/kyverno",
+    "identifier":    "latest",
+    "manifest":      manifest,
+    "configData":    config,
+}
+```
+
+The `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+
+For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
 ```json
 $ crane config ghcr.io/kyverno/kyverno:latest | jq
