@@ -3,7 +3,7 @@ title: "Verify Image with Multiple Keys"
 category: Sample
 version: 1.5.0
 subject: Pod
-policyType: "verifyImages"
+policyType: "validate"
 description: >
     There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy looks like a global key in a ConfigMap and also an image-specific key in the same ConfigMap.
 ---
