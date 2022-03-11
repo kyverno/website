@@ -56,5 +56,4 @@ spec:
         metadata:
           labels:
             foo: "*"
-
 ```
