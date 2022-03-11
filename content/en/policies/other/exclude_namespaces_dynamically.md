@@ -45,7 +45,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.object.metadata.namespace}}"
-        operator: AnyNotIn
+        operator: NotIn
         value: "{{namespacefilters.data.exclude}}"
     validate:
       message: >
