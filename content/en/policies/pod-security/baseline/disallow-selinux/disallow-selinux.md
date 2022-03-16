@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-selinux/disallow-selinux.yaml" target="-blank">/pod-security/baseline/disallow-selinux/disallow-selinux.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//pod-security/baseline/disallow-selinux/disallow-selinux.yaml" target="-blank">/pod-security/baseline/disallow-selinux/disallow-selinux.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

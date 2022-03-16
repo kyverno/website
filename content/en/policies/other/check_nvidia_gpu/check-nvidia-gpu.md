@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/check_nvidia_gpu/check-nvidia-gpu.yaml" target="-blank">/other/check_nvidia_gpu/check-nvidia-gpu.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/check_nvidia_gpu/check-nvidia-gpu.yaml" target="-blank">/other/check_nvidia_gpu/check-nvidia-gpu.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

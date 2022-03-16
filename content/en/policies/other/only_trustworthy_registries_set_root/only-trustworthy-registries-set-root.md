@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/only_trustworthy_registries_set_root/only-trustworthy-registries-set-root.yaml" target="-blank">/other/only_trustworthy_registries_set_root/only-trustworthy-registries-set-root.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/only_trustworthy_registries_set_root/only-trustworthy-registries-set-root.yaml" target="-blank">/other/only_trustworthy_registries_set_root/only-trustworthy-registries-set-root.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

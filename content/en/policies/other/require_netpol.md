@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/require_netpol.yaml" target="-blank">/other/require_netpol.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/require_netpol.yaml" target="-blank">/other/require_netpol.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

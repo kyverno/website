@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_node_selection/restrict_node_selection.yaml" target="-blank">/other/restrict_node_selection/restrict_node_selection.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/restrict_node_selection/restrict_node_selection.yaml" target="-blank">/other/restrict_node_selection/restrict_node_selection.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//psp-migration/check_supplemental_groups/check-supplemental-groups.yaml" target="-blank">/psp-migration/check_supplemental_groups/check-supplemental-groups.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//psp-migration/check_supplemental_groups/check-supplemental-groups.yaml" target="-blank">/psp-migration/check_supplemental_groups/check-supplemental-groups.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

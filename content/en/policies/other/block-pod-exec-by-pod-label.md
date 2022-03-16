@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/block-pod-exec-by-pod-label.yaml" target="-blank">/other/block-pod-exec-by-pod-label.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/block-pod-exec-by-pod-label.yaml" target="-blank">/other/block-pod-exec-by-pod-label.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

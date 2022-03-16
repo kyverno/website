@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_node_label_changes.yaml" target="-blank">/other/restrict_node_label_changes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/restrict_node_label_changes.yaml" target="-blank">/other/restrict_node_label_changes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -42,12 +42,12 @@ spec:
       deny:
         conditions:
           all:
-          - key: "{{ request.object.metadata.labels.foo }}"
-            operator: "NotEquals"
+          - key: "{{ request.object.metadata.labels.foo || '' }}"
+            operator: NotEquals
             value: ""
-          - key: "{{ request.object.metadata.labels.foo }}"
-            operator: "NotEquals"
-            value: "{{ request.oldObject.metadata.labels.foo }}"
+          - key: "{{ request.object.metadata.labels.foo || '' }}"
+            operator: NotEquals
+            value: "{{ request.oldObject.metadata.labels.foo || '' }}"
   - name: prevent-label-key-removal
     match:
       resources:
@@ -56,11 +56,11 @@ spec:
     preconditions:
       all:
       - key: "{{ request.operation }}"
-        operator: "Equals"
+        operator: Equals
         value: UPDATE
-      - key: "{{ request.oldObject.metadata.labels.foo }}"
-        operator: "Equals"
-        value: "*"
+      - key: "{{ request.oldObject.metadata.labels.foo || '' }}"
+        operator: Equals
+        value: "?*"
     validate:
       message: "Removing the `foo` label on a Node is not allowed."
       pattern:

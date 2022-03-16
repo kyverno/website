@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/restrict_node_port/restrict_node_port.yaml" target="-blank">/best-practices/restrict_node_port/restrict_node_port.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/restrict_node_port/restrict_node_port.yaml" target="-blank">/best-practices/restrict_node_port/restrict_node_port.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/advanced_restrict_image_registries/advanced-restrict-image-registries.yaml" target="-blank">/other/advanced_restrict_image_registries/advanced-restrict-image-registries.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/advanced_restrict_image_registries/advanced-restrict-image-registries.yaml" target="-blank">/other/advanced_restrict_image_registries/advanced-restrict-image-registries.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

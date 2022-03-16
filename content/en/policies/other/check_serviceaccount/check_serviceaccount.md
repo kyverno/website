@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/check_serviceaccount/check_serviceaccount.yaml" target="-blank">/other/check_serviceaccount/check_serviceaccount.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/check_serviceaccount/check_serviceaccount.yaml" target="-blank">/other/check_serviceaccount/check_serviceaccount.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

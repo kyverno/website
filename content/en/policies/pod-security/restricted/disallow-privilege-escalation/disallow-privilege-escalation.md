@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml" target="-blank">/pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml" target="-blank">/pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

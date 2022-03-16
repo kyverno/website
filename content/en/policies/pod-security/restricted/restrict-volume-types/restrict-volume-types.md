@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml" target="-blank">/pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml" target="-blank">/pod-security/restricted/restrict-volume-types/restrict-volume-types.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

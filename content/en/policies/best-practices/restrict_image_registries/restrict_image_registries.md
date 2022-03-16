@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/restrict_image_registries/restrict_image_registries.yaml" target="-blank">/best-practices/restrict_image_registries/restrict_image_registries.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/restrict_image_registries/restrict_image_registries.yaml" target="-blank">/best-practices/restrict_image_registries/restrict_image_registries.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

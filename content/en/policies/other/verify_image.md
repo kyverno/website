@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/verify_image.yaml" target="-blank">/other/verify_image.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/verify_image.yaml" target="-blank">/other/verify_image.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

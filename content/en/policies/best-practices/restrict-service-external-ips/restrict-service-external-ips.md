@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/restrict-service-external-ips/restrict-service-external-ips.yaml" target="-blank">/best-practices/restrict-service-external-ips/restrict-service-external-ips.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/restrict-service-external-ips/restrict-service-external-ips.yaml" target="-blank">/best-practices/restrict-service-external-ips/restrict-service-external-ips.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

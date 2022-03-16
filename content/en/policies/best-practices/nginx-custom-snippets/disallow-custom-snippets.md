@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml" target="-blank">/best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml" target="-blank">/best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/require_unique_external_dns/require_unique_external_dns.yaml" target="-blank">/other/require_unique_external_dns/require_unique_external_dns.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/require_unique_external_dns/require_unique_external_dns.yaml" target="-blank">/other/require_unique_external_dns/require_unique_external_dns.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

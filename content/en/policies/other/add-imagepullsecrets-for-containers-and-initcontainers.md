@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add-imagepullsecrets-for-containers-and-initcontainers.yaml" target="-blank">/other/add-imagepullsecrets-for-containers-and-initcontainers.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/add-imagepullsecrets-for-containers-and-initcontainers.yaml" target="-blank">/other/add-imagepullsecrets-for-containers-and-initcontainers.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

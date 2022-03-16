@@ -1,7 +1,7 @@
 ---
 title: "Exclude Namespaces Dynamically"
 category: Sample
-version: 
+version: 1.6.0
 subject: Namespace, Pod
 policyType: "validate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/exclude_namespaces_dynamically.yaml" target="-blank">/other/exclude_namespaces_dynamically.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/exclude_namespaces_dynamically.yaml" target="-blank">/other/exclude_namespaces_dynamically.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -21,6 +21,9 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace, Pod
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
       It's common where policy lookups need to consider a mapping to many possible values rather than a
       static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap
@@ -45,7 +48,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.object.metadata.namespace}}"
-        operator: NotIn
+        operator: AnyNotIn
         value: "{{namespacefilters.data.exclude}}"
     validate:
       message: >
@@ -56,4 +59,5 @@ spec:
         metadata:
           labels:
             foo: "*"
+
 ```

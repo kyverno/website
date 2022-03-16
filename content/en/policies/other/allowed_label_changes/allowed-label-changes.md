@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/allowed_label_changes/allowed-label-changes.yaml" target="-blank">/other/allowed_label_changes/allowed-label-changes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/allowed_label_changes/allowed-label-changes.yaml" target="-blank">/other/allowed_label_changes/allowed-label-changes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

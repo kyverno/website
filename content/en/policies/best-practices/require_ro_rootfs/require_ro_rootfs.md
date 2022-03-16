@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_ro_rootfs/require_ro_rootfs.yaml" target="-blank">/best-practices/require_ro_rootfs/require_ro_rootfs.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/require_ro_rootfs/require_ro_rootfs.yaml" target="-blank">/best-practices/require_ro_rootfs/require_ro_rootfs.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

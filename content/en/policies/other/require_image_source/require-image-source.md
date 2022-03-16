@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/require_image_source/require-image-source.yaml" target="-blank">/other/require_image_source/require-image-source.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//other/require_image_source/require-image-source.yaml" target="-blank">/other/require_image_source/require-image-source.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

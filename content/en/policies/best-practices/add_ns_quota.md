@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/add_ns_quota.yaml" target="-blank">/best-practices/add_ns_quota.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/add_ns_quota.yaml" target="-blank">/best-practices/add_ns_quota.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

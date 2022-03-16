@@ -1,6 +1,6 @@
 ---
 title: "Require Limits and Requests"
-category: Multi-Tenancy
+category: Best Practices
 version: 
 subject: Pod
 policyType: "validate"
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml" target="-blank">/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/release-1.6//best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml" target="-blank">/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -18,7 +18,7 @@ metadata:
   name: require-requests-limits
   annotations:
     policies.kyverno.io/title: Require Limits and Requests
-    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
