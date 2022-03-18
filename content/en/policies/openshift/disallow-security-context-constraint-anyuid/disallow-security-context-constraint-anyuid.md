@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/release-1.6//openshift/disallow-security-context-constraint-anyuid/disallow-security-context-constraint-anyuid.yaml" target="-blank">/openshift/disallow-security-context-constraint-anyuid/disallow-security-context-constraint-anyuid.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//openshift/disallow-security-context-constraint-anyuid/disallow-security-context-constraint-anyuid.yaml" target="-blank">/openshift/disallow-security-context-constraint-anyuid/disallow-security-context-constraint-anyuid.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
