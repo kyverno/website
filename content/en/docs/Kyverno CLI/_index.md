@@ -763,6 +763,13 @@ The test declaration consists of three (optionally four) parts:
 3. The `results` element which declares the expected results.
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
 
+A variables file may also optionally specify global variable values without the need to name specific rules or resources avoiding repetition for the same variable and same value.
+
+```yaml
+globalValues:
+  request.operation: UPDATE
+```
+
 The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
 
 Example:
