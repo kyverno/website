@@ -84,9 +84,9 @@ spec:
       - resources:
           kinds:
           - Service
-          subjects:
-          - kind: User
-            name: dave
+      - subjects:
+        - kind: User
+          name: dave
 ```
 
 `match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
