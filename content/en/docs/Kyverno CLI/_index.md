@@ -738,7 +738,7 @@ results:
   result: fail
 ```
 
-If needing to pass variables, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
+If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](https://kyverno.io/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
 
 ```yaml
 policies:
@@ -762,6 +762,13 @@ The test declaration consists of three (optionally four) parts:
 2. The `resources` element which lists one or more resources to which the policies are applied.
 3. The `results` element which declares the expected results.
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
+
+A variables file may also optionally specify global variable values without the need to name specific rules or resources avoiding repetition for the same variable and same value.
+
+```yaml
+globalValues:
+  request.operation: UPDATE
+```
 
 The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
 
