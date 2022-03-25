@@ -49,8 +49,8 @@ Wildcards supported formats:
 
 {{% alert title="Note" color="info" %}}
 * A policy using wildcards in `match` or `exclude` is not allowed in background mode.
-* A policy using wildcards does not `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
-* For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks..
+* A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
+* For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
