@@ -24,7 +24,7 @@ The following resource filters can be specified under an `any` or `all` clause.
 Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
 {{% /alert %}}
 
-At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.(any/all).resources.kinds` field.
+At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `match.(any/all).resources.kinds` field.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
 
@@ -40,6 +40,19 @@ These can be distinguished as:
 
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
+
+Wildcards supported formats:
+
+* `Group/*/Kind`
+* `*/Kind`
+* `*`
+
+{{% alert title="Note" color="info" %}}
+* A policy using wildcards in `match` or `exclude` is not allowed in background mode.
+* A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
+* For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
+* For the `mutate` rule type, a policy can only deal with the `metadata` object.
+{{% /alert %}}
 
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
