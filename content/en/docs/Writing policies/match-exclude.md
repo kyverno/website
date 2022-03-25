@@ -41,6 +41,19 @@ These can be distinguished as:
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
+Wildcards supported formats:
+
+* `Group/*/Kind`
+* `*/Kind`
+* `*`
+
+{{% alert title="Note" color="info" %}}
+* wildcard policy not allowed in background mode.
+* wildcard policy does not support `Generate`, `Verify Images`, `ForEach` rule type.
+* In validate rule type, policy can only deal with Deny and the metadata field of the resource Pattern and AnyPattern.
+* In Mutate rule type, policy can only deal metadata field.
+{{% /alert %}}
+
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
