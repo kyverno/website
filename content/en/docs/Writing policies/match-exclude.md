@@ -48,10 +48,10 @@ Wildcards supported formats:
 * `*`
 
 {{% alert title="Note" color="info" %}}
-* wildcard policy not allowed in background mode.
-* wildcard policy does not support `Generate`, `Verify Images`, `ForEach` rule type.
-* In validate rule type, policy can only deal with Deny and the metadata field of the resource Pattern and AnyPattern.
-* In Mutate rule type, policy can only deal metadata field.
+* A policy using wildcards in `match` or `exclude` is not allowed in background mode.
+* A policy using wildcards does not `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
+* For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks..
+* For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
