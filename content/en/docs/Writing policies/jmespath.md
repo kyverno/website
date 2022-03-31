@@ -434,8 +434,46 @@ spec:
 </p>
 </details>
 
-
 ### Base64_encode
+
+<details><summary>Expand</summary>
+<p>
+
+The `base64_encode()` filter is the inverse of the `base64_decode()` filter and takes in a regular, plaintext and unencoded string and produces a base64-encoded output similar to the tool and command `base64`. This can be useful when working with Kubernetes Secrets by encoding data into the base64 format which is the only acceptable format for Kubernetes Secrets.
+
+| Input 1 | Output   |
+|---------|----------|
+| String  | String   |
+<br>
+
+**Example:** This policy generates a Secret when a new Namespace is created the contents of which is the value of an annotation named `corpkey`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: base64-encode-demo
+spec:
+  rules:
+  - name: gen-supkey
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      apiVersion: v1
+      kind: Secret
+      name: sup-key
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: false
+      data:
+        data:
+          token: "{{ base64_encode('{{ request.object.metadata.annotations.corpkey }}') }}"
+```
+
+</p>
+</details>
 
 ### Compare
 
