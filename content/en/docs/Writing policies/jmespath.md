@@ -477,6 +477,48 @@ spec:
 
 ### Compare
 
+<details><summary>Expand</summary>
+<p>
+
+The `compare()` filter is provided as an analog to the [inbuilt function to Golang](https://pkg.go.dev/strings#Compare) of the same name. It compares two strings [lexicographically](https://en.wikipedia.org/wiki/Lexicographic_order) where the first string is compared against the second. If both strings are equal, the result is `0` (ex., "a" compared to "a"). If the first is in lower lexical order than the second, the result is `-1` (ex., "a" compared to "b"). And if the first is in higher order than the second, the result is `1` (ex., "b" compared to "a"). Kyverno also has built-in [operators](/docs/writing-policies/preconditions/#operators) for string comparison where `Equals` is usually the most common, and in most use cases it is more practical to use the `Equals` operator in expressions such as preconditions and `deny.conditions` blocks.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| String             | String             | Number   |
+
+<br>
+
+**Example:** This policy will write a new label called `dictionary` into a Service putting into order the values of two annotations if the order of the first comes before the second.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: compare-demo
+spec:
+  background: false
+  rules:
+  - name: write-dictionary
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    preconditions:
+      any:
+      - key: "{{ compare('{{request.object.metadata.annotations.foo}}', '{{request.object.metadata.annotations.bar}}') }}"
+        operator: LessThan
+        value: 0
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            dictionary: "{{request.object.metadata.annotations.foo}}-{{request.object.metadata.annotations.bar}}"
+```
+
+</p>
+</details>
+
 ### Divide
 
 ### Equal_fold
