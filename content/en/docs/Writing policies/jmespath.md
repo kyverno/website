@@ -521,6 +521,70 @@ spec:
 
 ### Divide
 
+<details><summary>Expand</summary>
+<p>
+
+The `divide()` filter performs arithmetic divide capabilities between two input fields and produces an output quotient. Like other arithmetic custom filters, it is input aware based on the type passed and, for quantities, allows auto conversion between units of measure. For example, dividing 10Mi (ten mebibytes) by 5Ki (five kibibytes) results in the value 5120 as units are first normalized and then [canceled](https://www.thoughtco.com/cancel-units-in-chemistry-metric-conversions-604149) through division. The `divide()` filter is currently under development to better account for all permutations of input types, however the below table captures the most common and practical use cases.
+
+Arithmetic filters like `divide()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| Number             | Number             | Number   |
+| Quantity           | Number             | Quantity |
+| Quantity           | Quantity           | Number   |
+| Duration           | Number             | Duration |
+| Duration           | Duration           | Number   |
+
+<br>
+
+**Example:** This policy will check every container in a Pod and ensure that memory limits are no more than 2.5x its requests.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-resources-as-ratio
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: check-memory-requests-limits
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    validate:
+      message: Limits may not exceed 2.5x the requests.
+      foreach:
+      - list: "request.object.spec.containers"
+        deny:
+          conditions:
+            any:
+              # Set resources.limits.memory equal to zero if not present and resources.requests.memory equal to 1m rather than zero
+              # to avoid undefined division error. No memory request in this case is basically the same as 1m. Kubernetes API server
+              # will automatically set requests=limits if only limits is defined.
+            - key: "{{ divide('{{ element.resources.limits.memory || '0' }}', '{{ element.resources.requests.memory || '1m' }}') }}"
+              operator: GreaterThan
+              value: 2.5
+```
+
+</p>
+</details>
+
 ### Equal_fold
 
 ### Label_match
