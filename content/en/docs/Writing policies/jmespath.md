@@ -587,6 +587,49 @@ spec:
 
 ### Equal_fold
 
+<details><summary>Expand</summary>
+<p>
+
+The `equal_fold()` filter is designed to provide text [case folding](https://www.w3.org/TR/charmod-norm/#dfn-case-folding) for two sets of strings as inputs. Case folding allows comparing two strings for equivalency where the only differences are letter cases. The return is a boolean (either `true` or `false`). For example, comparing "pizza" to "Pizza" results in `true` because other than title case on "Pizza" the strings are equivalent. Likewise with "pizza" and "pIzZa". Comparing "pizza" to "APPLE" results in `false` because even once normalized to the same case, the strings are different.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| String             | String             | Boolean  |
+
+Related filters to `equal_fold()` are [`to_upper()`](#to_upper) and [`to_lower()`](#to_lower) which can also be used to normalize text for comparison.
+
+<br>
+
+**Example:** This policy will validate that a ConfigMap with a label named `dept` and the value of a key under `data` by the same name have the same case-insensitive value.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: equal-fold-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: validate-dept-label-data
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    validate:
+      message: The dept label must equal the data.dept value aside from case.
+      deny:
+        conditions:
+          any:
+          - key: "{{ equal_fold('{{request.object.metadata.labels.dept}}', '{{request.object.data.dept}}') }}"
+            operator: NotEquals
+            value: true
+```
+
+</p>
+</details>
+
 ### Label_match
 
 ### Modulo
