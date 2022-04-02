@@ -632,6 +632,106 @@ spec:
 
 ### Label_match
 
+<details><summary>Expand</summary>
+<p>
+
+The `label_match()` filter compares two sets of Kubernetes labels (both key and value) and outputs a boolean response if they are equivalent. This custom filter is useful in that it functions similarly to how the Kubernetes API server associates one resource with another through label selectors. There may be one or multiple labels in each set. Labels may occur in any order. A response of `true` indicates all the labels (key and value) in the first input are accounted for in the second input. The second input, to which the first is compared, may have additional labels but it must have at minimum all those listed in the first input.
+
+For example, the first collection compared to the second below results in `true` despite the ordering.
+
+```json
+{
+  "dog": "lab",
+  "color": "tan"
+}
+```
+
+```json
+{
+  "color": "tan",
+  "dog": "lab"  
+}
+```
+
+Likewise, these two below collections also result in `true` when compared because the entirety of the first is found within the second.
+
+```json
+{
+  "dog": "lab",
+  "color": "tan"
+}
+```
+
+```json
+{
+  "color": "tan",
+  "weight":"chonky",
+  "dog": "lab"  
+}
+```
+
+These last two collections when compared are `false` because one of the values of one of the labels does not match what is in the first input.
+
+```json
+{
+  "dog": "lab",
+  "color": "tan"
+}
+```
+
+```json
+{
+  "color": "black",
+  "dog": "lab"  
+}
+```
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| Map (Object)       | Map (Object)       | Boolean  |
+
+<br>
+
+**Example:** This policy checks all incoming Deployments to ensure they have a matching, preexisting PodDisruptionBudget in the same Namespace. The `label_match()` filter is used in a query to count how many PDBs have a label set matching that of the incoming Deployment.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pdb
+spec:
+  validationFailureAction: audit
+  background: false
+  rules:
+  - name: require-pdb
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    preconditions:
+      any:
+      - key: "{{request.operation}}"
+        operator: Equals
+        value: CREATE
+    context:
+    - name: pdb_count
+      apiCall:
+        urlPath: "/apis/policy/v1beta1/namespaces/{{request.namespace}}/poddisruptionbudgets"
+        jmesPath: "items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)] | length(@)"
+    validate:
+      message: "There is no corresponding PodDisruptionBudget found for this Deployment."
+      deny:
+        conditions:
+          any:
+          - key: "{{pdb_count}}"
+            operator: LessThan
+            value: 1
+```
+
+</p>
+</details>
+
 ### Modulo
 
 ### Multiply
