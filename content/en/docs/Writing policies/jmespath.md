@@ -734,6 +734,63 @@ spec:
 
 ### Modulo
 
+<details><summary>Expand</summary>
+<p>
+
+The `modulo()` filter returns the [modulo](https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic) or remainder between a division of two numbers. For example, the modulo of a division between `10` and `3` would be `1` since `3` can be divided into `10` only `3` times (equaling `9`) while producing `1` as a remainder.
+
+| Input 1            | Input 2            | Output             |
+|--------------------|--------------------|--------------------|
+| Number             | Number             | Number             |
+| Quantity           | Quantity           | Quantity           |
+
+{{% pageinfo color="warning" %}}
+The inputs list is currently under construction.
+{{% /pageinfo %}}
+
+<br>
+
+**Example:** This policy checks every container and ensures that memory limits are evenly divisible by its requests.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: modulo-demo
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: check-memory-requests-limits
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    validate:
+      message: Limits must be evenly divisible by the requests.
+      foreach:
+      - list: "request.object.spec.containers"
+        deny:
+          conditions:
+            any:
+              # Set resources.limits.memory equal to zero if not present and resources.requests.memory equal to 1m rather than zero
+              # to avoid undefined division error. No memory request in this case is basically the same as 1m. Kubernetes API server
+              # will automatically set requests=limits if only limits is defined.
+            - key: "{{ modulo('{{ element.resources.limits.memory || '0' }}', '{{ element.resources.requests.memory || '1m' }}') }}"
+              operator: GreaterThan
+              value: 0
+```
+
+</p>
+</details>
+
 ### Multiply
 
 ### Parse_json
