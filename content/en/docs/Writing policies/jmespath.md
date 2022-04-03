@@ -326,6 +326,14 @@ The `add()` filter very simply adds two values and produces a sum. The official 
 
 `add()` is also value-aware (based on the formatting used for the inputs) and is capable of adding numbers, quantities, and durations without any form of unit conversion.
 
+Arithmetic filters like `add()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
 | Input 1            | Input 2            | Output   |
 |--------------------|--------------------|----------|
 | Number             | Number             | Number   |
@@ -739,6 +747,14 @@ spec:
 
 The `modulo()` filter returns the [modulo](https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic) or remainder between a division of two numbers. For example, the modulo of a division between `10` and `3` would be `1` since `3` can be divided into `10` only `3` times (equaling `9`) while producing `1` as a remainder.
 
+Arithmetic filters like `modulo()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
 | Input 1            | Input 2            | Output             |
 |--------------------|--------------------|--------------------|
 | Number             | Number             | Number             |
@@ -792,6 +808,60 @@ spec:
 </details>
 
 ### Multiply
+
+The `multiply()` filter performs standard multiplication on two inputs producing an output product. Like other arithmetic filters, it is input aware and will produce output with appropriate units attached.
+
+Arithmetic filters like `multiply()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| Number             | Number             | Number   |
+| Quantity           | Number             | Quantity |
+| Duration           | Number             | Duration |
+
+Due to the [commutative property](https://www.khanacademy.org/math/arithmetic-home/multiply-divide/properties-of-multiplication/a/commutative-property-review) of multiplication, the ordering of inputs (unlike with `divide()`) is irrelevant.
+
+{{% pageinfo color="warning" %}}
+The inputs list is currently under construction.
+{{% /pageinfo %}}
+
+<br>
+
+**Example:** This policy sets the replica count for a Deployment to a value of two times the current number of Nodes in a cluster.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: multiply-demo
+spec:
+  background: false
+  rules:
+    - name: multiply-replicas
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+      context:
+        - name: nodecount
+          apiCall:
+            urlPath: "/api/v1/nodes"
+            jmesPath: "items[] | length(@)"
+      mutate:
+        patchStrategicMerge:
+          spec:
+            replicas: "{{ multiply( `{{nodecount}}`,`2`) }}"
+```
+
+</p>
+</details>
 
 ### Parse_json
 
