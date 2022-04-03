@@ -809,6 +809,9 @@ spec:
 
 ### Multiply
 
+<details><summary>Expand</summary>
+<p>
+
 The `multiply()` filter performs standard multiplication on two inputs producing an output product. Like other arithmetic filters, it is input aware and will produce output with appropriate units attached.
 
 Arithmetic filters like `multiply()` currently accept inputs in the following formats.
