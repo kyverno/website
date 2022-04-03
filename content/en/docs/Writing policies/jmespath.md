@@ -1123,6 +1123,67 @@ metadata:
 
 ### Split
 
+<details><summary>Expand</summary>
+<p>
+
+The `split()` filter is used to take in an input string, a character or sequence found within that string, and split the source into an array of strings. For example, the string `cat,dog,horse` can be split on the comma (`,`) character resulting in three separate strings in the collection `["cat","dog","horse"]`. This filter is often most useful when looping over a number of different strings within a single value and performing some comparison or expression.
+
+| Input 1            | Input 2            | Output        |
+|--------------------|--------------------|---------------|
+| String             | String             | Array/string  |
+
+<br>
+
+**Example:** This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: split-demo
+spec:
+  validationFailureAction: audit
+  background: false
+  rules:
+    - name: check-path
+      match:
+        resources:
+          kinds:
+            - Ingress
+      context:
+        # Looks up the Ingress paths across the whole cluster.
+        - name: allpaths
+          apiCall:
+            urlPath: "/apis/networking.k8s.io/v1/ingresses"
+            jmesPath: "items[].spec.rules[].http.paths[].path"
+        # Looks up the Ingress paths in the same Namespace where the incoming request is targeted.
+        - name: nspath
+          apiCall:
+            urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses"
+            jmesPath: "items[].spec.rules[].http.paths[].path"
+      preconditions:
+        - key: "{{request.operation}}"
+          operator: Equals
+          value: "CREATE"
+      validate:
+        message: >-
+          The root path /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/ exists
+          in another Ingress rule elsewhere in the cluster.
+        deny:
+          conditions:
+            all:
+              # Deny if the root path of the request exists somewhere else in the cluster other than the same Namespace.
+              - key: /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/
+                operator: In
+                value: "{{allpaths}}"
+              - key: /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/
+                operator: NotIn
+                value: "{{nspath}}"
+```
+
+</p>
+</details>
+
 ### Subtract
 
 ### Time_since
