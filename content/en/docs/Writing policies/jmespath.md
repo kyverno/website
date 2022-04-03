@@ -827,7 +827,7 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Number             | Number             | Number   |
 | Quantity           | Number             | Quantity |
 | Duration           | Number             | Duration |
-
+<br>
 Due to the [commutative property](https://www.khanacademy.org/math/arithmetic-home/multiply-divide/properties-of-multiplication/a/commutative-property-review) of multiplication, the ordering of inputs (unlike with `divide()`) is irrelevant.
 
 {{% pageinfo color="warning" %}}
