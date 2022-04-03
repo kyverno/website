@@ -868,6 +868,59 @@ spec:
 
 ### Parse_json
 
+<details><summary>Expand</summary>
+<p>
+
+The `parse_json()` filter takes in a string of any valid encoded JSON and parses it into a fully-formed JSON object. This is useful because it allows Kyverno to access and work with string data that is stored anywhere which accepts strings as if it were "native" JSON data. Primary use cases for this filter include adding anything from snippets to whole documents as the values of labels, annotations, or ConfigMaps which should then be consumed by policy.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| String             | Any      |
+
+<br>
+
+**Example:** This policy uses the `parse_json()` filter to read a ConfigMap where a specified key contains JSON-encoded data (an array of strings in this case) and sets the supplementalGroups field of a Pod, if not already supplied, to that list.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: parse-json-demo
+spec:
+  rules:
+  - name: parse-supplementalgroups-from-json
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    context:
+    - name: gidsMap
+      configMap:
+        name: user-gids-map
+        namespace: default
+    mutate:
+      patchStrategicMerge:
+        spec:
+          securityContext:
+            +(supplementalGroups): "{{ gidsMap.data.\"{{ request.object.metadata.labels.\"corp.com/service-account\" }}\" | parse_json(@)[*].to_number(@) }}"
+```
+
+The referenced ConfigMap may look similar to the below.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-gids-map
+  namespace: default
+data:
+  finance: '["1001","1002"]'
+```
+
+</p>
+</details>
+
 ### Parse_yaml
 
 ### Path_canonicalize
