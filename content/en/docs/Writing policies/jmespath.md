@@ -923,9 +923,191 @@ data:
 
 ### Parse_yaml
 
+<details><summary>Expand</summary>
+<p>
+
+The `parse_yaml()` filter is the YAML equivalent of the [`parse_json()`](#parse_json) filter and takes in a string of any valid YAML document, serializes it into JSON, and parses it so it may be processed by JMESPath. Like `parse_json()`, this is useful because it allows Kyverno to access and work with string data that is stored anywhere which accepts strings as if it were "native" YAML data. Primary use cases for this filter include adding anything from snippets to whole documents as the values of labels, annotations, or ConfigMaps which should then be consumed by policy.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| String             | Any      |
+
+<br>
+
+**Example:** This policy parses a YAML document as the value of an annotation and uses the filtered value from a JMESPath expression in a variable substitution.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: parse-yaml-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: check-goodbois
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Only good bois allowed."
+      deny:
+        conditions:
+        - key: "{{request.object.metadata.annotations.pets | parse_yaml(@).species.isGoodBoi }}"
+          operator: NotEquals
+          value: true
+```
+
+The referenced Pod may look similar to the below.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+  labels:
+    app: busybox
+  annotations:
+    pets: |-
+      species:
+        dog: lab
+        name: dory
+        color: black
+        height: 15
+        isGoodBoi: false
+        snacks:
+        - chimken
+        - fries
+        - pizza
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.28
+```
+
+</p>
+</details>
+
 ### Path_canonicalize
 
+<details><summary>Expand</summary>
+<p>
+
+The `path_canonicalize()` filter is used to normalize or canonicalize a given path by removing excess slashes. For example, a path supplied to the filter may be `/var//lib///kubelet` which will be canonicalized into `/var/lib/kubelet` which is how an operating system would interpret the former. This filter is primarily used as a circumvention protection for what would otherwise be strict string matches for paths.
+
+| Input 1            | Output      |
+|--------------------|-------------|
+| String             | String      |
+
+<br>
+
+**Example:** This policy uses the `path_canonicalize()` filter to check the value of each `hostPath.path` field in a volume block in a Pod to ensure it does not attempt to mount the Containerd host socket.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: path-canonicalize-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: disallow-mount-containerd-sock
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      foreach:
+      - list: "request.object.spec.volumes[]"
+        deny:
+          conditions:
+            any:
+            - key: "{{ path_canonicalize(element.hostPath.path) }}"
+              operator: Equals
+              value: "/var/run/containerd/containerd.sock"
+```
+
+</p>
+</details>
+
 ### Pattern_match
+
+<details><summary>Expand</summary>
+<p>
+
+The `pattern_match()` filter is used to perform a simple, non-regex match by specifying an input pattern and the string or number to which it should be compared. The output is always a boolean response. This filter can be useful when wishing to make simpler comparisons, typically with strings or numbers involved. It avoids many of the complexities of regex while still support wildcards such as `*` (zero or more characters) and `?` (any one character). Note that since Kyverno supports overlay-style patterns and wildcards, use of `pattern_match()` is typically not needed in these scenarios. This filter is more valuable in dynamic lookup scenarios by using JMESPath variables for one or both inputs as exemplified below.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| String             | String             | Boolean  |
+| String             | Number             | Boolean  |
+
+<br>
+
+**Example:** This policy uses `pattern_match()` with dynamic inputs by fetching a pattern stored in a ConfigMap against an incoming Namespace label value.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pattern-match-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: dept-billing-check
+    context:
+    - name: deptbillingcodes
+      configMap:
+        name: deptbillingcodes
+        namespace: default
+    validate:
+      message: The department {{request.object.metadata.labels.dept}} must supply a matching billing code.
+      deny:
+        conditions:
+          any:
+            - key: "{{pattern_match('{{deptbillingcodes.data.{{request.object.metadata.labels.dept}}}}', '{{ request.object.metadata.labels.segbill}}') }}"
+              operator: Equals
+              value: false
+```
+
+The ConfigMap used as the source of the patterns may look like below.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deptbillingcodes
+data:
+  eng_china: 158-6?-3*
+  eng_india: 158-7?-4*
+  busops: 145-0?-9*
+  finops: 145-1?-5*
+```
+
+And a Namespace upon which the above ClusterPolicy may act can look like below.
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ind-go
+  labels:
+    dept: eng_india
+    segbill: 158-73-417
+```
+
+</p>
+</details>
 
 ### Regex_match
 
