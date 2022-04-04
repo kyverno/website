@@ -1195,3 +1195,39 @@ spec:
 ### Trim
 
 ### Truncate
+
+<details><summary>Expand</summary>
+<p>
+
+The `truncate()` filter takes a string, a number, and shortens (truncates) that string from the beginning to only include the desired number of characters. For example, calling `truncate()` on the string `foobar` by the number `3` would result in the output of `foo` because only three character positions were requested. This can be a useful filter when formulating values of names, labels, annotations, or other pieces of metadata to conform to a given length and to avoid overruns.
+
+| Input 1            | Input 2            | Output  |
+|--------------------|--------------------|---------|
+| String             | Number             | String  |
+
+<br>
+
+**Example:** This policy truncates the value of a label called `buildhash` to only take the first twelve characters.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: truncate-demo
+spec:
+  rules:
+  - name: truncate-buildhash
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            buildhash: "{{ truncate('{{@}}',`12`) }}"
+```
+
+</p>
+</details>
