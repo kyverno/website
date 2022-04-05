@@ -1194,6 +1194,42 @@ spec:
 
 ### Trim
 
+<details><summary>Expand</summary>
+<p>
+
+The `trim()` filter takes a string containing a "source" string, a second string representing what should be removed from that source, and outputs the trimmed remainder. For example, inputs of `'¡¡¡Hello, Gophers!!!'` and `'!¡'` will result in the output `'Hello, Gophers'` since the characters `'¡'` and `'!'` will be removed from the input. This filter is similar to [`truncate()`](#truncate) but requires a specific substring to be subtracted from the input and not a number. The `trim()` filter can be useful to remove exact portions of a string when they are known literally.
+
+| Input 1            | Input 2            | Output  |
+|--------------------|--------------------|---------|
+| String             | String             | String  |
+
+<br>
+
+**Example:** This policy uses the `trim()` filter to remove the domain from an email value set in an annotation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: trim-demo
+spec:
+  rules:
+  - name: trim-extnameemail
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            extnameemail: "{{ trim('{{@}}','@corp.com') }}"
+```
+
+</p>
+</details>
+
 ### Truncate
 
 <details><summary>Expand</summary>
