@@ -1197,7 +1197,9 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `trim()` filter takes a string containing a "source" string, a second string representing what should be removed from that source, and outputs the trimmed remainder. For example, inputs of `'¡¡¡Hello, Gophers!!!'` and `'!¡'` will result in the output `'Hello, Gophers'` since the characters `'¡'` and `'!'` will be removed from the input. This filter is similar to [`truncate()`](#truncate) but requires a specific substring to be subtracted from the input and not a number. The `trim()` filter can be useful to remove exact portions of a string when they are known literally.
+The `trim()` filter takes a string containing a "source" string, a second string representing a collection of discrete characters, and outputs the remainder of the source when both ends of the source string are trimmed by characters appearing in the collection. For example, inputs of `¡¡¡Hello, Gophers!!!` and `!¡` will result in the output `Hello, Gophers` since the characters `¡` and `!` are found at the beginning and end of the input string and will be trimmed. In the case of `trim('foocorpcom','mo')` the output returned is `foocorpc` since letters `m` and `o` are found at the end of `foocorpcom`. Notice that ordering of the letters in the second input is irrelevant. Interior characters will not be stripped unless exterior characters have also been removed. For example, `trim('foocorpcom','o')` will return the input of `foocorpcom` because `o` does not occur at the beginning or end of the input string. Characters named in the second input will be deduplicated from the source string so long as outside characters have been trimmed first. For example, `trim('foocorpcom','mcof')` will result in the output of `rp` since the other four characters in the second input collection can be stripped from the beginning and end of the input string.
+
+This filter is similar to [`truncate()`](#truncate). The `trim()` filter can be useful to remove exact portions of a string when they are known literally.
 
 | Input 1            | Input 2            | Output  |
 |--------------------|--------------------|---------|
