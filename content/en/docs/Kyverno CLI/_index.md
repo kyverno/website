@@ -115,12 +115,14 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <vari
 
 Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
 
+Use `-u` or `--userinfo` for applying policies while passing a optional user_info.yaml file which contains necessary admission request data made during the request.
+
 {{% alert title="Note" color="info" %}}
 When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
 {{% /alert %}}
 
 ```sh
-kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
+kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml --userinfo /path/to/user_info.yaml
 ```
 
 Format of `value.yaml` with all possible fields:
@@ -155,6 +157,15 @@ labels:
   <label key>: <label value>
 ```
 
+Format of `user_info.yaml`:
+
+```yaml
+clusterRoles:
+- admin
+userInfo:
+  username: molybdenum@somecorp.com
+```
+
 Example:
 
 Policy manifest (`add_network_policy.yaml`):
@@ -180,6 +191,8 @@ spec:
       - resources:
           kinds:
           - Namespace
+      clusterRoles:
+      - cluster-admin
     generate:
       kind: NetworkPolicy
       name: default-deny-ingress
@@ -725,6 +738,8 @@ resources:
   - <path/to/resource.yaml>
 # optional file for declaring variables. see below for example.
 variables: variables.yaml
+# optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
+userinfo: user_info.yaml
 results:
 - policy: <name>
   rule: <name>
@@ -756,12 +771,22 @@ policies:
           namespacefilters.data.exclude: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 ```
 
+The user can also declare a user_info.yaml file that can be used to pass admission request information such as roles, cluster roles and subjects.
+
+```yaml
+clusterRoles:
+- admin
+userInfo:
+  username: someone@somecorp.com
+```
+
 The test declaration consists of three (optionally four) parts:
 
 1. The `policies` element which lists one or more policies to be applied.
 2. The `resources` element which lists one or more resources to which the policies are applied.
 3. The `results` element which declares the expected results.
-4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
+4. The `userinfo` element which declares admission request data.
+5. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
 
 A variables file may also optionally specify global variable values without the need to name specific rules or resources avoiding repetition for the same variable and same value.
 
@@ -796,6 +821,8 @@ spec:
       - resources:
           kinds:
           - Pod
+      clusterRoles:
+      - cluster-admin
     validate:
       message: "An image tag is required."  
       pattern:
