@@ -168,3 +168,7 @@ The roles used in this document are custom roles mapped according to the [GitHub
 | Approver       | Write          |
 | Maintainer     | Maintain       |
 | Administrator  | Admin          |
+
+### Off-boarding Guidance
+
+If any of the above roles hasn't contributed in any phases (including, but not limited to: code changes, doc updates, issue discussions) in 3 months, the administrator needs to inform the member and remove one's roles and GitHub permissions.
