@@ -1237,12 +1237,45 @@ spec:
 
 ### To_lower
 
+<details><summary>Expand</summary>
+<p>
+
+The `to_lower()` filter takes in a string and outputs the same string with all lower-case letters. It is the opposite of [`to_upper()`](#to_upper).
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+<br>
+
+**Example:** This policy sets the value of a label named `zonekey` to all caps.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: to-lower-demo
+spec:
+  rules:
+  - name: format-deploy-zone
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            zonekey: "{{ to_lower('{{@}}') }}"
+```
+
 ### To_upper
 
 <details><summary>Expand</summary>
 <p>
 
-The `to_upper()` filter takes in a string and outputs the same string with all upper-case letters.
+The `to_upper()` filter takes in a string and outputs the same string with all upper-case letters. It is the opposite of [`to_lower()`](#to_lower).
 
 | Input 1            | Output  |
 |--------------------|---------|
