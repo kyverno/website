@@ -1111,6 +1111,53 @@ metadata:
 
 ### Regex_match
 
+<details><summary>Expand</summary>
+<p>
+
+The `regex_match()` filter is similar to the [`pattern_match()`](#pattern_match) filter except it accepts standard [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) as the comparison format. The first input is the pattern, specified in regex format, while the second is the string compared to the pattern which accepts either string or number. The output is always a boolean response. For example, the following two expressions, which check to ensure a number is in the range of one to seven, both evaluate to `true`.
+
+```
+regex_match('^[1-7]$',`1`)
+regex_match('^[1-7]$','1')
+```
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| String             | String             | Boolean  |
+| String             | Number             | Boolean  |
+
+<br>
+
+**Example:** This policy checks that a PersistentVolumeClaim resource contains an annotation named `backup-schedule` and its value conforms to a standard Cron expression string. Note that the regular expression in the first input has had an additional backslash added to each backslash to be valid YAML. To use this sample regex in other applications, remove one of each double backslash pair.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-backup-pvc-annotations
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: validate-backup-schedule-annotation-cron
+    match:
+      any:
+      - resources:
+          kinds:
+          - PersistentVolumeClaim
+    validate:
+      message: The annotation `backup-schedule` must be present and in cron format.
+      deny:
+        conditions:
+          any:
+          - key: "{{ regex_match('^((?:\\*|[0-5]?[0-9](?:(?:-[0-5]?[0-9])|(?:,[0-5]?[0-9])+)?)(?:\\/[0-9]+)?)\\s+((?:\\*|(?:1?[0-9]|2[0-3])(?:(?:-(?:1?[0-9]|2[0-3]))|(?:,(?:1?[0-9]|2[0-3]))+)?)(?:\\/[0-9]+)?)\\s+((?:\\*|(?:[1-9]|[1-2][0-9]|3[0-1])(?:(?:-(?:[1-9]|[1-2][0-9]|3[0-1]))|(?:,(?:[1-9]|[1-2][0-9]|3[0-1]))+)?)(?:\\/[0-9]+)?)\\s+((?:\\*|(?:[1-9]|1[0-2])(?:(?:-(?:[1-9]|1[0-2]))|(?:,(?:[1-9]|1[0-2]))+)?)(?:\\/[0-9]+)?)\\s+((?:\\*|[0-7](?:-[0-7]|(?:,[0-7])+)?)(?:\\/[0-9]+)?)$', '{{request.object.metadata.annotations.\"backup-schedule\" || ''}}') }}"
+            operator: Equals
+            value: false
+```
+
+</p>
+</details>
+
 ### Regex_replace_all
 
 ### Regex_replace_all_literal
