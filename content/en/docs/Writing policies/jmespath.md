@@ -1134,7 +1134,7 @@ regex_match('^[1-7]$','1')
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: validate-backup-pvc-annotations
+  name: regex-match-demo
 spec:
   background: true
   validationFailureAction: enforce
@@ -1238,6 +1238,42 @@ spec:
 ### To_lower
 
 ### To_upper
+
+<details><summary>Expand</summary>
+<p>
+
+The `to_upper()` filter takes in a string and outputs the same string with all upper-case letters.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+<br>
+
+**Example:** This policy sets the value of a label named `deployzone` to all caps.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: to-upper-demo
+spec:
+  rules:
+  - name: format-deploy-zone
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            deployzone: "{{ to_upper('{{@}}') }}"
+```
+
+</p>
+</details>
 
 ### Trim
 
