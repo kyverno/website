@@ -1235,6 +1235,8 @@ spec:
 
 ### Time_since
 
+RFC3339
+
 ### To_lower
 
 <details><summary>Expand</summary>
@@ -1269,6 +1271,9 @@ spec:
           labels:
             zonekey: "{{ to_lower('{{@}}') }}"
 ```
+
+</p>
+</details>
 
 ### To_upper
 
