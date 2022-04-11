@@ -1235,7 +1235,52 @@ spec:
 
 ### Time_since
 
-RFC3339
+<details><summary>Expand</summary>
+<p>
+
+The `time_since()` filter is used to calculate the difference between a start and end period of time where the end may either be a static definition or the then-current time. The time formats currently supported are [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339) (the same as used by Kubernetes) and Unix Date (the same as the output produced when running the `date` program). The output time difference is always given in hours, minutes, and seconds where seconds may either be an integer or floating point. For example, the expression `time_since('','2022-04-10T03:14:05-07:00','2022-04-11T03:14:05-07:00')` will result in the output of `"24h0m0s"`. The first input for time format defaults to RFC3339. The expression `time_since('Mon Jan _2 15:04:05 MST 2006', 'Mon Jan 02 15:04:05 MST 2021', 'Mon Jan 10 03:14:16 MST 2021')` will result in the output `"180h10m11s"`. The first input for time format here is in Unix Date. And the expression `time_since('','2022-04-10T03:14:05-07:00','')` will result in the difference between the current time and the second input. The output will be given in which seconds is a floating point value, for example `"28h0m33.8257394s"`.
+
+| Input 1                          | Input 2                         | Input 3                       | Output                     |
+|----------------------------------|---------------------------------|-------------------------------|----------------------------|
+| Time format (String)             | Time start (String)             | Time end (String)             | Time difference (String)   |
+
+<br>
+If the time format (first input) is present, it is declaring Unix Date format. Setting to an empty string (i.e., '') assumes RFC3339. It may not be set explicitly to an RFC3339 format. The time end (third input) may be set to an empty string indicating the current time (i.e., now) when the expression is evaluated.
+
+**Example:** This policy uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than six months.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: time-since-demo
+spec:
+  validationFailureAction: audit 
+  rules:
+    - name: block-stale-images
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      validate:
+        message: "Images built more than 6 months ago are prohibited."
+        foreach:
+        - list: "request.object.spec.containers"
+          context:
+          - name: imageData
+            imageRegistry:
+              reference: "{{ element.image }}"
+          deny:
+            conditions:
+              all:
+                - key: "{{ time_since('', '{{ imageData.configData.created }}', '') }}"
+                  operator: GreaterThan
+                  value: 4380h
+```
+
+</p>
+</details>
 
 ### To_lower
 
