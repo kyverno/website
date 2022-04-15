@@ -1233,6 +1233,60 @@ spec:
 
 ### Subtract
 
+<details><summary>Expand</summary>
+<p>
+
+The `subtract()` filter performs arithmetic subtraction capabilities between two input fields (terms) and produces an output difference. Like other arithmetic custom filters, it is input aware based on the type passed and, for quantities, allows auto conversion between units of measure. For example, subtracting 10Mi (ten mebibytes) minus 5Ki (five kibibytes) results in the value 10235Ki. The `subtract()` filter is currently under development to better account for all permutations of input types, however the below table captures the most common and practical use cases.
+
+Arithmetic filters like `subtract()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
+| Input 1            | Input 2            | Output   |
+|--------------------|--------------------|----------|
+| Number             | Number             | Number   |
+| Quantity           | Number             | Quantity |
+| Quantity           | Quantity           | Number   |
+| Duration           | Number             | Duration |
+| Duration           | Duration           | Duration |
+
+<br>
+
+**Example:** This policy sets the value of a new label called `lessreplicas` to the value of the current number of replicas in a Deployment minus two so long as there are more than two replicas to start with.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: subtract-demo
+spec:
+  background: false
+  rules:
+  - name: subtract-demo
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    preconditions:
+      any:
+      - key: "{{ request.object.spec.replicas }}"
+        operator: GreaterThan
+        value: 2
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            lessreplicas: "{{ subtract('{{ request.object.spec.replicas }}',`2`) }}"
+```
+
+</p>
+</details>
+
 ### Time_since
 
 <details><summary>Expand</summary>
