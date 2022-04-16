@@ -1164,6 +1164,57 @@ spec:
 
 ### Replace
 
+<details><summary>Expand</summary>
+<p>
+
+The `replace()` filter is similar to the [`replace_all()`](#replace_all) filter except it takes a fourth input (a number) to specify how many instances of the source string should be replaced with the replacement string in a parent. For example, the expression shown below results in the value `Lorem muspi dolor sit amet foo muspi bar ipsum` because only two instances of the string `ipsum` were requested to be replaced. String replacement begins at the left and proceeds to the right halting once the desired count has been reached. If `-1` is specified for the four input, it results in all instances of the source string being replaced (effectively the same behavior as `replace_all()`).
+
+```
+replace('Lorem ipsum dolor sit amet foo ipsum bar ipsum', 'ipsum', 'muspi', `2`)
+```
+
+| Input 1            | Input 2            | Input 3            | Input 4            | Output        |
+|--------------------|--------------------|--------------------|--------------------|---------------|
+| String             | String             | String             | Number             | String        |
+
+<br>
+
+**Example:** This policy replaces the rule on an Ingress resource so that the path field will replace the first instance of `/cart` with `/shoppingcart`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: replace-demo
+spec:
+  background: false
+  rules:
+    - name: replace-path
+      match:
+        any:
+        - resources:
+            kinds:
+              - Ingress
+      mutate:
+        foreach:
+        - list: "request.object.spec.rules[].http.paths[]"
+          patchStrategicMerge:
+            spec:
+              rules:
+              - http:
+                  paths:
+                  - backend:
+                      service: 
+                        name: kuard
+                        port: 
+                          number: 8080
+                    path: "{{ replace('{{element.path}}', '/cart', '/shoppingcart', `1`) }}"
+                    pathType: ImplementationSpecific
+```
+
+</p>
+</details>
+
 ### Replace_all
 
 <details><summary>Expand</summary>
