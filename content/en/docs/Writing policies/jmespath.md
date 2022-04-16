@@ -1166,6 +1166,46 @@ spec:
 
 ### Replace_all
 
+<details><summary>Expand</summary>
+<p>
+
+The `replace_all()` filter is used to find and replace all instances of one string with another in an overall parent string. Input strings are assumed to be literal and do not support wildcards. For example, the expression `replace_all('Lorem ipsum dolor sit amet', 'ipsum', 'muspi')` results in the value `Lorem muspi dolor sit amet` as the string `ipsum` has been replaced with `muspi`. If there were multiple instances of `ipsum` in the parent string, they would all be replaced with `muspi`.
+
+| Input 1            | Input 2            | Input 3            | Output        |
+|--------------------|--------------------|--------------------|---------------|
+| String             | String             | String             | String        |
+
+<br>
+
+**Example:** This policy uses `replace_all()` to replace the string `release-name---` with the contents of the annotation `meta.helm.sh/release-name` in the `workingDir` field under a container entry within a Deployment.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: replace-all-demo
+spec:
+  background: false
+  rules:
+    - name: replace-workingdir
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                containers:
+                  - (name): "*"
+                    workingDir: "{{ replace_all('{{@}}', 'release-name---', '{{request.object.metadata.annotations.\"meta.helm.sh/release-name\"}}') }}"
+```
+
+</p>
+</details>
+
 ### Semver_compare
 
 <details><summary>Expand</summary>
@@ -1182,7 +1222,6 @@ The `semver_compare()` filter compares two strings which comply with the [semant
 **Example:** This policy uses `semver_compare()` to check the attestations on a container image and denies it has been built with httpclient greater than version 4.5.0.
 
 ```yaml
-
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
