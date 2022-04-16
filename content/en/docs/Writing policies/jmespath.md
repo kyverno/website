@@ -1168,6 +1168,57 @@ spec:
 
 ### Semver_compare
 
+<details><summary>Expand</summary>
+<p>
+
+The `semver_compare()` filter compares two strings which comply with the [semantic versioning](https://semver.org/) schema and outputs a boolean response as to the position of the second relative to the first. The first input is the "base" semver string for comparison while the second is the version is compared against the first. The second string accepts an [operator prefix](/docs/writing-policies/validate/#operators) and supports AND and OR logic. It also supports the special placeholder variable "x" in any position. For some examples, `semver_compare('1.2.3','1.2.4')` results in the output `false` because version 1.2.4 is not equal to version 1.2.3. `semver_compare('4.1.3','>=4.1.x')` results in the output `true` because 4.1.3 is greater than or equal to 4.1.x. `semver_compare('4.1.3','!4.x.x')` returns `false` because 4.1.3 is equal to 4.x.x. `semver_compare('1.8.6','>1.0.0 <2.0.0')` returns `true` because the second input is an AND expression and 1.8.6 is both greater than 1.0.0 and less than 2.0.0. And `semver_compare('2.1.5','<2.0.0 || >=3.0.0')` returns `false` because 2.1.5 is neither less than 2.0.0 nor greater than or equal to 3.0.0.
+
+| Input 1            | Input 2            | Output        |
+|--------------------|--------------------|---------------|
+| String             | String             | Boolean       |
+
+<br>
+
+**Example:** This policy uses `semver_compare()` to check the attestations on a container image and denies it has been built with httpclient greater than version 4.5.0.
+
+```yaml
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: semver-compare-demo
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: check-sbom
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - image: "ghcr.io/kyverno/test-verify-image*"
+        key: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHMmDjK65krAyDaGaeyWNzgvIu155
+          JI50B2vezCw8+3CVeE0lJTL5dbL3OP98Za0oAEBJcOxky8Riy/XcmfKZbw==
+          -----END PUBLIC KEY-----
+        attestations:
+        - predicateType: https://example.com/CycloneDX/v1
+          conditions:
+            - all:
+              - key: "{{ components[?name == 'commons-logging'].version | [0] }}"
+                operator: GreaterThanOrEquals
+                value: "1.2.0"
+              - key: "{{ semver_compare( {{ components[?name == 'httpclient'].version | [0] }}, '>4.5.0') }}"
+                operator: Equals
+                value: true
+```
+
+</p>
+</details>
+
 ### Split
 
 <details><summary>Expand</summary>
