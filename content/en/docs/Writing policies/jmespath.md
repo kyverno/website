@@ -1160,6 +1160,47 @@ spec:
 
 ### Regex_replace_all
 
+<details><summary>Expand</summary>
+<p>
+
+The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_all) filter only differing by the first input being a valid [regular expression](https://en.wikipedia.org/wiki/Regular_expression) rather than a static string. If numbers are supplied for the second and third inputs, they will internally be converted to string. The output is always a string. For example, the expression `regex_replace_all('^(\d{3}-?\d{2}-?\d{4})$', '123-45-6789', 'redacted')` would return `redacted` as the regex filter matches the faux social security number of `123-45-6789`.
+
+| Input 1            | Input 2            | Input 3            | Output        |
+|--------------------|--------------------|--------------------|---------------|
+| String             | String             | String             | String        |
+| String             | Number             | Number             | String        |
+
+<br>
+
+**Example:** This policy replaces the image registry for each image in every container so it comes from `myregistry.corp.com`. Note that, for images without an explicit registry such as `nginx:latest`, Kyverno will internally replace this to be `docker.io/nginx:latest` and thereby ensuring the regex pattern below matches.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: regex-replace-all-demo
+spec:
+  background: false
+  rules:
+    - name: replace-image-registry
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      mutate:
+        foreach:
+        - list: "request.object.spec.containers"
+          patchStrategicMerge:
+            spec:
+              containers:
+              - name: "{{ element.name }}"
+                image: "{{ regex_replace_all('^[^/]+', '{{element.image}}', 'myregistry.corp.com' )}}"
+```
+
+</p>
+</details>
+
 ### Regex_replace_all_literal
 
 ### Replace
