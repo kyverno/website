@@ -1163,12 +1163,52 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_all) filter only differing by the first input being a valid [regular expression](https://en.wikipedia.org/wiki/Regular_expression) rather than a static string. If numbers are supplied for the second and third inputs, they will internally be converted to string. The output is always a string. For example, the expression `regex_replace_all('^(\d{3}-?\d{2}-?\d{4})$', '123-45-6789', 'redacted')` would return `redacted` as the regex filter matches the faux social security number of `123-45-6789`.
+The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_all) filter only differing by the first and third inputs being a valid [regular expression](https://en.wikipedia.org/wiki/Regular_expression) rather than a static string. For literal replacement, see [`regex_replace_all_literal()`](#regex_replace_all_literal). If numbers are supplied for the second and third inputs, they will internally be converted to string. The output is always a string. For example, the expression `regex_replace_all('([0-9])([0-9])', 'hello im 42 months old', '${1}1')` results in the output `hello im 41 months old`. The first input provides the regex which should be used to match against the second input, and the third serves as the replacement which, in this case, replaces the first capture group from the end with the number `1`.
 
-| Input 1            | Input 2            | Input 3            | Output        |
-|--------------------|--------------------|--------------------|---------------|
-| String             | String             | String             | String        |
-| String             | Number             | Number             | String        |
+| Input 1                    | Input 2            | Input 3            | Output        |
+|----------------------------|--------------------|--------------------|---------------|
+| Regex (String)             | String             | Regex (String)     | String        |
+| Regex (String)             | Number             | Number             | String        |
+
+<br>
+
+**Example:** This policy mutates a Deployment having label named `retention` to set the last number to `0`. For example, an incoming Deployment with the label value of `days_37` would result in the value `days_30` after mutation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: regex-replace-all-demo
+spec:
+  background: false
+  rules:
+  - name: retention-adjust
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            retention: "{{ regex_replace_all('([0-9])([0-9])', '{{ @ }}', '${1}0') }}"
+```
+
+</p>
+</details>
+
+### Regex_replace_all_literal
+
+<details><summary>Expand</summary>
+<p>
+
+The `regex_replace_all_literal()` filter is similar to the [`regex_replace_all()`](#regex_replace_all) filter with the third input being a static string used for literal replacement. If numbers are supplied for the second and third inputs, they will internally be converted to string. The output is always a string. For example, the expression `regex_replace_all_literal('^(\d{3}-?\d{2}-?\d{4})$', '123-45-6789', 'redacted')` would return `redacted` as the regex filter matches the faux social security number of `123-45-6789`.
+
+| Input 1                    | Input 2            | Input 3            | Output        |
+|----------------------------|--------------------|--------------------|---------------|
+| Regex (String)             | String             | String             | String        |
+| Regex (String)             | Number             | Number             | String        |
 
 <br>
 
@@ -1178,7 +1218,7 @@ The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_al
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: regex-replace-all-demo
+  name: regex-replace-all-literal-demo
 spec:
   background: false
   rules:
@@ -1195,13 +1235,11 @@ spec:
             spec:
               containers:
               - name: "{{ element.name }}"
-                image: "{{ regex_replace_all('^[^/]+', '{{element.image}}', 'myregistry.corp.com' )}}"
+                image: "{{ regex_replace_all_literal('^[^/]+', '{{element.image}}', 'myregistry.corp.com' )}}"
 ```
 
 </p>
 </details>
-
-### Regex_replace_all_literal
 
 ### Replace
 
