@@ -397,7 +397,7 @@ In addition to the list of [built-in functions](https://jmespath.org/specificati
 ```sh
 base64_decode(string) string
 base64_encode(string) string
-compare(string, string) bool
+compare(string, string) integer
 equal_fold(string, string) bool
 label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
 parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function)
