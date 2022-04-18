@@ -758,7 +758,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Input 1            | Input 2            | Output             |
 |--------------------|--------------------|--------------------|
 | Number             | Number             | Number             |
-| Quantity           | Quantity           | Quantity           |
 
 {{% pageinfo color="warning" %}}
 The inputs list is currently under construction.
@@ -1469,9 +1468,7 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Input 1            | Input 2            | Output   |
 |--------------------|--------------------|----------|
 | Number             | Number             | Number   |
-| Quantity           | Number             | Quantity |
 | Quantity           | Quantity           | Number   |
-| Duration           | Number             | Duration |
 | Duration           | Duration           | Duration |
 
 <br>
