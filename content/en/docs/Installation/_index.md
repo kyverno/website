@@ -457,6 +457,8 @@ The following flags can also be used to control the advanced behavior of Kyverno
 9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
 10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero.
+13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero.
 
 ### Policy Report access
 
