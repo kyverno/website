@@ -94,6 +94,7 @@ type: docs
 
 ## Presentations
 
+- [Kyverno Workshop, Kubernetes Community Days Bengaluru](https://docs.google.com/presentation/d/1mw09tclej3lQAWzebhXCXS2z2q9j4Edf/edit?usp=sharing&]ouid=112353473651856718940&rtpof=true&sd=true), April 2022
 - [Kubernetes Philly, October 2021 - Kubernetes Policy Management with Kyverno](https://www.youtube.com/watch?v=Am7mvIQWx4E), October 2021
 - [Cloud Native Live: SLSA with Cosign and Kyverno to secure software delivery](https://www.cncf.io/online-programs/cloud-native-live-slsa-with-cosign-and-kyverno-to-secure-software-delivery/), October 2021
 - [KubeCon 2021 US - Kyverno Office Hours](https://docs.google.com/presentation/d/1mw09tclej3lQAWzebhXCXS2z2q9j4Edf/), October 2021
