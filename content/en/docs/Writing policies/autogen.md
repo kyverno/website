@@ -92,6 +92,18 @@ By default, Kyverno inserts an annotation `pod-policies.kyverno.io/autogen-contr
 
 You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates a rule for a `Deployment` if the annotation of policy is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment`.
 
-When a `name` or `labelSelector` is specified in the `match` or `exclude` block, Kyverno skips generating Pod controller rules as these filters may not be applicable to Pod controllers.
+Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
+
+* `names`
+* `selector`
+* `annotations`
 
 To disable auto-generating rules for Pod controllers set `pod-policies.kyverno.io/autogen-controllers`  to the value `none`.
+
+When disabling auto-generation rules for select Pod controllers, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/writing-policies/preconditions/) with an expression similar to the below which may allow Pods created by a Job controller to pass.
+
+```yaml
+- key: Job
+  operator: AnyNotIn
+  value: "{{ request.object.metadata.ownerReferences[].kind }}"
+```

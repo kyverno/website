@@ -32,7 +32,7 @@ kubectl scale deploy kyverno -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces, and may violate security best practices.
+Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. If installing for [production via the Helm chart](/docs/installation/#high-availability), this can be done with the `config.webhooks` value. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are applied since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section.
 
 ## Policies not applied
 
