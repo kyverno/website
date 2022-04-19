@@ -642,4 +642,6 @@ context:
       jmesPath: "to_string(sum(manifest.layers[*].size))"
 ```
 
+To access images stored on private registries, see [using private registries](/docs/writing-policies/verify-images#using-private-registries)
+
 For more examples of using an imageRegistry context, see the [samples page](/policies).
