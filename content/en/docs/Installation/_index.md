@@ -55,7 +55,7 @@ helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 
 ### High Availability
 
-The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `mode=ha`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
 * Kyverno running with three replicas
 * PodDisruptionBudget
@@ -85,14 +85,14 @@ See also the [Namespace selectors](#namespace-selectors) section below and espec
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
 ```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set mode=ha
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
 ```
 
 For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
 
 ```sh
 kubectl create namespace kyverno
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set mode=ha
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
 ```
 
 Beginning with Kyverno 1.5.0 (Helm chart v2.1.0), the Kyverno [Pod Security Standard policies](/policies/pod-security/) must be added separately and after Kyverno is installed.
@@ -103,19 +103,19 @@ helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 
 ### Standalone
 
-A "standalone" installation of Kyverno is suitable for lab, testdev, or small environments where node count is less than three. It configures a single replica for the Kyverno Deployment and omits many of the production-grade components.
+A "standalone" installation of Kyverno is suitable for lab, test/dev, or small environments where node count is less than three. It configures a single replica for the Kyverno Deployment and omits many of the production-grade components.
 
 Use Helm 3.2+ to create a Namespace and install Kyverno.
 
 ```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set mode=standalone
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=1
 ```
 
 For Helm versions prior to 3.2, create a Namespace and then install the Kyverno Helm chart.
 
 ```sh
 kubectl create namespace kyverno
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set mode=standalone
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=1
 ```
 
 To install pre-releases, add the --devel switch to Helm.
@@ -446,7 +446,7 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
 
-1. `-v`: Sets the verbosity mode of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages.
+1. `-v`: Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages.
 2. `profile`: setting this flag to 'true' will enable profiling.
 3. `profilePort`: specifies port to enable profiling at, defaults to 6060.
 4. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
