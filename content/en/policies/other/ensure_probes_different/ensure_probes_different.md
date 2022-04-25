@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/ensure_probes_different/ensure_probes_different.yaml" target="-blank">/other/ensure_probes_different/ensure_probes_different.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/ensure_probes_different/ensure_probes_different.yaml" target="-blank">/other/ensure_probes_different/ensure_probes_different.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

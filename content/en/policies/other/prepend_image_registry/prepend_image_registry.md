@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/prepend_image_registry/prepend_image_registry.yaml" target="-blank">/other/prepend_image_registry/prepend_image_registry.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/prepend_image_registry/prepend_image_registry.yaml" target="-blank">/other/prepend_image_registry/prepend_image_registry.yaml</a>
 
 ```yaml
 apiVersion : kyverno.io/v1

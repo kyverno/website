@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/check_deprecated_apis.yaml" target="-blank">/best-practices/check_deprecated_apis.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/check_deprecated_apis.yaml" target="-blank">/best-practices/check_deprecated_apis.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

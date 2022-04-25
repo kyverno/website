@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_usergroup_fsgroup_id/restrict_usergroup_fsgroup_id.yaml" target="-blank">/other/restrict_usergroup_fsgroup_id/restrict_usergroup_fsgroup_id.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/restrict_usergroup_fsgroup_id/restrict_usergroup_fsgroup_id.yaml" target="-blank">/other/restrict_usergroup_fsgroup_id/restrict_usergroup_fsgroup_id.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

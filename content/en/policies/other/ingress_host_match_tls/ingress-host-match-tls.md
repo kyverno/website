@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/ingress_host_match_tls/ingress-host-match-tls.yaml" target="-blank">/other/ingress_host_match_tls/ingress-host-match-tls.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/ingress_host_match_tls/ingress-host-match-tls.yaml" target="-blank">/other/ingress_host_match_tls/ingress-host-match-tls.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

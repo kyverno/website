@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/mutate-large-termination-gps.yaml" target="-blank">/other/mutate-large-termination-gps.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/mutate-large-termination-gps.yaml" target="-blank">/other/mutate-large-termination-gps.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -36,7 +36,7 @@ spec:
             - Pod
       preconditions:
         all:
-        - key: "{{request.object.spec.terminationGracePeriodSeconds}}"
+        - key: "{{request.object.spec.terminationGracePeriodSeconds || `0` }}"
           operator: GreaterThan
           value: 50   # maximum tGPS allowed by cluster admin
       mutate:

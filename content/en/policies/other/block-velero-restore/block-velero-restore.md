@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/block-velero-restore/block-velero-restore.yaml" target="-blank">/other/block-velero-restore/block-velero-restore.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/block-velero-restore/block-velero-restore.yaml" target="-blank">/other/block-velero-restore/block-velero-restore.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

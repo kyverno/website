@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -38,7 +38,7 @@ spec:
         message: "The Ingress host name must be defined, not empty."
         deny:
           conditions:
-            - key: "{{ request.object.spec.rules[].host | length(@) }}"
+            - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
               operator: NotEquals
-              value: "{{ request.object.spec.rules[].http | length(@) }}"
+              value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
 ```

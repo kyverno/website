@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_helm_tiller/disallow_helm_tiller.yaml" target="-blank">/best-practices/disallow_helm_tiller/disallow_helm_tiller.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/disallow_helm_tiller/disallow_helm_tiller.yaml" target="-blank">/best-practices/disallow_helm_tiller/disallow_helm_tiller.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

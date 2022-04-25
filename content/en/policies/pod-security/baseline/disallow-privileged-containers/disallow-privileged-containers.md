@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml" target="-blank">/pod-security/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//pod-security/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml" target="-blank">/pod-security/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

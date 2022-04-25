@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//openshift/disallow-jenkins-pipeline-strategy/disallow-jenkins-pipeline-strategy.yaml" target="-blank">/openshift/disallow-jenkins-pipeline-strategy/disallow-jenkins-pipeline-strategy.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//openshift/disallow-jenkins-pipeline-strategy/disallow-jenkins-pipeline-strategy.yaml" target="-blank">/openshift/disallow-jenkins-pipeline-strategy/disallow-jenkins-pipeline-strategy.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

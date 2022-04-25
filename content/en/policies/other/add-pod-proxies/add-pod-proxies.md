@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add-pod-proxies/add-pod-proxies.yaml" target="-blank">/other/add-pod-proxies/add-pod-proxies.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/add-pod-proxies/add-pod-proxies.yaml" target="-blank">/other/add-pod-proxies/add-pod-proxies.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

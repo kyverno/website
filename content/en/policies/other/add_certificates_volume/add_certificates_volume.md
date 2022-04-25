@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/add_certificates_volume/add_certificates_volume.yaml" target="-blank">/other/add_certificates_volume/add_certificates_volume.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/add_certificates_volume/add_certificates_volume.yaml" target="-blank">/other/add_certificates_volume/add_certificates_volume.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

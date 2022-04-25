@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_service_account.yaml" target="-blank">/other/restrict_service_account.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/restrict_service_account.yaml" target="-blank">/other/restrict_service_account.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

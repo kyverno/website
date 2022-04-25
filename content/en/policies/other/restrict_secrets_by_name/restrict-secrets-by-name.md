@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_secrets_by_name/restrict-secrets-by-name.yaml" target="-blank">/other/restrict_secrets_by_name/restrict-secrets-by-name.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/restrict_secrets_by_name/restrict-secrets-by-name.yaml" target="-blank">/other/restrict_secrets_by_name/restrict-secrets-by-name.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/exclude_namespaces_dynamically.yaml" target="-blank">/other/exclude_namespaces_dynamically.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/exclude_namespaces_dynamically.yaml" target="-blank">/other/exclude_namespaces_dynamically.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/disallow_secrets_from_env_vars/disallow_secrets_from_env_vars.yaml" target="-blank">/other/disallow_secrets_from_env_vars/disallow_secrets_from_env_vars.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/disallow_secrets_from_env_vars/disallow_secrets_from_env_vars.yaml" target="-blank">/other/disallow_secrets_from_env_vars/disallow_secrets_from_env_vars.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

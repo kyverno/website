@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/inject_sidecar_deployment/inject_sidecar_deployment.yaml" target="-blank">/other/inject_sidecar_deployment/inject_sidecar_deployment.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/inject_sidecar_deployment/inject_sidecar_deployment.yaml" target="-blank">/other/inject_sidecar_deployment/inject_sidecar_deployment.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

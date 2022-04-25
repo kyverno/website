@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict_node_label_creation.yaml" target="-blank">/other/restrict_node_label_creation.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/restrict_node_label_creation.yaml" target="-blank">/other/restrict_node_label_creation.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -43,9 +43,9 @@ spec:
       - key: "{{request.operation}}"
         operator: Equals
         value: UPDATE
-      - key: "{{request.object.metadata.labels.foo}}"
+      - key: "{{request.object.metadata.labels.foo || '' }}"
         operator: Equals
-        value: "*"
+        value: "?*"
     validate:
       message: "Setting the `foo` label on a Node is not allowed."
       deny: {}

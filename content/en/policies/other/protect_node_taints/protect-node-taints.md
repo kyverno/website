@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/protect_node_taints/protect-node-taints.yaml" target="-blank">/other/protect_node_taints/protect-node-taints.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/protect_node_taints/protect-node-taints.yaml" target="-blank">/other/protect_node_taints/protect-node-taints.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

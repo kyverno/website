@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//psp-migration/restrict_adding_capabilities/restrict-adding-capabilities.yaml" target="-blank">/psp-migration/restrict_adding_capabilities/restrict-adding-capabilities.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//psp-migration/restrict_adding_capabilities/restrict-adding-capabilities.yaml" target="-blank">/psp-migration/restrict_adding_capabilities/restrict-adding-capabilities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//openshift/disallow-deprecated-apis/disallow-deprecated-apis.yaml" target="-blank">/openshift/disallow-deprecated-apis/disallow-deprecated-apis.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//openshift/disallow-deprecated-apis/disallow-deprecated-apis.yaml" target="-blank">/openshift/disallow-deprecated-apis/disallow-deprecated-apis.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

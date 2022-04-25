@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow_default_namespace/disallow_default_namespace.yaml" target="-blank">/best-practices/disallow_default_namespace/disallow_default_namespace.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/disallow_default_namespace/disallow_default_namespace.yaml" target="-blank">/best-practices/disallow_default_namespace/disallow_default_namespace.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -42,16 +42,6 @@ spec:
       pattern:
         metadata:
           namespace: "!default"
-  - name: require-namespace
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "A namespace is required."
-      pattern:
-        metadata:
-          namespace: "?*"
   - name: validate-podcontroller-namespace
     match:
       resources:
@@ -65,17 +55,4 @@ spec:
       pattern:
         metadata:
           namespace: "!default"
-  - name: require-podcontroller-namespace
-    match:
-      resources:
-        kinds:
-        - DaemonSet
-        - Deployment
-        - Job
-        - StatefulSet
-    validate:
-      message: "A namespace is required for pod controllers."
-      pattern:
-        metadata:
-          namespace: "?*"
 ```

@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/limit-hostpath-vols/limit-hostpath-vols.yaml" target="-blank">/other/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/limit-hostpath-vols/limit-hostpath-vols.yaml" target="-blank">/other/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

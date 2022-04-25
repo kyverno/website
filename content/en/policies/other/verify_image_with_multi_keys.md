@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/verify_image_with_multi_keys.yaml" target="-blank">/other/verify_image_with_multi_keys.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/verify_image_with_multi_keys.yaml" target="-blank">/other/verify_image_with_multi_keys.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

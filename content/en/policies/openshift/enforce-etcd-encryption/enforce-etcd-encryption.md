@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//openshift/enforce-etcd-encryption/enforce-etcd-encryption.yaml" target="-blank">/openshift/enforce-etcd-encryption/enforce-etcd-encryption.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//openshift/enforce-etcd-encryption/enforce-etcd-encryption.yaml" target="-blank">/openshift/enforce-etcd-encryption/enforce-etcd-encryption.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

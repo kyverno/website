@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//cert-manager/limit-dnsnames/limit-dnsnames.yaml" target="-blank">/cert-manager/limit-dnsnames/limit-dnsnames.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//cert-manager/limit-dnsnames/limit-dnsnames.yaml" target="-blank">/cert-manager/limit-dnsnames/limit-dnsnames.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -39,7 +39,7 @@ spec:
       message: Only one dnsNames entry allowed per certificate request.
       deny:
         conditions:
-        - key: "{{request.object.spec.dnsNames | length(@)}}"
+        - key: "{{request.object.spec.dnsNames || `[]` | length(@)}}"
           operator: GreaterThan
           value: "1"
 ```

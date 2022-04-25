@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/block-pod-exec-by-namespace.yaml" target="-blank">/other/block-pod-exec-by-namespace.yaml</a>
+<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/block-pod-exec-by-namespace.yaml" target="-blank">/other/block-pod-exec-by-namespace.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
