@@ -55,7 +55,7 @@ helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 
 ### High Availability
 
-The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list and may change. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
 * Kyverno running with three replicas
 * PodDisruptionBudget
@@ -66,7 +66,7 @@ The official Helm chart is the recommended method of installing Kyverno in a pro
 Kyverno does not support two replicas. For a highly-available installation, the only supported count is three.
 {{% /alert %}}
 
-By default, the Helm chart does not configure any Namespace exclusions, which may result in AdmissionReview requests for objects therein to be dropped by the API server. While this is a more secure posture by default, allowing users to optionally apply policy to those Namespaces should they so choose, it may result in difficulty should all Kyverno Pods be unavailable. The alternative is to exclude certain system-level Namespaces, for example Kyverno's and `kube-system`. This can be accomplished by setting `config.webhooks` in the Helm chart values file. For example, a values file with the below snippet will result in the Kyverno [ConfigMap](#configmap-flags) to be configured with a `namespaceSelector` object which will then be used to configure the webhooks managed by Kyverno. The end result is the API server will only forward AdmissionReview requests for resources other than those in the `values[]` array. Note that for Kubernetes 1.21, the immutable label `kubernetes.io/metadata.name` should be used for this purpose.
+By default, the Helm chart does not configure any Namespace exclusions. While this is a more secure posture by default, allowing users to apply policy to those Namespaces, it may result in manual recovery steps should all Kyverno Pods be unavailable. The alternative is to exclude certain system-level Namespaces, for example Kyverno's and `kube-system`. This can be accomplished by setting `config.webhooks` in the Helm chart values file. For example, a values file with the below snippet will result in the Kyverno [ConfigMap](#configmap-flags) being configured with a `namespaceSelector` object which will then be used to configure the webhooks managed by Kyverno. The end result is the API server will only forward AdmissionReview requests for resources other than those in the `values[]` array. Note that for Kubernetes 1.21, the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name` should be used for this purpose.
 
 ```yaml
 config:
@@ -142,9 +142,9 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/release-1.7/
 
 ## Security vs Operability
 
-Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default in fail closed mode. This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. Care must therefore be taken to ensure Kyverno is always available or else configured appropriately to exclude certain key Namespaces. There is a tradeoff between security by default and operability.
+Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/writing-policies/policy-settings/)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
 
-The following combination may result in cluster inoperability:
+The following combination may result in cluster inoperability if the Kyverno Namespace is not excluded:
 
 1. Kyverno is configured in fail closed mode (default).
 2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`).
@@ -152,14 +152,14 @@ The following combination may result in cluster inoperability:
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting/#api-server-is-blocked).
 
-By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention.
+By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
-The choices are therefore:
+The choices and their implications are therefore:
 
-1. Do not exclude system Namespaces during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
+1. Do not exclude system Namespaces, including Kyverno's, during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
 2. Exclude system Namespaces during installation resulting in easier cluster recovery but potentially requiring other methods to secure those Namespaces, for example with Kubernetes RBAC.
 
-For steps on how to exclude Namespaces during installation with Helm, see the [High Availability](#high-availability) section. You should choose the best option based upon your risk aversion, needs, and tolerances.
+For steps on how to exclude Namespaces during installation with Helm, see the [High Availability](#high-availability) section. You should choose the best option based upon your risk aversion, needs, and operational practices.
 
 ## Customize the installation of Kyverno
 
@@ -530,13 +530,13 @@ To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the def
 
 ### Namespace Selectors
 
-In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object.
+In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object. Note that when installing Kyverno via the Helm chart and setting Namespace exclusions, it will cause this `webhooks` object to be automatically created in the Kyverno ConfigMap.
 
 ```yaml
 apiVersion: v1
 data:
   resourceFilters: '[Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][Node,*,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][SelfSubjectAccessReview,*,*][*,kyverno,*][Binding,*,*][ReplicaSet,*,*][ReportChangeRequest,*,*][ClusterReportChangeRequest,*,*]'
-  webhooks: '[{"namespaceSelector":{"matchExpressions":[{"key":"environment","operator":"In","values":["prod"]}]}}]'
+  webhooks: '[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"In","values":["kyverno"]}]}}]'
 kind: ConfigMap
 metadata:
   name: kyverno
