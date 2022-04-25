@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/add-image-as-env-var/add-image-as-env-var.yaml" target="-blank">/other/add-image-as-env-var/add-image-as-env-var.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add-image-as-env-var/add-image-as-env-var.yaml" target="-blank">/other/add-image-as-env-var/add-image-as-env-var.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

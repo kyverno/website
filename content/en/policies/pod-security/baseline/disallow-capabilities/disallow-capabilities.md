@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//pod-security/baseline/disallow-capabilities/disallow-capabilities.yaml" target="-blank">/pod-security/baseline/disallow-capabilities/disallow-capabilities.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-capabilities/disallow-capabilities.yaml" target="-blank">/pod-security/baseline/disallow-capabilities/disallow-capabilities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

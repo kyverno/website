@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/require_emptydir_requests_limits/require-emptydir-requests-limits.yaml" target="-blank">/other/require_emptydir_requests_limits/require-emptydir-requests-limits.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/require_emptydir_requests_limits/require-emptydir-requests-limits.yaml" target="-blank">/other/require_emptydir_requests_limits/require-emptydir-requests-limits.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

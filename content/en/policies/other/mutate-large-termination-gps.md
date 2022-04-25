@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/mutate-large-termination-gps.yaml" target="-blank">/other/mutate-large-termination-gps.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/mutate-large-termination-gps.yaml" target="-blank">/other/mutate-large-termination-gps.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

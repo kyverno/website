@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/limit-hostpath-type-pv/limit_hostpath_type_pv.yaml" target="-blank">/other/limit-hostpath-type-pv/limit_hostpath_type_pv.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/limit-hostpath-type-pv/limit_hostpath_type_pv.yaml" target="-blank">/other/limit-hostpath-type-pv/limit_hostpath_type_pv.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

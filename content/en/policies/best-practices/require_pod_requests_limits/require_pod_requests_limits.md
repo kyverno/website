@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml" target="-blank">/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml" target="-blank">/best-practices/require_pod_requests_limits/require_pod_requests_limits.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

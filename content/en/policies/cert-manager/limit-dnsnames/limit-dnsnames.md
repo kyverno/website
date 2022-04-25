@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//cert-manager/limit-dnsnames/limit-dnsnames.yaml" target="-blank">/cert-manager/limit-dnsnames/limit-dnsnames.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//cert-manager/limit-dnsnames/limit-dnsnames.yaml" target="-blank">/cert-manager/limit-dnsnames/limit-dnsnames.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

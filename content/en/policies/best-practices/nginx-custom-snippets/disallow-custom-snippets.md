@@ -1,8 +1,8 @@
 ---
 title: "Disallow Custom Snippets"
-category: Best Practices
-version: 
-subject: ConfigMap, Ingress
+category: Security
+version: 1.6.0
+subject: ConfigMap, Ingress, NGINX Ingress
 policyType: "validate"
 description: >
     Users that can create or update ingress objects can use the custom snippets  feature to obtain all secrets in the cluster (CVE-2021-25742). This policy  disables allow-snippet-annotations in the ingress-nginx configuration and  blocks *-snippet annotations on an Ingress. See: https://github.com/kubernetes/ingress-nginx/issues/7837
@@ -18,8 +18,11 @@ metadata:
   name: disallow-ingress-nginx-custom-snippets
   annotations:
     policies.kyverno.io/title: Disallow Custom Snippets
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/subject: ConfigMap, Ingress
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/subject: ConfigMap, Ingress, NGINX Ingress
+    policies.kyverno.io/minversion: "1.6.0"
+    kyverno.io/kyverno-version: "1.6.0"
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
       Users that can create or update ingress objects can use the custom snippets 
       feature to obtain all secrets in the cluster (CVE-2021-25742). This policy 
@@ -31,8 +34,9 @@ spec:
   rules:
     - name: check-config-map
       match:
-        resources:
-          kinds:
+        any:
+        - resources:
+            kinds:
             - ConfigMap      
       validate:
         message: "ingress-nginx allow-snippet-annotations must be set to false"
@@ -41,9 +45,10 @@ spec:
             =(allow-snippet-annotations) : "false"
     - name: check-ingress-annotations
       match:
-        resources:
-          kinds:
-            - Ingress      
+        any:
+        - resources:
+            kinds:
+            - networking.k8s.io/v1/Ingress            
       validate:
         message: "ingress-nginx custom snippets are not allowed"
         pattern:

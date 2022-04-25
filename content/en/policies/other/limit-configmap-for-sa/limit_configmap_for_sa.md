@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/limit-configmap-for-sa/limit_configmap_for_sa.yaml" target="-blank">/other/limit-configmap-for-sa/limit_configmap_for_sa.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/limit-configmap-for-sa/limit_configmap_for_sa.yaml" target="-blank">/other/limit-configmap-for-sa/limit_configmap_for_sa.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

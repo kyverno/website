@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/add_node_affinity/add_node_affinity.yaml" target="-blank">/other/add_node_affinity/add_node_affinity.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add_node_affinity/add_node_affinity.yaml" target="-blank">/other/add_node_affinity/add_node_affinity.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

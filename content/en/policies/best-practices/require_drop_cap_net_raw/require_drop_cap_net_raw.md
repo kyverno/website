@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml" target="-blank">/best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml" target="-blank">/best-practices/require_drop_cap_net_raw/require_drop_cap_net_raw.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

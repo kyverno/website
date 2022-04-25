@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow_empty_ingress_host.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

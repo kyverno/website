@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//traefik/disallow_default_tlsoptions/disallow_default_tlsoptions.yaml" target="-blank">/traefik/disallow_default_tlsoptions/disallow_default_tlsoptions.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//traefik/disallow_default_tlsoptions/disallow_default_tlsoptions.yaml" target="-blank">/traefik/disallow_default_tlsoptions/disallow_default_tlsoptions.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

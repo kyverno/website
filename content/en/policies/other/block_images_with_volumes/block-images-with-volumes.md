@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/block_images_with_volumes/block-images-with-volumes.yaml" target="-blank">/other/block_images_with_volumes/block-images-with-volumes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/block_images_with_volumes/block-images-with-volumes.yaml" target="-blank">/other/block_images_with_volumes/block-images-with-volumes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

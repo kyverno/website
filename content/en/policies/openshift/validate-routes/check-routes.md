@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//openshift/validate-routes/check-routes.yaml" target="-blank">/openshift/validate-routes/check-routes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//openshift/validate-routes/check-routes.yaml" target="-blank">/openshift/validate-routes/check-routes.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

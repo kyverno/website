@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/add_env_vars_from_cm/add-env-vars-from-cm.yaml" target="-blank">/other/add_env_vars_from_cm/add-env-vars-from-cm.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/add_env_vars_from_cm/add-env-vars-from-cm.yaml" target="-blank">/other/add_env_vars_from_cm/add-env-vars-from-cm.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

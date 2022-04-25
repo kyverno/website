@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/spread_pods_across_topology/spread_pods_across_topology.yaml" target="-blank">/other/spread_pods_across_topology/spread_pods_across_topology.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/spread_pods_across_topology/spread_pods_across_topology.yaml" target="-blank">/other/spread_pods_across_topology/spread_pods_across_topology.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

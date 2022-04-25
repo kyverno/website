@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/allowed_pod_priorities/allowed_pod_priorities.yaml" target="-blank">/other/allowed_pod_priorities/allowed_pod_priorities.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/allowed_pod_priorities/allowed_pod_priorities.yaml" target="-blank">/other/allowed_pod_priorities/allowed_pod_priorities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1

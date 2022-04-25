@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/JimBugwadia/kyverno-policies/raw/fix_annotations//other/require-non-root-groups/require-non-root-groups.yaml" target="-blank">/other/require-non-root-groups/require-non-root-groups.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/require-non-root-groups/require-non-root-groups.yaml" target="-blank">/other/require-non-root-groups/require-non-root-groups.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
