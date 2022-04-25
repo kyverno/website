@@ -9,7 +9,7 @@ description: >
 Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running.
 
 {{% alert title="Note" color="info" %}}
-As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project which is N-2 version compatibility.
+As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project which is N-2 version compatibility. Although previous versions may work, they are not tested.
 {{% /alert %}}
 
 ## Compatibility Matrix
@@ -148,9 +148,14 @@ The following combination may result in cluster inoperability if the Kyverno Nam
 
 1. Kyverno is configured in fail closed mode (default).
 2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`).
-3. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
+3. At least one Kyverno rule matches on resource kind `Pods`.
+4. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting/#api-server-is-blocked).
+
+{{% alert title="Note" color="info" %}}
+Kubernetes does not permit the checking of webhook resources by admission controllers.
+{{% /alert %}}
 
 By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
@@ -160,6 +165,10 @@ The choices and their implications are therefore:
 2. Exclude system Namespaces during installation resulting in easier cluster recovery but potentially requiring other methods to secure those Namespaces, for example with Kubernetes RBAC.
 
 For steps on how to exclude Namespaces during installation with Helm, see the [High Availability](#high-availability) section. You should choose the best option based upon your risk aversion, needs, and operational practices.
+
+{{% alert title="Note" color="info" %}}
+If you choose to *not* exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/#resource-filters) entry in the [ConfigMap](/docs/installation/#configmap-flags) to remove those items.
+{{% /alert %}}
 
 ## Customize the installation of Kyverno
 
@@ -457,8 +466,8 @@ The following flags can also be used to control the advanced behavior of Kyverno
 9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
 10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero.
-13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero.
+12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
+13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
 
 ### Policy Report access
 
@@ -504,8 +513,6 @@ The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configurat
 Prior to 1.5.0, by default, the Kyverno webhook will process all API server requests for all Namespaces and the policy application was filtered using Resource Filters and Namespace Selectors discussed below.
 
 ### Resource Filters
-
-**NOTE:** In 1.5.0+ resource filters are only used when the `autoUpdateWebhooks` flag is set to `false`.
 
 Resource filters are a way to instruct Kyverno which AdmissionReview requests sent by the API server to disregard. This is not the same ability as configuration of the webhook. The Kubernetes kinds that should be ignored by policies can be filtered by adding a ConfigMap in Namespace `kyverno` and specifying the resources to be filtered under `data.resourceFilters`. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Node,*,*]` means that admissions of kind `Node` in any namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in namespace `foo-system` having names beginning with `redis`.
 
