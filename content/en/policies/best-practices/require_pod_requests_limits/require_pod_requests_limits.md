@@ -1,6 +1,6 @@
 ---
 title: "Require Limits and Requests"
-category: Best Practices
+category: Multi-Tenancy
 version: 
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: require-requests-limits
   annotations:
     policies.kyverno.io/title: Require Limits and Requests
-    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/category: Multi-Tenancy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-

@@ -42,6 +42,16 @@ spec:
       pattern:
         metadata:
           namespace: "!default"
+  - name: require-namespace
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "A namespace is required."
+      pattern:
+        metadata:
+          namespace: "?*"
   - name: validate-podcontroller-namespace
     match:
       resources:
@@ -55,4 +65,17 @@ spec:
       pattern:
         metadata:
           namespace: "!default"
+  - name: require-podcontroller-namespace
+    match:
+      resources:
+        kinds:
+        - DaemonSet
+        - Deployment
+        - Job
+        - StatefulSet
+    validate:
+      message: "A namespace is required for pod controllers."
+      pattern:
+        metadata:
+          namespace: "?*"
 ```

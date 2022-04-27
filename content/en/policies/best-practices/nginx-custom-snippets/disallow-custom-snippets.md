@@ -1,7 +1,7 @@
 ---
 title: "Disallow Custom Snippets"
-category: Security, NGINX Ingress
-version: 1.6.0
+category: Best Practices
+version: 
 subject: ConfigMap, Ingress
 policyType: "validate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//nginx-ingress/nginx-custom-snippets/disallow-custom-snippets.yaml" target="-blank">/nginx-ingress/nginx-custom-snippets/disallow-custom-snippets.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml" target="-blank">/best-practices/nginx-custom-snippets/disallow-custom-snippets.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -18,11 +18,8 @@ metadata:
   name: disallow-ingress-nginx-custom-snippets
   annotations:
     policies.kyverno.io/title: Disallow Custom Snippets
-    policies.kyverno.io/category: Security, NGINX Ingress
+    policies.kyverno.io/category: Best Practices
     policies.kyverno.io/subject: ConfigMap, Ingress
-    policies.kyverno.io/minversion: "1.6.0"
-    kyverno.io/kyverno-version: "1.6.0"
-    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
       Users that can create or update ingress objects can use the custom snippets 
       feature to obtain all secrets in the cluster (CVE-2021-25742). This policy 
@@ -34,9 +31,8 @@ spec:
   rules:
     - name: check-config-map
       match:
-        any:
-        - resources:
-            kinds:
+        resources:
+          kinds:
             - ConfigMap      
       validate:
         message: "ingress-nginx allow-snippet-annotations must be set to false"
@@ -45,10 +41,9 @@ spec:
             =(allow-snippet-annotations) : "false"
     - name: check-ingress-annotations
       match:
-        any:
-        - resources:
-            kinds:
-            - networking.k8s.io/v1/Ingress            
+        resources:
+          kinds:
+            - Ingress      
       validate:
         message: "ingress-nginx custom snippets are not allowed"
         pattern:
