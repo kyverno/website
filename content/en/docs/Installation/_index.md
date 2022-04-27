@@ -158,6 +158,10 @@ Kubernetes does not permit the checking of webhook resources by admission contro
 
 By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
+{{% alert title="Note" color="info" %}}
+Namespaces and/or objects within Namespaces may be excluded in a variety of ways including namespaceSelectors and objectSelectors. The Helm chart provides options for both.
+{{% /alert %}}
+
 The choices and their implications are therefore:
 
 1. Do not exclude system Namespaces, including Kyverno's, during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
