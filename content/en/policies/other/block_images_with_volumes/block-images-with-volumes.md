@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
-    OCI images may optionally be built with VOLUME statements which could allow unexpected mounting of host paths even if the manifest does not specify them. This policy checks the contents of every container image and inspects them for such VOLUME statements, then blocks if found.
+    OCI images may optionally be built with VOLUME statements which, if run in read-only mode, would still result in write access to the specified location. This may be unexpected and undesirable. This policy checks the contents of every container image and inspects them for such VOLUME statements, then blocks if found.
 ---
 
 ## Policy Definition
@@ -25,10 +25,10 @@ metadata:
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      OCI images may optionally be built with VOLUME statements which could
-      allow unexpected mounting of host paths even if the manifest does not
-      specify them. This policy checks the contents of every container image
-      and inspects them for such VOLUME statements, then blocks if found.
+      OCI images may optionally be built with VOLUME statements which, if run
+      in read-only mode, would still result in write access to the specified location.
+      This may be unexpected and undesirable. This policy checks the contents of every
+      container image and inspects them for such VOLUME statements, then blocks if found.
 spec:
   validationFailureAction: audit
   rules:

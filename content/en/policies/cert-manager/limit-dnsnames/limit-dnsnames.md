@@ -39,7 +39,7 @@ spec:
       message: Only one dnsNames entry allowed per certificate request.
       deny:
         conditions:
-        - key: "{{request.object.spec.dnsNames | length(@)}}"
+        - key: "{{request.object.spec.dnsNames || `[]` | length(@)}}"
           operator: GreaterThan
           value: "1"
 ```
