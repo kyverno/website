@@ -146,10 +146,9 @@ Regardless of the installation method used for Kyverno, it is important to under
 
 The following combination may result in cluster inoperability if the Kyverno Namespace is not excluded:
 
-1. Kyverno is configured in fail closed mode (default).
+1. At least one Kyverno rule matching on `Pods` is configured in fail closed mode (the default setting).
 2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`).
-3. At least one Kyverno rule matches on resource kind `Pods`.
-4. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
+3. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting/#api-server-is-blocked).
 
