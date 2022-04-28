@@ -22,5 +22,5 @@ curl https://raw.githubusercontent.com/kyverno/grafana-dashboard/master/grafana/
 
 * And your dashboard will be ready in front of you.
 
-<p align="center"><img src="https://raw.githubusercontent.com/kyverno/website/main/content/en/docs/Monitoring%20Kyverno%20With%20Prometheus%20Metrics/assets/dashboard-example-1.png" height="300px"/></p>
-<p align="center"><img src="https://raw.githubusercontent.com/kyverno/website/main/content/en/docs/Monitoring%20Kyverno%20With%20Prometheus%20Metrics/assets/dashboard-example-2.png" height="300px" /></p>
+<p align="center"><img src="https://raw.githubusercontent.com/kyverno/website/main/content/en/docs/Monitoring/assets/dashboard-example-1.png" height="300px"/></p>
+<p align="center"><img src="https://raw.githubusercontent.com/kyverno/website/main/content/en/docs/Monitoring/assets/dashboard-example-2.png" height="300px" /></p>

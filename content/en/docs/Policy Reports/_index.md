@@ -14,7 +14,7 @@ There are two types of reports that get created and updated by Kyverno: a `Clust
 Kyverno uses the policy report schema published by the [Kubernetes Policy WG](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
 
 {{% alert title="Note" color="info" %}}
-Policy reports show policy results for current resources in the cluster. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring-kyverno-with-prometheus-metrics/policy-rule-results-info/).
+Policy reports show policy results for current resources in the cluster. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/).
 {{% /alert %}}
 
 ## Report result logic
