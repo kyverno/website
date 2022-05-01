@@ -202,7 +202,6 @@ spec:
 
 In order to treat special characters like wildcards as literals, see [this section](/docs/writing-policies/jmespath/#matching-special-characters) in the JMESPath page.
 
-
 ### Operators
 
 Operators in the following support list values as of Kyverno 1.3.6 in addition to scalar values. Many of these operators also support checking of durations (ex., 12h) and semver (ex., 1.4.1).
