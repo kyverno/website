@@ -137,7 +137,7 @@ A validation rule which checks resource data is defined as an overlay pattern th
 
 For a couple of examples on how wildcards work in rules, see the following.
 
-This policy requires that all containers in all Pods have CPU and memory resource requests and limits defined:
+This policy requires that all containers in all Pods have resource requests and limits defined (CPU limits intentionally omitted):
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -167,7 +167,6 @@ spec:
                 # there can be 0 or more characters. Using them together
                 # e.g. '?*' requires at least one character.
                 memory: "?*"
-                cpu: "?*"
               requests:
                 memory: "?*"
                 cpu: "?*"
@@ -200,6 +199,8 @@ spec:
                 labels:
                   app: "?*"
 ```
+
+In order to treat special characters like wildcards as literals, see [this section](/docs/writing-policies/jmespath/#matching-special-characters) in the JMESPath page.
 
 ### Operators
 

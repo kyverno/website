@@ -23,7 +23,7 @@ Note that these two webhook configurations are used for resources. Other Kyverno
 
 2. Restart Kyverno
 
-Either delete the Kyverno Pods or scale the Deployment down to zero and then up. For example, for an installation with three replicas use:
+Either delete the Kyverno Pods or scale the Deployment down to zero and then up. For example, for an installation with three replicas in the default Namespace use:
 
 ```sh
 kubectl scale deploy kyverno -n kyverno --replicas 0
@@ -32,7 +32,7 @@ kubectl scale deploy kyverno -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces, and may violate security best practices.
+Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. If installing for [production via the Helm chart](/docs/installation/#high-availability), this can be done with the `config.webhooks` value. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section.
 
 ## Policies not applied
 

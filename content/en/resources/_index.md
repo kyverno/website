@@ -82,7 +82,6 @@ type: docs
 - [Self-Service Velero Backups with Kyverno](https://nirmata.com/2021/01/24/self-service-velero-backups-with-kyverno/), January 2021
 - [Kyverno: The Swiss Army Knife of Kubernetes](https://neonmirrors.net/post/2021-01/kyverno-the-swiss-army-knife-of-kubernetes/), January 2021
 - [Auto-labeling Kubernetes resources with Kyverno](https://www.cncf.io/blog/2020/12/30/auto-labeling-kubernetes-resources-with-kyverno/), December 2020
-- [How Kyverno helps with policy management](https://mccricardo.com/kyverno-roles/), December 2020
 - [Easy as one-two-three policy management with Kyverno on Amazon EKS](https://aws.amazon.com/blogs/containers/easy-as-one-two-three-policy-management-with-kyverno-on-amazon-eks/), December 2020
 - [Kyverno, a New CNCF Sandbox Project, Offers Kubernetes-Native Policy Management](https://thenewstack.io/kyverno-a-new-cncf-sandbox-project-offers-kubernetes-native-policy-management/), November 2020
 - [Exploring Kyverno Series](https://neonmirrors.net/post/2020-11/exploring-kyverno-intro/), November 2020

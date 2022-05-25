@@ -770,6 +770,15 @@ globalValues:
   request.operation: UPDATE
 ```
 
+If policies use namespaceSelector, these can also be specified in the variables file.
+
+```yaml
+namespaceSelector:
+  - name: test1
+    labels:
+      foo.com/managed-state: managed
+```
+
 The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
 
 Example:

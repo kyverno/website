@@ -33,14 +33,14 @@ spec:
       any:
       - resources:
           kinds:
-          - "ConfigMap"
-        subjects:
-        - kind: ServiceAccount
-          name: developer
-          namespace: kube-system
+          - ConfigMap
+        # subjects:
+        # - kind: ServiceAccount
+        #   name: developer
+        #   namespace: kube-system
       - resources:
           kinds:
-          - "ConfigMap"
+          - ConfigMap
         subjects:
         - kind: ServiceAccount
           name: another-developer

@@ -92,6 +92,74 @@ By default, Kyverno inserts an annotation `pod-policies.kyverno.io/autogen-contr
 
 You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates a rule for a `Deployment` if the annotation of policy is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment`.
 
-When a `name` or `labelSelector` is specified in the `match` or `exclude` block, Kyverno skips generating Pod controller rules as these filters may not be applicable to Pod controllers.
+Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
+
+* `names`
+* `selector`
+* `annotations`
 
 To disable auto-generating rules for Pod controllers set `pod-policies.kyverno.io/autogen-controllers`  to the value `none`.
+
+When disabling auto-generation rules for select Pod controllers, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/writing-policies/preconditions/) with an expression similar to the below which may allow Pods created by a Job controller to pass.
+
+```yaml
+- key: Job
+  operator: AnyNotIn
+  value: "{{ request.object.metadata.ownerReferences[].kind }}"
+```
+
+## Exclusion by Metadata
+
+In some cases it may be desirable to use an `exclude` block applied to Pods that uses either labels or annotations. For example, the following `match` and `exclude` statement may be written, the purpose of which would be to match any Pods except those that have the annotation `policy.test/require-requests-limits=skip`.
+
+```yaml
+rules:
+  - name: validate-resources
+    match:
+      any:
+      - resources:
+          kinds:
+            - Pod
+    exclude:
+      any:
+      - resources:
+          annotations:
+            policy.test/require-requests-limits: skip
+```
+
+When Kyverno sees these types of fields as mentioned above it skips auto-generation for the rule. The next choice may be to use preconditions to achieve the same effect but by writing an expression that looks at `request.object.metadata.*`. As part of auto-generation, Kyverno will see any variables from AdmissionReview such as that beginning with `request.object` and translate it for each of the applicable Pod controllers. The result may be that the auto-generated rule for, as an example, Deployments will get translated to `request.object.spec.template.metadata.*` which references the `metadata` object inside the Pod template and not the `metadata` object of the Deployment itself. To work around this and have preconditions which are not translated for these metadata use cases, double quote the `object` portion of the variable as shown below.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-requests-limits
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: validate-resources
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      preconditions:
+        all:
+        - key: "{{ request.\"object\".metadata.annotations.\"policy.test.io/require-requests-limits\" || '' }}"
+          operator: NotEquals
+          value: skip
+      validate:
+        message: "CPU and memory resource requests and limits are required."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    memory: "?*"
+                    cpu: "?*"
+                  limits:
+                    memory: "?*"
+```
+
+The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.

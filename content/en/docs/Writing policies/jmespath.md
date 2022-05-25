@@ -309,6 +309,36 @@ deny:
 
 It is common for a JMESPath expression to name a specific field so that its value may be acted upon. For example, in the [basics section](#basics) above, the label `appns` is written to a Pod via a mutate rule which does not contain it or is set to a different value. A Kyverno validate rule which exists to check the value of that label or any other field is commonplace. Because the schema for many Kubernetes resources is flexible in that many fields are optional, policy rules must contend with the scenario in which a matching resource does not contain the field being checked. When using JMESPath to check the value of such a field, a simple expression might be written `{{request.object.metadata.labels.appns}}`. If a resource is submitted which either does not contain any labels at all or does not contain a label with the specified key then the expression cannot be evaluated. An error is likely to result similar to `JMESPath query failed: Unknown key "labels" in path`. In these types of cases, the JMESPath expression should use a non-existence check in the form of the [OR expression](https://jmespath.org/specification.html#or-expressions) followed by a "default" value if the field does not exist. The resulting full expression which will correctly evaluate is `{{request.object.metadata.labels.appns || ''}}`. This expression reads, "take the value of the key request.object.metadata.labels.appns or, if it does not exist, set it to an empty string". Note that the value on the right side may need to be customized given the ultimate use of the value expected to be produced. This non-existence pattern can be used in almost any JMESPath expression to mitigate scenarios in which the initial query may be invalid.
 
+### Matching Special Characters
+
+Kyverno reserves [special behavior for wildcard characters](/docs/writing-policies/validate/#wildcards) such as `*` and `?`. However, certain Kubernetes resources permit wildcards as values in various fields which are treated literally. It may be necessary to construct a policy which validates literal usage of such wildcards. Using the JMESPath [`contains()`](https://jmespath.org/specification.html#contains) filter it is possible to do so. The below policy shows how to use `contains()` to match on wildcards as literal characters.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-ingress-wildcard
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: block-ingress-wildcard
+      match:
+        any:
+        - resources:
+            kinds:
+              - Ingress
+      validate:
+        message: "Wildcards are not permitted as hosts."
+        foreach:
+        - list: "request.object.spec.rules"
+          deny:
+            conditions:
+              any:
+              - key: "{{ contains(element.host, '*') }}"
+                operator: Equals
+                value: true
+```
+
 ## Custom Filters
 
 In addition to the filters available in the upstream JMESPath library which Kyverno uses, there are also many new and custom filters developed for Kyverno's use found nowhere else. These filters augment the already robust capabilities of JMESPath to bring new functionality and capabilities which help solve common use cases in running Kubernetes. The filters endemic to Kyverno can be used in addition to any of those found in the upstream JMESPath library used by Kyverno and do not represent replaced or removed functionality.
