@@ -872,32 +872,6 @@ The example above applies a test on the policy and the resource defined in the t
 | 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
 | 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             |
 
-### Validate
-
-The `validate` command validates that a policy is syntactically valid. It can validate multiple policy resource description files or even an entire folder containing policy resource description files. Currently supports files with resource description in YAML. The policies can also be passed from stdin.
-
-Example:
-
-```sh
-kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies
-```
-
-Passing policy from stdin:
-
-```sh
-kustomize build nginx/overlays/envs/prod/ | kyverno validate -
-```
-
-Use the `-o <yaml/json>` flag to display the mutated policy.
-
-Example:
-
-```sh
-kyverno validate /path/to/policy1.yaml /path/to/policy2.yaml /path/to/folderFullOfPolicies -o yaml
-```
-
-Policy can also be validated with CRDs. Use the `-c` flag to pass the CRD. You can pass multiple CRD files or even an entire folder containing CRDs.
-
 ### Jp
 
 The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
