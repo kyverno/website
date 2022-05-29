@@ -115,7 +115,7 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <vari
 
 Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
 
-Use `-u` or `--userinfo` for applying policies while passing a optional user_info.yaml file which contains necessary admission request data made during the request.
+Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
 {{% alert title="Note" color="info" %}}
 When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/writing-policies/external-data-sources/#handling-configmap-array-values).
