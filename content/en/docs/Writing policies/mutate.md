@@ -353,16 +353,16 @@ The anchor processing behavior for mutate conditions is as follows:
 
 ## Mutate Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports mutate existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through admission review, mutate existing policies are applied in the background which updates existing resources in the cluster. Such policies are triggered via admission requests, and can be optionally configured to apply on policy updates.
+With Kyverno 1.7.0+, Kyverno supports the mutate existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which updates existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
 
 To define such a policy, trigger resources need to be specified in the `match` block. The target resources, resources that are mutated in the background, are specified in each mutate rule `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`). 
 
 {{% alert title="Note" color="warning" %}}
-The proper permissions need to be granted to Kyverno service account in order to mutate existing resources. You will need to create a ClusterRole with right permissions and bind it to Kyverno service account via ClusterRoleBinding.
+The proper permissions need to be granted to Kyverno ServiceAccount. You may need to create a ClusterRole with proper permissions and bind it to the Kyverno ServiceAccount via a ClusterRoleBinding.
 {{% /alert %}}
 
 
-This policy applies when the trigger resource `staging/disctionary-1` ConfigMap changes, a label `foo=bar` will be added to the target resource `staging/secret-1` Secret.
+This policy, which matches when the trigger resource named `dictionary-1` in the `staging` Namespace changes, writes a label `foo=bar` to the target resource named `secret-1` also in the `staging` Namespace.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -393,7 +393,7 @@ spec:
               foo: bar
 ```
 
-By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATION and UPDATE.
+By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -420,7 +420,7 @@ spec:
 
 To reference data in target resources, you can define the variable `target` followed by the path to the desired attribute. For example, using `target.metadata.labels.env` references the label `env` in the target resource.
 
-This policy copies the configmaps' value `target.data.key` to their label with the key `env`.
+This policy copies the ConfigMaps' value `target.data.key` to their label with the key `env`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -456,9 +456,9 @@ spec:
           value: "{{ target.data.key }}"  
 ```
 
-`@` is added to reference the in-line value of the target resource.
+The `{{ @ }}` special variable is added to reference the in-line value of the target resource.
 
-This policy adds the value of `keyone` from the trigger configmap `foo/cmone` as the prefix to target configmaps in their data with `keynew`.
+This policy adds the value of `keyone` from the trigger ConfigMap named `cmone` in the `foo` Namespace as the prefix to target ConfigMaps in their data with `keynew`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -495,15 +495,15 @@ spec:
 
 Once a mutate existing policy is applied successfully, there will be an event and an annotation added to the target resource:
 
-```
-✗ kubectl describe deploy foobar
+```sh
+$ kubectl describe deploy foobar
 ...
 Events:
   Type     Reason             Age                From                   Message
   ----     ------             ----               ----                   -------
   Normal   PolicyApplied      29s (x2 over 31s)  kyverno-mutate         policy add-sec/add-sec-rule applied
 
-✗ kubectl get deploy foobar -o yaml
+$ kubectl get deploy foobar -o yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -513,17 +513,17 @@ metadata:
       add-sec-rule.add-sec.kyverno.io: added /spec/template/spec/containers/0/securityContext
 ```
 
-To troubleshoot the policy application failure, you can inspect `UpdateRequest` custom resource to get details. Succeeded updaterequests are automatically cleaned up by Kyverno.
+To troubleshoot the policy application failure, you can inspect `UpdateRequest` Custom Resource  to get details. Successful `UpdateRequests` are automatically cleaned up by Kyverno.
 
 For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
 
 ```
-✗ kubectl get ur -n kyverno
+$ kubectl get ur -n kyverno
 NAME       POLICY    RULETYPE   RESOURCEKIND   RESOURCENAME   RESOURCENAMESPACE   STATUS   AGE
 ur-swsdg   add-sec   mutate     Deployment     foobar         default             Failed   84s
 
 
-✗ kubectl describe ur ur-swsdg -n kyverno
+$ kubectl describe ur ur-swsdg -n kyverno
 Name:         ur-swsdg
 Namespace:    kyverno
 ...
@@ -531,9 +531,6 @@ Status:
   Message:  deployments.apps "foobar" is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account" cannot update resource "deployments" in API group "apps" in the namespace "default"
   State:    Failed
 ```
-
-
-
 
 ## Mutate Rule Ordering (Cascading)
 
