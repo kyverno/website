@@ -300,16 +300,16 @@ Here is an example of a rule that matches all Pods excluding those created by us
 ```yaml
 spec:
   rules:
-    name: match-pods-except-cluster-admin
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    exclude:
-      any:
-      - clusterRoles:
-        - cluster-admin
+    - name: match-pods-except-cluster-admin
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      exclude:
+        any:
+        - clusterRoles:
+          - cluster-admin
 ```
 
 ### Exclude `kube-system` namespace
@@ -323,17 +323,17 @@ Exclusion of selected Namespaces by name is supported beginning in Kyverno 1.3.0
 ```yaml
 spec:
   rules:
-    name: match-pods-except-admin
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    exclude:
-      any:
-      - resources:
-          namespaces:
-          - kube-system
+    - name: match-pods-except-admin
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
 ```
 
 ### Match a label and exclude users and roles
