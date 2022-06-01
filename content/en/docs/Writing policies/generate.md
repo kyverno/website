@@ -323,6 +323,7 @@ spec:
 ```
 
 ### Troubleshooting
+
 To troubleshoot policy application failures, inspect the `UpdateRequest` Custom Resource to get details.
 
 For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
@@ -343,7 +344,7 @@ status:
  state: Failed
 ```
 
-## Generating resources into existing namespaces using Selector (Deprecated)
+## Generating resources into existing namespaces
 
 This feature has been deprecated in Kyverno 1.7.0+, refer to [this](#generate-for-existing-resources) section to generate for existing resources.
 
