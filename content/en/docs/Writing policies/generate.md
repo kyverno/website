@@ -29,7 +29,7 @@ When generating a custom resource, it is necessary to set the apiVersion (ex., `
 Kyverno will create an intermediate object called a `UpdateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `UpdateRequest`. The following will give the list of `UpdateRequests`.
 
 ```sh
-kubectl get generaterequests -A
+kubectl get updaterequests -A
 ```
 
 A `UpdateRequest` status can have one of four values:
@@ -248,14 +248,13 @@ spec:
 
 ## Generate for Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resource in existing matched resources in the cluster.
-They may also optionally be configured to apply upon updates to the policy itself.
+With Kyverno 1.7.0+, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself.
 
-### Generate NetworkPolicy on Existing Namespaces
+### Generate NetworkPolicy in Existing Namespaces
 
 By default, policy will not be applied on existing trigger resource when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. Only if you set `generateExistingOnPolicyUpdate` to `true`, Kyverno will generate the target resource in existing triggers on policy CREATE and UPDATE events.
 
-In this example policy, which matches the trigger resource kind `Namespace` and generate data `NetworkPolicy` on all the existing or newly created `Namespace`.
+In this example policy, which triggers based on the resource kind `Namespace` a new NetworkPolicy will be generated in all new or existing Namespaces.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -287,9 +286,9 @@ spec:
           - Egress
 ```
 
-### Generate PodDisruptionBudget for Existing Deployment
+### Generate PodDisruptionBudget for Existing Deployments
 
-Similarly this Cluster Policy will create a `PodDisruptionBudget` resource for existing deployments or new deployments.
+Similarly, this Cluster Policy will create a `PodDisruptionBudget` resource for existing or new deployments.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -301,9 +300,10 @@ spec:
   rules:
   - name: create-default-pdb
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     exclude:
       resources:
         namespaces:
@@ -322,8 +322,8 @@ spec:
               "{{request.object.metadata.labels}}"
 ```
 
-### Troubleshoot
-To troubleshoot the policy application failure, you can inspect `UpdateRequest` Custom Resource  to get details.
+### Troubleshooting
+To troubleshoot policy application failures, inspect the `UpdateRequest` Custom Resource to get details.
 
 For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
 
@@ -342,7 +342,6 @@ status:
             cannot create resource "poddisruptionbudgets" in API group "policy" in the namespace "test"'
  state: Failed
 ```
-
 
 ## Generating resources into existing namespaces using Selector (Deprecated)
 
