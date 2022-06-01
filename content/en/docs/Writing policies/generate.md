@@ -248,18 +248,14 @@ spec:
 
 ## Generate for Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports the generate existing resources. Generate existing policies are applied in the background which creates target resource in existing matched resources in the cluster.
+With Kyverno 1.7.0+, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resource in existing matched resources in the cluster.
 They may also optionally be configured to apply upon updates to the policy itself.
-
-{{% alert title="Note" color="warning" %}}
-The proper permissions may need to be granted to Kyverno ServiceAccount. Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the generate behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named kyverno:generate and add or update the rules to cover the resources and verbs needed.
-{{% /alert %}}
 
 ### Generate NetworkPolicy on Existing Namespaces
 
-By default, policy will not be applied on existing trigger resource when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. If you set `generateExistingOnPolicyUpdate` to `true`, Kyverno will generate the target secret resource in existing namespaces on policy CREATE and UPDATE events.
+By default, policy will not be applied on existing trigger resource when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. Only if you set `generateExistingOnPolicyUpdate` to `true`, Kyverno will generate the target resource in existing triggers on policy CREATE and UPDATE events.
 
-In this example policy, which matches the trigger resource kind `Namespace` and generate data `NetworkPolicy` on all the existing or newly created `Namespace`
+In this example policy, which matches the trigger resource kind `Namespace` and generate data `NetworkPolicy` on all the existing or newly created `Namespace`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -350,7 +346,7 @@ status:
 
 ## Generating resources into existing namespaces using Selector (Deprecated)
 
-With Kyverno 1.7.0+, match selector is deprecated and support to [generate existing resources](#generate-for-existing-resources) using a Policy has been added.
+This feature has been deprecated in Kyverno 1.7.0+, refer to [this](#generate-for-existing-resources) section to generate for existing resources.
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
 
