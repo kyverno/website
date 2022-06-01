@@ -471,6 +471,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
 13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
+14. `webhookTimeout`: 
 
 ### Policy Report access
 
