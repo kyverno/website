@@ -1,7 +1,7 @@
 ---
 title: Mutate Resources
 description: >
-  Modify resources during admission control.
+  Modify resource configurations.
 weight: 3
 ---
 
@@ -9,7 +9,7 @@ A `mutate` rule can be used to modify matching resources and is written as eithe
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
-Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section.
+Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](/docs/writing-policies/autogen/#mutate-existing-resources) policies.
 
 This policy sets the `imagePullPolicy` to `IfNotPresent` if the image tag is `latest`:
 
@@ -350,6 +350,187 @@ The anchor processing behavior for mutate conditions is as follows:
 1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
 
 2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
+
+## Mutate Existing resources
+
+With Kyverno 1.7.0+, Kyverno supports the mutate existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which updates existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+
+To define such a policy, trigger resources need to be specified in the `match` block. The target resources, resources that are mutated in the background, are specified in each mutate rule `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`). 
+
+{{% alert title="Note" color="warning" %}}
+The proper permissions need to be granted to Kyverno ServiceAccount. You may need to create a ClusterRole with proper permissions and bind it to the Kyverno ServiceAccount via a ClusterRoleBinding.
+{{% /alert %}}
+
+
+This policy, which matches when the trigger resource named `dictionary-1` in the `staging` Namespace changes, writes a label `foo=bar` to the target resource named `secret-1` also in the `staging` Namespace.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: "mutate-existing-secret"
+spec:
+  rules:
+    - name: "mutate-secret-on-configmap-event"
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+            names:
+            - dictionary-1
+            namespaces:
+            - staging
+      mutate:
+        targets:
+        - apiVersion: v1
+          kind: Secret
+          name: secret-1
+          namespace: "{{ request.object.metadata.namespace }}"
+        patchStrategicMerge:
+          metadata:
+            labels:
+              foo: bar
+```
+
+By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: "mutate-existing-secret"
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: "mutate-secret-on-configmap-event"
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+            names:
+            - dictionary-1
+            namespaces:
+            - staging
+...
+```
+
+### Variables Referencing Target Resources
+
+To reference data in target resources, you can define the variable `target` followed by the path to the desired attribute. For example, using `target.metadata.labels.env` references the label `env` in the target resource.
+
+This policy copies the ConfigMaps' value `target.data.key` to their label with the key `env`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-cms
+spec:
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - name: concat-cm
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+          names:
+          - cmone
+          namespaces:
+          - foo
+    mutate:
+      targets:
+        - apiVersion: v1
+          kind: ConfigMap
+          name: cmtwo
+          namespace: bar
+        - apiVersion: v1
+          kind: ConfigMap
+          name: cmthree
+          namespace: bar
+      patchesJson6902: |-
+        - op: add
+          path: "/metadata/labels/env"
+          value: "{{ target.data.key }}"  
+```
+
+The `{{ @ }}` special variable is added to reference the in-line value of the target resource.
+
+This policy adds the value of `keyone` from the trigger ConfigMap named `cmone` in the `foo` Namespace as the prefix to target ConfigMaps in their data with `keynew`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-cms
+spec:
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - name: concat-cm
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+          names:
+          - cmone
+          namespaces:
+          - foo
+    mutate:
+      targets:
+        - apiVersion: v1
+          kind: ConfigMap
+          name: cmtwo
+          namespace: bar
+        - apiVersion: v1
+          kind: ConfigMap
+          name: cmthree
+          namespace: bar
+      patchStrategicMerge:
+        data:
+          keynew: "{{request.object.data.keyone}}-{{@}}"
+```
+
+Once a mutate existing policy is applied successfully, there will be an event and an annotation added to the target resource:
+
+```sh
+$ kubectl describe deploy foobar
+...
+Events:
+  Type     Reason             Age                From                   Message
+  ----     ------             ----               ----                   -------
+  Normal   PolicyApplied      29s (x2 over 31s)  kyverno-mutate         policy add-sec/add-sec-rule applied
+
+$ kubectl get deploy foobar -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    ...
+    policies.kyverno.io/last-applied-patches: |
+      add-sec-rule.add-sec.kyverno.io: added /spec/template/spec/containers/0/securityContext
+```
+
+To troubleshoot the policy application failure, you can inspect `UpdateRequest` Custom Resource  to get details. Successful `UpdateRequests` are automatically cleaned up by Kyverno.
+
+For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+
+```
+$ kubectl get ur -n kyverno
+NAME       POLICY    RULETYPE   RESOURCEKIND   RESOURCENAME   RESOURCENAMESPACE   STATUS   AGE
+ur-swsdg   add-sec   mutate     Deployment     foobar         default             Failed   84s
+
+
+$ kubectl describe ur ur-swsdg -n kyverno
+Name:         ur-swsdg
+Namespace:    kyverno
+...
+Status:
+  Message:  deployments.apps "foobar" is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account" cannot update resource "deployments" in API group "apps" in the namespace "default"
+  State:    Failed
+```
 
 ## Mutate Rule Ordering (Cascading)
 

@@ -26,16 +26,16 @@ Kubernetes has many default resource types even before considering CustomResourc
 When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion` and kind (ex., `spec.generate.kind`).
 {{% /alert %}}
 
-Kyverno will create an intermediate object called a `GenerateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `GenerateRequest`. The following will give the list of `GenerateRequests`.
+Kyverno will create an intermediate object called a `UpdateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `UpdateRequest`. The following will give the list of `UpdateRequests`.
 
 ```sh
-kubectl get generaterequests -A
+kubectl get updaterequests -A
 ```
 
-A `GenerateRequest` status can have one of four values:
+A `UpdateRequest` status can have one of four values:
 
-`Completed`: the `GenerateRequest` controller created resources defined in the policy
-`Failed`: the `GenerateRequest` controller failed to process the rules
+`Completed`: the `UpdateRequest` controller created resources defined in the policy
+`Failed`: the `UpdateRequest` controller failed to process the rules
 `Pending`: the request is yet to be processed or the resource has not been created
 `Skip`: marked when triggering the generate policy by adding a label/annotation to the existing resource, while the selector is not defined in the policy itself.
 
@@ -246,7 +246,107 @@ spec:
           foo: bar
 ```
 
+## Generate for Existing resources
+
+With Kyverno 1.7.0+, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself.
+
+### Generate NetworkPolicy in Existing Namespaces
+
+By default, policy will not be applied on existing trigger resource when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. Only if you set `generateExistingOnPolicyUpdate` to `true`, Kyverno will generate the target resource in existing triggers on policy CREATE and UPDATE events.
+
+In this example policy, which triggers based on the resource kind `Namespace` a new NetworkPolicy will be generated in all new or existing Namespaces.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-resources
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+  - name: generate-existing-networkpolicy
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      kind: NetworkPolicy
+      name: default-deny
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      data:
+        metadata:
+          labels:
+            created-by: kyverno
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+```
+
+### Generate PodDisruptionBudget for Existing Deployments
+
+Similarly, this Cluster Policy will create a `PodDisruptionBudget` resource for existing or new deployments.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-default-pdb
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+  - name: create-default-pdb
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    exclude:
+      resources:
+        namespaces:
+        - local-path-storage
+    generate:
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      name: "{{request.object.metadata.name}}-default-pdb"
+      namespace: "{{request.object.metadata.namespace}}"
+      synchronize: true
+      data:
+        spec:
+          minAvailable: 1
+          selector:
+            matchLabels:
+              "{{request.object.metadata.labels}}"
+```
+
+### Troubleshooting
+
+To troubleshoot policy application failures, inspect the `UpdateRequest` Custom Resource to get details.
+
+For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+
+```sh
+$ kubectl get ur -n kyverno
+NAME       POLICY               RULETYPE   RESOURCEKIND   RESOURCENAME           RESOURCENAMESPACE   STATUS   AGE
+ur-7gtbx   create-default-pdb   generate   Deployment     nginx-deployment       test                Failed   2s
+
+$ kubectl describe ur ur-7gtbx -n kyverno
+Name:         ur-7gtbx
+Namespace:    kyverno
+...
+
+status:
+  message: 'poddisruptionbudgets.policy is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account"
+            cannot create resource "poddisruptionbudgets" in API group "policy" in the namespace "test"'
+ state: Failed
+```
+
 ## Generating resources into existing namespaces
+
+This feature has been deprecated in Kyverno 1.7.0+, refer to [this](#generate-for-existing-resources) section to generate for existing resources.
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
 
