@@ -17,7 +17,7 @@ The logical structure of the rule is shown below:
 <img src="/images/image-verify-rule.png" alt="Image Verification Rule" width="50%"/>
 <br/><br/>
 
-Each  rule contains:
+Each rule contains:
 * One or more image reference patterns to match
 * Common configuration attributes:
   * required: enforces that all matching images are verified
@@ -265,9 +265,10 @@ spec:
   rules:
     - name: verify-signature
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+          resources:
+            kinds:
+              - Pod
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:signed-cert"
@@ -335,9 +336,10 @@ spec:
   rules:
     - name: verify-signature
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+          resources:
+            kinds:
+              - Pod
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:signed-cert"
@@ -405,9 +407,10 @@ spec:
   rules:
     - name: check-image-keyless
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+          resources:
+            kinds:
+              - Pod
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:signed-keyless"
