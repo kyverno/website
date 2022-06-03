@@ -326,7 +326,7 @@ You can also fetch image properties of all containers for further processing. Fo
 
 ## Inline Variables
 
-Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value or an object. The below sets a context variable with a value of `foo`.
+Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value, another variable, or a nested object. The below sets a context variable with a value of `foo`.
 
 ```yaml
     context:
@@ -337,6 +337,15 @@ Variables may be defined in a `context` for consumption by Kyverno rules. This c
         # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object.
         # value, default, and jmespath are optional but either value or jmespath must be defined.
         value: "foo"
+```
+
+This snippet sets a context variable to the value of `request.object.metadata.name`.
+
+```yaml  - name: defined-jmespath
+context:
+- name: objName
+  variable:
+    jmesPath: request.object.metadata.name
 ```
 
 And below allows for an inline variable with a nested object as well as a default value for that object if it cannot be resolved. Even if the value is not defined, the default can still be set to global values such as other `request.object.*` variables from AdmissionReview requests.
@@ -350,6 +359,7 @@ And below allows for an inline variable with a nested object as well as a defaul
             labels: 
               name: {{ request.object.metadata.name }}
         # the default value a variable may have if after jmespath processing the value ends up being nil
+        # the default value may also be another variable, for example something from the AdmissionReview
         default: '{}'
         # jmespath expression that can be used to modify the `value` before it is assigned to the variable
         jmespath: 'to_string(@)'
