@@ -2,7 +2,7 @@
 title: "Disallow use of the SecurityContextConstraint (SCC) anyuid"
 category: Security
 version: 1.6.0
-subject: Role,ClusterRole
+subject: Role,ClusterRole,RBAC
 policyType: "validate"
 description: >
     Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID as declared in the image instead of a random UID
@@ -23,7 +23,7 @@ metadata:
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.20"
-    policies.kyverno.io/subject: Role,ClusterRole
+    policies.kyverno.io/subject: Role,ClusterRole,RBAC
     policies.kyverno.io/description: >-
       Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID as declared in the image instead of a random UID
 spec:

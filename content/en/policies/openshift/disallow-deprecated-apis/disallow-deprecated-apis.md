@@ -2,7 +2,7 @@
 title: "Disallow deprecated APIs"
 category: OpenShift
 version: 1.6.0
-subject: ClusterRole,ClusterRoleBinding,Role,RoleBinding
+subject: ClusterRole,ClusterRoleBinding,Role,RoleBinding,RBAC
 policyType: "validate"
 description: >
     OpenShift APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.      
@@ -23,7 +23,7 @@ metadata:
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.20"
-    policies.kyverno.io/subject: ClusterRole,ClusterRoleBinding,Role,RoleBinding
+    policies.kyverno.io/subject: ClusterRole,ClusterRoleBinding,Role,RoleBinding,RBAC
     policies.kyverno.io/description: >-
       OpenShift APIs are sometimes deprecated and removed after a few releases.
       As a best practice, older API versions should be replaced with newer versions.
