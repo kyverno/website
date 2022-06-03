@@ -326,7 +326,7 @@ You can also fetch image properties of all containers for further processing. Fo
 
 ## Inline Variables
 
-Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value, another variable, or a nested object. The below sets a context variable with a value of `foo`.
+Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value, another variable, or a nested object. Variables may also be redefined by using the same variable name. The last value that is set is used. The below sets a context variable with a value of `foo`.
 
 ```yaml
     context:
