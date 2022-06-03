@@ -249,7 +249,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno.
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno and expiration is set at one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
 ```sh
 ## Install Kyverno
@@ -260,7 +260,7 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/
 The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
 {{% /alert %}}
 
-Also, by default Kyverno is installed in the `kyverno` Namespace. To install it in a different namespace, you can edit `install.yaml` and update the Namespace.
+Also, by default Kyverno is installed in the `kyverno` Namespace. To install it in a different Namespace, you can edit `install.yaml` and update the Namespace.
 
 To check the Kyverno controller status, run the command:
 
@@ -281,7 +281,7 @@ kubectl logs -l app.kubernetes.io/name=kyverno -n <namespace>
 
 #### Option 2: Use your own CA-signed certificate
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above).
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above). When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process.
 
 ##### 2.1. Generate a self-signed CA and signed certificate-key pair
 
