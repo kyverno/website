@@ -901,11 +901,11 @@ The example above applies a test on the policy and the resource defined in the t
 
 ### Jp
 
-The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
+The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON or YAML documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
 
 Example:
 
-List available Kyverno custom JMESPath filters.
+List available Kyverno custom JMESPath filters. Please refer to the JMESPath documentation page [here](/docs/writing-policies/jmespath/) for extensive details on each custom filter.
 
 ```sh
 $ kyverno jp -l
@@ -923,7 +923,7 @@ $ echo '{"foo": "BAR"}' | kyverno jp 'to_lower(foo)'
 "bar"
 ```
 
-Test a custom JMESPath filter using an input JSON file.
+Test a custom JMESPath filter using an input JSON file. YAML files are also supported.
 
 ```sh
 $ cat foo
