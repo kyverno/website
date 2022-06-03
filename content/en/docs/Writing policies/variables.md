@@ -365,6 +365,20 @@ And below allows for an inline variable with a nested object as well as a defaul
         jmespath: 'to_string(@)'
 ```
 
+Variables can reference other variables as well as shown below.
+
+```yaml
+context:
+- name: jpExpression
+  variable:
+    value: name
+- name: objName
+  variable:
+    value:
+      name: "{{ request.object.metadata.name }}"
+    jmesPath: "{{ jpExpression }}"
+```
+
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies, Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
