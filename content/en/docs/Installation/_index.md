@@ -175,7 +175,7 @@ If you choose to *not* exclude Kyverno or system Namespaces/objects and intend t
 
 ## Customize the installation of Kyverno
 
-The picture below shows shows a typical Kyverno installation:
+The picture below shows a typical Kyverno installation:
 
 <img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
 <br/><br/>
