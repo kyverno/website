@@ -54,11 +54,13 @@ Wildcards supported formats:
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
+Sub-resources may be specified with either a `/` or `.` as a separator between parent and sub-resource. For example, `Pods/status` or `Pods.status` will match on sub-resources.
+
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
 
-In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
+In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements. `match` statements also require an `any` or `all` expression allowing greater flexibility in treating multiple conditions.
 
 In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Service with name "staging" **OR** have the kind Service and are being created in the "prod" Namespace.
 
@@ -267,7 +269,7 @@ Although the above snippet is useful for showing the types of matching that you 
 
 This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute` using a `namespaceSelector`.
 
-Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation. 
+Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation.
 
 ```yaml
 spec:
