@@ -98,30 +98,15 @@ See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more in
 
 ### Handling ConfigMap Array Values
 
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. You have the choice of storing those array values in either YAML format within a block scalar or JSON-encoded content.
+In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap.
 
 {{% alert title="Note" color="info" %}}
-Storing array values in a YAML block scalar requires Kyverno 1.3.5+. Also, when storing array values as YAML, use the `|-` block style indicator with the "strip" block chomping indicator. See [this site](https://yaml-multiline.info/) for more information on multi-line YAML. When using arrays in this fashion, a minimum of two are required to form an array. A single value will produce an error. Ensure there are no spaces added to the end of the strings in these block scalars.
+Storing array values in a YAML block scalar was removed as of Kyverno 1.7.0. Please use JSON-encoded array of strings instead.
 {{% /alert %}}
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
 Consider a ConfigMap with the following content written as a YAML multi-line value.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: roles-dictionary
-  namespace: default
-data:
-  allowed-roles: |-
-    cluster-admin
-    cluster-operator
-    tenant-admin
-```
-
-Or this as a JSON-encoded value.
 
 ```yaml
 apiVersion: v1
@@ -172,7 +157,7 @@ spec:
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
 
 {{% alert title="Note" color="info" %}}
-You may also notice that this sample uses variables from both `AdmissionReview` and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
+You may also notice that this sample uses variables from both AdmissionReview and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
 {{% /alert %}}
 
 Once creating this sample `ClusterPolicy`, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
@@ -455,7 +440,34 @@ This sample policy retrieves the list of Services in the Namespace and stores th
 
 ## Variables from Image Registries
 
-A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource. For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
+A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource.
+
+For example, if you are using an `imageRegistry` like shown below:
+
+```yaml
+context: 
+- name: imageData
+  imageRegistry: 
+    reference: "ghcr.io/kyverno/kyverno"
+```
+
+the output `imageData` variable will have a structure which looks like the following:
+
+```json
+{
+    "image":         "ghcr.io/kyverno/kyverno",
+    "resolvedImage": "ghcr.io/kyverno/kyverno@sha256:17bfcdf276ce2cec0236e069f0ad6b3536c653c73dbeba59405334c0d3b51ecb",
+    "registry":      "ghcr.io",
+    "repository":    "kyverno/kyverno",
+    "identifier":    "latest",
+    "manifest":      manifest,
+    "configData":    config,
+}
+```
+
+The `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+
+For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
 ```json
 $ crane config ghcr.io/kyverno/kyverno:latest | jq

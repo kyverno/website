@@ -66,6 +66,7 @@ spec:
           - kyverno
     generate:
       synchronize: true
+      apiVersion: v1
       kind: ConfigMap
       name: zk-kafka-address
       # generate the resource in the new namespace
@@ -108,6 +109,8 @@ spec:
     generate:
       # Kind of generated resource
       kind: ConfigMap
+      # apiVersion of the generated resource
+      apiVersion: v1
       # Name of the generated resource
       name: default-config
       # namespace for the generated resource
@@ -159,6 +162,7 @@ spec:
           - Namespace
     generate:
       kind: RoleBinding
+      apiVersion: rbac.authorization.k8s.io/v1
       name: steven-rolebinding
       namespace: "{{request.object.metadata.name}}"
       data:  
@@ -201,6 +205,7 @@ spec:
           - kyverno
     generate:
       kind: NetworkPolicy
+      apiVersion: networking.k8s.io/v1
       name: deny-all-traffic
       namespace: "{{request.object.metadata.name}}"
       data:  
@@ -232,6 +237,7 @@ spec:
           - Service
     generate:
       kind: ConfigMap
+      apiVersion: v1
       name: "{{request.object.metadata.name}}-gen-cm"
       namespace: "{{request.namespace}}"
       synchronize: false
@@ -272,6 +278,7 @@ spec:
           - Namespace
     generate:
       kind: NetworkPolicy
+      apiVersion: networking.k8s.io/v1
       name: default-deny
       namespace: "{{request.object.metadata.name}}"
       synchronize: true
@@ -374,6 +381,7 @@ spec:
               mycorp-rollout: "true"
     generate:
       kind: Secret
+      apiVersion: v1
       name: corp-secret
       namespace: "{{request.object.metadata.name}}"
       synchronize : true
