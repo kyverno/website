@@ -57,7 +57,7 @@ When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recomm
 The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster.
 
 {{% alert title="Note" color="info" %}}
-Kyverno CLI in both `apply` and `validate` commands supports files from URLs both as policies and resources.
+Kyverno CLI `apply` supports files from URLs both as policies and resources.
 {{% /alert %}}
 
 Apply to a resource:
