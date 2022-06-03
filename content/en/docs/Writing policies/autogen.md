@@ -86,6 +86,10 @@ spec:
   validationFailureAction: enforce
 ```
 
+{{% alert title="Note" color="Info" %}}
+As of Kyverno 1.7.0, a new [container flag](/docs/installation/#container-flags) `--autogenInternals` is available as a beta feature (disabled by default) which prevents the writing-back of these auto-generated rules to the `.spec` field. Set to `true` to enable this new ability.
+{{% /alert %}}
+
 This auto-generation behavior is controlled by the `pod-policies.kyverno.io/autogen-controllers` annotation.
 
 By default, Kyverno inserts an annotation `pod-policies.kyverno.io/autogen-controllers=DaemonSet,Deployment,Job,StatefulSet,CronJob`, to generate additional rules that are applied to these controllers.
