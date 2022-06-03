@@ -682,7 +682,7 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
+The `test` command can test multiple policy resources (rule types `validate` and `mutate` currently supported) from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
 
 Run tests on a set of local files:
 
@@ -744,6 +744,10 @@ results:
 - policy: <name>
   rule: <name>
   resource: <name>
+  # when testing for a resource in a specific Namespace
+  namespace: <name>
+  # when testing a mutate rule supply patchedResource
+  patchedResource: <file_name.yaml>
   kind: <kind>
   result: pass
 - policy: <name>
@@ -894,10 +898,19 @@ kyverno test <PathToDirs>
 
 The example above applies a test on the policy and the resource defined in the test YAML.
 
-| #        | TEST                                                                  | RESULT           |
-| ---------|:---------------------------------------------------------------------:|:-----------------|
-| 1        |  myapp-pod  with  disallow-latest-tag/require-image-tag               | pass             |
-| 2        |  myapp-pod  with  disallow-latest-tag/validate-image-tag              | pass             |
+```sh
+Executing disallow_latest_tag...
+applying 1 policy to 1 resource... 
+
+│───│─────────────────────│────────────────────│───────────────────────│────────│
+│ # │ POLICY              │ RULE               │ RESOURCE              │ RESULT │
+│───│─────────────────────│────────────────────│───────────────────────│────────│
+│ 1 │ disallow-latest-tag │ require-image-tag  │ default/Pod/myapp-pod │ Pass   │
+│ 2 │ disallow-latest-tag │ validate-image-tag │ default/Pod/myapp-pod │ Pass   │
+│───│─────────────────────│────────────────────│───────────────────────│────────│
+
+Test Summary: 2 tests passed and 0 tests failed
+```
 
 ### Jp
 
