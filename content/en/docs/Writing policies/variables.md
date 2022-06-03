@@ -339,7 +339,7 @@ Variables may be defined in a `context` for consumption by Kyverno rules. This c
         value: "foo"
 ```
 
-This snippet sets a context variable to the value of `request.object.metadata.name`.
+This snippet sets a context variable to the value of `request.object.metadata.name`. If the `value` field is not defined, the contents of `jmesPath` will act on the entire context.
 
 ```yaml  - name: defined-jmespath
 context:
