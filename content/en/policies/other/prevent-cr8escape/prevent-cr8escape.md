@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
-    A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine  underpinning Kubernetes allows attackers to escape from a Kubernetes container  and gain root access to the host. The recommended remediation is to disallow  sysctl settings with + or = in their value.
+    A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.
 ---
 
 ## Policy Definition
@@ -25,9 +25,9 @@ metadata:
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
-      A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine 
-      underpinning Kubernetes allows attackers to escape from a Kubernetes container 
-      and gain root access to the host. The recommended remediation is to disallow 
+      A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine
+      underpinning Kubernetes allows attackers to escape from a Kubernetes container
+      and gain root access to the host. The recommended remediation is to disallow
       sysctl settings with + or = in their value.
 spec:
   validationFailureAction: enforce

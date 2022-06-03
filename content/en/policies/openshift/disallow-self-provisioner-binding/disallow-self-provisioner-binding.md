@@ -2,7 +2,7 @@
 title: "Disallow binding to self-provisioner cluster role in OpenShift"
 category: OpenShift
 version: 1.6.0
-subject: ClusterRoleBinding
+subject: ClusterRoleBinding, RBAC
 policyType: "validate"
 description: >
     This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
@@ -23,7 +23,7 @@ metadata:
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.20"
-    policies.kyverno.io/subject: ClusterRoleBinding
+    policies.kyverno.io/subject: ClusterRoleBinding, RBAC
     policies.kyverno.io/description: >-
       This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
 spec:

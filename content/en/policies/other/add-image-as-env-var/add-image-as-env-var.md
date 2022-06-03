@@ -2,7 +2,7 @@
 title: "Add Image as Environment Variable"
 category: Other
 version: 1.4.3
-subject: Pod, Deployment
+subject: Pod
 policyType: "mutate"
 description: >
     The Kubernetes downward API only has the ability to express so many options as environment variables. The image consumed in a Pod is commonly needed to make the application aware of some logic it must take. This policy takes the value of the `image` field and adds it as an environment variable to bare Pods and Deployments having no more than two containers. The `env` array must already exist for the policy to operate correctly. This policy may be easily extended to support other higher-level Pod controllers as well as more containers by following the established rules.
@@ -23,7 +23,9 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.4.3
-    policies.kyverno.io/subject: Pod, Deployment
+    kyverno.io/kyverno-version: 1.6.2
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The Kubernetes downward API only has the ability to express so many
       options as environment variables. The image consumed in a Pod is commonly
