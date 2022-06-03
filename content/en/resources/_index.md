@@ -65,6 +65,8 @@ type: docs
 ## Blogs
 
 (latest to oldest)
+
+- [Kyverno v1.7.0 Mutate and generate existing resources is here](https://nirmata.com/2022/06/03/kyverno-v1-7-0-mutate-and-generate-existing-resources-is-here/), June 2022
 - [Securing Kubernetes with Kyverno](https://cloudyuga.guru/hands_on_lab/kyverno-introduction/), January 2022
 - [No! You shall not pass! Kyverno’s here!](https://medium.com/@ul_Timate/no-you-shall-not-pass-kyvernos-here-def1d376a4f8), December 2021
 - [Admission Controller for Secure Supply Chain Verification - Kyverno](https://boxboat.com/2021/12/06/secure-supply-chains-kyverno/), December 2021
