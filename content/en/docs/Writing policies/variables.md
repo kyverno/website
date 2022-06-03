@@ -324,6 +324,36 @@ Note that certain characters must be escaped for JMESPath processing (ex. `-` in
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
 
+## Inline Variables
+
+Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value or an object. The below sets a context variable with a value of `foo`.
+
+```yaml
+    context:
+    # A unique name for the for the variable 
+    # if the user redeclares a variable with the same name it should be re-assigned
+    - name: foodata
+      variable:
+        # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object
+        value: "foo"
+```
+
+And below allows for an inline variable with a nested object as well as a default value for that object if it cannot be resolved.
+
+```yaml
+    context:
+    - name: nested-metadata
+      variable:
+        value:
+          metadata:
+            labels: 
+              name: {{ request.object.metadata.name }}
+        # the default value a variable may have if after jmespath processing the value ends up being nil
+        default: '{}'
+        # jmespath expression that can be used to modify the `value` before it is assigned to the variable
+        jmespath: 'to_string(@)'
+```
+
 ## Variables from external data sources
 
 Some policy decisions require access to cluster resources and data managed by other Kubernetes controllers or external applications. For these types of policies, Kyverno allows HTTP calls to the Kubernetes API server and the use of ConfigMaps.
