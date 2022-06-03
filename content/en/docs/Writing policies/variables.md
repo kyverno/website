@@ -334,7 +334,8 @@ Variables may be defined in a `context` for consumption by Kyverno rules. This c
     # if the user redeclares a variable with the same name it should be re-assigned
     - name: foodata
       variable:
-        # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object
+        # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object.
+        # value, default, and jmespath are optional but either value or jmespath must be defined.
         value: "foo"
 ```
 
