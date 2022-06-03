@@ -99,17 +99,4 @@ config:
 
 > `exclude` takes precedence over "include", in cases when a namespace is provided under both `include` and `exclude`.
 
-* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.<br>
-
-```sh
-...
-config:
-  # rate at which metrics should reset so as to clean up the memory footprint of kyverno metrics, if you might be expecting high memory footprint of Kyverno's metrics.
-  metricsRefreshInterval: 24h 
-  #Default: 0, no refresh of metrics
-...
-```
-
-> You still would not lose your previous metrics as your metrics get persisted in the Prometheus backend.
-
 ## Metrics and Dashboard
