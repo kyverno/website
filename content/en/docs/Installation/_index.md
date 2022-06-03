@@ -466,13 +466,14 @@ The following flags can also be used to control the advanced behavior of Kyverno
 6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to 'false'.
 7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
-9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
-10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
-13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
-14. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
-15. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
+9. `allowInsecureRegistry`: Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
+10. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
+11. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+12. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+13. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
+14. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
+15. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
+16. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
 
 ### Policy Report access
 
