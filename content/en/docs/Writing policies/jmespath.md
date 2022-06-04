@@ -706,7 +706,7 @@ $ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@
 
 <br>
 
-Related filter to `items()` is its inverse, [`object_from_lists()`](#object_from_lists).
+Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
 
 <br>
 
