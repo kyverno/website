@@ -668,6 +668,147 @@ spec:
 </p>
 </details>
 
+### Items
+
+<details><summary>Expand</summary>
+<p>
+
+The `items()` filter iterates on map keys (ex., annotations or labels) and converts them to an array of objects with key/value attributes with custom names.
+
+For example, given the following map below
+
+```json
+{
+  "team": "apple",
+  "organization": "banana"
+}
+```
+
+the `items()` filter can transform this into an array of objects which assigns a key and value of arbitrary name to each of the entries in the map.
+
+```sh
+$ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@, 'key', 'value')"
+[
+  {
+    "key": "organization",
+    "value": "banana"
+  },
+  {
+    "key": "team",
+    "value": "apple"
+  }
+]
+```
+
+| Input 1                  | Input 2            | Input 3    | Output        |
+|--------------------------|--------------------|------------|---------------|
+| Map (Object)             | String             | String     | Array/Object  |
+
+<br>
+
+Related filter to `items()` is its inverse, [`object_from_lists()`](#object_from_lists).
+
+<br>
+
+**Example:** This policy will take the labels on a Namespace `foobar` where a Bucket is deployed and add them as key/value elements to the `spec.forProvider.tagging.tagSet[]` array.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: test-policy
+spec:
+  background: false
+  rules:
+  - name: test-rule
+    match:
+      any:
+      - resources:
+          kinds:
+          - Bucket
+    context:
+    - name: nslabels
+      apiCall:
+        urlPath: /api/v1/namespaces/foobar
+        jmesPath: items(metadata.labels,'key','value')
+    mutate:
+      foreach:
+      - list: "nslabels"
+        patchesJson6902: |-
+          - path: "/spec/forProvider/tagging/tagSet/-1"
+            op: add
+            value: {"key": "{{element.key}}", "value": "{{element.value}}"}
+```
+
+Given a Namespace which looks like the following
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foobar
+  labels:
+    team: apple
+    organization: banana
+```
+
+and a Bucket which looks like the below
+
+```yaml
+apiVersion: s3.aws.crossplane.io/v1beta1
+kind: Bucket
+metadata:
+  name: lambda-bucket
+spec:
+  forProvider:
+    acl: private
+    locationConstraint: eu-central-1
+    accelerateConfiguration:
+      status: Enabled
+    versioningConfiguration:
+      status: Enabled
+    notificationConfiguration:
+      lambdaFunctionConfigurations:
+        - events: ["s3:ObjectCreated:*"]
+          lambdaFunctionArn: arn:aws:lambda:eu-central-1:255932642927:function:lambda
+    paymentConfiguration:
+      payer: BucketOwner
+    tagging:
+      tagSet:
+        - key: s3-bucket
+          value: lambda-bucket
+    objectLockEnabledForBucket: false
+  providerConfigRef:
+    name: default
+```
+
+the final `spec.forProvider.tagging.tagSet[]` will appear as below. Note that as of Kubernetes 1.21, the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#automatic-labelling) with key `kubernetes.io/metadata.name` and value equal to that of the Namespace name is automatically added to all Namespaces, hence the discrepancy when comparing Namespace with Bucket resource manifests above.
+
+```sh
+$ k get bucket lambda-bucket -o json | k kyverno jp "spec.forProvider.tagging.tagSet[]"
+[
+  {
+    "key": "s3-bucket",
+    "value": "lambda-bucket"
+  },
+  {
+    "key": "kubernetes.io/metadata.name",
+    "value": "foobar"
+  },
+  {
+    "key": "organization",
+    "value": "banana"
+  },
+  {
+    "key": "team",
+    "value": "apple"
+  }
+]
+```
+
+</p>
+</details>
+
 ### Label_match
 
 <details><summary>Expand</summary>
@@ -890,6 +1031,121 @@ spec:
         patchStrategicMerge:
           spec:
             replicas: "{{ multiply( `{{nodecount}}`,`2`) }}"
+```
+
+</p>
+</details>
+
+### Object_from_list
+
+<details><summary>Expand</summary>
+<p>
+
+The `object_from_list()` filter takes an array of objects and, based on the selected keys, produces a map. This is essentially the inverse of the [`items()`](#items) filter.
+
+For example, given a Pod definition that looks like the following
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: object-from-list-demo
+  labels:
+    foo: bar
+spec:
+  containers:
+  - name: containername01
+    image: containerimage:01
+    env:
+    - name: KEY
+      value: "123-456-789"
+    - name: endpoint
+      value: "licensing.corp.org"
+```
+
+you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_list()` filter will produce a map containing those entries.
+
+```sh
+$ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
+{
+  "KEY": "123-456-789",
+  "endpoint": "licensing.corp.org"
+}
+```
+
+| Input 1            | Input 2            | Output        |
+|--------------------|--------------------|---------------|
+| Array/string       | Array/string       | Map (Object)  |
+
+<br>
+
+**Example:** This policy converts all the environment variables across all containers in a Pod to labels and adds them to that same Pod. Any existing labels will not be replaced but rather augmented with the converted list.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: object-from-list-demo
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  background: false
+  rules:
+  - name: object-from-list-rule
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    context:
+    - name: envs
+      variable: 
+        jmesPath: request.object.spec.containers[].env[]
+    - name: envs_to_labels
+      variable: 
+        jmesPath: object_from_lists(envs[].name, envs[].value)
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            "{{envs_to_labels}}"        
+```
+
+Given an incoming Pod that looks like the following
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: object-from-list-demo
+  labels:
+    foo: bar
+spec:
+  containers:
+  - name: containername01
+    image: containerimage:01
+    env:
+    - name: KEY
+      value: "123-456-789"
+    - name: ENDPOINT
+      value: "licensing.corp.org"
+  - name: containername02
+    image: containerimage:02
+    env:
+    - name: ZONE
+      value: "fl-west-03"
+```
+
+after applying the policy the resulting label set on the Pod appears as shown below.
+
+```sh
+$ k get pod/object-from-list-demo -o json | k kyverno jp "metadata.labels"
+{
+  "ENDPOINT": "licensing.corp.org",
+  "KEY": "123-456-789",
+  "ZONE": "fl-west-03",
+  "foo": "bar"
+}
 ```
 
 </p>
