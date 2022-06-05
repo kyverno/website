@@ -682,51 +682,24 @@ summary:
 
 ### Test
 
-The `test` command can test multiple policy resources (rule types `validate` and `mutate` currently supported) from a Git repository or local folders. The command recursively looks for YAML files with policy test declarations (described below) and then executes those tests. `test` is useful when you wish to declare, in advance, what your expected results should be by defining the intent in a manifest. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
+The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
 
-Run tests on a set of local files:
+`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate` and `mutate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests.  All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/writing-policies/autogen/) making it possible to test, for example, Deployment resources against a Pod policy.
 
-```sh
-kyverno test /path/to/folderContainingTestYamls
-```
+`test` will search for a file named `kyverno-test.yaml` and, if found, will execute the tests within.
 
-#### Run tests on a Git repo:
+In each test, there are three desired results which can be tested for. If the actual result of the test, once executed, matches the desired result as defined in the test manifest, it will be scored as a `pass` in the command output. For example, if the specified result of a given test of a resource against a policy is declared to be a `pass` and the actual result when tested is also a `pass`, the command output will show as `pass`. If the actual result was instead a `skip`, the command output will show as `fail` because the two results do not agree. The following are the desired results which can be specified in a test manifest.
 
-Testing on an entire repo by specifying branch name within repo URL:
+1. pass: The resource passes the policy definition. For `validate` rules which are written with a `deny` statement, this will not be a possible result. `mutate` rules can declare a pass.
+2. skip: The resource does not meet either the `match` or `exclude` block, or does not pass the `preconditions` statements. For `validate` rules which are written with a `deny` statement, this is a possible result. If a rule contains certain conditional anchors which are not satisfied, the result may also be scored as a `skip`.
+3. fail: The resource does not pass the policy definition. Typically used for `validate` rules with pattern-style policy definitions.
+4. warn: Setting the annotation `policies.kyverno.io/scored` to `"false"` on a resource or policy which would otherwise fail will be considered a `warn`.
 
-```sh
-kyverno test https://github.com/<ORG>/<REPO>/<BRANCH>
-```
+For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
-Example:
+#### Test File Structures
 
-```sh
-kyverno test https://github.com/kyverno/policies/release-1.5
-```
-
-{{% alert title="Note" color="info" %}}
-If `<BRANCH>` is not provided in this case, the default branch is assumed to be `main`.
-{{% /alert %}}
-
-Testing on a specific directory of the repo by specifying the directory within repo URL, and the branch with `--git-branch` flag _(shorthand `-b`)_:
-
-```sh
-kyverno test https://github.com/<ORG>/<REPO>/<DIR> --git-branch <BRANCH>
-```
-
-Example:
-
-```sh
-kyverno test https://github.com/kyverno/policies/pod-security/restricted --git-branch release-1.5
-```
-
-{{% alert title="Note" color="info" %}}
-While providing `<DIR>` within the repo URL, it is necessary to provide the branch using the `--git-branch` or `-b` flag, even if it is `main`.
-{{% /alert %}}
-
-Use the `-f <fileName.yaml>` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `kyverno-test.yaml`. The previous file name of `test.yaml` is deprecated.
-
-The test declaration file format must be of the following format.
+The test declaration file format of `kyverno-test.yaml` must be of the following format. In order to quickly generate a sample manifest which you can populate with your specified inputs, use either the `--manifest-mutate` or `--manifest-validate` command and output the result to a `kyverno-test.yaml` file.
 
 ```yaml
 name: mytests
@@ -757,7 +730,15 @@ results:
   result: fail
 ```
 
-If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](https://kyverno.io/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource.
+The test declaration consists of the following parts:
+
+1. The `policies` element which lists one or more policies to be applied.
+2. The `resources` element which lists one or more resources to which the policies are applied.
+3. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
+4. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
+5. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
+
+If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](https://kyverno.io/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
 ```yaml
 policies:
@@ -775,23 +756,6 @@ policies:
           namespacefilters.data.exclude: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
 ```
 
-The user can also declare a user_info.yaml file that can be used to pass admission request information such as roles, cluster roles and subjects.
-
-```yaml
-clusterRoles:
-- admin
-userInfo:
-  username: someone@somecorp.com
-```
-
-The test declaration consists of three (optionally four) parts:
-
-1. The `policies` element which lists one or more policies to be applied.
-2. The `resources` element which lists one or more resources to which the policies are applied.
-3. The `results` element which declares the expected results.
-4. The `userinfo` element which declares admission request data.
-5. The `variables` element which defines a file in which variables and their values are stored for use in the policy test.
-
 A variables file may also optionally specify global variable values without the need to name specific rules or resources avoiding repetition for the same variable and same value.
 
 ```yaml
@@ -799,7 +763,7 @@ globalValues:
   request.operation: UPDATE
 ```
 
-If policies use namespaceSelector, these can also be specified in the variables file.
+If policies use a namespaceSelector, these can also be specified in the variables file.
 
 ```yaml
 namespaceSelector:
@@ -808,9 +772,62 @@ namespaceSelector:
       foo.com/managed-state: managed
 ```
 
-The test command executes a test declaration by applying the policies to the resources and comparing the results with the expected results. The test passes if the actual results match the expected results.
+The user can also declare a `user_info.yaml` file that can be used to pass admission request information such as roles, cluster roles, and subjects.
 
-Example:
+```yaml
+clusterRoles:
+- admin
+userInfo:
+  username: someone@somecorp.com
+```
+
+#### Test Against Local Files
+
+Test a set of local files in the working directory.
+
+```sh
+kyverno test .
+```
+
+Test a set of local files by specifying the directory.
+
+```sh
+kyverno test /path/to/folderContainingTestYamls
+```
+
+#### Test Against Git Repositories
+
+Test an entire Git repository by specifying the branch name within the repo URL. If branch is not specified, `main` will be used as a default.
+
+```sh
+kyverno test https://github.com/kyverno/policies/release-1.6
+```
+
+Test a specific directory of the repository by specifying the directory within repo URL and the branch with the `--git-branch` or `-b` flag. Even if testing against `main`, when using a directory in the URL of the repo requires passing the `--git-branch` or `-b` flag.
+
+```sh
+kyverno test https://github.com/kyverno/policies/pod-security/restricted -b release-1.6
+```
+
+Use the `-f` flag to set a custom file name which includes test cases. By default, `test` will search for a file called `kyverno-test.yaml`.
+
+#### Testing Policies with Image Registry Access
+
+For policies which require image registry access to set context variables, those variables may be sourced from a variables file (defined below) or from a "live" registry by passing the `--registry` flag.
+
+#### Test Subset of Resources
+
+In some cases, you may wish to only test a subset of policy, rules, and/ resource combination rather than all those defined in a test manifest. Use the `--test-case-selector` flag to specify the exact tests you wish to execute.
+
+```sh
+kyverno test . --test-case-selector "policy=add-default-resources, rule=add-default-requests, resource=nginx-demo2"
+```
+
+#### Examples
+
+The test command executes a test declaration by applying the policies to the resources and comparing the actual results with the desired/expected results. The test passes if the actual results match the expected results.
+
+Below is an example of testing a policy containing two `validate` rules against the same resource where each is supposed to pass the policy.
 
 Policy manifest (`disallow_latest_tag.yaml`):
 
@@ -876,9 +893,9 @@ Test manifest (`kyverno-test.yaml`):
 ```yaml
 name: disallow_latest_tag
 policies:
-  -  disallow_latest_tag.yaml
+  - disallow_latest_tag.yaml
 resources:
-  -  resource.yaml
+  - resource.yaml
 results:
   - policy: disallow-latest-tag
     rule: require-image-tag
@@ -893,12 +910,8 @@ results:
 ```
 
 ```sh
-kyverno test <PathToDirs>
-```
+$ kyverno test .
 
-The example above applies a test on the policy and the resource defined in the test YAML.
-
-```sh
 Executing disallow_latest_tag...
 applying 1 policy to 1 resource... 
 
@@ -911,6 +924,125 @@ applying 1 policy to 1 resource...
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
+
+In the below case, a `mutate` policy which adds default resources to a Pod is being tested against two resources. Notice the addition of the `patchedResource` field in the `results[]` array, which is a requirement when testing `mutate` rules.
+
+Policy manifest (`add-default-resources.yaml`):
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-resources
+spec:
+  background: false
+  rules:
+  - name: add-default-requests
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+        - UPDATE
+    mutate:
+      patchStrategicMerge:
+        spec:
+          containers:
+            - (name): "*"
+              resources:
+                requests:
+                  +(memory): "100Mi"
+                  +(cpu): "100m"
+```
+
+Resource manifest (`resource.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo1
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo2
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    resources:
+      requests:
+        memory: "200Mi" 
+        cpu: "200m"
+```
+
+Variables manifest (`values.yaml`):
+
+```yaml
+policies:
+- name: add-default-resources
+  resources:
+  - name: nginx-demo1
+    values:
+      request.operation: CREATE
+  - name: nginx-demo2
+    values:
+      request.operation: UPDATE
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+name: add-default-resources
+policies:
+  - add-default-resources.yaml
+resources:
+  - resource.yaml
+variables: values.yaml
+results:
+  - policy: add-default-resources
+    rule: add-default-requests
+    resource: nginx-demo1
+    patchedResource: patchedResource1.yaml
+    kind: Pod
+    result: pass
+  - policy: add-default-resources
+    rule: add-default-requests
+    resource: nginx-demo2
+    patchedResource: patchedResource2.yaml
+    kind: Pod
+    result: skip
+```
+
+```sh
+$ kyverno test .
+
+Executing add-default-resources...
+applying 1 policy to 2 resources... 
+
+skipped mutate policy add-default-resources -> resource default/Pod/nginx-demo2
+│───│───────────────────────│──────────────────────│─────────────────────────│────────│
+│ # │ POLICY                │ RULE                 │ RESOURCE                │ RESULT │
+│───│───────────────────────│──────────────────────│─────────────────────────│────────│
+│ 1 │ add-default-resources │ add-default-requests │ default/Pod/nginx-demo1 │ Pass   │
+│ 2 │ add-default-resources │ add-default-requests │ default/Pod/nginx-demo2 │ Pass   │
+│───│───────────────────────│──────────────────────│─────────────────────────│────────│
+
+Test Summary: 2 tests passed and 0 tests failed
+```
+
+For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
 
 ### Jp
 
