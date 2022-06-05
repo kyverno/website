@@ -1079,6 +1079,10 @@ $ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.
 
 <br>
 
+Related filter to `object_from_list()` is its inverse, [`items()`](#items).
+
+<br>
+
 **Example:** This policy converts all the environment variables across all containers in a Pod to labels and adds them to that same Pod. Any existing labels will not be replaced but rather augmented with the converted list.
 
 ```yaml
