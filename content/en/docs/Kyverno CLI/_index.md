@@ -693,7 +693,7 @@ In each test, there are three desired results which can be tested for. If the ac
 1. pass: The resource passes the policy definition. For `validate` rules which are written with a `deny` statement, this will not be a possible result. `mutate` rules can declare a pass.
 2. skip: The resource does not meet either the `match` or `exclude` block, or does not pass the `preconditions` statements. For `validate` rules which are written with a `deny` statement, this is a possible result. If a rule contains certain conditional anchors which are not satisfied, the result may also be scored as a `skip`.
 3. fail: The resource does not pass the policy definition. Typically used for `validate` rules with pattern-style policy definitions.
-4. warn: Setting the annotation `policies.kyverno.io/scored` to `"false"` on a resource which would otherwise fail will be considered a `warn`.
+4. warn: Setting the annotation `policies.kyverno.io/scored` to `"false"` on a resource or policy which would otherwise fail will be considered a `warn`.
 
 For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
