@@ -120,7 +120,7 @@ function sortQuery() {
       if(phrase.trim().length) {
         filtersObj.forEach(obj => {
           let policiesStr = obj.policies.join(" ").toLowerCase();
-          policiesStr.includes(phrase) ? sharedFilters.push({"id": obj.type, "type": phrase}) : false;
+          policiesStr.includes(phrase.toLowerCase()) ? sharedFilters.push({"id": obj.type, "type": phrase}) : false;
         });
       }
     });
