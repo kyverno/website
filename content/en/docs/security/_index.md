@@ -101,6 +101,8 @@ The following checks were performed on each of these signatures:
 ]
 ```
 
+Note that the important fields to verify in the output are `optional.Issuer` and `optional.Subject`.
+
 All three Kyverno images can be verified.
 
 ## Fetching the SBOM for Kyverno
