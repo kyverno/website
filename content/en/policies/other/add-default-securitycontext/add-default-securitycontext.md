@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "mutate"
 description: >
-    A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsUser`, `runAsGroup`, and `fsGroup` fields within the Pod securityContext if they are not already set.
+    A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, runAsUser`, `runAsGroup`, and `fsGroup` fields within the Pod securityContext if they are not already set.
 ---
 
 ## Policy Definition
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/description: >-
       A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod.
       Sometimes choosing default values for users rather than blocking is a better alternative to not impede
-      such Pod definitions. This policy will mutate a Pod to set `runAsUser`, `runAsGroup`, and `fsGroup` fields
+      such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, runAsUser`, `runAsGroup`, and `fsGroup` fields
       within the Pod securityContext if they are not already set.
 spec:
   rules:
@@ -36,6 +36,7 @@ spec:
       patchStrategicMerge:
         spec:
           securityContext:
+            +(runAsNonRoot): true
             +(runAsUser): 1000
             +(runAsGroup): 3000
             +(fsGroup): 2000

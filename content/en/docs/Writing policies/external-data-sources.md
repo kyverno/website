@@ -1,16 +1,16 @@
 ---
 title: External Data Sources
 description: >
-    Use data from ConfigMaps and the Kubernetes API Server 
+    Use data from ConfigMaps, the Kubernetes API server, and image registries in Kyverno policies.
 weight: 7
 ---
 
 The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [`context`](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.
 
-This section provides details on using ConfigMaps and API Calls to reference external data as variables in policies.
+This section provides details on using ConfigMaps, API calls, and image registries to reference external data as variables in policies.
 
 {{% alert title="Note" color="info" %}}
-For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server. Use a separate controller to fetch data from any source and store it in a ConfigMap that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
+For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server and image registries. Use a separate controller to fetch data from any source and store it in a ConfigMap that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
 {{% /alert %}}
 
 ## Variables from ConfigMaps
@@ -23,7 +23,7 @@ In order to consume data from a ConfigMap in a `rule`, a `context` is required. 
 
 A ConfigMap that is defined in a rule's `context` can be referred to using its unique name within the context. ConfigMap values can be referenced using a JMESPath style expression.
 
-```
+```sh
 {{ <context-name>.data.<key-name> }}
 ```
 
@@ -75,9 +75,10 @@ spec:
           name: some-config-map
           namespace: some-namespace
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       mutate:
         patchStrategicMerge:
           metadata:
@@ -92,34 +93,20 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 ```
 {{ "<name>".data."<key>" }}
 ```
+See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting concerns.
 {{% /alert %}}
 
 ### Handling ConfigMap Array Values
 
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap. You have the choice of storing those array values in either YAML format within a block scalar or JSON-encoded content.
+In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap.
 
 {{% alert title="Note" color="info" %}}
-Storing array values in a YAML block scalar requires Kyverno 1.3.5+. Also, when storing array values as YAML, use the `|-` block style indicator with the "strip" block chomping indicator. See [this site](https://yaml-multiline.info/) for more information on multi-line YAML. When using arrays in this fashion, a minimum of two are required to form an array. A single value will produce an error. Ensure there are no spaces added to the end of the strings in these block scalars.
+Storing array values in a YAML block scalar was removed as of Kyverno 1.7.0. Please use JSON-encoded array of strings instead.
 {{% /alert %}}
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
 Consider a ConfigMap with the following content written as a YAML multi-line value.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: roles-dictionary
-  namespace: default
-data:
-  allowed-roles: |-
-    cluster-admin
-    cluster-operator
-    tenant-admin
-```
-
-Or this as a JSON-encoded value.
 
 ```yaml
 apiVersion: v1
@@ -153,22 +140,24 @@ spec:
           name: roles-dictionary
           namespace: default
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     validate:
       message: "The role {{ request.object.metadata.annotations.role }} is not in the allowed list of roles: {{ \"roles-dictionary\".data.\"allowed-roles\" }}."
       deny:
         conditions:
-        - key: "{{ request.object.metadata.annotations.role }}"
-          operator: NotIn
-          value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
+          any:
+          - key: "{{ request.object.metadata.annotations.role }}"
+            operator: NotIn
+            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
 ```
 
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
 
 {{% alert title="Note" color="info" %}}
-You may also notice that this sample uses variables from both `AdmissionReview` and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
+You may also notice that this sample uses variables from both AdmissionReview and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
 {{% /alert %}}
 
 Once creating this sample `ClusterPolicy`, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
@@ -204,7 +193,7 @@ Submit the manifest and see how Kyverno reacts.
 kubectl create -f deploy.yaml
 ```
 
-```
+```sh
 Error from server: error when creating "deploy.yaml": admission webhook "validate.kyverno.svc" denied the request:
 
 resource Deployment/default/busybox was blocked due to the following policies
@@ -221,14 +210,14 @@ Kubernetes is powered by a declarative API that allows querying and manipulating
 
 A Kyverno Kubernetes API call works just as with `kubectl` and other API clients, and can be tested using existing tools.
 
-For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to [`jp`](https://github.com/jmespath/jp) which counts the number of Pods:
+For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to `kyverno jp` which counts the number of Pods:
 
 ```sh
-kubectl get --raw /api/v1/namespaces/kyverno/pods | jp "items | length(@)"
+kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp "items | length(@)"
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and [`jp`](https://github.com/jmespath/jp) (the JMESPath Command Line) to test API Calls.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API Calls.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -259,7 +248,7 @@ For namespaced resources, to get a specific resource by name or to get all resou
 
 For historic resources, the Kubernetes Core API is available under `/api/v1`. For example, to query all Namespace resources the path `/api/v1/namespaces` is used.
 
-The Kubernetes API groups are defined in the [API reference documentation](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#-strong-api-groups-strong-) and can also be retrieved via the `kubectl api-resources` command shown below:
+The Kubernetes API groups are defined in the [API reference documentation for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-) and can also be retrieved via the `kubectl api-resources` command shown below:
 
 ```sh
 $ kubectl api-resources
@@ -377,14 +366,13 @@ This will return a `NamespaceList` object with a property `items` that contains 
           "phase": "Active"
         }
       },
-
       ...
 ```
 
 To process this data in JMESPath, reference the `items`. Here is an example which extracts a few metadata fields across all Namespace resources:
 
 ```sh
-kubectl get --raw /api/v1/namespaces | jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
 ```
 
 This produces a new JSON list of objects with properties `name` and `creationTime`.
@@ -399,17 +387,16 @@ This produces a new JSON list of objects with properties `name` and `creationTim
     "creationTimestamp": "2021-01-19T20:20:36Z",
     "name": "kube-node-lease"
   },
-
   ...
 ```
 
 To find an item in the list you can use JMESPath filters. For example, this command will match a Namespace by its name:
 
 ```sh
- kubectl get --raw /api/v1/namespaces | jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
 ```
 
-In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples.
+In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno JMESPath page [here](/docs/writing-policies/jmespath/).
 
 ### Sample Policy: Limit Services of type LoadBalancer in a Namespace
 
@@ -425,25 +412,221 @@ spec:
   rules:
   - name: limit-lb-svc
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     context:
     - name: serviceCount
       apiCall:
         urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
     preconditions:
-    - key: "{{ request.operation }}"
-      operator: Equals
-      value: "CREATE"
+      any:
+      - key: "{{ request.operation }}"
+        operator: Equals
+        value: CREATE
     validate:
       message: "Only one LoadBalancer service is allowed per namespace"
       deny:
         conditions:
-        - key: "{{ serviceCount }}"
-          operator: GreaterThan
-          value: 1
+          any:
+          - key: "{{ serviceCount }}"
+            operator: GreaterThan
+            value: 1
 ```
 
 This sample policy retrieves the list of Services in the Namespace and stores the count of type `LoadBalancer` in a variable called serviceCount. A `deny` rule is used to ensure that the count cannot exceed one.
+
+## Variables from Image Registries
+
+A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource.
+
+For example, if you are using an `imageRegistry` like shown below:
+
+```yaml
+context: 
+- name: imageData
+  imageRegistry: 
+    reference: "ghcr.io/kyverno/kyverno"
+```
+
+the output `imageData` variable will have a structure which looks like the following:
+
+```json
+{
+    "image":         "ghcr.io/kyverno/kyverno",
+    "resolvedImage": "ghcr.io/kyverno/kyverno@sha256:17bfcdf276ce2cec0236e069f0ad6b3536c653c73dbeba59405334c0d3b51ecb",
+    "registry":      "ghcr.io",
+    "repository":    "kyverno/kyverno",
+    "identifier":    "latest",
+    "manifest":      manifest,
+    "configData":    config,
+}
+```
+
+The `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+
+For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
+
+```json
+$ crane config ghcr.io/kyverno/kyverno:latest | jq
+{
+  "architecture": "amd64",
+  "config": {
+    "User": "10001",
+    "Env": [
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    ],
+    "Entrypoint": [
+      "./kyverno"
+    ],
+    "WorkingDir": "/",
+    "Labels": {
+      "maintainer": "Kyverno"
+    },
+    "OnBuild": null
+  },
+  "created": "2022-02-04T08:57:38.818583756Z",
+  "history": [
+    {
+      "created": "2022-02-04T08:57:38.454742161Z",
+      "created_by": "LABEL maintainer=Kyverno",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2022-02-04T08:57:38.454742161Z",
+      "created_by": "COPY /output/kyverno / # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2022-02-04T08:57:38.802069102Z",
+      "created_by": "COPY /etc/passwd /etc/passwd # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2022-02-04T08:57:38.818583756Z",
+      "created_by": "COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2022-02-04T08:57:38.818583756Z",
+      "created_by": "USER 10001",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2022-02-04T08:57:38.818583756Z",
+      "created_by": "ENTRYPOINT [\"./kyverno\"]",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    }
+  ],
+  "os": "linux",
+  "rootfs": {
+    "type": "layers",
+    "diff_ids": [
+      "sha256:180b308b8730567d2d06a342148e1e9d274c8db84113077cfd0104a7e68db646",
+      "sha256:99187eab8264c714d0c260ae8b727c4d2bda3a9962635aaea67d04d0f8b0f466",
+      "sha256:26d825f3d198779c4990007ae907ba21e7c7b6213a7eb78d908122e435ec9958"
+    ]
+  }
+}
+```
+
+In the output above, we can see under `config.User` that the `USER` Dockerfile statement to run this container is `10001`. A Kyverno policy can be written to harness this information and perform, for example, a validation that the `USER` of an image is non-root.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: imageref-demo
+spec:
+  validationFailureAction: enforce
+  rules:
+  - name: no-root-images
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "Images run as root are not allowed."  
+      foreach:
+      - list: "request.object.spec.containers"
+        context: 
+        - name: imageData
+          imageRegistry: 
+            reference: "{{ element.image }}"
+        deny:
+          conditions:
+            any:
+              - key: "{{ imageData.configData.config.User || ''}}"
+                operator: Equals
+                value: ""
+```
+
+In the above sample policy, a new context has been written named `imageData` which uses the `imageRegistry` type. The `reference` key is used to instruct Kyverno where the image metadata is stored. In this case, the location is the same as the image itself hence `element.image` where `element` is each container image inside of a Pod. The value can then be referenced in an expression, for example in `deny.conditions` via the key `{{ imageData.configData.config.User || ''}}`.
+
+Using a sample "bad" resource to test which violates this policy, such as below, the Pod is blocked.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:latest
+```
+
+```sh
+$ kubectl apply -f bad.yaml 
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+resource Pod/default/badpod was blocked due to the following policies
+
+imageref-demo:
+  no-root-images: 'validation failure: Images run as root are not allowed.'
+```
+
+By contrast, when using a "good" Pod, such as the Kyverno container image referenced above, the resource is allowed.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod
+spec:
+  containers:
+  - name: kyverno
+    image: ghcr.io/kyverno/kyverno:latest
+```
+
+```sh
+$ kubectl apply -f good.yaml 
+pod/goodpod created
+```
+
+The `imageRegistry` context type also has an optional property called `jmesPath` which can be used to apply a JMESPath expression to contents returned by `imageRegistry` prior to storing as the context value. For example, the below snippet stores the total size of an image in a context named `imageSize` by summing up all the constituent layers of the image as reported by its manifest (visible with, for example, `crane` by using the `crane manifest` command). The value of the context variable can then be evaluated in a later expression.
+
+```yaml
+context: 
+  - name: imageSize
+    imageRegistry: 
+      reference: "{{ element.image }}"
+      # Note that we need to use `to_string` here to allow kyverno to treat it like a resource quantity of type memory
+      # the total size of an image as calculated by docker is the total sum of its layer sizes
+      jmesPath: "to_string(sum(manifest.layers[*].size))"
+```
+
+To access images stored on private registries, see [using private registries](/docs/writing-policies/verify-images#using-private-registries)
+
+For more examples of using an imageRegistry context, see the [samples page](/policies).

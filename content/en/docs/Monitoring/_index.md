@@ -6,7 +6,7 @@ weight: 65
 
 ## Introduction
 
-As a cluster admistrator, it may benefit you to have monitoring capabilities over both the state and execution of cluster-applied Kyverno policies. This includes monitoring over any applied changes to policies, any activity associated with incoming requests, and any results produced as an outcome. If enabled, monitoring will allow you to visualize and alert on applied policies, and is critical to overall cluster observability and compliance.
+As a cluster administrator, it may benefit you to have monitoring capabilities over both the state and execution of cluster-applied Kyverno policies. This includes monitoring over any applied changes to policies, any activity associated with incoming requests, and any results produced as an outcome. If enabled, monitoring will allow you to visualize and alert on applied policies, and is critical to overall cluster observability and compliance.
 
 In addition, you can specify the scope of your monitoring targets to either the rule, policy, or cluster level, which enables you to extract more granular insights from collected metrics.
 
@@ -83,6 +83,7 @@ While installing Kyverno via Helm, you also have the ability to configure which 
 
 * You can configure which namespaces you want to `include` and/or `exclude` for metric exportation when configuring your Helm chart. This configuration is useful in situations where you might want to exclude the exposure of Kyverno metrics for certain futile namespaces like test namespaces, which you might be dealing with on a regular basis. Likewise, you can include certain namespaces if you want to monitor Kyverno-related activity for only a set of certain critical namespaces.
 Exporting the right set of namespaces (as opposed to exposing all namespaces) can end up substantially reducing the memory footprint of Kyverno's metrics exporter.
+
 ```sh
 ...
 config:
@@ -95,9 +96,10 @@ config:
   # 'namespaces.exclude': list of namespaces to NOT capture metrics for. Default: [], none of the namespaces excluded.
 ...
 ```
+
 > `exclude` takes precedence over "include", in cases when a namespace is provided under both `include` and `exclude`.
 
-* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that timeframe. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particualrly useful in scenarios when concerned with the overall memory foorprint of Kyverno's metric exporter.<br>
+* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.<br>
 
 ```sh
 ...
@@ -107,6 +109,7 @@ config:
   #Default: 0, no refresh of metrics
 ...
 ```
+
 > You still would not lose your previous metrics as your metrics get persisted in the Prometheus backend.
 
 ## Metrics and Dashboard

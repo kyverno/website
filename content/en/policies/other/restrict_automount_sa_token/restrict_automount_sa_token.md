@@ -40,5 +40,6 @@ spec:
       message: "Auto-mounting of Service Account tokens is not allowed."
       pattern:
         spec:
-          automountServiceAccountToken: false
+          automountServiceAccountToken: "false"
+
 ```

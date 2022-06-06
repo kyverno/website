@@ -8,7 +8,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 ## General
 
-* Need more examples or struggling to see a practical use case? Remember to check out the extensive community samples library for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
+* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
 
 * Use `kubectl explain` to explain and explore the various parts and fields of a Kyverno policy. It works just like on native Kubernetes resources!
 
@@ -39,6 +39,8 @@ These are some tips and tricks you can use when putting together your Kyverno po
       Pattern specifies an overlay-style pattern used to check resources.
   ```
 
+* When using VS Code, because of the OpenAPIV3 schema Kyverno supports, you can make use of this integration to assist in writing policy by getting field hints and describing elements.
+* Make use of the [Kyverno CLI](/docs/kyverno-cli/) test policy out in advance.
 * Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design. In most cases, rules can be grouped into a single policy definition. Here are some tips when it comes to organizing rules:
   * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all namespaced `validate` rules.
   * `mutate` and `generate` rules should go into their own policy definition.
@@ -48,13 +50,16 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Ensure the resource you're matching and the spec definition align. For example, if writing a `mutate` rule which matches on a Deployment, the spec of what is being mutated needs to also align to a Deployment which may be different from, for example, a Pod. When copying-and-pasting from other rules, remember to check the spec.
 
 * Check Kyverno logs when designing rules if the desired result is not achieved:
-  ```sh
-  kubectl -n <kyverno_namespace> logs -l app=kyverno
-  ```
+
+```sh
+kubectl -n <kyverno_namespace> logs <pod_name>
+```
+
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4.
 
 ## Validate
 
-* When developing your `validate` policies, it's easiest to set `validationFailureAction: enforce` so when testing you can see the results immediately without having to look at report.
+* When developing your `validate` policies, it's easiest to set `validationFailureAction: enforce` so when testing you can see the results immediately without having to look at a report.
 
 * Before deploying into production, ensure you have `validationFailureAction: audit` so the policy doesn't have unintended consequences.
 

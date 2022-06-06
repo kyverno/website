@@ -15,10 +15,9 @@ Counter - An only-increasing integer representing the number of results/executio
 ## Use cases
 
 * The admin wants to track the count of the incoming resource requests which resulted in PASS status of any cluster policy since the last 24 hrs.
-* The cluster admin wants to track the count of all the Deployment objects, which when created, violated a specific cluster policy named “sample-cluster-policy” 
+* The cluster admin wants to track the count of all the Deployment objects, which when created, violated a specific cluster policy named `sample-cluster-policy`
 * The cluster admin wants to track the count of all the resources belonging to the default namespace in the last 1 hr which were blocked from being created because those resource requests violated some Kyverno Policy.
-* An end user has a dedicated namespace and in it, he/she is creating a big number of k8s resources in one go and wants to track how many of them are violating the existing cluster policies.
-
+* An end user has a dedicated namespace and in it, he/she is creating a big number of Kubernetes resources in one go and wants to track how many of them are violating the existing cluster policies.
 
 ## Filter Labels
 
@@ -30,11 +29,11 @@ Counter - An only-increasing integer representing the number of results/executio
 | policy\_name                      |                                                        | Name of the policy to which the rule belongs                                                                                                                                                                                              |
 | policy\_namespace                 |                                                        | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-"                                                                                                                 |
 | resource\_kind                    | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                                                                                                                                                     |
-| resource\_namespace               |                                                        | Namspace in which this resource lies                                                                                                                                                                                                      |
+| resource\_namespace               |                                                        | Namespace in which this resource lies                                                                                                                                                                                                      |
 | resource\_request\_operation      | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                                                                                                                                                           |
 | rule\_name                        |                                                        | Name of the rule, in the above policy, which is evaluating in this situation                                                                                                                                                              |
 | rule\_result                      | "PASS", "FAIL"                                         | Result of the rule's execution                                                                                                                                                                                                            |
-| rule\_type                        | "validate", "mutate", "generate"                       | Rule's behaviour type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules                                                                                         |
+| rule\_type                        | "validate", "mutate", "generate"                       | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules                                                                                         |
 | rule\_execution\_cause            | "admission\_request", "background\_scan"               | Identifies whether the rule is executing in response to an admission request or a periodic background scan.<br>In background scans, only validate rules whereas in the case of admission requests, all validate/mutate/generate rules run |
 
 ## Useful Queries

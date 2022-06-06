@@ -24,7 +24,7 @@ The following resource filters can be specified under an `any` or `all` clause.
 Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
 {{% /alert %}}
 
-At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are currently not supported in the `match.(any/all).resources.kinds` field.
+At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `match.(any/all).resources.kinds` field.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
 
@@ -41,11 +41,26 @@ These can be distinguished as:
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-When Kyverno receives an admission controller request (i.e., a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
+Wildcards supported formats:
+
+* `Group/*/Kind`
+* `*/Kind`
+* `*`
+
+{{% alert title="Note" color="info" %}}
+* A policy using wildcards in `match` or `exclude` is not allowed in background mode.
+* A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
+* For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
+* For the `mutate` rule type, a policy can only deal with the `metadata` object.
+{{% /alert %}}
+
+Sub-resources may be specified with either a `/` or `.` as a separator between parent and sub-resource. For example, `Pods/status` or `Pods.status` will match on sub-resources.
+
+When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
 
-In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements.
+In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements. `match` statements also require an `any` or `all` expression allowing greater flexibility in treating multiple conditions.
 
 In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Service with name "staging" **OR** have the kind Service and are being created in the "prod" Namespace.
 
@@ -84,9 +99,9 @@ spec:
       - resources:
           kinds:
           - Service
-          subjects:
-          - kind: User
-            name: dave
+      - subjects:
+        - kind: User
+          name: dave
 ```
 
 `match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
@@ -102,9 +117,10 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - networking.k8s.io/v1/NetworkPolicy
+      any:
+      - resources:
+          kinds:
+          - networking.k8s.io/v1/NetworkPolicy
 ```
 
 By specifying the `kind` in `version/kind` format, only specific versions of the resource kind will be matched.
@@ -114,13 +130,15 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - v1/NetworkPolicy
+      any:
+      - resources:
+          kinds:
+          - v1/NetworkPolicy
 ```
 
 As of Kyverno 1.5.0, wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster.
 Selector labels support wildcards `(* or ?)` for keys as well as values in the following paths.
+
 * `match.resources.selector.matchLabels`
 * `exclude.resources.selector.matchLabels`
 * `match.any.resources.selector.matchLabels`
@@ -149,13 +167,15 @@ spec:
   rules:
   - name: check-for-labels
     match:
-      resources:
-        kinds:
-        - "*"
+      any:
+      - resources:
+          kinds:
+          - "*"
     preconditions:
-    - key: "{{ request.operation }}"
-      operator: Equals
-      value: CREATE
+      any:
+      - key: "{{ request.operation }}"
+        operator: Equals
+        value: CREATE
     validate:
       message: "The label `app.kubernetes.io/name` is required."
       pattern:
@@ -183,15 +203,16 @@ spec:
   rules:
     - name: match-critical-app
       match:
+        any:
         # AND across kinds and namespaceSelector
-        resources:
-          # OR inside list of kinds
-          kinds:
-          - Deployment
-          - StatefulSet
-          selector:
-            matchLabels:
-              app: critical
+        - resources:
+            # OR inside list of kinds
+            kinds:
+            - Deployment
+            - StatefulSet
+            selector:
+              matchLabels:
+                app: critical
 ```
 
 This pattern can be leveraged to produce very fine-grained control over the selection of resources, for example the snippet as shown below which combines `match` elements that include `resources`, `subjects`, `roles`, and `clusterRoles`.
@@ -248,25 +269,26 @@ Although the above snippet is useful for showing the types of matching that you 
 
 This example selects Deployments in Namespaces that have a label `type=connector` or `type=compute` using a `namespaceSelector`.
 
-Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation. 
+Here, `kinds` and `namespaceSelector` are peer elements under `match.resources` and are evaluated using a logical **AND** operation.
 
 ```yaml
 spec:
   rules:
     - name: check-min-replicas
       match:
+        any:
         # AND across resources and selector
-        resources:
-          # OR inside list of kinds
-          kinds:
-          - Deployment
-          namespaceSelector:
-            matchExpressions:
-              - key: type 
-                operator: In
-                values: 
-                - connector
-                - compute
+        - resources:
+            # OR inside list of kinds
+            kinds:
+            - Deployment
+            namespaceSelector:
+              matchExpressions:
+                - key: type 
+                  operator: In
+                  values: 
+                  - connector
+                  - compute
 ```
 
 ## Combining match and exclude
@@ -280,14 +302,16 @@ Here is an example of a rule that matches all Pods excluding those created by us
 ```yaml
 spec:
   rules:
-    name: match-pods-except-cluster-admin
-    match:
-      resources:
-        kinds:
-        - Pod
-    exclude:
-      clusterRoles:
-      - cluster-admin
+    - name: match-pods-except-cluster-admin
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      exclude:
+        any:
+        - clusterRoles:
+          - cluster-admin
 ```
 
 ### Exclude `kube-system` namespace
@@ -301,15 +325,17 @@ Exclusion of selected Namespaces by name is supported beginning in Kyverno 1.3.0
 ```yaml
 spec:
   rules:
-    name: match-pods-except-admin
-    match:
-      resources:
-        kinds:
-        - Pod
-    exclude:
-      resources:
-        namespaces:
-        - kube-system
+    - name: match-pods-except-admin
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
 ```
 
 ### Match a label and exclude users and roles
@@ -325,18 +351,20 @@ spec:
   rules:
     - name: match-criticals-except-given-rbac
       match:
-        resources:
-          kind:
-          - Pod
-          selector:
-            matchLabels:
-              app: critical
+        any:
+        - resources:
+            kind:
+            - Pod
+            selector:
+              matchLabels:
+                app: critical
       exclude:
-        clusterRoles:
-        - cluster-admin
-        subjects:
-        - kind: User
-          name: John
+        any:
+        - clusterRoles:
+          - cluster-admin
+        - subjects:
+          - kind: User
+            name: John
 ```
 
 ### Match a label and exclude users
@@ -375,9 +403,10 @@ spec:
   rules:
     - name: match-pod-annotations
       match:
-        resources:
-          annotations:
-            imageregistry: "https://hub.docker.com/"
-          kinds:
-            - Pod
+        any:
+        - resources:
+            annotations:
+              imageregistry: "https://hub.docker.com/"
+            kinds:
+              - Pod
 ```

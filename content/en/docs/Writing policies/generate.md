@@ -8,7 +8,7 @@ A `generate` rule can be used to create additional resources when a new resource
 
 The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource. It is also possible to match or exclude API requests based on subjects, roles, etc.
 
-The generate rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
+The `generate` rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
 
 {{% alert title="Note" color="info" %}}
 As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified or deleted by other Kubernetes controllers and users with appropriate access permissions, and Kyverno will recreate or update the resource to comply with configured policies.
@@ -20,11 +20,24 @@ When using a `generate` rule, the origin resource can be either an existing reso
 Deleting the policy containing a `generate` rule with a `data` object and `synchronize=true` will cause immediate deletion of the downstream generated resources. Policies containing a `clone` object are not subject to this behavior.
 {{% /alert %}}
 
-Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generatecontroller` and add or update the rules to cover the resources and verbs needed.
+Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, edit the ClusterRole typically named `kyverno:generate` and add or update the rules to cover the resources and verbs needed.
 
 {{% alert title="Note" color="info" %}}
 When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion` and kind (ex., `spec.generate.kind`).
 {{% /alert %}}
+
+Kyverno will create an intermediate object called a `UpdateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `UpdateRequest`. The following will give the list of `UpdateRequests`.
+
+```sh
+kubectl get updaterequests -A
+```
+
+A `UpdateRequest` status can have one of four values:
+
+`Completed`: the `UpdateRequest` controller created resources defined in the policy
+`Failed`: the `UpdateRequest` controller failed to process the rules
+`Pending`: the request is yet to be processed or the resource has not been created
+`Skip`: marked when triggering the generate policy by adding a label/annotation to the existing resource, while the selector is not defined in the policy itself.
 
 ## Generate a ConfigMap using inline data
 
@@ -39,18 +52,21 @@ spec:
   rules:
   - name: k-kafka-address
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     exclude:
-      resources:
-        namespaces:
-        - kube-system
-        - default
-        - kube-public
-        - kyverno
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - default
+          - kube-public
+          - kyverno
     generate:
       synchronize: true
+      apiVersion: v1
       kind: ConfigMap
       name: zk-kafka-address
       # generate the resource in the new namespace
@@ -67,7 +83,7 @@ spec:
 
 ## Clone a ConfigMap and propagate changes
 
-In this policy, the source of the data is an existing ConfigMap resource named `config-template` which is stored in the `default` namespace. Notice how the `generate` rule here instead uses the `generate.clone` object when the origin data exists within Kubernetes.
+In this policy, the source of the data is an existing ConfigMap resource named `config-template` which is stored in the `default` Namespace. Notice how the `generate` rule here instead uses the `generate.clone` object when the origin data exists within Kubernetes.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -78,19 +94,23 @@ spec:
   rules:
   - name: Clone ConfigMap
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     exclude:
-      resources:
-        namespaces:
-        - kube-system
-        - default
-        - kube-public
-        - kyverno
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - default
+          - kube-public
+          - kyverno
     generate:
       # Kind of generated resource
       kind: ConfigMap
+      # apiVersion of the generated resource
+      apiVersion: v1
       # Name of the generated resource
       name: default-config
       # namespace for the generated resource
@@ -136,11 +156,13 @@ spec:
   rules:
   - name: steven-rolebinding
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       kind: RoleBinding
+      apiVersion: rbac.authorization.k8s.io/v1
       name: steven-rolebinding
       namespace: "{{request.object.metadata.name}}"
       data:  
@@ -169,18 +191,21 @@ spec:
   rules:
   - name: deny-all-traffic
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     exclude:
-      resources:
-        namespaces:
-        - kube-system
-        - default
-        - kube-public
-        - kyverno
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - default
+          - kube-public
+          - kyverno
     generate:
       kind: NetworkPolicy
+      apiVersion: networking.k8s.io/v1
       name: deny-all-traffic
       namespace: "{{request.object.metadata.name}}"
       data:  
@@ -206,11 +231,13 @@ spec:
   rules:
   - name: demo-ownerref-svc-cm
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     generate:
       kind: ConfigMap
+      apiVersion: v1
       name: "{{request.object.metadata.name}}-gen-cm"
       namespace: "{{request.namespace}}"
       synchronize: false
@@ -225,15 +252,116 @@ spec:
           foo: bar
 ```
 
+## Generate for Existing resources
+
+With Kyverno 1.7.0+, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself.
+
+### Generate NetworkPolicy in Existing Namespaces
+
+By default, policy will not be applied on existing trigger resource when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. Only if you set `generateExistingOnPolicyUpdate` to `true`, Kyverno will generate the target resource in existing triggers on policy CREATE and UPDATE events.
+
+In this example policy, which triggers based on the resource kind `Namespace` a new NetworkPolicy will be generated in all new or existing Namespaces.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-resources
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+  - name: generate-existing-networkpolicy
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      kind: NetworkPolicy
+      apiVersion: networking.k8s.io/v1
+      name: default-deny
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      data:
+        metadata:
+          labels:
+            created-by: kyverno
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+```
+
+### Generate PodDisruptionBudget for Existing Deployments
+
+Similarly, this Cluster Policy will create a `PodDisruptionBudget` resource for existing or new deployments.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-default-pdb
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+  - name: create-default-pdb
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    exclude:
+      resources:
+        namespaces:
+        - local-path-storage
+    generate:
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      name: "{{request.object.metadata.name}}-default-pdb"
+      namespace: "{{request.object.metadata.namespace}}"
+      synchronize: true
+      data:
+        spec:
+          minAvailable: 1
+          selector:
+            matchLabels:
+              "{{request.object.metadata.labels}}"
+```
+
+### Troubleshooting
+
+To troubleshoot policy application failures, inspect the `UpdateRequest` Custom Resource to get details.
+
+For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+
+```sh
+$ kubectl get ur -n kyverno
+NAME       POLICY               RULETYPE   RESOURCEKIND   RESOURCENAME           RESOURCENAMESPACE   STATUS   AGE
+ur-7gtbx   create-default-pdb   generate   Deployment     nginx-deployment       test                Failed   2s
+
+$ kubectl describe ur ur-7gtbx -n kyverno
+Name:         ur-7gtbx
+Namespace:    kyverno
+...
+
+status:
+  message: 'poddisruptionbudgets.policy is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account"
+            cannot create resource "poddisruptionbudgets" in API group "policy" in the namespace "test"'
+ state: Failed
+```
+
 ## Generating resources into existing namespaces
+
+This feature has been deprecated in Kyverno 1.7.0+, refer to [this](#generate-for-existing-resources) section to generate for existing resources.
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
 
-Normally, Kyverno does not alter existing objects in any way as a central tenet of its design. However, using this method of controlled roll-out, you may use `generate` rules to create new objects into existing namespaces. To do so, follow these steps:
+Normally, Kyverno does not alter existing objects in any way as a central tenet of its design. However, using this method of controlled roll-out, you may use `generate` rules to create new objects into existing Namespaces. To do so, follow these steps:
 
-1. Identify some Kubernetes label or annotation which is not yet defined on any Namespace but can be used to add to existing ones signaling to Kyverno that these namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved keys such as `kubernetes.io` or `kyverno.io`.
+1. Identify some Kubernetes label or annotation which is not yet defined on any Namespace but can be used to add to existing ones signaling to Kyverno that these Namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved keys such as `kubernetes.io` or `kyverno.io`.
 
-2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind Namespace as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only namespaces but a label of `mycorp-rollout=true` and copies into these namespaces a Secret called `corp-secret` stored in the `default` Namespace.
+2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind `Namespace` as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only Namespaces but a label of `mycorp-rollout=true` and copies into these Namespaces a Secret called `corp-secret` stored in the `default` Namespace.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -244,14 +372,16 @@ spec:
   rules:
   - name: sync-secret
     match:
-      resources:
-        kinds:
-        - Namespace
-        selector:
-          matchLabels:
-            mycorp-rollout: "true"
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          selector:
+            matchLabels:
+              mycorp-rollout: "true"
     generate:
       kind: Secret
+      apiVersion: v1
       name: corp-secret
       namespace: "{{request.object.metadata.name}}"
       synchronize : true
@@ -262,7 +392,7 @@ spec:
 
 3. Create the policy as usual.
 
-4. On an existing namespace where you wish to have the Secret `corp-secret` copied into it, label it with `mycorp-rollout=true`. This step must be completed after the ClusterPolicy exists. If it is labeled before, Kyverno will not see the request.
+4. On an existing Namespace where you wish to have the Secret `corp-secret` copied into it, label it with `mycorp-rollout=true`. This step must be completed after the ClusterPolicy exists. If it is labeled before, Kyverno will not see the request.
 
 ```sh
 $ kubectl label ns prod-bus-app1 mycorp-rollout=true
@@ -279,9 +409,9 @@ NAME                                               TYPE                         
 corp-secret                                        Opaque                                2      10s
 ```
 
-6. Repeat these steps as needed on any additional namespaces where you wish this ClusterPolicy to apply its `generate` rule.
+6. Repeat these steps as needed on any additional Namespaces where you wish this ClusterPolicy to apply its `generate` rule.
 
-If you would like Kyverno to remove the resource it generated into these existing namespaces, you may unlabel the namespace.
+If you would like Kyverno to remove the resource it generated into these existing Namespaces, you may unlabel the Namespace.
 
 ```sh
 $ kubectl label ns prod-bus-app1 mycorp-rollout-

@@ -5,9 +5,9 @@ description: >
 weight: 6
 ---
 
-Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps and the Kubernetes API Server.
+Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/)(pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. Beginning with Kyverno v1.4.2, any non-resolved variable will be considered an empty string. This applies only to `preconditions` and `deny.conditions` blocks.
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/).
 
 {{% alert title="Note" color="info" %}}
 Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
@@ -42,9 +42,10 @@ validationFailureAction: enforce
 rules:
 - name: check-tcpSocket
   match:
-    resources:
-      kinds:
-      - Pod
+    any:
+    - resources:
+        kinds:
+        - Pod
   validate:
     message: "Port number for the livenessProbe must be less than that of the readinessProbe."
     pattern:
@@ -91,9 +92,10 @@ spec:
   rules:
   - name: imbue-pod-spec
     match:
-      resources:
-        kinds:
-        - v1/Pod
+      any:
+      - resources:
+          kinds:
+          - v1/Pod
     mutate:
       patchStrategicMerge:
         spec:
@@ -221,9 +223,10 @@ spec:
   rules:
   - name: who-created-this
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -311,13 +314,70 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.digest}}`
 
+This same pattern and image variable arrangement also works for ephemeral containers.
+
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
 
 {{% alert title="Note" color="info" %}}
-Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`.
+Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](/docs/writing-policies/jmespath/#formatting).
 {{% /alert %}}
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
+
+## Inline Variables
+
+Variables may be defined in a `context` for consumption by Kyverno rules. This can be as simple as a static value, another variable, or a nested object. Variables may also be redefined by using the same variable name. The last value that is set is used. The below sets a context variable with a value of `foo`.
+
+```yaml
+    context:
+    # A unique name for the for the variable 
+    # if the user redeclares a variable with the same name it should be re-assigned
+    - name: foodata
+      variable:
+        # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object.
+        # value, default, and jmespath are optional but either value or jmespath must be defined.
+        value: "foo"
+```
+
+This snippet sets a context variable to the value of `request.object.metadata.name`. If the `value` field is not defined, the contents of `jmesPath` will act on the entire context.
+
+```yaml  - name: defined-jmespath
+context:
+- name: objName
+  variable:
+    jmesPath: request.object.metadata.name
+```
+
+And below allows for an inline variable with a nested object as well as a default value for that object if it cannot be resolved. Even if the value is not defined, the default can still be set to global values such as other `request.object.*` variables from AdmissionReview requests.
+
+```yaml
+    context:
+    - name: nested-metadata
+      variable:
+        value:
+          metadata:
+            labels: 
+              name: {{ request.object.metadata.name }}
+        # the default value a variable may have if after jmespath processing the value ends up being nil
+        # the default value may also be another variable, for example something from the AdmissionReview
+        default: '{}'
+        # jmespath expression that can be used to modify the `value` before it is assigned to the variable
+        jmespath: 'to_string(@)'
+```
+
+Variables can reference other variables as well as shown below.
+
+```yaml
+context:
+- name: jpExpression
+  variable:
+    value: name
+- name: objName
+  variable:
+    value:
+      name: "{{ request.object.metadata.name }}"
+    jmesPath: "{{ jpExpression }}"
+```
 
 ## Variables from external data sources
 
@@ -330,10 +390,6 @@ Learn more about ConfigMap lookups and API Server calls in the [External Data So
 ## Nested Lookups
 
 It is also possible to nest JMESPath expressions inside one another when mixing data sourced from a ConfigMap and AdmissionReview, for example. By including one JMESPath expression inside the other, Kyverno will first substitute the inner expression before building the outer one as seen in the below example.
-
-{{% alert title="Note" color="info" %}}
-Nesting JMESPath expressions is supported in Kyverno version 1.3.0 and higher.
-{{% /alert %}}
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -350,11 +406,12 @@ spec:
         name: resource-annotater-reference
         namespace: default
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             foo: "{{LabelsCM.data.{{ request.object.metadata.labels.app }}}}"
@@ -388,30 +445,57 @@ This ordering makes it possible to use request data when defining the context, a
 
 ## JMESPath custom functions
 
-In addition to the list of [built-in functions JMESPath](https://jmespath.org/specification.html#builtin-functions) offers, Kyverno augments these by adding several others which make it even easier to craft Kubernetes policies.
+In addition to the list of [built-in functions](https://jmespath.org/specification.html#builtin-functions) JMESPath offers, Kyverno augments these by adding several others which makes it even easier to craft Kyverno policies.
 
-```
+### General
+
+```sh
 base64_decode(string) string
 base64_encode(string) string
-compare(string, string) bool
+compare(string, string) integer
 equal_fold(string, string) bool
+label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
+parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function)
+parse_yaml(string) any
+path_canonicalize(string) string
+pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
+regex_match(string, string|number) bool
+regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
+regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
 replace(str string, old string, new string, n float64) string
 replace_all(str string, old string, new string) string
+semver_compare(string, string) bool (Use operators [>, <, etc] with string inputs for comparison logic)
+split(str string, sep string) []string
+time_since(<layout>, <time1>, <time2>) string (all inputs as string)
 to_upper(string) string
 to_lower(string) string
 trim(str string, cutset string) string
-split(str string, sep string) []string
-regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_match(string, string|number) bool
-label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
-add(number, number) number
-subtract(number, number) number
-multiply(number, number) number
-divide(number, number) number (divisor must be non zero)
-modulo(number, number) number (divisor must be non-zero, arguments must be integers)
+truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
 ```
+
+### Arithmetic
+
+```sh
+add(number, number) number
+add(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+add(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
+subtract(number, number) number
+subtract(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+subtract(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
+multiply(number, number) number
+multiply(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
+multiply(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
+divide(quantity|number, quantity|number) quantity|number (returns a quantity if exactly one of the parameters is a quantity, else a number; the divisor must be non-zero)
+divide(duration|number, duration|number) duration|number (returns a duration if exactly one of the parameters is a duration, else a number; the divisor must be non-zero)
+modulo(number, number) number
+modulo(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity; the divisor must be non-zero)
+modulo(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration; the divisor must be non-zero)
+```
+
+{{% alert title="Note" color="info" %}}
+The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.
+{{% /alert %}}
 
 The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
 
-To find examples of some of these functions in action, see the [Kyverno policies library](https://kyverno.io/policies/).
+To find examples of some of these functions in action, see the [Kyverno policies library](/policies/). And for more complete information along with samples for each custom filter, see the JMESPath page [here](/docs/writing-policies/jmespath/).

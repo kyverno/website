@@ -5,7 +5,7 @@ description: >
 weight: 10
 ---
 
-Kyverno can validate existing resources in the cluster that may have been created before a policy was created. This can be useful when evaluating the potential effects new policies will have on a cluster prior to changing them to `enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `background` is set to `false` in a policy like shown below in the snippet.
+Kyverno can validate existing resources in the cluster that may have been created before a policy was created. This can be useful when evaluating the potential effects new `validate` policies will have on a cluster prior to changing them to `enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `background` is set to `false` in a policy like shown below in the snippet.
 
 ```yaml
 spec:
@@ -16,7 +16,7 @@ spec:
 
 Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to scan existing resources and find if they match any `validate` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a `validate` rule, even in `enforce` mode. Background scanning is an optional field and defaults to `true`, only taking effect on `validate` rules. It has no effect on either `generate` or `mutate` rules.
 
-By default, background scanning occurs every hour and can be configured via the [background-scan](/docs/installation/#flags) flag.
+By default, background scanning occurs every hour and can be configured via the [background-scan](/docs/installation/#container-flags) flag.
 
 {{% alert title="Note" color="info" %}}
 Kyverno does not mutate existing resources to prevent inadvertent changes to workloads.
