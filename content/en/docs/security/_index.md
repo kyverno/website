@@ -47,7 +47,7 @@ With each release, the following artifacts are uploaded:
 
 (Needs update)
 
-Kyverno container images are signed using Cosign. To verify the container image, download the organization public key (https://github.com/kyverno/kyverno/blob/main/cosign.pub) into a file named `cosign.pub` and then:
+Kyverno container images are signed using Cosign and the [keyless signing feature](https://github.com/sigstore/cosign/blob/main/KEYLESS.md). To verify the container image, follow the steps below.
 
 1. Install Cosign
 2. Configure the Kyverno signature repository:
@@ -59,18 +59,46 @@ export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
 3. Verify the image:
 
 ```sh
-cosign verify -key cosign.pub ghcr.io/kyverno/kyverno:latest
+COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/kyverno:latest | jq
 ```
 
 If the container image was properly signed, the output should be similar to:
 
 ```sh
-Verification for kyverno/kyverno:latest --
+Verification for ghcr.io/kyverno/kyverno:latest --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
-  - The signatures were verified against the specified public key
+  - Existence of the claims in the transparency log was verified offline
   - Any certificates were verified against the Fulcio roots.
-[{"critical":{"identity":{"docker-reference":"ghcr.io/kyverno/kyverno"},"image":{"docker-manifest-digest":"sha256:a847df12e2c1cab19af9d1bb34e599cb56cf57639c7d5c958a4bb568c1dad8f6"},"type":"cosign container image signature"},"optional":null}]
+[
+  {
+    "critical": {
+      "identity": {
+        "docker-reference": "ghcr.io/kyverno/kyverno"
+      },
+      "image": {
+        "docker-manifest-digest": "sha256:22a37e135718dd25e2f419749cfa398936f583878079741d87c5b5a1587dd4c6"
+      },
+      "type": "cosign container image signature"
+    },
+    "optional": {
+      "Bundle": {
+        "SignedEntryTimestamp": "MEQCIDnRtzZE3z9CEsE5uFvwSFgfwZqdoly3HjHdFYzdOY/4AiB2JtOUQxKbrC0BoMnEYR9HSGnK9yX+nW4P5KZ+Aw/jYw==",
+        "Payload": {
+          "body": "<snip>",
+          "integratedTime": 1654284265,
+          "logIndex": 2551796,
+          "logID": "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"
+        }
+      },
+      "Issuer": "https://token.actions.githubusercontent.com",
+      "Subject": "https://github.com/kyverno/kyverno/.github/workflows/reuse.yaml@refs/heads/main",
+      "ref": "0b7b2458eb46d157e27fcc51bf3bc67d99d5cab9",
+      "repo": "kyverno/kyverno",
+      "workflow": "image"
+    }
+  }
+]
 ```
 
 All three Kyverno images can be verified.
