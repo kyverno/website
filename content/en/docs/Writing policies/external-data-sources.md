@@ -465,6 +465,20 @@ the output `imageData` variable will have a structure which looks like the follo
 }
 ```
 
+{{% alert title="Note" color="info" %}}
+The `imageData` variable represents a "normalized" view of an image after any redirects by the registry are performed and internal modifications by Kyverno (Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`). Most notably, this impacts [official images](https://docs.docker.com/docker-hub/official_images/) hosted on [Docker Hub](https://hub.docker.com/). Official images on Docker Hub are differentiated from other images in that their repository is prefixed by `library/` even if the image being pulled does not contain it. For example, pulling the [python](https://hub.docker.com/_/python) official image with `python:slim` results in the following fields of `imageData` being set:
+
+```json
+{
+    "image":         "docker.io/python:slim",
+    "resolvedImage": "index.docker.io/library/python@sha256:43705a7d3a22c5b954ed4bd8db073698522128cf2aaec07690a34aab59c65066",
+    "registry":      "index.docker.io",
+    "repository":    "library/python",
+    "identifier":    "slim"
+}
+```
+{{% /alert %}}
+
 The `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
 
 For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
