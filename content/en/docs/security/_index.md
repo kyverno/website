@@ -101,7 +101,7 @@ The following checks were performed on each of these signatures:
 ]
 ```
 
-Note that the important fields to verify in the output are `optional.Issuer` and `optional.Subject`.
+Note that the important fields to verify in the output are `optional.Issuer` and `optional.Subject`. If Issuer and Subject do not match the values shown above, the image is not genuine.
 
 All three Kyverno images can be verified.
 
