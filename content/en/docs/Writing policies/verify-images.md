@@ -14,7 +14,7 @@ The Kyverno __verifyImages__ rule uses [Cosign](https://github.com/sigstore/cosi
 
 The logical structure of the rule is shown below:
 
-<img src="/images/image-verify-rule.png" alt="Image Verification Rule" width="50%"/>
+<img src="/images/image-verify-rule.png" alt="Image Verification Rule" width="75%"/>
 <br/><br/>
 
 Each rule contains:
@@ -70,9 +70,9 @@ spec:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:*"
         attestors:
-          count: 1
+        - count: 1
           entries:
-            keys:
+          - keys:
               publicKeys: |-
                 -----BEGIN PUBLIC KEY-----
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
@@ -183,11 +183,6 @@ The [in-toto attestation format](https://github.com/in-toto/attestation) provide
 }
 ```
 
-Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestations for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
-
-```sh
-COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload | sed s/\"//g | base64 --decode | jq
-```
 
 The `imageVerify` rule can contain one or more attestation checks that verify the contents of the `predicate`. Here is an example that verifies the repository URI, the branch, and the reviewers.
 
@@ -200,7 +195,7 @@ spec:
   validationFailureAction: enforce
   background: false
   webhookTimeoutSeconds: 30
-  failurePolicy: fail
+  failurePolicy: Fail
   rules:
     - name: attest
       match:
@@ -210,14 +205,15 @@ spec:
               - Pod
       verifyImages:
       - imageReferences:
-        - "registry.io/org/*"
+        - "registry.io/org/app*"
         attestors:
-          keys:
-            publicKey: |-
-              -----BEGIN PUBLIC KEY-----
-              MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHMmDjK65krAyDaGaeyWNzgvIu155
-              JI50B2vezCw8+3CVeE0lJTL5dbL3OP98Za0oAEBJcOxky8Riy/XcmfKZbw==
-              -----END PUBLIC KEY-----
+        - entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
+                3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
+                -----END PUBLIC KEY-----
         attestations:
           - predicateType: https://example.com/CodeReview/v1
             conditions:
@@ -239,14 +235,43 @@ Each `verifyImages` rule can be used to verify signatures or attestations, but n
 
 ### Signing attestations
 
-To sign attestations, use the `cosign attest` command.
+To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry. 
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
 cosign attest --key cosign.key --predicate <file> --type <predicate type>  ${IMAGE}
 ```
 
-This command will sign your attestations and publish them to the OCI registry. You can verify the attestations using the `cosign verify-attestation` command.
+You can use a custom attestation type with a JSON document as the predicate. For example, with the code review example above the predicate body can be specified in a file `predicate.json` with the contents:
+
+```json
+{
+    "author": "alice@example.com",
+    "repo": {
+        "branch": "main",
+        "type": "git",
+        "uri": "https://git-repo.com/org/app"
+    },
+    "reviewers": [
+        "bob@example.com"
+    ]
+}
+
+```
+
+The following cosign command creates the in-toto format attestation and signs it with the specified credentials using the custom predicate type `https://example.com/CodeReview/v1`:
+
+```sh
+cosign attest ghcr.io/jimbugwadia/app1:v1 --key <KEY> --predicate predicate.json  --type https://example.com/CodeReview/v1
+```
+
+This flexible scheme allows attesting and verifying any JSON document, including vulnerability scan reports and Software Bill Of Materials (SBOMs).
+
+Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestations for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
+
+```sh
+COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload | sed s/\"//g | base64 --decode | jq
+```
 
 ```sh
 cosign verify-attestation --key cosign.pub ${IMAGE}
