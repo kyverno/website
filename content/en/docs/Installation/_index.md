@@ -644,3 +644,18 @@ kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg
 
 kubectl delete validatingwebhookconfigurations kyverno-policy-validating-webhook-cfg kyverno-resource-validating-webhook-cfg
 ```
+## Recommended setup
+Kyverno recommended configurations on different scales of clusters
+
+### Kyverno Memory limit config:
+* less than 4000 total resource: use default limit
+* more than 4000 total resource: use 768Mi (2x the default)
+### Kyverno mode:
+Recommendation setup based on environment
+#### Environment:
+* `Staging/demo`: standalone mode (1 replicas)
+* `Production`: High Availability mode (3 replicas)
+
+{{% alert title="Note" color="info" %}}
+total resources : combination of static (ConfigMap, Secret, etc.) and workloads (Pod, Cronjob, Deployment, etc.)
+{{% /alert %}},
