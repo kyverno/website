@@ -19,19 +19,17 @@ Kyverno uses the [Semantic Versioning](https://semver.org/) scheme. Kyverno v1.0
 
 #### MAJOR release
 
-Major releases contain large features, design and architectural changes, and may include incompatible API changes.
-
-- Low frequency and required e.g. once a year
+Major releases contain large features, design and architectural changes, and may include incompatible API changes. Major releases are low frequency and created as required e.g. once a year.
 
 #### MINOR release
 
-Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every three months helps balance speed and stability.
+Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every few months helps balance speed and stability.
 
 - Roughly every 3 months
 
 #### PATCH release
 
-Patch releases are for backwards-compatible bug fixes. Typically only critical fixes are picked for patch releases.
+Patch releases are for backwards-compatible bug fixes and very minor enhancements which do not impact stability or compatibility. Typically only critical fixes are selected for patch releases.
 
 - When critical fixes are required, or roughly each month
 
@@ -43,6 +41,12 @@ The dev images are pushed with tag `<major>.<minor>.dev-N-<git hash>`, where "N"
 
 To test with the latest images for different release branches, the images are pushed with `<major>.<minor>-dev-latest`.
 
+### Issues
+
+Non-critical issues and features are always added to the next minor release milestone, by default. 
+
+Critical issues, with no work-arounds, are added to the next patch release.
+
 ### Branches and PRs
 
 Release branches and PRs are managed as follows:
@@ -51,8 +55,15 @@ Release branches and PRs are managed as follows:
 - Branches are created for each major or minor release.
 - The branch name will contain the version, for example `release-1.5`.
 - Patch releases are created from a release branch.
-- For critical fixes that need to be included in a patch release, PRs should always be first merged to main and then cherry-picked to the release branch. The milestone label is important here for tracking.
+- For critical fixes that need to be included in a patch release, PRs should always be first merged to main and then cherry-picked to the release branch. The milestone label (for example `milestone-1.5`) must be added to PRs that are to be merged to a release branch, along with the `cherry-pick-required` label. When the PR is cherry picked (or merged), the `cherry-pick-completed` label is added.
 - For complex changes, or when branches diverge significantly, separate PRs may be required for `main` and release branches.
-- Issues are always added to milestones for releases.
-- PRs are labeled with milestone labels, for maintainers to cherry-pick to patch branches.
 - During PR review, the Assignee selection is used to indicate the reviewer.
+
+### Release Planning
+
+A minor release will contain a mix of features, enhancements, and bug fixes. 
+
+Major features follow the [Kyverno Design Proposal (KDP)](https://github.com/kyverno/KDP/) process.
+
+During the start of a release, there may be many issues assigned to the release milestone. The priorities for the release are discussed in the weekly contributor's meetings. As the release progresses several issues may be moved to the next milestone. Hence, if an issue is important it is important to advocate its priority early in the release cycle.
+
