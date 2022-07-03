@@ -11,25 +11,30 @@ import (
 
 var rootCmd *cobra.Command
 
+var Verbose bool
+var Clean bool
+
 func init() {
 	rootCmd = &cobra.Command{
-		Use:   "render <URL> <dir>",
-		Short: "render converts Kyverno policies in a GitHub repository from YAML to markdown files in the supplied directory",
-		Args:  cobra.ExactArgs(2),
+		Use:     "render <URL> <dir>",
+		Short:   "render converts Kyverno policies in a GitHub repository from YAML to markdown files in the supplied directory",
+		Example: "render  https://github.com/kyverno/policies/main ../content/en/policies/",
+		Args:    cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			git, outDir, err := validateAndParse(args)
 			if err != nil {
-				log.Println(err)
 				_ = rootCmd.Usage()
-				return
+				log.Fatal(err)
 			}
 
 			if err := render(git, outDir); err != nil {
-				log.Println(err)
-				return
+				log.Fatal(err)
 			}
 		},
 	}
+
+	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&Clean, "clean", "c", false, "delete files in target directory before rendering")
 }
 
 func validateAndParse(args []string) (*gitInfo, string, error) {
