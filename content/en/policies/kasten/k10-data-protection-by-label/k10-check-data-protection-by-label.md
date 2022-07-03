@@ -3,7 +3,7 @@ title: "Check Data Protection By Label"
 category: Kasten K10 by Veeam
 version: 1.6.2
 subject: Deployment, StatefulSet
-policyType: "generate"
+policyType: "validate"
 description: >
     Check the 'dataprotection' label that production Deployments and StatefulSet have a named K10 Policy. Use in combination with 'generate' ClusterPolicy to 'generate' a specific K10 Policy by name.
 ---

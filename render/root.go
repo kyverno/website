@@ -33,8 +33,8 @@ func init() {
 		},
 	}
 
-	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVarP(&Clean, "clean", "c", false, "delete files in target directory before rendering")
+	rootCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.Flags().BoolVarP(&Clean, "clean", "c", false, "delete files in target directory before rendering")
 }
 
 func validateAndParse(args []string) (*gitInfo, string, error) {

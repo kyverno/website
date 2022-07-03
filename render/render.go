@@ -181,7 +181,14 @@ func deleteMarkdownFiles(outdir string) error {
 		return err
 	}
 
-	defer d.Close()
+	defer func() {
+		if err := d.Close(); err != nil {
+			if Verbose {
+				log.Printf("failed to close output dir %s: %v", outdir, err)
+			}
+		}
+	}()
+
 	files, err := d.Readdir(-1)
 	if err != nil {
 		return err
@@ -199,7 +206,11 @@ func deleteMarkdownFiles(outdir string) error {
 					continue
 				}
 
-				os.Remove(file.Name())
+				if err := os.Remove(name); err != nil {
+					if Verbose {
+						log.Printf("failed to delete file %s: %v", name, err)
+					}
+				}
 			}
 		}
 	}
