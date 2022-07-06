@@ -1,7 +1,7 @@
 baseURL = "/"
 languageCode = "en-us"
 title = "Kyverno"
-theme = ["docsy"]
+# theme = ["docsy"]
 description = "Kyverno is a policy engine designed for Kubernetes"
 Paginate = 20
 
@@ -80,3 +80,17 @@ id = ""
 [[params.versions]]
   version = "main"
   url = "https://main.kyverno.io"
+
+# register docsytheme as hugo module
+[module]
+  # uncomment line below for temporary local development of module
+  # replacements = "github.com/google/docsy -> ../../docsy"
+  [module.hugoVersion]
+    extended = true
+    min = "0.75.0"
+  [[module.imports]]
+    path = "github.com/google/docsy"
+    disable = false
+  [[module.imports]]
+    path = "github.com/google/docsy/dependencies"
+    disable = false
