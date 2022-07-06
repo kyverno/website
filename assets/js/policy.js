@@ -3,7 +3,7 @@
  - Make listed filters collapseable in mobile.This would be help responsive issues
 */
 
-// local storage 
+// local storage
 const searchParams = new URLSearchParams(window.location.search);
 const wstorage = window.localStorage;
 const getStoredValues = JSON.parse(wstorage.getItem(storedValues));
@@ -43,16 +43,15 @@ function populateFilters(data) {
 
     if(data.length >= 1) {
       if (filters.size >= 1) {
-        Array.from(filters).sort().forEach(function(filter){
-          let actualFilters = filter.split(",");
-          if(actualFilters.length > 1) {
-            actualFilters.forEach(filter => {
-              createFilterButton(filter, filterTypeEl);
-            })
-          } else {
-            createFilterButton(filter, filterTypeEl);
-          }
-        });
+        filters = Array.from(filters)
+          .join(",")
+          .split(",");
+        filters = Array.from(new Set(filters))
+          .map(filter => filter.trim())
+          .sort();
+
+        filters.forEach(filter => createFilterButton(filter, filterTypeEl));
+
       } else {
         filterTypeEl.classList.add("passive");
       }
@@ -153,7 +152,7 @@ function listAppliedFilters() {
     }
   });
   if (chosenPolicies.length > 1) {
-    
+
     appliedFiltersEl.appendChild(createButton("clear all"));
   }
 }
@@ -179,14 +178,14 @@ function filterPolicies(obj=chosenPolicies) {
   let resultsTally = 0;
   const grouped = groupBy(obj, item => item.id);
   let filtersPresent = new Set();
-  
+
   // only apply to list page
   if(policies) {
     policies.forEach(policy => {
       const applicableFilters = policy.dataset.policy.split("::");
       let shouldList = false;
       let verdict = [];
-      
+
       grouped.forEach(group => {
         const hasFilter = group.map(item => {
           const itemFilter = item.type;
@@ -196,9 +195,9 @@ function filterPolicies(obj=chosenPolicies) {
         const internalVerdict = hasFilter.includes(true);
         verdict.push(internalVerdict);
       });
-      
+
       shouldList = verdict.includes(false) ? false : true;
-      
+
       if(shouldList) {
         policy.classList.remove(hidden);
         resultsTally += 1;
@@ -207,20 +206,20 @@ function filterPolicies(obj=chosenPolicies) {
       }
     });
   }
-  
+
   results.innerHTML = `<span>${resultsTally}</span> Policies Found`;
-  
+
   filtersPresent = Array.from(filtersPresent);
-  
+
   elems(".filter").forEach(button => {
     const id = button.textContent;
     const newObj = obj.map(entry => entry.type);
     filtersPresent = filtersPresent.length ? filtersPresent : newObj;
     filtersPresent.includes(id) ? button.classList.add(active) : button.classList.remove(active);
   });
-  
+
   section ? listAppliedFilters() : false;
-  
+
   !elem('.policy_page') ? updateQuery() : false;
 }
 
@@ -252,17 +251,17 @@ if(policyWrap) {
       } else {
         obj.push(filterGroup);
       }
-      
+
       // persist filters
       wstorage.setItem(storedValues, JSON.stringify(obj));
-      
+
       filterPolicies();
-      
+
       if(!section) {
         window.location.href = new URL("policies", rootURL).href;
       }
     }
-    
+
     const isButton = target.matches(".button");
     if(isButton) {
       const isClearAll = target.matches(".button_clear");
@@ -282,16 +281,16 @@ if(policyWrap) {
       wstorage.setItem(storedValues, JSON.stringify(chosenPolicies));
       filterPolicies();
     }
-    
+
     const isToggle = isTarget(target, ".policy_toggle");
     const filtersEl = elem(".policy_filters");
 
     containsClass(filtersEl, active) && !isToggle && !isTarget(target, ".policy_filters") ? deleteClass(filtersEl, active) : false;
-    
+
     isToggle ? modifyClass(filtersEl, active) : false;
-    
+
   });
-  
+
   window.addEventListener('load', function() {
     // fetch file
     fetch(new URL("index.json", rootURL).href)
@@ -306,7 +305,7 @@ if(policyWrap) {
       filterPolicies();
     })
     .catch((error) => console.error(error));
-    
+
   });
 }
 
