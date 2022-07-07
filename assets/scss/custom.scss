@@ -592,3 +592,14 @@ code.noClass {
 .panel_expanded .panel_from {
 	display: none;
 }
+
+.td {
+  @media screen and (min-width: 768px) {
+    &-blog {
+      margin-top: 90px;
+    }
+    &-blog main {
+      margin-top: -20px;
+    }
+  }
+}
