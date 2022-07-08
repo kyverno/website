@@ -115,9 +115,9 @@
     // max-width: 1024px;
     overflow: auto;
     grid-column: 1/-1;
-    // &:empty {
-    //   display: none;
-    // }
+    &:empty {
+      display: none;
+    }
   }
   &s_results {
     display: flex;
@@ -126,6 +126,9 @@
     min-width: 15rem;
     @media screen and (max-width: 768px) { 
       margin-bottom: 0;
+    }
+    @media screen and (min-width: 768px) { 
+      margin-top: 30px;
     }
   }
   &s_results span {
@@ -155,6 +158,9 @@
     }
   }
   &_filters {
+    @media screen and (min-width: 1024px) {
+      margin-top: -15px;
+    }
     @media screen and (max-width: 768px) {
       position: fixed;
       transform: translateX(-100vw);
@@ -601,5 +607,23 @@ code.noClass {
     &-blog main {
       margin-top: -20px;
     }
+  }
+  &-outer {
+    // @media screen and (max-width: 1200px) {
+    //   padding-top: 70px;
+    // }
+  }
+}
+
+.td-navbar .navbar-brand .navbar-logo svg {
+  --length: 56px;
+  --top-margin: -5px;
+  height: var(--length);
+  width: var(--length);
+  transform: translateY(var(--top-margin));
+  z-index: 9999;
+  @media screen and (min-width: 1024px) {
+    --length: 64px;
+    --top-margin: -5px;
   }
 }
