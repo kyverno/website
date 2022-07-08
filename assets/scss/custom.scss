@@ -608,10 +608,8 @@ code.noClass {
       margin-top: -20px;
     }
   }
-  &-outer {
-    // @media screen and (max-width: 1200px) {
-    //   padding-top: 70px;
-    // }
+  &-sidebar #content-mobile {
+    margin-top: 50px;
   }
 }
 
