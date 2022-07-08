@@ -1,8 +1,6 @@
 
 ---
-title: "New Releases"
+title: "Blog posts about Kyverno releases"
 linkTitle: "Releases"
 weight: 20
 ---
-
-
