@@ -601,11 +601,12 @@ code.noClass {
 
 .td {
   @media screen and (min-width: 768px) {
-    &-blog {
-      margin-top: 90px;
+    &-blog .td-sidebar-toc, 
+    &-blog main {
+      margin-top: 70px !important;
     }
     &-blog main {
-      margin-top: -20px;
+      margin-top: 50px !important;
     }
   }
   &-sidebar #content-mobile {
@@ -623,5 +624,11 @@ code.noClass {
   @media screen and (min-width: 1024px) {
     --length: 64px;
     --top-margin: -5px;
+  }
+}
+
+@media (min-width: 768px) {
+  .td-sidebar {
+    padding-top: 8rem;
   }
 }
