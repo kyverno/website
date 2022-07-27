@@ -47,11 +47,13 @@ func getPolicyType(yaml string) string {
 	validate := "validate"
 	verifyImages := "verifyImages"
 
-	if stringContains(yaml, generate) {
+	newYAML := strings.Split(yaml, "spec:")[1]
+
+	if stringContains(newYAML, generate) {
 		return generate
-	} else if stringContains(yaml, mutate) {
+	} else if stringContains(newYAML, mutate) {
 		return mutate
-	} else if stringContains(yaml, validate) {
+	} else if stringContains(newYAML, validate) {
 		return validate
 	} else {
 		return verifyImages
