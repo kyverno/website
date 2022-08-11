@@ -8,12 +8,15 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"text/template"
 
 	"github.com/go-git/go-billy/v5/memfs"
 	kyvernov1 "github.com/kyverno/kyverno/pkg/api/kyverno/v1"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
@@ -35,11 +38,7 @@ type policyData struct {
 
 func stringContains(rawString string, substring string) bool {
 	hasString := strings.Index(rawString, substring)
-
-	if hasString >= 0 {
-		return true
-	}
-	return false
+	return hasString >= 0
 }
 
 func getPolicyType(yaml string) string {
@@ -48,11 +47,13 @@ func getPolicyType(yaml string) string {
 	validate := "validate"
 	verifyImages := "verifyImages"
 
-	if stringContains(yaml, generate) {
+	newYAML := strings.Split(yaml, "spec:")[1]
+
+	if stringContains(newYAML, generate) {
 		return generate
-	} else if stringContains(yaml, mutate) {
+	} else if stringContains(newYAML, mutate) {
 		return mutate
-	} else if stringContains(yaml, validate) {
+	} else if stringContains(newYAML, validate) {
 		return validate
 	} else {
 		return verifyImages
@@ -79,7 +80,8 @@ func buildTitle(p *kyvernov1.ClusterPolicy) string {
 	name = p.Name
 	title := strings.ReplaceAll(name, "-", " ")
 	title = strings.ReplaceAll(title, "_", " ")
-	return strings.Title(title)
+
+	return cases.Title(language.Und, cases.NoLower).String(title)
 }
 
 func render(git *gitInfo, outdir string) error {
@@ -104,6 +106,13 @@ func render(git *gitInfo, outdir string) error {
 		return fmt.Errorf("failed to parse template: %v", err)
 	}
 
+	if Clean {
+		err := deleteMarkdownFiles(outdir)
+		if err != nil {
+			return fmt.Errorf("failed to clean directory %s: %v", outdir, err)
+		}
+	}
+
 	for _, yamlFilePath := range yamls {
 		file, err := fs.Open(yamlFilePath)
 		if err != nil {
@@ -124,7 +133,10 @@ func render(git *gitInfo, outdir string) error {
 
 		policy := &kyvernov1.ClusterPolicy{}
 		if err := json.Unmarshal(policyBytes, policy); err != nil {
-			log.Printf("failed to decode file %s: %v", yamlFilePath, err)
+			if Verbose {
+				log.Printf("failed to decode file %s: %v", yamlFilePath, err)
+			}
+
 			continue
 		}
 
@@ -132,9 +144,18 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
+		if !strings.HasPrefix(policy.APIVersion, "kyverno.io/") {
+			if Verbose {
+				log.Printf("skipping non-Kyverno policy resource: %s/%s", policy.APIVersion, policy.Kind)
+			}
+
+			continue
+		}
+
 		relPath := strings.ReplaceAll(yamlFilePath, "\\", "/")
 		pathElems := []string{git.owner, git.repo, "raw", git.branch, relPath}
 		rawURL := "https://github.com/" + strings.Join(pathElems, "/")
+		rawURL = trimDoubleSlashes(rawURL)
 
 		pd := newPolicyData(policy, string(bytes), rawURL, relPath)
 		outFile, err := createOutFile(filepath.Dir(yamlFilePath), outdir, filepath.Base(file.Name()))
@@ -147,10 +168,62 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
-		log.Printf("rendered %s", outFile.Name())
+		if Verbose {
+			log.Printf("rendered %s", outFile.Name())
+		}
 	}
 
 	return nil
+}
+
+// deleteMarkdownFiles deletes all .md files except "_index.md"
+func deleteMarkdownFiles(outdir string) error {
+	d, err := os.Open(outdir)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := d.Close(); err != nil {
+			if Verbose {
+				log.Printf("failed to close output dir %s: %v", outdir, err)
+			}
+		}
+	}()
+
+	files, err := d.Readdir(-1)
+	if err != nil {
+		return err
+	}
+
+	if Verbose {
+		log.Printf("cleaning directory %s", outdir)
+	}
+
+	for _, file := range files {
+		if file.Mode().IsRegular() {
+			name := file.Name()
+			if filepath.Ext(name) == ".md" {
+				if filepath.Base(name) == "_index.md" {
+					continue
+				}
+
+				if err := os.Remove(name); err != nil {
+					if Verbose {
+						log.Printf("failed to delete file %s: %v", name, err)
+					}
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+var regexReplaceDoubleSlashes = regexp.MustCompile("/([^:])(//+)/g")
+
+func trimDoubleSlashes(rawURL string) string {
+	return regexReplaceDoubleSlashes.ReplaceAllLiteralString(rawURL, "/")
 }
 
 func createOutFile(inDir, outDir, fileName string) (*os.File, error) {

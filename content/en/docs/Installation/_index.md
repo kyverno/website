@@ -60,25 +60,13 @@ The official Helm chart is the recommended method of installing Kyverno in a pro
 * Kyverno running with three replicas
 * PodDisruptionBudget
 * Pod anti-affinity configured
-* Ability to exclude Namespaces in the webhook
+* Kyverno Namespace excluded
 
 {{% alert title="Note" color="warning" %}}
 Kyverno does not support two replicas. For a highly-available installation, the only supported count is three.
 {{% /alert %}}
 
-By default, the Helm chart does not configure any Namespace exclusions. While this is a more secure posture by default, allowing users to apply policy to those Namespaces, it may result in manual recovery steps should all Kyverno Pods be unavailable. The alternative is to exclude certain system-level Namespaces, for example Kyverno's and `kube-system`. This can be accomplished by setting `config.webhooks` in the Helm chart values file. For example, a values file with the below snippet will result in the Kyverno [ConfigMap](#configmap-flags) being configured with a `namespaceSelector` object which will then be used to configure the webhooks managed by Kyverno. The end result is the API server will only forward AdmissionReview requests for resources other than those in the `values[]` array. Note that for Kubernetes 1.21, the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name` should be used for this purpose.
-
-```yaml
-config:
-  webhooks:
-  - namespaceSelector:
-      matchExpressions:
-        - key: kubernetes.io/metadata.name
-          operator: NotIn
-          values:
-            - kube-system
-            - kyverno
-```
+By default, starting with the Helm chart version 2.5.0, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
 
 See also the [Namespace selectors](#namespace-selectors) section below and especially the [Security vs Operability](#security-vs-operability) section.
 
@@ -118,7 +106,7 @@ kubectl create namespace kyverno
 helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=1
 ```
 
-To install pre-releases, add the --devel switch to Helm.
+To install pre-releases, add the `--devel` switch to Helm.
 
 ```sh
 helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
@@ -147,7 +135,7 @@ For a production installation, Kyverno should be installed in [HA mode](#high-av
 The following combination may result in cluster inoperability if the Kyverno Namespace is not excluded:
 
 1. At least one Kyverno rule matching on `Pods` is configured in fail closed mode (the default setting).
-2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`).
+2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`). This is not the default as of Helm chart version 2.5.0.
 3. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting/#api-server-is-blocked).
@@ -156,18 +144,22 @@ If this combination of events occurs, the only way to recover is to manually del
 Kubernetes will not send ValidatingWebhookConfiguration or MutatingWebhookConfiguration objects to admission controllers, so therefore it is not possible to use a Kyverno policy to validate or mutate these objects.
 {{% /alert %}}
 
-By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
+By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. This is the default behavior as of the Helm chart version 2.5.0. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
 {{% alert title="Note" color="info" %}}
-Namespaces and/or objects within Namespaces may be excluded in a variety of ways including namespaceSelectors and objectSelectors. The Helm chart provides options for both.
+Namespaces and/or objects within Namespaces may be excluded in a variety of ways including namespaceSelectors and objectSelectors. The Helm chart provides options for both, but by default the Kyverno Namespace will be excluded.
+{{% /alert %}}
+
+{{% alert title="Note" color="warning" %}}
+When using objectSelector, it may be possible for users to spoof the same label key/value used to configure the webhooks should they discover how it is configured, thereby allowing resources to circumvent policy detection. For this reason, a namespaceSelector using the `kubernetes.io/metadata.name` immutable label is recommended.
 {{% /alert %}}
 
 The choices and their implications are therefore:
 
-1. Do not exclude system Namespaces, including Kyverno's, during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
-2. Exclude system Namespaces during installation resulting in easier cluster recovery but potentially requiring other methods to secure those Namespaces, for example with Kubernetes RBAC.
+1. Do not exclude system Namespaces, including Kyverno's, (not default) during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
+2. Exclude system Namespaces during installation (default) resulting in easier cluster recovery but potentially requiring other methods to secure those Namespaces, for example with Kubernetes RBAC.
 
-For steps on how to exclude Namespaces during installation with Helm, see the [High Availability](#high-availability) section. You should choose the best option based upon your risk aversion, needs, and operational practices.
+You should choose the best option based upon your risk aversion, needs, and operational practices.
 
 {{% alert title="Note" color="info" %}}
 If you choose to *not* exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/#resource-filters) entry in the [ConfigMap](/docs/installation/#configmap-flags) to remove those items.
@@ -249,7 +241,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno.
+Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno and expiration is set at one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
 ```sh
 ## Install Kyverno
@@ -260,7 +252,7 @@ kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/
 The above command installs the last released version of Kyverno, which may not be stable. If you want to install a different version, you can edit the `install.yaml` file and update the image tag.
 {{% /alert %}}
 
-Also, by default Kyverno is installed in the `kyverno` Namespace. To install it in a different namespace, you can edit `install.yaml` and update the Namespace.
+Also, by default Kyverno is installed in the `kyverno` Namespace. To install it in a different Namespace, you can edit `install.yaml` and update the Namespace.
 
 To check the Kyverno controller status, run the command:
 
@@ -281,7 +273,7 @@ kubectl logs -l app.kubernetes.io/name=kyverno -n <namespace>
 
 #### Option 2: Use your own CA-signed certificate
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above).
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above). When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process.
 
 ##### 2.1. Generate a self-signed CA and signed certificate-key pair
 
@@ -325,9 +317,9 @@ X509v3 extensions:
 
 You can now use the following files to create Secrets:
 
-- `rootCA.crt`
-- `tls.crt`
-- `tls.key`
+* `rootCA.crt`
+* `tls.crt`
+* `tls.key`
 
 To create the required Secrets, use the following commands (do not change the Secret names):
 
@@ -379,12 +371,12 @@ Use `kubectl get clusterroles,roles -A | grep kyverno` to view all Kyverno roles
 
 The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces:
 
-- `kyverno:policies`: manages policies, reports, generate requests, report change requests, and status
-- `kyverno:view`: views all resources
-- `kyverno:generate`: creates, updates, and deletes resources via generate policy rules
-- `kyverno:events`: creates, updates, and deletes events for policy results
-- `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
-- `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
+* `kyverno:policies`: manages policies, reports, generate requests, report change requests, and status
+* `kyverno:view`: views all resources
+* `kyverno:generate`: creates, updates, and deletes resources via generate policy rules
+* `kyverno:events`: creates, updates, and deletes events for policy results
+* `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
+* `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
 
 For each `ClusterRole` a `ClusterRoleBinding` with the same name as the `ClusterRole` is used to bind the permissions to the `kyverno-service-account`.
 
@@ -392,7 +384,7 @@ For each `ClusterRole` a `ClusterRoleBinding` with the same name as the `Cluster
 
 The following `Roles` provide Kyverno with permissions to manage select resources in the Kyverno Namespace:
 
-- `kyverno:leaderelection`: manage leases for leader election across replicas
+* `kyverno:leaderelection`: manage leases for leader election across replicas
 
 For each `Role` a `RoleBinding` with the same name as the `Role` is used to bind the permissions to the `kyverno-service-account`.
 
@@ -400,9 +392,9 @@ For each `Role` a `RoleBinding` with the same name as the `Role` is used to bind
 
 The following `ClusterRoles` are used to extend the default `admin` role with permissions to view and manage policy resources via [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
 
-- `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
-- `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
-- `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
+* `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
+* `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
+* `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
 
 #### Customizing Permissions
 
@@ -466,19 +458,21 @@ The following flags can also be used to control the advanced behavior of Kyverno
 6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to 'false'.
 7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
 8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
-9. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. Default is set to 'true'.
-10. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-11. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-12. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
-13. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
-14. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
+9. `allowInsecureRegistry`: Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
+10. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the configmap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is set to 'true'.
+11. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+12. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+13. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
+14. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
+15. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
+16. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
 
 ### Policy Report access
 
 During the Kyverno installation, it creates a ClusterRole `kyverno:admin-policyreport` which has permission to perform all operations on resources `policyreport` and `clusterpolicyreport`. To grant access to a Namespace admin, configure the following YAML file then apply to the cluster.
 
-- Replace `metadata.namespace` with Namespace of the admin
-- Configure `subjects` field to bind admin's role to the ClusterRole `policyviolation`
+* Replace `metadata.namespace` with Namespace of the admin
+* Configure `subjects` field to bind admin's role to the ClusterRole `policyviolation`
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -541,7 +535,7 @@ To modify the ConfigMap, either directly edit the ConfigMap `kyverno` in the def
 
 ### Namespace Selectors
 
-In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object. Note that when installing Kyverno via the Helm chart and setting Namespace exclusions, it will cause this `webhooks` object to be automatically created in the Kyverno ConfigMap.
+In some cases, it is desired to limit those to certain Namespaces based upon labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object by adding a new `webhooks` object to the ConfigMap. For example, in the below snippet, the `webhooks` object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `environment=prod`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object. Note that when installing Kyverno via the Helm chart and setting Namespace exclusions, it will cause this `webhooks` object to be automatically created in the Kyverno ConfigMap. As of the Helm chart v2.5.0, the Kyverno Namespace is excluded by default.
 
 ```yaml
 apiVersion: v1

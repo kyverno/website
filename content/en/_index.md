@@ -4,7 +4,8 @@ linkTitle = "Kyverno"
 +++
 
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
-<h1 class="text-center">Kubernetes Native Policy Management</h1>
+# Kubernetes Native Policy Management { class="text-center" }
+
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#td-block-1">
 		Learn More <i class="fa fa-chalkboard-teacher ml-2"></i>
@@ -12,7 +13,9 @@ linkTitle = "Kyverno"
 	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="/docs/introduction/#quick-start">
 		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
 	  </a>
-	{{< blocks/link-down color="info" >}}
+
+  <a class="btn btn-link text-info" href="#td-block-1" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
+
 </div>
 {{< /blocks/cover >}}
 
@@ -38,9 +41,9 @@ security. The Kyverno CLI can be used to test policies and validate resources as
 {{% /blocks/lead %}}
 
 
-{{< blocks/lead color="gray" >}}
+{{% blocks/lead color="gray" %}}
 
-<h1 class="text-center">Join our community</h1>
+# Join our community { class="text-center" }
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
 [![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
@@ -53,15 +56,14 @@ security. The Kyverno CLI can be used to test policies and validate resources as
 </p>
 
 
-{{< /blocks/lead >}}
+{{% /blocks/lead %}}
 
 
 
 
 {{< blocks/lead color="dark" >}}
 
-<h2 class="text-center">Kyverno is a CNCF Sandbox Project</h2>
-</br>
+## Kyverno is a CNCF Sandbox Project { class="text-center mb-4" }
 
 <a href="https://www.cncf.io" target="blank">
 	<img class="cncf-logo img-fluid" src="/images/logo_cloudnative.png" alt="Cloud Native Computing Foundation logo">

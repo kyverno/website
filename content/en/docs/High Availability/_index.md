@@ -10,7 +10,7 @@ description: >
 
 To install Kyverno in HA using the Helm Chart.
 
-**NOTE:** Due to some complexities accompanied with running 2 replicas, the recommended replica counts for HA is at least 3.
+**NOTE:** For high availability, the only supported replica count is 3.
 
 ```sh
 helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set=replicaCount=3 

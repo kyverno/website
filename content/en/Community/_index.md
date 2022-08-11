@@ -22,14 +22,14 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 
 This is a monthly meeting for the broader community in which upcoming features and road map discussions take place:
 
-- Monthly on the third Wednesday at 9:00 AM PST
+- Monthly on the second Thursday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#)
 
 ### Contributors Meeting
 
 This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
 
-- Weekly every Thursday at 9:00 AM PST
+- Weekly every Wednesday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
 
 ## Get in touch
