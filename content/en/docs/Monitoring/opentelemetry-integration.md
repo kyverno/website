@@ -8,6 +8,12 @@ weight: 65
 
 We will work with a few yaml files are configurations to setup our collector in the kyverno namespace. The required configurations are listed below.
 
+### Install Cert-Manager
+
+```
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+```
+
 ### Config file for Opentelemetry Collector
 
 Create a ```configmap.yaml``` with the following content:
@@ -93,7 +99,7 @@ spec:
         name: collector-config
 ```
 
-This references the ```collector.yaml``` defined in configmap.yaml. Here we are using just a single replica. Ideally we will want a **Daemonset**. Check the Opentelemetry documentation for more deployment strategies.
+This references the ```collector.yaml``` defined in configmap.yaml. Here we are using just a single replica. Ideally we will want a **Daemonset**. Check the [Opentelemetry documentation](https://opentelemetry.io/docs/instrumentation/go/getting-started) for more deployment strategies.
 
 
 ### The Collector Service
@@ -120,7 +126,7 @@ spec:
   type: ClusterIP
 ```
 
-This defined a service for the discovery of the collector deployment.
+This defines a service for the discovery of the collector deployment.
 
 
 ### Setting up Kyverno and passing required flags
@@ -239,7 +245,7 @@ Pass the flag ```transportCreds``` as the secret name containing the "ca.pem" fi
 ```kubectl apply -k github.com/kyverno/grafana-dashboard/examples/prometheus```
 
 - Port-forward the Prometheus service to view the metrics on localhost.
-
+```kubectl port-forward svc/prometheus-server 9090:9090 -n kyverno```
 
 ### Setting up Jaeger
 
@@ -270,3 +276,7 @@ kubectl create -f jaeger.yaml
 ```
 
 - Port-forward jaeger service on **16686** to view the traces.
+
+```
+k port-forward svc/jaeger-query 16686:16686 -n observability
+```
