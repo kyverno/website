@@ -33,7 +33,7 @@ Container images can be signed during the build phase of a CI/CD pipeline using 
 
 The policy rule check fails if the signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
-The rule mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier), when when `mutateImages` is set to `true` (which is the default), if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
+The rule mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier), when `mutateDigest` is set to `true` (which is the default), if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
 
 The `imageVerify` rule first executes as part of the mutation webhook as the applying policy may insert the image digest. The `imageVerify` rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
 
@@ -183,7 +183,6 @@ The [in-toto attestation format](https://github.com/in-toto/attestation) provide
 }
 ```
 
-
 The `imageVerify` rule can contain one or more attestation checks that verify the contents of the `predicate`. Here is an example that verifies the repository URI, the branch, and the reviewers.
 
 ```yaml
@@ -235,7 +234,7 @@ Each `verifyImages` rule can be used to verify signatures or attestations, but n
 
 ### Signing attestations
 
-To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry. 
+To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
