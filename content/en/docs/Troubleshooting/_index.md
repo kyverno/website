@@ -112,9 +112,9 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 ## Kyverno fails on EKS
 
-**Symptom**: I'm an EKS user and I'm finding that resources that should be blocked by a Kyverno policy are not.
+**Symptom**: I'm an EKS user and I'm finding that resources that should be blocked by a Kyverno policy are not. My cluster does not use the VPC CNI.
 
-**Solution**: When using EKS with a custom CNI, the Kyverno webhook cannot be reached by the API server because the control plane nodes, which cannot use a custom CNI, differ from the configuration of the worker nodes, which can. In order to resolve this, when installing Kyverno via Helm, set the `hostNetwork` option to `true`. See also [this note](https://cert-manager.io/docs/installation/compatibility/#aws-eks).
+**Solution**: When using EKS with a custom CNI plug-in (ex., Calico), the Kyverno webhook cannot be reached by the API server because the control plane nodes, which cannot use a custom CNI, differ from the configuration of the worker nodes, which can. In order to resolve this, when installing Kyverno via Helm, set the `hostNetwork` option to `true`. See also [this note](https://cert-manager.io/docs/installation/compatibility/#aws-eks). AWS lists the alternate compatible CNI plug-ins [here](https://docs.aws.amazon.com/eks/latest/userguide/alternate-cni-plugins.html).
 
 **Symptom**: When creating Pods or other resources, I receive similar errors like `Error from server (InternalError): Internal error occurred: failed calling webhook "validate.kyverno.svc-fail": Post "https://kyverno-svc.kyverno.svc:443/validate?timeout=10s": context deadline exceeded`.
 
