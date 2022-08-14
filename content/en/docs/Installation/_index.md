@@ -156,7 +156,7 @@ When using objectSelector, it may be possible for users to spoof the same label 
 
 The choices and their implications are therefore:
 
-1. Do not exclude system Namespaces, including Kyverno's, (not default) during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios. This is the default posture unless overridden.
+1. Do not exclude system Namespaces, including Kyverno's, (not default) during installation resulting in a more secure-by-default posture but potentially requiring manual recovery steps in some outage scenarios.
 2. Exclude system Namespaces during installation (default) resulting in easier cluster recovery but potentially requiring other methods to secure those Namespaces, for example with Kubernetes RBAC.
 
 You should choose the best option based upon your risk aversion, needs, and operational practices.
