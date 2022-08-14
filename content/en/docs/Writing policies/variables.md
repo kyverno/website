@@ -375,7 +375,7 @@ And below allows for an inline variable with a nested object as well as a defaul
         jmespath: 'to_string(@)'
 ```
 
-Variables can reference other variables as well as shown below.
+Variables can reference other variables as well as shown below. Note that context variables are ordered; a variable consumed by another variable must be defined higher in the list of context variables.
 
 ```yaml
 context:
