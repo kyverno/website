@@ -457,7 +457,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 5. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
 6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to 'false'.
 7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-8. `imagePullSecrets`: specifies secret resource names for image registry access credentials.
+8. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
 9. `allowInsecureRegistry`: Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
 10. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the configmap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is set to 'true'.
 11. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.

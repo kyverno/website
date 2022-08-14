@@ -560,6 +560,8 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
+If multiple imagePullSecrets are needed, they can be specified as comma-separated values to the `--imagePullSecrets` container flag.
+
 ## Using a signature repository
 
 To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
