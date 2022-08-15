@@ -361,7 +361,7 @@ Kyverno requires the following permissions:
 * view, list, and watch resources to apply validation policy rules during background scans.
 * create, update, delete, get, list, and watch resources managed via [generate policy](/docs/writing-policies/generate/) rules.
 
-Kyverno creates the following roles that are bound to the `kyverno-service-account`
+Kyverno creates the following roles that are bound to the `kyverno-service-account` ServiceAccount.
 
 {{% alert title="Tip" color="info" %}}
 Use `kubectl get clusterroles,roles -A | grep kyverno` to view all Kyverno roles.
@@ -369,8 +369,9 @@ Use `kubectl get clusterroles,roles -A | grep kyverno` to view all Kyverno roles
 
 **Cluster Roles**
 
-The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces:
+Beginning in 1.8.0, Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to search for and combine ClusterRoles which apply to Kyverno. The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces:
 
+* `kyverno`: top-level ClusterRole which aggregates all other Kyverno ClusterRoles
 * `kyverno:policies`: manages policies, reports, generate requests, report change requests, and status
 * `kyverno:view`: views all resources
 * `kyverno:generate`: creates, updates, and deletes resources via generate policy rules
@@ -378,7 +379,7 @@ The following `ClusterRoles` provide Kyverno with permissions to policies and ot
 * `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
 * `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
 
-For each `ClusterRole` a `ClusterRoleBinding` with the same name as the `ClusterRole` is used to bind the permissions to the `kyverno-service-account`.
+Because aggregated ClusterRoles are used, there is only one ClusterRoleBinding named `kyverno` which binds the `kyverno` ClusterRole to the `kyverno-service-account` ServiceAccount.
 
 **Namespaced Roles**
 
@@ -395,45 +396,34 @@ The following `ClusterRoles` are used to extend the default `admin` role with pe
 * `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
 * `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
 * `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
+* `kyverno:admin-generaterequest`: allow `admin` role to manage GenerateRequests
 
 #### Customizing Permissions
 
-The default `kyverno:view` and `kyverno:generate` can be customized.
+Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules is a simple matter of creating one or more new ClusterRoles which use the `app=kyverno` label. It is no longer necessary to modify any existing ClusterRoles created as part of the Kyverno installation.
 
-For example, if a CustomResource is added to the cluster the configured Roles can be extended to allow Kyverno permissions to generate and/or mutate the new resource type. Or, new ClusterRole/Role and ClusterRoleBinding/RoleBinding pairs can be created and mapped to the Kyverno ServiceAccount.
+For example, if a new Kyverno policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. It will be necessary to create a new ClusterRole and assign it the aggregation label `app=kyverno` in order for those permissions to take effect.
 
-This sample configuration provides Kyverno additional permissions to generate `clusterroles` and `clusterrolebindings`:
+{{% alert title="Tip" color="info" %}}
+To inspect the complete permissions granted to the Kyverno ServiceAccount via all the aggregated ClusterRoles, run `kubectl get clusterrole kyverno -o yaml`.
+{{% /alert %}}
+
+This sample ClusterRole provides Kyverno additional permissions to create Deployments:
 
 ```yaml
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: kyverno:generate-roles
+  labels:
+    app: kyverno
+  name: kyverno:create-deployments
 rules:
 - apiGroups:
-  - "*"
+  - apps
   resources:
-  - clusterroles
-  - clusterrolebindings
+  - deployments
   verbs:
   - create
-  - update
-  - delete
-  - list
-  - get
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: kyverno:generate-roles
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: kyverno:generate-roles
-subjects:
-- kind: ServiceAccount
-  name: kyverno-service-account
 ```
 
 ### ConfigMap Flags
