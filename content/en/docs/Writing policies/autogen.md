@@ -98,9 +98,11 @@ You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to c
 
 Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
 
-* `names`
+* `name` (deprecated)
 * `selector`
 * `annotations`
+
+Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`.
 
 To disable auto-generating rules for Pod controllers set `pod-policies.kyverno.io/autogen-controllers`  to the value `none`.
 
