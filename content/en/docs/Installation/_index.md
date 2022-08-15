@@ -6,7 +6,7 @@ description: >
   Installation and configuration details for Kyverno using `Helm` or `kubectl`.
 ---
 
-Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running.
+Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running. Kyverno must always be installed in a dedicated Namespace; it must not be co-located with other applications in existing Namespaces including system-level Namespaces such as `kube-system`.
 
 {{% alert title="Note" color="info" %}}
 As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project which is N-2 version compatibility. Although previous versions may work, they are not tested.
