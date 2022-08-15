@@ -9,7 +9,7 @@ Preconditions allow controlling policy rule execution by building expressions ba
 
 While `match` and `exclude` allow filtering requests based on resource and user information, `preconditions` can be used to define custom filters for more granular control of when a rule should be applied.
 
-The primary use case for `preconditions` is in `mutate` or `generate` rules when needing to check and ensure a variable, typically from AdmissionReview data, is not empty. In addition to AdmissionReview variables, written as JMESPath expressions, `preconditions` can also be used to check against variables from ConfigMap resources. `mutate` rules which use `patchJson6902` should use `preconditions` as a way to filter out results.
+The primary use case for `preconditions` is in `mutate` or `generate` rules when needing to check and ensure a variable, typically from AdmissionReview data, is not empty. In addition to AdmissionReview variables, written as JMESPath expressions, `preconditions` can also be used to check against variables from ConfigMap resources, API server and registry lookups, and others. `mutate` rules which use `patchJson6902` should use `preconditions` as a way to filter out results.
 
 For `validate` rules, the use of `patterns` is often preferable since conditionals can be used.
 
@@ -20,6 +20,8 @@ When specifying a JMESPath expression in a `preconditions` statement which conta
 ```
 
 You may specify multiple statements in the `preconditions` field and controlling how they operate by using `any` and `all` statements.
+
+Preconditions use [short circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) to stop or continue processing depending on whether they occur in an `any` or `all` block. However, currently Kyverno will resolve all variables first before beginning precondition processing. This behavior is being reevaluated for optimization in future releases.
 
 ## Any and All Statements
 
@@ -68,9 +70,10 @@ spec:
   rules:
   - name: any-all-rule
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     preconditions:
       any:
       - key: "{{ request.object.metadata.labels.color || '' }}"
