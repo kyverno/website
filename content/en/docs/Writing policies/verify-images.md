@@ -255,7 +255,6 @@ You can use a custom attestation type with a JSON document as the predicate. For
         "bob@example.com"
     ]
 }
-
 ```
 
 The following cosign command creates the in-toto format attestation and signs it with the specified credentials using the custom predicate type `https://example.com/CodeReview/v1`:
@@ -269,7 +268,7 @@ This flexible scheme allows attesting and verifying any JSON document, including
 Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestations for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
 
 ```sh
-COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload | sed s/\"//g | base64 --decode | jq
+COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload -r | base64 --decode | jq
 ```
 
 ```sh
@@ -656,6 +655,10 @@ spec:
               gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
               -----END PUBLIC KEY-----
 ```
+
+## Offline Registries
+
+In Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
 ## Known Issues
 
