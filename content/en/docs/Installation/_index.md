@@ -27,7 +27,7 @@ As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project 
 
 ## Install Kyverno using Helm
 
-Kyverno can be deployed via a Helm chart--the recommended method for a production install--which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
+Kyverno can be deployed via a Helm chart--the only supported method for a production install--which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
 
 In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 
@@ -116,7 +116,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 ## Install Kyverno using YAMLs
 
-Kyverno can also be installed using a single installation manifest, however for production installation the Helm chart is the recommended method.
+Kyverno can also be installed using a single installation manifest, however for production installation the Helm chart is the only supported method.
 
 This manifest path will always point to the latest `main` branch and is not guaranteed to be stable.
 
