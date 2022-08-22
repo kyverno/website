@@ -160,11 +160,11 @@ policies:
         <variable2 in policy1>: <value>
 namespaceSelector:
 - name: <namespace1 name>
-labels:
-  <label key>: <label value>
+  labels:
+    <label key>: <label value>
 - name: <namespace2 name>
-labels:
-  <label key>: <label value>
+  labels:
+    <label key>: <label value>
 ```
 
 Format of `user_info.yaml`:
