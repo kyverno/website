@@ -736,6 +736,13 @@ results:
 - policy: <name>
   rule: <name>
   resource: <name>
+  # when testing a generate rule supply generatedResource
+  generatedResource: <file_name.yaml>
+  kind: <kind>
+  result: pass
+- policy: <name>
+  rule: <name>
+  resource: <name>
   kind: <kind>
   result: fail
 ```
@@ -1050,6 +1057,104 @@ skipped mutate policy add-default-resources -> resource default/Pod/nginx-demo2
 │───│───────────────────────│──────────────────────│─────────────────────────│────────│
 
 Test Summary: 2 tests passed and 0 tests failed
+```
+
+In the following policy test, a `generate` policy rule is applied which generates a new resource from an existing resource present in resource.yaml. To test such policy the `generatedResource` tag is applied in `results[]` array, where the new generated resource is added.
+
+Policy manifest (`add_network_policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-networkpolicy
+  annotations:
+    policies.kyverno.io/title: Add Network Policy
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/description: >-
+      By default, Kubernetes allows communications across all Pods within a cluster.
+      The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict
+      communications. A default NetworkPolicy should be configured for each Namespace to
+      default deny all ingress and egress traffic to the Pods in the Namespace. Application
+      teams can then configure additional NetworkPolicy resources to allow desired traffic
+      to application Pods from select sources. This policy will create a new NetworkPolicy resource
+      named `default-deny` which will deny all traffic anytime a new Namespace is created.
+spec:
+  rules:
+  - name: default-deny
+    match:
+      resources:
+        kinds:
+        - Namespace
+    generate:
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: default-deny
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      data:
+        spec:
+          # select all pods in the namespace
+          podSelector: {}
+          # deny all traffic
+          policyTypes:
+          - Ingress
+          - Egress
+```
+Resource manifest (`resource.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-world-namespace
+```
+Generated Resource (`generatedResource.yaml`):
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: hello-world-namespace
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+name: deny-all-traffic
+policies:
+  - add_network_policy.yaml
+resources:
+  - resource.yaml
+results:
+  - policy: add-networkpolicy
+    rule: default-deny
+    resource: hello-world-namespace
+    generatedResource: generatedResource.yaml
+    kind: Namespace
+    result: pass
+```
+```sh
+$ kyverno test .
+Executing deny-all-traffic...
+applying 1 policy to 1 resource... 
+
+ Note : The resource field is being deprecated in 1.8.0 release. Please provide the resources under the resources parameter as an array in the results field 
+
+│───│───────────────────│──────────────│──────────────────────────────────│────────│
+│ # │ POLICY            │ RULE         │ RESOURCE                         │ RESULT │
+│───│───────────────────│──────────────│──────────────────────────────────│────────│
+│ 1 │ add-networkpolicy │ default-deny │ /Namespace/hello-world-namespace │ Pass   │
+│───│───────────────────│──────────────│──────────────────────────────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
 ```
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
