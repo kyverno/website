@@ -707,6 +707,10 @@ In each test, there are four desired results which can be tested for. If the act
 
 For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
+{{% alert title="Note" color="info" %}}
+The Kyverno CLI via the `test` command does not embed the Kubernetes control plane components and therefore is not able to perform the types of initial mutations subjected to a resource as part of an in-cluster creation flow. Take care to ensure the manifests you test account for these modifications.
+{{% /alert %}}
+
 #### Test File Structures
 
 The test declaration file format of `kyverno-test.yaml` must be of the following format. In order to quickly generate a sample manifest which you can populate with your specified inputs, use either the `--manifest-mutate` or `--manifest-validate` command and output the result to a `kyverno-test.yaml` file.
