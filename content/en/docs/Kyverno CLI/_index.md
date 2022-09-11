@@ -723,25 +723,20 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
-# optional file for declaring variables. see below for example.
-variables: variables.yaml
-# optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
-userinfo: user_info.yaml
+variables: variables.yaml # optional file for declaring variables. see below for example.
+userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 results:
 - policy: <name>
   rule: <name>
   resource: <name>
-  # when testing for a resource in a specific Namespace
-  namespace: <name>
-  # when testing a mutate rule supply patchedResource
-  patchedResource: <file_name.yaml>
+  resources: # optional. One of either `resource` or `resources[]` must be specified. Use `resources[]` when a number of different resources should all share the same test result.
+  - <name_1>
+  - <name_2>
+  namespace: <name> # when testing for a resource in a specific Namespace
+  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   kind: <kind>
   result: pass
-- policy: <name>
-  rule: <name>
-  resource: <name>
-  kind: <kind>
-  result: fail
 ```
 
 The test declaration consists of the following parts:
