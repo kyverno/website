@@ -230,6 +230,29 @@ The `!-` operator provides an easier way of validating the value in question fal
 There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
 {{% /alert %}}
 
+An example of using an operator in a pattern style validation rule is shown below.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: validate-replica-count
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+      validate:
+        message: "Replica count for a Deployment must be greater than or equal to 2."
+        pattern:
+          spec:
+            replicas: ">=2"
+```
+
 ### Anchors
 
 Anchors allow conditional processing (i.e. "if-then-else") and other logical checks in validation patterns. The following types of anchors are supported:
