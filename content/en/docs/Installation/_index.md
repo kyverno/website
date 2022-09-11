@@ -434,13 +434,13 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
 2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
-4. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+3. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+4. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]".
 5. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno.
 
 ### Container Flags
 
-The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments.
+The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments. Unless otherwise stated, all container flags should be prefaced with two dashes (ex., `--autogenInternals`).
 
 1. `-v`: Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages.
 2. `profile`: setting this flag to 'true' will enable profiling.
@@ -458,6 +458,10 @@ The following flags can also be used to control the advanced behavior of Kyverno
 14. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
 15. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
 16. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
+17. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Value is an integer.
+18. `maxReportChangeRequests`: defines the number of RCRs that can be created in a given Namespace. When this threshold is reached, no further RCRs will be created and Kyverno will begin to start the clean-up process. This flag should be used when there is high churn rate in a cluster leading to PolicyReport exhaustion and excessive memory growth. Value is an integer.
+19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean.
+20. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
 
 ### Policy Report access
 
@@ -542,7 +546,7 @@ metadata:
 
 ## Upgrading Kyverno
 
-Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed.
+Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed. You cannot upgrade Kyverno by bumping the image tag on the Deployment as this will not affect the CRDs and other resources necessary for Kyverno's operation.
 
 ### Upgrade Kyverno with YAML manifest
 
