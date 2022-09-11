@@ -37,6 +37,16 @@ The Kyverno CLI can also be installed with [Homebrew](https://brew.sh/) as a [fo
 brew install kyverno
 ```
 
+### Manual Binary Installation
+
+The Kyverno CLI may also be installed by manually downloading the compiled binary available on the [releases page](https://github.com/kyverno/kyverno/releases). An example of installing the Kyverno CLI v1.7.2 on a Linux x86_64 system is shown below.
+
+```sh
+curl -LO https://github.com/kyverno/kyverno/releases/download/v1.7.2/kyverno-cli_v1.7.2_linux_x86_64.tar.gz
+tar -xvf kyverno-cli_v1.7.2_linux_x86_64.tar.gz
+sudo cp kyverno /usr/local/bin/
+```
+
 ### Building the CLI from source
 
 You can also build the CLI binary from the Git repository (requires Go).
@@ -150,11 +160,11 @@ policies:
         <variable2 in policy1>: <value>
 namespaceSelector:
 - name: <namespace1 name>
-labels:
-  <label key>: <label value>
+  labels:
+    <label key>: <label value>
 - name: <namespace2 name>
-labels:
-  <label key>: <label value>
+  labels:
+    <label key>: <label value>
 ```
 
 Format of `user_info.yaml`:

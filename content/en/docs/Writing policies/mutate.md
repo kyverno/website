@@ -353,14 +353,11 @@ The anchor processing behavior for mutate conditions is as follows:
 
 ## Mutate Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports the mutate existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which updates existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+With Kyverno 1.7.0+, Kyverno supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
 
-To define such a policy, trigger resources need to be specified in the `match` block. The target resources, resources that are mutated in the background, are specified in each mutate rule `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`). 
+Because these mutations occur on existing resources, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
 
-{{% alert title="Note" color="warning" %}}
-The proper permissions need to be granted to Kyverno ServiceAccount. You may need to create a ClusterRole with proper permissions and bind it to the Kyverno ServiceAccount via a ClusterRoleBinding.
-{{% /alert %}}
-
+To define such a policy, trigger resources need to be specified in the `match` block. The target resources--resources that are mutated in the background--are specified in each mutate rule under `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
 
 This policy, which matches when the trigger resource named `dictionary-1` in the `staging` Namespace changes, writes a label `foo=bar` to the target resource named `secret-1` also in the `staging` Namespace.
 

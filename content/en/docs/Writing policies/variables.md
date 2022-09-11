@@ -262,6 +262,7 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
   "containers": {
     "tomcat": {
       "registry": "https://ghcr.io",
+      "path": "tomcat",
       "name": "tomcat",
       "tag": "9"
     }
@@ -269,6 +270,7 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
   "initContainers": {
     "vault": {
       "registry": "https://ghcr.io",
+      "path": "vault",
       "name": "vault",
       "tag": "v3"
     }
@@ -284,7 +286,11 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.registry}}`
 
-2. Reference the image name
+2. Reference the path to the image
+
+`{{images.containers.tomcat.path}}`
+
+3. Reference the image name
 
 `{{images.containers.tomcat.name}}`
 
@@ -302,7 +308,11 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.registry}}`
 
-2. Reference the image name
+2. Reference the path to the image
+
+`{{images.initContainers.vault.path}}`
+
+3. Reference the image name
 
 `{{images.initContainers.vault.name}}`
 
@@ -365,7 +375,7 @@ And below allows for an inline variable with a nested object as well as a defaul
         jmespath: 'to_string(@)'
 ```
 
-Variables can reference other variables as well as shown below.
+Variables can reference other variables as well as shown below. Note that context variables are ordered; a variable consumed by another variable must be defined higher in the list of context variables.
 
 ```yaml
 context:

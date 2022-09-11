@@ -33,7 +33,7 @@ Container images can be signed during the build phase of a CI/CD pipeline using 
 
 The policy rule check fails if the signature is not found in the OCI registry, or if the image was not signed using the specified key.
 
-The rule mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier), when when `mutateImages` is set to `true` (which is the default), if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
+The rule mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier), when `mutateDigest` is set to `true` (which is the default), if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
 
 The `imageVerify` rule first executes as part of the mutation webhook as the applying policy may insert the image digest. The `imageVerify` rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
 
@@ -183,7 +183,6 @@ The [in-toto attestation format](https://github.com/in-toto/attestation) provide
 }
 ```
 
-
 The `imageVerify` rule can contain one or more attestation checks that verify the contents of the `predicate`. Here is an example that verifies the repository URI, the branch, and the reviewers.
 
 ```yaml
@@ -235,7 +234,7 @@ Each `verifyImages` rule can be used to verify signatures or attestations, but n
 
 ### Signing attestations
 
-To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry. 
+To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
@@ -256,7 +255,6 @@ You can use a custom attestation type with a JSON document as the predicate. For
         "bob@example.com"
     ]
 }
-
 ```
 
 The following cosign command creates the in-toto format attestation and signs it with the specified credentials using the custom predicate type `https://example.com/CodeReview/v1`:
@@ -270,7 +268,7 @@ This flexible scheme allows attesting and verifying any JSON document, including
 Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestations for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
 
 ```sh
-COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload | sed s/\"//g | base64 --decode | jq
+COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload -r | base64 --decode | jq
 ```
 
 ```sh
@@ -561,6 +559,8 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
+If multiple imagePullSecrets are needed, they can be specified as comma-separated values to the `--imagePullSecrets` container flag.
+
 ## Using a signature repository
 
 To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
@@ -655,6 +655,10 @@ spec:
               gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
               -----END PUBLIC KEY-----
 ```
+
+## Offline Registries
+
+In Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
 ## Known Issues
 
