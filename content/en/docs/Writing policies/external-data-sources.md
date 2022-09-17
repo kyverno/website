@@ -310,6 +310,62 @@ The output of this will be `apps/v1`. Older versions of Kubernetes (prior to 1.1
 
 {{% /alert %}}
 
+Kyverno can also fetch data from other API locations such as `/version` and [aggregated APIs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/).
+
+For example, fetching from `/version` might return something similar to what is shown below.
+
+```sh
+$ kubectl get --raw /version
+{
+  "major": "1",
+  "minor": "23",
+  "gitVersion": "v1.23.8+k3s1",
+  "gitCommit": "53f2d4e7d80c09a7db1858e3f4e7ddfa13256c45",
+  "gitTreeState": "clean",
+  "buildDate": "2022-06-27T21:48:01Z",
+  "goVersion": "go1.17.5",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}
+```
+
+Fetching from an aggregated API, for example the `metrics.k8s.io` group, can be done with `/apis/metrics.k8s.io/<api_version>/<resource_type>` as shown below.
+
+```sh
+$ kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes | jq
+{
+  "kind": "NodeMetricsList",
+  "apiVersion": "metrics.k8s.io/v1beta1",
+  "metadata": {},
+  "items": [
+    {
+      "metadata": {
+        "name": "k3d-kyv180rc1-server-0",
+        "creationTimestamp": "2022-09-11T13:37:39Z",
+        "labels": {
+          "beta.kubernetes.io/arch": "amd64",
+          "beta.kubernetes.io/instance-type": "k3s",
+          "beta.kubernetes.io/os": "linux",
+          "egress.k3s.io/cluster": "true",
+          "kubernetes.io/arch": "amd64",
+          "kubernetes.io/hostname": "k3d-kyv180rc1-server-0",
+          "kubernetes.io/os": "linux",
+          "node-role.kubernetes.io/control-plane": "true",
+          "node-role.kubernetes.io/master": "true",
+          "node.kubernetes.io/instance-type": "k3s"
+        }
+      },
+      "timestamp": "2022-09-11T13:37:24Z",
+      "window": "10.059s",
+      "usage": {
+        "cpu": "298952967n",
+        "memory": "1311340Ki"
+      }
+    }
+  ]
+}
+```
+
 ### Handling collections
 
 The API server response for a `HTTP GET` on a URL path that requests collections of resources will be an object with a list of items (resources).

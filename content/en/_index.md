@@ -63,7 +63,7 @@ security. The Kyverno CLI can be used to test policies and validate resources as
 
 {{< blocks/lead color="dark" >}}
 
-## Kyverno is a CNCF Sandbox Project { class="text-center mb-4" }
+## Kyverno is a CNCF Incubating Project { class="text-center mb-4" }
 
 <a href="https://www.cncf.io" target="blank">
 	<img class="cncf-logo img-fluid" src="/images/logo_cloudnative.png" alt="Cloud Native Computing Foundation logo">
