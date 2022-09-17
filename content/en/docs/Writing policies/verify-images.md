@@ -505,7 +505,7 @@ spec:
   validationFailureAction: enforce
   background: false
   webhookTimeoutSeconds: 30
-  failurePolicy: fail
+  failurePolicy: Fail
   rules:
     - name: check-image
       match:
