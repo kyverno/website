@@ -116,7 +116,7 @@ spec:
       # namespace for the generated resource
       namespace: "{{request.object.metadata.name}}"
       # propagate changes from the upstream resource
-      synchronize : true
+      synchronize: true
       clone:
         namespace: default
         name: config-template

@@ -54,6 +54,14 @@ type: docs
 
 {{% /videos %}}
 
+{{% videos %}}
+
+{{< youtube id="rVfLoueuCoY" start="0" class="video" >}}
+
+{{< youtube id="M_-r6vUKevQ" start="0" class="video" >}}
+
+{{% /videos %}}
+
 ## Interviews
 
 {{% videos %}}

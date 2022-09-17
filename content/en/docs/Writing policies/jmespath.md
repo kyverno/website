@@ -1394,6 +1394,56 @@ metadata:
 </p>
 </details>
 
+### Random
+
+<details><summary>Expand</summary>
+<p>
+
+The `random()` filter is used to generate a random sequence of string data based upon the input pattern, expressed as regex. The input it takes is a combination of the composition of the pattern and the length of each pattern. This filter is useful in a variety of ways including generating unique resource names. Some other use cases include creating Pod hashes, auth tokens, license keys, GUIDs, and more.
+
+For example, `random('[0-9a-z]{5}')` will produce a string output of exactly 5 characters long composed of numbers in the collection `0-9` and lower-case letters in the collection `a-z`. The output might be `"91t6f"`. More complex random output can be created by chaining multiple pattern and length combinations together. For example, to create a faux license key you could use the expression `random('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}')` which may generate the output `"K284DW7Y-7LMT-XHR3-ZZ53-36366O8JVDG9"`.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| String             | String   |
+
+<br>
+
+**Example:** This policy uses `random()` to mutate a new Secret to add a label with key `randomoutput` and the value of which is `random-` followed by 6 random characters composed of lower-case letters `a-z` and numbers `0-9`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ver-test
+spec:
+  rules:
+  - name: test-ver-ver
+    match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+    preconditions:
+      all:
+      - key: "{{request.operation}}"
+        operator: In
+        value:
+        - CREATE
+    context:
+    - name: randomtest
+      variable:
+        jmesPath: random('[a-z0-9]{6}')
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            randomoutput: random-{{randomtest}}
+```
+
+</p>
+</details>
+
 ### Regex_match
 
 <details><summary>Expand</summary>

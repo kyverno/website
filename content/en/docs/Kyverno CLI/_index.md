@@ -707,6 +707,10 @@ In each test, there are four desired results which can be tested for. If the act
 
 For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
+{{% alert title="Note" color="info" %}}
+The Kyverno CLI via the `test` command does not embed the Kubernetes control plane components and therefore is not able to perform the types of initial mutations subjected to a resource as part of an in-cluster creation flow. Take care to ensure the manifests you test account for these modifications.
+{{% /alert %}}
+
 #### Test File Structures
 
 The test declaration file format of `kyverno-test.yaml` must be of the following format. In order to quickly generate a sample manifest which you can populate with your specified inputs, use either the `--manifest-mutate` or `--manifest-validate` command and output the result to a `kyverno-test.yaml` file.
@@ -719,25 +723,20 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
-# optional file for declaring variables. see below for example.
-variables: variables.yaml
-# optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
-userinfo: user_info.yaml
+variables: variables.yaml # optional file for declaring variables. see below for example.
+userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 results:
 - policy: <name>
   rule: <name>
   resource: <name>
-  # when testing for a resource in a specific Namespace
-  namespace: <name>
-  # when testing a mutate rule supply patchedResource
-  patchedResource: <file_name.yaml>
+  resources: # optional. One of either `resource` or `resources[]` must be specified. Use `resources[]` when a number of different resources should all share the same test result.
+  - <name_1>
+  - <name_2>
+  namespace: <name> # when testing for a resource in a specific Namespace
+  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   kind: <kind>
   result: pass
-- policy: <name>
-  rule: <name>
-  resource: <name>
-  kind: <kind>
-  result: fail
 ```
 
 The test declaration consists of the following parts:
