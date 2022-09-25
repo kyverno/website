@@ -445,7 +445,7 @@ spec:
         - entries:
           - keyless:
               subject: "*@nirmata.com"
-              issuer: ""https://accounts.google.com"
+              issuer: "https://accounts.google.com"
 ```
 
 ### Keyless signing
