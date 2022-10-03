@@ -108,11 +108,17 @@ To disable auto-generating rules for Pod controllers set `pod-policies.kyverno.i
 
 When disabling auto-generation rules for select Pod controllers, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/writing-policies/preconditions/) with an expression similar to the below which may allow Pods created by a Job controller to pass.
 
+
 ```yaml
 - key: Job
   operator: AnyNotIn
   value: "{{ request.object.metadata.ownerReferences[].kind }}"
 ```
+
+{{% alert title="Note" color="Info" %}}
+`Auto-gen rules` is not enabled for patchesJson6902 mutation rules.
+{{% /alert %}}
+
 
 ## Exclusion by Metadata
 
