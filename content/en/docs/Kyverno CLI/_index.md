@@ -54,7 +54,7 @@ You can also build the CLI binary from the Git repository (requires Go).
 ```sh
 git clone https://github.com/kyverno/kyverno
 cd kyverno
-make cli
+make build-cli
 mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
 ```
 
