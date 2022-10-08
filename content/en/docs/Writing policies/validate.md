@@ -666,3 +666,138 @@ spec:
 ```
 
 Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
+
+## Manifest Validation
+
+Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/writing-policies/verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
+
+Generate a key pair used to sign a manifest by using the [`cosign`](https://github.com/sigstore/cosign#installation) command-line tool.
+
+```sh
+cosign generate-key-pair
+```
+
+Install the [`kubectl-sigstore`](https://github.com/sigstore/k8s-manifest-sigstore#installation) command-line tool using one of the provided methods.
+
+Sign the YAML manifest using the private key generated in the first step.
+
+```sh
+$ kubectl-sigstore sign -f secret.yaml -k cosign.key --tarball no -o secret-signed.yaml
+Enter password for private key: 
+Using payload from: /tmp/kubectl-sigstore-temp-dir1572288324/tmp-blob-file
+0D 7ѫO2�Ď��D)�I��!@t�0���X� Xmj���7���+u
+                                        ���_ڑ)ۆ�d�0�qHINFO[0004] signed manifest generated at secret-signed.yaml
+```
+
+The `secret.yaml` manifest provided as an input has been signed using your private key and the signed version is output at `secret-signed.yaml`.
+
+```yaml
+apiVersion: v1
+data:
+  api_token: MDEyMzQ1Njc4OWFiY2RlZg==
+kind: Secret
+metadata:
+  annotations:
+    cosign.sigstore.dev/message: H4sIAAAAAAAA/zTMPQrCQBBA4X5OMVeIWA2kU7sYVFC0kXEzyJr9c3cirKcXlXSv+R4ne5RcbAyErwYGViZA5GSvGkcJhN1qXbv3rtk+zLI/bex5sXeXe9vCaMNAeBCTRcGL8owd38SVbyG6aFh/d5lyTAKIgb0Q+lr+UmsSwj7xcxL4BAAA//+dVuynjwAAAA==
+    cosign.sigstore.dev/signature: MEQCIDfRq08y5MSOFo3iiEQUKdRJw9YhQHTjMAXwgO0eWO+hAiBYbR5qpa3wBjfN+d4rdQy5iNFf2pEp24aHZJgwyHEaSA==
+  labels:
+    location: europe
+  name: mysecret
+type: Opaque
+```
+
+Create the Kyverno policy which matches on Secrets and will be used to validate the signatures.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-secrets
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: validate-secrets
+      match:
+        any:
+        - resources:
+            kinds:
+              - Secret
+      validate:
+        manifests:
+          attestors:
+          - count: 1
+            entries:
+            - keys:
+                publicKeys: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEStoX3dPCFYFD2uPgTjZOf1I5UFTa
+                  1tIu7uoGoyTxJqqEq7K2aqU+vy+aK76uQ5mcllc+TymVtcLk10kcKvb3FQ==
+                  -----END PUBLIC KEY-----
+```
+
+To test the operation of this rule, modify the signed Secret to change some aspect of the manifest. For example, by changing even the value of the `location` label from `europe` to `asia` will cause the signed manifest to be invalid. Kyverno will reject the altered manifest because the signature was only valid for the original Secret manifest.
+
+```sh
+$ kubectl apply -f secret-signed.yaml 
+Error from server: error when creating "secret-signed.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+policy Secret/default/mysecret for resource violation: 
+
+validate-secrets:
+  validate-secrets: 'manifest verification failed; verifiedCount 0; requiredCount
+    1; message .attestors[0].entries[0].keys: failed to verify signature. diff found;
+    {"items":[{"key":"metadata.labels.location","values":{"after":"asia","before":"europe"}}]}'
+```
+
+The difference between the signed manifest and supplied manifest is shown as part of the failure message.
+
+Change the value of the `location` label back to `europe` and attempt to create the manifest once again.
+
+```sh
+$ kubectl apply -f secret-signed.yaml 
+secret/mysecret created
+```
+
+The creation is allowed since the signature was validated according to the original contents.
+
+In many cases, you may wish to secure a portion of a manifest while allowing alterations to other portions. For example, you may wish to sign manifests for Deployments which prevent tampering with any fields other than the replica count. Use the `ignoreFields` portion to define the object type and allowed fields which can differ from the signed original.
+
+The below policy example shows how to match on Deployments and verify signed manifests while allowing changes to the `spec.replicas` field.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-deployment
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: validate-deployment
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        manifests:
+          attestors:
+          - count: 1
+            entries:
+            - keys:
+                publicKeys: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEStoX3dPCFYFD2uPgTjZOf1I5UFTa
+                  1tIu7uoGoyTxJqqEq7K2aqU+vy+aK76uQ5mcllc+TymVtcLk10kcKvb3FQ==
+                  -----END PUBLIC KEY-----
+          ignoreFields:
+          - objects:
+            - kind: Deployment
+            fields:
+            - spec.replicas
+```
+
+Kyverno will permit the creation of a signed Deployment as long as the only difference between the signed original and the submitted manifest is the `spec.replicas` field. Modifications to any other field(s) will trigger a failure, for example if the `spec.template.spec.containers[0].image` field is changed from the default of `busybox:1.28` to `evilimage:1.28`.
+
+The manifest validation feature shares many of the same abilities as the [verify images](/docs/writing-policies/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
