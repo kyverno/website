@@ -804,7 +804,7 @@ The manifest validation feature shares many of the same abilities as the [verify
 
 ## Pod Security
 
-Starting in Kyverno 1.8, a new sub-rule type called `podSecurity` is available. This sub-rule type dramatically simplifies the process of writing and applying [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) profiles and controls. By integrating the same libraries as used in Kubernetes' [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/), enabled by default in 1.23 and stable in 1.25, Kyverno is able to apply all or some of the controls and profiles in as simple as a single rule while providing capabilities not possible in Pod Security Admission. Standard `match` and `exclude` processing is available just like with other rules. This sub-rule type is enabled when a `validate` rule is written with a `podSecurity` object, detailed below.
+Starting in Kyverno 1.8, a new subrule type called `podSecurity` is available. This subrule type dramatically simplifies the process of writing and applying [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) profiles and controls. By integrating the same libraries as used in Kubernetes' [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/), enabled by default in 1.23 and stable in 1.25, Kyverno is able to apply all or some of the controls and profiles in a single rule while providing capabilities not possible in Pod Security Admission. Standard `match` and `exclude` processing is available just like with other rules. This subrule type is enabled when a `validate` rule is written with a `podSecurity` object, detailed below.
 
 The podSecurity feature has the following advantages over the Kubernetes built-in Pod Security Admission feature:
 
@@ -1085,13 +1085,13 @@ Multiple control names may be excluded by listing them individually keeping in m
 
 ### PSA Interoperability
 
-Kyverno's podSecurity validate sub-rule type and Kubernetes' Pod Security Admission (PSA) are compatible and may be used together in a single cluster with an understanding of where each begins and ends. These are a few of the most common strategies when employing both technologies.
+Kyverno's podSecurity validate subrule type and Kubernetes' Pod Security Admission (PSA) are compatible and may be used together in a single cluster with an understanding of where each begins and ends. These are a few of the most common strategies when employing both technologies.
 
 {{% alert title="Note" color="info" %}}
-Pods which are blocked by PSA in enforce mode do not result in an AdmissionReview request being sent to admission controllers. Therefore, if a Pod is blocked by PSA, Kyverno never gets told about it.
+Pods which are blocked by PSA in enforce mode do not result in an AdmissionReview request being sent to admission controllers. Therefore, if a Pod is blocked by PSA, Kyverno cannot apply policies to it.
 {{% /alert %}}
 
-1. Use PSA to enforce the baseline profile cluster-wide and use Kyverno podSecurity sub-rule to enforce or audit the restricted profile with more granularity.
+1. Use PSA to enforce the baseline profile cluster-wide and use Kyverno podSecurity subrule to enforce or audit the restricted profile with more granularity.
 
     **Advantage**: Reduces some of the processing on Kyverno by blocking non-compliant Pods at the source while allowing more flexible control on exclusions not possible with PSA.
 
