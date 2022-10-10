@@ -460,7 +460,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 16. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
 17. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Value is an integer.
 18. `maxReportChangeRequests`: defines the number of RCRs that can be created in a given Namespace. When this threshold is reached, no further RCRs will be created and Kyverno will begin to start the clean-up process. This flag should be used when there is high churn rate in a cluster leading to PolicyReport exhaustion and excessive memory growth. Value is an integer.
-19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean.
+19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
 20. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
 
 ### Policy Report access
