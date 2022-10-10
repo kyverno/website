@@ -801,3 +801,308 @@ spec:
 Kyverno will permit the creation of a signed Deployment as long as the only difference between the signed original and the submitted manifest is the `spec.replicas` field. Modifications to any other field(s) will trigger a failure, for example if the `spec.template.spec.containers[0].image` field is changed from the default of `busybox:1.28` to `evilimage:1.28`.
 
 The manifest validation feature shares many of the same abilities as the [verify images](/docs/writing-policies/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
+
+## Pod Security
+
+Starting in Kyverno 1.8, a new subrule type called `podSecurity` is available. This subrule type dramatically simplifies the process of writing and applying [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) profiles and controls. By integrating the same libraries as used in Kubernetes' [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/), enabled by default in 1.23 and stable in 1.25, Kyverno is able to apply all or some of the controls and profiles in a single rule while providing capabilities not possible in Pod Security Admission. Standard `match` and `exclude` processing is available just like with other rules. This subrule type is enabled when a `validate` rule is written with a `podSecurity` object, detailed below.
+
+The podSecurity feature has the following advantages over the Kubernetes built-in Pod Security Admission feature:
+
+1. Cluster-wide application of Pod Security Standards does not require an [AdmissionConfiguration](https://kubernetes.io/docs/tasks/configure-pod-container/enforce-standards-admission-controller/#configure-the-admission-controller) file nor any modifications to any control plane components.
+2. Namespace application of Pod Security Standards does not require assignment of a label.
+3. Specific controls may be exempted from a given profile.
+4. Container images may be exempted along with a control exemption.
+5. Enforcement of Pod controllers is [automatic](/docs/writing-policies/autogen/).
+6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/policy-reports/) Custom Resource.
+7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
+
+For example, this policy enforces the latest version of the Pod Security Standards [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) in a single rule across the entire cluster.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: baseline
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: baseline
+        version: latest
+```
+
+The `podSecurity.level` field indicates the [profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#profile-details) to be applied. Applying the `baseline` profile automatically includes all the controls outlined in the [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline).
+
+The `podSecurity.version` field indicates which version of the Pod Security Standards should be applied. Use of the `latest` version indicates the latest version of the Pod Security Standards should be applied. This field allows prior versions, for example `v1.24`, to support the pinning to specific versions of the Pod Security Standards.
+
+Attempting to apply a Pod which does not meet all of the controls included in the baseline profile will result in a blocking action.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod01
+spec:
+  hostIPC: true
+  containers:
+  - name: container01
+    image: dummyimagename
+```
+
+The failure message returned indicates which level, version, and specific control(s) were responsible for the failure.
+
+```sh
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/badpod01 for resource violation: 
+
+psa:
+  baseline: |
+    Validation rule 'baseline' failed. It violates PodSecurity "baseline:latest": ({Allowed:false ForbiddenReason:host namespaces ForbiddenDetail:hostIPC=true})
+```
+
+Similarly, the restricted profile may be applied by changing the `level` field.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: restricted
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: restricted
+        version: latest
+```
+
+Applying the same Pod as above will now return additional information in the message about the cumulative violations.
+
+```
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/badpod01 for resource violation: 
+
+psa:
+  baseline: |
+    Validation rule 'baseline' failed. It violates PodSecurity "restricted:latest": ({Allowed:false ForbiddenReason:allowPrivilegeEscalation != false ForbiddenDetail:container "container01" must set securityContext.allowPrivilegeEscalation=false})
+    ({Allowed:false ForbiddenReason:unrestricted capabilities ForbiddenDetail:container "container01" must set securityContext.capabilities.drop=["ALL"]})
+    ({Allowed:false ForbiddenReason:host namespaces ForbiddenDetail:hostIPC=true})
+    ({Allowed:false ForbiddenReason:runAsNonRoot != true ForbiddenDetail:pod or container "container01" must set securityContext.runAsNonRoot=true})
+    ({Allowed:false ForbiddenReason:seccompProfile ForbiddenDetail:pod or container "container01" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost"})
+```
+
+{{% alert title="Note" color="info" %}}
+The `restricted` profile is inclusive of the `baseline` profile. Therefore, any Pod in violation of `baseline` is implicitly in violation of `restricted`.
+{{% /alert %}}
+
+### Exemptions
+
+When it is necessary to exempt specific controls within a profile while applying all others, the `podSecurity.exclude[]` object may be used. Controls which have restricted fields at the Pod `spec` level need only specify the `controlName` field, the value of which must be a valid name of a Pod Security Standard control. Controls which have restricted fields at the Pod `containers[]` level must additionally specify the `images[]` list. Wildcards are supported in the value of `images[]` allowing for flexible exemption. And controls which have restricted fields at both `spec` and `containers[]` levels must specify two objects in the `exclude[]` field: once with `controlName` and the other with both `controlName` and `images[]`.
+
+For example, the below policy applies the [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) across the entire cluster while exempting any Pod that violates the Host Namespaces control.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: baseline
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: baseline
+        version: latest
+        exclude:
+        - controlName: Host Namespaces
+```
+
+The following Pod violates the Host Namespaces control because it sets `spec.hostIPC: true` yet is allowed due to the exclusion.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod01
+spec:
+  hostIPC: true
+  containers:
+  - name: container01
+    image: dummyimagename
+```
+
+When a control exemption is requested where the control defines only container-level fields, the `images[]` list must be present with at least one entry. Wildcards (`*`) are supported both as the sole value and as a component of an image name.
+
+For example, the below policy enforces the restricted profile but exempts containers running either the `nginx` or `redis` image from following the Capabilities control.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: restricted
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: restricted
+        version: latest
+        exclude:
+        - controlName: Capabilities
+          images:
+          - nginx*
+          - redis*
+```
+
+The following Pod, running the `nginx:1.1.9` image, will be allowed although it violates the Capabilities control by virtue of it adding a forbidden capability.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx:1.1.9
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        add:
+        - SYS_ADMIN
+        drop:
+        - ALL
+```
+
+The same policy would result in blocking a Pod in which a container running the `busybox:1.28` image attempted the same thing.
+
+```
+Error from server: error when creating "temp.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/badpod01 for resource violation: 
+
+psa:
+  restricted: |
+    Validation rule 'restricted' failed. It violates PodSecurity "restricted:latest": ({Allowed:false ForbiddenReason:non-default capabilities ForbiddenDetail:container "container01" must not include "SYS_ADMIN" in securityContext.capabilities.add})
+    ({Allowed:false ForbiddenReason:unrestricted capabilities ForbiddenDetail:container "container01" must not include "SYS_ADMIN" in securityContext.capabilities.add})
+```
+
+{{% alert title="Note" color="info" %}}
+Note that in the above error message, the Pod is in violation of the Capabilities control at both the baseline and restricted profiles, hence the multiple entries.
+{{% /alert %}}
+
+When a control is to be excluded which contains fields at both the `spec` and `containers[]` level, in order for that control to be fully excluded it must have exclusions for both. The `controlName` field assumes `spec` level while `controlName` plus `images[]` assumes the `containers[]` level.
+
+For example, the Seccomp control in the restricted profile mandates that the `securityContext.seccompProfile.type` field be set to either `RuntimeDefault` or `Localhost`. The `securityContext` object may be defined at one or both the `spec` or `container[]` levels. The `container[]` fields may be undefined/nil if the Pod-level field is set appropriately. Conversely, the Pod-level field may be undefined/nil if _all_ container- level fields are set. In order to completely exclude this control, two entries must exist in the `podSecurity.exclude[]` object. The below policy enforces the restricted profile across the entire cluster while fully exempting the Seccomp control from all images.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: enforce
+  rules:
+  - name: restricted
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: restricted
+        version: latest
+        exclude:
+        - controlName: Seccomp
+        - controlName: Seccomp
+          images:
+          - '*'
+```
+
+An example Pod which satisfies all controls in the restricted profile except the Seccomp control is therefore allowed.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  securityContext:
+    seccompProfile:
+      type: Unconfined
+  containers:
+  - name: container01
+    image: busybox:1.28
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      # seccompProfile:
+      #   type: Unconfined
+      capabilities:
+        drop:
+        - ALL
+```
+
+Regardless of where the disallowed `type: Unconfined` field is specified, Kyverno allows the Pod.
+
+Multiple control names may be excluded by listing them individually keeping in mind the previously-described rules. Refer to the [Pod Security Standards documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/) for a listing of all present controls, restricted fields, and allowed values.
+
+### PSA Interoperability
+
+Kyverno's podSecurity validate subrule type and Kubernetes' Pod Security Admission (PSA) are compatible and may be used together in a single cluster with an understanding of where each begins and ends. These are a few of the most common strategies when employing both technologies.
+
+{{% alert title="Note" color="info" %}}
+Pods which are blocked by PSA in enforce mode do not result in an AdmissionReview request being sent to admission controllers. Therefore, if a Pod is blocked by PSA, Kyverno cannot apply policies to it.
+{{% /alert %}}
+
+1. Use PSA to enforce the baseline profile cluster-wide and use Kyverno podSecurity subrule to enforce or audit the restricted profile with more granularity.
+
+    **Advantage**: Reduces some of the processing on Kyverno by blocking non-compliant Pods at the source while allowing more flexible control on exclusions not possible with PSA.
+
+2. Use PSA to enforce either baseline or restricted on a per-Namespace basis and use Kyverno podSecurity cluster-wide or on different Namespaces.
+
+    **Advantage**: Does not require configuring an AdmissionConfiguration file for PSA.
+
+3. Use PSA to enforce the baseline profile cluster-wide, relax certain Namespaces to the privileged profile, and use Kyverno podSecurity at the baseline or restricted profile.
+
+    **Advantage**: Combines both AdmissionConfiguration with Namespace labeling while layering in Kyverno for granular control over baseline and restricted. A Kyverno mutate rule may also be separately employed here to handle the Namespace labeling as desired.
+
+4. Use both PSA and Kyverno to enforce the same profile at the same scope.
+
+    **Advantage**: Provides a safety net in case either technology is inadvertently/maliciously disabled or becomes unavailable.

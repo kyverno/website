@@ -328,14 +328,8 @@ To create the required Secrets, use the following commands (do not change the Se
 ```sh
 kubectl create ns <namespace>
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-ca self-signed-cert=true -n <namespace>
 ```
-
-{{% alert title="Note" color="info" %}}
-The annotation on the TLS pair secret is used by Kyverno to identify the use of self-signed certificates and checks for the required root CA secret.
-{{% /alert %}}
 
 Secret | Data | Content
 ------------ | ------------- | -------------
@@ -457,11 +451,13 @@ The following flags can also be used to control the advanced behavior of Kyverno
 13. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
 14. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
 15. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
-16. `autogenInternals`: New in Kyverno 1.7.0, this flag activates the (currently beta) [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. This is under construction and the behavior will change in the future. Set to `false` by default. Set to `true` to activate this ability.
+16. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
 17. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Value is an integer.
 18. `maxReportChangeRequests`: defines the number of RCRs that can be created in a given Namespace. When this threshold is reached, no further RCRs will be created and Kyverno will begin to start the clean-up process. This flag should be used when there is high churn rate in a cluster leading to PolicyReport exhaustion and excessive memory growth. Value is an integer.
-19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean.
-20. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
+20. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+21. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+22. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
 
 ### Policy Report access
 
