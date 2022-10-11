@@ -31,68 +31,62 @@ spec:
           - image: "registry.domain.com/*"
 ```
 
-Once the policy is created, these other resources can be shown in auto-generated rules which Kyverno adds to the policy.
+Once the policy is created, these other resources can be shown in auto-generated rules which Kyverno adds to the policy under the `status` object.
 
 ```yaml
-spec:
-  background: true
-  failurePolicy: Fail
-  rules:
-  - match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    name: validate-registries
-    validate:
-      message: Images may only come from our internal enterprise registry.
-      pattern:
-        spec:
-          containers:
-          - image: registry.domain.com/*
-  - match:
-      any:
-      - resources:
-          kinds:
-          - DaemonSet
-          - Deployment
-          - Job
-          - StatefulSet
-    name: autogen-validate-registries
-    validate:
-      message: Images may only come from our internal enterprise registry.
-      pattern:
-        spec:
-          template:
-            spec:
-              containers:
-              - image: registry.domain.com/*
-  - match:
-      any:
-      - resources:
-          kinds:
-          - CronJob
-    name: autogen-cronjob-validate-registries
-    validate:
-      message: Images may only come from our internal enterprise registry.
-      pattern:
-        spec:
-          jobTemplate:
-            spec:
-              template:
-                spec:
-                  containers:
-                  - image: registry.domain.com/*
-  validationFailureAction: enforce
+status:
+  autogen:
+    rules:
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - DaemonSet
+            - Deployment
+            - Job
+            - StatefulSet
+        resources: {}
+      mutate: {}
+      name: autogen-validate-registries
+      validate:
+        message: Images may only come from our internal enterprise registry.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                - image: registry.domain.com/*
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - CronJob
+        resources: {}
+      mutate: {}
+      name: autogen-cronjob-validate-registries
+      validate:
+        message: Images may only come from our internal enterprise registry.
+        pattern:
+          spec:
+            jobTemplate:
+              spec:
+                template:
+                  spec:
+                    containers:
+                    - image: registry.domain.com/*
 ```
 
-{{% alert title="Note" color="Info" %}}
-As of Kyverno 1.7.0, a new [container flag](/docs/installation/#container-flags) `--autogenInternals` is available as a beta feature (disabled by default) which prevents the writing-back of these auto-generated rules to the `.spec` field. Set to `true` to enable this new ability.
-{{% /alert %}}
-
 This auto-generation behavior is controlled by the `pod-policies.kyverno.io/autogen-controllers` annotation.
-
-By default, Kyverno inserts an annotation `pod-policies.kyverno.io/autogen-controllers=DaemonSet,Deployment,Job,StatefulSet,CronJob`, to generate additional rules that are applied to these controllers.
 
 You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates a rule for a `Deployment` if the annotation of policy is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment`.
 
@@ -102,7 +96,7 @@ Kyverno skips generating Pod controller rules whenever the following `resources`
 * `selector`
 * `annotations`
 
-Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`.
+Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`. Mutate rules which match on `Pod` and use a JSON patch are also excluded from rule auto-generation as noted [here](/docs/writing-policies/mutate/#rfc-6902-jsonpatch).
 
 To disable auto-generating rules for Pod controllers set `pod-policies.kyverno.io/autogen-controllers`  to the value `none`.
 
