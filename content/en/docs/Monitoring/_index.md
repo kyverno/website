@@ -99,7 +99,9 @@ config:
 
 > `exclude` takes precedence over "include", in cases when a namespace is provided under both `include` and `exclude`.
 
-* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.<br>
+> The below content is deprecated
+
+* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.
 
 ```sh
 ...
