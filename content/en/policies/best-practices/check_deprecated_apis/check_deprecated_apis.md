@@ -1,11 +1,11 @@
 ---
 title: "Check deprecated APIs"
 category: Best Practices
-version: 
+version: 1.7.4
 subject: Kubernetes APIs
 policyType: "validate"
 description: >
-    Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.
+    Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters. This policy requires Kyverno v1.7.3+ to function properly.
 ---
 
 ## Policy Definition
@@ -20,14 +20,15 @@ metadata:
     policies.kyverno.io/title: Check deprecated APIs
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/subject: Kubernetes APIs
-    kyverno.io/kyverno-version: 1.6.2
+    kyverno.io/kyverno-version: 1.7.4
+    policies.kyverno.io/minversion: 1.7.4
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
       Kubernetes APIs are sometimes deprecated and removed after a few releases.
       As a best practice, older API versions should be replaced with newer versions.
       This policy validates for APIs that are deprecated or scheduled for removal.
       Note that checking for some of these resources may require modifying the Kyverno
-      ConfigMap to remove filters.
+      ConfigMap to remove filters. This policy requires Kyverno v1.7.3+ to function properly.
 spec:
   validationFailureAction: audit
   background: true
@@ -60,6 +61,9 @@ spec:
         - storage.k8s.io/*/VolumeAttachment
     preconditions:
       all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: NotEquals
+        value: DELETE
       - key: "{{request.object.apiVersion}}"
         operator: AnyIn
         value:
@@ -92,6 +96,9 @@ spec:
         - node.k8s.io/*/RuntimeClass
     preconditions:
       all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: NotEquals
+        value: DELETE
       - key: "{{request.object.apiVersion}}"
         operator: AnyIn
         value:
@@ -105,4 +112,46 @@ spec:
         {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.25.
         See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
       deny: {}
+  - name: validate-v1-26-removals
+    match:
+      resources:
+        kinds:
+        - flowcontrol.apiserver.k8s.io/*/FlowSchema
+        - flowcontrol.apiserver.k8s.io/*/PriorityLevelConfiguration
+        - autoscaling/*/HorizontalPodAutoscaler
+    preconditions:
+      all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: NotEquals
+        value: DELETE
+      - key: "{{request.object.apiVersion}}"
+        operator: AnyIn
+        value:
+        - flowcontrol.apiserver.k8s.io/v1beta1
+        - autoscaling/v2beta2
+    validate:
+      message: >-
+        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.26.
+        See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
+      deny: {}
+  - name: validate-v1-27-removals
+    match:
+      resources:
+        kinds:
+        - storage.k8s.io/*/CSIStorageCapacity
+    preconditions:
+      all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: NotEquals
+        value: DELETE
+      - key: "{{request.object.apiVersion}}"
+        operator: AnyIn
+        value:
+        - storage.k8s.io/v1beta1
+    validate:
+      message: >-
+        {{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.27.
+        See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
+      deny: {}
+
 ```

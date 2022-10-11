@@ -43,5 +43,6 @@ spec:
       validate:
         message: "Binding to cluster-admin is not allowed."
         pattern:
-          roleRef: "!cluster-admin"
+          roleRef: 
+            name: "!cluster-admin"
 ```

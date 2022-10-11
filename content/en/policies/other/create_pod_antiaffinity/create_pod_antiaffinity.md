@@ -33,7 +33,7 @@ spec:
           kinds:
             - Deployment
       preconditions:
-        # This precondition selects Pods with the label `
+        # This precondition selects Pods with the label `app` defined
         all:
         - key: "{{request.object.spec.template.metadata.labels.app}}"
           operator: NotEquals
@@ -57,4 +57,5 @@ spec:
                               operator: In
                               values:
                               - "{{request.object.spec.template.metadata.labels.app}}"
+
 ```
