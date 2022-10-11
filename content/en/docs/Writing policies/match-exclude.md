@@ -99,7 +99,7 @@ spec:
       - resources:
           kinds:
           - Service
-      - subjects:
+        subjects:
         - kind: User
           name: dave
 ```
