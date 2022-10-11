@@ -55,6 +55,45 @@ To install the Kyverno [Pod Security Standard policies](/policies/pod-security/)
 helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 ```
 
+### Notes for ArgoCD users
+
+When deploying this chart with ArgoCD you will need to enable `Replace` in the `syncOptions`, and you probably want to ignore diff in aggregated cluster roles.
+
+You can do so by following instructions in these pages of ArgoCD documentation:
+- [Enable Replace in the syncOptions](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#replace-resource-instead-of-applying-changes)
+- [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
+
+ArgoCD uses helm only for templating but applies the results with `kubectl`.
+
+Unfortunately `kubectl` adds metadata that will cross the limit allowed by Kuberrnetes. Using `Replace` overcomes this limitation.
+
+Another option is to use server side apply, this will be supported in ArgoCD v2.5.
+
+Below is an example of ArgoCD application manifest that should work with this chart:
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyverno
+  namespace: argocd
+spec:
+  destination:
+    namespace: kyverno
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: kyverno
+    repoURL: https://kyverno.github.io/kyverno
+    targetRevision: 2.6.0
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+```
+
 ### High Availability
 
 The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list and may change. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
