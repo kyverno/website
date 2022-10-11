@@ -2043,3 +2043,174 @@ spec:
 
 </p>
 </details>
+
+### x509_decode
+
+<details><summary>Expand</summary>
+<p>
+
+The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certificate, and outputs a JSON object with the decoded certificate details. It may often be required to first decode a base64-encoded string using [base64_decode()](#base64_decode). This filter can be used to check and validate attributes within a certificate such as subject, issuer, SAN fields, and expiration time. An example of such a decoded object may look like the following:
+
+```json
+{
+  "AuthorityKeyId": null,
+  "BasicConstraintsValid": true,
+  "CRLDistributionPoints": null,
+  "DNSNames": null,
+  "EmailAddresses": null,
+  "ExcludedDNSDomains": null,
+  "ExcludedEmailAddresses": null,
+  "ExcludedIPRanges": null,
+  "ExcludedURIDomains": null,
+  "ExtKeyUsage": null,
+  "Extensions": [
+    {
+      "Critical": true,
+      "Id": [
+        2,
+        5,
+        29,
+        15
+      ],
+      "Value": "AwICpA=="
+    },
+    {
+      "Critical": true,
+      "Id": [
+        2,
+        5,
+        29,
+        19
+      ],
+      "Value": "MAMBAf8="
+    },
+    {
+      "Critical": false,
+      "Id": [
+        2,
+        5,
+        29,
+        14
+      ],
+      "Value": "BBSWivt1n53+61ZGAczAi0mleejTKg=="
+    }
+  ],
+  "ExtraExtensions": null,
+  "IPAddresses": null,
+  "IsCA": true,
+  "Issuer": {
+    "CommonName": "*.kyverno.svc",
+    "Country": null,
+    "ExtraNames": null,
+    "Locality": null,
+    "Names": [
+      {
+        "Type": [
+          2,
+          5,
+          4,
+          3
+        ],
+        "Value": "*.kyverno.svc"
+      }
+    ],
+    "Organization": null,
+    "OrganizationalUnit": null,
+    "PostalCode": null,
+    "Province": null,
+    "SerialNumber": "",
+    "StreetAddress": null
+  },
+  "IssuingCertificateURL": null,
+  "KeyUsage": 37,
+  "MaxPathLen": -1,
+  "MaxPathLenZero": false,
+  "NotAfter": "2023-10-10T12:46:32Z",
+  "NotBefore": "2022-10-10T11:46:32Z",
+  "OCSPServer": null,
+  "PermittedDNSDomains": null,
+  "PermittedDNSDomainsCritical": false,
+  "PermittedEmailAddresses": null,
+  "PermittedIPRanges": null,
+  "PermittedURIDomains": null,
+  "PolicyIdentifiers": null,
+  "PublicKey": {
+    "E": 65537,
+    "N": "28595925905962223424520947352207105451744616797088171943239289907331901888529856098458304611629660120574607501039902142361333982065793213267074854658525100799280158707840279479550961169213763526857247298653141711003931642606662052674943191476488665842309583311097351331994267413776792462637192775240062778036062353517979538994974045127175206597906751521558536719043095219698535279694800624795673809356898452438518041024126624051887044932164506019573725987204208750674129677584956156611454245004918943771571492757639432459688931855526941886354880727024912384140238027697348634609952850513122734230521040730560514233467"
+  },
+  "PublicKeyAlgorithm": 1,
+  "Raw": "MIIC7TCCAdWgAwIBAgIBADANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA0qLmt5dmVybm8uc3ZjMB4XDTIyMTAxMDExNDYzMloXDTIzMTAxMDEyNDYzMlowGDEWMBQGA1UEAwwNKi5reXZlcm5vLnN2YzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOKF+2P0Ufp855hpdsGD4lYkd6oU7HZAOWm1XskAMwrdsqWwTNNAinyHRoPQIbNbGDQ+r6Cggc2mlxHJ90PnC2weHj5otaD17Z+ARZpJZ4HMWkEfFt8sxwo9vuQJRWihqNwFheowjswoSB1DHnPufrZHfztkMoRx278ZfHaIMdlSTg50ektkNDoHA3OJsxxw54X3HR1iq6SZwN8xNT0TI6B6BbfAYWMNmKCiZ2iV6kW//XnTEqGd2WcmhuP0SjwO4tCJbj9oV6+Bj/uhFr7J4foErMaodYDBtQs/ul2tcAwSBHfnC2KcLbiZTZsC0Rs0WPJ4YwF/cOsD7Z/RmLs4FHsCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFJaK+3Wfnf7rVkYBzMCLSaV56NMqMA0GCSqGSIb3DQEBCwUAA4IBAQDY7F6b+t9BX7098JyGk6zeT39MoLdSv+8IaKXn+m8GyOKn3CZkruko57ycvPd4taC0gggtmUYynFhwPMQr+boNrrK9rat8Jw3yPPsBq/8D/s6tvwxSNXBfPUI5OvNIB/hA5XpJpdHQaCkYm+FWkcJsolkkbSOfVjUjImW26JHBnnPPtR4Y7dx0SVoPS19IC0T5RmdvgqlXj4XbhTnX3QOujVHn8u+wQ8po7EngHDQs+onfkp8ipe0QpEJL1ZdW2LhyDXGKrZ2y8UPZ9wYNzxHWaj1Thu4B9YFdsPUwWqSxn9e+FygpoktlD8YgT7jwgiVKX7Koz++zyvMIdhvRrtgS",
+  "RawIssuer": "MBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmM=",
+  "RawSubject": "MBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmM=",
+  "RawSubjectPublicKeyInfo": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4oX7Y/RR+nznmGl2wYPiViR3qhTsdkA5abVeyQAzCt2ypbBM00CKfIdGg9Ahs1sYND6voKCBzaaXEcn3Q+cLbB4ePmi1oPXtn4BFmklngcxaQR8W3yzHCj2+5AlFaKGo3AWF6jCOzChIHUMec+5+tkd/O2QyhHHbvxl8dogx2VJODnR6S2Q0OgcDc4mzHHDnhfcdHWKrpJnA3zE1PRMjoHoFt8BhYw2YoKJnaJXqRb/9edMSoZ3ZZyaG4/RKPA7i0IluP2hXr4GP+6EWvsnh+gSsxqh1gMG1Cz+6Xa1wDBIEd+cLYpwtuJlNmwLRGzRY8nhjAX9w6wPtn9GYuzgUewIDAQAB",
+  "RawTBSCertificate": "MIIB1aADAgECAgEAMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmMwHhcNMjIxMDEwMTE0NjMyWhcNMjMxMDEwMTI0NjMyWjAYMRYwFAYDVQQDDA0qLmt5dmVybm8uc3ZjMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4oX7Y/RR+nznmGl2wYPiViR3qhTsdkA5abVeyQAzCt2ypbBM00CKfIdGg9Ahs1sYND6voKCBzaaXEcn3Q+cLbB4ePmi1oPXtn4BFmklngcxaQR8W3yzHCj2+5AlFaKGo3AWF6jCOzChIHUMec+5+tkd/O2QyhHHbvxl8dogx2VJODnR6S2Q0OgcDc4mzHHDnhfcdHWKrpJnA3zE1PRMjoHoFt8BhYw2YoKJnaJXqRb/9edMSoZ3ZZyaG4/RKPA7i0IluP2hXr4GP+6EWvsnh+gSsxqh1gMG1Cz+6Xa1wDBIEd+cLYpwtuJlNmwLRGzRY8nhjAX9w6wPtn9GYuzgUewIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUlor7dZ+d/utWRgHMwItJpXno0yo=",
+  "SerialNumber": 0,
+  "Signature": "2Oxem/rfQV+9PfCchpOs3k9/TKC3Ur/vCGil5/pvBsjip9wmZK7pKOe8nLz3eLWgtIIILZlGMpxYcDzEK/m6Da6yva2rfCcN8jz7Aav/A/7Orb8MUjVwXz1COTrzSAf4QOV6SaXR0GgpGJvhVpHCbKJZJG0jn1Y1IyJltuiRwZ5zz7UeGO3cdElaD0tfSAtE+UZnb4KpV4+F24U5190Dro1R5/LvsEPKaOxJ4Bw0LPqJ35KfIqXtEKRCS9WXVti4cg1xiq2dsvFD2fcGDc8R1mo9U4buAfWBXbD1MFqksZ/XvhcoKaJLZQ/GIE+48IIlSl+yqM/vs8rzCHYb0a7YEg==",
+  "SignatureAlgorithm": 4,
+  "Subject": {
+    "CommonName": "*.kyverno.svc",
+    "Country": null,
+    "ExtraNames": null,
+    "Locality": null,
+    "Names": [
+      {
+        "Type": [
+          2,
+          5,
+          4,
+          3
+        ],
+        "Value": "*.kyverno.svc"
+      }
+    ],
+    "Organization": null,
+    "OrganizationalUnit": null,
+    "PostalCode": null,
+    "Province": null,
+    "SerialNumber": "",
+    "StreetAddress": null
+  },
+  "SubjectKeyId": "lor7dZ+d/utWRgHMwItJpXno0yo=",
+  "URIs": null,
+  "UnhandledCriticalExtensions": null,
+  "UnknownExtKeyUsage": null,
+  "Version": 3
+}
+```
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | Object  |
+
+<br>
+
+**Example:** This policy, designed to operate in background mode only, checks the certificates configured for webhooks and fails if any have an expiration time in the next week.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: test-x509-decode
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: test-x509-decode
+    match:
+      any:
+      - resources:
+          kinds:
+          - ValidatingWebhookConfiguration
+          - MutatingWebhookConfiguration
+    validate:
+      message: "Certificate will expire in less than a week."
+      deny:
+        conditions:
+          any:
+            - key: "{{ base64_decode('{{ request.object.webhooks[0].clientConfig.caBundle }}').x509_decode(@).time_since('',NotBefore,NotAfter) }}"
+              operator: LessThan
+              value: 168h0m0s
+```
+
+</p>
+</details>

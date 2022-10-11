@@ -22,6 +22,7 @@ As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project 
 | 1.5.x                          | 1.16           | 1.21           |
 | 1.6.x                          | 1.16           | 1.23           |
 | 1.7.x                          | 1.21           | 1.23           |
+| 1.8.x                          | 1.23           | 1.25           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
@@ -436,9 +437,9 @@ The following `ClusterRoles` are used to extend the default `admin` role with pe
 
 #### Customizing Permissions
 
-Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules is a simple matter of creating one or more new ClusterRoles which use the `app=kyverno` label. It is no longer necessary to modify any existing ClusterRoles created as part of the Kyverno installation.
+Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is no longer necessary to modify any existing ClusterRoles created as part of the Kyverno installation.
 
-For example, if a new Kyverno policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. It will be necessary to create a new ClusterRole and assign it the aggregation label `app=kyverno` in order for those permissions to take effect.
+For example, if a new Kyverno policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. It will be necessary to create a new ClusterRole and assign it the aggregation labels `app.kubernetes.io/instance=kyverno` and `app.kubernetes.io/name=kyverno` in order for those permissions to take effect.
 
 {{% alert title="Tip" color="info" %}}
 To inspect the complete permissions granted to the Kyverno ServiceAccount via all the aggregated ClusterRoles, run `kubectl get clusterrole kyverno -o yaml`.
@@ -451,7 +452,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app: kyverno
+    app.kubernetes.io/instance: kyverno
+    app.kubernetes.io/name: kyverno
   name: kyverno:create-deployments
 rules:
 - apiGroups:
@@ -476,28 +478,33 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments. Unless otherwise stated, all container flags should be prefaced with two dashes (ex., `--autogenInternals`).
 
-1. `-v`: Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages.
-2. `profile`: setting this flag to 'true' will enable profiling.
-3. `profilePort`: specifies port to enable profiling at, defaults to 6060.
-4. `metricsPort`: specifies the port to expose prometheus metrics, default to port 8000.
-5. `genWorkers`: the number of workers for processing generate policies concurrently. Default is set to 10.
-6. `disableMetrics`: specifies whether (true/false) to enable exposing the metrics. Default is set to 'false'.
-7. `backgroundScan`: the interval (like 30s, 15m, 12h) for background processing. Default is set to 1h.
-8. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
-9. `allowInsecureRegistry`: Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
-10. `autoUpdateWebhooks`: Set this flag to 'false' to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the configmap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is set to 'true'.
-11. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-12. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-13. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Example: `20`
-14. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Example: `50`
-15. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds, defaults to 10s.
-16. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to not write to the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
-17. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Value is an integer.
-18. `maxReportChangeRequests`: defines the number of RCRs that can be created in a given Namespace. When this threshold is reached, no further RCRs will be created and Kyverno will begin to start the clean-up process. This flag should be used when there is high churn rate in a cluster leading to PolicyReport exhaustion and excessive memory growth. Value is an integer.
-19. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
-20. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
-21. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
-22. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+1. `admissionReports`: enables the AdmissionReport resource which is created from validate rules in `audit` mode. Used to factor into a final PolicyReport. Default is `true`.
+2. `allowInsecureRegistry`: allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
+3. `autoUpdateWebhooks`: set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
+4. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to write to `status` rather than the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
+5. `backgroundScan`: enables/disables background scans. `true` by default. This replaces the former flag of the same name which controlled the background scan interval.
+6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `100`.
+7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `100`.
+8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
+9. `enableTracing`: set to enable exposing traces. Default is `false`.
+10. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+11. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
+12. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+14. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+15. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
+16. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
+17. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+18. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+19. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+20. `profilePort`: specifies port to enable profiling. Default is `6060`.
+21. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+22. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
+23. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+24. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
+25. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+26. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+27. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+28. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
 
 ### Policy Report access
 
