@@ -57,20 +57,21 @@ helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 
 ### Notes for ArgoCD users
 
-When deploying this chart with ArgoCD you will need to enable `Replace` in the `syncOptions`, and you probably want to ignore diff in aggregated cluster roles.
+When deploying this chart with ArgoCD you will need to enable `Replace` in the `syncOptions`, and you probably want to ignore diff in aggregated cluster roles (aggregated cluster roles are built by aggregating other cluster roles in the cluster and are dynamic by nature, therefore desired and observe states cannot match).
 
 You can do so by following instructions in these pages of ArgoCD documentation:
 - [Enable Replace in the syncOptions](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#replace-resource-instead-of-applying-changes)
 - [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
 
-ArgoCD uses helm only for templating but applies the results with `kubectl`.
+ArgoCD uses Helm only for templating but applies the results with `kubectl`.
 
-Unfortunately `kubectl` adds metadata that will cross the limit allowed by Kuberrnetes. Using `Replace` overcomes this limitation.
+Unfortunately `kubectl` adds metadata that will cross the limit allowed by Kubernetes. Using `Replace` overcomes this limitation.
 
-Another option is to use server side apply, this will be supported in ArgoCD v2.5.
+Another option is to use server-side apply, supported in ArgoCD v2.5+.
 
-Below is an example of ArgoCD application manifest that should work with this chart:
-```
+Below is an example of an ArgoCD Application manifest that should work with the Kyverno Helm chart:
+
+```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
