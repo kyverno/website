@@ -1,6 +1,6 @@
 ---
 title: "Label Existing Namespaces"
-category: other
+category: Other
 version: 1.7.0
 subject: Namespace
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: label-existing-namespaces
   annotations:
     policies.kyverno.io/title: Label Existing Namespaces
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.7.0
