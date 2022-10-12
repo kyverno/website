@@ -33,6 +33,10 @@ hugo server -v
 
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
 
+## Update Docsy theme
+
+Run `hugo mod get -u ./...` from project root.
+
 ## Rendering Policies to Markdown
 
 Policies found at https://kyverno.io/policies/ are generated in Markdown from the source repository at [kyverno/policies](https://github.com/kyverno/policies). For any changes to appear on https://kyverno.io/policies/, edits must be made to the upstream policy YAML files at kyverno/policies, and the `render` tool run from this repository to generate the respective Markdown. See [render](/render/README.md) README for more details.
