@@ -505,6 +505,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 26. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
 27. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 28. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+29. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
 
 ### Policy Report access
 
