@@ -79,7 +79,7 @@ To create a new release branch:
 
 2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release branch.
 
-3. Also in Netlify, go into the Domains settings of the site and add an ALIAS record for the branch representing the previous version. For example, if the release to be cut is 1.8.0, there will not be a `release-1-7-0.kyverno.io` record which exists. One must be created which points `release-1-7-0.kyverno.io` to `kyverno.netlify.app`.
+3. Also in Netlify, go into the Domain management settings of the site and add a new subdomain for the branch representing the previous version. For example, if the release to be cut is 1.8.0, there will not be a `release-1-7-0.kyverno.io` record which exists. One must be created for `release-1-7-0.kyverno.io`.
 
 In the `main` branch:
 
