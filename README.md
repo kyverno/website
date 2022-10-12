@@ -77,7 +77,9 @@ To create a new release branch:
 
 1. Create and push the branch using `git checkout -b release-{major}-{minor}-{patch}` or via [GitHub](https://github.com/kyverno/website/branches).
 
-2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release.
+2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release branch.
+
+3. Also in Netlify, go into the Domains settings of the site and add an ALIAS record for the branch representing the previous version. For example, if the release to be cut is 1.8.0, there will not be a `release-1-7-0.kyverno.io` record which exists. One must be created which points `release-1-7-0.kyverno.io` to `kyverno.netlify.app`.
 
 In the `main` branch:
 
@@ -88,6 +90,10 @@ In the `main` branch:
 3. Create a PR.
 
 4. Clear the Netlify cache!
+
+In the current release branch:
+
+1. Update `params.toml` so that `version_menu` and `version` reflect the version of that release branch, NOT `main`. This is so when users navigate to the version of the docs represented in that version it shows the correct number.
 
 #### Submitting a PR to multiple release branches
 
