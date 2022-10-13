@@ -46,7 +46,7 @@ spec:
       deny:
         conditions:
           any:
-            - key: "{{request.operation}}"
+            - key: "{{request.operation || 'BACKGROUND'}}"
               operator: In
               value:
               - DELETE

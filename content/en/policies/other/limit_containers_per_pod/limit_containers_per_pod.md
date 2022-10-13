@@ -41,7 +41,7 @@ spec:
         - StatefulSet
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equal
         value: CREATE
     validate:
@@ -59,7 +59,7 @@ spec:
         - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equal
         value: CREATE
     validate:
@@ -77,7 +77,7 @@ spec:
         - CronJob
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equal
         value: CREATE
     validate:

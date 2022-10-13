@@ -47,7 +47,7 @@ spec:
           - default
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: UPDATE
     mutate:

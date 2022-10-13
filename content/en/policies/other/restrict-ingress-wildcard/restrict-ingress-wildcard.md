@@ -42,7 +42,7 @@ spec:
               - Ingress
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: AnyIn
           value: ["CREATE", "UPDATE"]
       validate:

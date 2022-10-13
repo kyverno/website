@@ -49,7 +49,7 @@ spec:
           - Deployment
     preconditions:
       any:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: In
         value:
         - CREATE        
@@ -80,7 +80,7 @@ spec:
           - Deployment
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: In
         value:
         - CREATE        
@@ -121,7 +121,7 @@ spec:
           - Deployment
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: In
         value:
         - CREATE        

@@ -49,7 +49,7 @@ spec:
           jmesPath: "items[?@.metadata.ownerReferences == false || metadata.ownerReferences[?uid != '{{ request.object.metadata.keys(@).contains(@, 'ownerReferences') && request.object.metadata.ownerReferences[0].uid }}']].spec.containers[].securityContext.to_string(runAsUser)"
     preconditions:
       all:
-      - key: "{{ request.operation }}"
+      - key: "{{ request.operation || 'BACKGROUND' }}"
         operator: Equals
         value: "CREATE"
     validate:

@@ -62,7 +62,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: "{{request.operation}}"
+          - key: "{{request.operation || 'BACKGROUND'}}"
             operator: "In"
             value:
             - "UPDATE"
