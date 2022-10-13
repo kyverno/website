@@ -52,7 +52,7 @@ spec:
                 all:
                 - key: ALL
                   operator: AnyNotIn
-                  value: "{{ element.securityContext.capabilities.drop || '' }}"
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
     - name: adding-capabilities-strict
       match:
         any:
@@ -72,7 +72,7 @@ spec:
             deny:
               conditions:
                 all:
-                - key: "{{ element.securityContext.capabilities.add[] || '' }}"
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
                   operator: AnyNotIn
                   value:
                   - NET_BIND_SERVICE
