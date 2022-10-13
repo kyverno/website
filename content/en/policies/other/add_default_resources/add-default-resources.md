@@ -41,7 +41,7 @@ spec:
           - Pod
     preconditions:
       any:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: In
         value:
         - CREATE

@@ -45,7 +45,7 @@ spec:
       - key: "{{ request.object.spec.volumes[?hostPath] | length(@) }}"
         operator: GreaterThanOrEquals
         value: 1
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: In
         value:
         - CREATE

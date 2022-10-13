@@ -38,7 +38,7 @@ spec:
               - route.openshift.io/v1/Route
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: NotEquals
           value: ["DELETE"]
       validate:

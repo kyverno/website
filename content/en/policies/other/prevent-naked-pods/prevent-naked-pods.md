@@ -42,7 +42,7 @@ spec:
           - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:

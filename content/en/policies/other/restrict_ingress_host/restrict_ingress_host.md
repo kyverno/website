@@ -43,7 +43,7 @@ spec:
             jmesPath: "items[].spec.rules[].host"
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: Equals
           value: CREATE
         - key: "{{ request.object.spec.rules[].host }}"
@@ -59,7 +59,7 @@ spec:
             - Ingress
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: Equals
           value: CREATE
         - key: "{{ request.object.spec.rules[].host | length(@)}}"

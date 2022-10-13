@@ -39,7 +39,7 @@ spec:
         - Deployment
     preconditions:
       any:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: CREATE
     context:
