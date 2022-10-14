@@ -175,6 +175,16 @@ The result of the mutation of this Pod with respect to the `OTEL_RESOURCE_ATTRIB
         rule_applied=imbue-pod-spec
 ```
 
+### Variables in Helm
+
+Both Kyverno and Helm use Golang-style variable substitution syntax and, as a result, Kyverno policies containing variables deployed through Helm may need to be "wrapped" to avoid Helm interpreting them as Helm variables.
+
+Because Helm executes its templating routine prior to Kyverno, a Kyverno policy with a variable `{{ request.userInfo.username }}` must be padded with Helm's templating so that the resulting value, after the chart is deployed, remains `{{ request.userInfo.username }}`. Wrap the Kyverno variables in following way shown below:
+
+```
+{{`{{ request.userInfo.username }}`}}
+```
+
 ## Variables from admission review requests
 
 Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to the Kubernetes API server, for example to create a Pod, the API server sends this information to the webhooks registered to listen to the creation of Pod resources. This incoming data to a webhook is passed as a [`AdmissionReview`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) object. There are four commonly used data properties available in any AdmissionReview request:
