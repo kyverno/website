@@ -40,5 +40,6 @@ spec:
       message: "Services of type NodePort are not allowed."
       pattern:
         spec:
-          type: "!NodePort"
+          =(type): "!NodePort"
+
 ```
