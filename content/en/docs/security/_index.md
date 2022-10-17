@@ -45,11 +45,9 @@ With each release, the following artifacts are uploaded:
 
 ## Verifying Kyverno Container Images
 
-(Needs update)
+Kyverno container images are signed using Cosign and the [keyless signing feature](https://github.com/sigstore/cosign/blob/main/KEYLESS.md). The signatures are stored in a separate repository from the container image they reference located at `ghcr.io/kyverno/signatures`. To verify the container image, follow the steps below.
 
-Kyverno container images are signed using Cosign and the [keyless signing feature](https://github.com/sigstore/cosign/blob/main/KEYLESS.md). To verify the container image, follow the steps below.
-
-1. Install Cosign
+1. Install [Cosign](https://github.com/sigstore/cosign#installation)
 2. Configure the Kyverno signature repository:
 
 ```sh
@@ -59,13 +57,13 @@ export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
 3. Verify the image:
 
 ```sh
-COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/kyverno:latest | jq
+COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/kyverno:<release_tag> | jq
 ```
 
 If the container image was properly signed, the output should be similar to:
 
 ```sh
-Verification for ghcr.io/kyverno/kyverno:latest --
+Verification for ghcr.io/kyverno/kyverno:<release_tag> --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
   - Existence of the claims in the transparency log was verified offline
@@ -77,25 +75,30 @@ The following checks were performed on each of these signatures:
         "docker-reference": "ghcr.io/kyverno/kyverno"
       },
       "image": {
-        "docker-manifest-digest": "sha256:22a37e135718dd25e2f419749cfa398936f583878079741d87c5b5a1587dd4c6"
+        "docker-manifest-digest": "sha256:fb6b62f1a3a53b32be9cc508224e9b12e022665b472cc2e7069cfe12505b836b"
       },
       "type": "cosign container image signature"
     },
     "optional": {
+      "1.3.6.1.4.1.57264.1.2": "push",
+      "1.3.6.1.4.1.57264.1.3": "ef269c050f7ed78eff9cb2b905760beee8c65986",
+      "1.3.6.1.4.1.57264.1.4": "releaser",
+      "1.3.6.1.4.1.57264.1.5": "kyverno/kyverno",
+      "1.3.6.1.4.1.57264.1.6": "refs/tags/<release_tag>",
       "Bundle": {
-        "SignedEntryTimestamp": "MEQCIDnRtzZE3z9CEsE5uFvwSFgfwZqdoly3HjHdFYzdOY/4AiB2JtOUQxKbrC0BoMnEYR9HSGnK9yX+nW4P5KZ+Aw/jYw==",
+        "SignedEntryTimestamp": "MEQCIBaIXxkCW5z0MiZCjmBkcw+3Qtokv4JviRXUJsSvCNqaAiAWV9WB+fJnQQMBUMEEkeSSUO/Xjuowkr6l3hVfnSv/Ng==",
         "Payload": {
           "body": "<snip>",
-          "integratedTime": 1654284265,
-          "logIndex": 2551796,
+          "integratedTime": 1666022906,
+          "logIndex": 5288524,
           "logID": "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"
         }
       },
       "Issuer": "https://token.actions.githubusercontent.com",
-      "Subject": "https://github.com/kyverno/kyverno/.github/workflows/reuse.yaml@refs/heads/main",
-      "ref": "0b7b2458eb46d157e27fcc51bf3bc67d99d5cab9",
+      "Subject": "https://github.com/kyverno/kyverno/.github/workflows/reuse.yaml@refs/tags/<release_tag>",
+      "ref": "ef269c050f7ed78eff9cb2b905760beee8c65986",
       "repo": "kyverno/kyverno",
-      "workflow": "image"
+      "workflow": "releaser"
     }
   }
 ]
@@ -107,16 +110,16 @@ All three Kyverno images can be verified.
 
 ## Fetching the SBOM for Kyverno
 
-An SBOM (Software Bill of Materials) in CycloneDX JSON format is published for each Kyverno release. To download and verify the SBOM for a specific version, install Cosign and run:
+An SBOM (Software Bill of Materials) in [CycloneDX](https://cyclonedx.org/) JSON format is published for each Kyverno release, including pre-releases. Like signatures, SBOMs are stored in a separate repository at `ghcr.io/kyverno/sbom`. To download and verify the SBOM for a specific version, install Cosign and run:
 
 ```sh
-cosign download sbom ghcr.io/kyverno/sbom:latest
+COSIGN_REPOSITORY=ghcr.io/kyverno/sbom cosign download sbom ghcr.io/kyverno/kyverno:<release_tag>
 ```
 
 To save the SBOM to a file, run the following command:
 
 ```sh
-cosign download sbom ghcr.io/kyverno/sbom:latest > kyverno.sbom.json
+COSIGN_REPOSITORY=ghcr.io/kyverno/sbom cosign download sbom ghcr.io/kyverno/kyverno:<release_tag> > kyverno.sbom.json
 ```
 
 ## Security Scorecard
