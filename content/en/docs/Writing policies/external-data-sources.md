@@ -366,6 +366,16 @@ $ kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes | jq
 }
 ```
 
+Query parameters are also accepted in the `urlPath` field. This allows, for example, making API calls with a label selector or a return limit which is beneficial in that some of the processing of these API calls may be offloaded to the Kubernetes API server rather than Kyverno having to process them in JMESPath statements. The following shows a context variable being set which uses an API call with label selector and limit queries.
+
+```yaml
+context:
+- name: serviceCount
+  apiCall:
+    urlPath: "/api/v1/namespaces/{{ request.namespace }}/services?labelSelector=foo=bar?limit=5"
+    jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
+```
+
 ### Handling collections
 
 The API server response for a `HTTP GET` on a URL path that requests collections of resources will be an object with a list of items (resources).
