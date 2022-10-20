@@ -96,6 +96,10 @@ spec:
       - Replace=true
 ```
 
+### Notes for OpenShift Users
+
+Red Hat OpenShift contains a feature called [Security Context Constraints](https://docs.openshift.com/container-platform/4.11/authentication/managing-security-context-constraints.html) (SCC) which enforces certain security controls in a profile-driven manner. An OpenShift cluster contains several of these out of the box with OpenShift 4.11 preferring `restricted-v2` by default, for example. The Kyverno Helm chart defines its own values for the Pod's `securityContext` object which, although it confirms to the upstream [Pod Security Standards' restricted profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted), may potentially be incompatible with your defined Security Context Constraints. Deploying the Kyverno Helm chart as-is on an OpenShift environment may result in an error similar to "unable to validate against any security context constraint". In order to get past this, deploy the Kyverno Helm chart with the `--set securityContext=null` flag. OpenShift will apply the defined SCC upon deployment.
+
 ### High Availability
 
 The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list and may change. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
