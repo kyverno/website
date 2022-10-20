@@ -28,7 +28,7 @@ Kyverno automatically creates a few useful variables and makes them available wi
 5. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) for more information.
 
 {{% alert title="Note" color="warning" %}}
-One of either `request.roles` or `request.clusterRoles` will be substituted as variables but not both.
+Variables such as `serviceAccountName`, `serviceAccountNamespace`, `request.roles`, and `request.clusterRoles` may not occur in rules in which the parent policy is set for background scanning (`spec.background: true`) as this information is not available for existing resources. To use any of these variables you must disable background scanning in the policy.
 {{% /alert %}}
 
 ## Variables from policy definitions
