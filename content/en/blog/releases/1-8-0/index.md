@@ -3,7 +3,7 @@ date: 2022-10-14
 title: "Kyverno 1.8 Released"
 linkTitle: "Kyverno 1.8"
 description: "Kyverno 1.8 is here."
-draft: true
+draft: false
 ---
 
 ![kyverno](kyverno.png)
