@@ -487,8 +487,8 @@ The following flags can also be used to control the advanced behavior of Kyverno
 3. `autoUpdateWebhooks`: set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
 4. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to write to `status` rather than the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
 5. `backgroundScan`: enables/disables background scans. `true` by default. This replaces the former flag of the same name which controlled the background scan interval.
-6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `100`.
-7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `100`.
+6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
+7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
 9. `enableTracing`: set to enable exposing traces. Default is `false`.
 10. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
