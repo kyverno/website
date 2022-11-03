@@ -119,3 +119,15 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 **Symptom**: When creating Pods or other resources, I receive similar errors like `Error from server (InternalError): Internal error occurred: failed calling webhook "validate.kyverno.svc-fail": Post "https://kyverno-svc.kyverno.svc:443/validate?timeout=10s": context deadline exceeded`.
 
 **Solution**: When using EKS with the VPC CNI, problems may arise if the CNI plug-in is outdated. Upgrade the VPC CNI plug-in to a version supported and compatible with the Kubernetes version running in the EKS cluster.
+
+## Client-side throttling
+
+**Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side
+throttling`; the creation of mutated resources may be delayed.
+
+**Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS`
+(documented [here](https://kyverno.io/docs/installation/)) to `100` to begin
+with. If that doesn't resolve the problem, you can experiment with slowly
+increasing these values. Just bear in mind that higher values place more
+pressure on the Kubernetes API (the client-side throttling was implemented for a
+reason), which could result in cluster-wide latency, so proceed with caution.
