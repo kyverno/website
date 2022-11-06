@@ -122,12 +122,6 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 ## Client-side throttling
 
-**Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side
-throttling`; the creation of mutated resources may be delayed.
+**Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side throttling`; the creation of mutated resources may be delayed.
 
-**Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS`
-(documented [here](https://kyverno.io/docs/installation/)) to `100` to begin
-with. If that doesn't resolve the problem, you can experiment with slowly
-increasing these values. Just bear in mind that higher values place more
-pressure on the Kubernetes API (the client-side throttling was implemented for a
-reason), which could result in cluster-wide latency, so proceed with caution.
+**Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS` (documented [here](https://kyverno.io/docs/installation/)) to `100` to begin with. If that doesn't resolve the problem, you can experiment with slowly increasing these values. Just bear in mind that higher values place more pressure on the Kubernetes API (the client-side throttling was implemented for a reason), which could result in cluster-wide latency, so proceed with caution.
