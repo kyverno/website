@@ -96,6 +96,10 @@ spec:
       - Replace=true
 ```
 
+### Notes for OpenShift Users
+
+Red Hat OpenShift contains a feature called [Security Context Constraints](https://docs.openshift.com/container-platform/4.11/authentication/managing-security-context-constraints.html) (SCC) which enforces certain security controls in a profile-driven manner. An OpenShift cluster contains several of these out of the box with OpenShift 4.11 preferring `restricted-v2` by default, for example. The Kyverno Helm chart defines its own values for the Pod's `securityContext` object which, although it confirms to the upstream [Pod Security Standards' restricted profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted), may potentially be incompatible with your defined Security Context Constraints. Deploying the Kyverno Helm chart as-is on an OpenShift environment may result in an error similar to "unable to validate against any security context constraint". In order to get past this, deploy the Kyverno Helm chart with the `--set securityContext=null` flag. OpenShift will apply the defined SCC upon deployment.
+
 ### High Availability
 
 The official Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list and may change. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
@@ -483,8 +487,8 @@ The following flags can also be used to control the advanced behavior of Kyverno
 3. `autoUpdateWebhooks`: set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
 4. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to write to `status` rather than the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
 5. `backgroundScan`: enables/disables background scans. `true` by default. This replaces the former flag of the same name which controlled the background scan interval.
-6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `100`.
-7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `100`.
+6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
+7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
 9. `enableTracing`: set to enable exposing traces. Default is `false`.
 10. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.

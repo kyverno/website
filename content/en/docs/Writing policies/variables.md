@@ -28,7 +28,7 @@ Kyverno automatically creates a few useful variables and makes them available wi
 5. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) for more information.
 
 {{% alert title="Note" color="warning" %}}
-One of either `request.roles` or `request.clusterRoles` will be substituted as variables but not both.
+Variables such as `serviceAccountName`, `serviceAccountNamespace`, `request.roles`, and `request.clusterRoles` may not occur in rules in which the parent policy is set for background scanning (`spec.background: true`) as this information is not available for existing resources. To use any of these variables you must disable background scanning in the policy.
 {{% /alert %}}
 
 ## Variables from policy definitions
@@ -173,6 +173,16 @@ The result of the mutation of this Pod with respect to the `OTEL_RESOURCE_ATTRIB
       value: k8s.namespace.name=$(POD_NAMESPACE), k8s.node.name=$(NODE_NAME), k8s.pod.name=$(POD_NAME),
         k8s.pod.primary_ip_address=$(POD_IP_ADDRESS), k8s.pod.service_account.name=$(POD_SERVICE_ACCOUNT),
         rule_applied=imbue-pod-spec
+```
+
+### Variables in Helm
+
+Both Kyverno and Helm use Golang-style variable substitution syntax and, as a result, Kyverno policies containing variables deployed through Helm may need to be "wrapped" to avoid Helm interpreting them as Helm variables.
+
+Because Helm executes its templating routine prior to Kyverno, a Kyverno policy with a variable `{{ request.userInfo.username }}` must be padded with Helm's templating so that the resulting value, after the chart is deployed, remains `{{ request.userInfo.username }}`. Wrap the Kyverno variables in following way shown below:
+
+```
+{{`{{ request.userInfo.username }}`}}
 ```
 
 ## Variables from admission review requests

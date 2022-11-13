@@ -343,7 +343,7 @@ spec:
 The following example matches all resources with label `app=critical` excluding the resources created by ClusterRole `cluster-admin` **OR** by the user `John`.
 
 {{% alert title="Note" color="info" %}}
-Since `roles` and `clusterRoles` are built internally by Kyverno from AdmissionReview contents, rules which contain either of these must define `background: false` since the AdmissionReview payload is not available in background mode.
+Since `roles` and `clusterRoles` are built internally by Kyverno from AdmissionReview contents, rules which contain either of these must define `background: false` since the AdmissionReview payload is not available in background mode. `subjects` are also not allowed in background mode as this information is not available once a resource has been created.
 {{% /alert %}}
 
 ```yaml
