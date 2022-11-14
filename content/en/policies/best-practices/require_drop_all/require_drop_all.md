@@ -39,7 +39,7 @@ spec:
               - Pod
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: NotEquals
           value: DELETE
       validate:
@@ -52,5 +52,5 @@ spec:
                 all:
                 - key: ALL
                   operator: AnyNotIn
-                  value: "{{ element.securityContext.capabilities.drop || '' }}"
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
 ```

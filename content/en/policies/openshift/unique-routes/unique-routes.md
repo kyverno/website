@@ -46,7 +46,7 @@ spec:
             jmesPath: "items[].spec.host"
       preconditions:
         all:
-          - key: "{{ request.operation }}"
+          - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: "DELETE"
       validate:

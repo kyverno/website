@@ -43,7 +43,7 @@ spec:
             jmesPath: "items[?spec.nodeName=='minikube'] | length(@)"
       preconditions:
         any:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: Equals
           value: "CREATE"
       validate:

@@ -48,7 +48,7 @@ spec:
             jmesPath: "items[].metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\""
       preconditions:
         all:
-        - key: "{{ request.operation }}"
+        - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: In
           value:
             - CREATE

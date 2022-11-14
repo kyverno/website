@@ -337,6 +337,8 @@ spec:
   containers:
     - name: web
       image: corp.reg.com/nginx
+      imagePullSecrets:
+      - name: my-secret
       ports:
         - name: web
           containerPort: 80

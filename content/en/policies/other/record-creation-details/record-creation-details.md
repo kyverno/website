@@ -45,7 +45,7 @@ spec:
           - '*'
     preconditions:
       any:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: CREATE
     mutate:
@@ -63,7 +63,7 @@ spec:
             kyverno.io/created-by: "?*"
     preconditions:
       any:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: UPDATE
     validate:
@@ -87,7 +87,7 @@ spec:
             kyverno.io/created-by: "?*"
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: UPDATE
       - key: "{{ request.oldObject.metadata.annotations.\"kyverno.io/created-by\" || '' }}"
