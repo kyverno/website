@@ -45,7 +45,8 @@ spec:
         spec:
           containers:
           - livenessProbe:
-              periodSeconds: ">0"
+              =(periodSeconds): ">0"
             readinessProbe:
-              periodSeconds: ">0"
+              =(periodSeconds): ">0"
+
 ```

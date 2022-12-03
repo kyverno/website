@@ -37,7 +37,7 @@ metadata:
 spec:
   validationFailureAction: audit
   rules:
-  - name: check-base-image
+  - name: require-base-image
     match:
       any:
       - resources:
