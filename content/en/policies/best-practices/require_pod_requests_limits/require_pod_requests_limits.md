@@ -1,7 +1,7 @@
 ---
 title: "Require Limits and Requests"
-category: Best Practices
-version: 
+category: Best Practices, EKS Best Practices
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -18,9 +18,10 @@ metadata:
   name: require-requests-limits
   annotations:
     policies.kyverno.io/title: Require Limits and Requests
-    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       As application workloads share cluster resources, it is important to limit resources
       requested and consumed by each Pod. It is recommended to require resource requests and
@@ -34,9 +35,10 @@ spec:
   rules:
   - name: validate-resources
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "CPU and memory resource requests and limits are required."
       pattern:

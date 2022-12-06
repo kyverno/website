@@ -1,6 +1,6 @@
 ---
 title: "Baseline Pod Security Standards"
-category: Pod Security
+category: Pod Security, EKS Best Practices
 version: 1.8.0
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: podsecurity-subrule-baseline
   annotations:
     policies.kyverno.io/title: Baseline Pod Security Standards
-    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/category: Pod Security, EKS Best Practices
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.8.0
