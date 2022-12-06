@@ -43,7 +43,7 @@ spec:
         operator: Equals
         value: enabled
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
           - CREATE
           - UPDATE

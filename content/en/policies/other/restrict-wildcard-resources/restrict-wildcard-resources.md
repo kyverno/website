@@ -1,6 +1,6 @@
 ---
 title: "Restrict Wildcards in Resources"
-category: Security
+category: Security, EKS Best Practices
 version: 1.6.0
 subject: ClusterRole, Role, RBAC
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: restrict-wildcard-resources
   annotations:
     policies.kyverno.io/title: Restrict Wildcards in Resources
-    policies.kyverno.io/category: Security
+    policies.kyverno.io/category: Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ClusterRole, Role, RBAC
     kyverno.io/kyverno-version: 1.7.0

@@ -44,6 +44,10 @@ spec:
           namespaces:
           - fleet-local
     context:
+    - name: currentKubeconfigData
+      apiCall:
+        urlPath: "/api/v1/namespaces/kubed/secrets"
+        jmesPath: "items[?metadata.name == 'kubed'] | [0].data.kubeconfig || ''"
     - name: secretList
       apiCall:
         urlPath: "/api/v1/namespaces/{{request.object.metadata.namespace}}/secrets"
@@ -52,23 +56,23 @@ spec:
       variable:
         value: |
           {{ secretList | [].{
-              "name": metadata.name,
-              "cluster": data.value | base64_decode(@) | parse_yaml(@).clusters[].cluster[] | [0] }
+              "name": replace_all(metadata.name, '-kubeconfig', ''),
+              "cluster": data.value | base64_decode(@) | parse_yaml(@).clusters[].cluster[] | [0] } || '\[\]'
           }}
         jmesPath: 'to_string(@)'
     - name: kubeconfigUsersData
       variable:
         value: |
           {{ secretList | [].{
-              "name": metadata.name,
-              "user": data.value | base64_decode(@) | parse_yaml(@).users[].user[] | [0] }
+              "name": replace_all(metadata.name, '-kubeconfig', ''),
+              "user": data.value | base64_decode(@) | parse_yaml(@).users[].user[] | [0] } || '\[\]'
           }}
         jmesPath: 'to_string(@)'
 #    - name: kubeconfigContextsData # Enable when Kyverno variable substitution bug is resolved
 #      variable:
 #        value: |
 #          {{ secretList | [].{
-#              "name": metadata.name,
+#              "name": replace_all(metadata.name, '-kubeconfig', ''),
 #              "context": { "cluster": metadata.name, "user": metadata.name } }
 #          }}
 #        jmesPath: 'to_string(@)'
@@ -76,8 +80,8 @@ spec:
       variable:
         value: |
           {{ secretList | [].{
-              "name": metadata.name,
-              "context": ['CLUSTER_BEGIN', metadata.name, 'CLUSTER_END', 'USER_BEGIN', metadata.name, 'USER_END'] }
+              "name": replace_all(metadata.name, '-kubeconfig', ''),
+              "context": ['CLUSTER_BEGIN', replace_all(metadata.name, '-kubeconfig', ''), 'CLUSTER_END', 'USER_BEGIN', replace_all(metadata.name, '-kubeconfig', ''), 'USER_END'] } || '\[\]'
           }}
         jmesPath: "to_string(@) | replace_all(@, '[\"CLUSTER_BEGIN\",', '{\"cluster\":') | replace_all(@, '\"CLUSTER_END\",\"USER_BEGIN\",', '\"user\":') | replace_all(@, ',\"USER_END\"]', '}')"
     - name: kubeconfigData
@@ -87,19 +91,24 @@ spec:
             "apiVersion": "v1",
             "kind": "Config",
             "clusters": {{ kubeconfigClustersData }},
-            "users": {{ kubeconfigUsersData }},
-            "contexts": {{ kubeconfigContextsData }}
+            "contexts": {{ kubeconfigContextsData }},
+            "users": {{ kubeconfigUsersData }}
           }
         jmesPath: 'to_string(@)'
+    preconditions:
+      any:
+      - key: '{{ kubeconfigData || '''' | base64_encode(@) }}'
+        operator: NotEquals
+        value: '{{ currentKubeconfigData }}'
     generate:
       synchronize: true
       apiVersion: v1
       kind: Secret
       name: kubed
-      namespace: kube-system
+      namespace: kubed
       data:
         type: Opaque
         data:
-          kubeconfig: "{{ kubeconfigData | base64_encode(@) }}"
+          kubeconfig: '{{ kubeconfigData || '''' | base64_encode(@) }}'
 
 ```
