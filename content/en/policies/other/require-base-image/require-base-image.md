@@ -1,6 +1,6 @@
 ---
 title: "Check Image Base"
-category: Other
+category: Other, EKS Best Practices
 version: 1.7.0
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: require-base-image
   annotations:
     policies.kyverno.io/title: Check Image Base
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
