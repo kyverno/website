@@ -1,6 +1,6 @@
 ---
 title: "Require Pod Probes"
-category: Best Practices
+category: Best Practices, EKS Best Practices
 version: 
 subject: Pod
 policyType: "validate"
@@ -19,7 +19,7 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
     policies.kyverno.io/title: Require Pod Probes
-    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
@@ -34,18 +34,26 @@ spec:
   validationFailureAction: audit
   background: true
   rules:
-  - name: validate-livenessProbe-readinessProbe
+  - name: validate-probes
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
-      message: "Liveness and readiness probes are required."
-      pattern:
-        spec:
-          containers:
-          - livenessProbe:
-              periodSeconds: ">0"
-            readinessProbe:
-              periodSeconds: ">0"
+      message: "Liveness, readiness, or startup probes are required for all containers."
+      foreach:
+      - list: request.object.spec.containers[]
+        deny:
+          conditions:
+            all:
+            - key: livenessProbe
+              operator: AllNotIn
+              value: "{{ element.keys(@)[] }}"
+            - key: startupProbe
+              operator: AllNotIn
+              value: "{{ element.keys(@)[] }}"
+            - key: readinessProbe
+              operator: AllNotIn
+              value: "{{ element.keys(@)[] }}"
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Add Karpenter Do Not Evict"
-category: Karpenter
+category: Karpenter, EKS Best Practices
 version: 1.6.0
 subject: Pod
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: add-karpenter-donot-evict
   annotations:
     policies.kyverno.io/title: Add Karpenter Do Not Evict
-    policies.kyverno.io/category: Karpenter
+    policies.kyverno.io/category: Karpenter, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.7.1

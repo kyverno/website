@@ -1,7 +1,7 @@
 ---
 title: "Require Read-Only Root Filesystem"
-category: Best Practices
-version: 
+category: Best Practices, EKS Best Practices
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -18,9 +18,10 @@ metadata:
   name: require-ro-rootfs
   annotations:
     policies.kyverno.io/title: Require Read-Only Root Filesystem
-    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       A read-only root file system helps to enforce an immutable infrastructure strategy;
       the container only needs to write on the mounted volume that persists the state.
@@ -33,9 +34,10 @@ spec:
   rules:
   - name: validate-readOnlyRootFilesystem
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Root filesystem must be read-only."
       pattern:
