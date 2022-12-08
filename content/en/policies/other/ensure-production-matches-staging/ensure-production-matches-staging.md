@@ -50,7 +50,7 @@ spec:
     preconditions:
       any:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE        
         - UPDATE
@@ -81,7 +81,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE        
         - UPDATE
@@ -122,7 +122,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE        
         - UPDATE

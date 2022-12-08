@@ -36,8 +36,8 @@ type policyData struct {
 	Path   string
 }
 
-func stringContains(rawString string, substring string) bool {
-	hasString := strings.Index(rawString, substring)
+func yamlContainsPolicy(rawString string, substring string) bool {
+	hasString := strings.Index(rawString, (substring + ":"))
 	return hasString >= 0
 }
 
@@ -49,11 +49,11 @@ func getPolicyType(yaml string) string {
 
 	newYAML := strings.Split(yaml, "spec:")[1]
 
-	if stringContains(newYAML, generate) {
+	if yamlContainsPolicy(newYAML, generate) {
 		return generate
-	} else if stringContains(newYAML, mutate) {
+	} else if yamlContainsPolicy(newYAML, mutate) {
 		return mutate
-	} else if stringContains(newYAML, validate) {
+	} else if yamlContainsPolicy(newYAML, validate) {
 		return validate
 	} else {
 		return verifyImages
