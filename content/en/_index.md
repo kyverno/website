@@ -21,7 +21,9 @@ linkTitle = "Kyverno"
 
 
 {{% blocks/lead color="light" %}}
-<br/><br/>
+<br/>
+
+# Kyverno in a nutshell ... { class="text-center" }
 
 Kyverno is a policy engine **designed for Kubernetes**, policies are managed as Kubernetes resources and **no new language is required** to write policies.
 
