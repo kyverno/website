@@ -44,9 +44,12 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 
 
 {{% blocks/lead color="gray" %}}
-<br/><br/>
+
+<br/>
 
 # Join our community { class="text-center" }
+
+<br/>
 
 ### Interested in learning and contributing ?
 
