@@ -56,7 +56,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 
 <br/>
 
-### Interested in learning and contributing ?
+### Interested in learning and contributing?
 
 <p class="mt-5 mx-auto">
 	Sign up on our <a href="https://groups.google.com/g/kyverno">mailing list</a> 
