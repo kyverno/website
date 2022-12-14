@@ -47,17 +47,17 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 
 # Join our community { class="text-center" }
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
-[![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/kyverno/kyverno)](https://github.com/kyverno/kyverno/stargazers)
-
-Interested in learning and contributing ?
+### Interested in learning and contributing ?
 
 <p class="mt-5 mx-auto">
 	Sign up on our <a href="https://groups.google.com/g/kyverno">mailing list</a> 
 	or the <a href="https://slack.k8s.io/#kyverno">Kyverno channel on Kubernetes Slack</a> for discussions, and join 
 	our next community meeting. Check out the <a href="/community/">community page</a> for more details. 
 </p>
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
+[![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/kyverno/kyverno)](https://github.com/kyverno/kyverno/stargazers)
 
 {{% /blocks/lead %}}
 
