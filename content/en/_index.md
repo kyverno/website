@@ -22,9 +22,7 @@ linkTitle = "Kyverno"
 
 {{% blocks/lead color="light" %}}
 <br/><br/>
-[![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
-[![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/kyverno/kyverno)](https://github.com/kyverno/kyverno/stargazers)
+
 Kyverno is a policy engine **designed for Kubernetes**, policies are managed as Kubernetes resources and **no new language is required** to write policies.
 
 This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
@@ -49,9 +47,13 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 
 # Join our community { class="text-center" }
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
+[![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/kyverno/kyverno)](https://github.com/kyverno/kyverno/stargazers)
+
+Interested in learning and contributing ?
+
 <p class="mt-5 mx-auto">
-	Interested in learning and contributing?
-	
 	Sign up on our <a href="https://groups.google.com/g/kyverno">mailing list</a> 
 	or the <a href="https://slack.k8s.io/#kyverno">Kyverno channel on Kubernetes Slack</a> for discussions, and join 
 	our next community meeting. Check out the <a href="/community/">community page</a> for more details. 
