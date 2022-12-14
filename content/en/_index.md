@@ -20,7 +20,7 @@ linkTitle = "Kyverno"
 {{< /blocks/cover >}}
 
 
-{{% blocks/lead title="Kyverno in a nutshell" color="light" %}}
+{{% blocks/feature title="Kyverno in a nutshell" color="light" %}}
 <br/>
 
 # Kyverno in a nutshell ... { class="text-center" }
@@ -44,7 +44,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
   	</a>	
 </div>
 
-{{% /blocks/lead %}}
+{{% /blocks/feature %}}
 
 
 {{% blocks/lead color="gray" %}}
