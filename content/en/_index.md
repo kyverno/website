@@ -22,14 +22,11 @@ linkTitle = "Kyverno"
 
 {{% blocks/lead color="light" %}}
 <br/><br/>
-Kyverno is a policy engine **designed for Kubernetes**.
+Kyverno is a policy engine **designed for Kubernetes**, policies are managed as Kubernetes resources and **no new language is required** to write policies.
 
-With Kyverno, policies are managed as Kubernetes resources and **no new language is required** to write policies.
+This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
 
-This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, `git`, and `kustomize` to manage policies.
-
-Kyverno policies can **validate, mutate, and generate** Kubernetes resources<br/>
-plus ensure OCI image **supply chain security**.
+Kyverno policies can **validate, mutate, and generate** Kubernetes resources plus ensure OCI image **supply chain security**.
 
 The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
 
