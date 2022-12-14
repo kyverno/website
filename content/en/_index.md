@@ -20,7 +20,7 @@ linkTitle = "Kyverno"
 {{< /blocks/cover >}}
 
 
-{{% blocks/lead color="light" %}}
+{{% blocks/lead title="Kyverno in a nutshell" color="light" %}}
 <br/>
 
 # Kyverno in a nutshell ... { class="text-center" }
