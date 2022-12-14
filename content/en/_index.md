@@ -20,14 +20,14 @@ linkTitle = "Kyverno"
 {{< /blocks/cover >}}
 
 
-{{% blocks/feature title="Kyverno in a nutshell" color="light" %}}
+{{% blocks/lead color="light" %}}
 <br/>
 
-# Kyverno in a nutshell ... { class="text-center" }
+# Kyverno is a policy engine **designed for Kubernetes** { class="text-center" }
 
 <br/>
 
-Kyverno is a policy engine **designed for Kubernetes**, policies are managed as Kubernetes resources and **no new language is required** to write policies.
+Kyverno policies are managed as plain Kubernetes resources and **no new language is required** to write policies.
 
 This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
 
@@ -44,7 +44,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
   	</a>	
 </div>
 
-{{% /blocks/feature %}}
+{{% /blocks/lead %}}
 
 
 {{% blocks/lead color="gray" %}}
