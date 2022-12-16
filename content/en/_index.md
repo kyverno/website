@@ -28,13 +28,22 @@ linkTitle = "Kyverno"
 <br/>
 <br/>
 
+{{% blocks/feature %}}
 Policies are managed as Kubernetes resources and **no new language is required** to write policies.
+{{% /blocks/feature %}}
 
+
+{{% blocks/feature %}}
 This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
+{{% /blocks/feature %}}
 
+{{% blocks/feature %}}
 Kyverno policies can **validate, mutate, and generate** Kubernetes resources plus ensure OCI image **supply chain security**.
+{{% /blocks/feature %}}
 
+{{% blocks/feature %}}
 The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
+{{% /blocks/feature %}}
 
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="/docs/introduction/">
