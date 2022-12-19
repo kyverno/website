@@ -20,7 +20,7 @@ linkTitle = "Kyverno"
 {{< /blocks/cover >}}
 
 
-{{% blocks/section color="light" %}}
+{{% blocks/lead color="light" %}}
 <br/>
 
 # Kyverno is a policy engine **designed for Kubernetes** { class="text-center" }
@@ -28,10 +28,13 @@ linkTitle = "Kyverno"
 <br/>
 <br/>
 
+{{% /blocks/lead %}}
+
+{{% blocks/section color="light" %}}
+
 {{% blocks/feature %}}
 Policies are managed as Kubernetes resources and **no new language is required** to write policies.
 {{% /blocks/feature %}}
-
 
 {{% blocks/feature %}}
 This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
