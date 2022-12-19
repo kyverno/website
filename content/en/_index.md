@@ -21,12 +21,8 @@ linkTitle = "Kyverno"
 
 
 {{% blocks/lead color="light" %}}
-<br/>
 
 # Kyverno is a policy engine **designed for Kubernetes** { class="text-center" }
-
-<br/>
-<br/>
 
 {{% /blocks/lead %}}
 
@@ -48,6 +44,10 @@ Kyverno policies can **validate, mutate, and generate** Kubernetes resources plu
 The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
 {{% /blocks/feature %}}
 
+{{% /blocks/section %}}
+
+{{% blocks/lead color="light" %}}
+
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="/docs/introduction/">
 		Documentation <i class="fa fa-book ml-2"></i>
@@ -57,7 +57,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
   	</a>	
 </div>
 
-{{% /blocks/section %}}
+{{% /blocks/lead %}}
 
 
 {{% blocks/lead color="gray" %}}
