@@ -33,7 +33,7 @@ Policies are managed as Kubernetes resources and **no new language is required**
 {{% /blocks/feature %}}
 
 {{% blocks/feature icon="fa-brands fa-github" %}}
-This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
+This allows using familiar tools such as <code style="font-size: 1.35rem; white-space: nowrap">kubectl</code>, <code style="font-size: 1.35rem; white-space: nowrap">git</code>, and <code style="font-size: 1.35rem; white-space: nowrap">kustomize</code> to manage policies.
 {{% /blocks/feature %}}
 
 {{% blocks/feature icon="fa-gears" %}}
