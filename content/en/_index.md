@@ -20,7 +20,7 @@ linkTitle = "Kyverno"
 {{< /blocks/cover >}}
 
 
-{{% blocks/lead color="light" %}}
+{{% blocks/section color="light" %}}
 <br/>
 
 # Kyverno is a policy engine **designed for Kubernetes** { class="text-center" }
@@ -54,7 +54,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
   	</a>	
 </div>
 
-{{% /blocks/lead %}}
+{{% /blocks/section %}}
 
 
 {{% blocks/lead color="gray" %}}
