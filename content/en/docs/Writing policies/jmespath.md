@@ -365,7 +365,7 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Number             | Number             | Number   |
 | Quantity or Number | Quantity or Number | Quantity |
 | Duration or Number | Duration or Number | Duration |
-<br>
+
 Some specific behaviors to note:
 
 * If a duration ('1h') and a number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
@@ -418,7 +418,7 @@ The `base64_decode()` filter takes in a base64-encoded string and produces the d
 | Input 1 | Output   |
 |---------|----------|
 | String  | String   |
-<br>
+
 Some specific behaviors to note:
 
 * Base64-encoded strings with newline characters will be printed back with them inline.
@@ -478,7 +478,6 @@ The `base64_encode()` filter is the inverse of the `base64_decode()` filter and 
 | Input 1 | Output   |
 |---------|----------|
 | String  | String   |
-<br>
 
 **Example:** This policy generates a Secret when a new Namespace is created the contents of which is the value of an annotation named `corpkey`.
 
@@ -519,8 +518,6 @@ The `compare()` filter is provided as an analog to the [inbuilt function to Gola
 | Input 1            | Input 2            | Output   |
 |--------------------|--------------------|----------|
 | String             | String             | Number   |
-
-<br>
 
 **Example:** This policy will write a new label called `dictionary` into a Service putting into order the values of two annotations if the order of the first comes before the second.
 
@@ -576,8 +573,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Duration           | Number             | Duration |
 | Duration           | Duration           | Number   |
 
-<br>
-
 **Example:** This policy will check every container in a Pod and ensure that memory limits are no more than 2.5x its requests.
 
 ```yaml
@@ -631,8 +626,6 @@ The `equal_fold()` filter is designed to provide text [case folding](https://www
 | String             | String             | Boolean  |
 
 Related filters to `equal_fold()` are [`to_upper()`](#to_upper) and [`to_lower()`](#to_lower) which can also be used to normalize text for comparison.
-
-<br>
 
 **Example:** This policy will validate that a ConfigMap with a label named `dept` and the value of a key under `data` by the same name have the same case-insensitive value.
 
@@ -700,11 +693,7 @@ $ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@
 |--------------------------|--------------------|------------|---------------|
 | Map (Object)             | String             | String     | Array/Object  |
 
-<br>
-
 Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
-
-<br>
 
 **Example:** This policy will take the labels on a Namespace `foobar` where a Bucket is deployed and add them as key/value elements to the `spec.forProvider.tagging.tagSet[]` array.
 
@@ -865,8 +854,6 @@ These last two collections when compared are `false` because one of the values o
 |--------------------|--------------------|----------|
 | Map (Object)       | Map (Object)       | Boolean  |
 
-<br>
-
 **Example:** This policy checks all incoming Deployments to ensure they have a matching, preexisting PodDisruptionBudget in the same Namespace. The `label_match()` filter is used in a query to count how many PDBs have a label set matching that of the incoming Deployment.
 
 ```yaml
@@ -930,8 +917,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 The inputs list is currently under construction.
 {{% /pageinfo %}}
 
-<br>
-
 **Example:** This policy checks every container and ensures that memory limits are evenly divisible by its requests.
 
 ```yaml
@@ -993,14 +978,12 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Number             | Number             | Number   |
 | Quantity           | Number             | Quantity |
 | Duration           | Number             | Duration |
-<br>
+
 Due to the [commutative property](https://www.khanacademy.org/math/arithmetic-home/multiply-divide/properties-of-multiplication/a/commutative-property-review) of multiplication, the ordering of inputs (unlike with `divide()`) is irrelevant.
 
 {{% pageinfo color="warning" %}}
 The inputs list is currently under construction.
 {{% /pageinfo %}}
-
-<br>
 
 **Example:** This policy sets the replica count for a Deployment to a value of two times the current number of Nodes in a cluster.
 
@@ -1073,11 +1056,7 @@ $ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.
 |--------------------|--------------------|---------------|
 | Array/string       | Array/string       | Map (Object)  |
 
-<br>
-
 Related filter to `object_from_list()` is its inverse, [`items()`](#items).
-
-<br>
 
 **Example:** This policy converts all the environment variables across all containers in a Pod to labels and adds them to that same Pod. Any existing labels will not be replaced but rather augmented with the converted list.
 
@@ -1162,8 +1141,6 @@ The `parse_json()` filter takes in a string of any valid encoded JSON and parses
 |--------------------|----------|
 | String             | Any      |
 
-<br>
-
 **Example:** This policy uses the `parse_json()` filter to read a ConfigMap where a specified key contains JSON-encoded data (an array of strings in this case) and sets the supplementalGroups field of a Pod, if not already supplied, to that list.
 
 ```yaml
@@ -1216,8 +1193,6 @@ The `parse_yaml()` filter is the YAML equivalent of the [`parse_json()`](#parse_
 | Input 1            | Output   |
 |--------------------|----------|
 | String             | Any      |
-
-<br>
 
 **Example:** This policy parses a YAML document as the value of an annotation and uses the filtered value from a JMESPath expression in a variable substitution.
 
@@ -1286,8 +1261,6 @@ The `path_canonicalize()` filter is used to normalize or canonicalize a given pa
 |--------------------|-------------|
 | String             | String      |
 
-<br>
-
 **Example:** This policy uses the `path_canonicalize()` filter to check the value of each `hostPath.path` field in a volume block in a Pod to ensure it does not attempt to mount the Containerd host socket.
 
 ```yaml
@@ -1330,8 +1303,6 @@ The `pattern_match()` filter is used to perform a simple, non-regex match by spe
 |--------------------|--------------------|----------|
 | String             | String             | Boolean  |
 | String             | Number             | Boolean  |
-
-<br>
 
 **Example:** This policy uses `pattern_match()` with dynamic inputs by fetching a pattern stored in a ConfigMap against an incoming Namespace label value.
 
@@ -1407,8 +1378,6 @@ For example, `random('[0-9a-z]{5}')` will produce a string output of exactly 5 c
 |--------------------|----------|
 | String             | String   |
 
-<br>
-
 **Example:** This policy uses `random()` to mutate a new Secret to add a label with key `randomoutput` and the value of which is `random-` followed by 6 random characters composed of lower-case letters `a-z` and numbers `0-9`.
 
 ```yaml
@@ -1461,8 +1430,6 @@ regex_match('^[1-7]$','1')
 | String             | String             | Boolean  |
 | String             | Number             | Boolean  |
 
-<br>
-
 **Example:** This policy checks that a PersistentVolumeClaim resource contains an annotation named `backup-schedule` and its value conforms to a standard Cron expression string. Note that the regular expression in the first input has had an additional backslash added to each backslash to be valid YAML. To use this sample regex in other applications, remove one of each double backslash pair.
 
 ```yaml
@@ -1505,8 +1472,6 @@ The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_al
 | Regex (String)             | String             | Regex (String)     | String        |
 | Regex (String)             | Number             | Number             | String        |
 
-<br>
-
 **Example:** This policy mutates a Deployment having label named `retention` to set the last number to `0`. For example, an incoming Deployment with the label value of `days_37` would result in the value `days_30` after mutation.
 
 ```yaml
@@ -1544,8 +1509,6 @@ The `regex_replace_all_literal()` filter is similar to the [`regex_replace_all()
 |----------------------------|--------------------|--------------------|---------------|
 | Regex (String)             | String             | String             | String        |
 | Regex (String)             | Number             | Number             | String        |
-
-<br>
 
 **Example:** This policy replaces the image registry for each image in every container so it comes from `myregistry.corp.com`. Note that, for images without an explicit registry such as `nginx:latest`, Kyverno will internally replace this to be `docker.io/nginx:latest` and thereby ensuring the regex pattern below matches.
 
@@ -1590,8 +1553,6 @@ replace('Lorem ipsum dolor sit amet foo ipsum bar ipsum', 'ipsum', 'muspi', `2`)
 | Input 1            | Input 2            | Input 3            | Input 4            | Output        |
 |--------------------|--------------------|--------------------|--------------------|---------------|
 | String             | String             | String             | Number             | String        |
-
-<br>
 
 **Example:** This policy replaces the rule on an Ingress resource so that the path field will replace the first instance of `/cart` with `/shoppingcart`.
 
@@ -1640,8 +1601,6 @@ The `replace_all()` filter is used to find and replace all instances of one stri
 |--------------------|--------------------|--------------------|---------------|
 | String             | String             | String             | String        |
 
-<br>
-
 **Example:** This policy uses `replace_all()` to replace the string `release-name---` with the contents of the annotation `meta.helm.sh/release-name` in the `workingDir` field under a container entry within a Deployment.
 
 ```yaml
@@ -1681,8 +1640,6 @@ The `semver_compare()` filter compares two strings which comply with the [semant
 | Input 1            | Input 2            | Output        |
 |--------------------|--------------------|---------------|
 | String             | String             | Boolean       |
-
-<br>
 
 **Example:** This policy uses `semver_compare()` to check the attestations on a container image and denies it has been built with httpclient greater than version 4.5.0.
 
@@ -1733,8 +1690,6 @@ The `split()` filter is used to take in an input string, a character or sequence
 | Input 1            | Input 2            | Output        |
 |--------------------|--------------------|---------------|
 | String             | String             | Array/string  |
-
-<br>
 
 **Example:** This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).
 
@@ -1807,8 +1762,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Quantity           | Quantity           | Number   |
 | Duration           | Duration           | Duration |
 
-<br>
-
 **Example:** This policy sets the value of a new label called `lessreplicas` to the value of the current number of replicas in a Deployment minus two so long as there are more than two replicas to start with.
 
 ```yaml
@@ -1852,8 +1805,6 @@ The time format (layout) parameter is optional and will be defaulted to RFC3339 
 | Input 1                          | Input 2                         | Input 3                       | Output                     |
 |----------------------------------|---------------------------------|-------------------------------|----------------------------|
 | Time format (String)             | Time start (String)             | Time end (String)             | Time difference (String)   |
-
-<br>
 
 **Example:** This policy uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than six months.
 
@@ -1901,8 +1852,6 @@ The `to_lower()` filter takes in a string and outputs the same string with all l
 |--------------------|---------|
 | String             | String  |
 
-<br>
-
 **Example:** This policy sets the value of a label named `zonekey` to all caps.
 
 ```yaml
@@ -1938,8 +1887,6 @@ The `to_upper()` filter takes in a string and outputs the same string with all u
 | Input 1            | Output  |
 |--------------------|---------|
 | String             | String  |
-
-<br>
 
 **Example:** This policy sets the value of a label named `deployzone` to all caps.
 
@@ -1979,8 +1926,6 @@ This filter is similar to [`truncate()`](#truncate). The `trim()` filter can be 
 |--------------------|--------------------|---------|
 | String             | String             | String  |
 
-<br>
-
 **Example:** This policy uses the `trim()` filter to remove the domain from an email value set in an annotation.
 
 ```yaml
@@ -2016,8 +1961,6 @@ The `truncate()` filter takes a string, a number, and shortens (truncates) that 
 | Input 1            | Input 2            | Output  |
 |--------------------|--------------------|---------|
 | String             | Number             | String  |
-
-<br>
 
 **Example:** This policy truncates the value of a label called `buildhash` to only take the first twelve characters.
 
@@ -2181,8 +2124,6 @@ The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certifi
 | Input 1            | Output  |
 |--------------------|---------|
 | String             | Object  |
-
-<br>
 
 **Example:** This policy, designed to operate in background mode only, checks the certificates configured for webhooks and fails if any have an expiration time in the next week.
 
