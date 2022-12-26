@@ -529,6 +529,14 @@ Policies that have their validationFailureAction set to `audit` can be set to pr
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
 ```
 
+Additionally, you can use the `--warn-exit-code` flag with the `apply` command to control the exit code when warnings are reported. This is useful in CI/CD systems when used with the `--audit-warn` flag to treat `audit` policies as warnings. When no failures or errors are found, but warnings are encountered, the CLI will exit with the defined exit code.
+
+```sh
+kyverno apply disallow-latest-tag.yaml --resource=echo-test.yaml --audit-warn --warn-exit-code 3
+echo $?
+3
+```
+
 #### Policy Report
 
 Policy reports provide information about policy execution and violations. Use `--policy-report` with the `apply` command to generate a policy report for `validate` policies. `mutate` and `generate` policies do not trigger policy reports.
