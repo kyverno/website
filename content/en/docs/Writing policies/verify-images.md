@@ -460,7 +460,7 @@ This command generate ephemeral keys and launch a webpage to confirm an OIDC ide
 
 ### Keyless signing with GitHub Workflows
 
-GitHub supports [OpenID Connect (OIDC) tokens](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#understanding-the-oidc-token)) for workflow identities that eliminates the need for managing hard-coded secrets. A GitHub OIDC Token can be used for keyless signing. In this case, the `subject` in the ephemeral certificate provides the identity of the workflow that executes the image signing tasks.
+GitHub supports [OpenID Connect (OIDC) tokens](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#understanding-the-oidc-token) for workflow identities that eliminates the need for managing hard-coded secrets. A GitHub OIDC Token can be used for keyless signing. In this case, the `subject` in the ephemeral certificate provides the identity of the workflow that executes the image signing tasks.
 
 Since GitHub workflows can be reused in other workflows, it is important to verify the identity of the both the executing workflow and the actual workflow used for signing. This can be done using attributes stored in X.509 certificate extensions.
 
@@ -491,6 +491,57 @@ The supported formats include:
 * hashivault://[KEY]
 
 Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
+
+### Enabling IRSA to access AWS KMS
+
+When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant Kyverno service account permission to retrieve the public key(s) it needs from AWS KMS. 
+
+Once IRSA is enabled, Kyverno service account will have a new annotation with the IAM role it can assume, and Kyverno pod will assume this IAM role through the cluster's OIDC provider. To understand how IRSA works internally, see links below: 
+
+* https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
+* https://www.eksworkshop.com/beginner/110_irsa/
+* https://medium.com/@ankit.wal/the-how-of-iam-roles-for-service-accounts-irsa-on-aws-eks-3d76badb8942
+
+Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you prefer to use `AWS CLI` instead):
+
+1. Associate IAM OIDC provider
+
+    ```sh
+    eksctl utils associate-iam-oidc-provider --cluster <cluster-name> --approve
+    ```  
+
+2. Create IAM policy
+
+    ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "kms:GetPublicKey",
+                    "kms:DescribeKey"
+                ],
+                "Resource": "arn:aws:kms:<region>:<account-id>:key/<key-id>"
+            }
+        ]
+    }
+    ```
+
+3. Create IAM role and annotate Kyverno service account with it
+
+    ```sh
+    eksctl create iamserviceaccount \
+        --name kyverno \
+        --namespace kyverno \
+        --cluster <cluster-name> \
+        --attach-policy-arn "arn:aws:iam::<account-id>:policy/<iam-policy>" \
+        --approve \
+        --override-existing-serviceaccounts
+    ``` 
+
+{{% alert title="Note" color="info" %}} Kyverno needs to know the AWS region for the KMS store in use. To provide this information, environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in Kyverno Deployment. {{% /alert %}}
+
 
 ## Verifying Image Annotations
 
