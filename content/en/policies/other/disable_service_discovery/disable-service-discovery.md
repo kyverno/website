@@ -1,6 +1,6 @@
 ---
 title: "Disable Service Discovery"
-category: Other
+category: Other, EKS Best Practices
 version: 1.6.0
 subject: Pod
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: disable-service-discovery
   annotations:
     policies.kyverno.io/title: Disable Service Discovery
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.8.0-rc2
     kyverno.io/kubernetes-version: "1.24"

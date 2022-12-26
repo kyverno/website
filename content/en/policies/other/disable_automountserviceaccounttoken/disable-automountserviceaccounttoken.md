@@ -1,6 +1,6 @@
 ---
 title: "Disable automountServiceAccountToken"
-category: Other
+category: Other, EKS Best Practices
 version: 
 subject: ServiceAccount
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: disable-automountserviceaccounttoken
   annotations:
     policies.kyverno.io/title: Disable automountServiceAccountToken
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ServiceAccount
     kyverno.io/kyverno-version: 1.5.1
