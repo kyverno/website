@@ -82,6 +82,12 @@ Apply a policy to all matching resources in a cluster based on the current `kube
 kyverno apply /path/to/policy.yaml --cluster
 ```
 
+Apply all cluster policies of the current cluster to all matching resources in a cluster based on the current `kubectl` context:
+
+```sh
+ kubectl get clusterpolicies -o yaml | kyverno apply - --cluster
+```
+
 The resources can also be passed from stdin:
 
 ```sh
@@ -515,6 +521,12 @@ policies:
       - name: example-configmap-lookup
         values:
           dictionary.data.env: dev1
+```
+
+Policies that have their validationFailureAction set to `audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
 ```
 
 #### Policy Report
