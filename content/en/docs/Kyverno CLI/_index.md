@@ -523,6 +523,12 @@ policies:
           dictionary.data.env: dev1
 ```
 
+Policies that have their validationFailureAction set to `audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
+```
+
 #### Policy Report
 
 Policy reports provide information about policy execution and violations. Use `--policy-report` with the `apply` command to generate a policy report for `validate` policies. `mutate` and `generate` policies do not trigger policy reports.
