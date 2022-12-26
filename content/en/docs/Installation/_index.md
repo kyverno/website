@@ -443,10 +443,10 @@ The following `ClusterRoles` are used to extend the default `admin` role with pe
 
 Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is no longer necessary to modify any existing ClusterRoles created as part of the Kyverno installation.
 
-For example, if a new Kyverno policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. It will be necessary to create a new ClusterRole and assign it the aggregation labels `app.kubernetes.io/instance=kyverno` and `app.kubernetes.io/name=kyverno` in order for those permissions to take effect.
+For example, if a new Kyverno policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. It will be necessary to create a new ClusterRole and assign it the aggregation labels in order for those permissions to take effect.
 
 {{% alert title="Tip" color="info" %}}
-To inspect the complete permissions granted to the Kyverno ServiceAccount via all the aggregated ClusterRoles, run `kubectl get clusterrole kyverno -o yaml`.
+To inspect the complete permissions granted to the Kyverno ServiceAccount via all the aggregated ClusterRoles, as well as the current labels used for aggregation, run `kubectl get clusterrole kyverno -o yaml`.
 {{% /alert %}}
 
 This sample ClusterRole provides Kyverno additional permissions to create Deployments:
@@ -458,6 +458,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/name: kyverno
+    app: kyverno
   name: kyverno:create-deployments
 rules:
 - apiGroups:
