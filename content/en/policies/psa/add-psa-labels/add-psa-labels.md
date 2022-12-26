@@ -1,6 +1,6 @@
 ---
 title: "Add PSA Labels"
-category: Pod Security Admission
+category: Pod Security Admission, EKS Best Practices
 version: 1.6.0
 subject: Namespace
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: add-psa-labels
   annotations:
     policies.kyverno.io/title: Add PSA Labels
-    policies.kyverno.io/category: Pod Security Admission
+    policies.kyverno.io/category: Pod Security Admission, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0

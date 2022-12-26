@@ -1,6 +1,6 @@
 ---
 title: "Restrict Binding System Groups"
-category: Security
+category: Security, EKS Best Practices
 version: 1.6.0
 subject: RoleBinding, ClusterRoleBinding, RBAC
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: restrict-binding-system-groups
   annotations:
     policies.kyverno.io/title: Restrict Binding System Groups
-    policies.kyverno.io/category: Security
+    policies.kyverno.io/category: Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.8.0

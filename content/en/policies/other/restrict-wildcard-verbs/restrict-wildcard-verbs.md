@@ -1,6 +1,6 @@
 ---
 title: "Restrict Wildcard in Verbs"
-category: Security
+category: Security, EKS Best Practices
 version: 1.6.0
 subject: Role, ClusterRole, RBAC
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: restrict-wildcard-verbs
   annotations:
     policies.kyverno.io/title: Restrict Wildcard in Verbs
-    policies.kyverno.io/category: Security
+    policies.kyverno.io/category: Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.6.2

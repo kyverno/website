@@ -1,7 +1,7 @@
 ---
 title: "Add Quota"
-category: Multi-Tenancy
-version: 
+category: Multi-Tenancy, EKS Best Practices
+version: 1.6.0
 subject: ResourceQuota, LimitRange
 policyType: "generate"
 description: >
@@ -18,8 +18,9 @@ metadata:
   name: add-ns-quota
   annotations:
     policies.kyverno.io/title: Add Quota
-    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
     policies.kyverno.io/subject: ResourceQuota, LimitRange
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       To better control the number of resources that can be created in a given
       Namespace and provide default resource consumption limits for Pods,
@@ -30,9 +31,10 @@ spec:
   rules:
   - name: generate-resourcequota
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       apiVersion: v1
       kind: ResourceQuota
@@ -48,9 +50,10 @@ spec:
             limits.memory: '16Gi'
   - name: generate-limitrange
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       apiVersion: v1
       kind: LimitRange

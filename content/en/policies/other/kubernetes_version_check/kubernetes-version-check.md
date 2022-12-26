@@ -41,9 +41,8 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
-        value:
-        - CREATE
+        operator: Equals
+        value: CREATE
     context:
     - name: minorversion
       apiCall:

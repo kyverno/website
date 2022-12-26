@@ -1,7 +1,7 @@
 ---
 title: "Allowed Pod Priorities"
 category: Sample
-version: 1.3.0
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Allowed Pod Priorities
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.3.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others.
@@ -39,12 +39,13 @@ spec:
           name: allowed-pod-priorities
           namespace: default
     match:
-      resources:
-        kinds:
-        - Deployment
-        - DaemonSet
-        - StatefulSet
-        - Job
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          - DaemonSet
+          - StatefulSet
+          - Job
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.template.spec.priorityClassName }} is not in the list
@@ -53,7 +54,7 @@ spec:
         conditions:
           any:
           - key: "{{ request.object.spec.template.spec.priorityClassName }}"
-            operator: NotIn
+            operator: AnyNotIn
             value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-pods
     context:
@@ -62,9 +63,10 @@ spec:
           name: allowed-pod-priorities
           namespace: default
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list
@@ -73,7 +75,7 @@ spec:
         conditions:
           any:
           - key: "{{ request.object.spec.priorityClassName }}"
-            operator: NotIn
+            operator: AnyNotIn
             value:  "{{ podprioritydict.data.{{request.namespace}} }}"
   - name: validate-pod-priority-cronjob
     context:
@@ -82,9 +84,10 @@ spec:
           name: allowed-pod-priorities
           namespace: default
     match:
-      resources:
-        kinds:
-        - CronJob
+      any:
+      - resources:
+          kinds:
+          - CronJob
     validate:
       message: >-
         The Pod PriorityClass {{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }} is not in the list
@@ -93,7 +96,7 @@ spec:
         conditions:
           any:
           - key: "{{ request.object.spec.jobTemplate.spec.template.spec.priorityClassName }}"
-            operator: NotIn
+            operator: AnyNotIn
             value:  "{{ podprioritydict.data.{{request.namespace}} }}"
 
 ```
