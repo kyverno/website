@@ -491,9 +491,10 @@ The following flags can also be used to control the advanced behavior of Kyverno
 7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
 9. `enableTracing`: set to enable exposing traces. Default is `false`.
-10. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-11. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
-12. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+10. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
+11. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+12. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
+13. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 14. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
 15. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
 16. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
