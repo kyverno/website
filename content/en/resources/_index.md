@@ -4,7 +4,38 @@ linkTitle: "Resources"
 type: docs
 ---
 
-## Reviews
+## Videos
+
+{{% videos %}}
+
+{{< youtube id="T9pXLmb61Vw" start="0" class="video" >}}
+
+{{< youtube id="wY6JIBt6Cfg" start="0" class="video" >}}
+
+{{< youtube id="M_-r6vUKevQ" start="0" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="rVfLoueuCoY" start="0" class="video" >}}
+
+{{< youtube id="UVaWIvXjyrA" start="0" class="video" >}}
+
+{{< youtube id="dHhgfyH5KRs" start="0" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="ZrbJB2KgFAE" start="0" class="video" >}}
+
+{{< youtube id="sxASDgKu0dQ" start="0" class="video" >}}
+
+{{< youtube id="Bo8KhWhNY6g" start="0" class="video" >}}
+
+{{% /videos %}}
+
 
 {{% videos %}}
 
@@ -12,21 +43,19 @@ type: docs
 
 {{< youtube id="AmJUFH7n33c" start="0" class="video" >}}
 
-{{% /videos %}}
-
-{{% videos %}}
-
 {{< youtube id="k98BVmemp_0" start="0" class="video" >}}
 
-{{< youtube id="Am7mvIQWx4E" start="0" class="video" >}}
-
 {{% /videos %}}
 
+
 {{% videos %}}
+
+{{< youtube id="Am7mvIQWx4E" start="0" class="video" >}}
 
 {{< youtube id="9gSrRNmmKBc" start="0" class="video" >}}
 
 {{< youtube id="DREjzfTzNpA" start="0" class="video" >}}
+
 
 {{% /videos %}}
 
@@ -36,17 +65,14 @@ type: docs
 
 {{< youtube id="ZE4Zu9WQET4" start="1621" class="video" >}}
 
-{{% /videos %}}
-
-{{% videos %}}
-
 {{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
-{{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
 
 {{% /videos %}}
 
 {{% videos %}}
+
+{{< youtube id="GlqCW7uJ-7Q" start="0034" class="video" >}}
 
 {{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
 
@@ -54,19 +80,15 @@ type: docs
 
 {{% /videos %}}
 
-{{% videos %}}
-
-{{< youtube id="rVfLoueuCoY" start="0" class="video" >}}
-
-{{< youtube id="M_-r6vUKevQ" start="0" class="video" >}}
-
-{{% /videos %}}
-
-## Interviews
+## Meet the maintainers
 
 {{% videos %}}
 
 {{< youtube id="i_pemoAGEc8" start="0" class="video" >}}
+
+{{< youtube id="XNYkNL9d9hk" start="0" class="video" >}}
+
+{{< youtube id="FKSFuPGbKeY" start="0" class="video" >}}
 
 {{% /videos %}}
 
@@ -74,8 +96,24 @@ type: docs
 
 (latest to oldest)
 
+- [Why Kubernetes Policies are a Day-0 concern](https://nirmata.com/kubernetes-policies-should-be-a-day-0-concern/), November 2022
+
+- [Kyverno 1.8: Native Pod Security, YAML signing, and More!](https://nirmata.com/kyverno-v1-8-0-native-pod-security-yaml-signing-and-more/), October, 2022
+
+- [Reloading Secrets and ConfigMaps with Kyverno Policies](https://nirmata.com/reloading-secrets-and-configmaps-with-kyverno/), September, 2022
+
+- [Protect the pipe! Secure CI/CD pipelines with a policy-based approach using Tekton and Kyverno Policies](https://nirmata.com/protect-the-pipe-secure-ci-cd-pipelines-with-a-policy-based-approach-using-tekton-and-kyverno/), August 2022
+
+- [The 2 minute test for Kubernetes Pod Security](https://nirmata.com/the-2-minute-test-for-kubernetes-pod-security/), July 2022
+
+- [Governing Multi-Tenant Kubernetes Clusters with Kyverno](https://medium.com/compass-true-north/governing-multi-tenant-kubernetes-clusters-with-kyverno-3e11ba4a64ad), July 2022
+
+- [Governing Multi-Tenant Kubernetes Clusters with Kyverno](https://medium.com/compass-true-north/governing-multi-tenant-kubernetes-clusters-with-kyverno-3e11ba4a64ad), July 2022
+
 - [Kyverno v1.7.0 Mutate and generate existing resources is here](https://nirmata.com/2022/06/03/kyverno-v1-7-0-mutate-and-generate-existing-resources-is-here/), June 2022
+
 - [Securing Kubernetes with Kyverno](https://cloudyuga.guru/hands_on_lab/kyverno-introduction/), January 2022
+
 - [No! You shall not pass! Kyverno’s here!](https://medium.com/@ul_Timate/no-you-shall-not-pass-kyvernos-here-def1d376a4f8), December 2021
 - [Admission Controller for Secure Supply Chain Verification - Kyverno](https://boxboat.com/2021/12/06/secure-supply-chains-kyverno/), December 2021
 - [Enforcing Policy as Code using Kyverno in Kubernetes](https://dev.to/aws-builders/enforcing-policy-as-code-using-kyverno-in-kubernetes-3epk), October 2021
