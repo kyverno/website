@@ -38,7 +38,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

@@ -1,6 +1,6 @@
 ---
 title: "Add Network Policy for DNS"
-category: Multi-Tenancy
+category: Multi-Tenancy, EKS Best Practices
 version: 1.6.0
 subject: NetworkPolicy
 policyType: "generate"
@@ -18,7 +18,7 @@ metadata:
   name: add-networkpolicy-dns
   annotations:
     policies.kyverno.io/title: Add Network Policy for DNS
-    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
     policies.kyverno.io/subject: NetworkPolicy
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0

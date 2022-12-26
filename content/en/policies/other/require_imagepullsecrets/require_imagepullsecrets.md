@@ -1,7 +1,7 @@
 ---
 title: "Require imagePullSecrets"
 category: Sample
-version: 1.3.5
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Require imagePullSecrets
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.3.5
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Some registries, both public and private, require credentials in order to pull images
@@ -31,13 +31,14 @@ spec:
   rules:
   - name: check-for-image-pull-secrets
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{ images.containers.*.registry }}"
-        operator: NotIn
+        operator: AnyNotIn
         value:
         - ghcr.io
         - quay.io

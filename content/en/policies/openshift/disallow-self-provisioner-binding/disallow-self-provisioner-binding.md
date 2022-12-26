@@ -67,7 +67,7 @@ spec:
         conditions:
           all:
           - key: self-provisioner
-            operator: In
+            operator: AnyIn
             value: "{{request.object.roleRef.name}}"
 
 ```

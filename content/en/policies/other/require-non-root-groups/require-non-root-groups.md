@@ -1,6 +1,6 @@
 ---
 title: "Require Non Root Groups"
-category: Sample
+category: Sample, EKS Best Practices
 version: 1.3.6
 subject: Pod
 policyType: "validate"
@@ -17,7 +17,7 @@ kind: ClusterPolicy
 metadata:
   name: require-non-root-groups
   annotations:
-    policies.kyverno.io/category: Sample
+    policies.kyverno.io/category: Sample, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.3.6
     kyverno.io/kyverno-version: 1.6.0
