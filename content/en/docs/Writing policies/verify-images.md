@@ -494,13 +494,13 @@ Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
 
 ### Enabling IRSA to access AWS KMS
 
-When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant Kyverno service account permission to retrieve the public key(s) it needs from AWS KMS. 
+When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant the Kyverno ServiceAccount permission to retrieve the public key(s) it needs from AWS KMS.
 
-Once IRSA is enabled, Kyverno service account will have a new annotation with the IAM role it can assume, and Kyverno pod will assume this IAM role through the cluster's OIDC provider. To understand how IRSA works internally, see links below: 
+Once IRSA is enabled, the Kyverno ServiceAccount will have a new annotation with the IAM role it can assume, and the Kyverno Pod will assume this IAM role through the cluster's OIDC provider. To understand how IRSA works internally, see links below:
 
-* https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-* https://www.eksworkshop.com/beginner/110_irsa/
-* https://medium.com/@ankit.wal/the-how-of-iam-roles-for-service-accounts-irsa-on-aws-eks-3d76badb8942
+* [IAM roles for service accounts (EKS Documentation)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+* [IAM Roles for Service Accounts (eksworkshop.com)](https://www.eksworkshop.com/beginner/110_irsa/)
+* [Understanding IAM roles for service accounts, IRSA, on AWS EKS (Medium)](https://medium.com/@ankit.wal/the-how-of-iam-roles-for-service-accounts-irsa-on-aws-eks-3d76badb8942)
 
 Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you prefer to use `AWS CLI` instead):
 
@@ -528,7 +528,7 @@ Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you p
     }
     ```
 
-3. Create IAM role and annotate Kyverno service account with it
+3. Create IAM role and annotate the Kyverno ServiceAccount with it
 
     ```sh
     eksctl create iamserviceaccount \
@@ -538,10 +538,11 @@ Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you p
         --attach-policy-arn "arn:aws:iam::<account-id>:policy/<iam-policy>" \
         --approve \
         --override-existing-serviceaccounts
-    ``` 
+    ```
 
-{{% alert title="Note" color="info" %}} Kyverno needs to know the AWS region for the KMS store in use. To provide this information, environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in Kyverno Deployment. {{% /alert %}}
-
+{{% alert title="Note" color="info" %}}
+Kyverno needs to know the AWS region for the KMS store in use. To provide this information, the environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in the Kyverno Deployment.
+{{% /alert %}}
 
 ## Verifying Image Annotations
 
