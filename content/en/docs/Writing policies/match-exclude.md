@@ -41,20 +41,20 @@ These can be distinguished as:
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-Wildcards supported formats:
+Wildcards are supported with the following formats:
 
 * `Group/*/Kind`
 * `*/Kind`
 * `*`
 
 {{% alert title="Note" color="info" %}}
-* A policy using wildcards in `match` or `exclude` is not allowed in background mode.
+* A policy using wildcards in `match` or `exclude` or that validates subresources is not allowed in background mode.
 * A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
 * For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
-Sub-resources may be specified with either a `/` or `.` as a separator between parent and sub-resource. For example, `Pods/status` or `Pods.status` will match on sub-resources.
+Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`.
 
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
