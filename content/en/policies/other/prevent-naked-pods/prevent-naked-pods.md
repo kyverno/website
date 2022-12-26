@@ -1,6 +1,6 @@
 ---
 title: "Prevent Naked Pods"
-category: Other
+category: Other, EKS Best Practices
 version: 1.6.0
 subject: Pod
 policyType: "validate"
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Prevent Naked Pods
     pod-policies.kyverno.io/autogen-controllers: none
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.6.0
@@ -42,7 +42,7 @@ spec:
           - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:

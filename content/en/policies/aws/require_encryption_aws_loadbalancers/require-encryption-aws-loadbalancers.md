@@ -1,6 +1,6 @@
 ---
 title: "Require Encryption with AWS LoadBalancers"
-category: AWS
+category: AWS, EKS Best Practices
 version: 1.6.0
 subject: Service
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: require-encryption-aws-loadbalancers
   annotations:
     policies.kyverno.io/title: Require Encryption with AWS LoadBalancers
-    policies.kyverno.io/category: AWS
+    policies.kyverno.io/category: AWS, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     kyverno.io/kyverno-version: 1.7.3, 1.8.0-rc2

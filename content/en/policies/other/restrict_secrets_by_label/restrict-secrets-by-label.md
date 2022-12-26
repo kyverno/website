@@ -45,7 +45,7 @@ spec:
       - key: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef || '' | length(@) }}"
         operator: GreaterThanOrEquals
         value: 1
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:
@@ -77,7 +77,7 @@ spec:
       - key: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].envFrom[].secretRef || '' | length(@) }}"
         operator: GreaterThanOrEquals
         value: 1
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:
@@ -109,7 +109,7 @@ spec:
       - key: "{{ request.object.spec.volumes[].secret || '' | length(@) }}"
         operator: GreaterThanOrEquals
         value: 1
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:

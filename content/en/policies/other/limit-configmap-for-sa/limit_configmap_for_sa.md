@@ -48,12 +48,12 @@ spec:
     preconditions:
       all:
       - key: "{{request.object.metadata.namespace}}"
-        operator: In
+        operator: AnyIn
         value:
         - "any-namespace"
         - "another-namespace"
       - key: "{{request.object.metadata.name}}"
-        operator: In
+        operator: AnyIn
         value:
         - "any-configmap-name-good"
         - "another-configmap-name"
@@ -62,10 +62,10 @@ spec:
       deny:
         conditions:
           all:
-          - key: "{{request.operation}}"
-            operator: "In"
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
             value:
-            - "UPDATE"
-            - "CREATE"
+            - UPDATE
+            - CREATE
 
 ```

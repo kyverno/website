@@ -35,6 +35,7 @@ metadata:
       `pod-security.kubernetes.io/enforce=privileged`.
 spec:
   validationFailureAction: audit
+  background: false
   rules:
   - name: check-privileged
     match:

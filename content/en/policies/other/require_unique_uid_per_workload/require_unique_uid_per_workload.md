@@ -27,7 +27,7 @@ metadata:
       vulnerability were ever discovered in the underlying container runtime, and an application 
       were able to break out of the container to the host, they would not be able to interact 
       with processes owned by other users, or from other applications, in other projects.
-    kyverno.io/kyverno-version: 1.4.3
+    kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.20"
 spec:
   background: false
@@ -35,9 +35,10 @@ spec:
   rules:
   - name: require-unique-uid
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     context:
       - name: uidsAllPodsExceptSameOwnerAsRequestObject
         apiCall:
@@ -49,9 +50,9 @@ spec:
           jmesPath: "items[?@.metadata.ownerReferences == false || metadata.ownerReferences[?uid != '{{ request.object.metadata.keys(@).contains(@, 'ownerReferences') && request.object.metadata.ownerReferences[0].uid }}']].spec.containers[].securityContext.to_string(runAsUser)"
     preconditions:
       all:
-      - key: "{{ request.operation }}"
+      - key: "{{ request.operation || 'BACKGROUND' }}"
         operator: Equals
-        value: "CREATE"
+        value: CREATE
     validate:
       message: "Only cluster-unique UIDs are allowed"
       deny:
@@ -59,6 +60,6 @@ spec:
         # this checks uids for ALL containers in any pod of the workload
           all:
           - key: "{{ request.object.spec.containers[].securityContext.to_string(runAsUser) }}"
-            operator: In
+            operator: AnyIn
             value: "{{ uidsAllPodsExceptSameOwnerAsRequestObject }}"
 ```

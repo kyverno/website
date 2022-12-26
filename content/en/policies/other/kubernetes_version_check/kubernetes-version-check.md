@@ -40,10 +40,9 @@ spec:
           - Secret
     preconditions:
       all:
-      - key: "{{request.operation}}"
-        operator: In
-        value:
-        - CREATE
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: Equals
+        value: CREATE
     context:
     - name: minorversion
       apiCall:

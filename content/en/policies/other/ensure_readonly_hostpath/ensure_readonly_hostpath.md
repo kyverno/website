@@ -1,7 +1,7 @@
 ---
 title: "Ensure Read Only hostPath"
 category: Other
-version: 1.5.0
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -20,7 +20,7 @@ metadata:
     policies.kyverno.io/title: Ensure Read Only hostPath
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
@@ -37,13 +37,14 @@ spec:
   rules:
   - name: ensure-hostpaths-readonly
     match:
-      resources:
-        kinds:
-          - Pod
+      any:
+      - resources:
+          kinds:
+            - Pod
     preconditions:
       all:
-      - key: "{{ request.operation }}"
-        operator: In
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

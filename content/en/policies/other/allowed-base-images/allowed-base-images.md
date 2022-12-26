@@ -34,7 +34,7 @@ metadata:
 spec:
   validationFailureAction: audit
   rules:
-  - name: check-base-image
+  - name: allowed-base-images
     match:
       any:
       - resources:
@@ -42,7 +42,7 @@ spec:
           - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     context:

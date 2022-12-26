@@ -1,7 +1,7 @@
 ---
 title: "Require Unique External DNS Services"
 category: Other
-version: 1.3.6
+version: 1.6.0
 subject: Service
 policyType: "validate"
 description: >
@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/subject: Service
     kyverno.io/kyverno-version: 1.5.1
     kyverno.io/kubernetes-version: "1.21"
-    policies.kyverno.io/minversion: 1.3.6
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported
       providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with
@@ -35,11 +35,12 @@ spec:
   rules:
     - name: ensure-valid-externaldns-annotation
       match:
-        resources:
-          kinds:
-            - Service
-          annotations:
-            external-dns.alpha.kubernetes.io/hostname: "*"
+        any:
+        - resources:
+            kinds:
+              - Service
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: "*"
       context:
         # Looks up external DNS entries.
         - name: alldns
@@ -48,8 +49,8 @@ spec:
             jmesPath: "items[].metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\""
       preconditions:
         all:
-        - key: "{{ request.operation }}"
-          operator: In
+        - key: "{{ request.operation || 'BACKGROUND' }}"
+          operator: AnyIn
           value:
             - CREATE
             - UPDATE
@@ -62,7 +63,7 @@ spec:
             all:
               # Deny if "external-dns.alpha.kubernetes.io/hostname" annotation value is already taken
               - key: "{{request.object.metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\"}}"
-                operator: In
+                operator: AnyIn
                 value: "{{alldns}}"
 
 ```

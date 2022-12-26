@@ -1,7 +1,7 @@
 ---
 title: "Add imagePullSecrets for Containers and InitContainers"
 category: Sample
-version: 1.3.6
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,7 +20,7 @@ metadata:
     policies.kyverno.io/title: Add imagePullSecrets for Containers and InitContainers
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.3.6
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
@@ -34,16 +34,17 @@ spec:
   rules:
   - name: add-imagepullsecret
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       any:
       - key: "corp.reg.com"
-        operator: In
+        operator: AnyIn
         value: "{{ images.initContainers.*.registry || `[]` }}"
       - key: "corp.reg.com"          
-        operator: In
+        operator: AnyIn
         value: "{{ images.containers.*.registry }}"
     mutate:
       patchStrategicMerge:

@@ -42,8 +42,8 @@ spec:
       - key: '{{request.object.metadata.annotations."inject-certs"}}'
         operator: Equals
         value: enabled
-      - key: "{{request.operation}}"
-        operator: In
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
         value:
           - CREATE
           - UPDATE

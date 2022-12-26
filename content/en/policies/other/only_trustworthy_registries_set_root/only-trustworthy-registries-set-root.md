@@ -1,6 +1,6 @@
 ---
 title: "Only Trustworthy Registries Set Root"
-category: Other
+category: Other, EKS Best Practices
 version: 1.6.0
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: only-trustworthy-registries-set-root
   annotations:
     policies.kyverno.io/title: Only Trustworthy Registries Set Root
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
@@ -40,7 +40,7 @@ spec:
           - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: NotEquals
         value: DELETE
     validate:

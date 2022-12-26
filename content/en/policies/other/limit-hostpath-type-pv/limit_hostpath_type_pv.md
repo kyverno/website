@@ -37,8 +37,8 @@ spec:
         - PersistentVolume
     preconditions:
       all:
-      - key: "{{request.operation}}"
-        operator: In
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

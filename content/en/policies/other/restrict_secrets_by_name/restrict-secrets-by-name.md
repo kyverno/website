@@ -20,7 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict Secrets by Name
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod, Secret
-    kyverno.io/kyverno-version: 1.5.1
+    kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: >-
       Secrets often contain sensitive information and their access should be carefully controlled.
@@ -36,13 +36,14 @@ spec:
   rules:
   - name: safe-secrets-from-env
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
-        operator: In
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -70,13 +71,14 @@ spec:
                     name: safe-*
   - name: safe-secrets-from-envfrom
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
-        operator: In
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -101,13 +103,14 @@ spec:
                 name: safe-*
   - name: safe-secrets-from-volumes
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
-      - key: "{{request.operation}}"
-        operator: In
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

@@ -41,7 +41,7 @@ spec:
       - key: "{{request.object.metadata.name}}"
         operator: Equals
         value: self-provisioners
-      - key: "{{request.operation}}"
+      - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: UPDATE
     validate:
@@ -67,7 +67,7 @@ spec:
         conditions:
           all:
           - key: self-provisioner
-            operator: In
+            operator: AnyIn
             value: "{{request.object.roleRef.name}}"
 
 ```
