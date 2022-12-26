@@ -45,9 +45,9 @@ When `verifyDigest` rule is set to `true` (this is the default) each image is ch
 
 The `imageVerify` rule can be combined with [auto-gen](/docs/writing-policies/autogen/) so that policy rule checks are applied to Pod controllers.
 
-The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the requires count of attestors in the `entries` list that must be verified. By default, and when not specified, the all attestors are verified.
+The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the required count of attestors in the `entries` list that must be verified. By default, and when not specified, all attestors are verified.
 
-Here is a sample image verification policy:
+Here is a sample image verification policy which ensures an image from the `ghcr.io/kyverno/test-verify-image` repository, using any tag, is signed with the corresponding public key as defined in the policy:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -80,7 +80,9 @@ spec:
                 -----END PUBLIC KEY-----
 ```
 
-This policy will validate that all images that match `ghcr.io/kyverno/test-verify-image:*` are signed with the specified key.
+{{% alert title="Note" color="info" %}}
+The public key may either be defined in the policy directly or reference a standard Kubernetes Secret elsewhere in the cluster by specifying it in the format `k8s://<namespace>/<secret_name>`. The named Secret must specify a key `cosign.pub` containing the public key used for verification. Secrets may also be referenced using the `secret{}` object. See `kubectl explain clusterpolicy.spec.rules.verifyImages.attestors.entries.keys` for more details on the supported key options.
+{{% /alert %}}
 
 A signed image can be run as follows:
 
