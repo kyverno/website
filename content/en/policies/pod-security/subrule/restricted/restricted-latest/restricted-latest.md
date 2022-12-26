@@ -1,6 +1,6 @@
 ---
 title: "Restricted Pod Security Standards"
-category: Pod Security
+category: Pod Security, EKS Best Practices
 version: 1.8.0
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: podsecurity-subrule-restricted
   annotations:
     policies.kyverno.io/title: Restricted Pod Security Standards
-    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/category: Pod Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.8.0

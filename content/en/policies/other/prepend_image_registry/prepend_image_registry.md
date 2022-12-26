@@ -1,7 +1,7 @@
 ---
 title: "Prepend Image Registry"
 category: Other
-version: 1.5.0
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,7 +20,7 @@ metadata:
     policies.kyverno.io/title: Prepend Image Registry
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.5.1
     kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: >-
@@ -35,13 +35,14 @@ spec:
   rules:
   - name: prepend-registry-containers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -55,13 +56,14 @@ spec:
               image: registry.io/{{ images.containers."{{element.name}}".path}}:{{images.containers."{{element.name}}".tag}}
   - name: prepend-registry-initcontainers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

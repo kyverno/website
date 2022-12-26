@@ -1,7 +1,7 @@
 ---
 title: "Restrict Service Account"
 category: Sample
-version: 1.3.5
+version: 1.6.0
 subject: Pod,ServiceAccount
 policyType: "validate"
 description: >
@@ -21,7 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,ServiceAccount
-    policies.kyverno.io/minversion: 1.3.5
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
@@ -42,17 +42,18 @@ spec:
         name: sa-map
         namespace: staging
     match:
-      resources:
-        kinds:
-        - Pod
-        namespaces:
-        - staging
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - staging
     validate:
       message: "Invalid service account {{ request.object.spec.serviceAccountName }} for image {{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
       deny:
         conditions:
           any:
           - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
-            operator: NotIn
+            operator: AnyNotIn
             value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
 ```
