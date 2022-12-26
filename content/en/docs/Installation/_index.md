@@ -490,28 +490,28 @@ The following flags can also be used to control the advanced behavior of Kyverno
 6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
 7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
-9. `enableTracing`: set to enable exposing traces. Default is `false`.
-10. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
-11. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-12. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
-13. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-14. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
-15. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
-16. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
-17. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
-18. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
-19. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
-20. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
-21. `profilePort`: specifies port to enable profiling. Default is `6060`.
-22. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
-23. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
-24. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
-25. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
-26. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-27. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
-28. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-29. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
-
+9. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+10. `enableTracing`: set to enable exposing traces. Default is `false`.
+11. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
+12. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+13. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
+14. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+15. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+16. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
+17. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
+18. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
+19. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+20. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+21. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+22. `profilePort`: specifies port to enable profiling. Default is `6060`.
+23. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+24. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
+25. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+26. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
+27. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+28. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+29. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+30. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
 
 ### Policy Report access
 
