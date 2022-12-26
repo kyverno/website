@@ -82,16 +82,16 @@ Apply a policy to all matching resources in a cluster based on the current `kube
 kyverno apply /path/to/policy.yaml --cluster
 ```
 
-Apply all cluster policies of the current cluster to all matching resources in a cluster based on the current `kubectl` context:
-
-```sh
- kubectl get clusterpolicies -o yaml | kyverno apply - --cluster
-```
-
 The resources can also be passed from stdin:
 
 ```sh
 kustomize build nginx/overlays/envs/prod/ | kyverno apply /path/to/policy.yaml --resource -
+```
+
+Apply all cluster policies in the current cluster to all matching resources in a cluster based on the current `kubectl` context:
+
+```sh
+kubectl get clusterpolicies -o yaml | kyverno apply - --cluster
 ```
 
 Apply multiple policies to multiple resources:
