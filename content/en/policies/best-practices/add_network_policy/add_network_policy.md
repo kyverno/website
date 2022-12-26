@@ -1,7 +1,7 @@
 ---
 title: "Add Network Policy"
-category: Multi-Tenancy
-version: 
+category: Multi-Tenancy, EKS Best Practices
+version: 1.6.0
 subject: NetworkPolicy
 policyType: "generate"
 description: >
@@ -18,8 +18,9 @@ metadata:
   name: add-networkpolicy
   annotations:
     policies.kyverno.io/title: Add Network Policy
-    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
     policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       By default, Kubernetes allows communications across all Pods within a cluster.
       The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: default-deny
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       apiVersion: networking.k8s.io/v1
       kind: NetworkPolicy

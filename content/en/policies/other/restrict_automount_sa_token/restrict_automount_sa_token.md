@@ -1,6 +1,6 @@
 ---
 title: "Restrict Auto-Mount of Service Account Tokens"
-category: Sample
+category: Sample, EKS Best Practices
 version: 
 subject: Pod,ServiceAccount
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: restrict-automount-sa-token
   annotations:
     policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens
-    policies.kyverno.io/category: Sample
+    policies.kyverno.io/category: Sample, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,ServiceAccount
     policies.kyverno.io/description: >-

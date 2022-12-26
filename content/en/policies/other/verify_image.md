@@ -1,6 +1,6 @@
 ---
 title: "Verify Image"
-category: Sample
+category: Sample, EKS Best Practices
 version: 1.7.0
 subject: Pod
 policyType: "verifyImages"
@@ -18,7 +18,7 @@ metadata:
   name: verify-image
   annotations:
     policies.kyverno.io/title: Verify Image
-    policies.kyverno.io/category: Sample
+    policies.kyverno.io/category: Sample, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.7.0
