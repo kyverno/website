@@ -582,12 +582,20 @@ spec:
 
 ## Using private registries
 
-Private registries are defined as those requiring authentication in order to pull images. To use a private registry, you must create an image pull secret in the Kyverno Namespace and specify the Secret name as an argument for the Kyverno Deployment:
+Private registries are defined as those requiring authentication in order to pull images. A private registry may also present leaf certificates issued by internal certificate authorities. To use a private registry, depending on which of these needs apply to you, check the following sections for instructions on how to configure Kyverno appropriately.
 
-1. Configure the image pull secret:
+### Authentication
+
+In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment.
+
+1. Configure the imagePullSecret:
 
 ```sh
-kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-password> --docker-email=<your-email> 
+kubectl create secret docker-registry regcred \
+--docker-server=<server_address> \
+--docker-username=<username> \
+--docker-password=<password> \
+--docker-email=<email> \
 -n kyverno
 ```
 
@@ -615,7 +623,74 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
-If multiple imagePullSecrets are needed, they can be specified as comma-separated values to the `--imagePullSecrets` container flag.
+Currently, only a single value for the `--imagePullSecrets` container flag is supported due to an upstream bug.
+
+### Trust
+
+Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
+
+1. There are two potential ways to have Kyverno trust your private registry. The first allows replacing all the certificates Kyverno trusts by default with only that/those needed by your internal registry. This has the benefit of being a simpler process at the cost of Kyverno losing trust for any public registries such as Docker Hub, Amazon ECR, GitHub Container Registry, etc. The second involves providing Kyverno with the same trust as your Nodes. Often times this trust includes the aforementioned public certificate authorities but in other cases may not. This first step involves the latter process.
+
+Update your internal `ca-certificates` bundle by adding your private certificate authorities root certificate to the bundle and regenerating it. Many Linux distributions have slightly different processes, but it is documented [here](https://ubuntu.com/server/docs/security-trust-store) for Ubuntu as an example. If this process has already been done and your Nodes are using this, simply copy the contents out and proceed to the next step.
+
+2. Create a ConfigMap in your cluster, preferably in the Kyverno Namespace, which has these contents stored as a multi-line value. It should look something like the below.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno-certs
+  namespace: kyverno
+data:
+  ca-certificates: |
+    -----BEGIN CERTIFICATE-----
+    MIIH0zCCBbugAwIBAgIIXsO3pkN/pOAwDQYJKoZIhvcNAQEFBQAwQjESMBAGA1UE
+    AwwJQUNDVlJBSVoxMRAwDgYDVQQLDAdQS0lBQ0NWMQ0wCwYDVQQKDARBQ0NWMQsw
+    CQYDVQQGEwJFUzAeFw0xMTA1MDUwOTM3MzdaFw0zMDEyMzEwOTM3MzdaMEIxEjAQ
+    BgNVBAMMCUFDQ1ZSQUlaMTEQMA4GA1UECwwHUEtJQUNDVjENMAsGA1UECgwEQUND    
+<snip>
+    -----BEGIN CERTIFICATE-----
+    MIIBbzCCARWgAwIBAgIQK0Z1j0Q96/LIo4tNHxsPUDAKBggqhkjOPQQDAjAWMRQw
+    EgYDVQQDEwtab2xsZXJMYWJDQTAeFw0yMjA1MTgwODI2NTBaFw0zMjA1MTUwODI2
+    NTBaMBYxFDASBgNVBAMTC1pvbGxlckxhYkNBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+    AQcDQgAEJxGhyW26O77E7fqFcbzljYzlLq/G7yANNwerWnWUKlW9gcrcPqZwwrTX
+    yaJZpdCWTObvbOyaOxq5NsytC/ubLKNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1Ud
+    EwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYEFDoT1GEM8NYfxSKBkSzg4rpY+xdUMAoG
+    CCqGSM49BAMCA0gAMEUCIQDDLWFn/XJPqpNGXcyjlSJFxlQUJ5Cu/+nDvtbTeUGA
+    NAIgMsVwBafMtmLQFlfvZsE95UYoYUV4ayH+OLTTQaDQOPY=
+    -----END CERTIFICATE-----
+```
+
+3. Modify the Kyverno Deployment so it mounts this ConfigMap and overwrites the internal bundle provided by default. Refer to step one for the full ramifications of this act, especially if you have opted only to provide Kyverno with the certificate(s) of your internal root CA. An example snippet of the modified Deployment is shown below.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  template:
+    spec:
+      containers:
+      - image: ghcr.io/kyverno/kyverno:v1.9.0
+        name: kyverno
+        volumeMounts:
+        - mountPath: /.sigstore
+          name: sigstore
+        - name: ca-certificates
+          mountPath: /etc/ssl/certs/ca-certificates.crt
+          subPath: ca-certificates.crt
+<snip>
+      volumes:
+      - name: sigstore
+      - name: ca-certificates
+        configMap:
+          name: kyverno-certs
+          items:
+          - key: ca-certificates
+            path: ca-certificates.crt
+```
 
 ## Using a signature repository
 

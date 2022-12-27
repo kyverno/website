@@ -495,7 +495,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 10. `enableTracing`: set to enable exposing traces. Default is `false`.
 11. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
 12. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-13. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Accepts multiple values (comma separated).
+13. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
 14. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
 15. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
 16. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
