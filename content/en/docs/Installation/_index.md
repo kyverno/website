@@ -595,6 +595,10 @@ metadata:
   namespace: kyverno
 ```
 
+### Proxy
+
+Kyverno supports using of a proxy by setting the standard environment variables, `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. These variables must be defined for the main Kyverno container in the Kyverno Deployment resource.
+
 ## Upgrading Kyverno
 
 Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed. You cannot upgrade Kyverno by bumping the image tag on the Deployment as this will not affect the CRDs and other resources necessary for Kyverno's operation.
