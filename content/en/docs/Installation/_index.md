@@ -18,11 +18,10 @@ As of v1.7.0, Kyverno follows the same support policy as the Kubernetes project 
 
 | Kyverno Version                | Kubernetes Min | Kubernetes Max |
 |--------------------------------|----------------|----------------|
-| 1.4.x                          | 1.16           | 1.21           |
-| 1.5.x                          | 1.16           | 1.21           |
 | 1.6.x                          | 1.16           | 1.23           |
 | 1.7.x                          | 1.21           | 1.23           |
 | 1.8.x                          | 1.23           | 1.25           |
+| 1.9.x                          | 1.24           | 1.26           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
