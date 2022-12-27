@@ -86,6 +86,12 @@ kubectl get cm,secret -A | wc -l
 
 After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
 
+## Kyverno is slow to respond
+
+**Symptom**: Kyverno's operation seems slow in either mutating resources or validating them, causing additional time to create resources in the Kubernetes cluster.
+
+**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/#container-flags), `--clientRateLimitQPS` and `--clientRateLimitBurst`. Try values `100` for each and increase as needed.
+
 ## Policies are partially applied
 
 **Symptom**: Kyverno is working for some policies but not others. How can I see what's going on?
