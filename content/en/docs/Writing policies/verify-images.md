@@ -22,10 +22,12 @@ Each rule contains:
 * One or more image reference patterns to match
 * Common configuration attributes:
   * required: enforces that all matching images are verified
-  * mutateDigest: converts tags to digests, for matching images
-  * verifyDigest: enforces that digests are used, for matching images
+  * mutateDigest: converts tags to digests for matching images
+  * verifyDigest: enforces that digests are used for matching images
 * Zero or more __attestors__ which can be public keys, certificates, and keyless configuration attributes used to identify trust authorities
 * Zero or more [in-toto attestation](https://github.com/in-toto/attestation/blob/main/spec/README.md) __statements__ to be verified. If attestations are provided, at least one attestor is required.
+
+A verifyImages rule may also be used to perform tag-to-digest conversion (mutation) or require that images are verified via some other rule. While it is most common to actually perform signature or attestation verification, these are optional functionalities.
 
 ## Verifying Image Signatures
 
