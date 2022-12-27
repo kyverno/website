@@ -1268,6 +1268,48 @@ busybox
 
 For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/writing-policies/jmespath/).
 
+### Oci
+
+The Kyverno CLI has experimental ability to now push and pull Kyverno policies as OCI artifacts from an OCI-compliant registry. This ability allows one to store policies in a registry similar to how they are commonly stored in a git repository today. In a future release, the Kyverno admission controller will be able to directly reference this OCI image bundle to fetch policies.
+
+{{% alert title="Warning" color="warning" %}}
+The `oci` command is experimental and changes to the command and structure may change at any time.
+{{% /alert %}}
+
+To use the `oci` command, set the environment variable `KYVERNO_EXPERIMENTAL` to a value of `1` or `true`.
+
+#### Pushing
+
+Kyverno policies may be pushed to an OCI-compliant registry by using the `push` subcommand. Use the `-i` flag for the image repository reference and `--policy` or `-p` to reference one or more policies which should be bundled and pushed. The `-p` flag also supports a directory containing Kyverno policies. The directory must only contain Kyverno ClusterPolicy or Policy resources. Policies will be serialized and validated by the CLI first to ensure they are correct prior to pushing. This also means YAML comments will be lost.
+
+Push a single Kyverno ClusterPolicy named `require-labels.yaml` to GitHub Container Registry at the `acme` organization in a repository named `mypolicies` with tag `0.0.1`.
+
+```sh
+kyverno oci push -i ghcr.io/acme/mypolicies:0.0.1 --policy require-labels.yaml
+```
+
+Push a directory named `mydirofpolicies` containing multiple Kyverno ClusterPolicy and Policy resources to GitHub Container Registry at the `acme` organization in a repository named `mypolicybundle` with tag `0.0.1`.
+
+```sh
+kyverno oci push -i ghcr.io/acme/mypolicybundle:0.0.1 --policy mydirofpolicies/
+```
+
+#### Pulling
+
+Similar to the `push` subcommand, the `kyverno oci` command can pull the policies which were stored from a `push`. The `-i` flag is again used to reference the OCI artifact representing the Kyverno policies. The `--directory` or `-d` flag is used to set the output directory. Policies will be output as separate YAML files in the directory specified.
+
+Pull the `ghcr.io/acme/mypolicybundle:0.0.1` Kyverno policy bundle to the working directory.
+
+```sh
+kyverno oci pull -i ghcr.io/acme/mypolicybundle:0.0.1
+```
+
+Pull the `ghcr.io/acme/mypolicybundle:0.0.1` Kyverno policy bundle to a directory named `foodir`.
+
+```sh
+kyverno oci pull -i ghcr.io/acme/mypolicybundle:0.0.1 -d foodir/
+```
+
 ### Version
 
 Prints the version of Kyverno CLI.
