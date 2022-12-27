@@ -10,10 +10,6 @@ The `generate` rule supports `match` and `exclude` blocks, like other rules. Hen
 
 The `generate` rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
 
-{{% alert title="Note" color="info" %}}
-As of Kyverno 1.3.0, resources generated with `synchronize=true` may be modified or deleted by other Kubernetes controllers and users with appropriate access permissions, and Kyverno will recreate or update the resource to comply with configured policies.
-{{% /alert %}}
-
 When using a `generate` rule, the origin resource can be either an existing resource defined within Kubernetes, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a ConfigMap or Secret, for example, the `clone` object is used. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. These are mutually exclusive, and only one may be specified in a rule.
 
 {{% alert title="Caution" color="warning" %}}
@@ -292,6 +288,8 @@ spec:
 
 ## Generate for Existing resources
 
+Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
+
 With Kyverno 1.7, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself.
 
 ### Generate NetworkPolicy in Existing Namespaces
@@ -333,7 +331,7 @@ spec:
 
 ### Generate PodDisruptionBudget for Existing Deployments
 
-Similarly, this Cluster Policy will create a `PodDisruptionBudget` resource for existing or new deployments.
+Similarly, this ClusterPolicy will create a `PodDisruptionBudget` resource for existing or new Deployments.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -388,71 +386,3 @@ status:
             cannot create resource "poddisruptionbudgets" in API group "policy" in the namespace "test"'
  state: Failed
 ```
-
-## Generating resources into existing namespaces
-
-This feature has been deprecated in Kyverno 1.7+, refer to [this](#generate-for-existing-resources) section to generate for existing resources.
-
-Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
-
-Normally, Kyverno does not alter existing objects in any way as a central tenet of its design. However, using this method of controlled roll-out, you may use `generate` rules to create new objects into existing Namespaces. To do so, follow these steps:
-
-1. Identify some Kubernetes label or annotation which is not yet defined on any Namespace but can be used to add to existing ones signaling to Kyverno that these Namespaces should be targets for `generate` rules. The metadata can be anything, but it should be descriptive for this purpose and not in use anywhere else nor use reserved keys such as `kubernetes.io` or `kyverno.io`.
-
-2. Create a ClusterPolicy with a rule containing a `match` statement which matches on kind `Namespace` as well as the label or annotation you have set aside. In the `sync-secret` policy below, it matches on not only Namespaces but a label of `mycorp-rollout=true` and copies into these Namespaces a Secret called `corp-secret` stored in the `default` Namespace.
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: sync-secret
-spec:
-  rules:
-  - name: sync-secret
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-          selector:
-            matchLabels:
-              mycorp-rollout: "true"
-    generate:
-      kind: Secret
-      apiVersion: v1
-      name: corp-secret
-      namespace: "{{request.object.metadata.name}}"
-      synchronize : true
-      clone:
-        namespace: default
-        name: corp-secret
-```
-
-3. Create the policy as usual.
-
-4. On an existing Namespace where you wish to have the Secret `corp-secret` copied into it, label it with `mycorp-rollout=true`. This step must be completed after the ClusterPolicy exists. If it is labeled before, Kyverno will not see the request.
-
-```sh
-$ kubectl label ns prod-bus-app1 mycorp-rollout=true
-
-namespace/prod-bus-app1 labeled
-```
-
-5. Check the Namespace you just labeled to see if the Secret exists.
-
-```sh
-$ kubectl -n prod-bus-app1 get secret
-
-NAME                                               TYPE                                  DATA   AGE
-corp-secret                                        Opaque                                2      10s
-```
-
-6. Repeat these steps as needed on any additional Namespaces where you wish this ClusterPolicy to apply its `generate` rule.
-
-If you would like Kyverno to remove the resource it generated into these existing Namespaces, you may unlabel the Namespace.
-
-```sh
-$ kubectl label ns prod-bus-app1 mycorp-rollout-
-```
-
-The Secret from the previous example should be removed.
