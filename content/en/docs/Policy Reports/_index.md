@@ -47,7 +47,7 @@ The report's contents can be found under the `results[]` object in which it disp
 Policy reports are created in a 1:1 relationship with a Kyverno policy. The naming follows the convention `<policy_type>-<policy_name>` where `<report_type>` uses the alias `pol` (for `Policy`) or `cpol` (for `ClusterPolicy`).
 
 {{% alert title="Note" color="info" %}}
-Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or look at events on the corresponding Kyverno policy.
+Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or look at events on the corresponding Kyverno policy. A `PodExecOptions` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
 Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/#container-flags) section.
@@ -55,7 +55,6 @@ Policy reports have a few configuration options available. For details, see the 
 {{% alert title="Note" color="warning" %}}
 Policy reports created from background scans are not subject to the configuration of either a [resource filter](/docs/installation/#resource-filters) or a [Namespace selector](/docs/installation/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/#configmap-flags). This is due to the fact that the overhead required to generate these reports is minimal and should have no performance impact.
 {{% /alert %}}
-
 
 ## Report result logic
 
