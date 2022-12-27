@@ -810,6 +810,20 @@ userInfo:
   username: someone@somecorp.com
 ```
 
+Testing for subresources in `Kind/Subresource` matching format also requires a `subresources{}` section in the values file.
+
+```yaml
+subresources:
+  - subresource:
+      name: <name of subresource>
+      kind: <kind of subresource>
+      version: <version of subresource>
+    parentResource:
+      name: <name of parent resource>
+      kind: <kind of parent resource>
+      version: <version of parent resource>
+```
+
 #### Test Against Local Files
 
 Test a set of local files in the working directory.
