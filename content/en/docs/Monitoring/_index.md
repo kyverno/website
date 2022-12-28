@@ -114,4 +114,79 @@ config:
 
 > You still would not lose your previous metrics as your metrics get persisted in the Prometheus backend.
 
+## Disabling metrics
+
+Some metrics may generate an excess amount of data which may be undesirable in situations where this incurs additional cost. Some monitoring products and solutions have the ability to selectively disable which metrics are sent to collectors while leaving others enabled.
+
+Disabling select metrics with [DataDog OpenMetrics](https://docs.datadoghq.com/integrations/openmetrics/) can be done by annotating the Kyverno Pod(s) as shown below.
+
+```yaml
+apiVersion: v1                                                                                                                                               
+kind: Pod                                                                                                                                                    
+metadata:                                                                                                                                                    
+  annotations:                                                                                                                                               
+    ad.datadoghq.com/kyverno.checks: |                                                                                                                       
+      {                                                                                                                                                      
+        "openmetrics": {                                                                                                                                     
+          "init_config": {},                                                                                                                                 
+          "instances": [                                                                                                                                     
+            {                                                                                                                                                
+              "openmetrics_endpoint": "http://%%host%%:8000/metrics",                                                                                        
+              "namespace": "kyverno",                                                                                                                        
+              "metrics": [                                                                                                                                   
+                {"kyverno_policy_rule_info_total": "policy_rule_info"},                                                                                      
+                {"kyverno_admission_requests": "admission_requests"},                                                                                        
+                {"kyverno_policy_changes": "policy_changes"}                                                                                                 
+              ],                                                                                                                                             
+              "exclude_labels": [                                                                                                                            
+                "resource_namespace"                                                                                                                         
+              ]                                                                                                                                              
+            },                                                                                                                                               
+            {                                                                                                                                                
+              "openmetrics_endpoint": "http://%%host%%:8000/metrics",                                                                                        
+              "namespace": "kyverno",                                                                                                                        
+              "metrics": [                                                                                                                                   
+                {"kyverno_policy_results": "policy_results"}                                                                                                 
+              ]                                                                                                                                              
+            }                                                                                                                                                
+          ]                                                                                                                                                  
+        }                                                                                                                                                    
+      } 
+```
+
+The Kyverno Helm chart supports including additional Pod annotations in the values file as shown in the below example.
+
+```yaml
+podAnnotations:
+  # https://github.com/DataDog/integrations-core/blob/master/openmetrics/datadog_checks/openmetrics/data/conf.yaml.example
+  # Note: To collect counter metrics with names ending in `_total`, specify the metric name without the `_total`
+  ad.datadoghq.com/kyverno.checks: |
+    {
+      "openmetrics": {
+        "init_config": {},
+        "instances": [
+          {
+            "openmetrics_endpoint": "http://%%host%%:8000/metrics",
+            "namespace": "kyverno",
+            "metrics": [
+              {"kyverno_policy_rule_info_total": "policy_rule_info"},
+              {"kyverno_admission_requests": "admission_requests"},
+              {"kyverno_policy_changes": "policy_changes"}
+            ],
+            "exclude_labels": [
+              "resource_namespace"
+            ]
+          },
+          {
+            "openmetrics_endpoint": "http://%%host%%:8000/metrics",
+            "namespace": "kyverno",
+            "metrics": [
+              {"kyverno_policy_results": "policy_results"}
+            ]
+          }
+        ]
+      }
+    }
+```
+
 ## Metrics and Dashboard
