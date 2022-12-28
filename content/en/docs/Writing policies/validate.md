@@ -800,6 +800,16 @@ spec:
 
 Kyverno will permit the creation of a signed Deployment as long as the only difference between the signed original and the submitted manifest is the `spec.replicas` field. Modifications to any other field(s) will trigger a failure, for example if the `spec.template.spec.containers[0].image` field is changed from the default of `busybox:1.28` to `evilimage:1.28`.
 
+Rather than using ignoreFields to handle expected controller mutations, the `dryRun` object can be used to eliminate default changes by these and admission controllers. Set `enable` to `true` under the `dryRun` object as shown below and specify a Namespace in which the dry run will occur. Using other Namespaces or dry running with cluster-scoped or custom resources may entail giving additional privileges to the Kyverno ServiceAccount.
+
+```yaml
+validate:
+  manifests:
+    dryRun: 
+      enable: true
+      namespace: my-dryrun-ns
+```
+
 The manifest validation feature shares many of the same abilities as the [verify images](/docs/writing-policies/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
 
 ## Pod Security
