@@ -1,7 +1,7 @@
 ---
 title: Generate Resources
 description: Create additional resources based on resource creation or updates. 
-weight: 5
+weight: 60
 ---
 
 A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new RoleBindings or NetworkPolicies for a Namespace.

@@ -1,7 +1,7 @@
 ---
 title: Policy Settings
 description: Common configuration for all rules in a policy.
-weight: 1
+weight: 10
 ---
 
 A [policy](/docs/kyverno-policies/) contains one or more rules, and the following common settings which apply to all rules in the policy:

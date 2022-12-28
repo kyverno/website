@@ -2,7 +2,7 @@
 title: Background Scans 
 description: >
   Manage applying policies to existing resources in a cluster.
-weight: 10
+weight: 110
 ---
 
 Kyverno can validate existing resources in the cluster that may have been created before a policy was created. This can be useful when evaluating the potential effects new `validate` policies will have on a cluster prior to changing them to `enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `background` is set to `false` in a policy like shown below in the snippet.

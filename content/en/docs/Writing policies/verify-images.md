@@ -1,7 +1,7 @@
 ---
 title: Verify Images
 description: Check image signatures and add digests
-weight: 3
+weight: 40
 ---
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
