@@ -4,10 +4,6 @@ description: Check image signatures and add digests
 weight: 3
 ---
 
-{{% alert title="Warning" color="warning" %}}
-Image verification is a **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
-{{% /alert %}}
-
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
 The Kyverno __verifyImages__ rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and [in-toto attestations](https://github.com/in-toto/attestation/blob/main/spec/README.md) stored in an OCI registry.
