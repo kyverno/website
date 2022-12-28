@@ -232,6 +232,10 @@ The policy rule above fetches and verifies that the attestations are signed with
 
 Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations.
 
+{{% alert title="Note" color="info" %}}
+The structure of the predicate may differ slightly depending on the predicate type used during attestation. Use `cosign verify-attestation` by passing the expected predicate type with the `--type` flag and examine the predicate structure to ensure the expression you're writing is accurate.
+{{% /alert %}}
+
 ### Signing attestations
 
 To sign attestations, use the `cosign attest` command. This command will sign your attestations and publish them to the OCI registry.
