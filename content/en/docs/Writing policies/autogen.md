@@ -169,3 +169,23 @@ spec:
 ```
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
+
+Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow_default_namespace/disallow_default_namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
+
+```yaml
+pattern:
+  metadata:
+    namespace: "!default"
+```
+
+With auto-gen set to its default, this will get translated in the case of Deployments and others to the following below which is not the desire when expressing such a rule as the `namespace` field is not defined under the Pod template when using a Pod controller. This auto-generated pattern will therefore cause all applicable Pod controllers to be in violation of the translated pattern.
+
+```yaml
+pattern:
+  spec:
+    template:
+      metadata:
+        namespace: "!default"
+```
+
+In such cases, auto-gen should be disabled as described above and one or more rules written to explicitly control the matching resources and the patterns/expressions used against them.
