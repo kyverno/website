@@ -17,7 +17,7 @@ For improved security and performance, Kyverno is designed to not allow connecti
 
 A [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource in Kubernetes is commonly used as a source of configuration details which can be consumed by applications. This data can be written in multiple formats, stored in a Namespace, and accessed easily. Kyverno supports using a ConfigMap as a data source for variables. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the ConfigMap are always dynamic. Should the ConfigMap be updated, subsequent policy lookups will pick up the latest data at that point.
 
-In order to consume data from a ConfigMap in a `rule`, a `context` is required. For each `rule` you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy `rule` using JMESPath notation.
+In order to consume data from a ConfigMap in a rule, a `context` is required. For each rule you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy rule using JMESPath notation.
 
 ### Looking up ConfigMap values
 
@@ -39,7 +39,7 @@ data:
   env: production
 ```
 
-To refer to values from a ConfigMap inside a `rule`, define a `context` inside the `rule` with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below `rule` defines a `context` which references this specific ConfigMap by name.
+To refer to values from a ConfigMap inside a rule, define a `context` inside the rule with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below rule defines a `context` which references this specific ConfigMap by name.
 
 ```yaml
 rules:
@@ -86,7 +86,7 @@ spec:
               my-environment-name: "{{dictionary.data.env}}"
 ```
 
-In the above `ClusterPolicy`, a `mutate` rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
+In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
 
 {{% alert title="Note" color="info" %}}
 ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
@@ -95,6 +95,8 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 ```
 See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting concerns.
 {{% /alert %}}
+
+Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server.
 
 ### Handling ConfigMap Array Values
 
