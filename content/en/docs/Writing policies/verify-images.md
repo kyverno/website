@@ -205,16 +205,16 @@ spec:
       verifyImages:
       - imageReferences:
         - "registry.io/org/app*"
-        attestors:
-        - entries:
-          - keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
-                3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
-                -----END PUBLIC KEY-----
         attestations:
           - predicateType: https://example.com/CodeReview/v1
+            attestors:
+            - entries:
+              - keys:
+                  publicKeys: |-
+                    -----BEGIN PUBLIC KEY-----
+                    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
+                    3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
+                    -----END PUBLIC KEY-----
             conditions:
               - all:
                 - key: "{{ repo.uri }}"
@@ -230,7 +230,7 @@ spec:
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/writing-policies/preconditions/#any-and-all-statements) to the predicate.
 
-Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations.
+Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
 
 {{% alert title="Note" color="info" %}}
 The structure of the predicate may differ slightly depending on the predicate type used during attestation. Use `cosign verify-attestation` by passing the expected predicate type with the `--type` flag and examine the predicate structure to ensure the expression you're writing is accurate.
@@ -427,7 +427,6 @@ This image can now be verified using the leaf or root certificates.
 The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://github.com/sigstore/cosign/blob/main/KEYLESS.md):
 
 ```yaml
----
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -450,6 +449,8 @@ spec:
           - keyless:
               subject: "*@nirmata.com"
               issuer: "https://accounts.google.com"
+              rekor:
+                url: https://rekor.sigstore.dev
 ```
 
 ### Keyless signing
@@ -466,7 +467,7 @@ This command generate ephemeral keys and launch a webpage to confirm an OIDC ide
 
 GitHub supports [OpenID Connect (OIDC) tokens](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#understanding-the-oidc-token) for workflow identities that eliminates the need for managing hard-coded secrets. A GitHub OIDC Token can be used for keyless signing. In this case, the `subject` in the ephemeral certificate provides the identity of the workflow that executes the image signing tasks.
 
-Since GitHub workflows can be reused in other workflows, it is important to verify the identity of the both the executing workflow and the actual workflow used for signing. This can be done using attributes stored in X.509 certificate extensions.
+Since GitHub workflows can be reused in other workflows, it is important to verify the identity of both the executing workflow and the actual workflow used for signing. This can be done using attributes stored in X.509 certificate extensions.
 
 The policy rule fragment checks for the `subject` and `issuer` from the certificate. The rule also checks for additional extensions registered using [Fulcio Object IDs](https://github.com/sigstore/fulcio/blob/main/docs/oid-info.md).
 
@@ -481,6 +482,8 @@ attestors:
         githubWorkflowSha: {{WORKFLOW_COMMIT_SHA}}
         githubWorkflowName: {{WORKFLOW_NAME}}
         githubWorkflowRepository: {{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}
+      rekor:
+        url: https://rekor.sigstore.dev
 ```
 
 ## Using a Key Management Service (KMS)
@@ -789,7 +792,7 @@ spec:
 
 ## Offline Registries
 
-In Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
 ## Known Issues
 
