@@ -355,7 +355,7 @@ The anchor processing behavior for mutate conditions is as follows:
 
 ## Mutate Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
 
 Because these mutations occur on existing resources, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
 
@@ -402,11 +402,11 @@ By default, the above policy will not be applied when it is installed. This beha
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: "mutate-existing-secret"
+  name: mutate-existing-secret
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:
-    - name: "mutate-secret-on-configmap-event"
+    - name: mutate-secret-on-configmap-event
       match:
         any:
         - resources:
@@ -418,6 +418,10 @@ spec:
             - staging
 ...
 ```
+
+{{% alert title="Note" color="warning" %}}
+Installation of a mutate existing policy affects the `ValidatingWebhookConfiguration` Kyverno manages as opposed to traditional mutate rules affecting the `MutatingWebhookConfiguration`.
+{{% /alert %}}
 
 ### Variables Referencing Target Resources
 
