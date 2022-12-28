@@ -67,8 +67,8 @@ type: docs
 
 {{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
-
 {{% /videos %}}
+
 
 {{% videos %}}
 
@@ -77,6 +77,12 @@ type: docs
 {{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
 
 {{< youtube id="ZrOtTELNLyg" start="633" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="T9pXLmb61Vw" start="0" class="video" >}}
 
 {{% /videos %}}
 
