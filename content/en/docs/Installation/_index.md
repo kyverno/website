@@ -494,7 +494,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
 7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
-9.  `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+9. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
 10. `enableTracing`: set to enable exposing traces. Default is `false`.
 11. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
 12. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
