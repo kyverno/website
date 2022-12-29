@@ -491,32 +491,33 @@ The following flags can also be used to control the advanced behavior of Kyverno
 3. `autoUpdateWebhooks`: set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
 4. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to write to `status` rather than the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
 5. `backgroundScan`: enables/disables background scans. `true` by default. This replaces the former flag of the same name which controlled the background scan interval.
-6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
-7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
-8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
-9. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
-10. `enableTracing`: set to enable exposing traces. Default is `false`.
-11. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
-12. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-13. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
-14. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-15. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
-16. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
-17. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
-18. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
-19. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
-20. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
-21. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
-22. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
-23. `profilePort`: specifies port to enable profiling. Default is `6060`.
-24. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
-25. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
-26. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
-27. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
-28. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-29. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
-30. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-31. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+6. `backgroundScanInterval`: adjusts the time interval when forced background scanning takes place. Default is `1h`.
+7. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
+8. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
+9. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
+10. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+11. `enableTracing`: set to enable exposing traces. Default is `false`.
+12. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
+13. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+14. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
+15. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+16. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+17. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
+18. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
+19. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
+20. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
+21. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+22. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+23. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+24. `profilePort`: specifies port to enable profiling. Default is `6060`.
+25. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+26. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
+27. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+28. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
+29. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+30. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+31. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+32. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
 
 ### Policy Report access
 
@@ -603,7 +604,7 @@ metadata:
 
 Because Kyverno is an admission controller with many capabilities and due to the variability with respect to environment type, size, and composition of Kubernetes clusters, the amount of processing performed by Kyverno can vary greatly. Sizing a Kyverno installation based solely upon Node or Pod count is often not appropriate to accurately predict the amount of resources it will require. For example, a large production cluster hosting 60,000 Pods yet with no Kyverno policies installed which match on `Pod` has no bearing on the resources required by Kyverno. Because webhooks are dynamically managed by Kyverno according to the policies installed in the cluster, no policies which match on `Pod` results in no information about Pods being sent by the API server to Kyverno and, therefore, reduced processing load.
 
-The following is a table of test results observed on a highly available Kyverno 1.8.2 installation with a 4 Gi memory limit, all the Pod Security Standards policies installed (restricted profile) in which four were in `audit` mode, and background scanning enabled. ARPS is admission requests per second and QPS is client queries per second. Tests were performed with the [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2) tool. CPU and memory figures represent peak consumption. CPU represents physical cores of utilization with a frequency max of 3.35 GHz.
+The following is a table of test results observed on a highly available Kyverno 1.8.2 installation with a 4 Gi memory limit, all the Pod Security Standards policies installed (restricted profile) in which four were in `audit` mode, and background scanning enabled. ARPS is admission requests per second and QPS is client queries per second. Tests were performed with the [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2) tool. CPU and memory figures represent peak consumption. CPU represents physical cores of utilization total across all replicas with a frequency max of 3.35 GHz. Memory is per replica.
 
 | Test | Policies | Nodes | Pods | ARPS | QPS | Memory | CPU |
 |------|----------|-------|------|------|-----|--------|-----|
