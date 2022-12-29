@@ -758,3 +758,62 @@ spec:
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
+
+### Nested foreach
+
+The `foreach` object also supports nesting multiple foreach declarations to form loops within loops. This is especially useful when the mutations you need to perform are either replacements or removals as these require the use of JSON patches (`patchesJson6902`). When using nested loops, the special variable `{{elementIndex}}` requires a loop number to identify which element to process. Preconditions are supported only at the top-level loop and not per inner loop.
+
+For example, consider a scenario in which you must replace all host names which end in `old.com` with `new.com` in an Ingress resource under the `spec.tls[].hosts[]` list. Because `spec.tls[]` is an array of objects, and `hosts[]` is an array of strings within each object, a `foreach` declaration must iterate over each object in the `tls[]` array and then internally loop over each host in the `hosts[]` array.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+  labels:
+    app: myingress
+spec:
+  rules:
+  - host: myhost.corp.com
+    http:
+      paths:
+      - backend:
+          service: 
+            name: myservice
+            port: 
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - foo.old.com
+    - bar.old.com
+    secretName: mytlscertsecret
+```
+
+This type of advanced mutation can be performed with nested foreach loops as shown below. Notice that in the JSON patch, the `path` value references the current index of `tls[]` as `{{elementIndex0}}` and the current index of `hosts[]` as `{{elementIndex1}}`. In the `value` field, the `{{element}}` variable still references the current value of the `hosts[]` array being processed.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: replace-image-registry
+spec:
+  background: false
+  rules:
+    - name: replace-dns-suffix
+      match:
+        any:
+          - resources:
+              kinds:
+                - Ingress
+      mutate:
+        foreach:
+          - list: request.object.spec.tls[]
+            foreach:
+              - list: "element.hosts"
+                patchesJson6902: |-
+                  - path: /spec/tls/{{elementIndex0}}/hosts/{{elementIndex1}}
+                    op: replace
+                    value: "{{ replace_all('{{element}}', '.old.com', '.new.com') }}"
+```
