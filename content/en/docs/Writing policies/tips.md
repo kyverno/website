@@ -39,6 +39,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
       Pattern specifies an overlay-style pattern used to check resources.
   ```
 
+* Use `kubectl get kyverno -A` to show all the Kyverno Custom Resources present in your cluster. This will return resources such as policies of various types, policy reports, and intermediary resources used internally by Kyverno.
 * When using VS Code, because of the OpenAPIV3 schema Kyverno supports, you can make use of this integration to assist in writing policy by getting field hints and describing elements.
 * Make use of the [Kyverno CLI](/docs/kyverno-cli/) to test policies out in advance.
 * Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design. In most cases, rules can be grouped into a single policy definition. Here are some tips when it comes to organizing rules:
