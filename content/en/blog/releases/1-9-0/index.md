@@ -75,7 +75,7 @@ spec:
 
 Here is a ClusterCleanupPolicy which, as you might have guessed, applies cluster-wide, and which will find and remove Pods with no ownerReferences every day at midnight. Cleanup policies like these can be super helpful to keep clutter to a minimum and fit nicely into existing automation workflows.
 
-A policy-based approach is only the first step, and in the second phase we intend on implementing automated cleanup based on label or annotation assignment.
+A policy-based approach is only the first step, and in the second phase we intend on implementing automated cleanup based on a reserved label or annotation assigned to resources.
 
 ### Distributed Tracing
 
@@ -87,7 +87,7 @@ In the 1.8 release, we added OpenTelemetry support, but in this release we wante
 
 Kyverno has had support for some subresources for a few releases now (ephemeral containers have been supported since 1.7), but there were still gaps. Specifically, Kyverno had problems with the Scale subresource, which can be tricky to deal with, as well as mutations to the Status subresource. This meant that a couple real-world use cases that have come up simply weren't possible to implement in Kyverno policies. With Kyverno 1.9, that should be a thing of the past and most, if not all, subresources can be handled quite well.
 
-With this enhanced support, you can now easily match on the precise subresource you want (even using wildcards!) and Kyverno will figure it out. For example, advertising [extended resources](https://kubernetes.io/docs/tasks/administer-cluster/extended-resource-node/) to Kubernetes nodes is important for use cases like GPUs and FPGAs, and with a Kyverno [mutate](/docs/writing-policies/mutate/) rule targeted at Node/status, it's now incredibly simple and doesn't require any custom webhooks.
+With this enhanced support, you can now easily match on the precise subresource you want (even using wildcards) and Kyverno will figure it out. For example, advertising [extended resources](https://kubernetes.io/docs/tasks/administer-cluster/extended-resource-node/) to Kubernetes nodes is important for use cases like GPUs and FPGAs, and with a Kyverno [mutate](/docs/writing-policies/mutate/) rule targeted at Node/status, it's now incredibly simple and doesn't require any custom webhooks.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -112,7 +112,7 @@ spec:
 
 ### ConfigMap Caching
 
-ConfigMaps are a common source of data not just to Pods but to Kyverno policies as well. Kyverno has long had support for [dynamic lookups from ConfigMaps](/docs/writing-policies/external-data-sources/#variables-from-configmaps) without requiring any pre-syncing, and in most use cases this was fine. But as more users flocked to Kyverno with ever larger clusters, these additional API calls produced some unwanted overhead. Starting in Kyverno 1.9, if you would like Kyverno to cache the ConfigMaps you need for policy decisions, simply assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it for you. Nothing else you need to do. Simple.
+ConfigMaps are a common source of data not just to Pods but to Kyverno policies as well. Kyverno has long had support for [dynamic lookups from ConfigMaps](/docs/writing-policies/external-data-sources/#variables-from-configmaps) without requiring any pre-syncing, and in most use cases this was fine. But as more users flocked to Kyverno with ever larger clusters, these additional API calls produced some unwanted overhead. Starting in Kyverno 1.9, if you would like Kyverno to cache the ConfigMaps you need for policy decisions, simply assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it for you. Nothing else you need to do.
 
 ## Other Additions and Enhancements
 
@@ -120,15 +120,19 @@ Some other cool features and status updates we're proud to share include new JSO
 
 Kyverno now supports [nested foreach loops](/docs/writing-policies/mutate/#nested-foreach) which are great especially for mutation use cases where you need tactical modifications or removals from complex nested objects like arrays within arrays.
 
-Changes include the graduation of [verifyImages](/docs/writing-policies/verify-images/) rules to stable status exiting beta. With the [general availability announcement of Sigstore](https://openssf.org/press-release/2022/10/25/sigstore-announces-general-availability-at-sigstorecon/) and the modifications we've made around attestations (see Potentially Breaking Changes), we're confident that Kyverno is the best tool out there for guaranteeing your software supply chain needs are met in a Kubernetes environment. Although many users have been successfully running in production with image signature and attestation verification, we now believe the ecosystem is stable enough for us to declare it stable in kind.
+Pod controller [rule auto-generation](/docs/writing-policies/autogen/), another of Kyverno's hallmark capabilities which if you're not familiar allows Kyverno to translate rules solely for Pods to all other major Pod controllers, added support for ReplicaSet and ReplicationController. There's nothing policy authors need to do and Kyverno will now add these two resources into the auto-gen rules for you.
+
+Changes include the graduation of [verifyImages](/docs/writing-policies/verify-images/) rules to stable status exiting beta. With the [general availability announcement of Sigstore](https://openssf.org/press-release/2022/10/25/sigstore-announces-general-availability-at-sigstorecon/) and the modifications we've made around attestations (see [Potentially Breaking Changes](#potentially-breaking-changes)), we're confident that Kyverno is the best tool out there for guaranteeing your software supply chain needs are met in a Kubernetes environment. Although many users have been successfully running in production with image signature and attestation verification, we now believe the ecosystem is stable enough for us to declare it stable in kind.
 
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
-And, lastly, Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're always dedicating our resources where they're needed and staying current, we're build and testing around 1.24-1.26.
+Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
+
+And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it over the 250 mark.
 
 ## Potentially Breaking Changes
 
-One change we do want to make you aware of, which actually came in 1.8.3, which could be breaking is the new process for verifying a container image attestation. Due to some upstream changes in Sigstore's [cosign](https://github.com/sigstore/cosign), we had to move attestors under the attestation which you wanted to verify so we could separate the attestors of an image's signature from those of its attestations which aren't always the same. This necessitated a schema change which you can find in the [documentation](/docs/writing-policies/verify-images/#verifying-image-attestations). So if you have Kyverno policies which verified image attestations, please update them to the new schema so they continue to work in 1.9.
+One change we do want to make you aware of, which actually came in 1.8.3, which could be breaking is a schema modification for verifying a container image attestation. Due to some upstream changes in Sigstore's [cosign](https://github.com/sigstore/cosign), we had to move the attestors under the attestation being verified. This necessitated a schema change which you can find in the [documentation](/docs/writing-policies/verify-images/#verifying-image-attestations). So if you have Kyverno policies which verified image attestations, please update them to the new schema so they continue to work in 1.9.
 
 ## Closing
 
