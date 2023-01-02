@@ -44,7 +44,7 @@ spec:
         - important-tool
 ```
 
-Once a PolicyException is created, a resource which is selected by the exception and also applies to the policy and rule combo named in the exception will be allowed to circumvent the policy. As shown, it'll be quite useful, we think, for users who want those one-time exceptions to validate rules which are in `enforce` mode although it works for other situations and rules as well. Access to creating PolicyExceptions can be controlled through a combination of Kubernetes RBAC, your own GitOps review processes, and even Kyverno validate policies.
+Once a PolicyException is created, a resource which is selected by the exception and also applies to the policy and rule combo named in the exception will be allowed to circumvent the policy. As shown, it'll be quite useful, we think, for users who want those one-time exceptions to validate rules which are in `Enforce` mode although it works for other situations and rules as well. Access to creating PolicyExceptions can be controlled through a combination of Kubernetes RBAC, your own GitOps review processes, and even Kyverno validate policies.
 
 ### Cleanup Policies
 

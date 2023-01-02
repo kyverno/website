@@ -53,7 +53,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -191,7 +191,7 @@ kind: ClusterPolicy
 metadata:
   name: attest-code-review
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -292,7 +292,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -363,7 +363,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -432,7 +432,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image-keyless
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
   rules:
     - name: check-image-keyless
@@ -561,7 +561,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -727,7 +727,7 @@ kind: ClusterPolicy
 metadata:
   name: signed-task-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:
@@ -763,7 +763,7 @@ kind: ClusterPolicy
 metadata:
   name: signed-pipeline-bundle
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:

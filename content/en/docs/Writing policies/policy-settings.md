@@ -8,7 +8,7 @@ A [policy](/docs/kyverno-policies/) contains one or more rules, and the followin
 
 * **applyRules**: States how many of the rules in the parent policy should be applied to a matching resource. Values are `One` and `All` (default). If set to `One`, the first matching rule to be applied will stop further rules from being evaluated.
 
-* **validationFailureAction**: controls if a validation policy rule failure should block the admission review request (`enforce`) or allow (`audit`) the admission review request and report the policy failure in a policy report. Defaults to `audit`.
+* **validationFailureAction**: controls if a validation policy rule failure should block the admission review request (`Enforce`) or allow (`Audit`) the admission review request and report the policy failure in a policy report. Defaults to `Audit`.
 
 * **validationFailureActionOverrides**: a ClusterPolicy attribute that specifies `validationFailureAction` Namespace-wise. It overrides `validationFailureAction` for the specified Namespaces.
 

@@ -308,7 +308,7 @@ kind: ClusterPolicy
 metadata:
   name: cm-globalval-example
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-mode
@@ -398,7 +398,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-pod-name
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: validate-name
@@ -478,7 +478,7 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: example-configmap-lookup
@@ -523,13 +523,13 @@ policies:
           dictionary.data.env: dev1
 ```
 
-Policies that have their validationFailureAction set to `audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+Policies that have their validationFailureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
 ```
 
-Additionally, you can use the `--warn-exit-code` flag with the `apply` command to control the exit code when warnings are reported. This is useful in CI/CD systems when used with the `--audit-warn` flag to treat `audit` policies as warnings. When no failures or errors are found, but warnings are encountered, the CLI will exit with the defined exit code.
+Additionally, you can use the `--warn-exit-code` flag with the `apply` command to control the exit code when warnings are reported. This is useful in CI/CD systems when used with the `--audit-warn` flag to treat `Audit` policies as warnings. When no failures or errors are found, but warnings are encountered, the CLI will exit with the defined exit code.
 
 ```sh
 kyverno apply disallow-latest-tag.yaml --resource=echo-test.yaml --audit-warn --warn-exit-code 3
@@ -578,7 +578,7 @@ metadata:
       and 'resources.limits' per pod. If a namespace level request or limit is specified,
       defaults are automatically applied to each pod based on the 'LimitRange' configuration.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: validate-resources
     match:
@@ -886,7 +886,7 @@ metadata:
       image changes. A best practice is to use an immutable tag that maps to 
       a specific version of an application pod.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: require-image-tag
     match:

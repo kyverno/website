@@ -38,7 +38,7 @@ Kyverno policy definitions can refer to other fields in the policy definition as
 In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
 
 ```yaml
-validationFailureAction: enforce
+validationFailureAction: Enforce
 rules:
 - name: check-tcpSocket
   match:
@@ -265,7 +265,17 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 ## Variables from container images
 
-Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. Here is an example:
+Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. The following variables are set under the `images`:
+
+* `reference`
+* `referenceWithTag`
+* `registry`
+* `path`
+* `name`
+* `tag`
+* `digest`
+
+Here is an example:
 
 ```json
 {
@@ -288,7 +298,7 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
 }
 ```
 
-Whenever an AdmissionReview request has `containers` or `initContainers` defined, the `images` variable can be referenced as shown in the examples below:
+Whenever an AdmissionReview request has `containers`, `initContainers`, or `ephemeralContainers` defined, the `images` variable can be referenced as shown in the examples below. `tag` and `digest` are mutually exclusive as an image may only define one.
 
 Reference the image properties of container `tomcat`:
 

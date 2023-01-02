@@ -19,7 +19,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-image-registries
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: validate-registries
     match:
@@ -141,7 +141,7 @@ kind: ClusterPolicy
 metadata:
   name: require-requests-limits
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-resources

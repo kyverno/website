@@ -132,7 +132,7 @@ kind: ClusterPolicy
 metadata:
   name: cm-array-example
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-role-annotation
@@ -476,7 +476,7 @@ kind: ClusterPolicy
 metadata:
   name: limits
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: limit-lb-svc
     match:
@@ -625,7 +625,7 @@ kind: ClusterPolicy
 metadata:
   name: imageref-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: no-root-images
     match:

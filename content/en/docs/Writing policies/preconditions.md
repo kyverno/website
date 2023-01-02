@@ -65,7 +65,7 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -104,7 +104,7 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -171,7 +171,7 @@ kind: ClusterPolicy
 metadata:
   name: resource-quantities
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: memory-limit

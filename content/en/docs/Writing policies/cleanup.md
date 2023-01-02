@@ -41,7 +41,7 @@ Error from server: error when creating "ncleanpol.yaml": admission webhook "kyve
 ```
 
 {{% alert title="Warning" color="warning" %}}
-Be mindful of the validate policies in `enforce` mode in your cluster as the CronJobs and their spawned Jobs/Pods may be subjected to and potentially blocked. You may wish to exclude based on the label `app.kubernetes.io/managed-by`.
+Be mindful of the validate policies in `Enforce` mode in your cluster as the CronJobs and their spawned Jobs/Pods may be subjected to and potentially blocked. You may wish to exclude based on the label `app.kubernetes.io/managed-by`.
 {{% /alert %}}
 
 As cleanup policies are either updated or removed, the CronJobs are updated accordingly.

@@ -46,7 +46,7 @@ Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter req
     ```sh
     $ kubectl get cpol,pol -A
     NAME                                           BACKGROUND   VALIDATE ACTION   READY   AGE
-    clusterpolicy.kyverno.io/check-image-keyless   true         enforce           true    116s
+    clusterpolicy.kyverno.io/check-image-keyless   true         Enforce           true    116s
     ```
 
 3. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
@@ -80,7 +80,7 @@ Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter req
     pod "busybox" deleted
     ```
 
-5. For `validate` policies, ensure that `validationFailureAction` is set to `enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
+5. For `validate` policies, ensure that `validationFailureAction` is set to `Enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `Audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
 
 6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
 

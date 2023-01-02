@@ -315,7 +315,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-ingress-wildcard
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: block-ingress-wildcard
       match:
@@ -379,7 +379,7 @@ kind: ClusterPolicy
 metadata:
   name: add-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: add-demo
@@ -432,7 +432,7 @@ metadata:
   name: base64-decode-demo
 spec:
   background: false
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: base64-decode-demo
     match:
@@ -581,7 +581,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-resources-as-ratio
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -635,7 +635,7 @@ kind: ClusterPolicy
 metadata:
   name: equal-fold-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-dept-label-data
@@ -862,7 +862,7 @@ kind: ClusterPolicy
 metadata:
   name: require-pdb
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   - name: require-pdb
@@ -925,7 +925,7 @@ kind: ClusterPolicy
 metadata:
   name: modulo-demo
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -1202,7 +1202,7 @@ kind: ClusterPolicy
 metadata:
   name: parse-yaml-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-goodbois
@@ -1269,7 +1269,7 @@ kind: ClusterPolicy
 metadata:
   name: path-canonicalize-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: disallow-mount-containerd-sock
@@ -1312,7 +1312,7 @@ kind: ClusterPolicy
 metadata:
   name: pattern-match-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - match:
@@ -1439,7 +1439,7 @@ metadata:
   name: regex-match-demo
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: validate-backup-schedule-annotation-cron
     match:
@@ -1649,7 +1649,7 @@ kind: ClusterPolicy
 metadata:
   name: semver-compare-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-sbom
@@ -1699,7 +1699,7 @@ kind: ClusterPolicy
 metadata:
   name: split-demo
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
     - name: check-path
@@ -1814,7 +1814,7 @@ kind: ClusterPolicy
 metadata:
   name: time-since-demo
 spec:
-  validationFailureAction: audit 
+  validationFailureAction: Audit 
   rules:
     - name: block-stale-images
       match:
@@ -2133,7 +2133,7 @@ kind: ClusterPolicy
 metadata:
   name: test-x509-decode
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: test-x509-decode

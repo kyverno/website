@@ -4,7 +4,7 @@ description: Check resource configurations for policy compliance.
 weight: 50
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`enforce`) or noted in a [policy report](/docs/policy-reports/) (`audit`). Validation rules in `audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or noted in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -20,8 +20,8 @@ metadata:
   name: require-ns-purpose-label
 # The `spec` defines properties of the policy.
 spec:
-  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
-  validationFailureAction: enforce
+  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
+  validationFailureAction: Enforce
   # The `rules` is one or more rules which must be true.
   rules:
   - name: require-ns-purpose-label
@@ -80,7 +80,7 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 ## Validation Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
 
 ## Validation Failure Action Overrides
 
@@ -92,7 +92,7 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   validationFailureActionOverrides:
     - action: enforce     # Action to apply
       namespaces:       # List of affected namespaces
@@ -115,7 +115,7 @@ spec:
               app: "?*"
 ```
 
-In the above policy, for Namespace `default`, `validationFailureAction` is set to `enforce` and for Namespace `test`, it's set to `audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
+In the above policy, for Namespace `default`, `validationFailureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
 
 ## Patterns
 
@@ -145,7 +145,7 @@ kind: ClusterPolicy
 metadata:
   name: all-containers-need-requests-and-limits
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-container-resources
     match:
@@ -180,7 +180,7 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: check-label-app
       match:
@@ -238,7 +238,7 @@ kind: ClusterPolicy
 metadata:
   name: validate
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: validate-replica-count
       match:
@@ -277,7 +277,7 @@ kind: ClusterPolicy
 metadata:
   name: conditional-anchor-dockersock
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: conditional-anchor-dockersock
@@ -308,7 +308,7 @@ kind: ClusterPolicy
 metadata:
   name: equality-anchor-no-dockersock
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: equality-anchor-no-dockersock
@@ -344,7 +344,7 @@ kind: ClusterPolicy
 metadata:
   name: existence-anchor-at-least-one-nginx
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: existence-anchor-at-least-one-nginx
     match:
@@ -384,7 +384,7 @@ kind: ClusterPolicy
 metadata:
   name: sample
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-container-image
     match:
@@ -441,7 +441,7 @@ metadata:
   name: require-run-as-non-root
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-containers
     match:
@@ -502,7 +502,7 @@ In addition to applying patterns to check resources, a validation rule can deny 
 You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
 
 {{% alert title="Note" color="info" %}}
-When using a `deny` statement, `validationFailureAction` must be set to `enforce` to block the request.
+When using a `deny` statement, `validationFailureAction` must be set to `Enforce` to block the request.
 {{% /alert %}}
 
 Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables. `deny` statements can similarly use `any` and `all` blocks like those available to `preconditions`.
@@ -519,7 +519,7 @@ kind: ClusterPolicy
 metadata:
   name: deny-deletes
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-deletes-for-kyverno-resources
@@ -553,7 +553,7 @@ kind: ClusterPolicy
 metadata:
   name: block-updates-to-custom-resource
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-updates-to-custom-resource
@@ -585,7 +585,7 @@ kind: ClusterPolicy
 metadata:
   name: deny-netpol-changes
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: deny-netpol-changes
@@ -640,7 +640,7 @@ kind: ClusterPolicy
 metadata:
   name: check-images
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-registry
@@ -714,7 +714,7 @@ kind: ClusterPolicy
 metadata:
   name: validate-secrets
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-secrets
@@ -771,7 +771,7 @@ kind: ClusterPolicy
 metadata:
   name: validate-deployment
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-deployment
@@ -835,7 +835,7 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -888,7 +888,7 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -935,7 +935,7 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -976,7 +976,7 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -1046,7 +1046,7 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
