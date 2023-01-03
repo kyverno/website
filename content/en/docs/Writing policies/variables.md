@@ -265,15 +265,13 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 ## Variables from container images
 
-Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. The following variables are set under the `images`:
+Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. The following variables are set under `images`:
 
-* `reference`
-* `referenceWithTag`
-* `registry`
-* `path`
-* `name`
-* `tag`
-* `digest`
+- `registry`
+- `path`
+- `name`
+- `tag`
+- `digest`
 
 Here is an example:
 
