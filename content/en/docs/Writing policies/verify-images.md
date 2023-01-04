@@ -790,6 +790,18 @@ spec:
               -----END PUBLIC KEY-----
 ```
 
+## Special Variables
+
+A pre-defined, reserved special variable named `image` is available for use only in verifyImages rules. The following fields are available under the `image` object and may be used in a rule to reference the named fields.
+
+- `reference`
+- `referenceWithTag`
+- `registry`
+- `path`
+- `name`
+- `tag`
+- `digest`
+
 ## Offline Registries
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
