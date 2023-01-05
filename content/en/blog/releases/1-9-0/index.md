@@ -87,7 +87,7 @@ In the 1.8 release, we added OpenTelemetry support, but in this release we wante
 
 Kyverno has had support for some subresources for a few releases now (ephemeral containers have been supported since 1.7), but there were still gaps. Specifically, Kyverno had problems with the Scale subresource, which can be tricky to deal with, as well as mutations to the Status subresource. This meant that a couple real-world use cases that have come up simply weren't possible to implement in Kyverno policies. With Kyverno 1.9, that should be a thing of the past and most, if not all, subresources can be handled quite well.
 
-With this enhanced support, you can now easily match on the precise subresource you want (even using wildcards) and Kyverno will figure it out. For example, advertising [extended resources](https://kubernetes.io/docs/tasks/administer-cluster/extended-resource-node/) to Kubernetes nodes is important for use cases like GPUs and FPGAs, and with a Kyverno [mutate](/docs/writing-policies/mutate/) rule targeted at Node/status, it's now incredibly simple and doesn't require any custom webhooks.
+With this enhanced support, you can now easily match on the precise subresource you want (even using wildcards) and Kyverno will figure it out. For example, advertising [extended resources](https://kubernetes.io/docs/tasks/administer-cluster/extended-resource-node/) to Kubernetes nodes is important for use cases like GPUs and FPGAs, and with a Kyverno [mutate](/docs/writing-policies/mutate/) rule targeted at Node/status, it's now incredibly simple and doesn't require any custom webhooks. The below policy will add the `example.com/dongle` resource to new Nodes brought up in the cluster.
 
 ```yaml
 apiVersion: kyverno.io/v1
