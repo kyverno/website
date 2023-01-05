@@ -122,13 +122,11 @@ Kyverno now supports [nested foreach loops](/docs/writing-policies/mutate/#neste
 
 Pod controller [rule auto-generation](/docs/writing-policies/autogen/), another of Kyverno's hallmark capabilities which if you're not familiar allows Kyverno to translate rules solely for Pods to all other major Pod controllers, added support for ReplicaSet and ReplicationController. There's nothing policy authors need to do and Kyverno will now add these two resources into the auto-gen rules for you.
 
-Changes include the graduation of [verifyImages](/docs/writing-policies/verify-images/) rules to stable status exiting beta. With the [general availability announcement of Sigstore](https://openssf.org/press-release/2022/10/25/sigstore-announces-general-availability-at-sigstorecon/) and the modifications we've made around attestations (see [Potentially Breaking Changes](#potentially-breaking-changes)), we're confident that Kyverno is the best tool out there for guaranteeing your software supply chain needs are met in a Kubernetes environment. Although many users have been successfully running in production with image signature and attestation verification, we now believe the ecosystem is stable enough for us to declare it stable in kind.
-
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
 Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
 
-And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it over the 250 mark.
+And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark.
 
 ## Potentially Breaking Changes
 
