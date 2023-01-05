@@ -28,11 +28,13 @@ spec:
             canremove: "true"
   conditions:
     any:
-    - key: "{{ request.object.spec.replicas }}"
+    - key: "{{ target.spec.replicas }}"
       operator: LessThan
       value: 2
   schedule: "*/5 * * * *"
 ```
+
+Values from resources to be evaluated during a policy may be referenced with `target.*`.
 
 Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
 
