@@ -1,7 +1,7 @@
 +++
 description = "Gatekeeper library mapping to Kyverno."
 title = "Gatekeeper"
-type = "gatekeeper"
+type = "policies"
 url = "/policies/gatekeeper/"
 +++
 
