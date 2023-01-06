@@ -82,6 +82,18 @@ function listPolicies(data) {
   });
 }
 
+(function wrapPolicyTables() {
+  if(policyWrap) {
+    let tables = elems('table', policyWrap);
+    tables = tables && tables.length ? tables : [];
+    tables.forEach(table => {
+      const tableWrapper = createEl();
+      tableWrapper.className = 'td-content';
+      wrapEl(table, tableWrapper);
+    });
+  }
+})();
+
 function updateQuery() {
   let queryS = "";
   chosenPolicies.forEach((policy, index) => {
