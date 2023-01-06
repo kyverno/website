@@ -265,6 +265,7 @@
   &_wrap {
     @media screen and (max-width: 768px) {
       order: 3;
+      max-width: calc(100vw - 60px);
     }
     .td-page-meta {
       display: grid;
