@@ -19,6 +19,10 @@ Rules in a policy are applied in the order of definition. During [admission cont
 
 There is no ordering within or across policies and all matching policy rules will always be applied. For `validate` rules, this ordering is irrelevant, however for `mutate` and `generate` rules, if there is a cascading dependency, rules should be ordered according to those dependencies. Since validation rules are written as `pass` or `fail` conditions, rules cannot override other rules and can only extend the `fail` condition set. Hence, namespaced policies cannot override or modify behaviors described in a cluster-wide policy. Because policies are logical collections of related rules and do not imply functionality relative to other policies, a single policy having two validation rules, for example, produces the same ultimate effect as two policies each having one rule. Designing policies is therefore primarily an organizational concern and not a functional one.
 
+Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](/docs/writing-policies/exceptions/).
+
+[Cleanup policies](/docs/writing-policies/cleanup/), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
+
 ## In CI/CD Pipelines
 
 You can use the [Kyverno CLI](/docs/kyverno-cli/#apply) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.

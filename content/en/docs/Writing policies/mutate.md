@@ -50,7 +50,7 @@ The `patchesJson6902` method can be useful when a specific mutation is needed wh
 
 One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/writing-policies/preconditions/) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](/docs/writing-policies/autogen/). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
 
-This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any namespace.
+This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any Namespace.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -112,7 +112,7 @@ metadata:
   name: policy-remove-label
 spec:
   rules:
-    - name: "Remove unwanted label"
+    - name: remove-unwanted-label
       match:
         any:
         - resources:
@@ -204,9 +204,9 @@ spec:
             name: "{{request.object.metadata.name}}"
         spec:
           containers:
-            - name: "nginx"
-              image: "nginx:latest"
-              imagePullPolicy: "Never"
+            - name: nginx
+              image: nginx:latest
+              imagePullPolicy: Never
               command:
               - ls
 ```
@@ -219,7 +219,7 @@ Like with `validate` rules, conditional anchors are supported on `mutate` rules.
 
 An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
-The mutate overlay rules support two types of anchors:
+The mutate overlay rules support three types of anchors:
 
 | Anchor             | Tag  | Behavior                                             |
 |--------------------|----- |----------------------------------------------------- |
@@ -247,7 +247,7 @@ metadata:
   name: policy-set-port
 spec:
   rules:
-  - name: "Set port"
+  - name: set-port
     match:
       any:
       - resources:
@@ -371,10 +371,10 @@ This policy, which matches when the trigger resource named `dictionary-1` in the
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: "mutate-existing-secret"
+  name: mutate-existing-secret
 spec:
   rules:
-    - name: "mutate-secret-on-configmap-event"
+    - name: mutate-secret-on-configmap-event
       match:
         any:
         - resources:
@@ -520,9 +520,9 @@ metadata:
       add-sec-rule.add-sec.kyverno.io: added /spec/template/spec/containers/0/securityContext
 ```
 
-To troubleshoot the policy application failure, you can inspect `UpdateRequest` Custom Resource  to get details. Successful `UpdateRequests` are automatically cleaned up by Kyverno.
+To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
-For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field:
 
 ```
 $ kubectl get ur -n kyverno
@@ -693,7 +693,8 @@ A variable `element` is added to the processing context on each iteration. This 
 Each `foreach` declaration can optionally contain the following declarations:
 
 * [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
-* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped.
+* `foreach`: a nested `foreach` declaration described below.
 
 For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
 
@@ -743,7 +744,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE

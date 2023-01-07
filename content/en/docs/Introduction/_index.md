@@ -11,13 +11,15 @@ description: >
 Kyverno (Greek for "govern") is a policy engine designed specifically for Kubernetes. Some of its many features include:
 
 * policies as Kubernetes resources (no new language to learn!)
-* validate, mutate, or generate any resource
+* validate, mutate, generate, or cleanup (remove) any resource
 * verify container images for software supply chain security
 * inspect image metadata
 * match resources using label selectors and wildcards
 * validate and mutate using overlays (like Kustomize!)
 * synchronize configurations across Namespaces
 * block non-conformant resources using admission controls, or report policy violations
+* self-service reports (no proprietary audit log!)
+* self-service policy exceptions
 * test policies and validate resources using the Kyverno CLI, in your CI/CD pipeline, before applying to your cluster
 * manage policies as code using familiar tools like `git` and `kustomize`
 
@@ -27,7 +29,7 @@ Kyverno allows cluster administrators to manage environment specific configurati
 
 Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the kube-apiserver and applies matching policies to return results that enforce admission policies or reject requests.
 
-Kyverno policies can match resources using the resource kind, name, and label selectors. Wildcards are supported in names.
+Kyverno policies can match resources using the resource kind, name, label selectors, and much more.
 
 Mutating policies can be written as overlays (similar to [Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#bases-and-overlays)) or as a [RFC 6902 JSON Patch](http://jsonpatch.com/). Validating policies also use an overlay style syntax, with support for pattern matching and conditional (if-then-else) processing.
 
@@ -49,7 +51,7 @@ Your Kubernetes cluster version must be above v1.14 which adds webhook timeouts.
 To check the version, enter `kubectl version`.
 {{% /alert %}}
 
-You have the option of installing Kyverno directly from the latest release manifest or using Helm.
+You have the option of installing Kyverno directly from the latest release manifest or using Helm. The release manifest should only be used for testing purposes; Helm is recommended for production.
 
 To install Kyverno using the latest release manifest (which may be a pre-release):
 
@@ -57,7 +59,7 @@ To install Kyverno using the latest release manifest (which may be a pre-release
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
 ```
 
-You can also install Kyverno using a Helm chart:
+You can also install Kyverno using Helm:
 
 ```sh
 # Add the Helm repository
@@ -70,7 +72,7 @@ helm repo update
 helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, generate, and verify image configurations. The policy attribute `validationFailureAction` is set to `Enforce` to block API requests that are non-compliant (using the default value `Audit` will report violations but not block requests.)
+Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have a `app.kubernetes.io/name` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The policy attribute `validationFailureAction` is set to `Enforce` to block API requests that are non-compliant (using the default value `Audit` will report violations but not block requests.)
 
 ```yaml
 kubectl create -f- << EOF
@@ -115,7 +117,7 @@ require-labels:
 ```
 
 {{% alert title="Note" color="info" %}}
-Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace.
+Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (testing only).
 {{% /alert %}}
 
 Although the ClusterPolicy matches on Pods, Kyverno intelligently applies this to all sources capable of generating Pods by default, including the Deployment above.
