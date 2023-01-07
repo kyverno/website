@@ -100,15 +100,11 @@ Kyverno also has the ability to cache ConfigMaps commonly used by policies to re
 
 ### Handling ConfigMap Array Values
 
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap.
-
-{{% alert title="Note" color="info" %}}
-Storing array values in a YAML block scalar was removed as of Kyverno 1.7.0. Please use JSON-encoded array of strings instead.
-{{% /alert %}}
+In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap stored as either JSON- or YAML-formatted values. Depending on how you choose to store an array, the policy which consumes the values in a variable context will need to be written accordingly.
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
-Consider a ConfigMap with the following content written as a YAML multi-line value.
+Consider a ConfigMap with the following content written as a JSON array. You may also store array values in a YAML block scalar (in which case the [`parse_yaml()` filter](/docs/writing-policies/jmespath/#parse_yaml) will be necessary in a policy definition).
 
 ```yaml
 apiVersion: v1
@@ -117,14 +113,10 @@ metadata:
   name: roles-dictionary
   namespace: default
 data:
-  allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
+  allowed-roles: '["cluster-admin", "cluster-operator", "tenant-admin"]'
 ```
 
-{{% alert title="Note" color="info" %}}
-As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the ConfigMap data to be stored as a JSON array.
-{{% /alert %}}
-
-Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list:
+Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/writing-policies/jmespath/#parse_json) is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -152,8 +144,8 @@ spec:
         conditions:
           any:
           - key: "{{ request.object.metadata.annotations.role }}"
-            operator: NotIn
-            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
+            operator: AnyNotIn
+            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" | parse_json(@) }}"
 ```
 
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
