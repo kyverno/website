@@ -667,6 +667,84 @@ spec:
 
 Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
 
+### Nested foreach
+
+The `foreach` object also supports nesting multiple foreach declarations to form loops within loops. When using nested loops, the special variable `{{elementIndex}}` requires a loop number to identify which element to process. Preconditions are supported only at the top-level loop and not per inner loop.
+
+This sample illustrates using nested foreach loops to validate that every hostname does not ends with `new.com`.
+
+```yaml
+apiVersion : kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: check-ingress
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: check-tls-secret-host
+    match:
+      any:
+      - resources:
+          kinds:
+          - Ingress
+    validate:
+      message: "All TLS hosts must use a domain of old.com."  
+      foreach:
+      - list: request.object.spec.tls[]
+        foreach:
+        - list: "element.hosts"
+          deny:
+            conditions:
+              all:
+              - key: "{{element}}"
+                operator: Equals
+                value: "*.new.com"
+```
+
+A sample Ingress which may get blocked by this look like the below.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard
+  labels:
+    app: kuard
+spec:
+  rules:
+  - host: kuard.old.com
+    http:
+      paths:
+      - backend:
+          service: 
+            name: kuard
+            port: 
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific
+  - host: hr.old.com
+    http:
+      paths:
+      - backend:
+          service: 
+            name: kuard
+            port: 
+              number: 8090
+        path: /myhr
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - kuard.old.com
+    - kuard-foo.new.com
+    secretName: foosecret.old.com
+  - hosts:
+    - hr.old.com
+    secretName: hr.old.com
+```
+
+Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/writing-policies/mutate/#nested-foreach) for further details.
+
 ## Manifest Validation
 
 Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/writing-policies/verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
