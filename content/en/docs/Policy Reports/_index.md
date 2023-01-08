@@ -5,7 +5,7 @@ description: >
 weight: 60
 ---
 
-Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate` and `verifyImages` rules when the policy in which they are contained is configured with `spec.validationFailureAction: Audit` or `spec.background: true` and a resource applies to one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule. Policies configured with `spec.validationFailureAction: Enforce` immediately block violating resources and therefore do not generate policy reports. Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption. The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode. Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
+Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate` and `verifyImages` rules when the policy in which they are contained is configured with `spec.validationFailureAction: Audit` or `spec.background: true` and a resource applies to one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. Reports, therefore, always represent the current state of the cluster and do not record historical information. For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule. Policies configured with `spec.validationFailureAction: Enforce` immediately block violating resources and therefore do not generate policy reports. Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption. The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode. Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
 
 Policy reports are created based on two different triggers: an admission event (a `CREATE`, `UPDATE`, or `DELETE` action performed against a resource) or the result of a background scan discovering existing resources. Policy reports, like Kyverno policies, have both Namespaced and cluster-scoped variants; a `PolicyReport` is a Namespaced resource while a `ClusterPolicyReport` is a cluster-scoped resource. However, unlike `Policy` and `ClusterPolicy` resources, the `PolicyReport` and `ClusterPolicyReport` resources contain results from resources which are at the same scope and _not_ what is determined by the Kyverno policy. For example, a `ClusterPolicy` (a cluster-scoped policy) contains a rule which matches on Pods (a Namespaced resource). Results generated from this policy and rule are written to a `PolicyReport` in the Namespace where the Pod exists.
 
@@ -76,7 +76,7 @@ You can view a summary of the Namespaced policy reports using the following comm
 kubectl get policyreport -A
 ```
 
-For example, below are the policy reports for a small test cluster (`polr` is the alias for `PolicyReports`) in which the only policy installed is named `disallow-privileged-containers`. 
+For example, below are the policy reports for a small test cluster (`polr` is the alias for `PolicyReports`) in which the only policy installed is named `disallow-privileged-containers`.
 
 ```sh
 $ kubectl get polr -A
@@ -94,10 +94,6 @@ kubectl get clusterpolicyreport
 
 {{% alert title="Tip" color="info" %}}
 For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
-{{% /alert %}}
-
-{{% alert title="Note" color="info" %}}
-If you've set the `policies.kyverno.io/scored` annotation to `"false"` in your policy, then the policy violations will be reported as warnings rather than failures. By default, it is set to `"true"` and policy violations are reported as failures.
 {{% /alert %}}
 
 ## Viewing policy violations
@@ -280,7 +276,7 @@ Lastly, delete the Pod called `secret-pod` and once again check the PolicyReport
 $ kubectl delete po secret-pod
 pod "secret-pod" deleted
 
-$ k get polr cpol-secrets-not-from-env-vars
+$ kubectl get polr cpol-secrets-not-from-env-vars
 NAME                             PASS   FAIL   WARN   ERROR   SKIP   AGE
 cpol-secrets-not-from-env-vars   1      0      0      0       0      2m21s
 ```
@@ -319,9 +315,9 @@ spec:
 After creating this sample ClusterPolicy, check for the existence of a ClusterPolicyReport object.
 
 ```sh
-$ k get cpolr
+$ kubectl get cpolr
 NAME                     PASS   FAIL   WARN   ERROR   SKIP   AGE
-cpol-require-ns-labels   0      5      0      0       0      76m```
+cpol-require-ns-labels   0      5      0      0       0      76m
 ```
 
 Notice that a ClusterPolicyReport named `cpol-require-ns-labels` exists with five failures.
