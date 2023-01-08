@@ -1,10 +1,10 @@
 ---
-title: "Security"
-description: "Security Processes and Guidelines"
+title: Security
+description: Security Processes and Guidelines
 weight: 68
 ---
 
-Kyverno serves an admission controller and is a critical component of the Kubernetes control-plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
+Kyverno serves an admission controller and is a critical component of the Kubernetes control plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
 
 ## Disclosure Process
 
@@ -34,6 +34,7 @@ The Kyverno container images are available [here](https://github.com/orgs/kyvern
 With each release, the following artifacts are uploaded:
 
 - checksums.txt
+- install.yaml
 - kyverno-cli_v<version_number>_darwin_arm64.tar.gz
 - kyverno-cli_v<version_number>_darwin_x86_64.tar.gz
 - kyverno-cli_v<version_number>_linux_arm64.tar.gz
@@ -184,7 +185,7 @@ The following sections discuss related best practices for Kyverno:
 
 ### Pod security
 
-Kyverno Pods are configured to follow security best practices:
+Kyverno Pods are configured to follow security best practices and conform to the [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) `restricted` profile:
 
 * `runAsNonRoot` is set to `true`
 * `privileged` is set to `false`
@@ -238,6 +239,8 @@ Kyverno creates the following validating webhook configurations:
 
 - `kyverno-policy-validating-webhook-cfg`: validates Kyverno policies with checks that cannot be performed via schema validation
 - `kyverno-resource-validating-webhook-cfg`: handles resource resource admission requests to apply matching Kyverno validate policy rules.
+- `kyverno-cleanup-validating-webhook-cfg`: handles cleanup policies
+- `kyverno-exception-validating-webhook-cfg`: handles policy exceptions
 
 #### Webhook Failure Mode
 
