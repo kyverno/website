@@ -8,7 +8,7 @@ A `generate` rule can be used to create additional resources when a new resource
 
 The `generate` rule supports `match` and `exclude` blocks, like other rules. Hence, the trigger for applying this rule can be the creation of any resource. It is also possible to match or exclude API requests based on subjects, roles, etc.
 
-The `generate` rule is triggered during the API CREATE operation. To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
+To keep resources synchronized across changes, you can use the `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If  `synchronize` is set to  `false` then users can update or delete the generated resource directly.
 
 When using a `generate` rule, the origin resource can be either an existing resource in the cluster, or a new resource defined in the rule itself. When the origin resource is a pre-existing resource such as a ConfigMap or Secret, for example, the `clone` object is used. See the [Clone Source](#clone-source) section for more details. When the origin resource is a new resource defined within the manifest of the rule, the `data` object is used. See the [Data Source](#clone-source) section for more details. These are mutually exclusive and only one may be specified per rule.
 
@@ -16,11 +16,7 @@ When using a `generate` rule, the origin resource can be either an existing reso
 Deleting the policy containing a `generate` rule with a `data` object and `synchronize=true` will cause immediate deletion of the downstream generated resources. Policies containing a `clone` object are not subject to this behavior.
 {{% /alert %}}
 
-Kubernetes has many default resource types even before considering CustomResources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these CustomResources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to the ClusterRole responsible for the `generate` behavior. To enable Kyverno to generate these other types, see the section on [customizing permissions](/docs/installation/#customizing-permissions).
-
-{{% alert title="Note" color="info" %}}
-When generating a custom resource, it is necessary to set the apiVersion (ex., `spec.generate.apiVersion`) and kind (ex., `spec.generate.kind`).
-{{% /alert %}}
+Kubernetes has many default resource types even before considering Custom Resources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these Custom Resources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to Kyverno. To enable Kyverno to generate these other types, see the section on [customizing permissions](/docs/installation/#customizing-permissions).
 
 Kyverno will create an intermediate object called a `UpdateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `UpdateRequest`. The following will give the list of `UpdateRequests`.
 
@@ -50,7 +46,7 @@ The following table shows the behavior of deletion and modification events on co
 | Modify Rule/Policy | Downstream synced    | Downstream unmodified |
 | Modify Trigger     | None                 | None                  |
 
-### Examples
+### Data Examples
 
 This policy sets the Zookeeper and Kafka connection strings for all Namespaces based upon a ConfigMap defined within the rule itself.
 
@@ -137,7 +133,7 @@ For other examples of generate rules, see the [policy library](/policies/?policy
 
 When a generate policy should take the source from a resource which already exists in the cluster, a `clone` object is used instead of a `data` object. When triggered, the generate policy will clone from the resource name and location defined in the rule to create the new resource. Use of the `clone` object implies no modification during the path from source to destination and Kyverno is not able to modify its contents (aside from metadata used for processing and tracking).
 
-The following table shows the behavior of deletion and modification events on components of a generate rule with a clone source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks and "Source" refers to the clone source. Note that when using a clone source with sync enabled, deletion of the rule/policy responsible for a resource's generation or deletion of the clone source will NOT cause deletion of any downstream resources. This behavior differs when compared to [data declarations](#data-source).
+The following table shows the behavior of deletion and modification events on components of a generate rule with a clone source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks. "Source" refers to the clone source. Note that when using a clone source with sync enabled, deletion of the rule/policy responsible for a resource's generation or deletion of the clone source will NOT cause deletion of any downstream resources. This behavior differs when compared to [data declarations](#data-source).
 
 | Action             | Sync Effect           | NoSync Effect         |
 |--------------------|-----------------------|-----------------------|
@@ -150,7 +146,7 @@ The following table shows the behavior of deletion and modification events on co
 | Modify Source      | Downstream synced     | Downstream unmodified |
 | Modify Trigger     | None                  | None                  |
 
-### Examples
+### Clone Examples
 
 In this policy, designed to clone and keep downstream Secrets in-sync with the source, the source of the data is an existing Secret resource named `regcred` which is stored in the `default` Namespace. Notice how the `generate` rule here instead uses the `generate.clone` object when the origin data exists within Kubernetes. With synchronization enabled, any modifications to the `regcred` source Secret in the `default` Namespace will cause all downstream generated resources to be updated.
 
@@ -182,7 +178,7 @@ For other examples of generate rules, see the [policy library](/policies/?policy
 
 ### Cloning Multiple Resources
 
-Kyverno, as of 1.8, has the ability to clone multiple resources in a single rule definition for use cases where several resources must be cloned from a source Namespace to a destination Namespace. By using the `generate.cloneList` object, multiple kinds from the same Namespace may be specified. Use of an optional `selector` can scope down the source of the clones to only those having the matching label(s). The below policy clones Secrets and ConfigMaps from the `staging` Namespace which carry the label `allowedToBeCloned="true"`.
+Kyverno has the ability to clone multiple resources in a single rule definition for use cases where several resources must be cloned from a source Namespace to a destination Namespace. By using the `generate.cloneList` object, multiple kinds from the same Namespace may be specified. Use of an optional `selector` can scope down the source of the clones to only those having the matching label(s). The below policy clones Secrets and ConfigMaps from the `staging` Namespace which carry the label `allowedToBeCloned="true"`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -311,11 +307,11 @@ spec:
 
 ## Generate for Existing resources
 
-Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources into **existing** resources, namely the Namespace construct. This can be extremely useful when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
+Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future Namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources based on **existing** resources. This can be extremely useful especially for Namespaces when deploying Kyverno to an existing cluster in use where you wish policy to apply retroactively.
 
-With Kyverno 1.7, Kyverno supports the generate for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself.
+Kyverno supports generation for existing resources. Generate existing policies are applied in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself. By defining the `spec.generateExistingOnPolicyUpdate` set to `true`, a generate rule will take effect for existing resources which have the same match characteristics.
 
-### Examples
+### Generate Existing Examples
 
 By default, policy will not be applied on existing trigger resources when it is installed. This behavior can be configured via `generateExistingOnPolicyUpdate` attribute. Only if you set `generateExistingOnPolicyUpdate` to `true` will Kyverno generate the target resource in existing triggers on policy CREATE and UPDATE events.
 
@@ -390,7 +386,7 @@ spec:
 
 To troubleshoot policy application failures, inspect the `UpdateRequest` Custom Resource to get details.
 
-For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+For example, if the corresponding permission is not granted to Kyverno, you may see this error in the `STATUS` column:
 
 ```sh
 $ kubectl get ur -n kyverno
