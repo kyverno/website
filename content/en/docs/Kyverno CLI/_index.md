@@ -64,11 +64,7 @@ When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recomm
 
 ### Apply
 
-The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster.
-
-{{% alert title="Note" color="info" %}}
-Kyverno CLI `apply` supports files from URLs both as policies and resources.
-{{% /alert %}}
+The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster. The  `apply` command supports files from URLs both as policies and resources.
 
 Apply to a resource:
 
@@ -129,7 +125,7 @@ Apply a policy containing variables using the `--set` or `-s` flag to pass in th
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
+Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, and API call context data.
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
@@ -191,14 +187,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: add-networkpolicy
-  annotations:
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: By default, Kubernetes allows communications across
-      all pods within a cluster. Network policies and, a CNI that supports network policies,
-      must be used to restrict communications. A default NetworkPolicy should be configured
-      for each namespace to default deny all ingress traffic to the pods in the namespace.
-      Application teams can then configure additional NetworkPolicy resources to allow
-      desired traffic to application pods from select sources.
 spec:
   rules:
   - name: default-deny-ingress
@@ -207,9 +195,10 @@ spec:
       - resources:
           kinds:
           - Namespace
-      clusterRoles:
-      - cluster-admin
+        clusterRoles:
+        - cluster-admin
     generate:
+      apiVersion: networking.k8s.io/v1
       kind: NetworkPolicy
       name: default-deny-ingress
       namespace: "{{request.object.metadata.name}}"
@@ -321,9 +310,10 @@ spec:
         message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
         deny:
           conditions:
-            - key: "{{ request.mode }}"
-              operator: NotEquals
-              value: dev
+            any:
+              - key: "{{ request.mode }}"
+                operator: NotEquals
+                value: dev
 ```
 
 Resource manifest (`dev_prod_pod.yaml`):
@@ -369,8 +359,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details.
-Check [here](/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -570,13 +559,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-pod-requests-limits
-  annotations:
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: >-
-      As application workloads share cluster resources, it is important to limit resources
-      requested and consumed by each pod. It is recommended to require 'resources.requests'
-      and 'resources.limits' per pod. If a namespace level request or limit is specified,
-      defaults are automatically applied to each pod based on the 'LimitRange' configuration.
 spec:
   validationFailureAction: Audit
   rules:
@@ -897,12 +879,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
-  annotations:
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/description: >-
-      The ':latest' tag is mutable and can lead to unexpected errors if the 
-      image changes. A best practice is to use an immutable tag that maps to 
-      a specific version of an application pod.
 spec:
   validationFailureAction: Audit
   rules:
@@ -912,8 +888,8 @@ spec:
       - resources:
           kinds:
           - Pod
-      clusterRoles:
-      - cluster-admin
+        clusterRoles:
+        - cluster-admin
     validate:
       message: "An image tag is required."  
       pattern:
@@ -1007,7 +983,7 @@ spec:
     preconditions:
       any:
       - key: "{{request.operation}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -1112,18 +1088,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: add-networkpolicy
-  annotations:
-    policies.kyverno.io/title: Add Network Policy
-    policies.kyverno.io/category: Multi-Tenancy
-    policies.kyverno.io/subject: NetworkPolicy
-    policies.kyverno.io/description: >-
-      By default, Kubernetes allows communications across all Pods within a cluster.
-      The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict
-      communications. A default NetworkPolicy should be configured for each Namespace to
-      default deny all ingress and egress traffic to the Pods in the Namespace. Application
-      teams can then configure additional NetworkPolicy resources to allow desired traffic
-      to application Pods from select sources. This policy will create a new NetworkPolicy resource
-      named `default-deny` which will deny all traffic anytime a new Namespace is created.
 spec:
   rules:
   - name: default-deny
@@ -1190,8 +1154,8 @@ results:
 ```sh
 $ kyverno test .
 Executing deny-all-traffic...
-applying 1 policy to 1 resource... 
- 
+applying 1 policy to 1 resource...
+
 │───│───────────────────│──────────────│──────────────────────────────────│────────│
 │ # │ POLICY            │ RULE         │ RESOURCE                         │ RESULT │
 │───│───────────────────│──────────────│──────────────────────────────────│────────│
