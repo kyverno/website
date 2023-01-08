@@ -1,6 +1,6 @@
 ---
-title: "High Availability"
-linkTitle: "High Availability"
+title: High Availability
+linkTitle: High Availability
 weight: 120
 description: >
   Learn how to configure High Availability in Kyverno
@@ -40,17 +40,17 @@ In v1.4.0, both webhook register and certificate renewer have enabled leader ele
 
 A generate policy is processed in two phases:
 
-1. The webhook server receives the source (triggering) resource and creates a GenerateRequest object based on the admission request;
+1. The webhook server receives the source (triggering) resource and creates an UpdateRequest object based on the admission request;
 
-2. The generate controller receives the event for GenerateRequest, then starts processing it (generating target resource).
+2. The generate controller receives the event for UpdateRequest, then starts processing it (generating target resource).
 
-The leader election is enabled for the Generate Controller. That is to say, there will only be one instance processing the GenerateRequest if Kyverno is configured with multiple replicas.
+The leader election is enabled for the Generate Controller. That is to say, there will only be one instance processing the UpdateRequest if Kyverno is configured with multiple replicas.
 
 #### Module - Policy Controller
 
 The policy controller does three things:
 
-1. Updates GenerateRequests on generate policy updates.
+1. Updates UpdateRequests on generate policy updates.
 2. Builds and creates ReportChangeRequests on validate policy updates.
 3. Watches the events of ReportChangeRequest to generate policy reports.
 
