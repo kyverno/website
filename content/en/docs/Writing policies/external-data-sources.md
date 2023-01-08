@@ -46,7 +46,7 @@ rules:
   - name: example-lookup
     # Define a context for the rule
     context:
-    # A unique name for the ConfigMap
+    # A unique name for the context variable under which the below contents will later be accessible
     - name: dictionary
       configMap:
         # Name of the ConfigMap which will be looked up
@@ -211,7 +211,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp "items | length(@
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API Calls.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API calls and parse results.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -235,7 +235,7 @@ The HTTP URL paths of the API calls are based on the group, version, and resourc
 * `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}`: get a collection of resources
 * `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}/{NAME}`: get a resource
 
-For namespaced resources, to get a specific resource by name or to get all resources in a Namespace, the Namespace name must also be provided as follows:
+For Namespaced resources, to get a specific resource by name or to get all resources in a Namespace, the Namespace name must also be provided as follows:
 
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}`: get a collection of resources in the namespace
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}/{NAME}`: get a resource in a namespace
@@ -547,69 +547,52 @@ For example, one could inspect the labels, entrypoint, volumes, history, layers,
 $ crane config ghcr.io/kyverno/kyverno:latest | jq
 {
   "architecture": "amd64",
-  "config": {
-    "User": "10001",
-    "Env": [
-      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    ],
-    "Entrypoint": [
-      "./kyverno"
-    ],
-    "WorkingDir": "/",
-    "Labels": {
-      "maintainer": "Kyverno"
-    },
-    "OnBuild": null
-  },
-  "created": "2022-02-04T08:57:38.818583756Z",
+  "author": "github.com/ko-build/ko",
+  "created": "2023-01-08T00:10:08Z",
   "history": [
     {
-      "created": "2022-02-04T08:57:38.454742161Z",
-      "created_by": "LABEL maintainer=Kyverno",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
+      "author": "apko",
+      "created": "2023-01-08T00:10:08Z",
+      "created_by": "apko",
+      "comment": "This is an apko single-layer image"
     },
     {
-      "created": "2022-02-04T08:57:38.454742161Z",
-      "created_by": "COPY /output/kyverno / # buildkit",
-      "comment": "buildkit.dockerfile.v0"
+      "author": "ko",
+      "created": "0001-01-01T00:00:00Z",
+      "created_by": "ko build ko://github.com/kyverno/kyverno/cmd/kyverno",
+      "comment": "kodata contents, at $KO_DATA_PATH"
     },
     {
-      "created": "2022-02-04T08:57:38.802069102Z",
-      "created_by": "COPY /etc/passwd /etc/passwd # buildkit",
-      "comment": "buildkit.dockerfile.v0"
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ # buildkit",
-      "comment": "buildkit.dockerfile.v0"
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "USER 10001",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "ENTRYPOINT [\"./kyverno\"]",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
+      "author": "ko",
+      "created": "0001-01-01T00:00:00Z",
+      "created_by": "ko build ko://github.com/kyverno/kyverno/cmd/kyverno",
+      "comment": "go build output, at /ko-app/kyverno"
     }
   ],
   "os": "linux",
   "rootfs": {
     "type": "layers",
     "diff_ids": [
-      "sha256:180b308b8730567d2d06a342148e1e9d274c8db84113077cfd0104a7e68db646",
-      "sha256:99187eab8264c714d0c260ae8b727c4d2bda3a9962635aaea67d04d0f8b0f466",
-      "sha256:26d825f3d198779c4990007ae907ba21e7c7b6213a7eb78d908122e435ec9958"
+      "sha256:c9770b71bc04d50fb006eaacea8180b5f7c0fc72d16618590ec5231f9cec2525",
+      "sha256:ffe56a1c5f3878e9b5f803842adb9e2ce81584b6bd027e8599582aefe14a975b",
+      "sha256:de3816af2ab66f6b306277c83a7cc9af74e5b0e235021a37f2fc916882751819"
     ]
+  },
+  "config": {
+    "Entrypoint": [
+      "/ko-app/kyverno"
+    ],
+    "Env": [
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/ko-app",
+      "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+      "KO_DATA_PATH=/var/run/ko"
+    ],
+    "User": "65532"
   }
 }
 ```
 
-In the output above, we can see under `config.User` that the `USER` Dockerfile statement to run this container is `10001`. A Kyverno policy can be written to harness this information and perform, for example, a validation that the `USER` of an image is non-root.
+In the output above, we can see under `config.User` that the `USER` Dockerfile statement to run this container is `65532`. A Kyverno policy can be written to harness this information and perform, for example, a validation that the `USER` of an image is non-root.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -705,4 +688,4 @@ To access images stored on private registries, see [using private registries](/d
 
 For more examples of using an imageRegistry context, see the [samples page](/policies).
 
-As of Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
