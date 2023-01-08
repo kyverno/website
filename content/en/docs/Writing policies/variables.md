@@ -7,19 +7,15 @@ weight: 70
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/).
-
-{{% alert title="Note" color="info" %}}
-Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
-{{% /alert %}}
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
 ## Pre-defined Variables
 
 Kyverno automatically creates a few useful variables and makes them available within rules:
 
-1. `serviceAccountName`: the "userName" which is the last part of a service account (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
+1. `serviceAccountName`: the "userName" which is the last part of a ServiceAccount (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
 
-2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
+2. `serviceAccountNamespace`: the "namespace" part of the ServiceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
 
 3. `request.roles`: a list of roles stored in an array the given account may have. For example, `["foo:dave"]`.
 
@@ -78,7 +74,7 @@ For more information on operators see the [Operators](/docs/writing-policies/val
 
 ## Escaping Variables
 
-In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, as of Kyverno 1.5.0 these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values. Variables written in JMESPath notation can also be escaped using the same syntax, for example `\{{ request.object.metadata.name }}`.
+In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values. Variables written in JMESPath notation can also be escaped using the same syntax, for example `\{{ request.object.metadata.name }}`.
 
 In the below policy, the value of `OTEL_RESOURCE_ATTRIBUTES` contains references to other environment variables which will be quoted literally as, for example, `$(POD_NAMESPACE)`.
 
@@ -87,6 +83,7 @@ apiVersion: kyverno.io/v1
 kind: Policy
 metadata:
   name: add-otel-resource-env
+  namespace: foobar
 spec:
   background: false
   rules:
@@ -312,11 +309,11 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.name}}`
 
-3. Reference the image tag
+4. Reference the image tag
 
 `{{images.containers.tomcat.tag}}`
 
-4. Reference the digest
+5. Reference the digest
 
 `{{images.containers.tomcat.digest}}`
 
@@ -334,11 +331,11 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.name}}`
 
-3. Reference the image tag
+4. Reference the image tag
 
 `{{images.initContainers.vault.tag}}`
 
-4. Reference the digest
+5. Reference the digest
 
 `{{images.initContainers.vault.digest}}`
 
