@@ -1,6 +1,7 @@
 ---
 title: Monitoring
-description: Monitor Kyverno policy metrics with Prometheus
+description: >-
+  Monitor and observe the operation of Kyverno using metrics and tracing.
 weight: 65
 ---
 
@@ -12,7 +13,7 @@ In addition, you can specify the scope of your monitoring targets to either the 
 
 ## Installation and Setup
 
-When you install Kyverno via Helm, a service called `kyverno-svc-metrics` gets created inside the `kyverno` namespace and this service exposes metrics on port 8000.
+When you install Kyverno via Helm, additional services are created inside the `kyverno` Namespace which expose metrics on port 8000.
 
 ```sh
 $ values.yaml
@@ -33,11 +34,11 @@ metricsService:
 ...
 ```
 
-By default, the service type is going to be `ClusterIP` meaning that metrics can only be scraped by a Prometheus server sitting inside the cluster. <br>
+By default, the service type is going to be `ClusterIP` meaning that metrics can only be scraped by a Prometheus server sitting inside the cluster.
 
-In some cases, the Prometheus server may sit outside your workload cluster as a shared service. In these scenarios, you will want the `kyverno-svc-metrics` service to be publicly exposed so as to expose the metrics (available at port 8000) to your external Prometheus server.<br>
+In some cases, the Prometheus server may sit outside your workload cluster as a shared service. In these scenarios, you will want the `kyverno-svc-metrics` Service to be publicly exposed so as to expose the metrics (available at port 8000) to your external Prometheus server.
 
-Services can be exposed to external clients via an Ingress, or using `LoadBalancer` or `NodePort` service types.
+Services can be exposed to external clients via an Ingress, or using `LoadBalancer` or `NodePort` Service types.
 
 To expose your `kyverno-svc-metrics` service publicly as `NodePort` at host's/node's port number 8000, you can configure your `values.yaml` before Helm installation as follows:
 
@@ -79,10 +80,9 @@ metricsService:
 
 ## Configuring the metrics
 
-While installing Kyverno via Helm, you also have the ability to configure which metrics you'll want to expose.
+While installing Kyverno via Helm, you also have the ability to configure which metrics to expose.
 
-* You can configure which namespaces you want to `include` and/or `exclude` for metric exportation when configuring your Helm chart. This configuration is useful in situations where you might want to exclude the exposure of Kyverno metrics for certain futile namespaces like test namespaces, which you might be dealing with on a regular basis. Likewise, you can include certain namespaces if you want to monitor Kyverno-related activity for only a set of certain critical namespaces.
-Exporting the right set of namespaces (as opposed to exposing all namespaces) can end up substantially reducing the memory footprint of Kyverno's metrics exporter.
+You can configure which Namespaces you want to `include` and/or `exclude` for metric exportation when configuring your Helm chart. This configuration is useful in situations where you might want to exclude the exposure of Kyverno metrics for certain Namespaces like test or experimental Namespaces. Likewise, you can include certain Namespaces if you want to monitor Kyverno-related activity for only a set of certain critical Namespaces. Exporting the right set of Namespaces (as opposed to exposing all Namespaces) can end up substantially reducing the memory footprint of Kyverno's metrics exporter.
 
 ```sh
 ...
@@ -97,22 +97,7 @@ config:
 ...
 ```
 
-> `exclude` takes precedence over "include", in cases when a namespace is provided under both `include` and `exclude`.
-
-> The below content is deprecated
-
-* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.
-
-```sh
-...
-config:
-  # rate at which metrics should reset so as to clean up the memory footprint of kyverno metrics, if you might be expecting high memory footprint of Kyverno's metrics.
-  metricsRefreshInterval: 24h 
-  #Default: 0, no refresh of metrics
-...
-```
-
-> You still would not lose your previous metrics as your metrics get persisted in the Prometheus backend.
+`exclude` takes precedence over `include` in cases when a Namespace is provided under both.
 
 ## Disabling metrics
 
