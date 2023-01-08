@@ -43,7 +43,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * When using VS Code, because of the OpenAPIV3 schema Kyverno supports, you can make use of this integration to assist in writing policy by getting field hints and describing elements.
 * Make use of the [Kyverno CLI](/docs/kyverno-cli/) to test policies out in advance.
 * Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design. In most cases, rules can be grouped into a single policy definition. Here are some tips when it comes to organizing rules:
-  * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all namespaced `validate` rules.
+  * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all Namespaced `validate` rules.
   * `mutate` and `generate` rules should go into their own policy definition.
   * Policies that cannot be written as a single rule but have highly related processing can go into their own policy definition.
   * Name your rules effectively as this is a component that will be displayed to users upon enforcement for `validate` rules.
@@ -56,7 +56,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 kubectl -n <kyverno_namespace> logs <pod_name>
 ```
 
-Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4.
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
 
 ## Validate
 
