@@ -61,9 +61,8 @@ Release branches and PRs are managed as follows:
 
 ### Release Planning
 
-A minor release will contain a mix of features, enhancements, and bug fixes. 
+A minor release will contain a mix of features, enhancements, and bug fixes.
 
 Major features follow the [Kyverno Design Proposal (KDP)](https://github.com/kyverno/KDP/) process.
 
 During the start of a release, there may be many issues assigned to the release milestone. The priorities for the release are discussed in the weekly contributor's meetings. As the release progresses several issues may be moved to the next milestone. Hence, if an issue is important it is important to advocate its priority early in the release cycle.
-
