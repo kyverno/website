@@ -32,7 +32,7 @@ kubectl scale deploy kyverno -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. By default in the Helm chart version 2.5.0, the Kyverno Namespace is excluded.
+Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. The Kyverno Namespace is excluded by default.
 
 ## Policies not applied
 
