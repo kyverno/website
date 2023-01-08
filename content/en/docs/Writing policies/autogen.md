@@ -5,7 +5,7 @@ description: >
 weight: 100
 ---
 
-Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written for a Pod.
+Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.
 
 {{% alert title="Note" color="info" %}}
 Kyverno 1.9 adds support for including ReplicaSets and ReplicationControllers to auto-gen rules. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs.
@@ -98,7 +98,7 @@ You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to c
 
 Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
 
-* `name` (deprecated)
+* `names`
 * `selector`
 * `annotations`
 
