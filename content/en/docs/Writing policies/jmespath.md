@@ -16,7 +16,7 @@ In order to position yourself for success with JMESPath expressions inside Kyver
 
 2. `kyverno`, the Kyverno CLI [here](https://github.com/kyverno/kyverno/releases) or via [krew](https://krew.sigs.k8s.io/). Kyverno acts as a webhook (when run in-cluster) but also as a standalone CLI when run outside giving you the ability to test policies and, more recently, to test custom JMESPath filters which are endemic to only Kyverno. With the `jp` subcommand, it contains the functionality present in the upstream `jp` [CLI tool](https://github.com/jmespath/jp) and also newer capabilities. It effectively allows you to test out JMESPath expressions live in a command line interface by passing in a JSON document and seeing the results without having to repeatedly test Kyverno policies.
 
-3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. As of Kyverno 1.7.0, the Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
+3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
 
 4. `jq`, the JSON processor [here](https://stedolan.github.io/jq/download/). `jq` is an extremely popular tool for working with JSON documents and has its own filter ability, but it's also useful in order to format JSON on the terminal for better visuals.
 
@@ -58,7 +58,7 @@ When building a JMESPath expression, a dot (`.`) character is called a "sub-expr
 }
 ```
 
-When submitting a Pod, which matches the policy above, the result which gets created after Kyverno has mutated it would then look something like this.
+When submitting a Pod which matches the policy above, the result which gets created after Kyverno has mutated it would then look something like this.
 
 **Incoming Pod**
 
@@ -88,7 +88,7 @@ spec:
     image: busybox
 ```
 
-Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, as you might guess, the label would be `appns: bar`. And this is a nice segue into AdmissionReview resources.
+Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, the label would be `appns: bar`.
 
 {{% alert title="Remember" color="primary" %}}
 JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only works when fed with a JSON-encoded document. Although most work with Kubernetes resources using YAML, the API server will convert this to JSON internally and use that format when storing and sending objects to webhooks like Kyverno. This is why the program `yq` will be invaluable when building the correct expression based upon Kubernetes manifests written in YAML.
@@ -99,10 +99,10 @@ JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only wo
 Kyverno is an example, although there are many others, of an [admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-are-they). As the name implies, these are pieces of software which have some stake in whether a given resource is _admitted_ into the cluster or not. They may be either validating, mutating, or both. The latter applies to Kyverno as it has both capabilities. For a graphical representation of the order in which these requests make their way into Kyverno, see the [introduction page](/docs/introduction/#how-kyverno-works).
 
 {{% alert title="Note" color="info" %}}
-As the name "admission" implies, this process only takes place when an object _does not_ already exist. Pre-existing objects have already been admitted successfully in the past and therefore do not apply here. Certain other _operations_ on pre-existing objects, however, are subject to the admissions process including examples like executing (`exec`) commands inside Pods and deleting objects but, importantly, not when reading back objects.
+As the name "admission" implies, this process only takes place when an object _does not_ already exist. Pre-existing objects have already been admitted successfully in the past and therefore do not apply here. Certain other _operations_ on pre-existing objects, however, are subject to the admissions process including examples like executing (`exec`) commands inside Pods and deleting objects but, importantly, not when reading back objects. The act of reading, getting, or listing resources does not result in an admission review process.
 {{% /alert %}}
 
-When a resource that matches the criteria of a selection statement gets sent to the Kubernetes API server, after the API server performs some basic modifications to it, it then gets sent to webhooks which have told the API server via a MutatingWebhookConfiguration or ValidatingWebhookConfiguration resource--which Kyverno creates for you based upon the policies you write--that it wishes to be informed. The API server will "wrap" the matching resource in another resource called an [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request) which contains a bunch of other descriptive data about that request, for example what _type_ or request this is (like a creation or deletion), the user who submitted the request, and, most importantly, the contents of the resource itself. Given the simple Pod example above that a user wishes to be created in the `foo` Namespace, the AdmissionReview request that hits Kyverno might look like following.
+When a resource that matches the criteria of a selection statement gets sent to the Kubernetes API server, after the API server performs some basic modifications to it, it then gets sent to webhooks which have told the API server via a MutatingWebhookConfiguration or ValidatingWebhookConfiguration resource--which Kyverno creates for you based upon the policies you write--that it wishes to be informed. The API server will "wrap" the matching resource in another resource called an [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request) which contains a number of other descriptive data about that request, for example what _type_ or request this is (like a creation or deletion), the user who submitted the request, and, most importantly, the contents of the resource itself. Given the simple Pod example above that a user wishes to be created in the `foo` Namespace, the AdmissionReview request that hits Kyverno might look like following.
 
 ```json
 {
@@ -201,7 +201,7 @@ When developing policies for Kubernetes resources, there are several patterns wh
 
 In many Kubernetes resources, arrays of both objects and strings are very common. For example, in Pod resources, `spec.containers[]` is an array of objects where each object in the array may optionally specify `args[]` which is an array of strings. Policy very often must be able to peer into these arrays and match a given pattern with enough flexibility to implement a sufficiently advanced level of control. The JMESPath [flatten operator](https://jmespath.org/specification.html#flatten-operator) can help to simplify these checks so writing Kyverno policy becomes less verbose and require fewer rules.
 
-Pods may contain multiple containers and in different locations in the Pod spec tree, for example `ephemeralContainers[]`, `initContainers[]`, and `containers[]`. Regardless of where the container occurs, a container is still a container. And although it's possible to name each location in the spec individually, this produces rule or expression sprawl. It is often more efficient to collect all the containers together in a single query for processing. Consider the example Pod below.
+Pods may contain multiple containers and in different locations in the Pod spec, for example `ephemeralContainers[]`, `initContainers[]`, and `containers[]`. Regardless of where the container occurs, a container is still a container. And although it's possible to name each location in the spec individually, this produces rule or expression sprawl. It is often more efficient to collect all the containers together in a single query for processing. Consider the example Pod below.
 
 ```yaml
 apiVersion: v1
@@ -219,10 +219,10 @@ spec:
     image: nginx
 ```
 
-Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression after using `yq` to output it as a JSON document then piped into the [Kyverno CLI](/docs/kyverno-cli/#jp).
+Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/#jp).
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.containers[]"
+$ kyverno jp -f pod.yaml "spec.containers[]"
 [
   {
     "image": "busybox",
@@ -238,7 +238,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.containers[]"
 The above output shows the return of an array of objects as expected where each object is the container. But by using a [multi-select list](https://jmespath.org/specification.html#multiselect-list), the `initContainer[]` array may also be parsed.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers]"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
 [
   [
     {
@@ -262,7 +262,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers]"
 In the above, a multi-select list `spec.[initContainers, containers]` "wraps" the results of both `initContainers[]` and `containers[]` in parent array thereby producing an array consisting of multiple arrays. By using the [flatten operator](https://jmespath.org/specification.html#flatten-operator), these results can be collapsed into just a single array.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][]"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
 [
   {
     "image": "redis",
@@ -282,7 +282,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][]"
 With just a single array in which all containers, regardless of where they are, occur in a single hierarchy, it becomes easier to process the data for relevant fields and take action. For example, if you wished to write a policy which forbid using the image named `busybox` in a Pod, by flattening all containers it becomes easier to isolate just the `image` field. Because it does not matter where `busybox` may be found, if found the entire Pod must be rejected. Therefore, while loops or other methods may work, a more efficient method is to simply gather all containers across the Pod and flatten them.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][].image"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers][].image"
 [
   "redis",
   "busybox",
