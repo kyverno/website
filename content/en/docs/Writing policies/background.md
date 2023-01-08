@@ -19,8 +19,7 @@ Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object 
 Background scanning occurs on a continual basis and offers some configuration options via [container flags](/docs/installation/#container-flags).
 
 {{% alert title="Note" color="info" %}}
-Kyverno does not mutate existing resources to prevent inadvertent changes to workloads.
-Mutate and generate rules are not processed during background scans.
+Kyverno does not mutate existing resources to prevent inadvertent changes to workloads. Mutate and generate rules are not processed during background scans.
 {{% /alert %}}
 
 When background scanning is enabled, regardless of whether the policy's `validationFailureAction` is set to `Enforce` or `Audit`, the results will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
