@@ -4,9 +4,9 @@ description: Check resource configurations for policy compliance.
 weight: 50
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or noted in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
-To validate resource data, define a [pattern](#patterns) in the validation rule. To deny certain API requests define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
+To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
 ## Basic Validations
 
@@ -33,7 +33,7 @@ spec:
           - Namespace
     # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
     validate:
-      # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
+      # The `message` is what gets displayed to a user if this rule fails validation.
       message: "You must have label `purpose` with value `production` set on all new namespaces."
       # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
       pattern:
@@ -94,10 +94,10 @@ metadata:
 spec:
   validationFailureAction: Audit
   validationFailureActionOverrides:
-    - action: enforce     # Action to apply
+    - action: Enforce     # Action to apply
       namespaces:       # List of affected namespaces
         - default
-    - action: audit
+    - action: Audit
       namespaces:
         - test
   rules:
@@ -204,7 +204,7 @@ In order to treat special characters like wildcards as literals, see [this secti
 
 ### Operators
 
-Operators in the following support list values as of Kyverno 1.3.6 in addition to scalar values. Many of these operators also support checking of durations (ex., 12h) and semver (ex., 1.4.1).
+Operators in the following support list values in addition to scalar values. Many of these operators also support checking of durations (ex., 12h) and semver (ex., 1.4.1).
 
 | Operator   | Meaning                   |
 |------------|---------------------------|
@@ -219,11 +219,7 @@ Operators in the following support list values as of Kyverno 1.3.6 in addition t
 | `!-`       | outside a range           |
 
 {{% alert title="Note" color="info" %}}
-The `-` operator provides an easier way of validating the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing the `value >= a & value <= b`.
-{{% /alert %}}
-
-{{% alert title="Note" color="info" %}}
-The `!-` operator provides an easier way of validating the value in question falls outside a closed interval `[a,b]`. Thus, constructing the `a!-b` condition is equivalent of writing the `value < a | value > b`.
+The `-` operator provides an easier way of validating the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing the `value >= a & value <= b`. Likewise, the `!-` operator can be used to negate a range. Thus, constructing the `a!-b` condition is equivalent of writing the `value < a | value > b`.
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
@@ -374,7 +370,7 @@ This snippet above instead states that *every* entry in the array of containers,
 
 #### Global Anchor
 
-The global anchor, new in Kyverno 1.4.3, is a way to use a condition anywhere in a resource to base a decision. If the condition enclosed in the global anchor is true, the rest of the rule must apply. If the condition enclosed in the global anchor is false, the rule is skipped.
+The global anchor is a way to use a condition anywhere in a resource to base a decision. If the condition enclosed in the global anchor is true, the rest of the rule must apply. If the condition enclosed in the global anchor is false, the rule is skipped.
 
 In this example, a container image coming from a registry called `corp.reg.com` is required to mount an imagePullSecret called `my-registry-secret`.
 
@@ -497,17 +493,11 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions written as expressions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects.
+In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions written as expressions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects. `deny` conditions also have access to more advanced capabilities including [context variables](/docs/writing-policies/external-data-sources/), the full contents of the [AdmissionReview](/docs/introduction/), built-in [variables](/docs/writing-policies/variables/), and the complete [JMESPath filtering system](/docs/writing-policies/jmespath/).
 
 You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
 
-{{% alert title="Note" color="info" %}}
-When using a `deny` statement, `validationFailureAction` must be set to `Enforce` to block the request.
-{{% /alert %}}
-
 Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables. `deny` statements can similarly use `any` and `all` blocks like those available to `preconditions`.
-
-In addition to admission review request data, user information, and built-in variables, `deny` rules and preconditions can also operate on ConfigMap data, data from API server lookups, etc.
 
 ### Deny DELETE requests based on labels
 
@@ -594,7 +584,8 @@ spec:
       - resources:
           kinds:
           - NetworkPolicy
-          name: "*-default"
+          names:
+          - "*-default"
     exclude:
       any:
       - clusterRoles:
@@ -630,7 +621,7 @@ In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
 - [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
-- elementScope: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
+- `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
 
