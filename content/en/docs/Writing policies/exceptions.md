@@ -108,6 +108,15 @@ spec:
 
 PolicyExceptions are always Namespaced yet may provide an exception for a cluster-scoped resource as well. There is no correlation between the Namespace in which the PolicyException exists and the Namespace where resources may be excepted.
 
+Exceptions against a ClusterPolicy and those against a (Namespaced) Policy can be disambiguated by specifying the value of the `exceptions[].policyName` field in the format `<namespace>/<policy-name>`.
+
+```yaml
+exceptions:
+- policyName: team-a/disallow-host-namespaces
+  ruleNames:
+  - host-namespaces
+```
+
 Since PolicyExceptions are just another Custom Resource, their use can and should be controlled by a number of different mechanisms to ensure their creation in a cluster is authorized including:
 
 * Kubernetes RBAC
