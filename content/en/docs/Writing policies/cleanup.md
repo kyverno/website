@@ -6,6 +6,10 @@ weight: 67
 
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster defined in a new policy called a `CleanupPolicy`. Cleanup policies come in both cluster-scoped and Namespaced flavors; a `ClusterCleanupPolicy` being cluster scoped and a `CleanupPolicy` being Namespaced. A cleanup policy uses the familiar `match`/`exclude` block to select and exclude resources which are subjected to the cleanup process. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/writing-policies/preconditions/) and [deny rules](/docs/writing-policies/validate/#deny-rules) to query the contents of the selected resources in order to refine the selection process. And, lastly, a `schedule` field defines, in cron format, when the rule should run.
 
+{{% alert title="Note" color="note" %}}
+Since cleanup policies always operate against existing resources in a cluster, policies created with `subjects`, `Roles`, or `ClusterRoles` in the `match`/`exclude` block are not allowed since this information is only known at admission time.
+{{% /alert %}}
+
 The cleanup controller runs decoupled from Kyverno in a separate Deployment. Cleanup is executed by a CronJob which is automatically created and managed by the cleanup controller. Each cleanup policy maps to one CronJob. When the scheduled time occurs, the CronJob calls to the cleanup controller to execute the cleanup process defined in the policy.
 
 An example ClusterCleanupPolicy is shown below.
