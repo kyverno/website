@@ -48,7 +48,7 @@ The report controller is responsible for creation of policy reports from both ad
 
 #### Cleanup - Webhook Server
 
-In the cleanup controller, the webhook server reconciles cleanup policies and existing CronJobs. It does not require leader election.
+In the cleanup process, the webhook server reconciles cleanup policies and existing CronJobs. It does not require leader election.
 
 #### Cleanup - Cleanup controller
 
