@@ -44,7 +44,7 @@ The background controller is responsible for handling UpdateRequest resources (a
 
 #### Report Controller
 
-The report controller is responsible for creation of policy reports from both admission requests and background scans and requires leader election.
+The report controller is responsible for creation of policy reports from both admission requests and background scans and requires leader election. It track resources that need to be processed in the background and generates background scan reports (when policy/resource change). It also aggregates these and the intermediary admission reports into the final policy report resources PolicyReport and ClusterPolicyReport.
 
 #### Cleanup - Webhook Server
 
@@ -54,10 +54,10 @@ In the cleanup controller, the webhook server reconciles cleanup policies and ex
 
 The cleanup controller applies cleanup policies to generate CronJobs and reconciles existing CronJobs when they change. This component does require leader election.
 
-#### Cleanup - Cert Manager
+#### Cleanup - Cert Renewer
 
 The cert manager manages the certificates stored as Secrets and does require leader election.
 
-#### Cleanup - Webhook Monitor
+#### Cleanup - Webhook Controller
 
-The webhook config monitor updates the webhook used by the cleanup controller when the Secret changes. This component also uses leader election.
+The webhook controller updates the webhook used by the cleanup controller when the Secret changes. This component also uses leader election.
