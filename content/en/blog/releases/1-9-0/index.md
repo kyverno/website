@@ -67,7 +67,7 @@ spec:
           - Pod
   conditions:
     all:
-    - key: "{{ request.object.metadata.ownerReferences[] || `[]` }}"
+    - key: "{{ target.metadata.ownerReferences[] || `[]` }}"
       operator: Equals
       value: []
   schedule: "0 0 * * *"
