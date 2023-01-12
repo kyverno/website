@@ -472,51 +472,6 @@ This ordering makes it possible to use request data when defining the context, a
 
 In addition to the list of [built-in functions](https://jmespath.org/specification.html#builtin-functions) JMESPath offers, Kyverno augments these by adding several others which makes it even easier to craft Kyverno policies.
 
-### General
-
-```sh
-base64_decode(string) string
-base64_encode(string) string
-compare(string, string) integer
-equal_fold(string, string) bool
-label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
-parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function)
-parse_yaml(string) any
-path_canonicalize(string) string
-pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
-regex_match(string, string|number) bool
-regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
-replace(str string, old string, new string, n float64) string
-replace_all(str string, old string, new string) string
-semver_compare(string, string) bool (Use operators [>, <, etc] with string inputs for comparison logic)
-split(str string, sep string) []string
-time_since(<layout>, <time1>, <time2>) string (all inputs as string)
-to_upper(string) string
-to_lower(string) string
-trim(str string, cutset string) string
-truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
-```
-
-### Arithmetic
-
-```sh
-add(number, number) number
-add(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-add(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-subtract(number, number) number
-subtract(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-subtract(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-multiply(number, number) number
-multiply(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-multiply(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-divide(quantity|number, quantity|number) quantity|number (returns a quantity if exactly one of the parameters is a quantity, else a number; the divisor must be non-zero)
-divide(duration|number, duration|number) duration|number (returns a duration if exactly one of the parameters is a duration, else a number; the divisor must be non-zero)
-modulo(number, number) number
-modulo(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity; the divisor must be non-zero)
-modulo(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration; the divisor must be non-zero)
-```
-
 {{% alert title="Note" color="info" %}}
 The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.
 {{% /alert %}}
