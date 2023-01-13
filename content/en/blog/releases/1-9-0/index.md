@@ -120,11 +120,15 @@ Some other cool features and status updates we're proud to share include new JSO
 
 Kyverno now supports [nested foreach loops](/docs/writing-policies/mutate/#nested-foreach) which are great especially for mutation use cases where you need tactical modifications or removals from complex nested objects like arrays within arrays.
 
+There are eleven new [JMESPath filters](/docs/writing-policies/jmespath/#custom-filters) specifically for working with time. These filters include things like getting current time, converting it from different formats, and even translating the time to a Cron expression. These are sure to come in handy when writing policies which account for time in various ways.
+
 Pod controller [rule auto-generation](/docs/writing-policies/autogen/), another of Kyverno's hallmark capabilities which if you're not familiar allows Kyverno to translate rules solely for Pods to all other major Pod controllers, added support for ReplicaSet and ReplicationController. There's nothing policy authors need to do and Kyverno will now add these two resources into the auto-gen rules for you.
 
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
 Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
+
+We have long been a champion of software supply chain security and insist on enacting these practices ourselves. With the 1.9 release, Kyverno now generates and attests to [SLSA provenance](https://slsa.dev/spec/v0.1/index) which anyone on their end can publicly [verify](/docs/security/#verifying-provenance). We believe this and other policies by which we abide makes us adherent to SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) and will be working with the [Open Source Security Foundation](https://openssf.org/) to ensure this is the case.
 
 And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark.
 
