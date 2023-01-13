@@ -1,7 +1,7 @@
 ---
 title: "Mutate termination Grace Periods Seconds"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
@@ -33,9 +34,10 @@ spec:
   rules:
     - name: mutate-termination-grace-period-seconds
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       preconditions:
         all:
         - key: "{{request.object.spec.terminationGracePeriodSeconds || `0` }}"

@@ -1,7 +1,7 @@
 ---
 title: "Disallow Helm Tiller"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Disallow Helm Tiller
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
@@ -33,9 +34,10 @@ spec:
   rules:
     - name: validate-helm-tiller
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       validate:
         message: "Helm Tiller is not allowed"
         pattern:

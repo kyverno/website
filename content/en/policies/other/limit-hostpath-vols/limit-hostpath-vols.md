@@ -37,9 +37,10 @@ spec:
   rules:
   - name: limit-hostpath-to-slash-data
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{ request.object.spec.volumes[?hostPath] | length(@) }}"

@@ -1,7 +1,7 @@
 ---
 title: "Enforce pod duration"
 category: Sample
-version: 1.4.2
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Enforce pod duration
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.4.2
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       This validation is valuable when annotations are used to define durations,
@@ -31,9 +31,10 @@ spec:
   rules:
   - name: pods-lifetime
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Pod lifetime exceeds limit of 8h"
       deny:

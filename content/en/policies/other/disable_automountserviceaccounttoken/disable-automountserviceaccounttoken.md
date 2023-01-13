@@ -1,7 +1,7 @@
 ---
 title: "Disable automountServiceAccountToken"
 category: Other, EKS Best Practices
-version: 
+version: 1.6.0
 subject: ServiceAccount
 policyType: "mutate"
 description: >
@@ -21,7 +21,8 @@ metadata:
     policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ServiceAccount
-    kyverno.io/kyverno-version: 1.5.1
+    kyverno.io/kyverno-version: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: >-
       A new ServiceAccount called `default` is created whenever a new Namespace is created.
@@ -32,11 +33,12 @@ spec:
   rules:
   - name: disable-automountserviceaccounttoken
     match:
-      resources:
-        kinds:
-        - ServiceAccount
-        names:
-        - default
+      any:
+      - resources:
+          kinds:
+          - ServiceAccount
+          names:
+          - default
     mutate:
       patchStrategicMerge:
         automountServiceAccountToken: false

@@ -1,7 +1,7 @@
 ---
 title: "Limit hostPath PersistentVolumes to Specific Directories"
 category: Other
-version: 
+version: 1.6.0
 subject: PersistentVolume
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: PersistentVolume
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       hostPath persistentvolumes consume the underlying node's file system. If hostPath volumes
       are not to be universally disabled, they should be restricted to only certain
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: limit-hostpath-type-pv-to-slash-data
     match:
-      resources:
-        kinds:
-        - PersistentVolume
+      any:
+      - resources:
+          kinds:
+          - PersistentVolume
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"

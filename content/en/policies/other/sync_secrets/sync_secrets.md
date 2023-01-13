@@ -1,7 +1,7 @@
 ---
 title: "Sync Secrets"
 category: Sample
-version: 
+version: 1.6.0
 subject: Secret
 policyType: "generate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Sync Secrets
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Secret
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Secrets like registry credentials often need to exist in multiple
       Namespaces so Pods there have access. Manually duplicating those Secrets
@@ -31,9 +32,10 @@ spec:
   rules:
   - name: sync-image-pull-secret
     match:
-      resources:
-        kinds:
-        - Namespace
+      any:
+      - resources:
+          kinds:
+          - Namespace
     generate:
       apiVersion: v1
       kind: Secret

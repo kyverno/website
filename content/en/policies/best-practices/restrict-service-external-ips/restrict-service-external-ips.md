@@ -1,7 +1,7 @@
 ---
 title: "Restrict External IPs"
 category: Best Practices
-version: 
+version: 1.6.0
 subject: Service
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict External IPs
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: check-ips
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     validate:
       message: "externalIPs are not allowed."
       pattern:

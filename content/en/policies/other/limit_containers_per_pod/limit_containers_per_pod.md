@@ -1,7 +1,7 @@
 ---
 title: "Limit Containers per Pod"
 category: Sample
-version: 1.3.6
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Limit Containers per Pod
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.3.6
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Pods can have many different containers which
@@ -33,12 +33,13 @@ spec:
   rules:
   - name: limit-containers-per-pod-controllers
     match:
-      resources:
-        kinds:
-        - Deployment
-        - DaemonSet
-        - Job
-        - StatefulSet
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          - DaemonSet
+          - Job
+          - StatefulSet
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
@@ -54,9 +55,10 @@ spec:
             value: "4"
   - name: limit-containers-per-pod-bare
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
@@ -72,9 +74,10 @@ spec:
             value: "4"
   - name: limit-containers-per-pod-cronjob
     match:
-      resources:
-        kinds:
-        - CronJob
+      any:
+      - resources:
+          kinds:
+          - CronJob
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"

@@ -1,7 +1,7 @@
 ---
 title: "Block Pod Exec by Pod and Container"
 category: Sample
-version: 1.4.2
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Block Pod Exec by Pod and Container
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.4.2
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can
@@ -32,9 +32,10 @@ spec:
   rules:
   - name: deny-nginx-exec-in-myapp-maintenance
     match:
-      resources:
-        kinds:
-        - PodExecOptions
+      any:
+      - resources:
+          kinds:
+          - PodExecOptions
     preconditions:
       all:
       - key: "{{ request.operation || 'BACKGROUND' }}"

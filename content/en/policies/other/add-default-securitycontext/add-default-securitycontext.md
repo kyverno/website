@@ -1,7 +1,7 @@
 ---
 title: "Add Default securityContext"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add Default securityContext
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod.
       Sometimes choosing default values for users rather than blocking is a better alternative to not impede
@@ -29,9 +30,10 @@ spec:
   rules:
   - name: add-default-securitycontext
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:

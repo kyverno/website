@@ -1,7 +1,7 @@
 ---
 title: "Add Pod Proxies"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add Pod Proxies
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       In restricted environments, Pods may not be allowed to egress directly to all destinations
       and some overrides to specific addresses may need to go through a corporate proxy.
@@ -30,9 +31,10 @@ spec:
   rules:
   - name: add-pod-proxies
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:

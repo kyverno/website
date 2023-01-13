@@ -1,7 +1,7 @@
 ---
 title: "Add Labels"
 category: Sample
-version: 
+version: 1.6.0
 subject: Label
 policyType: "mutate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Add Labels
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Label
     policies.kyverno.io/description: >-
@@ -30,12 +31,13 @@ spec:
   rules:
   - name: add-labels
     match:
-      resources:
-        kinds:
-        - Pod
-        - Service
-        - ConfigMap
-        - Secret
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Service
+          - ConfigMap
+          - Secret
     mutate:
       patchStrategicMerge:
         metadata:

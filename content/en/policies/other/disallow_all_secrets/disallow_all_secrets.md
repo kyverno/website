@@ -1,7 +1,7 @@
 ---
 title: "Disallow all Secrets"
 category: Other
-version: 
+version: 1.6.0
 subject: Pod, Secret
 policyType: "validate"
 description: >
@@ -21,7 +21,8 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Secret
-    kyverno.io/kyverno-version: 1.5.1
+    kyverno.io/kyverno-version: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: >-
       Secrets often contain sensitive information which not all Pods need consume.
@@ -33,9 +34,10 @@ spec:
   rules:
   - name: secrets-not-from-env
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "No Secrets from env."
       pattern:
@@ -57,9 +59,10 @@ spec:
                 X(secretKeyRef): "null"
   - name: secrets-not-from-envfrom
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "No Secrets from envFrom."
       pattern:
@@ -78,9 +81,10 @@ spec:
             - X(secretRef): "null"
   - name: secrets-not-from-volumes
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "No Secrets from volumes."
       pattern:

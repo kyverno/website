@@ -1,7 +1,7 @@
 ---
 title: "Add ndots"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add ndots
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       The ndots value controls where DNS lookups are first performed in a cluster
       and needs to be set to a lower value than the default of 5 in some cases.
@@ -28,9 +29,10 @@ spec:
   rules:
   - name: add-ndots
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:
