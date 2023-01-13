@@ -121,7 +121,8 @@ Since PolicyExceptions are just another Custom Resource, their use can and shoul
 
 * Kubernetes RBAC
 * Existing GitOps governance processes
-* Kyverno validate rules
+* [Kyverno validate rules](/docs/writing-policies/validate/)
+* [YAML manifest validation](/docs/writing-policies/validate/#manifest-validation)
 
 PolicyExceptions may be subjected to Kyverno validate policies which can be used to provide additional guardrails around how they may be crafted. For example, it is considered a best practice to only allow very narrow exceptions to a much broader rule. Given the case shown earlier, only a Pod or Deployment with the name `important-tool` would be allowed by the exception, not any Pod or Deployment. Kyverno policy can help ensure, both in the cluster and in a CI/CD process via the [CLI](/docs/kyverno-cli/), that PolicyExceptions conform to your design standards. Below is an example of a sample policy to illustrate how a Kyverno validate rule ensure that a specific name must be used when creating an exception. For other samples, see the [policy library](/policies).
 
