@@ -130,7 +130,7 @@ Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support 
 
 We have long been a champion of software supply chain security and insist on enacting these practices ourselves. With the 1.9 release, Kyverno now generates and attests to [SLSA provenance](https://slsa.dev/spec/v0.1/index) which anyone on their end can publicly [verify](/docs/security/#verifying-provenance). We believe this and other policies by which we abide makes us adherent to SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) and will be working with the [Open Source Security Foundation](https://openssf.org/) to ensure this is the case.
 
-And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark.
+And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark. Included in this library update is a new [table](/policies/gatekeeper/) which maps Gatekeeper policies to Kyverno policies, helpful for users of both tools to see how to accomplish some common use cases in these engines.
 
 ## Potentially Breaking Changes
 
