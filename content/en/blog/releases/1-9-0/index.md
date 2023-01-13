@@ -3,7 +3,7 @@ date: 2023-01-10
 title: "Kyverno 1.9 Released"
 linkTitle: "Kyverno 1.9"
 description: "Kyverno 1.9 released with new policy exceptions, cleanup policies, and more."
-draft: false
+draft: true
 ---
 
 ![kyverno](kyverno-horizontal.png)
