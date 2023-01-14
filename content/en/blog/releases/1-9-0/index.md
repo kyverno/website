@@ -124,6 +124,8 @@ There are eleven new [JMESPath filters](/docs/writing-policies/jmespath/#custom-
 
 Pod controller [rule auto-generation](/docs/writing-policies/autogen/), another of Kyverno's hallmark capabilities which if you're not familiar allows Kyverno to translate rules solely for Pods to all other major Pod controllers, added support for ReplicaSet and ReplicationController. There's nothing policy authors need to do and Kyverno will now add these two resources into the auto-gen rules for you.
 
+The Kyverno CLI now has experimental support for uploading and downloading Kyverno policies as OCI artifacts. This is great for storing policies alongside container images using the same, common semantics. In the future, we're planning on doing more with this support so keep a lookout.
+
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
 Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
