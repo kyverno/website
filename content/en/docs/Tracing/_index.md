@@ -24,7 +24,7 @@ Tracing requires a backend where Kyverno will send traces. Kyverno uses OpenTele
 
 When you install Kyverno via Helm, you need to set a couple of values to enable tracing.
 
-```sh
+```shell
 $ values.yaml
 
 ...
