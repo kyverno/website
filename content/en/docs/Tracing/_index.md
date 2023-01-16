@@ -26,7 +26,7 @@ extraArgs:
   # enable tracing
   - --enableTracing
   # configure tracing endpoint
-  - --tracingAddress=tempo.monitoring
+  - --tracingAddress=<backend url>
   # configure tracing port
   - --tracingPort=4317
 ...
