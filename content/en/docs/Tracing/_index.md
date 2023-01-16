@@ -1,6 +1,6 @@
 ---
 title: Tracing
-description: Trace Kyverno engine admission requests processing
+description: Tracing Kyverno engine admission requests processing
 weight: 65
 ---
 
@@ -14,7 +14,7 @@ In the context of Kyverno, requests are usually sent by the Kubernetes API serve
 
 ## Installation and Setup
 
-Tracing requires a backend where Kyverno will send traces. Kyverno uses OpenTelemetry for instrumentation and supports various backends like Jaeger, Grafana Tempo or Datadog to name a few.
+Tracing requires a backend where Kyverno will send traces. Kyverno uses OpenTelemetry for instrumentation and supports various backends like [Jaeger](https://www.jaegertracing.io/), [Grafana Tempo](https://grafana.com/oss/tempo/) or [Datadog](https://docs.datadoghq.com/tracing/) to name a few.
 
 When you install Kyverno via Helm, you need to set a couple of values to enable tracing.
 
@@ -34,41 +34,6 @@ extraArgs:
 
 Tracing is disabled by default and depending on the backend the associated cost can be significant.
 
-## Configuring the metrics
-
-While installing Kyverno via Helm, you also have the ability to configure which metrics you'll want to expose.
-
-* You can configure which namespaces you want to `include` and/or `exclude` for metric exportation when configuring your Helm chart. This configuration is useful in situations where you might want to exclude the exposure of Kyverno metrics for certain futile namespaces like test namespaces, which you might be dealing with on a regular basis. Likewise, you can include certain namespaces if you want to monitor Kyverno-related activity for only a set of certain critical namespaces.
-Exporting the right set of namespaces (as opposed to exposing all namespaces) can end up substantially reducing the memory footprint of Kyverno's metrics exporter.
-
-```sh
-...
-config:
-  metricsConfig:
-    namespaces: {
-      "include": [],
-      "exclude": []
-    }
-  # 'namespaces.include': list of namespaces to capture metrics for. Default: all namespaces included.
-  # 'namespaces.exclude': list of namespaces to NOT capture metrics for. Default: [], none of the namespaces excluded.
-...
-```
-
-> `exclude` takes precedence over "include", in cases when a namespace is provided under both `include` and `exclude`.
-
-> The below content is deprecated
-
-* The metric refresh interval is also configurable, and allows the metrics registry to purge itself of all associated metrics within that time frame. This clean-up resets the memory footprint associated with Kyverno's metric exporter. This is particularly useful in scenarios when concerned with the overall memory footprint of Kyverno's metric exporter.
-
-```sh
-...
-config:
-  # rate at which metrics should reset so as to clean up the memory footprint of kyverno metrics, if you might be expecting high memory footprint of Kyverno's metrics.
-  metricsRefreshInterval: 24h 
-  #Default: 0, no refresh of metrics
-...
-```
-
-> You still would not lose your previous metrics as your metrics get persisted in the Prometheus backend.
+Currently, Kyverno tracing is configured to sample all incoming requests, there's no way to configure the tracing sampler directly in Kyverno. [OpenTelemtry Collector](https://opentelemetry.io/docs/collector/) can be used to take better sampling decision at the cost of a more advanced setup.
 
 ## Metrics and Dashboard
