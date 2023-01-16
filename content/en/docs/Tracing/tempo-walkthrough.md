@@ -20,8 +20,8 @@ Setting up Grafana with Helm can be done with the following command:
 
 ```shell
 helm upgrade --install grafana --namespace monitoring --create-namespace --wait \
-		--repo https://grafana.github.io/helm-charts grafana \
-    --values - <<EOF
+  --repo https://grafana.github.io/helm-charts grafana \
+  --values - <<EOF
 adminPassword: admin
 sidecar:
   enableUniqueFilenames: true
@@ -54,8 +54,8 @@ Setting up Tempo with Helm can be done with the following command:
 
 ```shell
 helm upgrade --install tempo --namespace monitoring --create-namespace --wait \
-		--repo https://grafana.github.io/helm-charts tempo \
-    --values - <<EOF
+  --repo https://grafana.github.io/helm-charts tempo \
+  --values - <<EOF
 tempo:
   searchEnabled: true
 EOF
@@ -93,8 +93,8 @@ We can do it with the following command:
 
 ```shell
 helm upgrade --install kyverno --namespace kyverno --create-namespace --wait \
-		--devel --repo https://kyverno.github.io/kyverno kyverno \
-    --values - <<EOF
+  --devel --repo https://kyverno.github.io/kyverno kyverno \
+  --values - <<EOF
 # kyverno controller
 extraArgs:
   # enable tracing
