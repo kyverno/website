@@ -171,8 +171,8 @@ After that, navigate to the [Grafana explore page](http://localhost/grafana/expl
 
 The list should show the trace for the previous `Pod` creation request:
 
-<p align="center"><img src="./assets/walkthrough-tempo-1.png" height="300px"/></p>
+<p align="center"><img src="../assets/walkthrough-tempo-1.png" height="300px"/></p>
 
 Clicking on the trace will take you to the trace details, showing all spans covered by the `Pod` admission request:
 
-<p align="center"><img src="./assets/walkthrough-tempo-2.png" height="300px"/></p>
+<p align="center"><img src="../assets/walkthrough-tempo-2.png" height="300px"/></p>
