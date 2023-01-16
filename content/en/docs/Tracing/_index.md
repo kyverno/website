@@ -12,6 +12,12 @@ Tracing is not limited to a single application, as the tracing context can be tr
 
 In the context of Kyverno, requests are usually sent by the Kubernetes API server to the Kyverno service during the admission phase. Kyverno receives and processes admission requests according to the configured policies. Every step in the admission pipeline and during the engine policy processing will produce spans. All clients (Kubernetes client, registry client and cosign client) have also been instrument to produce client spans and transmit the tracing context on the wire.
 
+## Trace example
+
+Below is a trace for a validating admission request.
+
+<p align="center"><img src="https://raw.githubusercontent.com/kyverno/website/main/content/en/docs/Tracing/assets/trace-example-1.png" height="300px"/></p>
+
 ## Installation and Setup
 
 Tracing requires a backend where Kyverno will send traces. Kyverno uses OpenTelemetry for instrumentation and supports various backends like [Jaeger](https://www.jaegertracing.io/), [Grafana Tempo](https://grafana.com/oss/tempo/) or [Datadog](https://docs.datadoghq.com/tracing/) to name a few.
