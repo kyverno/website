@@ -4,6 +4,35 @@ description: Tracing with Grafana Tempo.
 weight: 10
 ---
 
+## Cluster Setup
+
+TODO
+
+```shell
+kind create cluster --config - <<EOF
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |-
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+  - role: worker
+  - role: worker
+  - role: worker
+EOF
+```
+
 ## Ingress NGINX Setup
 
 In order to access Grafana, we need an ingress controller, we can install `ingress-nginx` with the following command:
@@ -115,3 +144,35 @@ cleanupController:
     port: 4317
 EOF
 ```
+
+## Kyverno policies Setup
+
+Now we can deploy the `kyverno-policies` helm chart to get a bunch of policies installed in the cluster.
+
+```shell
+helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
+  --devel --repo https://kyverno.github.io/kyverno kyverno-policies \
+  --values - <<EOF
+validationFailureAction: Enforce
+EOF
+```
+
+Note that we set `validationFailureAction` to `Enforce`, this is because `Audit` policies are processed in a separate go rountine and will produce a separate trace from the main one (both traces are linked together but not with a parent/child relationship).
+
+## Create a Pod and observe the corresponding trace
+
+With everything in place we can create a `Pod` and find the corresponding trace in Grafana.
+
+```shell
+kubectl run nginx --image=nginx
+```
+
+After that, navigate to the [Grafana explore page](http://localhost/grafana/explore) and search for traces with `kyverno` service name and `ADMISSION POST /validate/fail` span name.
+
+The list should show the trace for the previous `Pod` creation request:
+
+<p align="center"><img src="./assets/walkthrough-tempo-1.png" height="300px"/></p>
+
+Clicking on the trace will take you to the trace details, showing all spans covered by the `Pod` admission request:
+
+<p align="center"><img src="./assets/walkthrough-tempo-2.png" height="300px"/></p>
