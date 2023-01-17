@@ -189,7 +189,7 @@ kubectl run nginx --image=nginx
 
 After that, navigate to the [Grafana explore page](http://localhost/grafana/explore), select `Tempo` in the top left drop down list, click on the `Search` tab, and search for traces with the following criteria:
 - Service name: `kyverno`, every trace defines a service name and all traces coming from Kyverno will use the `kyverno` service name
-- Span name: `ADMISSION POST /validate/fail`, every span defines a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`. The `/validate/fail` path indicates indicates that it's a validating webhook that was configured to fail the admission request in case of error. Fail mode is the default).
+- Span name: `ADMISSION POST /validate/fail`, every span defines a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`. The `/validate/fail` path indicates that it's a validating webhook that was configured to fail the admission request in case of error. Fail mode is the default).
 
 The list should show the trace for the previous Pod creation request:
 

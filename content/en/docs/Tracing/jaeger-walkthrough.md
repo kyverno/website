@@ -8,7 +8,7 @@ This walkthrough shows how to create a local cluster and deploy a number of comp
 
 On the prepared cluster we will deploy Kyverno with tracing enabled and a couple of policies.
 
-Finally we will exercise the Kyverno webhooks by creating a Pod, then we will use Grafana to find and examine the corresponding trace.
+Finally we will exercise the Kyverno webhooks by creating a Pod, then we will use Jaeger to find and examine the corresponding trace.
 
 Please note that **this walkthrough uses [kind](https://kind.sigs.k8s.io) to create a local cluster** with a specific label on the control plane node.
 This is necessary as we are using an [ingress-nginx](https://github.com/kubernetes/ingress-nginx) deployment specifically crafted to work with kind.
@@ -63,7 +63,7 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 
 [Jaeger](https://www.jaegertracing.io) will allow us to store, search and visualise traces.
 
-Jaeger is made of multiple components and is capable of using multiple storage solutions like Elasticsearch or Cassandra. In this tutorial we will deploy an all-in-one version of Jaeger and storage will be done in memory.
+Jaeger is made of multiple components and is capable of using multiple storage solutions like Elasticsearch or Cassandra. In this tutorial, we will deploy the all-in-one version of Jaeger and storage will be done in memory.
 
 We can deploy Jaeger using Helm with the following command:
 
@@ -90,7 +90,7 @@ allInOne:
 EOF
 ```
 
-At this point Jaeger UI should be available at http://localhost.
+At this point, the Jaeger UI should be available at http://localhost.
 
 ## Kyverno Setup
 
@@ -127,7 +127,7 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-We are going to deploy the `kyverno-policies` helm chart (with the `Baseline` profile of PSS) using the following command:
+We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` profile of PSS) using the following command:
 
 ```shell
 helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
@@ -151,7 +151,7 @@ kubectl run nginx --image=nginx
 
 After that, navigate to the [Jaeger UI](http://localhost) and search for traces with the following criteria:
 - Service: `kyverno`, every trace defines a service name and all traces coming from Kyverno will use the `kyverno` service name
-- Operation: `ADMISSION POST /validate/fail`, every span defines a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`. The `/validate/fail` path indicates indicates that it's a validating webhook that was configured to fail the admission request in case of error. Fail mode is the default).
+- Operation: `ADMISSION POST /validate/fail`, every span defines a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`. The `/validate/fail` path indicates that it's a validating webhook that was configured to fail the admission request in case of error. Fail mode is the default).
 
 The list should show the trace for the previous Pod creation request:
 
@@ -161,5 +161,4 @@ Clicking on the trace will take you to the trace details, showing all spans cove
 
 <p align="center"><img src="../assets/walkthrough-jaeger-2.png" height="300px"/></p>
 
-The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated).
-The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod admission request.
+The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated). The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod admission request.
