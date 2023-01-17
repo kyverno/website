@@ -42,4 +42,4 @@ Tracing is disabled by default and depending on the backend the associated cost 
 
 Currently, Kyverno tracing is configured to sample all incoming requests, there's no way to configure the tracing sampler directly in Kyverno. [OpenTelemtry Collector](https://opentelemetry.io/docs/collector/) can be used to take better sampling decision at the cost of a more advanced setup.
 
-## Tracing docs
+## Additional docs and tutorials

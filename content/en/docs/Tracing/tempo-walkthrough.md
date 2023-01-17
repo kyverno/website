@@ -127,13 +127,13 @@ data:
       access: proxy
       url: "http://tempo.monitoring:3100"
       version: 1
-      isDefault: false
+      isDefault: true
 EOF
 ```
 
-## Kyverno Setup
-
 At this point we have a running cluster with Grafana and Tempo backend installed and we can access Grafana using an ingress controller.
+
+## Kyverno Setup
 
 We now need to install Kyverno with tracing enabled and pointing to our Tempo backend.
 
@@ -190,11 +190,9 @@ Run the following command to create a `Pod`:
 kubectl run nginx --image=nginx
 ```
 
-After that, navigate to the [Grafana explore page](http://localhost/grafana/explore) and search for traces with the following criterias:
+After that, navigate to the [Grafana explore page](http://localhost/grafana/explore), select `Tempo` in the top left drop down list, click on the `Search` tab, and search for traces with the following criterias:
 - Service name: `kyverno`, every trace define a service name and all traces coming from Kyverno will use the `kyverno` service name
 - Span name: `ADMISSION POST /validate/fail`, every span define a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`, the validate `/validate/fail` path indicates indicates that it's a validating webhook that was configured to fail the admission request in case of error).
-
-Alternatively you can browse [this URL](http://localhost/grafana/explore?left={"queries":[{"queryType":"nativeSearch","serviceName":"kyverno","spanName":"ADMISSION POST /validate/fail"}]}), that should open the Grafana explore page showing the search tab configured with the criterias mentioned above.
 
 The list should show the trace for the previous `Pod` creation request:
 
