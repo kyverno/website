@@ -10,7 +10,7 @@ On the prepared cluster we will deploy Kyverno with tracing enabled and a couple
 
 Finally we will exercise the Kyverno webhooks by creating a `Pod`, then we will use Grafana to find and examine the corresponding trace.
 
-Please note that this walkthrough uses [kind](https://kind.sigs.k8s.io) to create the cluster with a specific label on the control plane node.
+Please note that **this walkthrough uses [kind](https://kind.sigs.k8s.io) to create a local cluster** with a specific label on the control plane node.
 This is necessary as we are using an `ingress-nginx` deployment specifically crafted to work with kind.
 All other components setup should not be kind specific but may require different configuration depending on the target cluster.
 
