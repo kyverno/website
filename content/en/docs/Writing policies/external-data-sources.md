@@ -2,7 +2,7 @@
 title: External Data Sources
 description: >
     Use data from ConfigMaps, the Kubernetes API server, and image registries in Kyverno policies.
-weight: 7
+weight: 80
 ---
 
 The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [`context`](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.
@@ -17,7 +17,7 @@ For improved security and performance, Kyverno is designed to not allow connecti
 
 A [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource in Kubernetes is commonly used as a source of configuration details which can be consumed by applications. This data can be written in multiple formats, stored in a Namespace, and accessed easily. Kyverno supports using a ConfigMap as a data source for variables. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the ConfigMap are always dynamic. Should the ConfigMap be updated, subsequent policy lookups will pick up the latest data at that point.
 
-In order to consume data from a ConfigMap in a `rule`, a `context` is required. For each `rule` you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy `rule` using JMESPath notation.
+In order to consume data from a ConfigMap in a rule, a `context` is required. For each rule you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy rule using JMESPath notation.
 
 ### Looking up ConfigMap values
 
@@ -39,14 +39,14 @@ data:
   env: production
 ```
 
-To refer to values from a ConfigMap inside a `rule`, define a `context` inside the `rule` with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below `rule` defines a `context` which references this specific ConfigMap by name.
+To refer to values from a ConfigMap inside a rule, define a `context` inside the rule with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below rule defines a `context` which references this specific ConfigMap by name.
 
 ```yaml
 rules:
   - name: example-lookup
     # Define a context for the rule
     context:
-    # A unique name for the ConfigMap
+    # A unique name for the context variable under which the below contents will later be accessible
     - name: dictionary
       configMap:
         # Name of the ConfigMap which will be looked up
@@ -86,7 +86,7 @@ spec:
               my-environment-name: "{{dictionary.data.env}}"
 ```
 
-In the above `ClusterPolicy`, a `mutate` rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
+In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
 
 {{% alert title="Note" color="info" %}}
 ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
@@ -96,17 +96,15 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting concerns.
 {{% /alert %}}
 
+Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server.
+
 ### Handling ConfigMap Array Values
 
-In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap.
-
-{{% alert title="Note" color="info" %}}
-Storing array values in a YAML block scalar was removed as of Kyverno 1.7.0. Please use JSON-encoded array of strings instead.
-{{% /alert %}}
+In addition to simple string values, Kyverno has the ability to consume array values from a ConfigMap stored as either JSON- or YAML-formatted values. Depending on how you choose to store an array, the policy which consumes the values in a variable context will need to be written accordingly.
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
-Consider a ConfigMap with the following content written as a YAML multi-line value.
+Consider a ConfigMap with the following content written as a JSON array. You may also store array values in a YAML block scalar (in which case the [`parse_yaml()` filter](/docs/writing-policies/jmespath/#parse_yaml) will be necessary in a policy definition).
 
 ```yaml
 apiVersion: v1
@@ -115,14 +113,10 @@ metadata:
   name: roles-dictionary
   namespace: default
 data:
-  allowed-roles: "[\"cluster-admin\", \"cluster-operator\", \"tenant-admin\"]"
+  allowed-roles: '["cluster-admin", "cluster-operator", "tenant-admin"]'
 ```
 
-{{% alert title="Note" color="info" %}}
-As mentioned previously, certain characters must be escaped for [JMESPath](http://jmespath.org/) processing. In this case, the backslash ("`\`") character is used to escape the double quotes which allow the ConfigMap data to be stored as a JSON array.
-{{% /alert %}}
-
-Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list:
+Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/writing-policies/jmespath/#parse_json) is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -130,7 +124,7 @@ kind: ClusterPolicy
 metadata:
   name: cm-array-example
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-role-annotation
@@ -150,8 +144,8 @@ spec:
         conditions:
           any:
           - key: "{{ request.object.metadata.annotations.role }}"
-            operator: NotIn
-            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" }}"
+            operator: AnyNotIn
+            value:  "{{ \"roles-dictionary\".data.\"allowed-roles\" | parse_json(@) }}"
 ```
 
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
@@ -217,7 +211,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp "items | length(@
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API Calls.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API calls and parse results.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -241,7 +235,7 @@ The HTTP URL paths of the API calls are based on the group, version, and resourc
 * `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}`: get a collection of resources
 * `/apis/{GROUP}/{VERSION}/{RESOURCETYPE}/{NAME}`: get a resource
 
-For namespaced resources, to get a specific resource by name or to get all resources in a Namespace, the Namespace name must also be provided as follows:
+For Namespaced resources, to get a specific resource by name or to get all resources in a Namespace, the Namespace name must also be provided as follows:
 
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}`: get a collection of resources in the namespace
 * `/apis/{GROUP}/{VERSION}/namespaces/{NAMESPACE}/{RESOURCETYPE}/{NAME}`: get a resource in a namespace
@@ -474,7 +468,7 @@ kind: ClusterPolicy
 metadata:
   name: limits
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: limit-lb-svc
     match:
@@ -553,69 +547,52 @@ For example, one could inspect the labels, entrypoint, volumes, history, layers,
 $ crane config ghcr.io/kyverno/kyverno:latest | jq
 {
   "architecture": "amd64",
-  "config": {
-    "User": "10001",
-    "Env": [
-      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    ],
-    "Entrypoint": [
-      "./kyverno"
-    ],
-    "WorkingDir": "/",
-    "Labels": {
-      "maintainer": "Kyverno"
-    },
-    "OnBuild": null
-  },
-  "created": "2022-02-04T08:57:38.818583756Z",
+  "author": "github.com/ko-build/ko",
+  "created": "2023-01-08T00:10:08Z",
   "history": [
     {
-      "created": "2022-02-04T08:57:38.454742161Z",
-      "created_by": "LABEL maintainer=Kyverno",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
+      "author": "apko",
+      "created": "2023-01-08T00:10:08Z",
+      "created_by": "apko",
+      "comment": "This is an apko single-layer image"
     },
     {
-      "created": "2022-02-04T08:57:38.454742161Z",
-      "created_by": "COPY /output/kyverno / # buildkit",
-      "comment": "buildkit.dockerfile.v0"
+      "author": "ko",
+      "created": "0001-01-01T00:00:00Z",
+      "created_by": "ko build ko://github.com/kyverno/kyverno/cmd/kyverno",
+      "comment": "kodata contents, at $KO_DATA_PATH"
     },
     {
-      "created": "2022-02-04T08:57:38.802069102Z",
-      "created_by": "COPY /etc/passwd /etc/passwd # buildkit",
-      "comment": "buildkit.dockerfile.v0"
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ # buildkit",
-      "comment": "buildkit.dockerfile.v0"
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "USER 10001",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
-    },
-    {
-      "created": "2022-02-04T08:57:38.818583756Z",
-      "created_by": "ENTRYPOINT [\"./kyverno\"]",
-      "comment": "buildkit.dockerfile.v0",
-      "empty_layer": true
+      "author": "ko",
+      "created": "0001-01-01T00:00:00Z",
+      "created_by": "ko build ko://github.com/kyverno/kyverno/cmd/kyverno",
+      "comment": "go build output, at /ko-app/kyverno"
     }
   ],
   "os": "linux",
   "rootfs": {
     "type": "layers",
     "diff_ids": [
-      "sha256:180b308b8730567d2d06a342148e1e9d274c8db84113077cfd0104a7e68db646",
-      "sha256:99187eab8264c714d0c260ae8b727c4d2bda3a9962635aaea67d04d0f8b0f466",
-      "sha256:26d825f3d198779c4990007ae907ba21e7c7b6213a7eb78d908122e435ec9958"
+      "sha256:c9770b71bc04d50fb006eaacea8180b5f7c0fc72d16618590ec5231f9cec2525",
+      "sha256:ffe56a1c5f3878e9b5f803842adb9e2ce81584b6bd027e8599582aefe14a975b",
+      "sha256:de3816af2ab66f6b306277c83a7cc9af74e5b0e235021a37f2fc916882751819"
     ]
+  },
+  "config": {
+    "Entrypoint": [
+      "/ko-app/kyverno"
+    ],
+    "Env": [
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/ko-app",
+      "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+      "KO_DATA_PATH=/var/run/ko"
+    ],
+    "User": "65532"
   }
 }
 ```
 
-In the output above, we can see under `config.User` that the `USER` Dockerfile statement to run this container is `10001`. A Kyverno policy can be written to harness this information and perform, for example, a validation that the `USER` of an image is non-root.
+In the output above, we can see under `config.User` that the `USER` Dockerfile statement to run this container is `65532`. A Kyverno policy can be written to harness this information and perform, for example, a validation that the `USER` of an image is non-root.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -623,7 +600,7 @@ kind: ClusterPolicy
 metadata:
   name: imageref-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: no-root-images
     match:
@@ -711,4 +688,4 @@ To access images stored on private registries, see [using private registries](/d
 
 For more examples of using an imageRegistry context, see the [samples page](/policies).
 
-As of Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.

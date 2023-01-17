@@ -1,7 +1,7 @@
 ---
 title: "Restrict control plane scheduling"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict control plane scheduling
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable
       because it takes away resources from the control plane components and can represent
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: restrict-controlplane-scheduling-master
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: Pods may not use tolerations which schedule on control plane nodes.
       pattern:
@@ -43,9 +45,10 @@ spec:
             - key: "!node-role.kubernetes.io/master"
   - name: restrict-controlplane-scheduling-control-plane
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: Pods may not use tolerations which schedule on control plane nodes.
       pattern:

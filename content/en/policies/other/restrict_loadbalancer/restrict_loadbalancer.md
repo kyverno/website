@@ -1,7 +1,7 @@
 ---
 title: "Disallow Service Type LoadBalancer"
 category: Sample
-version: 
+version: 1.6.0
 subject: Service
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Especially in cloud provider environments, a Service having type LoadBalancer will cause the
       provider to respond by creating a load balancer somewhere in the customer account. This adds
@@ -33,9 +34,10 @@ spec:
   rules:
   - name: no-LoadBalancer
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     validate:
       message: "Service of type LoadBalancer is not allowed."
       pattern:

@@ -1,7 +1,7 @@
 ---
 title: Select Resources
 description: Use `match` and `exclude` to filter and select resources.
-weight: 2
+weight: 20
 ---
 
 The `match` and `exclude` filters control which resources policies are applied to.
@@ -34,33 +34,31 @@ Supported formats:
 * `Version/Kind`
 * `Kind`
 
-To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy.
-
-These can be distinguished as:
+To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy. These can be distinguished as:
 
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-Wildcards supported formats:
+Wildcards are supported with the following formats:
 
 * `Group/*/Kind`
 * `*/Kind`
 * `*`
 
 {{% alert title="Note" color="info" %}}
-* A policy using wildcards in `match` or `exclude` is not allowed in background mode.
+* A policy using wildcards in `match` or `exclude` or that validates subresources is not allowed in background mode.
 * A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
 * For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
-Sub-resources may be specified with either a `/` or `.` as a separator between parent and sub-resource. For example, `Pods/status` or `Pods.status` will match on sub-resources.
+Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources can be specified with their own kind, for example `PodExecOptions` and `NodeProxyOptions` while some are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision.
 
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
 ## Match statements
 
-In any `rule` statement, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements. `match` statements also require an `any` or `all` expression allowing greater flexibility in treating multiple conditions.
+In every rule, there must be a single `match` statement to function as the filter to which the rule will apply. Although the `match` statement can be complex having many different elements, there must be at least one. The most common type of element in a `match` statement is one which filters on categories of Kubernetes resources, for example Pods, Deployments, Services, Namespaces, etc. Variable substitution is not currently supported in `match` or `exclude` statements. `match` statements also require an `any` or `all` expression allowing greater flexibility in treating multiple conditions.
 
 In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Service with name "staging" **OR** have the kind Service and are being created in the "prod" Namespace.
 
@@ -74,12 +72,12 @@ spec:
           kinds: 
           - Service
           names: 
-          - "staging"
+          - staging
       - resources:
           kinds: 
           - Service
           namespaces:
-          - "prod"
+          - prod
 ```
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
@@ -136,11 +134,8 @@ spec:
           - v1/NetworkPolicy
 ```
 
-As of Kyverno 1.5.0, wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster.
-Selector labels support wildcards `(* or ?)` for keys as well as values in the following paths.
+Wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster. Selector labels support wildcards `(* or ?)` for keys as well as values in the following paths.
 
-* `match.resources.selector.matchLabels`
-* `exclude.resources.selector.matchLabels`
 * `match.any.resources.selector.matchLabels`
 * `match.all.resources.selector.matchLabels`
 * `exclude.any.resources.selector.matchLabels`
@@ -162,7 +157,7 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   - name: check-for-labels
@@ -184,8 +179,8 @@ spec:
             app.kubernetes.io/name: "?*"
 ```
 
-{{% alert title="Note" color="info" %}}
-Keep in mind that when matching on all kinds (`*`) the policy you write must be applicable across all of them. Typical uses for this type of wildcard matching are elements within the `metadata` object.
+{{% alert title="Warning" color="warning" %}}
+Keep in mind that when matching on all kinds (`*`) the policy you write must be applicable across all of them. Typical uses for this type of wildcard matching are elements within the `metadata` object. This type of matching should be used sparingly and carefully as it will instruct the API server to send every eligible resource type to Kyverno, greatly increasing the amount of processing performed by Kyverno.
 {{% /alert %}}
 
 Here are some other examples of `match` statements.
@@ -223,13 +218,13 @@ This pattern can be leveraged to produce very fine-grained control over the sele
 spec:
   # validationFailureAction controls admission control behaviors,
   # when a policy rule fails:
-  # - use 'enforce' to block resource creation or modification
-  # - use 'audit' to allow resource updates and report policy violations
-  validationFailureAction: enforce
+  # - use 'Enforce' to block resource creation or modification
+  # - use 'Audit' to allow resource updates and report policy violations
+  validationFailureAction: Enforce
   # Each policy has a list of rules applied in declaration order
   rules:
     # Rules must have a unique name
-    - name: "check-pod-controller-labels"
+    - name: check-pod-controller-labels
       # Each rule matches specific resource described by "match" field.
       match:
         resources:
@@ -319,7 +314,7 @@ spec:
 This rule matches all Pods except those in the `kube-system` Namespace.
 
 {{% alert title="Note" color="info" %}}
-Exclusion of selected Namespaces by name is supported beginning in Kyverno 1.3.0.
+The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
 {{% /alert %}}
 
 ```yaml
@@ -373,7 +368,7 @@ A variation on the above sample, this snippet uses `any` and `all` statements to
 
 ```yaml
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: match-criticals-except-given-users

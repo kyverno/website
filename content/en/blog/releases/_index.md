@@ -2,5 +2,5 @@
 ---
 title: "Blog posts about Kyverno releases"
 linkTitle: "Releases"
-weight: 20
+weight: 30
 ---

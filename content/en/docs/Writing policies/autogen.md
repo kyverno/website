@@ -2,10 +2,14 @@
 title: Auto-Gen Rules for Pod Controllers
 description: >
     Automatically generate rules for Pod controllers.
-weight: 9
+weight: 100
 ---
 
-Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written for a Pod.
+Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.
+
+{{% alert title="Note" color="info" %}}
+Kyverno 1.9 adds support for including ReplicaSets and ReplicationControllers to auto-gen rules. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs.
+{{% /alert %}}
 
 For example, when creating a validation policy like below which checks that all images come from an internal, trusted registry, the policy applies to all resources capable of generating Pods.
 
@@ -15,7 +19,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-image-registries
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: validate-registries
     match:
@@ -50,6 +54,8 @@ status:
             - Deployment
             - Job
             - StatefulSet
+            - ReplicaSet
+            - ReplicationController
         resources: {}
       mutate: {}
       name: autogen-validate-registries
@@ -92,7 +98,7 @@ You can change the annotation `pod-policies.kyverno.io/autogen-controllers` to c
 
 Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
 
-* `name` (deprecated)
+* `names`
 * `selector`
 * `annotations`
 
@@ -135,7 +141,7 @@ kind: ClusterPolicy
 metadata:
   name: require-requests-limits
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-resources
@@ -163,3 +169,23 @@ spec:
 ```
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
+
+Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow_default_namespace/disallow_default_namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
+
+```yaml
+pattern:
+  metadata:
+    namespace: "!default"
+```
+
+With auto-gen set to its default, this will get translated in the case of Deployments and others to the following below which is not the desire when expressing such a rule as the `namespace` field is not defined under the Pod template when using a Pod controller. This auto-generated pattern will therefore cause all applicable Pod controllers to be in violation of the translated pattern.
+
+```yaml
+pattern:
+  spec:
+    template:
+      metadata:
+        namespace: "!default"
+```
+
+In such cases, auto-gen should be disabled as described above and one or more rules written to explicitly control the matching resources and the patterns/expressions used against them.

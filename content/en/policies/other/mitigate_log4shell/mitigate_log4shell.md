@@ -1,7 +1,7 @@
 ---
 title: "Log4Shell Mitigation"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Log4Shell Mitigation
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/category: Sample
     policies.kyverno.io/description: >-
@@ -35,9 +36,10 @@ spec:
   rules:
   - name: add-log4shell-mitigation-initcontainers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:
@@ -48,9 +50,10 @@ spec:
                 value: "true"
   - name: add-log4shell-mitigation-containers
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:

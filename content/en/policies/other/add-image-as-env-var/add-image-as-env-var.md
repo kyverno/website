@@ -1,7 +1,7 @@
 ---
 title: "Add Image as Environment Variable"
 category: Other
-version: 1.4.3
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/title: Add Image as Environment Variable
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.4.3
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
@@ -41,9 +41,10 @@ spec:
   # One Pod
   - name: pod-containers-1-inject-image
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.object.spec.containers[] | length(@)}}"
@@ -57,9 +58,10 @@ spec:
   # Two or more Pods
   - name: pod-containers-2-inject-image
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{request.object.spec.containers[] | length(@)}}"
@@ -73,9 +75,10 @@ spec:
   # Deployment with one Pod
   - name: deploy-containers-1-inject-image
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     preconditions:
       all:
       - key: "{{request.object.spec.template.spec.containers[] | length(@)}}"
@@ -89,9 +92,10 @@ spec:
   # Deployment with two or more Pods
   - name: deploy-containers-2-inject-image
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     preconditions:
       all:
       - key: "{{request.object.spec.template.spec.containers[] | length(@)}}"

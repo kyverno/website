@@ -1,7 +1,7 @@
 ---
 title: "Require imagePullPolicy Always"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       If the `latest` tag is allowed for images, it is a good idea to have the
       imagePullPolicy field set to `Always` to ensure should that tag be overwritten that future
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: imagepullpolicy-always
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         The imagePullPolicy must be set to `Always` when the tag `latest` is used.

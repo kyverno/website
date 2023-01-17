@@ -1,7 +1,7 @@
 ---
 title: "Validate User ID, Group ID, and FS Group"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       All processes inside a Pod can be made to run with specific user and groupID
       by setting `runAsUser` and `runAsGroup` respectively. `fsGroup` can be specified
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: validate-userid
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "User ID should be 1000."
       pattern:
@@ -43,9 +45,10 @@ spec:
             runAsUser: '1000'
   - name: validate-groupid
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Group ID should be 3000."
       pattern:
@@ -54,9 +57,10 @@ spec:
             runAsGroup: '3000'
   - name: validate-fsgroup
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "fsgroup should be 2000."
       pattern:

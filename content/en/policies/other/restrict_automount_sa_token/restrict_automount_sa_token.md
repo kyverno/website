@@ -1,7 +1,7 @@
 ---
 title: "Restrict Auto-Mount of Service Account Tokens"
 category: Sample, EKS Best Practices
-version: 
+version: 1.6.0
 subject: Pod,ServiceAccount
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,ServiceAccount
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Kubernetes automatically mounts ServiceAccount credentials in each Pod.
       The ServiceAccount may be assigned roles allowing Pods to access API resources.
@@ -33,9 +34,10 @@ spec:
   rules:
   - name: validate-automountServiceAccountToken
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     preconditions:
       all:
       - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"

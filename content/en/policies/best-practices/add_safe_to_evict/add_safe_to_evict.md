@@ -1,7 +1,7 @@
 ---
 title: "Add Safe To Evict"
 category: Other
-version: 1.4.3
+version: 1.6.0
 subject: Pod,Annotation
 policyType: "mutate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod,Annotation
-    policies.kyverno.io/minversion: 1.4.3
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       The Kubernetes cluster autoscaler does not evict pods that 
       use hostPath or emptyDir volumes. To allow eviction of these pods, the annotation 
@@ -28,9 +28,10 @@ spec:
   rules: 
   - name: annotate-empty-dir
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:
@@ -41,9 +42,10 @@ spec:
           - <(emptyDir): {}
   - name: annotate-host-path
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         metadata:

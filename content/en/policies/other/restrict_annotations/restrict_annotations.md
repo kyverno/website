@@ -1,7 +1,7 @@
 ---
 title: "Restrict Annotations"
 category: Sample
-version: 1.3.0
+version: 1.6.0
 subject: Pod, Annotation
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Restrict Annotations
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.3.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod, Annotation
     policies.kyverno.io/description: >-
       Some annotations control functionality driven by other cluster-wide tools and are not
@@ -33,14 +33,15 @@ spec:
   rules:
   - name: block-flux-v1
     match:
-      resources:
-        kinds:
-        - Deployment
-        - CronJob
-        - Job
-        - StatefulSet
-        - DaemonSet
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          - CronJob
+          - Job
+          - StatefulSet
+          - DaemonSet
+          - Pod
     validate:
       message: Cannot use Flux v1 annotation.
       pattern:

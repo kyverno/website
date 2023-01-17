@@ -1,7 +1,7 @@
 ---
 title: "Require PodDisruptionBudget"
 category: Sample, EKS Best Practices
-version: 1.3.6
+version: 1.6.0
 subject: Deployment, PodDisruptionBudget
 policyType: "validate"
 description: >
@@ -19,7 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Require PodDisruptionBudget
     policies.kyverno.io/category: Sample, EKS Best Practices
-    policies.kyverno.io/minversion: 1.3.6
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Deployment, PodDisruptionBudget

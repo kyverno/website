@@ -1,7 +1,7 @@
 ---
 title: "Disallow empty Ingress host"
 category: Best Practices
-version: 
+version: 1.6.0
 subject: Ingress
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Disallow empty Ingress host
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
@@ -31,9 +32,10 @@ spec:
   rules:
     - name: disallow-empty-ingress-host
       match:
-        resources:
-          kinds:
-            - Ingress
+        any:
+        - resources:
+            kinds:
+              - Ingress
       validate:
         message: "The Ingress host name must be defined, not empty."
         deny:

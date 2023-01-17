@@ -1,7 +1,7 @@
 ---
 title: Verify Images
 description: Check image signatures and add digests
-weight: 3
+weight: 40
 ---
 
 {{% alert title="Warning" color="warning" %}}
@@ -22,10 +22,13 @@ Each rule contains:
 * One or more image reference patterns to match
 * Common configuration attributes:
   * required: enforces that all matching images are verified
-  * mutateDigest: converts tags to digests, for matching images
-  * verifyDigest: enforces that digests are used, for matching images
+  * mutateDigest: converts tags to digests for matching images
+  * verifyDigest: enforces that digests are used for matching images
+  * repository: use a different repository for fetching signatures
 * Zero or more __attestors__ which can be public keys, certificates, and keyless configuration attributes used to identify trust authorities
 * Zero or more [in-toto attestation](https://github.com/in-toto/attestation/blob/main/spec/README.md) __statements__ to be verified. If attestations are provided, at least one attestor is required.
+
+A verifyImages rule may also be used to perform tag-to-digest conversion (mutation) or require that images are verified via some other rule. While it is most common to actually perform signature or attestation verification, these are optional functionalities.
 
 ## Verifying Image Signatures
 
@@ -39,15 +42,15 @@ The `imageVerify` rule first executes as part of the mutation webhook as the app
 
 The rule is also executed as part of the validation webhook to apply the `required` and `verifyDigest` checks.
 
-When `required` is set to `true` (this is the default) each image in the resource is checked to ensure that an immutable annotation that marks the image as verified is present.
+When `required` is set to `true` (default) each image in the resource is checked to ensure that an immutable annotation that marks the image as verified is present.
 
-When `verifyDigest` rule is set to `true` (this is the default) each image is checked for a digest.
+When `verifyDigest` rule is set to `true` (default) each image is checked for a digest.
 
 The `imageVerify` rule can be combined with [auto-gen](/docs/writing-policies/autogen/) so that policy rule checks are applied to Pod controllers.
 
-The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the requires count of attestors in the `entries` list that must be verified. By default, and when not specified, the all attestors are verified.
+The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the required count of attestors in the `entries` list that must be verified. By default, and when not specified, all attestors are verified.
 
-Here is a sample image verification policy:
+Here is a sample image verification policy which ensures an image from the `ghcr.io/kyverno/test-verify-image` repository, using any tag, is signed with the corresponding public key as defined in the policy:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -55,7 +58,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -68,7 +71,7 @@ spec:
               - Pod
       verifyImages:
       - imageReferences:
-        - "ghcr.io/kyverno/test-verify-image:*"
+        - "ghcr.io/kyverno/test-verify-image*"
         attestors:
         - count: 1
           entries:
@@ -80,7 +83,9 @@ spec:
                 -----END PUBLIC KEY-----
 ```
 
-This policy will validate that all images that match `ghcr.io/kyverno/test-verify-image:*` are signed with the specified key.
+{{% alert title="Note" color="info" %}}
+The public key may either be defined in the policy directly or reference a standard Kubernetes Secret elsewhere in the cluster by specifying it in the format `k8s://<namespace>/<secret_name>`. The named Secret must specify a key `cosign.pub` containing the public key used for verification. Secrets may also be referenced using the `secret{}` object. See `kubectl explain clusterpolicy.spec.rules.verifyImages.attestors.entries.keys` for more details on the supported key options.
+{{% /alert %}}
 
 A signed image can be run as follows:
 
@@ -125,14 +130,14 @@ To sign images, install [Cosign](https://github.com/sigstore/cosign#installation
 cosign generate-key-pair
 ```
 
-Next, use the `cosign sign` command and specifying the private key in the `-key` command line argument.
+Next, use the `cosign sign` command and specifying the private key in the `--key` command line argument.
 
 ```sh
 # ${IMAGE} is REPOSITORY/PATH/NAME:TAG
 cosign sign --key cosign.key ${IMAGE}
 ```
 
-This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign -verify` command.
+This command will sign your image and publish the signature to the OCI registry. You can verify the signature using the `cosign verify` command.
 
 ```sh
 cosign verify --key cosign.pub ${IMAGE}
@@ -191,7 +196,7 @@ kind: ClusterPolicy
 metadata:
   name: attest-code-review
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -205,16 +210,16 @@ spec:
       verifyImages:
       - imageReferences:
         - "registry.io/org/app*"
-        attestors:
-        - entries:
-          - keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
-                3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
-                -----END PUBLIC KEY-----
         attestations:
           - predicateType: https://example.com/CodeReview/v1
+            attestors:
+            - entries:
+              - keys:
+                  publicKeys: |-
+                    -----BEGIN PUBLIC KEY-----
+                    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
+                    3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
+                    -----END PUBLIC KEY-----
             conditions:
               - all:
                 - key: "{{ repo.uri }}"
@@ -230,7 +235,11 @@ spec:
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/writing-policies/preconditions/#any-and-all-statements) to the predicate.
 
-Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations.
+Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
+
+{{% alert title="Note" color="info" %}}
+The structure of the predicate may differ slightly depending on the predicate type used during attestation. Use `cosign verify-attestation` by passing the expected predicate type with the `--type` flag and examine the predicate structure to ensure the expression you're writing is accurate.
+{{% /alert %}}
 
 ### Signing attestations
 
@@ -265,14 +274,16 @@ cosign attest ghcr.io/jimbugwadia/app1:v1 --key <KEY> --predicate predicate.json
 
 This flexible scheme allows attesting and verifying any JSON document, including vulnerability scan reports and Software Bill Of Materials (SBOMs).
 
-Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestations for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
+Attestations, such as the snippet shown above, are base64 encoded by default and may be verified and viewed with the `cosign verify-attestation` command. For example, the below command will verify and decode the attestation of type `slsaprovenance` for a given image which was signed with the [keyless signing ability](/docs/writing-policies/verify-images/#keyless-signing-and-verification).
 
 ```sh
-COSIGN_EXPERIMENTAL=true cosign verify-attestation registry.io/myrepo/myimage:mytag | jq .payload -r | base64 --decode | jq
+COSIGN_EXPERIMENTAL=true cosign verify-attestation --type slsaprovenance registry.io/myrepo/myimage:mytag | jq .payload -r | base64 --decode | jq
 ```
 
+Verification of an attestation using a public key can be done simply:
+
 ```sh
-cosign verify-attestation --key cosign.pub ${IMAGE}
+cosign verify-attestation --key cosign.pub --type <type> ${IMAGE}
 ```
 
 Refer to the [Cosign documentation](https://github.com/sigstore/cosign#quick-start) for additional details including [OCI registry support](https://github.com/sigstore/cosign#registry-support).
@@ -288,7 +299,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -359,7 +370,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -398,7 +409,7 @@ spec:
                 -----END CERTIFICATE-----
 ```
 
-This enables use cases where in an enterprise with a private CA all each team has their own leaf certificate used for signing their images, and a global policy is used to verify all images signatures.
+This enables use cases where, in an enterprise with a private CA, each team has their own leaf certificate used for signing their images, and a global policy is used to verify all images signatures.
 
 ### Signing images using certificates
 
@@ -407,10 +418,10 @@ To use certificates for image signing, you must first extract the public key usi
 Assuming you have a root CA `myCA.pem` and a public-private certificate pair `test.crt` and `test.key`, you can convert the public certificate to a key as follows:
 
 ```sh
-cosign import-key-pair --key  test.key
+cosign import-key-pair --key test.key
 ```
 
-This creates the `import-cosign.key`  and `import-cosign.pub` files. You can then sign using the certificate as follows:
+This creates the `import-cosign.key` and `import-cosign.pub` files. You can then sign using the certificate as follows:
 
 ```sh
 cosign sign $IMAGE --key import-cosign.key --cert test.crt --cert-chain myCA.pem 
@@ -423,13 +434,12 @@ This image can now be verified using the leaf or root certificates.
 The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://github.com/sigstore/cosign/blob/main/KEYLESS.md):
 
 ```yaml
----
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: check-image-keyless
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
   rules:
     - name: check-image-keyless
@@ -446,6 +456,8 @@ spec:
           - keyless:
               subject: "*@nirmata.com"
               issuer: "https://accounts.google.com"
+              rekor:
+                url: https://rekor.sigstore.dev
 ```
 
 ### Keyless signing
@@ -456,13 +468,13 @@ To sign images using the keyless flow, use the following cosign command:
 COSIGN_EXPERIMENTAL=1 cosign sign ghcr.io/kyverno/test-verify-image:signed-keyless
 ```
 
-This command generate ephemeral keys and launch a webpage to confirm an OIDC identity using providers like GitHub, Microsoft, or Google. The subject and issuer used in the policy must match the identity information provided during signing.
+This command generates ephemeral keys and launches a webpage to confirm an OIDC identity using providers like GitHub, Microsoft, or Google. The subject and issuer used in the policy must match the identity information provided during signing.
 
 ### Keyless signing with GitHub Workflows
 
-GitHub supports [OpenID Connect (OIDC) tokens](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#understanding-the-oidc-token) for workflow identities that eliminates the need for managing hard-coded secrets. A GitHub OIDC Token can be used for keyless signing. In this case, the `subject` in the ephemeral certificate provides the identity of the workflow that executes the image signing tasks.
+GitHub supports [OpenID Connect (OIDC) tokens](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#understanding-the-oidc-token) for workflow identities that eliminates the need for managing hard-coded secrets. A GitHub OIDC token can be used for keyless signing. In this case, the `subject` in the ephemeral certificate provides the identity of the workflow that executes the image signing tasks.
 
-Since GitHub workflows can be reused in other workflows, it is important to verify the identity of the both the executing workflow and the actual workflow used for signing. This can be done using attributes stored in X.509 certificate extensions.
+Since GitHub workflows can be reused in other workflows, it is important to verify the identity of both the executing workflow and the actual workflow used for signing. This can be done using attributes stored in X.509 certificate extensions.
 
 The policy rule fragment checks for the `subject` and `issuer` from the certificate. The rule also checks for additional extensions registered using [Fulcio Object IDs](https://github.com/sigstore/fulcio/blob/main/docs/oid-info.md).
 
@@ -477,6 +489,8 @@ attestors:
         githubWorkflowSha: {{WORKFLOW_COMMIT_SHA}}
         githubWorkflowName: {{WORKFLOW_NAME}}
         githubWorkflowRepository: {{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}
+      rekor:
+        url: https://rekor.sigstore.dev
 ```
 
 ## Using a Key Management Service (KMS)
@@ -494,13 +508,13 @@ Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
 
 ### Enabling IRSA to access AWS KMS
 
-When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant Kyverno service account permission to retrieve the public key(s) it needs from AWS KMS. 
+When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant the Kyverno ServiceAccount permission to retrieve the public key(s) it needs from AWS KMS.
 
-Once IRSA is enabled, Kyverno service account will have a new annotation with the IAM role it can assume, and Kyverno pod will assume this IAM role through the cluster's OIDC provider. To understand how IRSA works internally, see links below: 
+Once IRSA is enabled, the Kyverno ServiceAccount will have a new annotation with the IAM role it can assume, and the Kyverno Pod will assume this IAM role through the cluster's OIDC provider. To understand how IRSA works internally, see links below:
 
-* https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-* https://www.eksworkshop.com/beginner/110_irsa/
-* https://medium.com/@ankit.wal/the-how-of-iam-roles-for-service-accounts-irsa-on-aws-eks-3d76badb8942
+* [IAM roles for service accounts (EKS Documentation)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+* [IAM Roles for Service Accounts (eksworkshop.com)](https://www.eksworkshop.com/beginner/110_irsa/)
+* [Understanding IAM roles for service accounts, IRSA, on AWS EKS (Medium)](https://medium.com/@ankit.wal/the-how-of-iam-roles-for-service-accounts-irsa-on-aws-eks-3d76badb8942)
 
 Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you prefer to use `AWS CLI` instead):
 
@@ -528,7 +542,7 @@ Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you p
     }
     ```
 
-3. Create IAM role and annotate Kyverno service account with it
+3. Create IAM role and annotate the Kyverno ServiceAccount with it
 
     ```sh
     eksctl create iamserviceaccount \
@@ -538,14 +552,15 @@ Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you p
         --attach-policy-arn "arn:aws:iam::<account-id>:policy/<iam-policy>" \
         --approve \
         --override-existing-serviceaccounts
-    ``` 
+    ```
 
-{{% alert title="Note" color="info" %}} Kyverno needs to know the AWS region for the KMS store in use. To provide this information, environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in Kyverno Deployment. {{% /alert %}}
-
+{{% alert title="Note" color="info" %}}
+Kyverno needs to know the AWS region for the KMS store in use. To provide this information, the environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in the Kyverno Deployment.
+{{% /alert %}}
 
 ## Verifying Image Annotations
 
-Cosign has the ability to add annotations when signing and image, and Kyverno can be used to verify these annotations with the `verifyImage.annotations` field. For example, this policy checks for the annotation of `sig: original`.
+Cosign has the ability to add annotations when signing an image, and Kyverno can be used to verify them. For example, this policy checks for the annotation of `sig: original`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -553,7 +568,7 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   webhookTimeoutSeconds: 30
   failurePolicy: Fail
@@ -565,24 +580,36 @@ spec:
             kinds:
               - Pod
       verifyImages:
-      - image: "ghcr.io/kyverno/test-verify-image:signed-keyless"
-        key: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-        annotations:
-          sig: "original"
+      - imageReferences: 
+        - ghcr.io/myorg/myimage*
+        attestors:
+        - entries:
+          - keys: 
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvy6wqHIx5JTxdDcbFIkb6boaxBBw
+                FZmwwzag3ZrsfOLT+r5DOx2LSyoef+eTda/QOcooUEZo7r4HpNbFH/y7Eg==
+                -----END PUBLIC KEY-----
+            annotations:
+              sig: original
 ```
 
 ## Using private registries
 
-Private registries are defined as those requiring authentication in order to pull images. To use a private registry, you must create an image pull secret in the Kyverno Namespace and specify the Secret name as an argument for the Kyverno Deployment:
+Private registries are defined as those requiring authentication in order to pull images. A private registry may also present leaf certificates issued by internal certificate authorities. To use a private registry, depending on which of these needs apply to you, check the following sections for instructions on how to configure Kyverno appropriately.
 
-1. Configure the image pull secret:
+### Authentication
+
+In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment.
+
+1. Configure the imagePullSecret:
 
 ```sh
-kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-password> --docker-email=<your-email> 
+kubectl create secret docker-registry regcred \
+--docker-server=<server_address> \
+--docker-username=<username> \
+--docker-password=<password> \
+--docker-email=<email> \
 -n kyverno
 ```
 
@@ -610,7 +637,74 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
-If multiple imagePullSecrets are needed, they can be specified as comma-separated values to the `--imagePullSecrets` container flag.
+Currently, only a single value for the `--imagePullSecrets` container flag is supported due to an upstream bug.
+
+### Trust
+
+Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
+
+1. There are two potential ways to have Kyverno trust your private registry. The first allows replacing all the certificates Kyverno trusts by default with only those needed by your internal registry. This has the benefit of being a simpler process at the cost of Kyverno losing trust for any public registries such as Docker Hub, Amazon ECR, GitHub Container Registry, etc. The second involves providing Kyverno with the same trust as your Nodes. Often times this trust includes the aforementioned public certificate authorities but in other cases may not. This first step involves the latter process.
+
+Update your internal `ca-certificates` bundle by adding your private certificate authorities root certificate to the bundle and regenerating it. Many Linux distributions have slightly different processes, but it is documented [here](https://ubuntu.com/server/docs/security-trust-store) for Ubuntu as an example. If this process has already been done and your Nodes are using this, simply copy the contents out and proceed to the next step.
+
+2. Create a ConfigMap in your cluster, preferably in the Kyverno Namespace, which has these contents stored as a multi-line value. It should look something like the below.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno-certs
+  namespace: kyverno
+data:
+  ca-certificates: |
+    -----BEGIN CERTIFICATE-----
+    MIIH0zCCBbugAwIBAgIIXsO3pkN/pOAwDQYJKoZIhvcNAQEFBQAwQjESMBAGA1UE
+    AwwJQUNDVlJBSVoxMRAwDgYDVQQLDAdQS0lBQ0NWMQ0wCwYDVQQKDARBQ0NWMQsw
+    CQYDVQQGEwJFUzAeFw0xMTA1MDUwOTM3MzdaFw0zMDEyMzEwOTM3MzdaMEIxEjAQ
+    BgNVBAMMCUFDQ1ZSQUlaMTEQMA4GA1UECwwHUEtJQUNDVjENMAsGA1UECgwEQUND    
+<snip>
+    -----BEGIN CERTIFICATE-----
+    MIIBbzCCARWgAwIBAgIQK0Z1j0Q96/LIo4tNHxsPUDAKBggqhkjOPQQDAjAWMRQw
+    EgYDVQQDEwtab2xsZXJMYWJDQTAeFw0yMjA1MTgwODI2NTBaFw0zMjA1MTUwODI2
+    NTBaMBYxFDASBgNVBAMTC1pvbGxlckxhYkNBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+    AQcDQgAEJxGhyW26O77E7fqFcbzljYzlLq/G7yANNwerWnWUKlW9gcrcPqZwwrTX
+    yaJZpdCWTObvbOyaOxq5NsytC/ubLKNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1Ud
+    EwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYEFDoT1GEM8NYfxSKBkSzg4rpY+xdUMAoG
+    CCqGSM49BAMCA0gAMEUCIQDDLWFn/XJPqpNGXcyjlSJFxlQUJ5Cu/+nDvtbTeUGA
+    NAIgMsVwBafMtmLQFlfvZsE95UYoYUV4ayH+OLTTQaDQOPY=
+    -----END CERTIFICATE-----
+```
+
+3. Modify the Kyverno Deployment so it mounts this ConfigMap and overwrites the internal bundle provided by default. Refer to step one for the full ramifications of this act, especially if you have opted only to provide Kyverno with the certificate(s) of your internal root CA. An example snippet of the modified Deployment is shown below.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  template:
+    spec:
+      containers:
+      - image: ghcr.io/kyverno/kyverno:v1.9.0
+        name: kyverno
+        volumeMounts:
+        - mountPath: /.sigstore
+          name: sigstore
+        - name: ca-certificates
+          mountPath: /etc/ssl/certs/ca-certificates.crt
+          subPath: ca-certificates.crt
+<snip>
+      volumes:
+      - name: sigstore
+      - name: ca-certificates
+        configMap:
+          name: kyverno-certs
+          items:
+          - key: ca-certificates
+            path: ca-certificates.crt
+```
 
 ## Using a signature repository
 
@@ -619,21 +713,23 @@ To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https
 ```yaml
 ...
 verifyImages:
-- image: "ghcr.io/kyverno/test-verify-image:*"
+- imageReferences:
+  - ghcr.io/kyverno/test-verify-image*
   repository: "registry.io/signatures"
-  key: |-
-    -----BEGIN PUBLIC KEY-----
-    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-    5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-    -----END PUBLIC KEY-----
+  attestors:
+  - entries:
+    - keys:
+        publicKeys: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
 ...
 ```
 
 ## Verifying images in Custom Resources
 
-In addition to Kubernetes pods, custom resources, such as Tekton Tasks and Argo Workflow Steps can also reference container images. In other cases, rather than an image, an OCI Artifact like a Tekton Pipeline bundle may be signed.
-
-Kyverno supports verification for images and OCI Artifacts in custom resources by allowing the declaration of an `imageExtractor`, which specifies the location of the image or artifact in the custom resource.
+In addition to Kubernetes Pods, custom resources such as Tekton Tasks, Argo Workflow Steps, and others may also reference container images. In other cases, rather than an image, an OCI artifact like a Tekton Pipeline bundle may be signed. Kyverno supports verification for images and OCI Artifacts in custom resources by allowing the declaration of an `imageExtractor`, which specifies the location of the image or artifact in the custom resource.
 
 Here is an example of a policy that verifies that Tekton task steps are signed using a private key that matches the specified public key:
 
@@ -644,7 +740,7 @@ kind: ClusterPolicy
 metadata:
   name: signed-task-image
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:
@@ -680,7 +776,7 @@ kind: ClusterPolicy
 metadata:
   name: signed-pipeline-bundle
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:
@@ -707,9 +803,21 @@ spec:
               -----END PUBLIC KEY-----
 ```
 
+## Special Variables
+
+A pre-defined, reserved special variable named `image` is available for use only in verifyImages rules. The following fields are available under the `image` object and may be used in a rule to reference the named fields.
+
+* `reference`
+* `referenceWithTag`
+* `registry`
+* `path`
+* `name`
+* `tag`
+* `digest`
+
 ## Offline Registries
 
-In Kyverno 1.8.0, the policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
 ## Known Issues
 

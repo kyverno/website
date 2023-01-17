@@ -1,7 +1,7 @@
 ---
 title: "Add nodeSelector"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add nodeSelector
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       The nodeSelector field uses labels to select the node on which a Pod can be scheduled.
       This can be useful when Pods have specific needs that only certain nodes in a cluster can provide.
@@ -28,9 +29,10 @@ spec:
   rules:
   - name: add-nodeselector
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     # Adds the `nodeSelector` field to any Pod with two labels.
     mutate:
       patchStrategicMerge:

@@ -1,7 +1,7 @@
 ---
 title: "Check ServiceAccount"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod,ServiceAccount
 policyType: "validate"
 description: >
@@ -20,7 +20,8 @@ metadata:
     policies.kyverno.io/title: Check ServiceAccount
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod,ServiceAccount
-    kyverno.io/kyverno-version: 1.5.2
+    kyverno.io/kyverno-version: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: >-
       ServiceAccounts with privileges to create Pods may be able to do so and name
@@ -33,9 +34,10 @@ spec:
   rules:
     - name: check-sa
       match:
-        resources:
-          kinds:
-          - Pod
+        any:
+        - resources:
+            kinds:
+            - Pod
       preconditions:
         all:
         - key: "{{serviceAccountName}}"

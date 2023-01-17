@@ -1,7 +1,7 @@
 ---
 title: "Restrict Pod Count per Node"
 category: Sample
-version: 1.3.2
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -21,7 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.3.2
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Sometimes Kubernetes Nodes may have a maximum number of Pods they can accommodate due to
       resources outside CPU and memory such as licensing, or in some
@@ -33,9 +33,10 @@ spec:
   rules:
     - name: restrict-pod-count
       match:
-        resources:
-          kinds:
-            - Pod
+        any:
+        - resources:
+            kinds:
+              - Pod
       context:
         - name: podcounts
           apiCall:

@@ -1,9 +1,9 @@
 ---
-title: "High Availability"
-linkTitle: "High Availability"
+title: High Availability
+linkTitle: High Availability
 weight: 120
 description: >
-  Learn how to configure High Availability in Kyverno
+  Understand how to deploy high availability and how it works across Kyverno.
 ---
 
 ## Configure Kyverno in HA mode
@@ -20,38 +20,44 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set=replica
 
 This section provides details on how Kyverno handles HA scenarios.
 
-#### Module - Webhook Server
+#### Webhook Server
 
-Webhook server is where Kyverno receives and processes admission requests. This controller does not require a leader-election. When Kyverno runs multiple instances, the Service will distribute the admission requests across different instances.
+The webhook server is where Kyverno receives and processes admission requests. This controller does not require leader election. When Kyverno runs multiple instances, the Kubernetes Service will distribute the admission requests across different Kyverno instances.
 
-For `mutate` and `validate` enforce policies, Kyverno returns the decision along with the admission response; it is a synchronous request-response process. However, for `generate` and `validate` audit policies, Kyverno pushes these requests to a queue, and returns the response immediately, and then starts processing the data asynchronously. The queue in the `validate` audit handler is used to generate policy reports.
+For `mutate` and `validate` rules in `Enforce` mode, Kyverno returns the decision along with the admission response; it is a synchronous request-response process. However, for `generate` and `validate` rules in `Audit` mode, Kyverno pushes these requests to a queue and returns the response immediately, then starts processing the data asynchronously. The queue in the `validate` audit handler is used to generate policy reports.
 
 Since the report will be reconciled when Kyverno restarts, there's no need to drain this queue on shutdown. If the process is terminated, we need to complete pending requests / drain the queue and then shutdown Kyverno gracefully.
 
 The library is used by kube-controller-manager, kube-scheduler, etc. Notice that this library does not guarantee that only one client is acting as a leader (a.k.a. fencing), so we have to design in a way that even if the same process gets executed twice, the results are consistent.
 
-#### Module - Webhook Register / Webhook Monitor / Certificate Renewer
+#### Cert Renewer
 
-In v1.3.6, the webhook register, webhook monitor, and certificate renewer are managed in the same package. The minimum requirement is to enable leader election for the webhook register to register the webhook configurations.
+The certificate renewer controller is responsible for monitoring the Secrets Kyverno uses for its webhooks. This controller also uses leader election.
 
-In v1.4.0, both webhook register and certificate renewer have enabled leader election.  The webhook monitor runs across all instances as it maintains an internal webhook timestamp to monitor the webhook status. The monitor also recreates the webhook configurations if any are missing. The check is currently performed every 30 seconds.
+#### Webhook Controller
 
-#### Module - Generate Controller
+The webhook controller is responsible for configuring the various webhooks. These webhooks, by default managed dynamically, instruct the Kubernetes API server which resources to send to Kyverno. The webhook controller uses leader election as it maintains an internal webhook timestamp to monitor the webhook status. The controller also recreates the webhook configurations if any are missing.
 
-A generate policy is processed in two phases:
+#### Background Controller
 
-1. The webhook server receives the source (triggering) resource and creates a GenerateRequest object based on the admission request;
+The background controller is responsible for handling UpdateRequest resources (an intermediary resource used by generate and mutate-existing rules) and processing rules in background scanning mode. The background controller does not require leader election.
 
-2. The generate controller receives the event for GenerateRequest, then starts processing it (generating target resource).
+#### Report Controller
 
-The leader election is enabled for the Generate Controller. That is to say, there will only be one instance processing the GenerateRequest if Kyverno is configured with multiple replicas.
+The report controller is responsible for creation of policy reports from both admission requests and background scans and requires leader election. It track resources that need to be processed in the background and generates background scan reports (when policy/resource change). It also aggregates these and the intermediary admission reports into the final policy report resources PolicyReport and ClusterPolicyReport.
 
-#### Module - Policy Controller
+#### Cleanup - Webhook Server
 
-The policy controller does three things:
+In the cleanup process, the webhook server reconciles cleanup policies and existing CronJobs. It does not require leader election.
 
-1. Updates GenerateRequests on generate policy updates.
-2. Builds and creates ReportChangeRequests on validate policy updates.
-3. Watches the events of ReportChangeRequest to generate policy reports.
+#### Cleanup - Cleanup controller
 
-Both policy controller and policy report controller have enabled leader election.
+The cleanup controller applies cleanup policies to generate CronJobs and reconciles existing CronJobs when they change. This component does require leader election.
+
+#### Cleanup - Cert Renewer
+
+The cert manager manages the certificates stored as Secrets and does require leader election.
+
+#### Cleanup - Webhook Controller
+
+The webhook controller updates the webhook used by the cleanup controller when the Secret changes. This component also uses leader election.

@@ -32,7 +32,7 @@ kubectl scale deploy kyverno -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. By default in the Helm chart version 2.5.0, the Kyverno Namespace is excluded.
+Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. The Kyverno Namespace is excluded by default.
 
 ## Policies not applied
 
@@ -41,23 +41,33 @@ Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter req
 **Solution**: There are a few moving parts that need to be checked to ensure Kyverno is receiving information from Kubernetes and is in good health.
 
 1. Check and ensure the Kyverno Pod(s) are running. Assuming Kyverno was installed into the default Namespace of `kyverno`, use the command `kubectl -n kyverno get po` to check their status. The status should be `Running` at all times.
-2. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
+2. Check all the policies installed in the cluster to ensure they are all reporting `true` under the `READY` column.
+
+    ```sh
+    $ kubectl get cpol,pol -A
+    NAME                                           BACKGROUND   VALIDATE ACTION   READY   AGE
+    clusterpolicy.kyverno.io/check-image-keyless   true         Enforce           true    116s
+    ```
+
+3. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
 
    ```sh
    $ kubectl get validatingwebhookconfigurations,mutatingwebhookconfigurations
-    NAME                                                                                                  WEBHOOKS   AGE
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-validating-webhook-cfg     1          46m
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-validating-webhook-cfg   1          46m
+    NAME                                                                                                   WEBHOOKS   AGE
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-cleanup-validating-webhook-cfg     1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-validating-webhook-cfg      1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-exception-validating-webhook-cfg   1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-validating-webhook-cfg    1          5d21h
 
     NAME                                                                                              WEBHOOKS   AGE
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-mutating-webhook-cfg     1          46m
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-mutating-webhook-cfg   1          46m
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-verify-mutating-webhook-cfg     1          46m
+    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-mutating-webhook-cfg     1          5d21h
+    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-verify-mutating-webhook-cfg     1          5d21h
+    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-mutating-webhook-cfg   1          5d21h
     ```
 
     The age should be consistent with the age of the currently running Kyverno Pod(s). If the age of these webhooks shows, for example, a few seconds old, Kyverno may be having trouble registering with Kubernetes.
 
-3. Test that name resolution and connectivity to the Kyverno service works inside your cluster by starting a simple `busybox` Pod and trying to connect to Kyverno. Enter the `wget` command as shown below. If the response is not "remote file exists" then there is a network connectivity or DNS issue within your cluster. If your cluster was provisioned with [kubespray](https://github.com/kubernetes-sigs/kubespray), see if [this comment](https://github.com/jetstack/cert-manager/issues/2640#issuecomment-601872165) helps you.
+4. Test that name resolution and connectivity to the Kyverno service works inside your cluster by starting a simple `busybox` Pod and trying to connect to Kyverno. Enter the `wget` command as shown below. If the response is not "remote file exists" then there is a network connectivity or DNS issue within your cluster. If your cluster was provisioned with [kubespray](https://github.com/kubernetes-sigs/kubespray), see if [this comment](https://github.com/jetstack/cert-manager/issues/2640#issuecomment-601872165) helps you.
 
     ```sh
     $ kubectl run busybox --rm -ti --image=busybox -- /bin/sh
@@ -70,9 +80,9 @@ Use [Namespace selectors](/docs/installation/#namespace-selectors) to filter req
     pod "busybox" deleted
     ```
 
-4. For `validate` policies, ensure that `validationFailureAction` is set to `enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
+5. For `validate` policies, ensure that `validationFailureAction` is set to `Enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `Audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
 
-5. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
+6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/#resource-filters).
 
 ## Kyverno consumes a lot of resources
 
@@ -85,6 +95,12 @@ kubectl get cm,secret -A | wc -l
 ```
 
 After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
+
+## Kyverno is slow to respond
+
+**Symptom**: Kyverno's operation seems slow in either mutating resources or validating them, causing additional time to create resources in the Kubernetes cluster.
+
+**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/#container-flags), `--clientRateLimitQPS` and `--clientRateLimitBurst`. Try values `100` for each and increase as needed.
 
 ## Policies are partially applied
 
@@ -125,3 +141,11 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 **Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side throttling`; the creation of mutated resources may be delayed.
 
 **Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS` (documented [here](https://kyverno.io/docs/installation/)) to `100` to begin with. If that doesn't resolve the problem, you can experiment with slowly increasing these values. Just bear in mind that higher values place more pressure on the Kubernetes API (the client-side throttling was implemented for a reason), which could result in cluster-wide latency, so proceed with caution.
+
+## Policy definition not working
+
+**Symptom**: My policy _seems_ like it should work based on how I have authored it but it doesn't.
+
+**Solution**: There can be many reasons why a policy may fail to work as intended, assuming other policies work. One of the most common reasons is that the API server is sending different contents than what you have accounted for in your policy. To see the full contents of the AdmissionReview request the Kubernetes API server sends to Kyverno, add the `dumpPayload` [container flag](/docs/installation/#container-flags) set to `true` and check the logs. This has performance impact so it should be removed or set back to `false` when complete.
+
+The second most common reason policies may fail to operate per design is due to variables. To see the values Kyverno is substituting for variables, increase logging to level `4` by setting the container flag `-v=4`. You can `grep` for the string `variable` (or use tools such as [stern](https://github.com/stern/stern)) and only see the values being substituted for those variables.
