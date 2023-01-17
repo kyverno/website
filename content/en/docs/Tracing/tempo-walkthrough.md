@@ -1,5 +1,5 @@
 ---
-title: Tracing with Grafana Tempo
+title: Grafana Tempo tracing
 description: Tracing with Grafana Tempo.
 weight: 10
 ---
