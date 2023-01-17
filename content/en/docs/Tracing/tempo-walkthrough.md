@@ -8,18 +8,18 @@ This walkthrough shows how to create a local cluster and deploy a number of comp
 
 On the prepared cluster we will deploy Kyverno with tracing enabled and a couple of policies.
 
-Finally we will exercise the Kyverno webhook by creating a pod to find and examine the corresponding trace in Grafana.
+Finally we will exercise the Kyverno webhooks by creating a `Pod`, then we will use Grafana to find and examine the corresponding trace.
 
-Please note that this walkthrough uses KinD to create the cluster with a specific label on the control plane node.
-This is necessary as we are using an `ingress-nginx` deployment specifically crafted to work with KinD.
-All other components setup are not KinD specific.
+Please note that this walkthrough uses [kind](https://kind.sigs.k8s.io) to create the cluster with a specific label on the control plane node.
+This is necessary as we are using an `ingress-nginx` deployment specifically crafted to work with kind.
+All other components setup should not be kind specific but may require different configuration depending on the target cluster.
 
 ## Cluster Setup
 
-In this first step we are going to create a local cluster using KinD.
+In this first step we are going to create a local cluster using [kind](https://kind.sigs.k8s.io).
 
 The created cluster will have two nodes, one master node and one worker node.
-The master node maps host ports 80 and 443 to the container node, if those ports are already in use they can be changed by editing the `hostPort` stanza in the config manifest below.
+Note that the master node maps host ports `80` and `443` to the container node, if those ports are already in use they can be changed by editing the `hostPort` stanza in the config manifest below.
 
 To create the local cluster run the following command:
 
@@ -48,7 +48,7 @@ EOF
 
 ## Ingress NGINX Setup
 
-In order to access Grafana, we need to deploy an ingress controller.
+In order to access Grafana from our browser, we need to deploy an ingress controller.
 
 We are going to install `ingress-nginx` with the following command:
 
@@ -60,7 +60,7 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 
 ## Grafana Setup
 
-Grafana is going to allow us to explore traces.
+Grafana will allow us to explore, search and examine traces.
 
 We can deploy Grafana using Helm with the following command:
 
@@ -94,7 +94,7 @@ At this point Grafana should be available at http://localhost/grafana (log in wi
 
 ## Tempo Setup
 
-Tempo is a tracing backend capable of receiving traces in OpenTelemetry format, it is developped and maintained by Grafana and integrates very well with it.
+Tempo is a tracing backend capable of receiving traces in OpenTelemetry format, it is developped and maintained by the Grafana team and integrates very well with it.
 
 We can deploy Tempo using Helm with the following command:
 
@@ -133,9 +133,9 @@ EOF
 
 ## Kyverno Setup
 
-At this point we have a running cluster with Grafana and Tempo backend installed and we can access Grafana through an ingress controller.
+At this point we have a running cluster with Grafana and Tempo backend installed and we can access Grafana using an ingress controller.
 
-We need to install Kyverno with tracing enabled and pointing to our Tempo backend.
+We now need to install Kyverno with tracing enabled and pointing to our Tempo backend.
 
 We can deploy Kyverno using Helm with the following command:
 
@@ -166,9 +166,9 @@ EOF
 
 ## Kyverno policies Setup
 
-Finally we need to deploy a couple of policies in the cluster to configure the Kyverno admission webhooks.
+Finally we need to deploy a couple of policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-We are going to deploy the `kyverno-policies` helm chart (using the `Baseline` profile) using the following command:
+We are going to deploy the `kyverno-policies` helm chart (with the `Baseline` profile of PSS) using the following command:
 
 ```shell
 helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
@@ -190,11 +190,11 @@ Run the following command to create a `Pod`:
 kubectl run nginx --image=nginx
 ```
 
-After that, navigate to the [Grafana explore page](http://localhost/grafana/explore) and search for traces with based on the following criterias:
+After that, navigate to the [Grafana explore page](http://localhost/grafana/explore) and search for traces with the following criterias:
 - Service name: `kyverno`, every trace define a service name and all traces coming from Kyverno will use the `kyverno` service name
-- Span name: `ADMISSION POST /validate/fail`, every span define a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`).
+- Span name: `ADMISSION POST /validate/fail`, every span define a span name and root spans created by Kyverno when receiving an admission request have their name computed from the http operation and path (`ADMISSION <HTTP OPERATION> <HTTP PATH>`, the validate `/validate/fail` path indicates indicates that it's a validating webhook that was configured to fail the admission request in case of error).
 
-Alternatively you can browse http://localhost/grafana/explore?left={"queries":[{"queryType":"nativeSearch","serviceName":"kyverno","spanName":"ADMISSION POST /validate/fail"}]}, that should open the Grafana explore page showing the search tab configured with the criterias mentioned above.
+Alternatively you can browse [this URL](http://localhost/grafana/explore?left={"queries":[{"queryType":"nativeSearch","serviceName":"kyverno","spanName":"ADMISSION POST /validate/fail"}]}), that should open the Grafana explore page showing the search tab configured with the criterias mentioned above.
 
 The list should show the trace for the previous `Pod` creation request:
 
@@ -204,5 +204,5 @@ Clicking on the trace will take you to the trace details, showing all spans cove
 
 <p align="center"><img src="../assets/walkthrough-tempo-2.png" height="300px"/></p>
 
-The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not evaluated).
-The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod.
+The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated).
+The sum of all spans equals the trace time or the entire time Kyverno spent processing the `Pod` admission request.
