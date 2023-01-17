@@ -10,17 +10,13 @@ On the prepared cluster we will deploy Kyverno with tracing enabled and a couple
 
 Finally we will exercise the Kyverno webhooks by creating a Pod, then we will use Grafana to find and examine the corresponding trace.
 
-Please note that **this walkthrough uses [kind](https://kind.sigs.k8s.io) to create a local cluster** with a specific label on the control plane node.
-This is necessary as we are using an [ingress-nginx](https://github.com/kubernetes/ingress-nginx) deployment specifically crafted to work with kind.
-All other components setup should not be kind specific but may require different configuration depending on the target cluster.
+Please note that **this walkthrough uses [kind](https://kind.sigs.k8s.io) to create a local cluster** with a specific label on the control plane node. This is necessary as we are using an [ingress-nginx](https://github.com/kubernetes/ingress-nginx) deployment specifically crafted to work with kind. All other components setup should not be kind specific but may require different configuration depending on the target cluster.
 
 ## Cluster Setup
 
 In this first step we are going to create a local cluster using [kind](https://kind.sigs.k8s.io).
 
-The created cluster will have two nodes, one master node and one worker node.
-Note that the master node maps host ports `80` and `443` to the container node.
-If those ports are already in use they can be changed by editing the `hostPort` stanza in the config manifest below.
+The created cluster will have two nodes, one master node and one worker node. Note that the master node maps host ports `80` and `443` to the container node. If those ports are already in use they can be changed by editing the `hostPort` stanza in the config manifest below.
 
 To create the local cluster, run the following command:
 
@@ -95,8 +91,7 @@ At this point Grafana should be available at http://localhost/grafana (log in wi
 
 ## Tempo Setup
 
-[Tempo](https://grafana.com/oss/tempo) is a tracing backend capable of receiving traces in OpenTelemetry format.
-It is developed and maintained by the Grafana team and integrates very well with it.
+[Tempo](https://grafana.com/oss/tempo) is a tracing backend capable of receiving traces in OpenTelemetry format. It is developed and maintained by the Grafana team and integrates very well with it.
 
 We can deploy Tempo using Helm with the following command:
 
@@ -204,5 +199,4 @@ Clicking on the trace will take you to the trace details, showing all spans cove
 
 <p align="center"><img src="../assets/walkthrough-tempo-2.png" height="300px"/></p>
 
-The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated).
-The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod admission request.
+The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated). The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod admission request.
