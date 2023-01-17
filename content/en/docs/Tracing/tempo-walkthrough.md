@@ -165,7 +165,7 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-We are going to deploy the `kyverno-policies` helm chart (with the `Baseline` profile of PSS) using the following command:
+We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` profile of PSS) using the following command:
 
 ```shell
 helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
