@@ -1,7 +1,7 @@
 ---
 title: "Add Volume to Deployment"
 category: Sample
-version: 
+version: 1.6.0
 subject: Deployment, Volume
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Add Volume to Deployment
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Deployment, Volume
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Some Kubernetes applications like HashiCorp Vault must perform some modifications
       to resources in order to invoke their specific functionality. Often times, that functionality
@@ -30,9 +31,10 @@ spec:
   rules:
   - name: add-volume
     match:
-      resources:
-        kinds:
-        - Deployment
+      any:
+      - resources:
+          kinds:
+          - Deployment
     preconditions:
       any:
       - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"

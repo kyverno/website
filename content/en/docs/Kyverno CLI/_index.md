@@ -64,11 +64,7 @@ When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recomm
 
 ### Apply
 
-The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster.
-
-{{% alert title="Note" color="info" %}}
-Kyverno CLI `apply` supports files from URLs both as policies and resources.
-{{% /alert %}}
+The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster. The  `apply` command supports files from URLs both as policies and resources.
 
 Apply to a resource:
 
@@ -82,16 +78,16 @@ Apply a policy to all matching resources in a cluster based on the current `kube
 kyverno apply /path/to/policy.yaml --cluster
 ```
 
-Apply all cluster policies of the current cluster to all matching resources in a cluster based on the current `kubectl` context:
-
-```sh
- kubectl get clusterpolicies -o yaml | kyverno apply - --cluster
-```
-
 The resources can also be passed from stdin:
 
 ```sh
 kustomize build nginx/overlays/envs/prod/ | kyverno apply /path/to/policy.yaml --resource -
+```
+
+Apply all cluster policies in the current cluster to all matching resources in a cluster based on the current `kubectl` context:
+
+```sh
+kubectl get clusterpolicies -o yaml | kyverno apply - --cluster
 ```
 
 Apply multiple policies to multiple resources:
@@ -129,7 +125,7 @@ Apply a policy containing variables using the `--set` or `-s` flag to pass in th
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data (Kyverno 1.3.6), and API call context data (Kyverno 1.3.6).
+Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, and API call context data.
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
@@ -191,14 +187,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: add-networkpolicy
-  annotations:
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: By default, Kubernetes allows communications across
-      all pods within a cluster. Network policies and, a CNI that supports network policies,
-      must be used to restrict communications. A default NetworkPolicy should be configured
-      for each namespace to default deny all ingress traffic to the pods in the namespace.
-      Application teams can then configure additional NetworkPolicy resources to allow
-      desired traffic to application pods from select sources.
 spec:
   rules:
   - name: default-deny-ingress
@@ -207,9 +195,10 @@ spec:
       - resources:
           kinds:
           - Namespace
-      clusterRoles:
-      - cluster-admin
+        clusterRoles:
+        - cluster-admin
     generate:
+      apiVersion: networking.k8s.io/v1
       kind: NetworkPolicy
       name: default-deny-ingress
       namespace: "{{request.object.metadata.name}}"
@@ -308,7 +297,7 @@ kind: ClusterPolicy
 metadata:
   name: cm-globalval-example
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-mode
@@ -321,9 +310,10 @@ spec:
         message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
         deny:
           conditions:
-            - key: "{{ request.mode }}"
-              operator: NotEquals
-              value: dev
+            any:
+              - key: "{{ request.mode }}"
+                operator: NotEquals
+                value: dev
 ```
 
 Resource manifest (`dev_prod_pod.yaml`):
@@ -369,8 +359,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details.
-Check [here](/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/writing-policies/match-exclude/#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -398,7 +387,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-pod-name
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: validate-name
@@ -478,7 +467,7 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: example-configmap-lookup
@@ -523,10 +512,18 @@ policies:
           dictionary.data.env: dev1
 ```
 
-Policies that have their validationFailureAction set to `audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+Policies that have their validationFailureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
+```
+
+Additionally, you can use the `--warn-exit-code` flag with the `apply` command to control the exit code when warnings are reported. This is useful in CI/CD systems when used with the `--audit-warn` flag to treat `Audit` policies as warnings. When no failures or errors are found, but warnings are encountered, the CLI will exit with the defined exit code.
+
+```sh
+kyverno apply disallow-latest-tag.yaml --resource=echo-test.yaml --audit-warn --warn-exit-code 3
+echo $?
+3
 ```
 
 #### Policy Report
@@ -562,15 +559,8 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-pod-requests-limits
-  annotations:
-    policies.kyverno.io/category: Workload Management
-    policies.kyverno.io/description: >-
-      As application workloads share cluster resources, it is important to limit resources
-      requested and consumed by each pod. It is recommended to require 'resources.requests'
-      and 'resources.limits' per pod. If a namespace level request or limit is specified,
-      defaults are automatically applied to each pod based on the 'LimitRange' configuration.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: validate-resources
     match:
@@ -802,6 +792,38 @@ userInfo:
   username: someone@somecorp.com
 ```
 
+Testing for subresources in `Kind/Subresource` matching format also requires a `subresources{}` section in the values file.
+
+```yaml
+subresources:
+  - subresource:
+      name: <name of subresource>
+      kind: <kind of subresource>
+      group: <group of subresource>
+      version: <version of subresource>
+    parentResource:
+      name: <name of parent resource>
+      kind: <kind of parent resource>
+      group: <group of parent resource>
+      version: <version of parent resource>
+```
+
+Here is an example when testing for subresources:
+
+```yaml
+subresources:
+  - subresource:
+      name: "deployments/scale"
+      kind: "Scale"
+      group: "autoscaling"
+      version: "v1"
+    parentResource:
+      name: "deployments"
+      kind: "Deployment"
+      group: "apps"
+      version: "v1"
+```
+
 #### Test Against Local Files
 
 Test a set of local files in the working directory.
@@ -857,14 +879,8 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
-  annotations:
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/description: >-
-      The ':latest' tag is mutable and can lead to unexpected errors if the 
-      image changes. A best practice is to use an immutable tag that maps to 
-      a specific version of an application pod.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: require-image-tag
     match:
@@ -872,8 +888,8 @@ spec:
       - resources:
           kinds:
           - Pod
-      clusterRoles:
-      - cluster-admin
+        clusterRoles:
+        - cluster-admin
     validate:
       message: "An image tag is required."  
       pattern:
@@ -967,7 +983,7 @@ spec:
     preconditions:
       any:
       - key: "{{request.operation}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -1072,18 +1088,6 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: add-networkpolicy
-  annotations:
-    policies.kyverno.io/title: Add Network Policy
-    policies.kyverno.io/category: Multi-Tenancy
-    policies.kyverno.io/subject: NetworkPolicy
-    policies.kyverno.io/description: >-
-      By default, Kubernetes allows communications across all Pods within a cluster.
-      The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict
-      communications. A default NetworkPolicy should be configured for each Namespace to
-      default deny all ingress and egress traffic to the Pods in the Namespace. Application
-      teams can then configure additional NetworkPolicy resources to allow desired traffic
-      to application Pods from select sources. This policy will create a new NetworkPolicy resource
-      named `default-deny` which will deny all traffic anytime a new Namespace is created.
 spec:
   rules:
   - name: default-deny
@@ -1150,8 +1154,8 @@ results:
 ```sh
 $ kyverno test .
 Executing deny-all-traffic...
-applying 1 policy to 1 resource... 
- 
+applying 1 policy to 1 resource...
+
 │───│───────────────────│──────────────│──────────────────────────────────│────────│
 │ # │ POLICY            │ RULE         │ RESOURCE                         │ RESULT │
 │───│───────────────────│──────────────│──────────────────────────────────│────────│
@@ -1245,6 +1249,48 @@ busybox
 ```
 
 For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/writing-policies/jmespath/).
+
+### Oci
+
+The Kyverno CLI has experimental ability to now push and pull Kyverno policies as OCI artifacts from an OCI-compliant registry. This ability allows one to store policies in a registry similar to how they are commonly stored in a git repository today. In a future release, the Kyverno admission controller will be able to directly reference this OCI image bundle to fetch policies.
+
+{{% alert title="Warning" color="warning" %}}
+The `oci` command is experimental and changes to the command and structure may change at any time.
+{{% /alert %}}
+
+To use the `oci` command, set the environment variable `KYVERNO_EXPERIMENTAL` to a value of `1` or `true`.
+
+#### Pushing
+
+Kyverno policies may be pushed to an OCI-compliant registry by using the `push` subcommand. Use the `-i` flag for the image repository reference and `--policy` or `-p` to reference one or more policies which should be bundled and pushed. The `-p` flag also supports a directory containing Kyverno policies. The directory must only contain Kyverno ClusterPolicy or Policy resources. Policies will be serialized and validated by the CLI first to ensure they are correct prior to pushing. This also means YAML comments will be lost.
+
+Push a single Kyverno ClusterPolicy named `require-labels.yaml` to GitHub Container Registry at the `acme` organization in a repository named `mypolicies` with tag `0.0.1`.
+
+```sh
+kyverno oci push -i ghcr.io/acme/mypolicies:0.0.1 --policy require-labels.yaml
+```
+
+Push a directory named `mydirofpolicies` containing multiple Kyverno ClusterPolicy and Policy resources to GitHub Container Registry at the `acme` organization in a repository named `mypolicybundle` with tag `0.0.1`.
+
+```sh
+kyverno oci push -i ghcr.io/acme/mypolicybundle:0.0.1 --policy mydirofpolicies/
+```
+
+#### Pulling
+
+Similar to the `push` subcommand, the `kyverno oci` command can pull the policies which were stored from a `push`. The `-i` flag is again used to reference the OCI artifact representing the Kyverno policies. The `--directory` or `-d` flag is used to set the output directory. Policies will be output as separate YAML files in the directory specified.
+
+Pull the `ghcr.io/acme/mypolicybundle:0.0.1` Kyverno policy bundle to the working directory.
+
+```sh
+kyverno oci pull -i ghcr.io/acme/mypolicybundle:0.0.1
+```
+
+Pull the `ghcr.io/acme/mypolicybundle:0.0.1` Kyverno policy bundle to a directory named `foodir`.
+
+```sh
+kyverno oci pull -i ghcr.io/acme/mypolicybundle:0.0.1 -d foodir/
+```
 
 ### Version
 

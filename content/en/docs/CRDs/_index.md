@@ -51,7 +51,7 @@ FIELDS:
      ValidationFailureAction controls if a validation policy rule failure should
      disallow the admission review request (enforce), or allow (audit) the
      admission review request and report an error in a policy report. Optional.
-     The default value is "audit".
+     Allowed values are `Audit` or `Enforce`. The default value is `Audit`.
 
    validationFailureActionOverrides     <[]Object>
      ValidationFailureActionOverrides is a Cluter Policy attribute that

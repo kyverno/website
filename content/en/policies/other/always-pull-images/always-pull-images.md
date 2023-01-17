@@ -1,7 +1,7 @@
 ---
 title: "Always Pull Images"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       By default, images that have already been pulled can be accessed by other
       Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios,
@@ -31,9 +32,10 @@ spec:
   rules:
   - name: always-pull-images
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:

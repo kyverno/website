@@ -1,6 +1,6 @@
 ---
 title: "Verify Image"
-category: Sample, EKS Best Practices
+category: Software Supply Chain Security, EKS Best Practices
 version: 1.7.0
 subject: Pod
 policyType: "verifyImages"
@@ -18,7 +18,7 @@ metadata:
   name: verify-image
   annotations:
     policies.kyverno.io/title: Verify Image
-    policies.kyverno.io/category: Sample, EKS Best Practices
+    policies.kyverno.io/category: Software Supply Chain Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.7.0
@@ -41,7 +41,7 @@ spec:
               - Pod
       verifyImages:
       - imageReferences:
-        - "ghcr.io/kyverno/test-verify-image:*"
+        - "ghcr.io/kyverno/test-verify-image*"
         mutateDigest: true
         attestors:
         - entries:

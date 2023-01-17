@@ -16,7 +16,7 @@ Counter - An only-increasing integer representing the total number of policy-lev
 
 * The cluster admin wants to track how many cluster policies have been created in the last 1 year.
 * An end user wants to track how many policies (kind: Policy) have been created in their personal namespace.
-* The cluster admin wants to see how many policies with `validationFailureAction: enforce` and background mode enabled were created since last week.
+* The cluster admin wants to see how many policies with `validationFailureAction: Enforce` and background mode enabled were created since last week.
 
 ## Filter Labels
 

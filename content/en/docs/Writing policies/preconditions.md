@@ -2,12 +2,10 @@
 title: Preconditions
 description: >
   Control policy rule execution based on variables.
-weight: 8
+weight: 90
 ---
 
-Preconditions allow controlling policy rule execution by building expressions based on variable values.
-
-While `match` and `exclude` allow filtering requests based on resource and user information, `preconditions` can be used to define custom filters for more granular control of when a rule should be applied.
+Preconditions allow controlling policy rule execution by building expressions based on variable values. While `match` and `exclude` allow filtering requests based on resource and user information, `preconditions` can be used to define custom filters for more granular control of when a rule should be applied.
 
 The primary use case for `preconditions` is in `mutate` or `generate` rules when needing to check and ensure a variable, typically from AdmissionReview data, is not empty. In addition to AdmissionReview variables, written as JMESPath expressions, `preconditions` can also be used to check against variables from ConfigMap resources, API server and registry lookups, and others. `mutate` rules which use `patchJson6902` should use `preconditions` as a way to filter out results.
 
@@ -65,7 +63,7 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -104,7 +102,7 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -144,10 +142,8 @@ The following operators are currently supported for precondition evaluation:
 
 - Equals
 - NotEquals
-- In (deprecated)
 - AnyIn
 - AllIn
-- NotIn (deprecated)
 - AnyNotIn
 - AllNotIn
 - GreaterThan
@@ -159,11 +155,11 @@ The following operators are currently supported for precondition evaluation:
 - DurationLessThan
 - DurationLessThanOrEquals
 
-The set operators, `In`, `AnyIn`, `AllIn`, `NotIn`, `AnyNotIn` and `AllNotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] AllIn ["str1", "str2", "str3"]). In this case `AllIn` checks if **all** of the strings part of the key are in the value set, `AnyIn` checks if **any** of the strings part of the key are in the value set, `AllNotIn` checks if **all** of the strings part of the key is **not** in the value set and `AnyNotIn` checks if **any** of the strings part of the key is **not** in the value set. Sets of other types are currently not supported. Old operators `In` and `NotIn` work like `AllIn` and `AnyNotIn`, these are now deprecated and will be removed in a future version.
+The set operators, `AnyIn`, `AllIn`, `AnyNotIn` and `AllNotIn` support a set of strings as the value (e.g. In ["str1", "str2"]). They also allow you to specify a set of strings as the key (e.g. ["str1", "str2"] AllIn ["str1", "str2", "str3"]). In this case `AllIn` checks if **all** of the strings part of the key are in the value set, `AnyIn` checks if **any** of the strings part of the key are in the value set, `AllNotIn` checks if **all** of the strings part of the key is **not** in the value set and `AnyNotIn` checks if **any** of the strings part of the key is **not** in the value set. Sets of other types are currently not supported.
 
 The duration operators can be used for things such as validating an annotation that is a duration unit. Duration operators expect numeric key or value as seconds or as a string that is a valid Go time duration, eg: "1h". The string units supported are `s` (second), `m` (minute) and `h` (hour).  Full details on supported duration strings are covered by [time.ParseDuration](https://pkg.go.dev/time#ParseDuration).
 
-The `GreaterThan`, `GreaterThanOrEquals`, `LessThan` and `LessThanOrEquals` operators can also be used with Kubernetes resource quantities. Any value handled by [resource.ParseQuantity](https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#ParseQuantity) can be used, this includes comparing values that have different scales.
+The `GreaterThan`, `GreaterThanOrEquals`, `LessThan` and `LessThanOrEquals` operators can also be used with Kubernetes resource quantities. Any value handled by [resource.ParseQuantity](https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#ParseQuantity) can be used, this includes comparing values that have different scales. Note that these operators can only operate on a single value currently and not an array of values, even if the array contains a single string.
 
 Example:
 
@@ -173,7 +169,7 @@ kind: ClusterPolicy
 metadata:
   name: resource-quantities
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: memory-limit
@@ -184,7 +180,7 @@ spec:
           - Pod
     preconditions:
       any:
-      - key: "{{request.object.spec.containers[*].resources.requests.memory}}"
+      - key: "{{request.object.spec.containers[0].resources.requests.memory}}"
         operator: LessThan
         value: 1Gi
 ```

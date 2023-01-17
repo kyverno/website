@@ -1,7 +1,7 @@
 ---
 title: "Disallow Latest Tag"
 category: Best Practices
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Disallow Latest Tag
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: require-image-tag
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "An image tag is required."
       pattern:
@@ -43,9 +45,10 @@ spec:
           - image: "*:*"
   - name: validate-image-tag
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Using a mutable image tag e.g. 'latest' is not allowed."
       pattern:

@@ -2,24 +2,20 @@
 title: Variables
 description: >
     Data-driven policies for reuse and intelligent decision making
-weight: 6
+weight: 70
 ---
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/).
-
-{{% alert title="Note" color="info" %}}
-Variables are not currently allowed in `match` or `exclude` statements or `patchesJson6902.path`.
-{{% /alert %}}
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
 ## Pre-defined Variables
 
 Kyverno automatically creates a few useful variables and makes them available within rules:
 
-1. `serviceAccountName`: the "userName" which is the last part of a service account (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
+1. `serviceAccountName`: the "userName" which is the last part of a ServiceAccount (i.e. without the prefix `system:serviceaccount:<namespace>:`). For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store the value `user1` in the variable `serviceAccountName`.
 
-2. `serviceAccountNamespace`: the "namespace" part of the serviceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
+2. `serviceAccountNamespace`: the "namespace" part of the ServiceAccount. For example, when processing a request from `system:serviceaccount:nirmata:user1` Kyverno will store `nirmata` in the variable `serviceAccountNamespace`.
 
 3. `request.roles`: a list of roles stored in an array the given account may have. For example, `["foo:dave"]`.
 
@@ -38,7 +34,7 @@ Kyverno policy definitions can refer to other fields in the policy definition as
 In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
 
 ```yaml
-validationFailureAction: enforce
+validationFailureAction: Enforce
 rules:
 - name: check-tcpSocket
   match:
@@ -78,7 +74,7 @@ For more information on operators see the [Operators](/docs/writing-policies/val
 
 ## Escaping Variables
 
-In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, as of Kyverno 1.5.0 these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values. Variables written in JMESPath notation can also be escaped using the same syntax, for example `\{{ request.object.metadata.name }}`.
+In some cases, you wish to write a rule containing a variable for action on by another program or process flow and not for Kyverno's use. For example, with the variables in `$()` notation, these can be escaped with a leading backslash (`\`) and Kyverno will not attempt to substitute values. Variables written in JMESPath notation can also be escaped using the same syntax, for example `\{{ request.object.metadata.name }}`.
 
 In the below policy, the value of `OTEL_RESOURCE_ATTRIBUTES` contains references to other environment variables which will be quoted literally as, for example, `$(POD_NAMESPACE)`.
 
@@ -87,6 +83,7 @@ apiVersion: kyverno.io/v1
 kind: Policy
 metadata:
   name: add-otel-resource-env
+  namespace: foobar
 spec:
   background: false
   rules:
@@ -265,7 +262,15 @@ In the output, we can clearly see the value of our `created-by` label is `kubern
 
 ## Variables from container images
 
-Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. Here is an example:
+Kyverno extracts image data from the AdmissionReview request and makes this available as a variable named `images` of type map in the rule context. The following variables are set under `images`:
+
+- `registry`
+- `path`
+- `name`
+- `tag`
+- `digest`
+
+Here is an example:
 
 ```json
 {
@@ -288,7 +293,7 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
 }
 ```
 
-Whenever an AdmissionReview request has `containers` or `initContainers` defined, the `images` variable can be referenced as shown in the examples below:
+Whenever an AdmissionReview request has `containers`, `initContainers`, or `ephemeralContainers` defined, the `images` variable can be referenced as shown in the examples below. `tag` and `digest` are mutually exclusive as an image may only define one.
 
 Reference the image properties of container `tomcat`:
 
@@ -304,11 +309,11 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.name}}`
 
-3. Reference the image tag
+4. Reference the image tag
 
 `{{images.containers.tomcat.tag}}`
 
-4. Reference the digest
+5. Reference the digest
 
 `{{images.containers.tomcat.digest}}`
 
@@ -326,11 +331,11 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.name}}`
 
-3. Reference the image tag
+4. Reference the image tag
 
 `{{images.initContainers.vault.tag}}`
 
-4. Reference the digest
+5. Reference the digest
 
 `{{images.initContainers.vault.digest}}`
 
@@ -466,51 +471,6 @@ This ordering makes it possible to use request data when defining the context, a
 ## JMESPath custom functions
 
 In addition to the list of [built-in functions](https://jmespath.org/specification.html#builtin-functions) JMESPath offers, Kyverno augments these by adding several others which makes it even easier to craft Kyverno policies.
-
-### General
-
-```sh
-base64_decode(string) string
-base64_encode(string) string
-compare(string, string) integer
-equal_fold(string, string) bool
-label_match(object, object) bool (object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}`)
-parse_json(string) any (decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function)
-parse_yaml(string) any
-path_canonicalize(string) string
-pattern_match(pattern string, string|number) bool ('*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character)
-regex_match(string, string|number) bool
-regex_replace_all(regex string, src string|number, replace string|number) string (converts all parameters to string)
-regex_replace_all_literal(regex string, src string|number, replace string|number) string (converts all parameters to string)
-replace(str string, old string, new string, n float64) string
-replace_all(str string, old string, new string) string
-semver_compare(string, string) bool (Use operators [>, <, etc] with string inputs for comparison logic)
-split(str string, sep string) []string
-time_since(<layout>, <time1>, <time2>) string (all inputs as string)
-to_upper(string) string
-to_lower(string) string
-trim(str string, cutset string) string
-truncate(str string, length float64) string (length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}")
-```
-
-### Arithmetic
-
-```sh
-add(number, number) number
-add(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-add(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-subtract(number, number) number
-subtract(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-subtract(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-multiply(number, number) number
-multiply(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity)
-multiply(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration)
-divide(quantity|number, quantity|number) quantity|number (returns a quantity if exactly one of the parameters is a quantity, else a number; the divisor must be non-zero)
-divide(duration|number, duration|number) duration|number (returns a duration if exactly one of the parameters is a duration, else a number; the divisor must be non-zero)
-modulo(number, number) number
-modulo(quantity|number, quantity|number) quantity (returns a quantity if any of the parameters is a quantity; the divisor must be non-zero)
-modulo(duration|number, duration|number) duration (returns a duration if any of the parameters is a duration; the divisor must be non-zero)
-```
 
 {{% alert title="Note" color="info" %}}
 The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.

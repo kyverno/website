@@ -1,7 +1,7 @@
 ---
 title: "Require Multiple Replicas"
 category: Sample
-version: 
+version: 1.6.0
 subject: Deployment
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Deployments with a single replica cannot be highly available and thus the application
       may suffer downtime if that one replica goes down. This policy validates that Deployments
@@ -31,9 +32,10 @@ spec:
   rules:
     - name: deployment-has-multiple-replicas
       match:
-        resources:
-          kinds:
-          - Deployment
+        any:
+        - resources:
+            kinds:
+            - Deployment
       validate:
         message: "Deployments should have more than one replica to ensure availability."
         pattern:

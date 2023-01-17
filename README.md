@@ -108,3 +108,5 @@ There are several ways to create multiple PRs, but here is one easy flow:
 ## Customize other settings
 
 Edit the `.toml` files inside the `config/_default` directory.
+
+If needing to create a new page under the `Policies` heading that adopts the same CSS styling, assign `type = "policies"` to the page.

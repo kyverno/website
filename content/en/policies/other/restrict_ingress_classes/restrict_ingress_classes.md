@@ -1,7 +1,7 @@
 ---
 title: "Restrict Ingress Classes"
 category: Sample
-version: 
+version: 1.6.0
 subject: Ingress
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Ingress classes should only be allowed which match up to deployed Ingress controllers
       in the cluster. Allowing users to define classes which cannot be satisfied by a deployed
@@ -34,9 +35,10 @@ spec:
   rules:
   - name: validate-ingress
     match:
-      resources:
-        kinds:
-        - Ingress
+      any:
+      - resources:
+          kinds:
+          - Ingress
     validate:
       message: "Unknown ingress class."
       pattern:

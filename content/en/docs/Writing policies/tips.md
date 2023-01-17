@@ -1,7 +1,7 @@
 ---
 title: Tips & Tricks 
 description: Tips and tricks for writing more effective policy.
-weight: 11
+weight: 120
 ---
 
 These are some tips and tricks you can use when putting together your Kyverno policies.
@@ -39,10 +39,11 @@ These are some tips and tricks you can use when putting together your Kyverno po
       Pattern specifies an overlay-style pattern used to check resources.
   ```
 
+* Use `kubectl get kyverno -A` to show all the Kyverno Custom Resources present in your cluster. This will return resources such as policies of various types, policy reports, and intermediary resources used internally by Kyverno.
 * When using VS Code, because of the OpenAPIV3 schema Kyverno supports, you can make use of this integration to assist in writing policy by getting field hints and describing elements.
-* Make use of the [Kyverno CLI](/docs/kyverno-cli/) test policy out in advance.
+* Make use of the [Kyverno CLI](/docs/kyverno-cli/) to test policies out in advance.
 * Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design. In most cases, rules can be grouped into a single policy definition. Here are some tips when it comes to organizing rules:
-  * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all namespaced `validate` rules.
+  * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all Namespaced `validate` rules.
   * `mutate` and `generate` rules should go into their own policy definition.
   * Policies that cannot be written as a single rule but have highly related processing can go into their own policy definition.
   * Name your rules effectively as this is a component that will be displayed to users upon enforcement for `validate` rules.
@@ -55,13 +56,13 @@ These are some tips and tricks you can use when putting together your Kyverno po
 kubectl -n <kyverno_namespace> logs <pod_name>
 ```
 
-Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4.
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
 
 ## Validate
 
-* When developing your `validate` policies, it's easiest to set `validationFailureAction: enforce` so when testing you can see the results immediately without having to look at a report.
+* When developing your `validate` policies, it's easiest to set `validationFailureAction: Enforce` so when testing you can see the results immediately without having to look at a report.
 
-* Before deploying into production, ensure you have `validationFailureAction: audit` so the policy doesn't have unintended consequences.
+* Before deploying into production, ensure you have `validationFailureAction: Audit` so the policy doesn't have unintended consequences.
 
 * `validate` rules have no precedence/overriding behavior, so even though a rule may be written to either allow or deny a resource/action, one cannot counteract the other. For example, a rule written to ensure all images come from registry `reg.corp.com` and another rule written to ensure they do **not** come from `reg.corp.com` will effectively render all image pulls impossible and nothing will run. Where the rule is defined is irrelevant.
 

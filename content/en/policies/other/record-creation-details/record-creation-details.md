@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Annotation
 policyType: "mutate"
 description: >
-    Kubernetes by default does not make a record of who or what created a resource in that resource itself. It must be retrieved from an audit log, if enabled, which can make it difficult for cluster operators to know who was responsible for an object's creation. This policy writes an annotation with the key `kyverno.io/created-by` having all the userInfo fields present in the AdmissionReview request for any object being created. It then protects this annotation from tampering or removal making it immutable.
+    Kubernetes by default does not make a record of who or what created a resource in that resource itself. It must be retrieved from an audit log, if enabled, which can make it difficult for cluster operators to know who was responsible for an object's creation. This policy writes an annotation with the key `kyverno.io/created-by` having all the userInfo fields present in the AdmissionReview request for any object being created. It then protects this annotation from tampering or removal making it immutable. Although this policy matches on all kinds ("*") it is highly recommend to more narrowly scope it to only the resources which should be labeled.
 ---
 
 ## Policy Definition
@@ -32,7 +32,9 @@ metadata:
       This policy writes an annotation with the key `kyverno.io/created-by`
       having all the userInfo fields present in the AdmissionReview request
       for any object being created. It then protects this annotation from
-      tampering or removal making it immutable.
+      tampering or removal making it immutable. Although this policy matches on
+      all kinds ("*") it is highly recommend to more narrowly scope it to only
+      the resources which should be labeled.
 spec:
   validationFailureAction: enforce
   background: false

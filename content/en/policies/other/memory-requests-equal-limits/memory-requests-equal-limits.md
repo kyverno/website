@@ -1,7 +1,7 @@
 ---
 title: "Memory Requests Equal Limits"
 category: Sample
-version: 1.3.6
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.3.6
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Pods which have memory limits equal to requests are given a QoS class of Guaranteed
       which is the highest schedulable class. This policy checks that all containers in
@@ -33,12 +33,13 @@ spec:
   rules:
   - name: memory-requests-equal-limits-deployment
     match:
-      resources:
-        kinds:
-        - Deployment
-        - DaemonSet
-        - StatefulSet
-        - Job
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          - DaemonSet
+          - StatefulSet
+          - Job
     validate:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:
@@ -49,9 +50,10 @@ spec:
             value: 0
   - name: memory-requests-equal-limits-pod
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:
@@ -62,9 +64,10 @@ spec:
             value: 0
   - name: memory-requests-equal-limits-cronjob
     match:
-      resources:
-        kinds:
-        - CronJob
+      any:
+      - resources:
+          kinds:
+          - CronJob
     validate:
       message: "resources.requests.memory must be equal to resources.limits.memory"
       deny:

@@ -1,7 +1,7 @@
 ---
 title: JMESPath 
 description: The JSON query language behind Kyverno.
-weight: 12
+weight: 130
 ---
 
 [JMESPath](https://jmespath.org/) (pronounced "James path") is a JSON query language created by James Saryerwinnie and is the language that Kyverno supports to perform more complex selections of fields and values and also manipulation thereof by using one or more [filters](https://jmespath.org/specification.html#filter-expressions). If you're familiar with `kubectl` and Kubernetes already, this might ring a bell in that it's similar to [JSONPath](https://github.com/json-path/JsonPath). JMESPath can be used almost anywhere in Kyverno although is an optional component depending on the type and complexity of a Kyverno policy or rule that is being written. While many policies can be written with simple overlay patterns, others require more detailed selection and transformation. The latter is where JMESPath is useful.
@@ -16,7 +16,7 @@ In order to position yourself for success with JMESPath expressions inside Kyver
 
 2. `kyverno`, the Kyverno CLI [here](https://github.com/kyverno/kyverno/releases) or via [krew](https://krew.sigs.k8s.io/). Kyverno acts as a webhook (when run in-cluster) but also as a standalone CLI when run outside giving you the ability to test policies and, more recently, to test custom JMESPath filters which are endemic to only Kyverno. With the `jp` subcommand, it contains the functionality present in the upstream `jp` [CLI tool](https://github.com/jmespath/jp) and also newer capabilities. It effectively allows you to test out JMESPath expressions live in a command line interface by passing in a JSON document and seeing the results without having to repeatedly test Kyverno policies.
 
-3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. As of Kyverno 1.7.0, the Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
+3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
 
 4. `jq`, the JSON processor [here](https://stedolan.github.io/jq/download/). `jq` is an extremely popular tool for working with JSON documents and has its own filter ability, but it's also useful in order to format JSON on the terminal for better visuals.
 
@@ -58,7 +58,7 @@ When building a JMESPath expression, a dot (`.`) character is called a "sub-expr
 }
 ```
 
-When submitting a Pod, which matches the policy above, the result which gets created after Kyverno has mutated it would then look something like this.
+When submitting a Pod which matches the policy above, the result which gets created after Kyverno has mutated it would then look something like this.
 
 **Incoming Pod**
 
@@ -88,7 +88,7 @@ spec:
     image: busybox
 ```
 
-Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, as you might guess, the label would be `appns: bar`. And this is a nice segue into AdmissionReview resources.
+Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, the label would be `appns: bar`.
 
 {{% alert title="Remember" color="primary" %}}
 JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only works when fed with a JSON-encoded document. Although most work with Kubernetes resources using YAML, the API server will convert this to JSON internally and use that format when storing and sending objects to webhooks like Kyverno. This is why the program `yq` will be invaluable when building the correct expression based upon Kubernetes manifests written in YAML.
@@ -99,10 +99,10 @@ JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only wo
 Kyverno is an example, although there are many others, of an [admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-are-they). As the name implies, these are pieces of software which have some stake in whether a given resource is _admitted_ into the cluster or not. They may be either validating, mutating, or both. The latter applies to Kyverno as it has both capabilities. For a graphical representation of the order in which these requests make their way into Kyverno, see the [introduction page](/docs/introduction/#how-kyverno-works).
 
 {{% alert title="Note" color="info" %}}
-As the name "admission" implies, this process only takes place when an object _does not_ already exist. Pre-existing objects have already been admitted successfully in the past and therefore do not apply here. Certain other _operations_ on pre-existing objects, however, are subject to the admissions process including examples like executing (`exec`) commands inside Pods and deleting objects but, importantly, not when reading back objects.
+As the name "admission" implies, this process only takes place when an object _does not_ already exist. Pre-existing objects have already been admitted successfully in the past and therefore do not apply here. Certain other _operations_ on pre-existing objects, however, are subject to the admissions process including examples like executing (`exec`) commands inside Pods and deleting objects but, importantly, not when reading back objects. The act of reading, getting, or listing resources does not result in an admission review process.
 {{% /alert %}}
 
-When a resource that matches the criteria of a selection statement gets sent to the Kubernetes API server, after the API server performs some basic modifications to it, it then gets sent to webhooks which have told the API server via a MutatingWebhookConfiguration or ValidatingWebhookConfiguration resource--which Kyverno creates for you based upon the policies you write--that it wishes to be informed. The API server will "wrap" the matching resource in another resource called an [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request) which contains a bunch of other descriptive data about that request, for example what _type_ or request this is (like a creation or deletion), the user who submitted the request, and, most importantly, the contents of the resource itself. Given the simple Pod example above that a user wishes to be created in the `foo` Namespace, the AdmissionReview request that hits Kyverno might look like following.
+When a resource that matches the criteria of a selection statement gets sent to the Kubernetes API server, after the API server performs some basic modifications to it, it then gets sent to webhooks which have told the API server via a MutatingWebhookConfiguration or ValidatingWebhookConfiguration resource--which Kyverno creates for you based upon the policies you write--that it wishes to be informed. The API server will "wrap" the matching resource in another resource called an [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request) which contains a number of other descriptive data about that request, for example what _type_ or request this is (like a creation or deletion), the user who submitted the request, and, most importantly, the contents of the resource itself. Given the simple Pod example above that a user wishes to be created in the `foo` Namespace, the AdmissionReview request that hits Kyverno might look like following.
 
 ```json
 {
@@ -201,7 +201,7 @@ When developing policies for Kubernetes resources, there are several patterns wh
 
 In many Kubernetes resources, arrays of both objects and strings are very common. For example, in Pod resources, `spec.containers[]` is an array of objects where each object in the array may optionally specify `args[]` which is an array of strings. Policy very often must be able to peer into these arrays and match a given pattern with enough flexibility to implement a sufficiently advanced level of control. The JMESPath [flatten operator](https://jmespath.org/specification.html#flatten-operator) can help to simplify these checks so writing Kyverno policy becomes less verbose and require fewer rules.
 
-Pods may contain multiple containers and in different locations in the Pod spec tree, for example `ephemeralContainers[]`, `initContainers[]`, and `containers[]`. Regardless of where the container occurs, a container is still a container. And although it's possible to name each location in the spec individually, this produces rule or expression sprawl. It is often more efficient to collect all the containers together in a single query for processing. Consider the example Pod below.
+Pods may contain multiple containers and in different locations in the Pod spec, for example `ephemeralContainers[]`, `initContainers[]`, and `containers[]`. Regardless of where the container occurs, a container is still a container. And although it's possible to name each location in the spec individually, this produces rule or expression sprawl. It is often more efficient to collect all the containers together in a single query for processing. Consider the example Pod below.
 
 ```yaml
 apiVersion: v1
@@ -219,10 +219,10 @@ spec:
     image: nginx
 ```
 
-Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression after using `yq` to output it as a JSON document then piped into the [Kyverno CLI](/docs/kyverno-cli/#jp).
+Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/#jp).
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.containers[]"
+$ kyverno jp -f pod.yaml "spec.containers[]"
 [
   {
     "image": "busybox",
@@ -238,7 +238,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.containers[]"
 The above output shows the return of an array of objects as expected where each object is the container. But by using a [multi-select list](https://jmespath.org/specification.html#multiselect-list), the `initContainer[]` array may also be parsed.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers]"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
 [
   [
     {
@@ -262,7 +262,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers]"
 In the above, a multi-select list `spec.[initContainers, containers]` "wraps" the results of both `initContainers[]` and `containers[]` in parent array thereby producing an array consisting of multiple arrays. By using the [flatten operator](https://jmespath.org/specification.html#flatten-operator), these results can be collapsed into just a single array.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][]"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
 [
   {
     "image": "redis",
@@ -282,7 +282,7 @@ $ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][]"
 With just a single array in which all containers, regardless of where they are, occur in a single hierarchy, it becomes easier to process the data for relevant fields and take action. For example, if you wished to write a policy which forbid using the image named `busybox` in a Pod, by flattening all containers it becomes easier to isolate just the `image` field. Because it does not matter where `busybox` may be found, if found the entire Pod must be rejected. Therefore, while loops or other methods may work, a more efficient method is to simply gather all containers across the Pod and flatten them.
 
 ```sh
-$ yq e pod.yaml -o json | kyverno jp "spec.[initContainers, containers][].image"
+$ kyverno jp -f pod.yaml "spec.[initContainers, containers][].image"
 [
   "redis",
   "busybox",
@@ -315,7 +315,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-ingress-wildcard
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: block-ingress-wildcard
       match:
@@ -365,7 +365,7 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Number             | Number             | Number   |
 | Quantity or Number | Quantity or Number | Quantity |
 | Duration or Number | Duration or Number | Duration |
-<br>
+
 Some specific behaviors to note:
 
 * If a duration ('1h') and a number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
@@ -379,7 +379,7 @@ kind: ClusterPolicy
 metadata:
   name: add-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: add-demo
@@ -418,7 +418,7 @@ The `base64_decode()` filter takes in a base64-encoded string and produces the d
 | Input 1 | Output   |
 |---------|----------|
 | String  | String   |
-<br>
+
 Some specific behaviors to note:
 
 * Base64-encoded strings with newline characters will be printed back with them inline.
@@ -432,7 +432,7 @@ metadata:
   name: base64-decode-demo
 spec:
   background: false
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: base64-decode-demo
     match:
@@ -478,7 +478,6 @@ The `base64_encode()` filter is the inverse of the `base64_decode()` filter and 
 | Input 1 | Output   |
 |---------|----------|
 | String  | String   |
-<br>
 
 **Example:** This policy generates a Secret when a new Namespace is created the contents of which is the value of an annotation named `corpkey`.
 
@@ -519,8 +518,6 @@ The `compare()` filter is provided as an analog to the [inbuilt function to Gola
 | Input 1            | Input 2            | Output   |
 |--------------------|--------------------|----------|
 | String             | String             | Number   |
-
-<br>
 
 **Example:** This policy will write a new label called `dictionary` into a Service putting into order the values of two annotations if the order of the first comes before the second.
 
@@ -576,8 +573,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Duration           | Number             | Duration |
 | Duration           | Duration           | Number   |
 
-<br>
-
 **Example:** This policy will check every container in a Pod and ensure that memory limits are no more than 2.5x its requests.
 
 ```yaml
@@ -586,7 +581,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-resources-as-ratio
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -632,8 +627,6 @@ The `equal_fold()` filter is designed to provide text [case folding](https://www
 
 Related filters to `equal_fold()` are [`to_upper()`](#to_upper) and [`to_lower()`](#to_lower) which can also be used to normalize text for comparison.
 
-<br>
-
 **Example:** This policy will validate that a ConfigMap with a label named `dept` and the value of a key under `data` by the same name have the same case-insensitive value.
 
 ```yaml
@@ -642,7 +635,7 @@ kind: ClusterPolicy
 metadata:
   name: equal-fold-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-dept-label-data
@@ -700,11 +693,7 @@ $ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@
 |--------------------------|--------------------|------------|---------------|
 | Map (Object)             | String             | String     | Array/Object  |
 
-<br>
-
 Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
-
-<br>
 
 **Example:** This policy will take the labels on a Namespace `foobar` where a Bucket is deployed and add them as key/value elements to the `spec.forProvider.tagging.tagSet[]` array.
 
@@ -865,8 +854,6 @@ These last two collections when compared are `false` because one of the values o
 |--------------------|--------------------|----------|
 | Map (Object)       | Map (Object)       | Boolean  |
 
-<br>
-
 **Example:** This policy checks all incoming Deployments to ensure they have a matching, preexisting PodDisruptionBudget in the same Namespace. The `label_match()` filter is used in a query to count how many PDBs have a label set matching that of the incoming Deployment.
 
 ```yaml
@@ -875,7 +862,7 @@ kind: ClusterPolicy
 metadata:
   name: require-pdb
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   - name: require-pdb
@@ -930,8 +917,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 The inputs list is currently under construction.
 {{% /pageinfo %}}
 
-<br>
-
 **Example:** This policy checks every container and ensures that memory limits are evenly divisible by its requests.
 
 ```yaml
@@ -940,7 +925,7 @@ kind: ClusterPolicy
 metadata:
   name: modulo-demo
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -993,14 +978,12 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Number             | Number             | Number   |
 | Quantity           | Number             | Quantity |
 | Duration           | Number             | Duration |
-<br>
+
 Due to the [commutative property](https://www.khanacademy.org/math/arithmetic-home/multiply-divide/properties-of-multiplication/a/commutative-property-review) of multiplication, the ordering of inputs (unlike with `divide()`) is irrelevant.
 
 {{% pageinfo color="warning" %}}
 The inputs list is currently under construction.
 {{% /pageinfo %}}
-
-<br>
 
 **Example:** This policy sets the replica count for a Deployment to a value of two times the current number of Nodes in a cluster.
 
@@ -1073,11 +1056,7 @@ $ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.
 |--------------------|--------------------|---------------|
 | Array/string       | Array/string       | Map (Object)  |
 
-<br>
-
 Related filter to `object_from_list()` is its inverse, [`items()`](#items).
-
-<br>
 
 **Example:** This policy converts all the environment variables across all containers in a Pod to labels and adds them to that same Pod. Any existing labels will not be replaced but rather augmented with the converted list.
 
@@ -1162,8 +1141,6 @@ The `parse_json()` filter takes in a string of any valid encoded JSON and parses
 |--------------------|----------|
 | String             | Any      |
 
-<br>
-
 **Example:** This policy uses the `parse_json()` filter to read a ConfigMap where a specified key contains JSON-encoded data (an array of strings in this case) and sets the supplementalGroups field of a Pod, if not already supplied, to that list.
 
 ```yaml
@@ -1217,8 +1194,6 @@ The `parse_yaml()` filter is the YAML equivalent of the [`parse_json()`](#parse_
 |--------------------|----------|
 | String             | Any      |
 
-<br>
-
 **Example:** This policy parses a YAML document as the value of an annotation and uses the filtered value from a JMESPath expression in a variable substitution.
 
 ```yaml
@@ -1227,7 +1202,7 @@ kind: ClusterPolicy
 metadata:
   name: parse-yaml-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-goodbois
@@ -1286,8 +1261,6 @@ The `path_canonicalize()` filter is used to normalize or canonicalize a given pa
 |--------------------|-------------|
 | String             | String      |
 
-<br>
-
 **Example:** This policy uses the `path_canonicalize()` filter to check the value of each `hostPath.path` field in a volume block in a Pod to ensure it does not attempt to mount the Containerd host socket.
 
 ```yaml
@@ -1296,7 +1269,7 @@ kind: ClusterPolicy
 metadata:
   name: path-canonicalize-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: disallow-mount-containerd-sock
@@ -1331,8 +1304,6 @@ The `pattern_match()` filter is used to perform a simple, non-regex match by spe
 | String             | String             | Boolean  |
 | String             | Number             | Boolean  |
 
-<br>
-
 **Example:** This policy uses `pattern_match()` with dynamic inputs by fetching a pattern stored in a ConfigMap against an incoming Namespace label value.
 
 ```yaml
@@ -1341,7 +1312,7 @@ kind: ClusterPolicy
 metadata:
   name: pattern-match-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - match:
@@ -1407,8 +1378,6 @@ For example, `random('[0-9a-z]{5}')` will produce a string output of exactly 5 c
 |--------------------|----------|
 | String             | String   |
 
-<br>
-
 **Example:** This policy uses `random()` to mutate a new Secret to add a label with key `randomoutput` and the value of which is `random-` followed by 6 random characters composed of lower-case letters `a-z` and numbers `0-9`.
 
 ```yaml
@@ -1461,8 +1430,6 @@ regex_match('^[1-7]$','1')
 | String             | String             | Boolean  |
 | String             | Number             | Boolean  |
 
-<br>
-
 **Example:** This policy checks that a PersistentVolumeClaim resource contains an annotation named `backup-schedule` and its value conforms to a standard Cron expression string. Note that the regular expression in the first input has had an additional backslash added to each backslash to be valid YAML. To use this sample regex in other applications, remove one of each double backslash pair.
 
 ```yaml
@@ -1472,7 +1439,7 @@ metadata:
   name: regex-match-demo
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: validate-backup-schedule-annotation-cron
     match:
@@ -1504,8 +1471,6 @@ The `regex_replace_all()` filter is similar to the [`replace_all()`](#replace_al
 |----------------------------|--------------------|--------------------|---------------|
 | Regex (String)             | String             | Regex (String)     | String        |
 | Regex (String)             | Number             | Number             | String        |
-
-<br>
 
 **Example:** This policy mutates a Deployment having label named `retention` to set the last number to `0`. For example, an incoming Deployment with the label value of `days_37` would result in the value `days_30` after mutation.
 
@@ -1544,8 +1509,6 @@ The `regex_replace_all_literal()` filter is similar to the [`regex_replace_all()
 |----------------------------|--------------------|--------------------|---------------|
 | Regex (String)             | String             | String             | String        |
 | Regex (String)             | Number             | Number             | String        |
-
-<br>
 
 **Example:** This policy replaces the image registry for each image in every container so it comes from `myregistry.corp.com`. Note that, for images without an explicit registry such as `nginx:latest`, Kyverno will internally replace this to be `docker.io/nginx:latest` and thereby ensuring the regex pattern below matches.
 
@@ -1590,8 +1553,6 @@ replace('Lorem ipsum dolor sit amet foo ipsum bar ipsum', 'ipsum', 'muspi', `2`)
 | Input 1            | Input 2            | Input 3            | Input 4            | Output        |
 |--------------------|--------------------|--------------------|--------------------|---------------|
 | String             | String             | String             | Number             | String        |
-
-<br>
 
 **Example:** This policy replaces the rule on an Ingress resource so that the path field will replace the first instance of `/cart` with `/shoppingcart`.
 
@@ -1640,8 +1601,6 @@ The `replace_all()` filter is used to find and replace all instances of one stri
 |--------------------|--------------------|--------------------|---------------|
 | String             | String             | String             | String        |
 
-<br>
-
 **Example:** This policy uses `replace_all()` to replace the string `release-name---` with the contents of the annotation `meta.helm.sh/release-name` in the `workingDir` field under a container entry within a Deployment.
 
 ```yaml
@@ -1682,8 +1641,6 @@ The `semver_compare()` filter compares two strings which comply with the [semant
 |--------------------|--------------------|---------------|
 | String             | String             | Boolean       |
 
-<br>
-
 **Example:** This policy uses `semver_compare()` to check the attestations on a container image and denies it has been built with httpclient greater than version 4.5.0.
 
 ```yaml
@@ -1692,7 +1649,7 @@ kind: ClusterPolicy
 metadata:
   name: semver-compare-demo
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-sbom
@@ -1734,8 +1691,6 @@ The `split()` filter is used to take in an input string, a character or sequence
 |--------------------|--------------------|---------------|
 | String             | String             | Array/string  |
 
-<br>
-
 **Example:** This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).
 
 ```yaml
@@ -1744,7 +1699,7 @@ kind: ClusterPolicy
 metadata:
   name: split-demo
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
     - name: check-path
@@ -1807,8 +1762,6 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Quantity           | Quantity           | Number   |
 | Duration           | Duration           | Duration |
 
-<br>
-
 **Example:** This policy sets the value of a new label called `lessreplicas` to the value of the current number of replicas in a Deployment minus two so long as there are more than two replicas to start with.
 
 ```yaml
@@ -1840,6 +1793,403 @@ spec:
 </p>
 </details>
 
+### Time_add
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_add()` filter is used to take a starting, absolute time in RFC 3339 format, and add some duration to it. Duration can be specified in terms of seconds, minutes, and hours. For times not given in RFC 3339, use the `time_parse()` function to convert the source time into RFC 3339.
+
+The expression `time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time start (String)              | Time duration (String)          | Time end (String)          |
+
+**Example:** This policy uses `time_add()` in addition to `time_now_utc()` and `time_to_cron()` to get the current time and add four hours to it in order to write out the new schedule, in Cron format, necessary for a ClusterCleanupPolicy.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: automate-cleanup
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: cleanup
+    match:
+      any:
+      - resources:
+          kinds:
+          - PolicyException
+          namespaces:
+          - foo
+    generate:
+      apiVersion: kyverno.io/v2alpha1
+      kind: ClusterCleanupPolicy
+      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
+      synchronize: false
+      data:
+        metadata:
+          labels:
+            kyverno.io/automated: "true"
+        spec:
+          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
+          match:
+            any:
+            - resources:
+                kinds:
+                  - PolicyException
+                namespaces:
+                - "{{ request.namespace }}"
+                names:
+                - "{{ request.object.metadata.name }}"
+```
+
+</p>
+</details>
+
+### Time_after
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_after()` filter is used to determine whether one absolute time is after another absolute time where both times are in RFC 3339 format. The output is a boolean response where `true` if the end time is after the begin time and `false` if it is not.
+
+The expression `time_after('2023-01-12T14:07:55-05:00','2023-01-12T19:05:59Z')` results in the value `true`. The expression `time_after('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `false`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time end (String)                | Time begin (String)             | Boolean                    |
+
+**Example:** This policy uses `time_after()` in addition to `time_now_utc()` to deny ConfigMap creation if the current time is after the deadline for cluster decommissioning.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: decommission-policy
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: decomm-jan-12
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+      validate:
+        message: "This cluster is being decommissioned and no further resources may be created after January 12th."
+        deny:
+          conditions:
+            all:
+            - key: "{{ time_after('{{time_now_utc() }}','2023-01-12T00:00:00Z') }}"
+              operator: Equals
+              value: true
+```
+
+</p>
+</details>
+
+### Time_before
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_before()` filter is used to determine whether one absolute time is before another absolute time where both times are in RFC 3339 format. The output is a boolean response where `true` if the end time is before the begin time and `false` if it is not.
+
+The expression `time_before('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `true`. The expression `time_before('2023-01-12T19:05:59Z','2023-01-11T19:05:59Z')` results in the value `false`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time end (String)                | Time begin (String)             | Boolean                    |
+
+**Example:** This policy uses `time_before()` in addition to `time_now_utc()` to effectively set an expiration date for a policy. Up until the UTC time of 2023-01-31T00:00:00Z, the label `foo` must be present on a ConfigMap.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: expiration
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: expire-jan-31
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+      preconditions:
+        all:
+        - key: "{{ time_before('{{ time_now_utc() }}','2023-01-31T00:00:00Z') }}"
+          operator: Equals
+          value: true
+      validate:
+        message: "The foo label must be set."
+        pattern:
+          metadata:
+            labels:
+              foo: "?*"
+```
+
+</p>
+</details>
+
+### Time_between
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_between()` filter is used to check if a given time is between a range of two other times where all time is expected in RFC 3339 format.
+
+The expression `time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-15T19:05:59Z')` results in the value `true`. The expression `time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-11T19:05:59Z')` results in the value `false`.
+
+| Input 1                          | Input 2                         | Input 3                       | Output                     |
+|----------------------------------|---------------------------------|-------------------------------|----------------------------|
+| Time to check (String)           | Time start (String)             | Time end (String)             | Boolean                    |
+
+**Example:** This policy uses `time_between()` in addition to `time_now_utc()` to establish a boundary of a policy's function. Between 1 January 2023 and 31 January 2023, the label `foo` must be present on a ConfigMap.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: expiration
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: expire-jan-31
+      match:
+        any:
+        - resources:
+            kinds:
+            - ConfigMap
+      preconditions:
+        all:
+        - key: "{{ time_between('{{ time_now_utc() }}','2023-01-01T00:00:00Z','2023-01-31T23:59:59Z') }}"
+          operator: Equals
+          value: true
+      validate:
+        message: "The foo label must be set."
+        pattern:
+          metadata:
+            labels:
+              foo: "?*"
+```
+
+</p>
+</details>
+
+### Time_diff
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_diff()` filter calculates the amount of time between a start and end time where start and end are given in RFC 3339 format. The output, a string, is the duration and may be a negative duration.
+
+The expression `time_diff('2023-01-10T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"24h0m0s"`. The expression `time_diff('2023-01-12T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"-24h0m0s"`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time start (String)              | Time duration (String)          | Duration (String)          |
+
+**Example:** This policy uses the `time_diff()` filter in addition to `time_now_utc()` to ensure that a vulnerability scan for a given container image is no more than 24 hours old.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: require-vulnerability-scan
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 20
+  failurePolicy: Fail
+  rules:
+    - name: scan-not-older-than-one-day
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/myorg/myrepo:*"
+        attestations:
+        - predicateType: cosign.sigstore.dev/attestation/vuln/v1
+          attestors:
+          - entries:
+            - keyless:
+                subject: "https://github.com/myorg/myrepo/.github/workflows/*"
+                issuer: "https://token.actions.githubusercontent.com"
+                rekor:
+                  url: https://rekor.sigstore.dev
+          conditions:
+          - all:
+            - key: "{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"
+              operator: LessThanOrEquals
+              value: "24h"
+```
+
+</p>
+</details>
+
+### Time_now
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_now()` filter returns the current time in RFC 3339 format. The returned time will be presented as it is known to the Kubernetes Node itself and is not guaranteed to be in a specific time zone. There are no required inputs and the output is always an absolute time (string) in RFC 3339 format.
+
+| Input 1                          | Output                     |
+|----------------------------------|----------------------------|
+| None                             | Current time (String)      |
+
+Also note that in addition to calling `time_now()`, for new resources the then-current time can often be retrieved via the `metadata.creationTimestamp` field.
+
+**Example:** This policy uses the `time_now()` filter in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: automate-cleanup
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: cleanup
+    match:
+      any:
+      - resources:
+          kinds:
+          - PolicyException
+          namespaces:
+          - foo
+    generate:
+      apiVersion: kyverno.io/v2alpha1
+      kind: ClusterCleanupPolicy
+      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
+      synchronize: false
+      data:
+        metadata:
+          labels:
+            kyverno.io/automated: "true"
+        spec:
+          schedule: "{{ time_add('{{ time_now() }}','4h') | time_to_cron(@) }}"
+          match:
+            any:
+            - resources:
+                kinds:
+                  - PolicyException
+                namespaces:
+                - "{{ request.namespace }}"
+                names:
+                - "{{ request.object.metadata.name }}"
+```
+
+</p>
+</details>
+
+### Time_now_utc
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_now_utc()` filter returns the current UTC time in RFC 3339 format. The returned time will be presented in UTC regardless of the time zone returned. There are no required inputs and the output is always an absolute time (string) in RFC 3339 format.
+
+| Input 1                          | Output                     |
+|----------------------------------|----------------------------|
+| None                             | Current time (String)      |
+
+Also note that in addition to calling `time_now_utc()`, for new resources the then-current time can often be retrieved via the `metadata.creationTimestamp` field.
+
+**Example:** This policy uses the `time_now_utc()` filter in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: automate-cleanup
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: cleanup
+    match:
+      any:
+      - resources:
+          kinds:
+          - PolicyException
+          namespaces:
+          - foo
+    generate:
+      apiVersion: kyverno.io/v2alpha1
+      kind: ClusterCleanupPolicy
+      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
+      synchronize: false
+      data:
+        metadata:
+          labels:
+            kyverno.io/automated: "true"
+        spec:
+          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
+          match:
+            any:
+            - resources:
+                kinds:
+                  - PolicyException
+                namespaces:
+                - "{{ request.namespace }}"
+                names:
+                - "{{ request.object.metadata.name }}"
+```
+
+</p>
+</details>
+
+### Time_parse
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. The first input is any time in the source format, the second input is the actual time to convert which is expected to be in the format specified by the first input. The output is always the second input converted to RFC 3339.
+
+The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time format (String)             | Time to convert (String)        | Time in RFC 3339 (String)  |
+
+**Example:** This policy uses `time_parse()` to convert the value of the `thistime` annotation, expected to be in a different format, to RFC 3339 and rewriting that value.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: time
+spec:
+  rules:
+  - name: set-time
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            thistime: "{{ time_parse('Mon Jan 02 2006 15:04:05 -0700','{{ @ }}') }}"
+```
+
+</p>
+</details>
+
 ### Time_since
 
 <details><summary>Expand</summary>
@@ -1853,8 +2203,6 @@ The time format (layout) parameter is optional and will be defaulted to RFC3339 
 |----------------------------------|---------------------------------|-------------------------------|----------------------------|
 | Time format (String)             | Time start (String)             | Time end (String)             | Time difference (String)   |
 
-<br>
-
 **Example:** This policy uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than six months.
 
 ```yaml
@@ -1863,7 +2211,7 @@ kind: ClusterPolicy
 metadata:
   name: time-since-demo
 spec:
-  validationFailureAction: audit 
+  validationFailureAction: Audit 
   rules:
     - name: block-stale-images
       match:
@@ -1890,6 +2238,139 @@ spec:
 </p>
 </details>
 
+### Time_to_cron
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_to_cron()` filter takes in a time in RFC 3339 format and outputs the equivalent Cron-style expression.
+
+The expression `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`.
+
+| Input 1                          | Output                     |
+|----------------------------------|----------------------------|
+| Time (string)                    | Cron expression (String)   |
+
+**Example:** This policy uses the `time_to_cron()` filter in addition to `time_add()` and `time_now_utc()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: automate-cleanup
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: cleanup
+    match:
+      any:
+      - resources:
+          kinds:
+          - PolicyException
+          namespaces:
+          - foo
+    generate:
+      apiVersion: kyverno.io/v2alpha1
+      kind: ClusterCleanupPolicy
+      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
+      synchronize: false
+      data:
+        metadata:
+          labels:
+            kyverno.io/automated: "true"
+        spec:
+          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
+          match:
+            any:
+            - resources:
+                kinds:
+                  - PolicyException
+                namespaces:
+                - "{{ request.namespace }}"
+                names:
+                - "{{ request.object.metadata.name }}"
+```
+
+</p>
+</details>
+
+### Time_truncate
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_truncate()` filter takes in a time in RFC 3339 format and a duration and outputs the nearest rounded down time that is a multiple of that duration.
+
+The expression `time_truncate('2023-01-12T17:37:00Z','1h')` results in the output `"2023-01-12T17:00:00Z"`. The expression `time_truncate('2023-01-12T17:37:00Z','2h')` results in the output `"2023-01-12T16:00:00Z"`.
+
+| Input 1                          | Input 2                         | Output                     |
+|----------------------------------|---------------------------------|----------------------------|
+| Time in RFC 3339 (String)        | Duration (String)               | Time in RFC 3339 (String)  |
+
+**Example:** This policy uses `time_truncate()` to get the current value of the `thistime` annotation and round it down to the nearest multiple of 2 hours which, when `thistime` is set to a value of `"2021-01-02T23:04:05Z"` should result in the Service being mutated with the value `"2021-01-02T22:00:00Z"`.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: time
+spec:
+  rules:
+  - name: set-time
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            thistime: "{{ time_truncate('{{ @ }}','2h') }}"
+```
+
+</p>
+</details>
+
+### Time_utc
+
+<details><summary>Expand</summary>
+<p>
+
+The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu.
+
+The expression `time_utc('2021-01-02T18:04:05-05:00')` results in the output `"2021-01-02T23:04:05Z"`. The expression `time_utc('2021-01-02T02:04:05+08:30')` results in the output `"2021-01-01T17:34:05Z"`.
+
+| Input 1                          | Output                     |
+|----------------------------------|----------------------------|
+| Time in RFC 3339 (string)        | Time in RFC 3339 (String)  |
+
+**Example:** This policy takes the time of the `thistime` annotation and rewrites it in UTC. 
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: time
+spec:
+  rules:
+  - name: set-time
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            thistime: "{{ time_utc('{{ @ }}') }}"
+```
+
+</p>
+</details>
+
 ### To_lower
 
 <details><summary>Expand</summary>
@@ -1900,8 +2381,6 @@ The `to_lower()` filter takes in a string and outputs the same string with all l
 | Input 1            | Output  |
 |--------------------|---------|
 | String             | String  |
-
-<br>
 
 **Example:** This policy sets the value of a label named `zonekey` to all caps.
 
@@ -1938,8 +2417,6 @@ The `to_upper()` filter takes in a string and outputs the same string with all u
 | Input 1            | Output  |
 |--------------------|---------|
 | String             | String  |
-
-<br>
 
 **Example:** This policy sets the value of a label named `deployzone` to all caps.
 
@@ -1979,8 +2456,6 @@ This filter is similar to [`truncate()`](#truncate). The `trim()` filter can be 
 |--------------------|--------------------|---------|
 | String             | String             | String  |
 
-<br>
-
 **Example:** This policy uses the `trim()` filter to remove the domain from an email value set in an annotation.
 
 ```yaml
@@ -2016,8 +2491,6 @@ The `truncate()` filter takes a string, a number, and shortens (truncates) that 
 | Input 1            | Input 2            | Output  |
 |--------------------|--------------------|---------|
 | String             | Number             | String  |
-
-<br>
 
 **Example:** This policy truncates the value of a label called `buildhash` to only take the first twelve characters.
 
@@ -2182,8 +2655,6 @@ The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certifi
 |--------------------|---------|
 | String             | Object  |
 
-<br>
-
 **Example:** This policy, designed to operate in background mode only, checks the certificates configured for webhooks and fails if any have an expiration time in the next week.
 
 ```yaml
@@ -2192,7 +2663,7 @@ kind: ClusterPolicy
 metadata:
   name: test-x509-decode
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: test-x509-decode

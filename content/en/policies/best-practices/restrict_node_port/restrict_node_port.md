@@ -1,7 +1,7 @@
 ---
 title: "Disallow NodePort"
 category: Best Practices
-version: 
+version: 1.6.0
 subject: Service
 policyType: "validate"
 description: >
@@ -19,6 +19,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Disallow NodePort
     policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
@@ -33,9 +34,10 @@ spec:
   rules:
   - name: validate-nodeport
     match:
-      resources:
-        kinds:
-        - Service
+      any:
+      - resources:
+          kinds:
+          - Service
     validate:
       message: "Services of type NodePort are not allowed."
       pattern:

@@ -1,7 +1,7 @@
 ---
 title: "Restrict node label creation"
 category: Sample
-version: 
+version: 1.6.0
 subject: Node, Label
 policyType: "validate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict node label creation
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Node, Label
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Node labels are critical pieces of metadata upon which many other applications and
       logic may depend and should not be altered or removed by regular users. Many cloud
@@ -35,9 +36,10 @@ spec:
   rules:
   - name: prevent-label-set
     match:
-      resources:
-        kinds:
-        - Node
+      any:
+      - resources:
+          kinds:
+          - Node
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"

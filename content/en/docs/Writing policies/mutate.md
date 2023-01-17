@@ -2,7 +2,7 @@
 title: Mutate Resources
 description: >
   Modify resource configurations.
-weight: 3
+weight: 30
 ---
 
 A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch or a strategic merge patch.
@@ -50,7 +50,7 @@ The `patchesJson6902` method can be useful when a specific mutation is needed wh
 
 One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/writing-policies/preconditions/) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](/docs/writing-policies/autogen/). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
 
-This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any namespace.
+This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any Namespace.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -112,7 +112,7 @@ metadata:
   name: policy-remove-label
 spec:
   rules:
-    - name: "Remove unwanted label"
+    - name: remove-unwanted-label
       match:
         any:
         - resources:
@@ -204,9 +204,9 @@ spec:
             name: "{{request.object.metadata.name}}"
         spec:
           containers:
-            - name: "nginx"
-              image: "nginx:latest"
-              imagePullPolicy: "Never"
+            - name: nginx
+              image: nginx:latest
+              imagePullPolicy: Never
               command:
               - ls
 ```
@@ -219,7 +219,7 @@ Like with `validate` rules, conditional anchors are supported on `mutate` rules.
 
 An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
-The mutate overlay rules support two types of anchors:
+The mutate overlay rules support three types of anchors:
 
 | Anchor             | Tag  | Behavior                                             |
 |--------------------|----- |----------------------------------------------------- |
@@ -247,7 +247,7 @@ metadata:
   name: policy-set-port
 spec:
   rules:
-  - name: "Set port"
+  - name: set-port
     match:
       any:
       - resources:
@@ -355,7 +355,7 @@ The anchor processing behavior for mutate conditions is as follows:
 
 ## Mutate Existing resources
 
-With Kyverno 1.7.0+, Kyverno supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
 
 Because these mutations occur on existing resources, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
 
@@ -371,10 +371,10 @@ This policy, which matches when the trigger resource named `dictionary-1` in the
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: "mutate-existing-secret"
+  name: mutate-existing-secret
 spec:
   rules:
-    - name: "mutate-secret-on-configmap-event"
+    - name: mutate-secret-on-configmap-event
       match:
         any:
         - resources:
@@ -402,11 +402,11 @@ By default, the above policy will not be applied when it is installed. This beha
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: "mutate-existing-secret"
+  name: mutate-existing-secret
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:
-    - name: "mutate-secret-on-configmap-event"
+    - name: mutate-secret-on-configmap-event
       match:
         any:
         - resources:
@@ -418,6 +418,10 @@ spec:
             - staging
 ...
 ```
+
+{{% alert title="Note" color="warning" %}}
+Installation of a mutate existing policy affects the `ValidatingWebhookConfiguration` Kyverno manages as opposed to traditional mutate rules affecting the `MutatingWebhookConfiguration`.
+{{% /alert %}}
 
 ### Variables Referencing Target Resources
 
@@ -516,9 +520,9 @@ metadata:
       add-sec-rule.add-sec.kyverno.io: added /spec/template/spec/containers/0/securityContext
 ```
 
-To troubleshoot the policy application failure, you can inspect `UpdateRequest` Custom Resource  to get details. Successful `UpdateRequests` are automatically cleaned up by Kyverno.
+To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
-For example, if the corresponding permission is not granted to Kyverno, you should see this error in the `updaterequest.status`:
+For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field:
 
 ```
 $ kubectl get ur -n kyverno
@@ -689,7 +693,8 @@ A variable `element` is added to the processing context on each iteration. This 
 Each `foreach` declaration can optionally contain the following declarations:
 
 * [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
-* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+* [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped.
+* `foreach`: a nested `foreach` declaration described below.
 
 For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
 
@@ -739,7 +744,7 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation}}"
-        operator: In
+        operator: AnyIn
         value:
         - CREATE
         - UPDATE
@@ -754,3 +759,62 @@ spec:
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
+
+### Nested foreach
+
+The `foreach` object also supports nesting multiple foreach declarations to form loops within loops. This is especially useful when the mutations you need to perform are either replacements or removals as these require the use of JSON patches (`patchesJson6902`). When using nested loops, the special variable `{{elementIndex}}` requires a loop number to identify which element to process. Preconditions are supported only at the top-level loop and not per inner loop.
+
+For example, consider a scenario in which you must replace all host names which end in `old.com` with `new.com` in an Ingress resource under the `spec.tls[].hosts[]` list. Because `spec.tls[]` is an array of objects, and `hosts[]` is an array of strings within each object, a `foreach` declaration must iterate over each object in the `tls[]` array and then internally loop over each host in the `hosts[]` array.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+  labels:
+    app: myingress
+spec:
+  rules:
+  - host: myhost.corp.com
+    http:
+      paths:
+      - backend:
+          service: 
+            name: myservice
+            port: 
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - foo.old.com
+    - bar.old.com
+    secretName: mytlscertsecret
+```
+
+This type of advanced mutation can be performed with nested foreach loops as shown below. Notice that in the JSON patch, the `path` value references the current index of `tls[]` as `{{elementIndex0}}` and the current index of `hosts[]` as `{{elementIndex1}}`. In the `value` field, the `{{element}}` variable still references the current value of the `hosts[]` array being processed.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: replace-image-registry
+spec:
+  background: false
+  rules:
+    - name: replace-dns-suffix
+      match:
+        any:
+          - resources:
+              kinds:
+                - Ingress
+      mutate:
+        foreach:
+          - list: request.object.spec.tls[]
+            foreach:
+              - list: "element.hosts"
+                patchesJson6902: |-
+                  - path: /spec/tls/{{elementIndex0}}/hosts/{{elementIndex1}}
+                    op: replace
+                    value: "{{ replace_all('{{element}}', '.old.com', '.new.com') }}"
+```

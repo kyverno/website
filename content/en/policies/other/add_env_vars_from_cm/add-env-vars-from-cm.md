@@ -1,7 +1,7 @@
 ---
 title: "Add Environment Variables from ConfigMap"
 category: Other
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -18,6 +18,7 @@ metadata:
   name: add-env-vars-from-cm
   annotations:
     policies.kyverno.io/title: Add Environment Variables from ConfigMap
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/category: Other
     policies.kyverno.io/description: >-
@@ -31,9 +32,10 @@ spec:
   rules:
   - name: add-env-vars-from-cm
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     mutate:
       patchStrategicMerge:
         spec:

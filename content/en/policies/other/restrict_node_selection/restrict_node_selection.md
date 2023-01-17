@@ -1,7 +1,7 @@
 ---
 title: "Restrict node selection"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Restrict node selection
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       The Kubernetes scheduler uses complex logic to determine the optimal placement
       for new Pods. Users who have access to set certain fields in a Pod spec
@@ -32,9 +33,10 @@ spec:
   rules:
   - name: restrict-nodeselector
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: Setting the nodeSelector field is prohibited.
       pattern:
@@ -42,9 +44,10 @@ spec:
           X(nodeSelector): "null"
   - name: restrict-nodename
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: Setting the nodeName field is prohibited.
       pattern:

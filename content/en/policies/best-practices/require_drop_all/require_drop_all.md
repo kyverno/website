@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
-    Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability.      
+    Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.
 ---
 
 ## Policy Definition
@@ -26,7 +26,8 @@ metadata:
       Capabilities permit privileged actions without giving full root access. All
       capabilities should be dropped from a Pod, with only those required added back.
       This policy ensures that all containers explicitly specify the `drop: ["ALL"]`
-      ability.      
+      ability. Note that this policy also illustrates how to cover drop entries in any
+      case although this may not strictly conform to the Pod Security Standards.
 spec:
   validationFailureAction: audit
   background: true

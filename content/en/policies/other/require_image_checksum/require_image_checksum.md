@@ -1,7 +1,7 @@
 ---
 title: "Require Images Use Checksums"
 category: Sample
-version: 
+version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Use of a SHA checksum when pulling an image is often preferable because tags
       are mutable and can be overwritten. This policy checks to ensure that all images
@@ -31,9 +32,10 @@ spec:
   rules:
   - name: require-image-checksum
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: "Images must use checksums rather than tags."
       pattern:

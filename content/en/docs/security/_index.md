@@ -1,10 +1,10 @@
 ---
-title: "Security"
-description: "Security Processes and Guidelines"
+title: Security
+description: Security Processes and Guidelines
 weight: 68
 ---
 
-Kyverno serves an admission controller and is a critical component of the Kubernetes control-plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
+Kyverno serves an admission controller and is a critical component of the Kubernetes control plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
 
 ## Disclosure Process
 
@@ -34,6 +34,7 @@ The Kyverno container images are available [here](https://github.com/orgs/kyvern
 With each release, the following artifacts are uploaded:
 
 - checksums.txt
+- install.yaml
 - kyverno-cli_v<version_number>_darwin_arm64.tar.gz
 - kyverno-cli_v<version_number>_darwin_x86_64.tar.gz
 - kyverno-cli_v<version_number>_linux_arm64.tar.gz
@@ -108,6 +109,54 @@ Note that the important fields to verify in the output are `optional.Issuer` and
 
 All three Kyverno images can be verified.
 
+## Verifying Provenance
+
+Kyverno creates and attests to the provenance of its builds using the [SLSA standard](https://slsa.dev/provenance/v0.1) and meets the SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) specification. The attested provenance may be verified using the `cosign` tool.
+
+```sh
+$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance ghcr.io/kyverno/kyverno:v1.9.0-beta.1 | jq .payload -r | base64 --decode | jq
+
+Verification for ghcr.io/kyverno/kyverno:v1.9.0-beta.1 --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - Existence of the claims in the transparency log was verified offline
+  - Any certificates were verified against the Fulcio roots.
+Certificate subject:  https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.4.0
+Certificate issuer URL:  https://token.actions.githubusercontent.com
+GitHub Workflow Trigger: push
+GitHub Workflow SHA: da8297b3c0ace39088061ec84a63e7a2efccbbaa
+GitHub Workflow Name: releaser
+GitHub Workflow Trigger kyverno/kyverno
+GitHub Workflow Ref: refs/tags/v1.9.0-beta.1
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v0.2",
+  "subject": [
+    {
+      "name": "ghcr.io/kyverno/kyverno",
+      "digest": {
+        "sha256": "36d26e870854991783b8eff71969c67d43747b4c5ac97fd5db7a71c1e2761d30"
+      }
+    }
+  ],
+  "predicate": {
+    "builder": {
+      "id": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.4.0"
+    },
+    "buildType": "https://github.com/slsa-framework/slsa-github-generator/container@v1",
+    "invocation": {
+      "configSource": {
+        "uri": "git+https://github.com/kyverno/kyverno@refs/tags/v1.9.0-beta.1",
+        "digest": {
+          "sha1": "da8297b3c0ace39088061ec84a63e7a2efccbbaa"
+        },
+        "entryPoint": ".github/workflows/release.yaml"
+      },
+      "parameters": {},
+      "environment": {
+      <snip>
+```
+
 ## Fetching the SBOM for Kyverno
 
 An SBOM (Software Bill of Materials) in [CycloneDX](https://cyclonedx.org/) JSON format is published for each Kyverno release, including pre-releases. Like signatures, SBOMs are stored in a separate repository at `ghcr.io/kyverno/sbom`. To download and verify the SBOM for a specific version, install Cosign and run:
@@ -136,7 +185,7 @@ The following sections discuss related best practices for Kyverno:
 
 ### Pod security
 
-Kyverno Pods are configured to follow security best practices:
+Kyverno Pods are configured to follow security best practices and conform to the [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) `restricted` profile:
 
 * `runAsNonRoot` is set to `true`
 * `privileged` is set to `false`
@@ -190,6 +239,8 @@ Kyverno creates the following validating webhook configurations:
 
 - `kyverno-policy-validating-webhook-cfg`: validates Kyverno policies with checks that cannot be performed via schema validation
 - `kyverno-resource-validating-webhook-cfg`: handles resource resource admission requests to apply matching Kyverno validate policy rules.
+- `kyverno-cleanup-validating-webhook-cfg`: handles cleanup policies
+- `kyverno-exception-validating-webhook-cfg`: handles policy exceptions
 
 #### Webhook Failure Mode
 

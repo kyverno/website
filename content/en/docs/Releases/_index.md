@@ -23,13 +23,13 @@ Major releases contain large features, design and architectural changes, and may
 
 #### MINOR release
 
-Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every few months helps balance speed and stability.
+Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every few months helps balance speed and stability. Vulnerabilities scored as either medium or low will be included in minor releases unless they coincide with an existing patch release.
 
 - Roughly every 3 months
 
 #### PATCH release
 
-Patch releases are for backwards-compatible bug fixes and very minor enhancements which do not impact stability or compatibility. Typically only critical fixes are selected for patch releases.
+Patch releases are for backwards-compatible bug fixes, very minor enhancements which do not impact stability or compatibility, or critical or high security vulnerabilities. Typically only critical fixes are selected for patch releases.
 
 - When critical fixes are required, or roughly each month
 
@@ -43,9 +43,9 @@ To test with the latest images for different release branches, the images are pu
 
 ### Issues
 
-Non-critical issues and features are always added to the next minor release milestone, by default. 
+Non-critical issues and features are always added to the next minor release milestone, by default.
 
-Critical issues, with no work-arounds, are added to the next patch release.
+Critical issues, with no workarounds, are added to the next patch release.
 
 ### Branches and PRs
 
@@ -61,9 +61,8 @@ Release branches and PRs are managed as follows:
 
 ### Release Planning
 
-A minor release will contain a mix of features, enhancements, and bug fixes. 
+A minor release will contain a mix of features, enhancements, and bug fixes.
 
 Major features follow the [Kyverno Design Proposal (KDP)](https://github.com/kyverno/KDP/) process.
 
 During the start of a release, there may be many issues assigned to the release milestone. The priorities for the release are discussed in the weekly contributor's meetings. As the release progresses several issues may be moved to the next milestone. Hence, if an issue is important it is important to advocate its priority early in the release cycle.
-

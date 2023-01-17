@@ -1,7 +1,7 @@
 ---
 title: "Spread Pods Across Nodes"
 category: Sample
-version: 
+version: 1.6.0
 subject: Deployment, Pod
 policyType: "mutate"
 description: >
@@ -20,6 +20,7 @@ metadata:
     policies.kyverno.io/title: Spread Pods Across Nodes
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Deployment, Pod
+    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Deployments to a Kubernetes cluster with multiple availability zones often need to
       distribute those replicas to align with those zones to ensure site-level failures
@@ -30,12 +31,13 @@ spec:
     - name: spread-pods-across-nodes
       # Matches any Deployment with the label `distributed=required`
       match:
-        resources:
-          kinds:
-          - Deployment
-          selector:
-            matchLabels:
-              distributed: required
+        any:
+        - resources:
+            kinds:
+            - Deployment
+            selector:
+              matchLabels:
+                distributed: required
       # Mutates the incoming Deployment.
       mutate:
         patchStrategicMerge:

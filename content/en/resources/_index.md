@@ -67,8 +67,8 @@ type: docs
 
 {{< youtube id="Mukbfbr2b_k" start="1053" class="video" >}}
 
-
 {{% /videos %}}
+
 
 {{% videos %}}
 
@@ -77,6 +77,12 @@ type: docs
 {{< youtube id="0cJAfmQ7Emg" start="0020" class="video" >}}
 
 {{< youtube id="ZrOtTELNLyg" start="633" class="video" >}}
+
+{{% /videos %}}
+
+{{% videos %}}
+
+{{< youtube id="T9pXLmb61Vw" start="0" class="video" >}}
 
 {{% /videos %}}
 
@@ -97,23 +103,13 @@ type: docs
 (latest to oldest)
 
 - [Why Kubernetes Policies are a Day-0 concern](https://nirmata.com/kubernetes-policies-should-be-a-day-0-concern/), November 2022
-
 - [Kyverno 1.8: Native Pod Security, YAML signing, and More!](https://nirmata.com/kyverno-v1-8-0-native-pod-security-yaml-signing-and-more/), October, 2022
-
 - [Reloading Secrets and ConfigMaps with Kyverno Policies](https://nirmata.com/reloading-secrets-and-configmaps-with-kyverno/), September, 2022
-
 - [Protect the pipe! Secure CI/CD pipelines with a policy-based approach using Tekton and Kyverno Policies](https://nirmata.com/protect-the-pipe-secure-ci-cd-pipelines-with-a-policy-based-approach-using-tekton-and-kyverno/), August 2022
-
 - [The 2 minute test for Kubernetes Pod Security](https://nirmata.com/the-2-minute-test-for-kubernetes-pod-security/), July 2022
-
 - [Governing Multi-Tenant Kubernetes Clusters with Kyverno](https://medium.com/compass-true-north/governing-multi-tenant-kubernetes-clusters-with-kyverno-3e11ba4a64ad), July 2022
-
-- [Governing Multi-Tenant Kubernetes Clusters with Kyverno](https://medium.com/compass-true-north/governing-multi-tenant-kubernetes-clusters-with-kyverno-3e11ba4a64ad), July 2022
-
 - [Kyverno v1.7.0 Mutate and generate existing resources is here](https://nirmata.com/2022/06/03/kyverno-v1-7-0-mutate-and-generate-existing-resources-is-here/), June 2022
-
 - [Securing Kubernetes with Kyverno](https://cloudyuga.guru/hands_on_lab/kyverno-introduction/), January 2022
-
 - [No! You shall not pass! Kyverno’s here!](https://medium.com/@ul_Timate/no-you-shall-not-pass-kyvernos-here-def1d376a4f8), December 2021
 - [Admission Controller for Secure Supply Chain Verification - Kyverno](https://boxboat.com/2021/12/06/secure-supply-chains-kyverno/), December 2021
 - [Enforcing Policy as Code using Kyverno in Kubernetes](https://dev.to/aws-builders/enforcing-policy-as-code-using-kyverno-in-kubernetes-3epk), October 2021
@@ -133,7 +129,7 @@ type: docs
 - [Easy as one-two-three policy management with Kyverno on Amazon EKS](https://aws.amazon.com/blogs/containers/easy-as-one-two-three-policy-management-with-kyverno-on-amazon-eks/), December 2020
 - [Kyverno, a New CNCF Sandbox Project, Offers Kubernetes-Native Policy Management](https://thenewstack.io/kyverno-a-new-cncf-sandbox-project-offers-kubernetes-native-policy-management/), November 2020
 - [Exploring Kyverno Series](https://neonmirrors.net/post/2020-11/exploring-kyverno-intro/), November 2020
-- [Policy-as-Code on Kubernetes with Kyverno](https://medium.com/better-programming/policy-as-code-on-kubernetes-with-kyverno-b144749f144), November 2020 
+- [Policy-as-Code on Kubernetes with Kyverno](https://medium.com/better-programming/policy-as-code-on-kubernetes-with-kyverno-b144749f144), November 2020
 - [Generate policies! Make life hassle free with Kyverno](https://evalsocket.dev/kyverno-generate-policy/), July 2020
 - [Deny Rules! Fine Grained Access Controls with Kyverno](https://medium.com/@shutting06/deny-rules-fine-grained-kubernetes-access-controls-with-kyverno-88eaffb7bc6), July 2020
 - [10 Kubernetes Best Practices](https://thenewstack.io/10-kubernetes-best-practices-you-can-easily-apply-to-your-clusters/), November 2019
@@ -150,3 +146,4 @@ type: docs
 - [CNCF Webinar - Keep Your Clusters Safe and Healthy](https://www.cncf.io/webinars/how-to-keep-your-clusters-safe-and-healthy/), May 2020
 - [VMware Code Meetup Video](https://www.youtube.com/watch?v=mgEmTvLytb0), April 2020
 - [Virtual Rejekts 2020 EU Presentation](https://www.youtube.com/watch?v=caFMtSg4A6I), May 2020
+
