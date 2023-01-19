@@ -78,7 +78,7 @@ These are persons who have full access to the project, including sensitive and d
 
 | Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Contributors | None                                                                  | Made at least five contributions to the project and appointed by 2 approvers or maintainers.  | CONTRIBUTORS.md                                   |
+| Contributors | None                                                                  | Made at least five contributions to the project and appointed by 2 maintainers.  | CONTRIBUTORS.md                                   |
 | Code Owner   | Active contributions, assist maintainers, review and approve contributions.                 | Highly experienced and active reviewer + contributor to a subproject.                         | Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member.                                           |
 | Maintainer   | Code Owner, monitor project growth, set direction and priorities for a subproject. | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
 
@@ -186,7 +186,7 @@ The following responsibilities apply to the subproject for which one would be an
 - Tracks and ensures adequate health of the modules and subprojects they are in charge of
 - Ensures adequate test coverage to confidently release new features and fixes
 - Ensures that tests are passing reliably (i.e. not flaky) and are fixed when they fail
-- Mentors and guides approvers, reviewers, and contributors
+- Mentors and guides code owners, reviewers, and contributors
 - Actively participates in the processes for discussion and decision making in the project
 - Merges Pull Requests and helps prepare releases
 - Makes and approves technical design decisions for the subproject
@@ -215,7 +215,7 @@ The roles used in this document are custom roles mapped according to the [GitHub
 | Project Role   | GitHub Role    |
 | -------------- | -------------- |
 | Contributor    | Triage         |
-| Approver       | Write          |
+| Code Owner     | Write          |
 | Maintainer     | Maintain       |
 | Administrator  | Admin          |
 
