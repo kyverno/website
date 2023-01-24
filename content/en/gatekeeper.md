@@ -1,13 +1,19 @@
 +++
-description = "Gatekeeper library mapping to Kyverno."
-title = "Gatekeeper"
+description = "Migration guidelines with policy mappings"
+title = "Gatekeeper Migration Guide"
 type = "policies"
 url = "/policies/gatekeeper/"
 +++
 
 <br/>
 
-## Gatekeeper to Kyverno Mapping
+### Migration Strategy
+
+One strategy for migration from Gatekeeper is to run both policy engines for some period of time, and incrementally migrate policies over to Kyverno. The Kyverno policies can be initially introduced in [`Audit` mode](/docs/applying-policies/) to assess results. Once ready, the Kyverno policies can be set to `Enforce` mode and the corresponding Gatekeeper policies can be removed.
+
+Mutation policies may require additional consideration and testing, as running both engines may result in overwrites. For these, and for custom or complex policies, it is recommended that the Kyverno policies first be tested using the [Kyverno CLI test comamnd](http://localhost:1313/docs/testing-policies/) and then deployed into a cluster.
+
+### Gatekeeper to Kyverno Policy Mapping
 
 The following table maps the [Gatekeeper library policies](https://github.com/open-policy-agent/gatekeeper-library) to the [Kyverno library policies](/policies). While there may be some minor variations in these mappings, anything more than tacit alterations are covered in the Notes section below the table.
 
