@@ -1,7 +1,7 @@
 ---
-title: "OVH Cloud"
-linkTitle: "OVH Cloud"
-description: "Cloud Provider"
+title: "OVHcloud"
+linkTitle: "OVHcloud"
+description: "Global Cloud Service Provider"
 type: docs
 ---
 
