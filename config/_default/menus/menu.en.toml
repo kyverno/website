@@ -1,7 +1,7 @@
 # Top-level navigation (horizontal)
 
 [[main]]
-  name = "About Kyverno"
+  name = "About"
   weight = -103
   url = "#td-block-1"
 
@@ -26,7 +26,7 @@
   url = "/community"
 
 [[main]]
-  name = "Support"
+  name = "Commercial"
   weight = -90
   url = "/support"
 
