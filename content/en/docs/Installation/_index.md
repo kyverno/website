@@ -45,7 +45,7 @@ Optionally, show all available chart versions for Kyverno.
 helm search repo kyverno -l
 ```
 
-Install Kyverno, with three replicas for high-availability, in a new namespace:
+Install Kyverno with three replicas for high-availability in a new Namespace:
 
 ```sh
  helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
