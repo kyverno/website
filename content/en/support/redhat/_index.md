@@ -1,6 +1,6 @@
 ---
-title: "Red Hat Openshift"
-linkTitle: "Red Hat Openshift"
+title: "Red Hat OpenShift"
+linkTitle: "Red Hat OpenShift"
 description: "Kubernetes management platform"
 type: docs
 ---
