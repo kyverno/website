@@ -78,8 +78,8 @@ These are persons who have full access to the project, including sensitive and d
 
 | Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Contributors | None                                                                  | Made at least five contributions to the project and appointed by 2 maintainers.  | CONTRIBUTORS.md                                   |
-| Code Owner   | Active contributions, assist maintainers, review and approve contributions.                 | Highly experienced and active reviewer + contributor to a subproject.                         | Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member.                                           |
+| Contributors | None                                                                  | Made at least five (5) contributions to the project and appointed by 2 maintainers.  | CONTRIBUTORS.md                                   |
+| Code Owner   | Active contributions, assist maintainers, review and approve contributions. | Made at least ten (10) significant contributions and appointed by 2 maintainers. Highly experienced and active reviewer + contributor to a subproject.                         | Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member.                                           |
 | Maintainer   | Code Owner, monitor project growth, set direction and priorities for a subproject. | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
 
 #### Contributors
@@ -88,7 +88,7 @@ Contributors are community members who have made some contribution in the past t
 
 **Checklist before becoming a Contributor**
 
-- Have at least 3 PRs successfully merged for any repositories under the Kyverno organization
+- Have at least five (5) PRs successfully merged for any repositories under the Kyverno organization
 - Member of the kyverno channel on Kubernetes and/or CNCF Slack
 - Attended one (1) Contributors Meeting as documented
 - Registered for the Kyverno [mailing list](https://groups.google.com/g/kyverno)
@@ -100,11 +100,11 @@ Contributors are community members who have made some contribution in the past t
 
 #### Code Owners
 
-Code Owners are a special type of contributor and have _significantly_ contributed and maintain an _active_ status within the organization. They can have issues and PRs assigned to them and are responsible for providing PR review. Unlike Contributors, Code Owners have responsibilities and must maintain an active status defined below to remain a Code Owner.
+Code Owners are a special type of contributor and have _significantly_ contributed and maintain an _active_ status within the organization. They can have issues and PRs assigned to them and are responsible for providing PR reviews. Unlike Contributors, Code Owners have responsibilities and must maintain an active status defined below to remain a Code Owner.
 
 **Checklist before becoming a Code Owner**
 
-- Have at least 5 PRs successfully merged for any combination of repositories under the Kyverno organization
+- Have at least ten (10) significant PRs successfully merged for any combination of repositories under the Kyverno organization
 - Member of the kyverno channel on Kubernetes and/or CNCF Slack
 - Attended five (5) Contributors Meetings as documented
 - Registered for the Kyverno [mailing list](https://groups.google.com/g/kyverno)
