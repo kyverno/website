@@ -153,13 +153,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 Kyverno can also be installed using a single installation manifest, however for production installation the Helm chart is the only supported method.
 
-This manifest path will always point to the latest `main` branch and is not guaranteed to be stable.
-
-```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
-```
-
-You can also pull from a release branch to install the stable releases including release candidates.
+Pull from a release branch to install the stable releases including release candidates.
 
 ```sh
 kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
@@ -233,14 +227,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno and expiration is set at one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
-```sh
-## Install Kyverno
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
-```
-
-{{% alert title="Note" color="info" %}}
-The above command installs the last released version of Kyverno, which may not be stable. This is not suitable for a production-grade install and Helm should instead be used.
-{{% /alert %}}
+Install Kyverno using one of the methods defined above.
 
 To check the Kyverno controller status, run the command:
 
@@ -553,10 +540,10 @@ Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm 
 
 ### Upgrade Kyverno with YAML manifest
 
-Apply the new manifest over the existing installation. Keep in mind the below example points to the latest code changes, not a release, and may therefore be unstable.
+Apply the new manifest over the existing installation.
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+kubectl apply -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
 ```
 
 ### Upgrade Kyverno with Helm
@@ -588,7 +575,7 @@ To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno depl
 ### Option 1 - Uninstall Kyverno with YAML manifest
 
 ```sh
-kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
 ```
 
 ### Option 2 - Uninstall Kyverno with Helm
