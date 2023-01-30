@@ -8,7 +8,7 @@ weight: 100
 Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.
 
 {{% alert title="Note" color="info" %}}
-Kyverno 1.9 adds support for including ReplicaSets and ReplicationControllers to auto-gen rules. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs.
+Kyverno 1.9 adds support for including ReplicaSets and ReplicationControllers to auto-gen rules. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs. Although these intermediary controllers have rules auto-generated, the Kyverno ConfigMap may need to be updated to remove default [resource filters](/docs/installation/#resource-filters) for them.
 {{% /alert %}}
 
 For example, when creating a validation policy like below which checks that all images come from an internal, trusted registry, the policy applies to all resources capable of generating Pods.
