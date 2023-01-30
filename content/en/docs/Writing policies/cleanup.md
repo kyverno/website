@@ -44,7 +44,7 @@ spec:
 
 Values from resources to be evaluated during a policy may be referenced with `target.*`.
 
-Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
+Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Role aggregation is supported allowing a separate ClusterRole to be created rather than editing an existing one. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
 
 ```sh
 Error from server: error when creating "ncleanpol.yaml": admission webhook "kyverno-cleanup-controller.kyverno.svc" denied the request: cleanup controller has no permission to delete kind Ingress
