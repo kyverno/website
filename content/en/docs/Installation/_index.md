@@ -45,7 +45,13 @@ Optionally, show all available chart versions for Kyverno.
 helm search repo kyverno -l
 ```
 
-Based on the manner in which you would like to install Kyverno, see either the [High Availability](#high-availability) or [Standalone](#standalone) options below.
+Install Kyverno with three replicas for high-availability in a new Namespace:
+
+```sh
+ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
+```
+
+See [High Availability](#high-availability) and [Standalone](#standalone) sections below for additional details.
 
 To install the Kyverno [Pod Security Standard policies](/policies/pod-security/) run the below Helm command after Kyverno has been installed.
 
