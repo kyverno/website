@@ -56,7 +56,7 @@ spec:
 A cluster administrator wishes to grant an exception to a Pod or Deployment named `important-tool` which will be created in the `delta` Namespace. A PolicyException resource is created which specifies the policy name and rule name which should be bypassed as well as the resource kind, Namespace, and name which may bypass it.
 
 {{% alert title="Note" color="info" %}}
-Auto-generated rules for Pod controllers must be specified along with the Pod controller requesting exception, if applicable.
+Auto-generated rules for Pod controllers must be specified along with the Pod controller requesting exception, if applicable. Since Kyverno's auto-generated rules are additive in nature, when specifying specific resource names of Pod controllers, it may be necessary to use a wildcard (`*`) to allow the Pods emitted from those controllers to be exempted.
 {{% /alert %}}
 
 ```yaml
@@ -80,7 +80,7 @@ spec:
         namespaces:
         - delta
         names:
-        - important-tool
+        - important-tool*
 ```
 
 A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule's definition.
