@@ -359,7 +359,8 @@ Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/acce
 - `kyverno:events`: creates, updates, and deletes events for policy results
 - `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
 - `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
-- `kyverno-cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup.
+- `kyverno-cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This is the top-level ClusterRole which aggregates other ClusterRoles for use by the cleanup controller.
+- `kyverno-cleanup-controller:core`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This ClusterRole is aggregated to `kyverno-cleanup-controller`.
 
 Because aggregated ClusterRoles are used, there is only one ClusterRoleBinding named `kyverno` which binds the `kyverno` ClusterRole to the `kyverno` ServiceAccount.
 
