@@ -84,6 +84,8 @@ type: docs
 
 {{< youtube id="T9pXLmb61Vw" start="0" class="video" >}}
 
+{{< youtube id="SYbh_TQHeOA" start="0" class="video" >}}
+
 {{% /videos %}}
 
 ## Meet the maintainers
@@ -146,4 +148,3 @@ type: docs
 - [CNCF Webinar - Keep Your Clusters Safe and Healthy](https://www.cncf.io/webinars/how-to-keep-your-clusters-safe-and-healthy/), May 2020
 - [VMware Code Meetup Video](https://www.youtube.com/watch?v=mgEmTvLytb0), April 2020
 - [Virtual Rejekts 2020 EU Presentation](https://www.youtube.com/watch?v=caFMtSg4A6I), May 2020
-
