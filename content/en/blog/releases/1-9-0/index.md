@@ -1,9 +1,9 @@
 ---
-date: 2023-01-10
+date: 2023-02-01
 title: "Kyverno 1.9 Released"
 linkTitle: "Kyverno 1.9"
 description: "Kyverno 1.9 released with new policy exceptions, cleanup policies, and more."
-draft: true
+draft: false
 ---
 
 ![kyverno](kyverno-horizontal.png)
@@ -41,7 +41,7 @@ spec:
         namespaces:
         - delta
         names:
-        - important-tool
+        - important-tool*
 ```
 
 Once a PolicyException is created, a resource which is selected by the exception and also applies to the policy and rule combo named in the exception will be allowed to circumvent the policy. As shown, it'll be quite useful, we think, for users who want those one-time exceptions to validate rules which are in `Enforce` mode although it works for other situations and rules as well. Access to creating PolicyExceptions can be controlled through a combination of Kubernetes RBAC, your own GitOps review processes, [YAML signing](/docs/writing-policies/validate/#manifest-validation) for integrity and tamper-prevention checks, and even Kyverno validate policies.

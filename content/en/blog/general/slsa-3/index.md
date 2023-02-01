@@ -1,9 +1,9 @@
 ---
-date: 2023-01-29
+date: 2023-02-01
 title: Kyverno and SLSA 3
 linkTitle: Kyverno and SLSA 3
 description: How the Kyverno project believes it is meeting SLSA Level 3 requirements.
-draft: true
+draft: false
 ---
 
 With the release of Kyverno 1.9, Kyverno has begun generating and attesting to the provenance of its release artifacts in the [SLSA](https://security.googleblog.com/2021/06/introducing-slsa-end-to-end-framework.html) standard and provisionally meet Level 3. This blog post attempts to explain a bit about SLSA and Level 3 and how we meet the requirements. Once the [Open Source Security Foundation](https://openssf.org/) (OpenSSF) establishes its conformance program, we hope to see official acknowledgement of this process.
