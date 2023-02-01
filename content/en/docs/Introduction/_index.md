@@ -53,10 +53,10 @@ To check the version, enter `kubectl version`.
 
 You have the option of installing Kyverno directly from the latest release manifest or using Helm. The release manifest should only be used for testing purposes; Helm is recommended for production.
 
-To install Kyverno using the latest release manifest (which may be a pre-release):
+To install Kyverno using a specific release:
 
 ```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
 ```
 
 You can also install Kyverno using Helm:

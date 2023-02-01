@@ -218,7 +218,7 @@ Variables from the `AdmissionReview` can also be combined with user-defined stri
 
 Let's look at an example of how this AdmissionReview data can be used in Kyverno policies.
 
-In the below `ClusterPolicy`, we wish to know which account created a given Pod resource. We can use information from the `AdmissionReview` contents, specifically the `username` key, to write this information out in the form of a label. Apply the following sample.
+In the below `ClusterPolicy`, we wish to know which account created a given Pod resource. We can use information from the `AdmissionReview` contents, specifically the `username` key, to write this information out in the form of an annotation. Apply the following sample.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -237,11 +237,11 @@ spec:
     mutate:
       patchStrategicMerge:
         metadata:
-          labels:
+          annotations:
             created-by: "{{request.userInfo.username}}"
 ```
 
-This sample will mutate all incoming Pod creation requests with a label named `created-by` and the value of the authenticated user based on their `kubeconfig`.
+This sample will mutate all incoming Pod creation requests with an annotation named `created-by` and the value of the authenticated user based on their `kubeconfig`.
 
 Create a simple Pod resource.
 
@@ -252,13 +252,11 @@ kubectl run busybox --image busybox:1.28
 Now `get` the newly-created `busybox` Pod.
 
 ```sh
-kubectl get po busybox --show-labels
-
-NAME       READY   STATUS    RESTARTS   AGE   LABELS
-busybox   0/1     Pending   0          25m   created-by=kubernetes-admin,run=busybox
+kubectl get po busybox -o jsonpath='{.metadata.annotations}'
+{"created-by":"kubernetes-admin"}
 ```
 
-In the output, we can clearly see the value of our `created-by` label is `kubernetes-admin` which, in this case, is the user who created the Pod.
+In the output, we can clearly see the value of our `created-by` annotation is `kubernetes-admin` which, in this case, is the user who created the Pod.
 
 ## Variables from container images
 

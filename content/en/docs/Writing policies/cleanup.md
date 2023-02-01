@@ -4,6 +4,10 @@ description: Automate the resource cleanup process by using a CleanupPolicy.
 weight: 67
 ---
 
+{{% alert title="Warning" color="warning" %}}
+Cleanup policies are an **alpha** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+{{% /alert %}}
+
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster defined in a new policy called a `CleanupPolicy`. Cleanup policies come in both cluster-scoped and Namespaced flavors; a `ClusterCleanupPolicy` being cluster scoped and a `CleanupPolicy` being Namespaced. A cleanup policy uses the familiar `match`/`exclude` block to select and exclude resources which are subjected to the cleanup process. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/writing-policies/preconditions/) and [deny rules](/docs/writing-policies/validate/#deny-rules) to query the contents of the selected resources in order to refine the selection process. And, lastly, a `schedule` field defines, in cron format, when the rule should run.
 
 {{% alert title="Note" color="info" %}}
@@ -40,7 +44,7 @@ spec:
 
 Values from resources to be evaluated during a policy may be referenced with `target.*`.
 
-Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
+Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Role aggregation is supported allowing a separate ClusterRole to be created rather than editing an existing one. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
 
 ```sh
 Error from server: error when creating "ncleanpol.yaml": admission webhook "kyverno-cleanup-controller.kyverno.svc" denied the request: cleanup controller has no permission to delete kind Ingress

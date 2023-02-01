@@ -1,9 +1,9 @@
 ---
-date: 2023-01-29
+date: 2023-02-01
 title: Kyverno and SLSA 3
 linkTitle: Kyverno and SLSA 3
 description: How the Kyverno project believes it is meeting SLSA Level 3 requirements.
-draft: true
+draft: false
 ---
 
 With the release of Kyverno 1.9, Kyverno has begun generating and attesting to the provenance of its release artifacts in the [SLSA](https://security.googleblog.com/2021/06/introducing-slsa-end-to-end-framework.html) standard and provisionally meet Level 3. This blog post attempts to explain a bit about SLSA and Level 3 and how we meet the requirements. Once the [Open Source Security Foundation](https://openssf.org/) (OpenSSF) establishes its conformance program, we hope to see official acknowledgement of this process.
@@ -154,7 +154,7 @@ The GitHub Action reusable workflow hosted by the SLSA GitHub Generator project 
 The build service's users can not falsify the provenance.
 
 **Kyverno Processes:**
-GitHub takes care of avoiding interference with the build system. GitHub uses ephemeral and isolated virtual machines, no one can persistently compromise this environment. GitHub automatically provisions a new VM for that job. When the job execution is finished, the VM is automatically decommissioned.
+GitHub takes care of avoiding interference with the build system. GitHub uses ephemeral and isolated virtual machines, no one can persistently compromise this environment. GitHub automatically provisions a new VM for that job. When the job execution is finished, the VM is automatically decommissioned. Use of the [SLSA GitHub generator](https://github.com/slsa-framework/slsa-github-generator) separates the signing from building so the Kyverno build itself never has access to the signing secrets. Use of OIDC-based secrets through Sigstore's [keyless signing](https://github.com/sigstore/cosign/blob/main/KEYLESS.md) means the ephemeral signing secret is associated only with one specific build making it easy to detect secret theft and an attempt at signing something else.
 
 ### Provenance Content Requirements
 

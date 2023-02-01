@@ -153,13 +153,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 Kyverno can also be installed using a single installation manifest, however for production installation the Helm chart is the only supported method.
 
-This manifest path will always point to the latest `main` branch and is not guaranteed to be stable.
-
-```sh
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
-```
-
-You can also pull from a release branch to install the stable releases including release candidates.
+Pull from a release branch to install the stable releases including release candidates.
 
 ```sh
 kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
@@ -233,14 +227,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno and expiration is set at one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
-```sh
-## Install Kyverno
-kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/release/install.yaml
-```
-
-{{% alert title="Note" color="info" %}}
-The above command installs the last released version of Kyverno, which may not be stable. This is not suitable for a production-grade install and Helm should instead be used.
-{{% /alert %}}
+Install Kyverno using one of the methods defined above.
 
 To check the Kyverno controller status, run the command:
 
@@ -359,7 +346,8 @@ Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/acce
 - `kyverno:events`: creates, updates, and deletes events for policy results
 - `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
 - `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
-- `kyverno-cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup.
+- `kyverno:cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This is the top-level ClusterRole which aggregates other ClusterRoles for use by the cleanup controller.
+- `kyverno:cleanup-controller:core`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This ClusterRole is aggregated to `kyverno-cleanup-controller`.
 
 Because aggregated ClusterRoles are used, there is only one ClusterRoleBinding named `kyverno` which binds the `kyverno` ClusterRole to the `kyverno` ServiceAccount.
 
@@ -427,27 +415,28 @@ The following flags can also be used to control the advanced behavior of Kyverno
 9. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
 10. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
 11. `enableTracing`: set to enable exposing traces. Default is `false`.
-12. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
-13. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-14. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
-15. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-16. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
-17. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
-18. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
-19. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
-20. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
-21. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
-22. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
-23. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
-24. `profilePort`: specifies port to enable profiling. Default is `6060`.
-25. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
-26. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
-27. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
-28. `splitPolicyReport`: splits ClusterPolicyReports and PolicyReports into individual reports per policy rather than a single entity per cluster and per Namespace. Useful when having Namespaces with many resources which apply to policies. Value is boolean. Deprecated in 1.8 and will be removed in 1.9.
-29. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-30. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
-31. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-32. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+12. `enablePolicyException`: set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
+13. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. Default is `kyverno`. Implies the `enablePolicyException` flag is set to `true`.
+14. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
+15. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+16. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
+17. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+18. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+19. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
+20. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
+21. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
+22. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
+23. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+24. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+25. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+26. `profilePort`: specifies port to enable profiling. Default is `6060`.
+27. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+28. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
+29. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+30. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+31. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+32. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+33. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
 
 ### Policy Report access
 
@@ -551,10 +540,10 @@ Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm 
 
 ### Upgrade Kyverno with YAML manifest
 
-Apply the new manifest over the existing installation. Keep in mind the below example points to the latest code changes, not a release, and may therefore be unstable.
+Apply the new manifest over the existing installation.
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+kubectl apply -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
 ```
 
 ### Upgrade Kyverno with Helm
@@ -586,7 +575,7 @@ To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno depl
 ### Option 1 - Uninstall Kyverno with YAML manifest
 
 ```sh
-kubectl delete -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
 ```
 
 ### Option 2 - Uninstall Kyverno with Helm
