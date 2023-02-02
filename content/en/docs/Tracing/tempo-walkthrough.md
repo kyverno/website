@@ -138,7 +138,7 @@ We can deploy Kyverno using Helm with the following command:
 
 ```shell
 helm upgrade --install kyverno --namespace kyverno --create-namespace --wait \
-  --devel --repo https://kyverno.github.io/kyverno kyverno \
+  --repo https://kyverno.github.io/kyverno kyverno \
   --values - <<EOF
 # kyverno controller
 extraArgs:
@@ -169,7 +169,7 @@ We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` pr
 
 ```shell
 helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
-  --devel --repo https://kyverno.github.io/kyverno kyverno-policies \
+  --repo https://kyverno.github.io/kyverno kyverno-policies \
   --values - <<EOF
 validationFailureAction: Enforce
 EOF
