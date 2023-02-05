@@ -12,7 +12,7 @@ A [policy](/docs/kyverno-policies/) contains one or more rules, and the followin
 
 * **validationFailureActionOverrides**: a ClusterPolicy attribute that specifies `validationFailureAction` Namespace-wise. It overrides `validationFailureAction` for the specified Namespaces.
 
-* **background**: controls if rules are applied to existing resources during a background scan. Defaults to "true".
+* **background**: controls scanning of existing resources to find potential violations and creating report of those violations during a background scan and is enabled by default.
 
 * **schemaValidation**: controls whether policy validation checks are applied. Defaults to "true". Kyverno will attempt to validate the schema of a policy and fail if it cannot determine it satisfies the OpenAPI schema definition for that resource. Can occur on either validate or mutate policies. Set to "false" to skip schema validation.
 
