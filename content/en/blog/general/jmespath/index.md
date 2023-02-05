@@ -177,3 +177,9 @@ The `pattern_match()` filter is used to perform a simple, non-regex match by spe
 #### Arguments
 **Input**: String, String
 **Output**: Boolean
+
+## --WIP--
+
+## Summary
+
+JMESPath is a powerful and robust tool for selecting, extracting and manipulating data in JSON.
