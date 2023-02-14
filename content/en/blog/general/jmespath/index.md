@@ -27,49 +27,12 @@ The `time_add()` filter is used to take a starting, absolute time in RFC 3339 fo
 #### Arguments
 - **Input**: Time start string, Time duration string
 - **Output**: Time end string
-#### Examples
-`time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`.
+#### Usecases
+**Example**: `time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`.
 
-This policy uses `time_add()` in addition to `time_now_utc()` and `time_to_cron()` to get the current time and add four hours to it in order to write out the new schedule, in Cron format, necessary for a ClusterCleanupPolicy.
+We can use `time_add()` to get the right input for other time based filters
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: automate-cleanup
-spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-  - name: cleanup
-    match:
-      any:
-      - resources:
-          kinds:
-          - PolicyException
-          namespaces:
-          - foo
-    generate:
-      apiVersion: kyverno.io/v2alpha1
-      kind: ClusterCleanupPolicy
-      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            kyverno.io/automated: "true"
-        spec:
-          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
-          match:
-            any:
-            - resources:
-                kinds:
-                  - PolicyException
-                namespaces:
-                - "{{ request.namespace }}"
-                names:
-                - "{{ request.object.metadata.name }}"
-```
+`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses `time_add()` in addition to `time_now_utc()` and `time_to_cron()` to get the current time and add four hours to it in order to write out the new schedule, in Cron format.
 
 ### Time_after
 
@@ -79,35 +42,12 @@ The `time_after()` filter is used to determine whether one absolute time is afte
 #### Arguments
 - **Input**: Time end (String), Time begin (String)
 - **Output**: Boolean
-#### Examples
-`time_after('2023-01-12T14:07:55-05:00','2023-01-12T19:05:59Z')` results in the value `true`.
+#### Usecases
+**Example**: `time_after('2023-01-12T14:07:55-05:00','2023-01-12T19:05:59Z')` results in the value `true`.
 
-This policy uses `time_after()` in addition to `time_now_utc()` to deny ConfigMap creation if the current time is after the deadline for cluster decommissioning.
+The `time_after()` filter can be used as a control condition.
+`"{{ time_after('{{time_now_utc() }}','2023-01-12T00:00:00Z') }}"` expression uses `time_after()` in addition to `time_now_utc()`. The resulting boolean can be used as control condition to allow or deny admission.
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: decommission-policy
-spec:
-  background: false
-  validationFailureAction: Enforce
-  rules:
-    - name: decomm-jan-12
-      match:
-        any:
-        - resources:
-            kinds:
-            - ConfigMap
-      validate:
-        message: "This cluster is being decommissioned and no further resources may be created after January 12th."
-        deny:
-          conditions:
-            all:
-            - key: "{{ time_after('{{time_now_utc() }}','2023-01-12T00:00:00Z') }}"
-              operator: Equals
-              value: true
-```
 ### Time_before
 
 #### Description
@@ -116,38 +56,12 @@ The `time_before()` filter is used to determine whether one absolute time is bef
 #### Arguments
 - **Input**: Time end (String), Time begin (String)
 - **Output**: Boolean
-#### Examples
-`time_before('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `true`.
+#### Usecase
+**Example**: `time_before('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `true`.
 
-This policy uses `time_before()` in addition to `time_now_utc()` to effectively set an expiration date for a policy. Up until the UTC time of 2023-01-31T00:00:00Z, the label `foo` must be present on a ConfigMap.
+The `time_before()` filter can be used as a control condition.
+`"{{ time_before('{{ time_now_utc() }}','2023-01-31T00:00:00Z') }}"` expression uses `time_before()` in addition to `time_now_utc()`. The resulting boolean can be used as control condition to allow or deny admission.
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: expiration
-spec:
-  background: false
-  validationFailureAction: Enforce
-  rules:
-    - name: expire-jan-31
-      match:
-        any:
-        - resources:
-            kinds:
-            - ConfigMap
-      preconditions:
-        all:
-        - key: "{{ time_before('{{ time_now_utc() }}','2023-01-31T00:00:00Z') }}"
-          operator: Equals
-          value: true
-      validate:
-        message: "The foo label must be set."
-        pattern:
-          metadata:
-            labels:
-              foo: "?*"
-```
 
 ### Time_between
 
@@ -156,39 +70,13 @@ The `time_between()` filter is used to check if a given time is between a range 
 
 #### Arguments
 - **Input**: Time to check (String), Time start (String), Time end (String)
-- **Output**: Boolean
-#### Examples
-`time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-15T19:05:59Z')` results in the value `true`.
+- **Output**: Boolean`a
+#### Usecases
+**Example**: `time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-15T19:05:59Z')` results in the value `true`.
 
-This policy uses `time_between()` in addition to `time_now_utc()` to establish a boundary of a policy's function. Between 1 January 2023 and 31 January 2023, the label `foo` must be present on a ConfigMap.
+The `time_between()` filter can be used as a control condition.
+`"{{ time_between('{{ time_now_utc() }}','2023-01-01T00:00:00Z','2023-01-31T23:59:59Z') }}"` expresssion uses `time_between()` in addition to `time_now_utc()` to establish a boundary of a policy's function. Between 1 January 2023 and 31 January 2023.
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: expiration
-spec:
-  background: false
-  validationFailureAction: Enforce
-  rules:
-    - name: expire-jan-31
-      match:
-        any:
-        - resources:
-            kinds:
-            - ConfigMap
-      preconditions:
-        all:
-        - key: "{{ time_between('{{ time_now_utc() }}','2023-01-01T00:00:00Z','2023-01-31T23:59:59Z') }}"
-          operator: Equals
-          value: true
-      validate:
-        message: "The foo label must be set."
-        pattern:
-          metadata:
-            labels:
-              foo: "?*"
-```
 ### Time_diff
 
 #### Description
@@ -196,45 +84,10 @@ The `time_diff()` filter calculates the amount of time between a start and end t
 #### Arguments
 - **Input**: Time start (String), Time duration (String)
 - **Output**: Duration (String) 
-#### Examples
-`time_diff('2023-01-10T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"24h0m0s"`.
+#### Usecases
+**Example**: `time_diff('2023-01-10T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"24h0m0s"`.
 
-This policy uses the `time_diff()` filter in addition to `time_now_utc()` to ensure that a vulnerability scan for a given container image is no more than 24 hours old.
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: require-vulnerability-scan
-spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 20
-  failurePolicy: Fail
-  rules:
-    - name: scan-not-older-than-one-day
-      match:
-        any:
-        - resources:
-            kinds:
-              - Pod
-      verifyImages:
-      - imageReferences:
-        - "ghcr.io/myorg/myrepo:*"
-        attestations:
-        - predicateType: cosign.sigstore.dev/attestation/vuln/v1
-          attestors:
-          - entries:
-            - keyless:
-                subject: "https://github.com/myorg/myrepo/.github/workflows/*"
-                issuer: "https://token.actions.githubusercontent.com"
-                rekor:
-                  url: https://rekor.sigstore.dev
-          conditions:
-          - all:
-            - key: "{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"
-              operator: LessThanOrEquals
-              value: "24h"
-```
+`"{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"` expression uses the `time_diff()` filter in addition to `time_now_utc()`. This filter can be used to ensure that a vulnerability scan for a given container image is no more than 24 hours old.
 
 ### Time_now
 
@@ -245,47 +98,10 @@ The `time_now()` filter returns the current time in RFC 3339 format.
 - **Input**: None
 - **Output**: Current Time (string)
 
-#### Examples
-This policy uses the `time_now()` filter in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+#### Usecases
+`time_now()` can be used to provide input for other jmes filter.
+`time_now()` filter can be used in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: automate-cleanup
-spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-  - name: cleanup
-    match:
-      any:
-      - resources:
-          kinds:
-          - PolicyException
-          namespaces:
-          - foo
-    generate:
-      apiVersion: kyverno.io/v2alpha1
-      kind: ClusterCleanupPolicy
-      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            kyverno.io/automated: "true"
-        spec:
-          schedule: "{{ time_add('{{ time_now() }}','4h') | time_to_cron(@) }}"
-          match:
-            any:
-            - resources:
-                kinds:
-                  - PolicyException
-                namespaces:
-                - "{{ request.namespace }}"
-                names:
-                - "{{ request.object.metadata.name }}"
-```
 ### Time_now_utc
 #### Description
 The `time_now_utc()` filter returns the current UTC time in RFC 3339 format. The returned time will be presented in UTC regardless of the time zone returned. 
@@ -293,47 +109,9 @@ The `time_now_utc()` filter returns the current UTC time in RFC 3339 format. The
 #### Arguments
 - **Input**: None
 - **Output**: Current Time (string)
-#### Examples
-This policy uses the `time_now_utc()` filter in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: automate-cleanup
-spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-  - name: cleanup
-    match:
-      any:
-      - resources:
-          kinds:
-          - PolicyException
-          namespaces:
-          - foo
-    generate:
-      apiVersion: kyverno.io/v2alpha1
-      kind: ClusterCleanupPolicy
-      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            kyverno.io/automated: "true"
-        spec:
-          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
-          match:
-            any:
-            - resources:
-                kinds:
-                  - PolicyException
-                namespaces:
-                - "{{ request.namespace }}"
-                names:
-                - "{{ request.object.metadata.name }}"
-```
+#### Usecases
+`time_now_utc()` can be used to provide input for other jmes filter.
+`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses the `time_now_utc()` filter in addition to `time_add()` and `time_to_cron()`. It can be used to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
 
 ### Time_parse
 #### Description
@@ -342,30 +120,10 @@ The `time_parse()` filter converts an input time, given some other format, to RF
 #### Arguments
 - **Input**: Time format (String), Time to convert (String)
 - **Output**: Time in RFC 3339 (String)
-#### Examples
-The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`.
+#### Usecases
+**Example**: `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`.
 
-This policy uses `time_parse()` to convert the value of the `thistime` annotation, expected to be in a different format, to RFC 3339 and rewriting that value.
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: time
-spec:
-  rules:
-  - name: set-time
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            thistime: "{{ time_parse('Mon Jan 02 2006 15:04:05 -0700','{{ @ }}') }}"
-```
+`time_parse()` can be used to convert one timeformat to another and can be used to make annotations.
 ### Time_since
 #### Description
 The `time_since()` filter is used to calculate the difference between a start and end period of time where the end may either be a static definition or the then-current time. 
@@ -373,40 +131,10 @@ The `time_since()` filter is used to calculate the difference between a start an
 #### Arguments
 - **Input**: Time format (String), Time start (String), Time end (String)
 - **Output**: Time difference (String)
-#### Examples
- `time_since('','2022-04-10T03:14:05-07:00','2022-04-11T03:14:05-07:00')` will result in the output of `"24h0m0s"`.
+#### Usecases
+**Example**: `time_since('','2022-04-10T03:14:05-07:00','2022-04-11T03:14:05-07:00')` will result in the output of `"24h0m0s"`.
 
- This policy uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than six months.
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: time-since-demo
-spec:
-  validationFailureAction: Audit 
-  rules:
-    - name: block-stale-images
-      match:
-        any:
-        - resources:
-            kinds:
-            - Pod
-      validate:
-        message: "Images built more than 6 months ago are prohibited."
-        foreach:
-        - list: "request.object.spec.containers"
-          context:
-          - name: imageData
-            imageRegistry:
-              reference: "{{ element.image }}"
-          deny:
-            conditions:
-              all:
-                - key: "{{ time_since('', '{{ imageData.configData.created }}', '') }}"
-                  operator: GreaterThan
-                  value: 4380h
-```
+`"{{ time_since('', '{{ imageData.configData.created }}', '') }}"` expression uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than a certain amount of time.
 
 ### Time_to_cron
 
@@ -416,49 +144,10 @@ The `time_to_cron()` filter takes in a time in RFC 3339 format and outputs the e
 #### Arguments
 - **Input**: Time (String)
 - **Output**: Cron expression (String)
-#### Examples
-`time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`.
+#### Usecases
+**Example**: `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`.
 
-This policy uses the `time_to_cron()` filter in addition to `time_add()` and `time_now_utc()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: automate-cleanup
-spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-  - name: cleanup
-    match:
-      any:
-      - resources:
-          kinds:
-          - PolicyException
-          namespaces:
-          - foo
-    generate:
-      apiVersion: kyverno.io/v2alpha1
-      kind: ClusterCleanupPolicy
-      name: polex-{{ request.namespace }}-{{ request.object.metadata.name }}-{{ random('[0-9a-z]{8}') }}
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            kyverno.io/automated: "true"
-        spec:
-          schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
-          match:
-            any:
-            - resources:
-                kinds:
-                  - PolicyException
-                namespaces:
-                - "{{ request.namespace }}"
-                names:
-                - "{{ request.object.metadata.name }}"
-```
+`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses the `time_to_cron()` filter in addition to `time_add()` and `time_now_utc()` and can be used to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
 
 ### Time_truncate
 #### Description
@@ -467,30 +156,11 @@ The `time_truncate()` filter takes in a time in RFC 3339 format and a duration a
 #### Arguments
 - **Input**: Time in RFC 3339 (String), Duration (String)
 - **Output**: Time in RFC 3339 (String)
-#### Examples
-`time_truncate('2023-01-12T17:37:00Z','1h')` results in the output `"2023-01-12T17:00:00Z"`. 
+#### Usecases
+**Example**: `time_truncate('2023-01-12T17:37:00Z','1h')` results in the output `"2023-01-12T17:00:00Z"`. 
 
-This policy uses `time_truncate()` to get the current value of the `thistime` annotation and round it down to the nearest multiple of 2 hours which, when `thistime` is set to a value of `"2021-01-02T23:04:05Z"` should result in the Service being mutated with the value `"2021-01-02T22:00:00Z"`.
+`"{{ time_truncate('{{ @ }}','2h') }}"` expression can be used to get the current value of the `thistime` annotation and round it down to the nearest multiple of 2 hours which, when `thistime` is set to a value of `"2021-01-02T23:04:05Z"` should result in the Service being mutated with the value `"2021-01-02T22:00:00Z"`.
 
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: time
-spec:
-  rules:
-  - name: set-time
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            thistime: "{{ time_truncate('{{ @ }}','2h') }}"
-```
 ### Time_utc
 #### Description
 The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu.
@@ -498,30 +168,11 @@ The `time_utc()` filter takes in a time in RFC 3339 format with a time offset an
 #### Arguments
 - **Input**: Time in RFC 3339 (String)
 - **Output**: Time in RFC 3339 (String)
-#### Examples
-`time_utc('2021-01-02T18:04:05-05:00')` results in the output `"2021-01-02T23:04:05Z"`.
+#### Usecases
+**Example**: `time_utc('2021-01-02T18:04:05-05:00')` results in the output `"2021-01-02T23:04:05Z"`.
 
-This policy takes the time of the `thistime` annotation and rewrites it in UTC. 
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: time
-spec:
-  rules:
-  - name: set-time
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            thistime: "{{ time_utc('{{ @ }}') }}"
-```
+`time_utc()`'s output can be used as an input for other JMES filters or as annotations.
+`"{{ time_utc('{{ @ }}') }}"` expression can be used as annotation for creation time.
 
 ## Summary
 
