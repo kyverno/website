@@ -1,12 +1,12 @@
 ---
-date: 2023-02-05
-title: Custom JMESPath in Kyverno
-linkTitle: Custom JMESPath in Kyverno
-description: How the Kyverno project uses the JSON query language, JMESPath.
+date: 2023-02-15
+title: New time related JMESPath filters in Kyverno!
+linkTitle: New time related JMESPath filters in Kyverno
+description: Use time in your filters now!.
 draft: false
 ---
 
-Kyverno allows complex selections and manipulation of fields and values almost anywhere using the JSON query language, JMESPath. This blog attempts to explain an bit about JMESPath and how it is used in Kyverno.
+Kyverno allows complex selections and manipulation of fields and values almost anywhere using the JSON query language, JMESPath. In release 1.9 we have added several new time related filters and this post briefly explains those new filters 
 
 ## About JMESPath
 
@@ -20,160 +20,44 @@ For in depth explaination of all JMESPath functions with example, refer to the [
 
 In Release 1.9 Kyverno has added several new custom filters for handling and manipulating time.
 ### Time_add
-
-#### Description
-The `time_add()` filter is used to take a starting, absolute time in RFC 3339 format, and add some duration to it. Duration can be specified in terms of seconds, minutes, and hours. For times not given in RFC 3339, use the `time_parse()` function to convert the source time into RFC 3339.
-
-#### Arguments
-- **Input**: Time start string, Time duration string
-- **Output**: Time end string
-#### Usecases
-**Example**: `time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`.
-
-We can use `time_add()` to get the right input for other time based filters
-
-`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses `time_add()` in addition to `time_now_utc()` and `time_to_cron()` to get the current time and add four hours to it in order to write out the new schedule, in Cron format.
+We have added a filter to do arithmetic addition of a duration to a given time. The `time_add()` filter takes a time and a duration and returns a time. For example, `time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`. Time add has been added for purposes like adding some time to the current time and passing it as an argument for other time related filters.
 
 ### Time_after
 
-#### Description
-The `time_after()` filter is used to determine whether one absolute time is after another absolute time where both times are in RFC 3339 format. The output is a boolean response where `true` if the end time is after the begin time and `false` if it is not.
-
-#### Arguments
-- **Input**: Time end (String), Time begin (String)
-- **Output**: Boolean
-#### Usecases
-**Example**: `time_after('2023-01-12T14:07:55-05:00','2023-01-12T19:05:59Z')` results in the value `true`.
-
-The `time_after()` filter can be used as a control condition.
-`"{{ time_after('{{time_now_utc() }}','2023-01-12T00:00:00Z') }}"` expression uses `time_after()` in addition to `time_now_utc()`. The resulting boolean can be used as control condition to allow or deny admission.
+`time_after()` filter is also a new addition to our library of filters. This is used to verify whether a time is after another time and returns a boolean. It can be used directly as a validation filter, where we can check if current time is greater than a specific time or not and make decisions based on that information.
 
 ### Time_before
 
-#### Description
-The `time_before()` filter is used to determine whether one absolute time is before another absolute time where both times are in RFC 3339 format.
-
-#### Arguments
-- **Input**: Time end (String), Time begin (String)
-- **Output**: Boolean
-#### Usecase
-**Example**: `time_before('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `true`.
-
-The `time_before()` filter can be used as a control condition.
-`"{{ time_before('{{ time_now_utc() }}','2023-01-31T00:00:00Z') }}"` expression uses `time_before()` in addition to `time_now_utc()`. The resulting boolean can be used as control condition to allow or deny admission.
-
-
+`time_before()` filter works similarly to the `time_after()` filter. This is used to verify whether a time is before another time and returns a boolean. For example, `time_before('2023-01-12T19:05:59Z','2023-01-13T19:05:59Z')` results in the value `true`. It can be used directly as a validation filter, where we can check if current time is less than a specific time or not and make decisions based on that information.
 ### Time_between
 
 #### Description
-The `time_between()` filter is used to check if a given time is between a range of two other times where all time is expected in RFC 3339 format.
-
-#### Arguments
-- **Input**: Time to check (String), Time start (String), Time end (String)
-- **Output**: Boolean`a
-#### Usecases
-**Example**: `time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-15T19:05:59Z')` results in the value `true`.
-
-The `time_between()` filter can be used as a control condition.
-`"{{ time_between('{{ time_now_utc() }}','2023-01-01T00:00:00Z','2023-01-31T23:59:59Z') }}"` expresssion uses `time_between()` in addition to `time_now_utc()` to establish a boundary of a policy's function. Between 1 January 2023 and 31 January 2023.
-
+The `time_between()` filter completes the collection of time comparision filters. This filter allows us to check whether a time occurs between a start time and an end time. It is used in the cases that require both `time_before()` and `time_after()` filter. For example, `time_between('2023-01-12T19:05:59Z','2023-01-01T19:05:59Z','2023-01-15T19:05:59Z')` results in the value `true`. It can be used directly as a validation filter, where we can check if current time is between two times or not and make decisions based on that information.
 ### Time_diff
 
-#### Description
-The `time_diff()` filter calculates the amount of time between a start and end time where start and end are given in RFC 3339 format. The output, a string, is the duration and may be a negative duration.
-#### Arguments
-- **Input**: Time start (String), Time duration (String)
-- **Output**: Duration (String) 
-#### Usecases
-**Example**: `time_diff('2023-01-10T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"24h0m0s"`.
-
-`"{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"` expression uses the `time_diff()` filter in addition to `time_now_utc()`. This filter can be used to ensure that a vulnerability scan for a given container image is no more than 24 hours old.
-
+The `time_diff()` filter is used to find how much time has passed between two time period. For example, `time_diff('2023-01-10T00:00:00Z','2023-01-11T00:00:00Z')` results in the value `"24h0m0s"`. It has been added for a common usecase where we want to check, whether a certain amount of time has been passed since an important event or not, such as to check whether 4 hours have passed since last scan was finished, we can use `time_diff()` filter like this `"{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"`
 ### Time_now
 
-#### Description
-The `time_now()` filter returns the current time in RFC 3339 format.
-
-#### Arguments
-- **Input**: None
-- **Output**: Current Time (string)
-
-#### Usecases
-`time_now()` can be used to provide input for other jmes filter.
-`time_now()` filter can be used in addition to `time_add()` and `time_to_cron()` to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+The `time_now()` filter, as the name suggests returns the current time. It has been introduced for the common case where we need current time as an argument for other filters. We require current time in several filters like `time_add()` and this is added for such cases.
 
 ### Time_now_utc
-#### Description
-The `time_now_utc()` filter returns the current UTC time in RFC 3339 format. The returned time will be presented in UTC regardless of the time zone returned. 
 
-#### Arguments
-- **Input**: None
-- **Output**: Current Time (string)
-#### Usecases
-`time_now_utc()` can be used to provide input for other jmes filter.
-`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses the `time_now_utc()` filter in addition to `time_add()` and `time_to_cron()`. It can be used to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
-
+The `time_now_utc()` filter works similar to `time_now()` where it returns the current time according to UTC. It has been introduced for the common case where we need current time as an argument for other filters.
 ### Time_parse
-#### Description
-The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. d
 
-#### Arguments
-- **Input**: Time format (String), Time to convert (String)
-- **Output**: Time in RFC 3339 (String)
-#### Usecases
-**Example**: `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`.
-
-`time_parse()` can be used to convert one timeformat to another and can be used to make annotations.
-### Time_since
-#### Description
-The `time_since()` filter is used to calculate the difference between a start and end period of time where the end may either be a static definition or the then-current time. 
-
-#### Arguments
-- **Input**: Time format (String), Time start (String), Time end (String)
-- **Output**: Time difference (String)
-#### Usecases
-**Example**: `time_since('','2022-04-10T03:14:05-07:00','2022-04-11T03:14:05-07:00')` will result in the output of `"24h0m0s"`.
-
-`"{{ time_since('', '{{ imageData.configData.created }}', '') }}"` expression uses `time_since()` to compare the time a container image was created to the present time, blocking if that difference is greater than a certain amount of time.
+The `Time_parse()` filter is an interesting addition where we can pass any time string in any format to convert it ino the Kyverno standard RFC 3339 format. It takes 2 arguments, the time format and the time string. For example, `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. This field has been added to allow standardization such that all the timestamps added as metadata and annotations follow the RFC 3339 format.
 
 ### Time_to_cron
 
-#### Description
-The `time_to_cron()` filter takes in a time in RFC 3339 format and outputs the equivalent Cron-style expression.
-
-#### Arguments
-- **Input**: Time (String)
-- **Output**: Cron expression (String)
-#### Usecases
-**Example**: `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`.
-
-`"{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"` expression uses the `time_to_cron()` filter in addition to `time_add()` and `time_now_utc()` and can be used to generate a ClusterCleanupPolicy from 4 hours after the triggering PolicyException is created, converting it into cron format for use by the ClusterCleanupPolicy.
+In kyverno, we use cron in several places to perform job scheduling. The cron expression enables users to schedule tasks to run periodically at a specified date/time. And it's naturally a great tool for automating lots of process runs, which otherwise would require human intervention. We have added a `time_to_cron()` filter to generate a cron expression from a time. For example, `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`. This filter can be used to generate things like ClusterCleanupPolicy.
 
 ### Time_truncate
-#### Description
-The `time_truncate()` filter takes in a time in RFC 3339 format and a duration and outputs the nearest rounded down time that is a multiple of that duration.
-
-#### Arguments
-- **Input**: Time in RFC 3339 (String), Duration (String)
-- **Output**: Time in RFC 3339 (String)
-#### Usecases
-**Example**: `time_truncate('2023-01-12T17:37:00Z','1h')` results in the output `"2023-01-12T17:00:00Z"`. 
-
-`"{{ time_truncate('{{ @ }}','2h') }}"` expression can be used to get the current value of the `thistime` annotation and round it down to the nearest multiple of 2 hours which, when `thistime` is set to a value of `"2021-01-02T23:04:05Z"` should result in the Service being mutated with the value `"2021-01-02T22:00:00Z"`.
+The `time_truncate()` filter is used to round the given time to the nearest duration which is specified in the arguments. For example,  `time_truncate('2023-01-12T17:37:00Z','1h')` results in the output `"2023-01-12T17:00:00Z"`. 
 
 ### Time_utc
 #### Description
-The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu.
-
-#### Arguments
-- **Input**: Time in RFC 3339 (String)
-- **Output**: Time in RFC 3339 (String)
-#### Usecases
-**Example**: `time_utc('2021-01-02T18:04:05-05:00')` results in the output `"2021-01-02T23:04:05Z"`.
-
-`time_utc()`'s output can be used as an input for other JMES filters or as annotations.
-`"{{ time_utc('{{ @ }}') }}"` expression can be used as annotation for creation time.
+The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu. It can be used in pair with `time_parse()` to convert it to UTC.
 
 ## Summary
 
-JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON.
+JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilitites of JMES filters in kyverno and have opened new usecases.
