@@ -8,7 +8,7 @@ draft: false
 
 The v1.9 release of Kyverno added several time related JMESPath filters. With this addition, users now can add time based rules in their Kyverno policies. This blog post aims to describe those new additions.
 
-## What is "JMESPath"
+## What is "JMESPath"?
 
 [JMESPath](https://jmespath.org/) (pronounced "James path") is a JSON query language that allows you to declaratively specify how to extract elements from a JSON document. It is similar to JSONPath in Kubernetes. It can be used almost anywhere in Kyverno. 
 
@@ -39,7 +39,7 @@ In v1.9 release, Kyverno added 11 new time related filters to fulfill the above 
 11. **Time_utc:** The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu. It can be used in pair with `time_parse()` to convert it to UTC.
 
 ## How to use it?
-An indepth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](https://main.kyverno.io/docs/writing-policies/jmespath/). 
+An in-depth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](https://main.kyverno.io/docs/writing-policies/jmespath/). 
 ## Summary
 
 JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilitites of JMES filters in kyverno and have opened new usecases.
