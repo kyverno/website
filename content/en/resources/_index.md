@@ -88,6 +88,10 @@ type: docs
 
 {{% /videos %}}
 
+## Video Playlists
+
+- [Kyverno training from Nirmata](https://www.youtube.com/playlist?list=PLgEqb619wcz-56b1PEctELLtNTYGdb2NP)
+
 ## Meet the maintainers
 
 {{% videos %}}
