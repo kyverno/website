@@ -81,7 +81,7 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: enforce
   rules:
   - name: check-for-labels
     match:
