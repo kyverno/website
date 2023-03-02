@@ -91,6 +91,7 @@ type: docs
 ## Video Playlists
 
 - [Kyverno training from Nirmata](https://www.youtube.com/playlist?list=PLgEqb619wcz-56b1PEctELLtNTYGdb2NP)
+- [Kyverno use cases](https://www.youtube.com/playlist?list=PLgEqb619wcz_tuBt9K6gRunpnUPqbPQAb)
 
 ## Meet the maintainers
 
