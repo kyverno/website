@@ -80,4 +80,13 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 	<img class="cncf-logo img-fluid" src="/images/logo_cloudnative.png" alt="Cloud Native Computing Foundation logo">
 </a>
 
+<br/>
+<br/>
+<br/>
+<br/>
+
+<div class="mt-8 mx-auto">
+	<small class="text-white">The Linux Foundation</small><small class="text-white">&reg; (TLF) has registered trademarks and uses trademarks.</small>
+</div>
+
 {{< /blocks/lead >}}
