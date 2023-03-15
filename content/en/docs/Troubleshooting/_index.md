@@ -98,7 +98,7 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 **Symptom**: I'm using AKS and Kyverno is using too much memory or CPU
 
-**Solution**: On AKS the kyverno webhooks will be mutated by the [Admissions Enforcer](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) that can lead to an endless update loop. To prevent that behaviour, you can set the annotation `"admissions.enforcer/disabled": true` to all kyverno webhooks. When installing via Helm, you can change the annotations with `config.webhookAnnotations`.
+**Solution**: On AKS the kyverno webhooks will be mutated by the AKS [Admissions Enforcer](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) Plugin, that can lead to an endless update loop. To prevent that behaviour, you can set the annotation `"admissions.enforcer/disabled": true` to all kyverno webhooks. When installing via Helm, you can add the annotation with `config.webhookAnnotations`.
 
 ## Kyverno is slow to respond
 
