@@ -385,7 +385,7 @@ And below allows for an inline variable with a nested object as well as a defaul
         # the default value may also be another variable, for example something from the AdmissionReview
         default: '{}'
         # jmespath expression that can be used to modify the `value` before it is assigned to the variable
-        jmespath: 'to_string(@)'
+        jmesPath: 'to_string(@)'
 ```
 
 Variables can reference other variables as well as shown below. Note that context variables are ordered; a variable consumed by another variable must be defined higher in the list of context variables.
