@@ -408,6 +408,75 @@ spec:
 </p>
 </details>
 
+### Sum
+
+<details><summary>Expand</summary>
+
+<p>
+
+The `sum()` filter very simply adds a list of elements and returns a result. The exception to this rule is `sum()`, which is described here. The official JMESPath library does not have the most fundamental arithmetic operators, such as add, subtract, multiply, and divide. `Sum()`, which is defined in our own JMESPath filters, is beneficial as a streamlined filter when a list of any type of values is needed to be summed, but [`sum()`](https://jmespath.org/specification.html#sum) in the JMESPath library is handy in that it accepts an array of integers as an input. See how sum() differs from the add() filter, which is used to add the values of two fields, in this case. If you want to sum the values in a list of fields, use sum() instead.
+
+`sum()` is value-aware (based on the formatting used for the inputs) just as `add()` and is capable of adding list of numbers, quantities, and durations without any form of unit conversion.
+
+Arithmetic filters like `sum()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
+| Input                 | Output   |
+|-----------------------|----------|
+| [Number]              | Number   |
+| [Quantity or Number]  | Quantity |
+| [Duration or Number]  | Duration |
+
+Some specific behaviors to note:
+
+* If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
+* Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
+
+**Example:** This policy denies a Pod if any of its containers specify memory requests and limits in excess of 200Mi.
+
+```
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-demo
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: add-demo
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: In
+        value: ["CREATE","UPDATE"]
+    validate:
+      message: "The total memory defined in requests and limits must not exceed 200Mi."
+      foreach:
+      - list: "{{ request.object.spec.containers }}"
+        body:
+          var: total_memory
+          value: "{{ sum([element.resources.requests.memory, element.resources.limits.memory], default='0') }}"
+        deny:
+          conditions:
+          - key: "{{ total_memory }}"
+            operator: GreaterThan
+            value: 200Mi
+```
+
+</p>
+
+</details>
+
 ### Base64_decode
 
 <details><summary>Expand</summary>
