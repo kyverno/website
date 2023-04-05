@@ -437,40 +437,64 @@ Some specific behaviors to note:
 * If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
 * Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
 
-**Example:** This policy denies a Pod if any of its containers specify memory requests and limits in excess of 200Mi.
+**Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in configmap.
 
-```
+```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: add-demo
+  name: restrict-storage-quota
+  annotations:
+    policies.kyverno.io/title: Restrict storage quota for volumes
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Volume
+    policies.kyverno.io/minversion: 1.8.0
+    policies.kyverno.io/description: >-
+      Kubernetes namespaces can only accommodate a maximum capacity of
+volume storage due to resources limitation for namespaces/tenants.
+      This policy restricts the capacity in Gigabytes of storage volumes as
+per ConfigMap, so that the number of maximum allowed resources can be
+modified on demand.
 spec:
   validationFailureAction: Enforce
-  background: false
+  background: true
   rules:
-  - name: add-demo
-    match:
-      any:
-      - resources:
+    - name: restrict-storage
+      match:
+        resources:
           kinds:
-          - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value: ["CREATE","UPDATE"]
-    validate:
-      message: "The total memory defined in requests and limits must not exceed 200Mi."
-      foreach:
-      - list: "{{ request.object.spec.containers }}"
-        body:
-          var: total_memory
-          value: "{{ sum([element.resources.requests.memory, element.resources.limits.memory], default='0') }}"
+            - Volume
+      preconditions:
+        all:
+        - key: "{{ request.operation || 'BACKGROUND' }}"
+          operator: AnyIn
+          value: [ "CREATE", "UPDATE" ]
+      context:
+        - name: customer-resource-quota
+          configMap:
+            name: osc-resource-quota
+            namespace: "{{ request.namespace }}"
+        - name: storage-count
+          apiCall:
+            urlPath: "/apis/storage.api.onmetal.de/v1alpha1/namespaces/{{
+request.namespace }}/volumes/"
+            jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" |
+sum([].to_number(@))"
+      validate:
+        message: "Only {{ \"customer-resource-quota\".data.\"
+limit.storage.gb\" }} GB storage are allowed. Already consumed {{
+\"storage-count\" }} GB onmetal storage. Trying to allocate additional {{
+request.object.metadata.labels.\"osc-storage-gb\" }} Gi of storage. Please
+contact the administrator to increase the quota."
         deny:
           conditions:
-          - key: "{{ total_memory }}"
-            operator: GreaterThan
-            value: 200Mi
+            any:
+            - key: "{{
+add((request.object.metadata.labels.\"osc-storage-gb\").to_number(@),
+\"storage-count\") }}"
+              operator: GreaterThan
+              value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"
+}}"
 ```
 
 </p>
