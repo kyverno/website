@@ -451,25 +451,26 @@ metadata:
     policies.kyverno.io/minversion: 1.8.0
     policies.kyverno.io/description: >-
       Kubernetes namespaces can only accommodate a maximum capacity of
-volume storage due to resources limitation for namespaces/tenants.
+      volume storage due to resources limitation for namespaces/tenants.
       This policy restricts the capacity in Gigabytes of storage volumes as
-per ConfigMap, so that the number of maximum allowed resources can be
-modified on demand.
+      per ConfigMap, so that the number of maximum allowed resources can be
+      modified on demand.
 spec:
   validationFailureAction: Enforce
   background: true
   rules:
-    - name: restrict-storage
-      match:
-        resources:
+  - name: restrict-storage
+    match:
+      any:
+      - resources:
           kinds:
-            - Volume
-      preconditions:
+          - Volume
+    preconditions:
         all:
         - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: AnyIn
           value: [ "CREATE", "UPDATE" ]
-      context:
+    context:
         - name: customer-resource-quota
           configMap:
             name: osc-resource-quota
@@ -480,7 +481,7 @@ spec:
 request.namespace }}/volumes/"
             jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" |
 sum([].to_number(@))"
-      validate:
+    validate:
         message: "Only {{ \"customer-resource-quota\".data.\"
 limit.storage.gb\" }} GB storage are allowed. Already consumed {{
 \"storage-count\" }} GB onmetal storage. Trying to allocate additional {{
