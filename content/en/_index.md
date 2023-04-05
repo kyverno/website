@@ -59,9 +59,9 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 ### Interested in learning and contributing?
 
 <p class="mt-5 mx-auto">
-	Sign up on our <a href="https://groups.google.com/g/kyverno">mailing list</a> 
-	or the <a href="https://slack.k8s.io/#kyverno">Kyverno channel on Kubernetes Slack</a> for discussions, and join 
-	our next community meeting. Check out the <a href="/community/">community page</a> for more details. 
+	Sign up on our <a href="https://groups.google.com/g/kyverno" target="_blank">mailing list</a> 
+	or the <a href="https://slack.k8s.io/#kyverno" target="_blank">Kyverno channel on Kubernetes Slack</a> for discussions, and join 
+	our next community meeting. Check out the <a href="/community/" target="_blank">community page</a> for more details. 
 </p>
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno) 
@@ -79,5 +79,14 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 <a href="https://www.cncf.io" target="blank">
 	<img class="cncf-logo img-fluid" src="/images/logo_cloudnative.png" alt="Cloud Native Computing Foundation logo">
 </a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+<div class="mt-8 mx-auto">
+	<small class="text-white">The Linux Foundation</small><small class="text-white">&reg; (TLF) has registered trademarks and uses trademarks.</small>
+</div>
 
 {{< /blocks/lead >}}
