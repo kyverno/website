@@ -437,6 +437,22 @@ Some specific behaviors to note:
 * If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
 * Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
 
+For example, given the following map below
+
+```json
+{
+  "numbers": ['2Ki','5Ki','8Ki']
+}
+```
+
+the `sum()` filter can sum up this array of entities and produce a result in the same type of entity (in this case, Quantity).
+
+```sh
+$ echo '{"numbers": ['2Ki','5Ki','8Ki']}' |  kyverno jp query "sum(numbers)"
+#sum(numbers)
+"15Ki"
+```
+
 **Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in a ConfigMap..
 
 ```yaml
@@ -481,6 +497,8 @@ contact the administrator to increase the quota."
               operator: GreaterThan
               value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"}}"
 ```
+
+
 
 </p>
 
