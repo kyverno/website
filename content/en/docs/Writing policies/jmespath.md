@@ -414,7 +414,7 @@ spec:
 
 <p>
 
-The `sum()` filter very simply adds a list of elements and returns a result. The exception to this rule is `sum()`, which is described here. The official JMESPath library does not have the most fundamental arithmetic operators, such as add, subtract, multiply, and divide. `Sum()`, which is defined in our own JMESPath filters, is beneficial as a streamlined filter when a list of any type of values is needed to be summed, but [`sum()`](https://jmespath.org/specification.html#sum) in the JMESPath library is handy in that it accepts an array of integers as an input. See how sum() differs from the add() filter, which is used to add the values of two fields, in this case. If you want to sum the values in a list of fields, use sum() instead.
+The sum() filter is a customized version of the default filter present in [upstream JMESPath](https://jmespath.org/specification.html#sum) which brings, in addition to the support for scalars (integers), the ability to sum duration and quantities. sum() is similar to add() with the difference that sum() accepts an array as an input while add() does not.
 
 `sum()` is value-aware (based on the formatting used for the inputs) just as `add()` and is capable of adding list of numbers, quantities, and durations without any form of unit conversion.
 
@@ -426,35 +426,24 @@ Arithmetic filters like `sum()` currently accept inputs in the following formats
 
 Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
 
-| Input                 | Output   |
-|-----------------------|----------|
-| [Number]              | Number   |
-| [Quantity or Number]  | Quantity |
-| [Duration or Number]  | Duration |
+| Input 1                | Output   |
+|----------------------- |----------|
+| Array/Number           | Number   |
+| Array/Quantity/Number  | Quantity |
+| Array/Duration/Number  | Duration |
 
 Some specific behaviors to note:
 
 * If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
 * Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
 
-**Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in configmap.
+**Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in a ConfigMap..
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: restrict-storage-quota
-  annotations:
-    policies.kyverno.io/title: Restrict storage quota for volumes
-    policies.kyverno.io/severity: high
-    policies.kyverno.io/subject: Volume
-    policies.kyverno.io/minversion: 1.8.0
-    policies.kyverno.io/description: >-
-      Kubernetes namespaces can only accommodate a maximum capacity of
-      volume storage due to resources limitation for namespaces/tenants.
-      This policy restricts the capacity in Gigabytes of storage volumes as
-      per ConfigMap, so that the number of maximum allowed resources can be
-      modified on demand.
 spec:
   validationFailureAction: Enforce
   background: true
@@ -477,10 +466,8 @@ spec:
             namespace: "{{ request.namespace }}"
         - name: storage-count
           apiCall:
-            urlPath: "/apis/storage.api.onmetal.de/v1alpha1/namespaces/{{
-request.namespace }}/volumes/"
-            jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" |
-sum([].to_number(@))"
+            urlPath: "/apis/storage.api.onmetal.de/v1alpha1/namespaces/{{request.namespace }}/volumes/"
+            jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" | sum([].to_number(@))"
     validate:
         message: "Only {{ \"customer-resource-quota\".data.\"
 limit.storage.gb\" }} GB storage are allowed. Already consumed {{
@@ -490,12 +477,9 @@ contact the administrator to increase the quota."
         deny:
           conditions:
             any:
-            - key: "{{
-add((request.object.metadata.labels.\"osc-storage-gb\").to_number(@),
-\"storage-count\") }}"
+            - key: "{{add((request.object.metadata.labels.\"osc-storage-gb\").to_number(@),\"storage-count\") }}"
               operator: GreaterThan
-              value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"
-}}"
+              value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"}}"
 ```
 
 </p>
