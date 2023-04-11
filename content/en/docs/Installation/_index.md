@@ -407,29 +407,29 @@ The following flags can also be used to control the advanced behavior of Kyverno
 1. `admissionReports`: enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. Default is `true`.
 2. `allowInsecureRegistry`: allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
 3. `autoUpdateWebhooks`: set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which match all kinds of resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
-4. `autogenInternals`: activates the [auto-generate](/docs/writing-policies/autogen/) rule calculation to write to `status` rather than the `.spec` field of Kyverno policies. Set to `true` by default. Set to `false` to disable this ability.
-5. `backgroundScan`: enables/disables background scans. `true` by default.
-6. `backgroundScanInterval`: sets the time interval when periodic background scans take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
-7. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
-8. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
-9. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
-10. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
-11. `enableTracing`: set to enable exposing traces. Default is `false`.
-12. `enablePolicyException`: set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
-13. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. Default is `kyverno`. Implies the `enablePolicyException` flag is set to `true`.
-14. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
-15. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
-16. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
-17. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-18. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
-19. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
-20. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
-21. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
-22. `eventsApplied` defines whether policy applied events are emitted or not. Default is `true`
-23. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
-24. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
-25. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
-26. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+4. `backgroundScan`: enables/disables background scans. `true` by default.
+5. `backgroundScanInterval`: sets the time interval when periodic background scans take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
+6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
+7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
+8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
+9.  `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+10. `enableTracing`: set to enable exposing traces. Default is `false`.
+11. `enablePolicyException`: set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
+12. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`.
+13. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
+14. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
+15. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
+16. `imageSignatureRepository`: specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+17. `kubeconfig`: specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate.
+18. `leaderElectionRetryPeriod`: controls the leader election renewal frequency. Default is `2s`.
+19. `loggingFormat`: determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
+20. `maxQueuedEvents`: defines the upper limit of events that are queued internally. Default is `1000`.
+21. `eventsApplied` defines whether policy applied events are emitted or not. Default is `true`
+22. `metricsPort`: specifies the port to expose prometheus metrics. Default is `8000`.
+23. `otelCollector`: sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+24. `otelConfig`: sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+25. `profile`: setting this flag to `true` will enable profiling. Default is `false`.
+26. `profileAddress`: Configures the address of the profiling server. Default is `""`.
 27. `profilePort`: specifies port to enable profiling. Default is `6060`.
 28. `protectManagedResources`: protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
 29. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
