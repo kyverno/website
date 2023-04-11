@@ -415,7 +415,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 9.  `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
 10. `enableTracing`: set to enable exposing traces. Default is `false`.
 11. `enablePolicyException`: set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
-12. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. Implies the `enablePolicyException` flag is set to `true`.
+12. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`.
 13. `forceFailurePolicyIgnore`: set to force Failure Policy to `Ignore`. Default is `false`.
 14. `genWorkers`: the number of workers for processing generate policies concurrently. Default is `10`.
 15. `imagePullSecrets`: specifies secret resource names for image registry access credentials. Only a single value accepted currently due to an upstream bug.
