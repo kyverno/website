@@ -408,6 +408,102 @@ spec:
 </p>
 </details>
 
+### Sum
+
+<details><summary>Expand</summary>
+
+<p>
+
+The sum() filter is a customized version of the default filter present in [upstream JMESPath](https://jmespath.org/specification.html#sum) which brings, in addition to the support for scalars (integers), the ability to sum duration and quantities. sum() is similar to add() with the difference that sum() accepts an array as an input while add() does not.
+
+`sum()` is value-aware (based on the formatting used for the inputs) just as `add()` and is capable of adding list of numbers, quantities, and durations without any form of unit conversion.
+
+Arithmetic filters like `sum()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
+
+| Input 1                | Output   |
+|----------------------- |----------|
+| Array/Number           | Number   |
+| Array/Quantity/Number  | Quantity |
+| Array/Duration/Number  | Duration |
+
+Some specific behaviors to note:
+
+* If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
+* Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
+
+For example, given the following map below
+
+```json
+{
+  "numbers": ['2Ki','5Ki','8Ki']
+}
+```
+
+the `sum()` filter can sum up this array of entities and produce a result in the same type of entity (in this case, Quantity).
+
+```sh
+$ echo '{"numbers": ['2Ki','5Ki','8Ki']}' |  kyverno jp query "sum(numbers)"
+#sum(numbers)
+"15Ki"
+```
+
+**Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in a ConfigMap..
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-storage-quota
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+  - name: restrict-storage
+    match:
+      any:
+      - resources:
+          kinds:
+          - Volume
+    preconditions:
+        all:
+        - key: "{{ request.operation || 'BACKGROUND' }}"
+          operator: AnyIn
+          value: [ "CREATE", "UPDATE" ]
+    context:
+        - name: customer-resource-quota
+          configMap:
+            name: osc-resource-quota
+            namespace: "{{ request.namespace }}"
+        - name: storage-count
+          apiCall:
+            urlPath: "/apis/storage.api.onmetal.de/v1alpha1/namespaces/{{request.namespace }}/volumes/"
+            jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" | sum([].to_number(@))"
+    validate:
+        message: "Only {{ \"customer-resource-quota\".data.\"
+limit.storage.gb\" }} GB storage are allowed. Already consumed {{
+\"storage-count\" }} GB onmetal storage. Trying to allocate additional {{
+request.object.metadata.labels.\"osc-storage-gb\" }} Gi of storage. Please
+contact the administrator to increase the quota."
+        deny:
+          conditions:
+            any:
+            - key: "{{add((request.object.metadata.labels.\"osc-storage-gb\").to_number(@),\"storage-count\") }}"
+              operator: GreaterThan
+              value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"}}"
+```
+
+
+
+</p>
+
+</details>
+
 ### Base64_decode
 
 <details><summary>Expand</summary>
