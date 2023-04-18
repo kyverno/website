@@ -1,5 +1,5 @@
 ---
-title: "Require Unique Uid Per Workload"
+title: "Require Unique UID per Workload"
 category: other
 version: 
 subject: Pod
@@ -17,6 +17,7 @@ kind: ClusterPolicy
 metadata:
   name: require-unique-uid-per-workload
   annotations:
+    policies.kyverno.io/title: Require Unique UID per Workload
     policies.kyverno.io/category: other
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
