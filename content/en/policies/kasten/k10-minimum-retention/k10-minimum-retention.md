@@ -31,6 +31,7 @@ metadata:
       To use different 
       This policy can also be used go reduce retentions lengths to enforce cost optimization.
 spec:
+  schemaValidation: false
   rules:
   - name: k10-minimum-retention
     match:
@@ -79,6 +80,10 @@ spec:
       patchesJson6902: |-
         - path: "/spec/retention"
           op: replace
-          value: {"hourly":24,"daily":30,"weekly":4,"monthly":3}
+          value:
+            hourly: 24
+            daily: 30
+            weekly: 4
+            monthly: 3
 
 ```

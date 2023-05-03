@@ -50,5 +50,7 @@ spec:
       message: "Update the aws-node daemonset to use IRSA."
       pattern:
         spec:
-          serviceAccountName: "!aws-node"
+          template:
+            spec:
+              serviceAccountName: "!aws-node"
 ```
