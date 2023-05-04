@@ -1,7 +1,7 @@
 ---
 title: "Add Default Resources"
 category: Other
-version: 1.6.0
+version: 1.7.0
 subject: Pod
 policyType: "mutate"
 description: >
@@ -20,9 +20,9 @@ metadata:
     policies.kyverno.io/title: Add Default Resources
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
-    kyverno.io/kyverno-version: 1.6.0
-    policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.10.0-alpha.2
+    policies.kyverno.io/minversion: 1.7.0
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Pods which don't specify at least resource requests are assigned a QoS class
@@ -47,10 +47,12 @@ spec:
         - CREATE
         - UPDATE
     mutate:
-      patchStrategicMerge:
-        spec:
-          containers:
-            - (name): "*"
+      foreach:
+      - list: "request.object.spec.containers[]"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - (name): "{{element.name}}"
               resources:
                 requests:
                   +(memory): "100Mi"

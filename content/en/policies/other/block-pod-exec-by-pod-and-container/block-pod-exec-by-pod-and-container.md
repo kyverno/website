@@ -35,7 +35,7 @@ spec:
       any:
       - resources:
           kinds:
-          - PodExecOptions
+          - Pod/exec
     preconditions:
       all:
       - key: "{{ request.operation || 'BACKGROUND' }}"

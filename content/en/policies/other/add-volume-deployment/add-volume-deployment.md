@@ -39,13 +39,18 @@ spec:
       any:
       - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"
         operator: Equals
-        value: "enabled"
+        value: enabled
     mutate:
       patchesJson6902: |-
         - op: add
-          path: /spec/template/spec/volumes
-          value: [{"name": "vault-secret","emptyDir": {"medium": "Memory"}}]
+          path: /spec/template/spec/volumes/-
+          value:
+            name: vault-secret
+            emptyDir:
+              medium: Memory
         - op: add
-          path: /spec/template/spec/containers/0/volumeMounts
-          value: [{"mountPath": "/secret","name": "vault-secret"}]
+          path: /spec/template/spec/containers/0/volumeMounts/-
+          value:
+            mountPath: /secret
+            name: vault-secret
 ```

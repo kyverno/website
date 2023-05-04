@@ -34,7 +34,7 @@ spec:
       any:
       - resources:
           kinds:
-          - PodExecOptions
+          - Pod/exec
     context:
     - name: nslabelexec
       apiCall:
