@@ -20,6 +20,7 @@ Kyverno follows the same support policy as the Kubernetes project which is an N-
 | 1.7.x                          | 1.21           | 1.23           |
 | 1.8.x                          | 1.23           | 1.25           |
 | 1.9.x                          | 1.24           | 1.26           |
+| 1.10.x                         | 1.24           | 1.26           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
@@ -27,7 +28,7 @@ Kyverno follows the same support policy as the Kubernetes project which is an N-
 
 ## Install Kyverno using Helm
 
-Kyverno can be deployed via a Helm chart--the only supported method for a production install--which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
+Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
 
 In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 
@@ -47,15 +48,15 @@ Optionally, show all available chart versions for Kyverno.
 helm search repo kyverno -l
 ```
 
-Install Kyverno with three replicas for high-availability in a new Namespace:
+Install Kyverno with a single replica for each of its controllers in a new Namespace called `kyverno`.
 
 ```sh
- helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
 ```
 
-See [High Availability](#high-availability) and [Standalone](#standalone) sections below for additional details.
+See the [High Availability](#high-availability) and [Standalone](#standalone) sections below for additional details.
 
-To install the Kyverno [Pod Security Standard policies](/policies/pod-security/) run the below Helm command after Kyverno has been installed.
+To install the Kyverno [Pod Security Standard policies](/policies/pod-security/), run the below Helm command after Kyverno has been installed.
 
 ```sh
 helm install kyverno-policies kyverno/kyverno-policies -n kyverno
@@ -106,27 +107,43 @@ ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to 
 
 Red Hat OpenShift contains a feature called [Security Context Constraints](https://docs.openshift.com/container-platform/4.11/authentication/managing-security-context-constraints.html) (SCC) which enforces certain security controls in a profile-driven manner. An OpenShift cluster contains several of these out of the box with OpenShift 4.11 preferring `restricted-v2` by default. The Kyverno Helm chart defines its own values for the Pod's `securityContext` object which, although it conforms to the upstream [Pod Security Standards' restricted profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted), may potentially be incompatible with your defined Security Context Constraints. Deploying the Kyverno Helm chart as-is on an OpenShift environment may result in an error similar to "unable to validate against any security context constraint". In order to get past this, deploy the Kyverno Helm chart with with the required securityContext flags/fields set to a value of `null`. OpenShift will apply the defined SCC upon deployment. If on OpenShift 4.11+, the `restricted-v2` profile is known to allow for successful deployment of the chart without modifying the Helm chart installation process.
 
+### Notes for AKS Users
+
+AKS uses an Admission Enforcer control the webhooks in an AKS cluster and will remove those that may impact system Namespaces. Since Kyverno registers as a webhook, this Admission Enforcer may remove Kyverno's webhook causing the two to fight over webhook reconciliation. See [this Microsoft Azure FAQ](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) for further information. When deploying Kyverno on an AKS cluster, set the Helm option `config.webhookAnnotations` to include the necessary annotation to disable the Admission Enforcer. Kyverno will configure its webhooks with this annotation to prevent their removal by AKS. The annotation that should be used is `"admissions.enforcer/disabled": true`. See the chart [README](https://github.com/kyverno/kyverno/blob/release-1.10/charts/kyverno/README.md) for more information.
+
 ### High Availability
 
-The official Helm chart is the recommended (and currently only supported) method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configurations to meet production needs. By setting `replicaCount=3`, the following will be automatically created and configured as part of the defaults. This is not an exhaustive list and may change. For all of the default values, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno) keeping in mind the release branch. You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs.
 
-- Kyverno running with three replicas
-- PodDisruptionBudget
-- Pod anti-affinity configured
-- Kyverno Namespace excluded
+Since Kyverno is comprised of separate controllers where each is installed as its own Kubernetes Deployment, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas does not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability/) for more complete details.
+
+The Helm chart offers parameters to configure multiple replicas for each controller. For example, a minimally-viable, highly-available, complete deployment of Kyverno would consist of the following values.
+
+```yaml
+admissionController.replicas: 3
+backgroundController.replicas: 2
+cleanupController.replicas: 2
+reportsController.replicas: 2
+```
+
+For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
 {{% alert title="Note" color="warning" %}}
-Kyverno does not support two replicas. For a highly-available installation, the only supported count is three.
+All Kyverno installations require the admission controller be among the controllers deployed. The admission controller does not support two replicas. For a highly-available installation, the only supported count is three.
 {{% /alert %}}
 
-By default, starting with the Helm chart version 2.5.0, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
+By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
 
 See also the [Namespace selectors](#namespace-selectors) section below and especially the [Security vs Operability](#security-vs-operability) section.
 
-Use Helm to create a Namespace and install Kyverno in a high availability configuration.
+Use Helm to create a Namespace and install Kyverno in a highly-available configuration.
 
 ```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
+--set admissionController.replicas=3 \
+--set backgroundController.replicas=2 \
+--set cleanupController.replicas=2 \
+--set reportsController.replicas=2
 ```
 
 The Kyverno [Pod Security Standard policies](/policies/pod-security/), an optional but recommended set of policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/), must be added separately after Kyverno is installed.
@@ -137,12 +154,12 @@ helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 
 ### Standalone
 
-A "standalone" installation of Kyverno is suitable for lab, test/dev, or small environments where node count is less than three. It configures a single replica for the Kyverno Deployment and omits many of the production-grade components.
+A "standalone" installation of Kyverno is suitable for lab, test/dev, or small environments where node count is less than three. It configures a single replica for each Kyverno Deployment and omits many of the production-grade components.
 
 Use Helm to create a Namespace and install Kyverno.
 
 ```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=1
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
 To install pre-releases, add the `--devel` switch to Helm.
@@ -153,12 +170,12 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 ## Install Kyverno using YAMLs
 
-Kyverno can also be installed using a single installation manifest, however for production installation the Helm chart is the only supported method.
+Kyverno can also be installed using a single installation manifest, however for production installations the Helm chart is the preferred and recommended method.
 
-Pull from a release branch to install the stable releases including release candidates.
+Pull from a tagged release to install Kyverno using the YAML manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
 ```
 
 ## Security vs Operability
