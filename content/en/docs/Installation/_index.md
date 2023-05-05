@@ -23,6 +23,8 @@ Kyverno follows the same support policy as the Kubernetes project which is an N-
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
+**NOTE:** The [Enterprise Kyverno](https://nirmata.com/kyverno-enterprise/) by Nirmata supports a wide range of Kubernetes versions for any Kyverno version. Refer to the Release Compatibility Matrix for the Enterprise Kyverno [here](https://docs.nirmata.io/n4k/nirmata-enterprise-kyverno/) or contact [Nirmata support](mailto:support@nirmata.com) for assistance.
+
 ## Install Kyverno using Helm
 
 Kyverno can be deployed via a Helm chart--the only supported method for a production install--which is accessible either through the Kyverno repo or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
