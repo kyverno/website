@@ -481,13 +481,22 @@ The `spec.failurePolicy` and `spec.webhookTimeoutSeconds` and [policy configurat
 
 ### Resource Filters
 
-Resource filters are a way to instruct Kyverno which AdmissionReview requests sent by the API server to disregard. This is not the same ability as configuration of the webhook. The Kubernetes kinds that should be ignored by policies can be filtered out by modifying the value of `data.resourceFilters` in the `kyverno` ConfigMap stored in Kyverno's Namespace. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Secret,*,*]` means that admissions of kind `Secret` in any Namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in Namespace `foo-system` having names beginning with `redis`.
+Resource filters are a way to instruct Kyverno which AdmissionReview requests sent by the API server to disregard. This is not the same ability as configuration of the webhook and the logical flow of a request from the API server to the Kyverno engine is shown below. In order for a given request to be fully processed by the Kyverno engine it must pass webhooks and then all the resource filters.
+
+```mermaid
+graph LR
+  id1["API Server"] --> id2["Webhook"]
+  id2 --> id3["Resource Filters"]
+  id3 --> id4["Kyverno engine"]
+```
+
+The Kubernetes kinds that should be ignored by policies can be filtered out by modifying the value of `data.resourceFilters` in Kyverno's ConfigMap stored in its Namespace. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Secret,*,*]` means that admissions of kind `Secret` in any Namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in Namespace `foo-system` having names beginning with `redis`.
 
 ```
 [Pod,foo-system,redis*]
 ```
 
-By default a number of kinds are skipped in the default configuration including Nodes, Events, APIService, SubjectAccessReview, and more.
+By default a number of kinds are skipped in the default configuration including Nodes, Events, APIService, SubjectAccessReview, and more. Filters may be added and removed according to your needs.
 
 ```yaml
 apiVersion: v1
@@ -500,7 +509,7 @@ data:
   resourceFilters: '[*,kyverno,*][Event,*,*][*,kube-system,*][*,kube-public,*][*,kube-node-lease,*][APIService,*,*][TokenReview,*,*][SubjectAccessReview,*,*][SelfSubjectAccessReview,*,*][Binding,*,*][ReplicaSet,*,*][AdmissionReport,*,*][ClusterAdmissionReport,*,*][BackgroundScanReport,*,*][ClusterBackgroundScanReport,*,*][ClusterRole,*,kyverno:*][ClusterRoleBinding,*,kyverno:*][ServiceAccount,kyverno,kyverno][ConfigMap,kyverno,kyverno][ConfigMap,kyverno,kyverno-metrics][Deployment,kyverno,kyverno][Job,kyverno,kyverno-hook-pre-delete][NetworkPolicy,kyverno,kyverno][PodDisruptionBudget,kyverno,kyverno][Role,kyverno,kyverno:*][RoleBinding,kyverno,kyverno:*][Secret,kyverno,kyverno-svc.kyverno.svc.*][Service,kyverno,kyverno-svc][Service,kyverno,kyverno-svc-metrics][ServiceMonitor,kyverno,kyverno-svc-service-monitor][Pod,kyverno,kyverno-test]'
 ```
 
-To modify the ConfigMap, use existing tools and processes to edit the contents. Changes to the ConfigMap will automatically be picked up at runtime. Resource filters may also be configured at installation time via a Helm value.
+Changes to the ConfigMap are read dynamically during runtime. Resource filters may also be configured at installation time via a Helm value.
 
 ### Namespace Selectors
 
