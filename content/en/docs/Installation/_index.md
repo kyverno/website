@@ -421,7 +421,7 @@ The following flags are used to control the behavior of Kyverno and must be set 
 
 ### Container Flags
 
-The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments. Unless otherwise stated, all container flags should be prefaced with two dashes (ex., `--autogenInternals`).
+The following flags can also be used to control the advanced behavior of Kyverno and must be set on the main `kyverno` container in the form of arguments. All container flags can be prefaced with one or two dashes (ex., `-admissionReports` or `--admissionReports`).
 
 1. `admissionReports`: enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. Default is `true`.
 2. `allowInsecureRegistry`: allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
@@ -431,7 +431,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 6. `clientRateLimitBurst`: configure the maximum burst for throttling. Uses the client default if zero. Default is `50`.
 7. `clientRateLimitQPS`: configure the maximum QPS to the control plane from Kyverno. Uses the client default if zero. Default is `20`.
 8. `disableMetrics`: specifies whether to enable exposing the metrics. Default is `false`.
-9.  `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+9. `dumpPayload`: toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
 10. `enableTracing`: set to enable exposing traces. Default is `false`.
 11. `enablePolicyException`: set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
 12. `exceptionNamespace`: set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`.
@@ -453,7 +453,7 @@ The following flags can also be used to control the advanced behavior of Kyverno
 28. `reportsChunkSize`: maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
 29. `serverIP`: Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
 30. `transportCreds`: set to the certificate authority secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-31. `-v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+31. `v`: sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
 32. `webhookRegistrationTimeout`: specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 33. `webhookTimeout`: specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
 
