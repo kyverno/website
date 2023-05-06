@@ -244,30 +244,46 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Option 1: Auto-generate a self-signed CA and certificate
 
-Kyverno can automatically generate a new self-signed Certificate Authority (CA) and a CA signed certificate to use for webhook registration. This is the default behavior when installing Kyverno and expiration is set at one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
+By default, Kyverno will automatically generate self-signed Certificate Authority (CA) and a leaf certificates for use in its webhook registrations. The CA certificate carries an expiration date of one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
-Install Kyverno using one of the methods defined above.
+After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
-To check the Kyverno controller status, run the command:
+Get all Secrets in Kyverno's Namespace.
 
 ```sh
-## Check pod status
-kubectl get pods -n <namespace>
+$ kubectl -n kyverno get secret
+NAME                                                      TYPE                 DATA   AGE
+kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca     kubernetes.io/tls    2      21d
+kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair   kubernetes.io/tls    2      21d
+kyverno-svc.kyverno.svc.kyverno-tls-ca                    kubernetes.io/tls    2      21d
+kyverno-svc.kyverno.svc.kyverno-tls-pair                  kubernetes.io/tls    2      21d
 ```
 
-If the Kyverno controller is not running, you can check its status and logs for errors:
+Get and decode the CA certificate used by the admission controller.
 
 ```sh
-kubectl describe pod <kyverno-pod-name> -n <namespace>
+$ kubectl -n kyverno get secret kyverno-svc.kyverno.svc.kyverno-tls-ca -o jsonpath='{.data.tls\.crt}' | step base64 -d | step certificate inspect --short
+X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
+  Subject:     *.kyverno.svc
+  Issuer:      *.kyverno.svc
+  Valid from:  2023-04-14T18:33:37Z
+          to:  2024-04-13T19:33:37Z
 ```
 
+Get and decode the certificate used to register the webhooks with the Kubernetes API server (assumes at least one validate policy is installed) and see the same CA root certificate is in use.
+
 ```sh
-kubectl logs -l app.kubernetes.io/name=kyverno -n <namespace>
+$ kubectl get validatingwebhookconfiguration kyverno-resource-validating-webhook-cfg -o jsonpath='{.webhooks[0].clientConfig.caBundle}' | step base64 -d | step certificate inspect --short
+X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
+  Subject:     *.kyverno.svc
+  Issuer:      *.kyverno.svc
+  Valid from:  2023-04-14T18:33:37Z
+          to:  2024-04-13T19:33:37Z
 ```
 
 #### Option 2: Use your own CA-signed certificate
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above). When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process.
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above). When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
 
 ##### 2.1. Generate a self-signed CA and signed certificate-key pair
 
