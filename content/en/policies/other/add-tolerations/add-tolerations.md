@@ -45,6 +45,10 @@ spec:
       patchesJson6902: |-
         - op: add
           path: "/spec/tolerations/-"
-          value: {"key":"org.com/role","operator":"Equal","value":"service","effect":"NoSchedule"}
+          value:
+            key: org.com/role
+            operator: Equal
+            value: service
+            effect: NoSchedule
 
 ```
