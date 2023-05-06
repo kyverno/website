@@ -1,5 +1,5 @@
 ---
-title: "Add prefix to exernal secret"
+title: "Add prefix to external secret"
 category: ExternalSecretOperator
 version: 1.6.0
 subject: ExternalSecret
@@ -17,7 +17,7 @@ kind: ClusterPolicy
 metadata:
   name: add-external-secret-prefix
   annotations:
-    policies.kyverno.io/title: Add prefix to exernal secret
+    policies.kyverno.io/title: Add prefix to external secret
     policies.kyverno.io/category: ExternalSecretOperator
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ExternalSecret
@@ -46,11 +46,10 @@ spec:
         patchesJson6902: |-
           - path: /spec/data/{{elementIndex}}/remoteRef
             op: add
-            value: {
-              "key" : "prefix-{{element.remoteRef.key}}", 
-              "property": {{element.remoteRef.property}},
-              "conversionStrategy": {{element.remoteRef.conversionStrategy}},
-              "decodingStrategy": {{element.remoteRef.decodingStrategy}}
-            } 
+            value:
+              key: "prefix-{{element.remoteRef.key}}"
+              property: "{{element.remoteRef.property}}"
+              conversionStrategy: "{{element.remoteRef.conversionStrategy}}"
+              decodingStrategy: "{{element.remoteRef.decodingStrategy}}"
 
 ```
