@@ -6,9 +6,37 @@ description: >
   Understand how to install and configure Kyverno.
 ---
 
-Kyverno can be installed using Helm or deploying from the YAML manifests directly. When using either of these methods, there are no other steps required to get Kyverno up and running.
+Kyverno provides multiple methods for installation: Helm and YAML manifest. When installing in a production environment, Helm is the recommended and most flexible method as it offers convenient configuration options to satisfy a wide range of customizations. Regardless of the method, Kyverno must always be installed in a dedicated Namespace; it must not be co-located with other applications in existing Namespaces including system Namespaces such as `kube-system`. The Kyverno Namespace should also not be used for deployment of other, unrelated applications and services.
 
-Kyverno must always be installed in a dedicated Namespace; it must not be co-located with other applications in existing Namespaces including system-level Namespaces such as `kube-system`.
+The diagram below shows a typical Kyverno installation featuring all available controllers.
+
+<img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
+<br/><br/>
+
+A standard Kyverno installation consists of a number of different components, some of which are optional.
+
+* **Deployments**
+  * Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, [Policy Exceptions](/docs/writing-policies/exceptions/), and the processing engine.
+  * Background controller (optional): The component responsible for processing of generate and mutate-existing rules.
+  * Reports controller (optional): The component responsible for handling of [Policy Reports](/docs/policy-reports/).
+  * Cleanup controller (optional): The component responsible for processing of [Cleanup Policies](/docs/writing-policies/cleanup/).
+* **Services**
+  * Services needed to receive webhook requests.
+  * Services needed for monitoring of metrics.
+* **ServiceAccounts**
+  * One ServiceAccount per controller to segregate and confine the permissions needed for each controller to operate on the resources for which it is responsible.
+* **ConfigMaps**
+  * ConfigMap for holding the main Kyverno configuration.
+  * ConfigMap for holding the metrics configuration.
+* **Secrets**
+  * Secrets for webhook registration and authentication with the API server.
+* **Roles and Bindings**
+  * Roles and ClusterRoles, Bindings and ClusterRoleBindings authorizing the various ServiceAccounts to act on the resources in their scope.
+* **Webhooks**
+  * ValidatingWebhookConfigurations for receiving both policy and resource validation requests.
+  * MutatingWebhookConfigurations for receiving both policy and resource mutating requests.
+* **CustomResourceDefinitions**
+  * CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
 
 ## Compatibility Matrix
 
@@ -28,7 +56,7 @@ Kyverno follows the same support policy as the Kubernetes project which is an N-
 
 ## Install Kyverno using Helm
 
-Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno).
+Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [ArtifactHub](https://artifacthub.io/packages/helm/kyverno/kyverno). Both generally available and pre-releases are available with Helm.
 
 In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 
@@ -48,30 +76,103 @@ Optionally, show all available chart versions for Kyverno.
 helm search repo kyverno -l
 ```
 
-Install Kyverno with a single replica for each of its controllers in a new Namespace called `kyverno`.
+Choose one of the installation configuration options based upon your environment type and availability needs. For a production installation, see the [High Availability](#high-availability) section. For a non-production installation, see the [Standalone](#standalone) section below for additional details.
 
-```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set replicaCount=3
-```
+When deploying Kyverno to certain Kubernetes platforms such as EKS, AKS, or OpenShift; or when using certain GitOps tools such as ArgoCD, additional configuration options may be needed or recommended. See the [Platform-Specific Notes](#platform-specific-notes) section below for additional details.
 
-See the [High Availability](#high-availability) and [Standalone](#standalone) sections below for additional details.
-
-To install the Kyverno [Pod Security Standard policies](/policies/pod-security/), run the below Helm command after Kyverno has been installed.
+After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](/policies/pod-security/), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
 
 ```sh
 helm install kyverno-policies kyverno/kyverno-policies -n kyverno
 ```
 
+### High Availability
+
+The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs including platform-specific controls.
+
+Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability/) for more complete details.
+
+The Helm chart offers parameters to configure multiple replicas for each controller. For example, a minimally-viable, highly-available, complete deployment of Kyverno would consist of the following values.
+
+```yaml
+admissionController.replicas: 3
+backgroundController.replicas: 2
+cleanupController.replicas: 2
+reportsController.replicas: 2
+```
+
+For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+
+{{% alert title="Note" color="warning" %}}
+All Kyverno installations require the admission controller be among the controllers deployed. The admission controller does not support two replicas. For a highly-available installation, the only supported count is three.
+{{% /alert %}}
+
+By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
+
+See also the [Namespace selectors](#namespace-selectors) section below and especially the [Security vs Operability](#security-vs-operability) section.
+
+Use Helm to create a Namespace and install Kyverno in a highly-available configuration.
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
+--set admissionController.replicas=3 \
+--set backgroundController.replicas=2 \
+--set cleanupController.replicas=2 \
+--set reportsController.replicas=2
+```
+
+### Standalone
+
+A standalone installation of Kyverno is suitable for lab, test/dev, or small environments typically associated with non-production. It configures a single replica for each Kyverno Deployment and omits many of the production-grade components.
+
+Use Helm to create a Namespace and install Kyverno.
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
+```
+
+To install pre-releases, add the `--devel` switch to Helm.
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
+```
+
+## Install Kyverno using YAMLs
+
+Kyverno can also be installed using a single installation manifest, however for production installations the Helm chart is the preferred and recommended method.
+
+Although Kyverno uses release branches, only YAML manifests from a tagged release are supported. Pull from a tagged release to install Kyverno using the YAML manifest.
+
+```sh
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
+```
+
+### Testing unreleased code
+
+In some cases, you may wish to trial yet unreleased Kyverno code in a quick way. Kyverno provides an experimental installation manifest for these purposes which reflects the current state of the codebase as it is known on the `main` development branch.
+
+{{% alert title="Warning" color="warning" %}}
+DO NOT use this manifest for anything other than testing or experimental purposes!
+{{% /alert %}}
+
+```sh
+kubectl create -f https://github.com/kyverno/kyverno/raw/main/config/install-latest-testing.yaml
+```
+
+## Platform-Specific Notes
+
+Depending on the application used to either install and manage Kyverno or the Kubernetes platform on which the cluster is built, there are some specific considerations of which to be aware. These notes are provided assuming the Helm chart is the installation artifact used.
+
 ### Notes for ArgoCD users
 
-When deploying the Kyverno Helm chart with ArgoCD, you will need to enable `Replace` in the `syncOptions`. You probably want to also ignore diff in aggregated cluster roles (aggregated cluster roles are built by aggregating other cluster roles in the cluster and are dynamic by nature, therefore desired and observe states cannot match).
+When deploying the Kyverno Helm chart with ArgoCD, you will need to enable `Replace` in the `syncOptions`. You may want to also ignore differences in aggregated ClusterRoles which Kyverno uses by default. Aggregated ClusterRoles are built by aggregating other ClusterRoles in the cluster and are dynamic by nature, therefore desired and observed states cannot match.
 
 You can do so by following instructions in these pages of the ArgoCD documentation:
 
-- [Enable Replace in the syncOptions](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#replace-resource-instead-of-applying-changes)
-- [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
+* [Enable Replace in the syncOptions](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#replace-resource-instead-of-applying-changes)
+* [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
 
-ArgoCD uses Helm only for templating but applies the results with `kubectl`. Unfortunately `kubectl` adds metadata that will cross the limit allowed by Kubernetes. Using `Replace` overcomes this limitation. Another option is to use server-side apply, supported in ArgoCD v2.5+.
+ArgoCD uses Helm only for templating but applies the results with `kubectl`. Unfortunately `kubectl` adds metadata that exceeds the limit allowed by Kubernetes. Using `Replace` overcomes this limitation. Another option is to use server-side apply, supported in ArgoCD v2.5+.
 
 Below is an example of an ArgoCD Application manifest that should work with the Kyverno Helm chart:
 
@@ -115,73 +216,6 @@ For EKS clusters built with the VPC CNI plug-in, if you wish to opt for the oper
 
 AKS uses an Admission Enforcer control the webhooks in an AKS cluster and will remove those that may impact system Namespaces. Since Kyverno registers as a webhook, this Admission Enforcer may remove Kyverno's webhook causing the two to fight over webhook reconciliation. See [this Microsoft Azure FAQ](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) for further information. When deploying Kyverno on an AKS cluster, set the Helm option `config.webhookAnnotations` to include the necessary annotation to disable the Admission Enforcer. Kyverno will configure its webhooks with this annotation to prevent their removal by AKS. The annotation that should be used is `"admissions.enforcer/disabled": true`. See the chart [README](https://github.com/kyverno/kyverno/blob/release-1.10/charts/kyverno/README.md) for more information.
 
-### High Availability
-
-The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs.
-
-Since Kyverno is comprised of separate controllers where each is installed as its own Kubernetes Deployment, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas does not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability/) for more complete details.
-
-The Helm chart offers parameters to configure multiple replicas for each controller. For example, a minimally-viable, highly-available, complete deployment of Kyverno would consist of the following values.
-
-```yaml
-admissionController.replicas: 3
-backgroundController.replicas: 2
-cleanupController.replicas: 2
-reportsController.replicas: 2
-```
-
-For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
-
-{{% alert title="Note" color="warning" %}}
-All Kyverno installations require the admission controller be among the controllers deployed. The admission controller does not support two replicas. For a highly-available installation, the only supported count is three.
-{{% /alert %}}
-
-By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
-
-See also the [Namespace selectors](#namespace-selectors) section below and especially the [Security vs Operability](#security-vs-operability) section.
-
-Use Helm to create a Namespace and install Kyverno in a highly-available configuration.
-
-```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
---set admissionController.replicas=3 \
---set backgroundController.replicas=2 \
---set cleanupController.replicas=2 \
---set reportsController.replicas=2
-```
-
-The Kyverno [Pod Security Standard policies](/policies/pod-security/), an optional but recommended set of policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/), must be added separately after Kyverno is installed.
-
-```sh
-helm install kyverno-policies kyverno/kyverno-policies -n kyverno
-```
-
-### Standalone
-
-A "standalone" installation of Kyverno is suitable for lab, test/dev, or small environments where node count is less than three. It configures a single replica for each Kyverno Deployment and omits many of the production-grade components.
-
-Use Helm to create a Namespace and install Kyverno.
-
-```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace
-```
-
-To install pre-releases, add the `--devel` switch to Helm.
-
-```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
-```
-
-## Install Kyverno using YAMLs
-
-Kyverno can also be installed using a single installation manifest, however for production installations the Helm chart is the preferred and recommended method.
-
-Pull from a tagged release to install Kyverno using the YAML manifest.
-
-```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
-```
-
 ## Security vs Operability
 
 For a production installation, Kyverno should be installed in [high availability mode](#high-availability). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/writing-policies/policy-settings/)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
@@ -219,36 +253,17 @@ You should choose the best option based upon your risk aversion, needs, and oper
 If you choose to *not* exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/#resource-filters) entry in the [ConfigMap](/docs/installation/#configmap-flags) to remove those items.
 {{% /alert %}}
 
-## Customize the installation of Kyverno
+## Customizing Kyverno
 
-The picture below shows a typical Kyverno installation:
-
-<img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
-<br/><br/>
-
-If you wish to customize the installation of Kyverno to have certificates signed by an internal or trusted CA, or to otherwise learn how the components work together, follow the below guide.
-
-### Installing a specific version
-
-To install a specific version, locate the Helm chart version you wish to install and pass the chart version as the value of the `--version` flag.
-
-```sh
-helm search repo kyverno -l | head -n 10
-```
-
-```sh
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --version 2.6.5
-```
-
-Alternatively, find the version of Kyverno you wish to install from the [releases page](https://github.com/kyverno/kyverno/releases) and download and apply the `install.yaml` manifest directly.
+Kyverno has many different functions and supports a wide range of possible customizations. This section provides more information on Kyverno's supporting resources and how they can be customized to tune certain behaviors.
 
 ### Certificate Management
 
-The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the kube-apiserver (the CA can be self-signed). There are two ways to configure secure communications between Kyverno and the kube-apiserver.
+The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the Kubernetes API server. There are two ways to configure secure communications between Kyverno and the API server.
 
-#### Option 1: Auto-generate a self-signed CA and certificate
+#### Default certificates
 
-By default, Kyverno will automatically generate self-signed Certificate Authority (CA) and a leaf certificates for use in its webhook registrations. The CA certificate carries an expiration date of one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
+By default, Kyverno will automatically generate self-signed Certificate Authority (CA) and a leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
@@ -266,7 +281,8 @@ kyverno-svc.kyverno.svc.kyverno-tls-pair                  kubernetes.io/tls    2
 Get and decode the CA certificate used by the admission controller.
 
 ```sh
-$ kubectl -n kyverno get secret kyverno-svc.kyverno.svc.kyverno-tls-ca -o jsonpath='{.data.tls\.crt}' | step base64 -d | step certificate inspect --short
+$ kubectl -n kyverno get secret kyverno-svc.kyverno.svc.kyverno-tls-ca -o jsonpath='{.data.tls\.crt}' | \
+  step base64 -d | step certificate inspect --short
 X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
   Subject:     *.kyverno.svc
   Issuer:      *.kyverno.svc
@@ -277,7 +293,8 @@ X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
 Get and decode the certificate used to register the webhooks with the Kubernetes API server (assumes at least one validate policy is installed) and see the same CA root certificate is in use.
 
 ```sh
-$ kubectl get validatingwebhookconfiguration kyverno-resource-validating-webhook-cfg -o jsonpath='{.webhooks[0].clientConfig.caBundle}' | step base64 -d | step certificate inspect --short
+$ kubectl get validatingwebhookconfiguration kyverno-resource-validating-webhook-cfg -o jsonpath='{.webhooks[0].clientConfig.caBundle}' | \
+  step base64 -d | step certificate inspect --short
 X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
   Subject:     *.kyverno.svc
   Issuer:      *.kyverno.svc
@@ -285,11 +302,11 @@ X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
           to:  2024-04-13T19:33:37Z
 ```
 
-#### Option 2: Use your own CA-signed certificate
+#### Custom certificates
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them. Otherwise it will create its own CA and sign a certificate from it (see Option 1 above). When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
 
-##### 2.1. Generate a self-signed CA and signed certificate-key pair
+##### Generate a self-signed CA and signed certificate-key pair
 
 {{% alert title="Note" color="warning" %}}
 Using a separate self-signed root CA is difficult to manage and not recommended for production use.
@@ -327,13 +344,13 @@ X509v3 extensions:
         DNS:kyverno-svc, DNS:kyverno-svc.kyverno, DNS:kyverno-svc.kyverno.svc
 ```
 
-##### 2.2. Configure Secrets for the CA and TLS certificate-key pair
+##### Configure Secrets for the CA and TLS certificate-key pair
 
 You can now use the following files to create Secrets:
 
-- `rootCA.crt`
-- `tls.crt`
-- `tls.key`
+* `rootCA.crt`
+* `tls.crt`
+* `tls.key`
 
 To create the required Secrets, use the following commands (do not change the Secret names):
 
@@ -348,11 +365,11 @@ Secret | Data | Content
 `kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
 `kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
 
-Kyverno uses Secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
+Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
 
 This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
 
-##### 2.3. Install Kyverno
+##### Install Kyverno
 
 You can now install Kyverno by selecting one of the available methods from the [installation section above](/docs/installation/#compatibility-matrix).
 
@@ -362,31 +379,46 @@ Kyverno creates several Roles, ClusterRoles, RoleBindings, and ClusterRoleBindin
 
 #### Roles
 
-Kyverno creates the following Roles in its Namespace:
+Kyverno creates the following Roles in its Namespace, one per controller type:
 
-- `kyverno:leaderelection`: create, delete, get, patch, and update Leases to handle high availability configurations. get, list, patch, update, and watch Deployments so it can manage the Kyverno Deployment itself.
-- `kyverno-cleanup-controller`: get, list, watch, create, and update Secrets. get, list, and watch ConfigMaps. create, delete, get, patch, and update Leases.
+* `kyverno:admission-controller`
+  * create, delete, get, patch, and update Leases to handle high availability configurations.
+  * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
+  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, and watch ConfigMaps for configuration changes.
+* `kyverno:reports-controller`
+  * get, list, and watch ConfigMaps for configuration changes.
+  * create, delete, get, patch, and update Leases to handle high availability configurations.
+* `kyverno:background-controller`
+  * get, list, and watch ConfigMaps for configuration changes.
+  * create, delete, get, patch, and update Leases to handle high availability configurations.
+* `kyverno:cleanup-controller`
+  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, and watch ConfigMaps for configuration changes.
+  * create, delete, get, patch, and update Leases to handle high availability configurations.
 
 #### RoleBindings
 
-Kyverno creates the following RoleBindings:
+Kyverno creates the following RoleBindings which bind the ServiceAccounts of the same name to the Roles listed above.
 
-- `kyverno:leaderelection`: manage leases for leader election across replicas
-- `kyverno-cleanup-controller`: manages permissions bound to the ServiceAccount used by the cleanup controller
+* `kyverno:admission-controller`
+* `kyverno:reports-controller`
+* `kyverno:background-controller`
+* `kyverno:cleanup-controller`
 
 #### ClusterRoles
 
 Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to search for and combine ClusterRoles which apply to Kyverno. The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces:
 
-- `kyverno`: top-level ClusterRole which aggregates all other Kyverno ClusterRoles
-- `kyverno:policies`: manages policies, reports, generate requests, report change requests, and status
-- `kyverno:view`: views all resources
-- `kyverno:generate`: creates, updates, and deletes resources via generate policy rules
-- `kyverno:events`: creates, updates, and deletes events for policy results
-- `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
-- `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
-- `kyverno:cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This is the top-level ClusterRole which aggregates other ClusterRoles for use by the cleanup controller.
-- `kyverno:cleanup-controller:core`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This ClusterRole is aggregated to `kyverno-cleanup-controller`.
+* `kyverno`: top-level ClusterRole which aggregates all other Kyverno ClusterRoles
+* `kyverno:policies`: manages policies, reports, generate requests, report change requests, and status
+* `kyverno:view`: views all resources
+* `kyverno:generate`: creates, updates, and deletes resources via generate policy rules
+* `kyverno:events`: creates, updates, and deletes events for policy results
+* `kyverno:userinfo`: query Roles and RoleBinding configurations to build [variables](/docs/writing-policies/variables/#pre-defined-variables) with Role information.
+* `kyverno:webhook`: allows Kyverno to manage dynamic webhook configurations
+* `kyverno:cleanup-controller`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This is the top-level ClusterRole which aggregates other *lusterRoles for use by the cleanup controller.
+* `kyverno:cleanup-controller:core`: allows the cleanup controller to manage webhooks, cleanup policies, and CronJobs it creates to perform the actual cleanup. This ClusterRole is aggregated to `kyverno-cleanup-controller`.
 
 Because aggregated ClusterRoles are used, there is only one ClusterRoleBinding named `kyverno` which binds the `kyverno` ClusterRole to the `kyverno` ServiceAccount.
 
@@ -394,10 +426,10 @@ Because aggregated ClusterRoles are used, there is only one ClusterRoleBinding n
 
 The following `ClusterRoles` are used to extend the default `admin` role with permissions to view and manage policy resources via [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
 
-- `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
-- `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
-- `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
-- `kyverno:admin-updaterequest`: allow `admin` role to manage UpdateRequests
+* `kyverno:admin-policies`: allow `admin` role to manage Policies and ClusterPolicies
+* `kyverno:admin-policyreport`: allow `admin` role to manage PolicyReports and ClusterPolicyReports
+* `kyverno:admin-reportchangerequest`: allow `admin` role to manage ClusterReportChangeRequests and ClusterReportChangeRequests
+* `kyverno:admin-updaterequest`: allow `admin` role to manage UpdateRequests
 
 #### Customizing Permissions
 
