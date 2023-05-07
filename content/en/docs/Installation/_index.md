@@ -453,15 +453,20 @@ Once a supplemental ClusterRole has been created, get the top-level ClusterRole 
 kubectl get clusterrole kyverno:background-controller -o yaml
 ```
 
-### ConfigMap Flags
+### ConfigMap Keys
 
-The following flags are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap.
+The following keys are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap. Kyverno watches for changes to this ConfigMap and will load any updates which occur.
 
-1. `excludeGroupRole`: excludeGroupRole role expected string with comma-separated group role. It will exclude all the group role from the user request. Default we are using `system:serviceaccounts:kube-system,system:nodes,system:kube-scheduler`.
-2. `excludeUsername`: excludeUsername expected string with comma-separated kubernetes username. In generate request if user enable `Synchronize` in generate policy then only kyverno can update/delete generated resource but admin can exclude specific username who have access of delete/update generated resource.
-3. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
-4. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode.
-5. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno.
+1. `defaultRegistry`: sets the default image registry to use if one is not specified. Defaults to `docker.io`.
+2. `enableDefaultRegistryMutation`: tells Kyverno whether it should update its internal context with the value of the `defaultRegistry` key when the condition is met. Defaults to `"true"`.
+3. `excludeGroups`: excludes the provided groups from any processing. Supports a comma-separated list of groups. Defaults to `system:serviceaccounts:kube-system,system:nodes`.
+4. `excludeUsernames`: excludes user names from any processing. Supports the `!` operator to negate an entry (ex., `!john` will include the username `john` if it was excluded via another parameter). Default is `'!system:kube-scheduler'`.
+5. `excludeRoles`: list of Roles to exclude from processing. Default is undefined.
+6. `excludeClusterRoles`: list of ClusterRoles to exclude from processing. Default is undefined.
+7. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+8. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
+9. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector": {"matchExpressions": [{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'`.
+10. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](#notes-for-aks-users) section above for details.
 
 ### Container Flags
 
