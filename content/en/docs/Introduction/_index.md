@@ -3,7 +3,7 @@ title: "Introduction"
 linkTitle: "Introduction"
 weight: 10
 description: >
-  Learn about Kyverno and create your first policy.
+  Learn about Kyverno and create your first policy through a Quick Start guide.
 ---
 
 ## About Kyverno
