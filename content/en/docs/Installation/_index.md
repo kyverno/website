@@ -483,7 +483,7 @@ The following flags can be used to control the advanced behavior of the various 
 4. `alsologtostderr` (ABCR): log to standard error as well as files (no effect when -logtostderr=true)
 5. `autoUpdateWebhooks` (A): set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Default is `true`.
 6. `backgroundServiceAccountName` (A): the name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.
-7. `backgroundScan` (R): enables/disables background reporting scans. `true` by default.
+7. `backgroundScan` (R): enables/disables background reporting scans. Has no effect on background reconciliation by the background controller. `true` by default.
 8. `backgroundScanInterval` (R): sets the time interval when periodic background scans for reporting take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
 9. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`.
 10. `clientRateLimitBurst` (ABCR): configures the maximum burst for throttling. Uses the client default if zero. Default is `300`.
