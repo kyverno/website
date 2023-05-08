@@ -626,7 +626,7 @@ We recommend conducting tests in your own environment to determine real-world ut
 
 ### Proxy
 
-Kyverno supports using of a proxy by setting the standard environment variables, `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. These variables must be defined for the main Kyverno container in the Kyverno Deployment resource.
+Kyverno supports using of a proxy by setting the standard environment variables, `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. These variables must be defined for the main container of a given Kyverno Deployment.
 
 ## Upgrading Kyverno
 
