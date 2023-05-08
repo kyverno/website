@@ -622,13 +622,6 @@ metadata:
 
 Because Kyverno is an admission controller with many capabilities and due to the variability with respect to environment type, size, and composition of Kubernetes clusters, the amount of processing performed by Kyverno can vary greatly. Sizing a Kyverno installation based solely upon Node or Pod count is often not appropriate to accurately predict the amount of resources it will require. For example, a large production cluster hosting 60,000 Pods yet with no Kyverno policies installed which match on `Pod` has no bearing on the resources required by Kyverno. Because webhooks are dynamically managed by Kyverno according to the policies installed in the cluster, no policies which match on `Pod` results in no information about Pods being sent by the API server to Kyverno and, therefore, reduced processing load.
 
-The following is a table of test results observed on a highly available Kyverno 1.8.2 installation with a 4 Gi memory limit, all the Pod Security Standards policies installed (restricted profile) in which four were in `Audit` mode, and background scanning enabled. ARPS is admission requests per second and QPS is client queries per second. Tests were performed with the [ClusterLoader2](https://github.com/kubernetes/perf-tests/tree/master/clusterloader2) tool. CPU and memory figures represent peak consumption. CPU represents physical cores of utilization total across all replicas with a frequency max of 3.35 GHz. Memory is per replica.
-
-| Test | Policies | Nodes | Pods | ARPS | QPS | Memory | CPU |
-|------|----------|-------|------|------|-----|--------|-----|
-| 1    | 17       | 40    | 1192 | 10   | 41  | 400 Mi | 6   |
-| 2    | 17       | 50    | 1444 | 11   | 30  | 364 Mi | 7   |
-
 We recommend conducting tests in your own environment to determine real-world utilization in order to best set resource requests and limits, but as a best practice we also recommend not setting CPU limits.
 
 ### Proxy
