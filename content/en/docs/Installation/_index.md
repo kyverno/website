@@ -630,62 +630,46 @@ Kyverno supports using of a proxy by setting the standard environment variables,
 
 ## Upgrading Kyverno
 
-Upgrading Kyverno is as simple as applying the new YAML manifest, or using Helm depending on how it was installed. You cannot upgrade Kyverno by bumping the image tag on the Deployment as this will not affect the CRDs and other resources necessary for Kyverno's operation.
+Kyverno supports the same upgrade methods as those supported for installation. The below sections will cover both Helm and YAML manifest. Because new versions of Kyverno often have a number of supporting resources which change, including CRDs, an upgrade cannot be done by bumping the tag of any image.
 
-### Upgrade Kyverno with YAML manifest
+Kyverno 1.10 also brings breaking changes along with it making upgrades to 1.10 limited in nature. Always read the complete [release notes](https://github.com/kyverno/kyverno/releases) for any version prior to upgrading.
 
-Apply the new manifest over the existing installation.
+### Upgrade Kyverno with YAML
 
-```sh
-kubectl apply -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
-```
+Direct upgrades from previous versions to Kyverno version 1.10 are not supported when using the YAML manifest approach. Please use the corresponding release manifest from the tagged release used to install to perform the uninstallation. Once Kyverno is removed, follow the installation instructions [above](#install-kyverno-using-yamls) to install Kyverno 1.10.
 
 ### Upgrade Kyverno with Helm
 
-Kyverno can be upgraded like any other Helm chart.
-
-Scan your Helm repositories for updated charts.
-
-```sh
-helm repo update
-```
-
-Show the versions of the Kyverno chart which are available. To see pre-release charts, add the `--devel` flag to the `helm` command.
-
-```sh
-helm search repo kyverno
-```
-
-Run the upgrade command picking the target version.
-
-```sh
-helm upgrade kyverno kyverno/kyverno -n kyverno --version <version_number>
-```
+An upgrade to Kyverno 1.10 using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.10/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
 ## Uninstalling Kyverno
 
-To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno deployment, RBAC resources, and all CRDs will be removed, including any reports.
+To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno Deployments and all supporting resources will be removed in addition to policy reports.
 
-### Option 1 - Uninstall Kyverno with YAML manifest
+### Uninstall Kyverno with YAML
+
+Use the tagged release manifest corresponding to your version to fully uninstall Kyverno. After removal, verify that all webhooks have been removed as shown [below](#clean-up-webhooks).
 
 ```sh
-kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.8.5/install.yaml
+kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
 ```
 
-### Option 2 - Uninstall Kyverno with Helm
+### Uninstall Kyverno with Helm
+
+Locate the Namespace and name of the release used to install Kyverno. Assuming you used default settings, the uninstallation command is shown below.
 
 ```sh
 helm uninstall kyverno kyverno/kyverno -n kyverno
 ```
 
-### Clean up Webhook Configurations
+### Clean up Webhooks
 
-Kyverno by default will try to clean up all its webhook configurations when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
+Kyverno by default will try to clean up all its webhooks when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
 
 If manual webhook removal is necessary, use the below commands.
 
 ```sh
 kubectl delete mutatingwebhookconfigurations kyverno-policy-mutating-webhook-cfg kyverno-resource-mutating-webhook-cfg kyverno-verify-mutating-webhook-cfg
 
-kubectl delete validatingwebhookconfigurations kyverno-policy-validating-webhook-cfg kyverno-resource-validating-webhook-cfg kyverno-cleanup-validating-webhook-cfg
+kubectl delete validatingwebhookconfigurations kyverno-policy-validating-webhook-cfg kyverno-resource-validating-webhook-cfg kyverno-cleanup-validating-webhook-cfg kyverno-exception-validating-webhook-cfg
 ```
