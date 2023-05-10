@@ -61,6 +61,9 @@ func getPolicyType(yaml string) string {
 }
 
 func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *policyData {
+	if !hasKyvernoAnnotation(p){
+		return nil
+	}
 	return &policyData{
 		Title:  buildTitle(p),
 		Policy: p,
@@ -69,6 +72,15 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *po
 		RawURL: rawURL,
 		Path:   path,
 	}
+}
+
+func hasKyvernoAnnotation(p *kyvernov1.ClusterPolicy) bool {
+    for k := range p.Annotations {
+        if strings.HasPrefix(k, "policies.kyverno.io") {
+            return true
+        }
+    }
+    return false
 }
 
 func buildTitle(p *kyvernov1.ClusterPolicy) string {
@@ -158,6 +170,10 @@ func render(git *gitInfo, outdir string) error {
 		rawURL = trimDoubleSlashes(rawURL)
 
 		pd := newPolicyData(policy, string(bytes), rawURL, relPath)
+
+		if pd == nil {
+					continue
+		}
 		outFile, err := createOutFile(filepath.Dir(yamlFilePath), outdir, filepath.Base(file.Name()))
 		if err != nil {
 			return err
