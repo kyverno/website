@@ -11,7 +11,7 @@ The [Kyverno Policies](/policies/) repository contains several policies you can 
 
 ## In Clusters
 
-On installation, Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the kube-apiserver and applies matching policies to return results that enforce admission policies or reject requests.
+On installation, Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the Kubernetes API server and applies matching policies to return results that enforce admission policies or reject requests.
 
 Policies with validation rules can be used to block insecure or non-compliant configurations by setting the [`validationFailureAction`](/docs/writing-policies/validate/#validation-failure-action) to `Enforce`. Or, validation rules can be applied using periodic scans with results available as [policy reports](/docs/policy-reports/).
 
@@ -23,8 +23,8 @@ Exceptions to policies may be defined in the rules themselves or with a separate
 
 [Cleanup policies](/docs/writing-policies/cleanup/), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
 
-## In CI/CD Pipelines
+## In Pipelines
 
 You can use the [Kyverno CLI](/docs/kyverno-cli/#apply) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
 
-Refer to the [Kyverno apply command help documentation](/docs/kyverno-cli/#apply) for details.
+Refer to the [Kyverno apply command section](/docs/kyverno-cli/#apply) for details on the CLI. And refer to the [Continuous Integration section](/docs/testing-policies/#continuous-integration) for an example of how to incorporate the CLI to apply and test policies in your pipeline.
