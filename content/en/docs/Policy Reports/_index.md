@@ -50,10 +50,10 @@ Policy reports are created in a 1:1 relationship with a Kyverno policy. The nami
 Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or look at events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
-Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/#container-flags) section.
+Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization/#container-flags) section.
 
 {{% alert title="Note" color="warning" %}}
-Policy reports created from background scans are not subject to the configuration of either a [resource filter](/docs/installation/#resource-filters) or a [Namespace selector](/docs/installation/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/#configmap-flags). This is due to the fact that the overhead required to generate these reports is minimal and should have no performance impact.
+Policy reports created from background scans are not subject to the configuration of either a [resource filter](/docs/installation/customization/#resource-filters) or a [Namespace selector](/docs/installation/customization/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization/#configmap-keys). This is due to the fact that the overhead required to generate these reports is minimal and should have no performance impact.
 {{% /alert %}}
 
 ## Report result logic

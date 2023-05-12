@@ -116,7 +116,7 @@ ConfigMaps are a common source of data not just to Pods but to Kyverno policies 
 
 ## Other Additions and Enhancements
 
-Some other cool features and status updates we're proud to share include new JSON logging format and the ability to dump out the full AdmissionReview contents the API server sends to Kyverno. The latter has been a common request from the community and should help in those situations where you're not quite sure how to write a certain policy. Both require setting a new container flag so check out the [docs](/docs/installation/#container-flags).
+Some other cool features and status updates we're proud to share include new JSON logging format and the ability to dump out the full AdmissionReview contents the API server sends to Kyverno. The latter has been a common request from the community and should help in those situations where you're not quite sure how to write a certain policy. Both require setting a new container flag so check out the [docs](/docs/installation/customization/#container-flags).
 
 Kyverno now supports [nested foreach loops](/docs/writing-policies/mutate/#nested-foreach) which are great especially for mutation use cases where you need tactical modifications or removals from complex nested objects like arrays within arrays.
 

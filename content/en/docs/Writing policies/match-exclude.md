@@ -314,7 +314,7 @@ spec:
 This rule matches all Pods except those in the `kube-system` Namespace.
 
 {{% alert title="Note" color="info" %}}
-The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
+The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/customization/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
 {{% /alert %}}
 
 ```yaml

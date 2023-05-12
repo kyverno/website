@@ -16,7 +16,7 @@ When using a `generate` rule, the origin resource can be either an existing reso
 Deleting the policy containing a `generate` rule with a `data` object and `synchronize=true` will cause immediate deletion of the downstream generated resources. Policies containing a `clone` object are not subject to this behavior.
 {{% /alert %}}
 
-Kubernetes has many default resource types even before considering Custom Resources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these Custom Resources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to Kyverno. To enable Kyverno to generate these other types, see the section on [customizing permissions](/docs/installation/#customizing-permissions).
+Kubernetes has many default resource types even before considering Custom Resources defined in CustomResourceDefinitions (CRDs). While Kyverno can generate these Custom Resources as well, both these as well as certain default Kubernetes resources may require granting additional privileges to Kyverno. To enable Kyverno to generate these other types, see the section on [customizing permissions](/docs/installation/customization/#customizing-permissions).
 
 Kyverno will create an intermediate object called a `UpdateRequest` which is used to queue work items for the final resource generation. To get the details and status of a generated resource, check the details of the `UpdateRequest`. The following will give the list of `UpdateRequests`.
 

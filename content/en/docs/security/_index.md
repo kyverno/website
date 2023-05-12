@@ -197,7 +197,7 @@ Kyverno Pods are configured to follow security best practices and conform to the
 
 ### RBAC
 
-The Kyverno RBAC configurations are described in the [installation](/docs/installation/#roles-and-permissions) section.
+The Kyverno RBAC configurations are described in the [installation](/docs/installation/customization/#roles-and-permissions) section.
 
 Use the following command to view all Kyverno roles:
 
@@ -248,7 +248,7 @@ Kyverno policies are configured to **fail-closed** by default. This setting can 
 
 #### Webhook authentication and encryption
 
-By default, Kyverno automatically generates and manage TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](/docs/installation/#certificate-management).
+By default, Kyverno automatically generates and manage TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](/docs/installation/customization/#certificate-management).
 
 ### Recommended policies
 
@@ -288,7 +288,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 3 - Webhook authenticates callers](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-3---webhook-authenticates-callers)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 3 - Attacker exploits misconfiguration of webhook to bypass
 
@@ -308,7 +308,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [installation section](/docs/installation/#roles-and-permissions). The `kyverno:webhook` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
+  Kyverno RBAC configurations are described in the [installation section](/docs/installation/customization/#roles-and-permissions). The `kyverno:webhook` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
 ### Threat ID 5 - Attacker gets access to valid credentials for the webhook
 
@@ -346,7 +346,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 9 - Attacker steals traffic from the webhook via spoofing
 
@@ -356,7 +356,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [installation guide](/docs/installation/#option-2-use-your-own-ca-signed-certificate). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 10 - Abusing a mutation rule to create a privileged container
 
@@ -376,9 +376,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [installation section](/docs/installation/#roles-and-permissions). The `kyverno:webhook` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
+  Kyverno RBAC configurations are described in the [configuration section](/docs/installation/customization/#roles-and-permissions). The `kyverno:webhook` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings. In particular, the default `kyverno:view` and `kyverno:generate` roles can be customized to match your requirements.
 
-  Kyverno does not exempt any Namespaces by default. It allows configuration of exempt Namespaces via a [ConfigMap](https://kyverno.io/docs/installation/#configmap-flags).
+  Kyverno does not exempt any Namespaces by default. It allows configuration of exempt Namespaces via a [ConfigMap](/docs/installation/customization/#configmap-keys).
 
 ### Threat ID 12 - Block rule can be bypassed due to missing match (e.g. missing initContainers)
 
