@@ -753,6 +753,47 @@ spec:
 </p>
 </details>
 
+### Image_normalize
+
+<details><summary>Expand</summary>
+<p>
+
+The `image_normalize()` filter is used to output the canonical image string as it is known internally to Kyverno. This filter will render the internal values for the default image registry and tag (`latest`) if they apply to a given image. It is useful particularly in mutate rules where the full image value is needed to decide whether to mutate it. This filter cannot be tested with the Kyverno CLI because the runtime context is only available in webhook mode.
+
+For example, assuming the value of the default registry is left at its defaults of `docker.io` and a Pod is sent to Kyverno which has a single container the value of its `image` field being only `nginx`, when run through the `image_normalize()` filter will come out `docker.io/nginx:latest`.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| String             | String   |
+
+**Example:** This policy will mutate the value of the `image` field in a Pod's `containers[]` array if, after normalization, it begins with `docker.io`. The registry will be replaced with `harbor.corp.org`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: image-normalize-demo
+spec:
+  rules:
+    - name: replace-image-registry-pod-containers
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      mutate:
+        foreach:
+        - list: "request.object.spec.containers"
+          patchStrategicMerge:
+            spec:
+              containers:
+              - name: "{{ element.name }}"
+                image: "{{ regex_replace_all('^docker.io/(.*)$', image_normalize('{{element.image}}'), 'harbor.corp.org/$1' )}}"
+```
+
+</p>
+</details>
+
 ### Items
 
 <details><summary>Expand</summary>
