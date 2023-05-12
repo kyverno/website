@@ -6,7 +6,7 @@ weight: 15
 
 ## Install Kyverno using Helm
 
-Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [Artifact Hub](https://artifacthub.io/packages/helm/kyverno/kyverno). Both generally available and pre-releases are available with Helm.
+Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [Artifact Hub](https://artifacthub.io/). Both generally available and pre-releases are available with Helm.
 
 In order to install Kyverno with Helm, first add the Kyverno Helm repository.
 

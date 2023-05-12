@@ -56,7 +56,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 kubectl -n <kyverno_namespace> logs <pod_name>
 ```
 
-Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/customization/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
 
 ## Validate
 
