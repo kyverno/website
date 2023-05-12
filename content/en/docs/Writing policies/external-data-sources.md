@@ -699,11 +699,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation}}"
-        operator: NotEquals
-        value: DELETE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: "Images run as root are not allowed."  
       foreach:
