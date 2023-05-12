@@ -21,10 +21,10 @@ Each rule contains:
 
 * One or more image reference patterns to match
 * Common configuration attributes:
-  * required: enforces that all matching images are verified
-  * mutateDigest: converts tags to digests for matching images
-  * verifyDigest: enforces that digests are used for matching images
-  * repository: use a different repository for fetching signatures
+  * `required`: enforces that all matching images are verified
+  * `mutateDigest`: converts tags to digests for matching images
+  * `verifyDigest`: enforces that digests are used for matching images
+  * `repository`: use a different repository for fetching signatures
 * Zero or more __attestors__ which can be public keys, certificates, and keyless configuration attributes used to identify trust authorities
 * Zero or more [in-toto attestation](https://github.com/in-toto/attestation/blob/main/spec/README.md) __statements__ to be verified. If attestations are provided, at least one attestor is required.
 
@@ -801,6 +801,34 @@ spec:
               MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
               gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
               -----END PUBLIC KEY-----
+```
+
+For Custom Resources which reference container images in a non-standard way, an optional `jmesPath` field may be used to apply a filter to transform the value of the extracted field. For example, in the case of KubeVirt's `DataVolume` custom resource, the fielding referencing the image needing verification is located at `spec.source.registry.url` as seen below.
+
+```yaml
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: registry-image-datavolume
+spec:
+  source:
+    registry:
+      url: "docker://kubevirt/fedora-cloud-registry-disk-demo"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 5Gi
+```
+
+The value of the field contains a prefix of `docker://` which must be removed first. Applying a JMESPath expression in an extractor along with a Kyverno custom filter such as [`trim_prefix()`](/docs/writing-policies/jmespath/#trim_prefix) can be used to provide the container image for Kyverno to verify.
+
+```yaml
+imageExtractors:
+  DataVolume:
+    - path: /spec/source/registry/url
+      jmesPath: "trim_prefix(@, 'docker://')"
 ```
 
 ## Special Variables
