@@ -164,7 +164,7 @@ Now that you've experienced validate policies and seen a bit about policy report
 kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster!
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/writing-policies/validate/).
 
 ### Mutation
 
@@ -232,7 +232,7 @@ Now that you've experienced mutate policies and seen how logic can be written ea
 kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster!
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/writing-policies/mutate/).
 
 ### Generation
 
@@ -290,6 +290,12 @@ Get the Secrets in this new Namespace and see if `regcred` is present.
 kubectl -n mytestns get secret
 ```
 
-You should see that Kyverno has generated the `regcred` Secret using the source Secret from the `default` Namespace as the template.
+You should see that Kyverno has generated the `regcred` Secret using the source Secret from the `default` Namespace as the template. If you wish, you may also modify the source Secret and watch as Kyverno synchronizes those changes down to wherever it has generated it.
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster!
+With a basic understanding of generate policies, clean up by deleting the policy you created above.
+
+```sh
+kubectl delete clusterpolicy sync-secrets
+```
+
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/writing-policies/generate/).
