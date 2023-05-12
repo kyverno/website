@@ -2467,6 +2467,47 @@ spec:
 </p>
 </details>
 
+### To_boolean
+
+<details><summary>Expand</summary>
+<p>
+
+The `to_boolean()` filter converts a string to its boolean equivalent. Any strings which spell out "true" or "false" regardless of character case will be returned in boolean format. For example, the query `to_boolean('true')` will result in the output `true`. The query `to_boolean('FalsE')` will result in the output `false`.
+
+This filter can be helpful when needing to produce output for a field which only accepts boolean without requiring more complex string manipulation.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | Boolean |
+
+**Example:** This policy sets the `hostIPC` field of a Pod spec appropriately based on the value of a label (a string). Note that use of this filter may require setting the policy option `spec.schemaValidation` to `false` since there may be a type checking mismatch.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: to-boolean-demo
+spec:
+  schemaValidation: false
+  rules:
+  - name: canuseIPC
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              canuseIPC: "true"
+    mutate:
+      patchStrategicMerge:
+        spec:
+          hostIPC: "{{ to_boolean (request.object.metadata.labels.canuseIPC) }}"
+```
+
+</p>
+</details>
+
 ### To_lower
 
 <details><summary>Expand</summary>
