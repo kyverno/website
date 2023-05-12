@@ -236,7 +236,7 @@ The following flags can be used to control the advanced behavior of the various 
 6. `backgroundServiceAccountName` (A): the name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.
 7. `backgroundScan` (R): enables/disables background reporting scans. Has no effect on background reconciliation by the background controller. `true` by default.
 8. `backgroundScanInterval` (R): sets the time interval when periodic background scans for reporting take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
-9. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`.
+9. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time.
 10. `clientRateLimitBurst` (ABCR): configures the maximum burst for throttling. Uses the client default if zero. Default is `300`.
 11. `clientRateLimitQPS` (ABCR): configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. Default is `300`.
 12. `disableMetrics` (ABCR): specifies whether to enable exposing the metrics. Default is `false`.
