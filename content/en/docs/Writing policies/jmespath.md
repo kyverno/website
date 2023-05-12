@@ -1953,6 +1953,50 @@ spec:
 </p>
 </details>
 
+### Sum
+
+<details><summary>Expand</summary>
+<p>
+
+The `sum()` filter takes an array of numbers, durations, or quantities and sums them together. This is a customized version of `sum()` found in the [upstream JMESPath specification](https://jmespath.org/specification.html#sum) but augmented to support inputs common to Kubernetes workloads, specifically durations and quantities. Inputs must be of a homogenous type. For example, the query `echo '{"input":['2Ki','5Gi','8Mi']}' | kyverno jp query "sum(input)"` results in the value `"5251074Ki"`. The query `echo '{"input":['2h','50s','90s']}' | kyverno jp query "sum(input)"` results in the value `"2h2m20s"`. And the query `echo '{"input":[6,3,8]}' | kyverno jp query "sum(input)"` results in the value of `17`.
+
+See the [Formatting](#formatting) section above for more details on how inputs are expected to be supplied. Durations cannot be expressed as minutes (i.e., `"5m"`) as the "m" unit is interpreted to be millicores.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| Array/Number       | Number   |
+| Array/Quantity     | Quantity |
+| Array/Duration     | Duration |
+
+**Example:** This policy sums the memory requests of all containers in a Pod and denies it if it exceeds 1 gibibyte (1Gi).
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sum-demo
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: memory-requests-check
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      validate:
+        message: The sum of all memory requests in a Pod cannot exceed 1 gibibyte.
+        deny:
+          conditions:
+            all:
+            - key: "{{ sum(request.object.spec.containers[].resources.requests.memory) }}"
+              operator: GreaterThan
+              value: 1Gi
+```
+
+</p>
+</details>
+
 ### Time_add
 
 <details><summary>Expand</summary>
