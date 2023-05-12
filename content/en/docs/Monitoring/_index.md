@@ -1,7 +1,7 @@
 ---
 title: Monitoring
-description: >-
-  Monitor and observe the operation of Kyverno using metrics and tracing.
+description: >
+  Monitor and observe the operation of Kyverno using metrics.
 weight: 65
 ---
 

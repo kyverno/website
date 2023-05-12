@@ -1,6 +1,7 @@
 ---
 title: Tracing
-description: Tracing Kyverno engine admission requests processing
+description: >
+  Using distributed tracing to introspect the internal operations of Kyverno.
 weight: 65
 ---
 
