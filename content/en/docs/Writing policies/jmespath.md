@@ -2577,6 +2577,57 @@ spec:
 </p>
 </details>
 
+### Trim_prefix
+
+<details><summary>Expand</summary>
+<p>
+
+The `trim_prefix()` filter takes an input string and from it trims the beginning by the second string. For the trim to occur, the input string must begin with the trimmed string. This filter differs from `trim()` in that it only removes a string from the beginning of another. For example, the query `trim_prefix('docker://kubevirt/fedora-cloud-registry-disk-demo','docker://')` will result in the output of `kubevirt/fedora-cloud-registry-disk-demo`.
+
+The `trim_prefix()` filter can be useful to remove URIs found in container image values referenced by some custom resources, or anywhere else where a more strategic removal of a substring within a parent is required.
+
+| Input 1            | Input 2            | Output  |
+|--------------------|--------------------|---------|
+| String             | String             | String  |
+
+**Example:** This policy uses the `trim_prefix()` filter to remove `docker://` from the name of an image in a KubeVirt `DataVolume` custom resource through use of an image extractor.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-data-volume-image
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: verify-data-volume-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - DataVolume
+      imageExtractors:
+        DataVolume:
+          - path: /spec/source/registry/url
+            jmesPath: "trim_prefix(@, 'docker://')"
+      verifyImages:
+      - imageReferences:
+        - "*"
+        mutateDigest: true
+        verifyDigest: true
+        attestors:
+        - entries:
+          - keys:
+              publicKeys: |
+                -----BEGIN PUBLIC KEY-----
+                ...
+                -----END PUBLIC KEY-----
+```
+
+</p>
+</details>
+
 ### Truncate
 
 <details><summary>Expand</summary>
