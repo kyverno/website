@@ -758,7 +758,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `items()` filter iterates on map keys (ex., annotations or labels) and converts them to an array of objects with key/value attributes with custom names.
+The `items()` filter iterates on map keys (ex., annotations or labels) or arrays and converts them to an array of objects with key/value attributes with custom names.
 
 For example, given the following map below
 
@@ -785,9 +785,32 @@ $ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@
 ]
 ```
 
+It can also work on an input source given as an array of objects.
+
+```sh
+$ echo '[{"team" : "apple"} , {"organization" : "banana"}]' |  kyverno jp query "items(@, 'key', 'value')"
+Reading from terminal input.
+Enter input object and hit Ctrl+D.
+# items(@, 'key', 'value')
+[
+  {
+    "key": 0,
+    "value": {
+      "team": "apple"
+    }
+  },
+  {
+    "key": 1,
+    "value": {
+      "organization": "banana"
+    }
+  }
+]
+```
+
 | Input 1                  | Input 2            | Input 3    | Output        |
 |--------------------------|--------------------|------------|---------------|
-| Map (Object)             | String             | String     | Array/Object  |
+| Map (Object) or Array    | String             | String     | Array/Object  |
 
 Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
 
