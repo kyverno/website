@@ -2733,7 +2733,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certificate, and outputs a JSON object with the decoded certificate details. It may often be required to first decode a base64-encoded string using [base64_decode()](#base64_decode). This filter can be used to check and validate attributes within a certificate such as subject, issuer, SAN fields, and expiration time. An example of such a decoded object may look like the following:
+The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certificate or certificate signing request (CSR), and outputs a JSON object with the decoded details. It may often be required to first decode a base64-encoded string using [base64_decode()](#base64_decode). This filter can be used to check and validate attributes within a certificate or a CSR such as subject, issuer, SAN fields, and expiration time. An example of a decoded certificate may look like the following:
 
 ```json
 {
