@@ -818,3 +818,31 @@ spec:
                     op: replace
                     value: "{{ replace_all('{{element}}', '.old.com', '.new.com') }}"
 ```
+
+## GitOps Considerations
+
+It is very common to use Kyverno in a GitOps approach where policies and/or other resources, which may be affected by those policies, are deployed via a state held in git by a separate tool such as Argo CD or Flux. In the case of mutations, the classic problem which arises is Kyverno (or some other tool) mutates a resource which was created by a GitOps tool. The mutation changes the resource in a way which causes divergence from the state held in git. When this divergence is detected by the GitOps controller, said controller attempts to reconcile the resource to bring it back into alignment with the desired state held in git. This process continues in an endless loop and creates "fighting" between the mutating admission controller and the GitOps controller. This type of fighting is problematic as it increases churn in the cluster, increases resource consumption by the respective tools, and can lead to disruption if it occurs on a large scale.
+
+While Kyverno can interoperate with GitOps solutions when mutate rules are used, there are a few considerations of which to be aware and some recommended configurations.
+
+### Flux
+
+[Flux](https://fluxcd.io/) uses server-side apply along with dry-run mode when calculating a diff to determine if the actual state has diverged from desired state. Because Kyverno supports mutations in dry-run mode, the resource returned to Flux in this mode already includes the result of any would-be mutations. As a result, Flux natively accommodates mutating admission controllers such as Kyverno usually without any modifications needed. It is not necessary to inform Flux of the nature and number of mutations to expect for a given resource.
+
+However, as dry-run mode causes mutation webhooks to be invoked just as if not in dry-run mode, this produces additional load on Kyverno as it must perform the same mutations every time a diff is calculated. The Flux synchronization interval should be checked and balanced to ensure only the minimal amount of processing overhead is introduced.
+
+### ArgoCD
+
+[Argo CD](https://argoproj.github.io/cd) does not currently support server-side apply dry-run mode in its diff calculations like [Flux](#flux) does. While this is currently a [roadmap item](https://github.com/argoproj/argo-cd/issues/11574), it means using Argo CD with Kyverno mutate rules requires some specific configurations. See the [platform notes](/docs/installation/platform-notes/#notes-for-argocd-users) page for general recommendations with Argo CD first.
+
+In order to use Argo CD with Kyverno, it will require configuring the `Application` custom resource with one or more `ignoreDifferences` entries to [instruct Argo CD](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/) to ignore the mutations created by Kyverno. Some of these options include `jqPathExpressions`, `jsonPointers`, and `managedFieldsManagers`. For example, if a Kyverno mutate rule is expected to add a label `foo` to all Deployments, the Argo CD `Application` may need a section as follows.
+
+```yaml
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jqPathExpressions:
+    - .metadata.labels.foo
+```
+
+It may also be helpful to configure a `managedFieldsManagers` with a value of `kyverno` in the list to instruct Argo CD to allow Kyverno to own the fields it is mutating.
