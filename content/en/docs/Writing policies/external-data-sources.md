@@ -1,8 +1,8 @@
 ---
 title: External Data Sources
 description: >
-    Use data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries in Kyverno policies.
-weight: 80
+  Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
+weight: 100
 ---
 
 The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [context](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.

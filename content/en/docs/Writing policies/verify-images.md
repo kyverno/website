@@ -1,7 +1,8 @@
 ---
-title: Verify Images
-description: Check image signatures and add digests
-weight: 40
+title: Verify Images Rules
+description: >
+  Check container image signatures and attestations to ensure supply chain security.
+weight: 60
 ---
 
 {{% alert title="Warning" color="warning" %}}

@@ -1,6 +1,7 @@
 ---
-title: Select Resources
-description: Use `match` and `exclude` to filter and select resources.
+title: Selecting Resources
+description: >
+  Identifying and filtering resources for policy evaluation.
 weight: 20
 ---
 

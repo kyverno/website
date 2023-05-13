@@ -1,8 +1,8 @@
 ---
-title: Mutate Resources
+title: Mutate Rules
 description: >
   Modify resource configurations.
-weight: 30
+weight: 40
 ---
 
 A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch or a strategic merge patch.

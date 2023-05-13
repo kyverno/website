@@ -1,8 +1,8 @@
 ---
-title: Auto-Gen Rules for Pod Controllers
+title: Auto-Gen Rules
 description: >
-    Automatically generate rules for Pod controllers.
-weight: 100
+  Automatically generate rules for Pod controllers.
+weight: 110
 ---
 
 Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.

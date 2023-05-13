@@ -1,6 +1,7 @@
 ---
 title: Policy Settings
-description: Common configuration for all rules in a policy.
+description: >
+    Common configuration for all rules in a policy.
 weight: 10
 ---
 

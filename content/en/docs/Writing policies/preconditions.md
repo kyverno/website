@@ -1,8 +1,8 @@
 ---
 title: Preconditions
 description: >
-  Control policy rule execution based on variables.
-weight: 90
+  Fine-grained control of policy rule execution based on variables and expressions.
+weight: 120
 ---
 
 Preconditions allow controlling policy rule execution by building expressions based on variable values. While `match` and `exclude` allow filtering requests based on resource and user information, `preconditions` can be used to define custom filters for more granular control of when a rule should be applied.
