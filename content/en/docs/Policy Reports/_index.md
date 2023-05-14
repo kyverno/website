@@ -58,6 +58,8 @@ Policy reports have a few configuration options available. For details, see the 
 Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization/#configmap-keys).
 {{% /alert %}}
 
+Reports are automatically chunked in increments of 1,000 results. Once a single report reaches this number of results, a second report with an incremented resource name will be created.
+
 ## Report result logic
 
 Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
