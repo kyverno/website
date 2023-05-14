@@ -100,7 +100,8 @@ spec:
         patchesJson6902: |-
           - path: "/data"
             op: add
-            value: {"ship.properties": "{\"type\": \"starship\", \"owner\": \"utany.corp\"}"}
+            value:
+              ship.properties: '{"type": "starship", "owner": "utany.corp"}'
 ```
 
 This is an example of a patch that removes a label from a Secret:
@@ -124,7 +125,7 @@ spec:
             op: remove
 ```
 
-This policy rule adds elements to a list. In this case, it adds a new busybox container and a command. Note that because the `path` statement is a precise schema element, this will only work on a direct Pod and not higher-level objects such as Deployments.
+This policy rule adds elements to a list. In this case, it adds a new busybox container and a command. Note that because the `path` statement is a precise schema element, this will only work on a direct Pod and not higher-level objects such as Deployments. Testing the below policy requires setting `spec.automountServiceAccountToken: false` in a Pod.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -143,7 +144,9 @@ spec:
       patchesJson6902: |-
         - op: add
           path: "/spec/containers/1"
-          value: {"name":"busybox","image":"busybox:latest"}
+          value:
+            name: busybox
+            image: busybox:latest
         - op: add
           path: "/spec/containers/1/command"
           value:
@@ -161,7 +164,11 @@ mutate:
   patchesJson6902: |-
     - op: add
       path: "/spec/tolerations/-"
-      value: {"key":"networkzone","operator":"Equal","value":"dmz","effect":"NoSchedule"}
+      value:
+        key: networkzone
+        operator: Equal
+        value: dmz
+        effect: NoSchedule
 ```
 
 JSON Patch uses [JSON Pointer](http://jsonpatch.com/#json-pointer) to reference keys, and keys with tilde (`~`) and forward slash (`/`) characters need to be escaped with `~0` and `~1`, respectively. For example, the following adds an annotation with the key of `config.linkerd.io/skip-outbound-ports` with the value of `"8200"`.
@@ -719,7 +726,8 @@ spec:
           patchesJson6902: |-
             - path: /spec/containers/{{elementIndex}}/securityContext
               op: add
-              value: {"runAsNonRoot" : true}
+              value:
+                runAsNonRoot: true
 ```
 
 For a complete example of the `patchStrategicMerge` method that mutates the image to prepend the address of a trusted registry, see below.

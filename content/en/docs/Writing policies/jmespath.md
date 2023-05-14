@@ -784,7 +784,9 @@ spec:
         patchesJson6902: |-
           - path: "/spec/forProvider/tagging/tagSet/-1"
             op: add
-            value: {"key": "{{element.key}}", "value": "{{element.value}}"}
+            value:
+              key: "{{element.key}}"
+              value": "{{element.value}}"
 ```
 
 Given a Namespace which looks like the following
