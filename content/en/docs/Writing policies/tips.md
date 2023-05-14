@@ -1,7 +1,8 @@
 ---
 title: Tips & Tricks 
-description: Tips and tricks for writing more effective policy.
-weight: 120
+description: >
+  Tips and tricks for writing more effective policy.
+weight: 140
 ---
 
 These are some tips and tricks you can use when putting together your Kyverno policies.

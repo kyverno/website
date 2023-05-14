@@ -45,6 +45,8 @@ spec:
       - Replace=true
 ```
 
+For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](/docs/writing-policies/mutate/#argocd).
+
 #### Ownership Clashes
 
 ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to determine which resources form the app. The Kyverno Helm chart also sets this label for the same purposes. In order to resolve this conflict, configure ArgoCD to use a different tracking mechanism as described in the ArgoCD [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).

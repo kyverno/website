@@ -1,8 +1,8 @@
 ---
 title: Variables
 description: >
-    Data-driven policies for reuse and intelligent decision making
-weight: 70
+  Defining and using variables in policies from multiple sources.
+weight: 90
 ---
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.

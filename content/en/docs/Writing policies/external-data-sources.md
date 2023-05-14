@@ -1,27 +1,23 @@
 ---
 title: External Data Sources
 description: >
-    Use data from ConfigMaps, the Kubernetes API server, and image registries in Kyverno policies.
-weight: 80
+  Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
+weight: 100
 ---
 
-The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [`context`](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.
+The [Variables](/docs/writing-policies/variables/) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [context](/docs/writing-policies/variables/#variables-from-external-data-sources) that stores all variables.
 
-This section provides details on using ConfigMaps, API calls, and image registries to reference external data as variables in policies.
-
-{{% alert title="Note" color="info" %}}
-For improved security and performance, Kyverno is designed to not allow connections to systems other than the cluster Kubernetes API server and image registries. Use a separate controller to fetch data from any source and store it in a ConfigMap that can be efficiently used in a policy. This design enables separation of concerns and enforcement of security boundaries.
-{{% /alert %}}
+This section provides details on using ConfigMaps, API calls, service calls, and image registries to reference external data as variables in policies.
 
 ## Variables from ConfigMaps
 
 A [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource in Kubernetes is commonly used as a source of configuration details which can be consumed by applications. This data can be written in multiple formats, stored in a Namespace, and accessed easily. Kyverno supports using a ConfigMap as a data source for variables. When a policy referencing a ConfigMap resource is evaluated, the ConfigMap data is checked at that time ensuring that references to the ConfigMap are always dynamic. Should the ConfigMap be updated, subsequent policy lookups will pick up the latest data at that point.
 
-In order to consume data from a ConfigMap in a rule, a `context` is required. For each rule you wish to consume data from a ConfigMap, you must define a `context`. The context data can then be referenced in the policy rule using JMESPath notation.
+In order to consume data from a ConfigMap in a rule, a context is required. For each rule you wish to consume data from a ConfigMap, you must define a context. The context data can then be referenced in the policy rule using JMESPath notation.
 
 ### Looking up ConfigMap values
 
-A ConfigMap that is defined in a rule's `context` can be referred to using its unique name within the context. ConfigMap values can be referenced using a JMESPath style expression.
+A ConfigMap that is defined in a rule's context can be referenced using its unique name within the context. ConfigMap values can be referenced using a JMESPath style expression.
 
 ```sh
 {{ <context-name>.data.<key-name> }}
@@ -39,7 +35,7 @@ data:
   env: production
 ```
 
-To refer to values from a ConfigMap inside a rule, define a `context` inside the rule with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below rule defines a `context` which references this specific ConfigMap by name.
+To refer to values from a ConfigMap inside a rule, define a context inside the rule with one or more ConfigMap declarations. Using the sample ConfigMap snippet referenced above, the below rule defines a context which references this specific ConfigMap by name.
 
 ```yaml
 rules:
@@ -57,7 +53,7 @@ rules:
 
 Based on the example above, we can now refer to a ConfigMap value using `{{dictionary.data.env}}`. The variable will be substituted with the value `production` during policy execution.
 
-Put into context of a full `ClusterPolicy`, referencing a ConfigMap as a variable looks like the following.
+Put into context of a full policy, referencing a ConfigMap as a variable looks like the following.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -69,16 +65,16 @@ metadata:
 spec:
     rules:
     - name: example-configmap-lookup
-      context:
-      - name: dictionary
-        configMap:
-          name: some-config-map
-          namespace: some-namespace
       match:
         any:
         - resources:
             kinds:
             - Pod
+      context:
+      - name: dictionary
+        configMap:
+          name: some-config-map
+          namespace: some-namespace
       mutate:
         patchStrategicMerge:
           metadata:
@@ -86,17 +82,17 @@ spec:
               my-environment-name: "{{dictionary.data.env}}"
 ```
 
-In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a `context` which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
+In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a context which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
 
 {{% alert title="Note" color="info" %}}
 ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
 ```
 {{ "<name>".data."<key>" }}
 ```
-See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting concerns.
+See the [JMESPath page](/docs/writing-policies/jmespath/#formatting) for more information on formatting.
 {{% /alert %}}
 
-Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server.
+Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](/docs/installation/customization/#container-flags) if desired.
 
 ### Handling ConfigMap Array Values
 
@@ -116,7 +112,7 @@ data:
   allowed-roles: '["cluster-admin", "cluster-operator", "tenant-admin"]'
 ```
 
-Now that the array data is saved in the `allowed-roles` key, here is a sample ClusterPolicy containing a single `rule` that blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/writing-policies/jmespath/#parse_json) is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
+Now that the array data is saved in the `allowed-roles` key, here is a sample policy which blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/writing-policies/jmespath/#parse_json) is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -154,7 +150,7 @@ This rule denies the request for a new Deployment if the annotation `role` is no
 You may also notice that this sample uses variables from both AdmissionReview and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
 {{% /alert %}}
 
-Once creating this sample `ClusterPolicy`, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
+Once creating this sample policy, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
 
 ```yaml
 apiVersion: apps/v1
@@ -204,10 +200,10 @@ Kubernetes is powered by a declarative API that allows querying and manipulating
 
 A Kyverno Kubernetes API call works just as with `kubectl` and other API clients, and can be tested using existing tools.
 
-For example, here is a command line that uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to `kyverno jp` which counts the number of Pods:
+For example, this command uses `kubectl` to fetch the list of Pods in a Namespace and then pipes the output to `kyverno jp` which counts the number of Pods:
 
 ```sh
-kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp "items | length(@)"
+kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp query "items | length(@)"
 ```
 
 {{% alert title="Tip" color="info" %}}
@@ -226,6 +222,33 @@ rules:
       jmesPath: "items | length(@)"   
 ```
 
+Calls to the Kubernetes API server may also perform `POST` operations in addition to `GET` which is the default method. The returned data from the API server can then be used for further policy decisions.
+
+For example, this snippet below shows making a call to the [SubjectAccessReview API](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/authorization-resources/subject-access-review-v1/) to determine if an actor is authorized. Performing a `POST` operation requires specifying the `method` field and the `data` object with the contents of the request given as a list of key/value pairs.
+
+```yaml
+context:
+  - name: subjectaccessreview
+    apiCall:
+      urlPath: /apis/authorization.k8s.io/v1/subjectaccessreviews
+      method: POST
+      data:
+      - key: kind
+        value: SubjectAccessReview
+      - key: apiVersion
+        value: authorization.k8s.io/v1
+      - key: spec
+        value:
+          resource: "namespace"
+          resourceAttributes:
+            namespace: "{{ request.namespace }}"
+            verb: "delete"
+            group: ""
+          user: "{{ request.userInfo.username }}"
+```
+
+The response from such a request will be the full JSON return and accessible under the variable `subjectaccessreview`.
+
 ### URL Paths
 
 The Kubernetes API organizes resources under groups and versions. For example, the resource type `Deployment` is available in the API Group `apps` with a version `v1`.
@@ -242,21 +265,25 @@ For Namespaced resources, to get a specific resource by name or to get all resou
 
 For historic resources, the Kubernetes Core API is available under `/api/v1`. For example, to query all Namespace resources the path `/api/v1/namespaces` is used.
 
-The Kubernetes API groups are defined in the [API reference documentation for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-) and can also be retrieved via the `kubectl api-resources` command shown below:
+The Kubernetes API groups are defined in the [API reference documentation for v1.25](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/) and can also be retrieved via the `kubectl api-resources` command shown below:
 
 ```sh
 $ kubectl api-resources
-NAME                              SHORTNAMES   APIGROUP                       NAMESPACED   KIND
-bindings                                                                      true         Binding
-componentstatuses                 cs                                          false        ComponentStatus
-configmaps                        cm                                          true         ConfigMap
-endpoints                         ep                                          true         Endpoints
-events                            ev                                          true         Event
-limitranges                       limits                                      true         LimitRange
-namespaces                        ns                                          false        Namespace
-nodes                             no                                          false        Node
-persistentvolumeclaims            pvc                                         true         PersistentVolumeClaim
-
+NAME                                SHORTNAMES   APIVERSION                              NAMESPACED   KIND
+bindings                                         v1                                      true         Binding
+componentstatuses                   cs           v1                                      false        ComponentStatus
+configmaps                          cm           v1                                      true         ConfigMap
+endpoints                           ep           v1                                      true         Endpoints
+events                              ev           v1                                      true         Event
+limitranges                         limits       v1                                      true         LimitRange
+namespaces                          ns           v1                                      false        Namespace
+nodes                               no           v1                                      false        Node
+persistentvolumeclaims              pvc          v1                                      true         PersistentVolumeClaim
+persistentvolumes                   pv           v1                                      false        PersistentVolume
+pods                                po           v1                                      true         Pod
+podtemplates                                     v1                                      true         PodTemplate
+replicationcontrollers              rc           v1                                      true         ReplicationController
+resourcequotas                      quota        v1                                      true         ResourceQuota
 ...
 ```
 
@@ -265,20 +292,17 @@ The `kubectl api-versions` command prints out the available versions for each AP
 ```sh
 $ kubectl api-versions
 admissionregistration.k8s.io/v1
-admissionregistration.k8s.io/v1beta1
+admissionregistration.k8s.io/v1alpha1
 apiextensions.k8s.io/v1
-apiextensions.k8s.io/v1beta1
 apiregistration.k8s.io/v1
-apiregistration.k8s.io/v1beta1
 apps/v1
 authentication.k8s.io/v1
-authentication.k8s.io/v1beta1
 authorization.k8s.io/v1
-authorization.k8s.io/v1beta1
 autoscaling/v1
-autoscaling/v2beta1
-autoscaling/v2beta2
+autoscaling/v2
 batch/v1
+certificates.k8s.io/v1
+coordination.k8s.io/v1
 ...
 ```
 
@@ -300,7 +324,7 @@ The API group is shown in the third column of the output. You can then use the g
 kubectl api-versions | grep apps
 ```
 
-The output of this will be `apps/v1`. Older versions of Kubernetes (prior to 1.18) will also show `apps/v1beta2`.
+The output of this will be `apps/v1`.
 
 {{% /alert %}}
 
@@ -370,6 +394,31 @@ context:
     jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
 ```
 
+Using query parameters has the added benefit that there will always be a response even if the query returns no results. This can be beneficial (and even necessary) in some cases where an API call to fetch an exact resource by name may fail because the resource does not exist.
+
+For example, if the `foo` Service does not exist, an API call to return that specific resource will fail.
+
+```sh
+$ kubectl get --raw /api/v1/namespaces/default/services/foo
+Error from server (NotFound): services "foo" not found
+```
+
+However, an API call with a query parameter against all Services will return successful but with an empty collection.
+
+```sh
+$ kubectl get --raw /api/v1/namespaces/default/services?fieldSelector=metadata.name=foo | jq
+{
+  "kind": "ServiceList",
+  "apiVersion": "v1",
+  "metadata": {
+    "resourceVersion": "167567"
+  },
+  "items": []
+}
+```
+
+Further information on handling collections is covered below.
+
 ### Handling collections
 
 The API server response for a `HTTP GET` on a URL path that requests collections of resources will be an object with a list of items (resources).
@@ -432,7 +481,7 @@ This will return a `NamespaceList` object with a property `items` that contains 
 To process this data in JMESPath, reference the `items`. Here is an example which extracts a few metadata fields across all Namespace resources:
 
 ```sh
-kubectl get --raw /api/v1/namespaces | kyverno jp "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp query "items[*].{name: metadata.name, creationTime: metadata.creationTimestamp}"
 ```
 
 This produces a new JSON list of objects with properties `name` and `creationTime`.
@@ -453,14 +502,14 @@ This produces a new JSON list of objects with properties `name` and `creationTim
 To find an item in the list you can use JMESPath filters. For example, this command will match a Namespace by its name:
 
 ```sh
-kubectl get --raw /api/v1/namespaces | kyverno jp "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
+kubectl get --raw /api/v1/namespaces | kyverno jp query "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
 ```
 
-In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno JMESPath page [here](/docs/writing-policies/jmespath/).
+In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno [JMESPath page](/docs/writing-policies/jmespath/).
 
-### Sample Policy: Limit Services of type LoadBalancer in a Namespace
+### Examples
 
-Here is a complete sample policy that limits each namespace to a single service of type `LoadBalancer`.
+Here is a complete sample policy that limits each Namespace to a single Service of type `LoadBalancer`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -476,16 +525,13 @@ spec:
       - resources:
           kinds:
           - Service
+          operations:
+          - CREATE
     context:
     - name: serviceCount
       apiCall:
         urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: Equals
-        value: CREATE
     validate:
       message: "Only one LoadBalancer service is allowed per namespace"
       deny:
@@ -496,7 +542,52 @@ spec:
             value: 1
 ```
 
-This sample policy retrieves the list of Services in the Namespace and stores the count of type `LoadBalancer` in a variable called serviceCount. A `deny` rule is used to ensure that the count cannot exceed one.
+This sample policy retrieves the list of Services in the Namespace and stores the count of type `LoadBalancer` in a variable called `serviceCount`. A `deny` rule is used to ensure that the count cannot exceed one.
+
+## Variables from Service Calls
+
+Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster. This feature is nested under the apiCall context type and builds upon it. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
+
+By using the `apiCall.service` object, a call may be made to another URL to retrieve and store data. The fields `caBundle` and `url` are used to specify the CA bundle and URL, respectively, for the call. The fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be to either the Kubernetes API or some other service. At this time, authentication as part of these service calls is not supported. The response from a Service call must only be JSON.
+
+For example, the following policy makes a `POST` request to another Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace` and sends it the data `{"name":"foonamespace"}` when a ConfigMap is created in the `foonamespace` Namespace. The JSON result Kyverno receives is stored in the context called `result`. The value of `result` is JSON where the key `allowed` is either `true` or `false`. The request is blocked if the value is `false`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-namespaces      
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: call-extension
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    context:
+    - name: result
+      apiCall:
+        method: POST
+        data:
+        - key: namespace
+          value: "{{request.namespace}}"
+        service:
+          url: http://sample.kyverno-extension/check-namespace
+          caBundle: |-
+            -----BEGIN CERTIFICATE-----
+            <snip>
+            -----END CERTIFICATE-----
+    validate:
+      message: "namespace {{request.namespace}} is not allowed"
+      deny:
+        conditions:
+          all:
+          - key: "{{ result.allowed }}"
+            operator: Equals
+            value: false
+```
 
 ## Variables from Image Registries
 
@@ -608,11 +699,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation}}"
-        operator: NotEquals
-        value: DELETE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: "Images run as root are not allowed."  
       foreach:

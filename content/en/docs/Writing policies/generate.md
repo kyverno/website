@@ -1,7 +1,8 @@
 ---
-title: Generate Resources
-description: Create additional resources based on resource creation or updates. 
-weight: 60
+title: Generate Rules
+description: >
+  Create new Kubernetes resources. 
+weight: 50
 ---
 
 A `generate` rule can be used to create additional resources when a new resource is created or when the source is updated. This is useful to create supporting resources, such as new RoleBindings or NetworkPolicies for a Namespace.

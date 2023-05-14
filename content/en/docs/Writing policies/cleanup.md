@@ -1,7 +1,8 @@
 ---
-title: Cleanup
-description: Automate the resource cleanup process by using a CleanupPolicy. 
-weight: 67
+title: Cleanup Rules
+description: >
+  Remove Kubernetes resources. 
+weight: 70
 ---
 
 {{% alert title="Warning" color="warning" %}}
