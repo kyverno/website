@@ -16,7 +16,7 @@ The `match` and `exclude` clauses have the same structure and can each contain *
 
 The following resource filters can be specified under an `any` or `all` clause.
 
-* `resources`: select resources by names, namespaces, kinds, label selectors, annotations, and namespace selectors.
+* `resources`: select resources by names, namespaces, kinds, , operations, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
@@ -167,11 +167,8 @@ spec:
       - resources:
           kinds:
           - "*"
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: Equals
-        value: CREATE
+          operations:
+          - CREATE
     validate:
       message: "The label `app.kubernetes.io/name` is required."
       pattern:
@@ -228,33 +225,32 @@ spec:
     - name: check-pod-controller-labels
       # Each rule matches specific resource described by "match" field.
       match:
-        resources:
-          kinds: # Required, list of kinds
-          - Deployment
-          - StatefulSet
-          # Optional resource names. Supports wildcards (* and ?)
-          names: 
-          - "mongo*"
-          - "postgres*"
-          # Optional list of namespaces. Supports wildcards (* and ?)
-          namespaces:
-          - "dev*"
-          - test
-          # Optional label selectors. Values support wildcards (* and ?)
-          selector:
-              matchLabels:
-                  app: mongodb
-              matchExpressions:
-                  - {key: tier, operator: In, values: [database]}
-        # Optional users or service accounts to be matched
-        subjects:
-        - kind: User
-          name: mary@somecorp.com
-        # Optional roles to be matched
-        roles:
-        # Optional clusterroles to be matched
-        clusterRoles: 
-        - cluster-admin
+        any:
+        - resources:
+            kinds: # Required, list of kinds
+            - Deployment
+            - StatefulSet
+            # Optional resource names. Supports wildcards (* and ?)
+            names: 
+            - "mongo*"
+            - "postgres*"
+            # Optional list of namespaces. Supports wildcards (* and ?)
+            namespaces:
+            - "dev*"
+            - test
+            # Optional label selectors. Values support wildcards (* and ?)
+            selector:
+                matchLabels:
+                    app: mongodb
+                matchExpressions:
+                    - {key: tier, operator: In, values: [database]}
+          # Optional users or service accounts to be matched
+          subjects:
+          - kind: User
+            name: mary@somecorp.com
+          # Optional clusterroles to be matched
+          clusterRoles: 
+          - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}

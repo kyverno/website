@@ -388,11 +388,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value: ["CREATE","UPDATE"]
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: "The total memory defined in requests and limits must not exceed 200Mi."
       foreach:
@@ -593,13 +591,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value:
-        - CREATE
-        - UPDATE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: Limits may not exceed 2.5x the requests.
       foreach:
@@ -939,11 +933,8 @@ spec:
       - resources:
           kinds:
           - Deployment
-    preconditions:
-      any:
-      - key: "{{request.operation}}"
-        operator: Equals
-        value: CREATE
+          operations:
+          - CREATE
     context:
     - name: pdb_count
       apiCall:
@@ -1001,13 +992,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value:
-        - CREATE
-        - UPDATE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: Limits must be evenly divisible by the requests.
       foreach:
@@ -1461,12 +1448,8 @@ spec:
       - resources:
           kinds:
           - Secret
-    preconditions:
-      all:
-      - key: "{{request.operation}}"
-        operator: In
-        value:
-        - CREATE
+          operations:
+          - CREATE
     context:
     - name: randomtest
       variable:
@@ -1772,9 +1755,12 @@ spec:
   rules:
     - name: check-path
       match:
-        resources:
-          kinds:
-            - Ingress
+        any:
+        - resources:
+            kinds:
+              - Ingress
+            operations:
+            - CREATE
       context:
         # Looks up the Ingress paths across the whole cluster.
         - name: allpaths
@@ -1786,10 +1772,6 @@ spec:
           apiCall:
             urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses"
             jmesPath: "items[].spec.rules[].http.paths[].path"
-      preconditions:
-        - key: "{{request.operation}}"
-          operator: Equals
-          value: "CREATE"
       validate:
         message: >-
           The root path /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/ exists

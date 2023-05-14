@@ -711,11 +711,8 @@ spec:
         - resources:
             kinds:
               - Pod
-      preconditions:
-        any:
-        - key: "{{ request.operation }}"
-          operator: Equals
-          value: CREATE
+            operation:
+            - CREATE
       mutate:
         foreach: 
         - list: "request.object.spec.containers"
@@ -741,13 +738,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation}}"
-        operator: AnyIn
-        value:
-        - CREATE
-        - UPDATE
+          operations:
+          - CREATE
+          - UPDATE
     mutate:
       foreach:
       - list: "request.object.spec.containers"
