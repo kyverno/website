@@ -6,7 +6,7 @@ weight: 20
 
 **Metric Name**
 
-kyverno_policy_results_total
+`kyverno_policy_results_total`
 
 **Metric Value**
 

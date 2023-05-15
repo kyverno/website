@@ -6,7 +6,7 @@ weight: 55
 
 **Metric Name**
 
-kyverno_client_queries_total
+`kyverno_client_queries_total`
 
 **Metric Value**
 
