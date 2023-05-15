@@ -10,7 +10,7 @@ weight: 10
 
 **Metric Value**
 
-* 1 - for rules currently actively present in the cluster.
+* `1` - for rules currently actively present in the cluster.
 
 ## Use cases
 
