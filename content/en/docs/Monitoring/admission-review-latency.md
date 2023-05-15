@@ -6,7 +6,7 @@ weight: 40
 
 **Metric Name**
 
-kyverno_admission_review_duration_seconds
+`kyverno_admission_review_duration_seconds`
 
 **Metric Value**
 

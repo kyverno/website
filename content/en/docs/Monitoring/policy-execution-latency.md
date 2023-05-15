@@ -6,7 +6,7 @@ weight: 30
 
 **Metric Name**
 
-kyverno_policy_execution_duration_seconds
+`kyverno_policy_execution_duration_seconds`
 
 **Metric Value**
 
