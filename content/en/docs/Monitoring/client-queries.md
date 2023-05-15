@@ -4,7 +4,7 @@ description: This metric can be used to track the number of queries per second (
 weight: 55
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 `kyverno_client_queries_total`
 

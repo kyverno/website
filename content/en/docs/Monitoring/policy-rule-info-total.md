@@ -4,7 +4,7 @@ description: This metric can be used to track the number of policies as well as 
 weight: 10
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 `kyverno_policy_rule_info_total`
 

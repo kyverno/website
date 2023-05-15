@@ -4,7 +4,7 @@ description: This metric can be used to track the history of all Kyverno policy-
 weight: 50
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 `kyverno_policy_changes_total`
 

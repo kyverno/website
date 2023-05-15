@@ -4,7 +4,7 @@ description: This metric can be used to track the results associated with the ru
 weight: 20
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 `kyverno_policy_results_total`
 

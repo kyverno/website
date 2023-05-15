@@ -4,13 +4,17 @@ description: This metric can be used to track the end-to-end latencies associate
 weight: 40
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
-`kyverno_admission_review_duration_seconds`
+* `kyverno_admission_review_duration_seconds_count`
+* `kyverno_admission_review_duration_seconds_sum`
+* `kyverno_admission_review_duration_seconds_bucket`
 
 **Metric Value**
 
 Histogram - A float value representing the latency of the admission review in seconds.
+
+See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a detailed explanation of how histograms work.
 
 ## Use cases
 
@@ -19,11 +23,13 @@ Histogram - A float value representing the latency of the admission review in se
 
 ## Filter Labels
 
-| Label                        | Allowed Values                                         | Description                                                                       |
-| ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| resource\_kind               | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                             |
-| resource\_namespace          |                                                        | Namespace in which this resource lies                                              |
-| resource\_request\_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                   |
+| Label | Allowed Values | Description |
+| --- | --- | --- |
+| request\_allowed | "true", "false" | If the admission review was accepeted or rejected. |
+| request\_webhook | "ValidatingWebhookConfiguration", "MutatingWebhookConfiguration" | Type of webhook processing the admission review. |
+| resource\_kind | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource |
+| resource\_namespace | | Namespace in which this resource lives |
+| resource\_request\_operation | "create", "update", "delete" | If the requested resource is being created, updated, or deleted. |
 
 ## Useful Queries
 

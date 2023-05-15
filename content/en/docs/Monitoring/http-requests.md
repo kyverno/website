@@ -4,7 +4,7 @@ description: This metric can be used to track the number of http requests which 
 weight: 45
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 `kyverno_http_requests_total`
 

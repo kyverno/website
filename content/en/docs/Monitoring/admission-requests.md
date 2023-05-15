@@ -4,7 +4,7 @@ description: This metric can be used to track the number of admission requests w
 weight: 45
 ---
 
-**Metric Name**
+**Metric Name(s)**
 
 kyverno_admission_requests_total
 
