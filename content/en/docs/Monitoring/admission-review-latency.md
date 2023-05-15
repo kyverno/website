@@ -4,24 +4,19 @@ description: This metric can be used to track the end-to-end latencies associate
 weight: 40
 ---
 
-**Metric Name(s)**
+#### Metric Name(s)
 
 * `kyverno_admission_review_duration_seconds_count`
 * `kyverno_admission_review_duration_seconds_sum`
 * `kyverno_admission_review_duration_seconds_bucket`
 
-**Metric Value**
+#### Metric Value
 
 Histogram - A float value representing the latency of the admission review in seconds.
 
 See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a detailed explanation of how histograms work.
 
-## Use cases
-
-* The cluster admin wants to know how fast/slow have the admission reviews been for incoming requests around “Deployment” creations in the default namespace.
-* The cluster admin wants to be alerted as soon as the p95 latency of admission reviews associated with the incoming “Pod” creation requests breach a certain threshold.
-
-## Filter Labels
+#### Metric Labels
 
 | Label | Allowed Values | Description |
 | --- | --- | --- |
@@ -31,7 +26,12 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | resource\_namespace | | Namespace in which this resource lives |
 | resource\_request\_operation | "create", "update", "delete" | If the requested resource is being created, updated, or deleted. |
 
-## Useful Queries
+#### Use cases
+
+* The cluster admin wants to know how fast/slow have the admission reviews been for incoming requests around “Deployment” creations in the default namespace.
+* The cluster admin wants to be alerted as soon as the p95 latency of admission reviews associated with the incoming “Pod” creation requests breach a certain threshold.
+
+#### Useful Queries
 
 * Average latency associated with the admission reviews triggered by incoming resource requests, grouped by the resource:<br> 
 `avg(kyverno_admission_review_duration_seconds{}) by (resource_type)`

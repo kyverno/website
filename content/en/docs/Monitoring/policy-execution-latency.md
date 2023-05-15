@@ -4,24 +4,19 @@ description: This metric can be used to track the latencies associated with the 
 weight: 30
 ---
 
-**Metric Name(s)**
+#### Metric Name(s)
 
 * `kyverno_policy_execution_duration_seconds_count`
 * `kyverno_policy_execution_duration_seconds_sum`
 * `kyverno_policy_execution_duration_seconds_bucket`
 
-**Metric Value**
+#### Metric Value
 
 Histogram - A float value representing the latency of the rule's execution in seconds.
 
 See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a detailed explanation of how histograms work.
 
-## Use cases
-
-* The cluster admin wants to know how efficiently the policies are getting executed by tracking the average latencies associated with the Kyverno policies' execution since the last 24 hrs.
-* The cluster admin wants to track the rule causing highest latency in a certain cluster policy.
-
-## Filter Labels
+#### Metric Labels
 
 | Label | Allowed Values | Description |
 | --- | --- | --- |
@@ -38,7 +33,12 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | rule\_result | "PASS", "FAIL" | Result of the rule's execution |
 | rule\_type | "validate", "mutate", "generate" | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules |
 
-## Useful Queries
+#### Use cases
+
+* The cluster admin wants to know how efficiently the policies are getting executed by tracking the average latencies associated with the Kyverno policies' execution since the last 24 hrs.
+* The cluster admin wants to track the rule causing highest latency in a certain cluster policy.
+
+#### Useful Queries
 
 * Tracking the average latency associated with the execution of rules grouped by their rule types (validate, mutate, generate):<br>
 `avg(kyverno_policy_execution_duration_seconds{}) by (rule_type)`
