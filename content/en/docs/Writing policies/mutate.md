@@ -231,7 +231,7 @@ The mutate overlay rules support three types of anchors:
 | Anchor             | Tag  | Behavior                                             |
 |--------------------|----- |----------------------------------------------------- |
 | Conditional        | ()   | Use the tag and value as an "if" condition           |
-| Add if not present | +()  | Add the tag value if the tag is not already present  |
+| Add if not present | +()  | Add the tag value if the tag is not already present. Not to be used for arrays/lists unless inside a [`foreach`](#foreach) statement.  |
 | Global             | <()  | Add the pattern when the global anchor is true       |
 
 The **anchors** values support **wildcards**:
@@ -274,7 +274,7 @@ If the anchor tag value is an object or array, the entire object or array must m
 
 A variation of an anchor is to add a field value if it is not already defined. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
 
-An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource.
+An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource. This anchor should only be used on lists/arrays if inside a `foreach` loop as it is not intended to be an iterator.
 
 For example, this policy matches and mutates pods with an `emptyDir` volume to add the `safe-to-evict` annotation if it is not specified.
 
