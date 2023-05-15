@@ -1,12 +1,12 @@
 ---
-title: Http Requests Counts
+title: HTTP Requests Count
 description: This metric can be used to track the number of http requests which were triggered as a part of Kyverno.
 weight: 45
 ---
 
 **Metric Name**
 
-kyverno_http_requests_total
+`kyverno_http_requests_total`
 
 **Metric Value**
 
@@ -21,7 +21,7 @@ Counter - An only-increasing integer representing the count of http requests ass
 
 | Label | Allowed Values | Description |
 | --- | --- | --- |
-| http\_method | "GET", "POST, etc. | HTTP method |
+| http\_method | `GET`, `POST`, etc. | HTTP method |
 | http\_url | | URL of the request |
 
 ## Useful Queries
