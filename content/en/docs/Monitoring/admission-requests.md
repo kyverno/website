@@ -22,7 +22,7 @@ Counter - An only-increasing integer representing the count of admission request
 | Label                        | Allowed Values                                         | Description                                                                       |
 | ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
 | resource\_kind               | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                             |
-| resource\_namespace          |                                                        | Namespace in which this resource lies                                              |
+| resource\_namespace          |                                                        | Namespace in which this resource lives                                              |
 | resource\_request\_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                   |
 
 ## Useful Queries
