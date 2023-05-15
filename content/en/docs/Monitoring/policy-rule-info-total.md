@@ -10,8 +10,7 @@ weight: 10
 
 **Metric Value**
 
-* 0 - if the rule is not anymore present in the cluster (although it was created in the past).
-* 1 - if the rule is currently actively present in the cluster.
+* `1` - for rules currently actively present in the cluster.
 
 ## Use cases
 
