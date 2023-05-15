@@ -20,16 +20,16 @@ weight: 10
 
 ## Filter Labels
 
-| Label                    | Allowed Values                   | Description                                                                                                                                       |
-| ------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| policy\_validation\_mode | "enforce", "audit"               | PolicyValidationFailure action of the rule's parent policy                                                                                       |
-| policy\_type             | "cluster", "namespaced"          | Kind of the rule's parent policy. Kind: ClusterPolicy or Kind: Policy                                                                             |
-| policy\_background\_mode | "true", "false"                  | Policy's set background mode                                                                                                                      |
-| policy\_name             |                                  | Name of the policy to which the rule belongs                                                                                                      |
-| policy\_namespace        |                                  | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-"                         |
-| rule\_name               |                                  | Name of the rule, in the above policy, which is evaluating in this situation                                                                      |
-| rule\_type               | "validate", "mutate", "generate" | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules |
-| status\_ready            | "true", "false"                  | Readiness of the policy. When ready, the policy is able to serve admission requests
+| Label | Allowed Values | Description |
+| --- | --- | --- |
+| policy\_validation\_mode | "enforce", "audit" | PolicyValidationFailure action of the rule's parent policy |
+| policy\_type | "cluster", "namespaced" | Kind of the rule's parent policy. Kind: ClusterPolicy or Kind: Policy |
+| policy\_background\_mode | "true", "false" | Policy's set background mode |
+| policy\_name | | Name of the policy to which the rule belongs |
+| policy\_namespace | | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-" |
+| rule\_name | | Name of the rule, in the above policy, which is evaluating in this situation |
+| rule\_type | "validate", "mutate", "generate" | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules |
+| status\_ready | "true", "false" | Readiness of the policy. When ready, the policy is able to serve admission requests |
 
 ## Useful Queries
 
