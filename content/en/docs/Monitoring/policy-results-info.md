@@ -21,20 +21,20 @@ Counter - An only-increasing integer representing the number of results/executio
 
 ## Filter Labels
 
-| Label                             | Allowed Values                                         | Description                                                                                                                                                                                                                               |
-| --------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| policy\_validation\_mode          | "enforce", "audit"                                     | PolicyValidationFailure action of the rule's parent policy                                                                                                                                                                               |
-| policy\_type                      | "cluster", "namespaced"                                | Kind of the rule's parent policy. Kind: ClusterPolicy or Kind: Policy                                                                                                                                                                     |
-| policy\_background\_mode          | "true", "false"                                        | Policy's set background mode                                                                                                                                                                                                              |
-| policy\_name                      |                                                        | Name of the policy to which the rule belongs                                                                                                                                                                                              |
-| policy\_namespace                 |                                                        | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-"                                                                                                                 |
-| resource\_kind                    | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                                                                                                                                                     |
-| resource\_namespace               |                                                        | Namespace in which this resource lies                                                                                                                                                                                                      |
-| resource\_request\_operation      | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                                                                                                                                                           |
-| rule\_name                        |                                                        | Name of the rule, in the above policy, which is evaluating in this situation                                                                                                                                                              |
-| rule\_result                      | "PASS", "FAIL"                                         | Result of the rule's execution                                                                                                                                                                                                            |
-| rule\_type                        | "validate", "mutate", "generate"                       | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules                                                                                         |
-| rule\_execution\_cause            | "admission\_request", "background\_scan"               | Identifies whether the rule is executing in response to an admission request or a periodic background scan.<br>In background scans, only validate rules whereas in the case of admission requests, all validate/mutate/generate rules run |
+| Label | Allowed Values | Description |
+| --- | --- | --- |
+| policy\_validation\_mode | "enforce", "audit" | PolicyValidationFailure action of the rule's parent policy |
+| policy\_type | "cluster", "namespaced" | Kind of the rule's parent policy. Kind: ClusterPolicy or Kind: Policy |
+| policy\_background\_mode | "true", "false" | Policy's set background mode |
+| policy\_name | | Name of the policy to which the rule belongs |
+| policy\_namespace | | Namespace in which this Policy resides (only for policies with kind: Policy), For ClusterPolicies, this field will be "-" |
+| resource\_kind | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource |
+| resource\_namespace | | Namespace in which this resource lies |
+| resource\_request\_operation | "create", "update", "delete" | If the requested resource is being created, updated, or deleted. |
+| rule\_name | | Name of the rule, in the above policy, which is evaluating in this situation |
+| rule\_result | "PASS", "FAIL" | Result of the rule's execution |
+| rule\_type | "validate", "mutate", "generate" | Rule's behavior type.<br>For rule\_execution\_cause="background\_scan", it will always be "validate" as background scans only run validate rules |
+| rule\_execution\_cause | "admission\_request", "background\_scan" | Identifies whether the rule is executing in response to an admission request or a periodic background scan.<br>In background scans, only validate rules whereas in the case of admission requests, all validate/mutate/generate rules run |
 
 ## Useful Queries
 
