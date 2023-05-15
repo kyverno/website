@@ -10,7 +10,7 @@ weight: 10
 
 **Metric Value**
 
-* `1` - for rules currently actively present in the cluster.
+Gauge - `1` for rules currently actively present in the cluster.
 
 ## Use cases
 
