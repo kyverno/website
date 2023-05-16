@@ -695,6 +695,8 @@ patchStrategicMerge:
 
 When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing. The value of the `list` field may also resolve to a simple array of strings, for example as defined in a context variable. The value of the `list` field should not be enclosed in braces even though it is a JMESPath expression.
 
+`foreach` statements may also declare an optional `order` field for controlling whether to iterate over the `list` results in ascending or descending order.
+
 A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 Each `foreach` declaration can optionally contain the following declarations:
@@ -719,7 +721,7 @@ spec:
             kinds:
               - Pod
             operation:
-            - CREATE
+              - CREATE
       mutate:
         foreach: 
         - list: "request.object.spec.containers"
@@ -760,6 +762,13 @@ spec:
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
+
+It is important to understand internally how Kyverno treats `foreach` rules. Some general statements to keep in mind:
+
+* No internal patches are produced until all `foreach` iterations are complete.
+* `foreach` supports multiple loops but will be processed in declaration order and not independently or in parallel. The results of the first loop will be available internally to subsequent loops.
+* Cascading mutations as separate rules will be necessary for a mutation to be further mutated by other logic.
+* Use of the `order` field is required in some situations, for example when removing elements from an array use `Descending`.
 
 ### Nested foreach
 
