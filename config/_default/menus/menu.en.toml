@@ -21,8 +21,13 @@
   url = "/resources"
 
 [[main]]
-  name = "Community"
+  name = "Playgound"
   weight = -98
+  url = "https://playground.kyverno.io/"
+
+[[main]]
+  name = "Community"
+  weight = -97
   url = "/community"
 
 [[main]]
