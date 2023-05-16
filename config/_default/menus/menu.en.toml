@@ -21,7 +21,7 @@
   url = "/resources"
 
 [[main]]
-  name = "Playgound"
+  name = "Playground"
   weight = -98
   url = "https://playground.kyverno.io/"
 
