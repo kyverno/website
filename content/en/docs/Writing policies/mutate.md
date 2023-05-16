@@ -362,9 +362,10 @@ The anchor processing behavior for mutate conditions is as follows:
 
 ## Mutate Existing resources
 
-In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background (via the background controller) which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself. This has two important implications:
 
-Because these mutations occur on existing resources, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
+1. Mutation for existing resources is an asynchronous process. This means there will be a variable amount of delay between the period where the trigger was observed and the existing resource was mutated.
+2. Custom permissions are almost always required. Because these mutations occur on existing resources and not an AdmissionReview (which does not yet exist), Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
 
 To define such a policy, trigger resources need to be specified in the `match` block. The target resources--resources that are mutated in the background--are specified in each mutate rule under `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
 
@@ -428,6 +429,59 @@ spec:
 
 {{% alert title="Note" color="warning" %}}
 Installation of a mutate existing policy affects the `ValidatingWebhookConfiguration` Kyverno manages as opposed to traditional mutate rules affecting the `MutatingWebhookConfiguration`.
+{{% /alert %}}
+
+When defining a list of `targets[]`, the fields `name` and `namespace` are not strictly required but encouraged. If omitted, it implies a wildcard (`"*"`) for the omitted field which can have unintended impact on other resources.
+
+In order to more precisely control the target resources, mutate existing rules support both [context variables](/docs/writing-policies/external-data-sources/) and [preconditions](/docs/writing-policies/preconditions/). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
+
+This sample below illustrates how to combine preconditions and conditional anchors within `targets[]` to precisely select the desired existing resources for mutation. This policy restarts existing Deployments if they are consuming a Secret that has been updated assigned label `kyverno.io/watch: "true"` AND have a name beginning with `testing-`.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: refresh-env-var-in-pods
+spec:
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - name: refresh-from-secret-env
+    match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+          selector:
+            matchLabels:
+              kyverno.io/watch: "true"
+          operations:
+          - UPDATE
+    mutate:
+      targets:
+        - apiVersion: apps/v1
+          kind: Deployment
+          namespace: "{{request.namespace}}"
+          preconditions:
+            all:
+            - key: "{{target.metadata.name}}"
+              operator: Equals
+              value: testing-*
+      patchStrategicMerge:
+        spec:
+          template:
+            metadata:
+              annotations:
+                corp.org/random: "{{ random('[0-9a-z]{8}') }}"
+            spec:
+              containers:
+              - env:
+                - valueFrom:
+                    secretKeyRef:
+                      <(name): "{{ request.object.metadata.name }}"
+```
+
+{{% alert title="Note" color="warning" %}}
+The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](/docs/installation/customization/#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
 {{% /alert %}}
 
 ### Variables Referencing Target Resources
@@ -529,7 +583,7 @@ metadata:
 
 To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
-For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field:
+For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field, however a permission check is performed when a policy is installed.
 
 ```
 $ kubectl get ur -n kyverno
