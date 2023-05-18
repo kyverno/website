@@ -9,7 +9,7 @@ A `mutate` rule can be used to modify matching resources and is written as eithe
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
-Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](/docs/writing-policies/mutate/#mutate-existing-resources) policies.
+Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](#mutate-existing-resources) policies.
 
 This policy sets the `imagePullPolicy` to `IfNotPresent` if the image tag is `latest`:
 
@@ -187,7 +187,7 @@ Some other capabilities of the `patchesJson6902` method include:
 
 ## Strategic Merge Patch
 
-The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
+The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
 This policy adds a new container to the Pod, sets the `imagePullPolicy`, adds a command, and sets a label with the key of `name` and value set to the name of the Pod from AdmissionReview data. Once again, the overlay in this case names a specific schema path which is relevant only to a Pod and not higher-level resources like a Deployment.
 
@@ -219,6 +219,8 @@ spec:
 ```
 
 Note that when using `patchStrategicMerge` to mutate the `pod.spec.containers[]` array, the `name` key must be specified as a conditional anchor (i.e., `(name): "*"`) in order for the merge to occur on other fields.
+
+Mutate rules written with this style, if they match exclusively on a Pod, are subject to [auto-generation rules](/docs/writing-policies/autogen/) for Pod controllers.
 
 ## Conditional logic using anchors
 
