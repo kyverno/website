@@ -70,7 +70,7 @@ Below is a process which shows how to create a self-signed root CA, and generate
 1. Create a self-signed CA
 
 ```sh
-step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password
+step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password --kty=RSA
 ```
 
 2. Generate leaf certificates with a five-year expiration
@@ -78,12 +78,14 @@ step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --ins
 ```sh
 step certificate create kyverno-svc tls.crt tls.key --profile leaf \
             --ca rootCA.crt --ca-key rootCA.key \
-            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h --insecure --no-password
+            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
 
 
 step certificate create kyverno-cleanup-controller cleanup-tls.crt cleanup-tls.key --profile leaf \
             --ca rootCA.crt --ca-key rootCA.key \
-            --san kyverno-cleanup-controller --san kyverno-cleanup-controller.kyverno --san kyverno-cleanup-controller.kyverno.svc --not-after 43200h --insecure --no-password
+            --san kyverno-cleanup-controller --san kyverno-cleanup-controller.kyverno --san kyverno-cleanup-controller.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
 ```
 
 3. Verify the contents of the certificate
