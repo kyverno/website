@@ -55,9 +55,9 @@ X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
 
 #### Custom certificates
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign certificates for admission and cleanup controllers. Once you have a CA and X.509 certificate-key pairs, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
 
-##### Generate a self-signed CA and signed certificate-key pair
+##### Generate a self-signed CA and signed certificate-key pairs
 
 {{% alert title="Note" color="warning" %}}
 Using a separate self-signed root CA is difficult to manage and not recommended for production use.
@@ -65,20 +65,27 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Below is a process which shows how to create a self-signed root CA, and generate a signed certificate and key using [step CLI](https://smallstep.com/cli/):
+Below is a process which shows how to create a self-signed root CA, and generate a signed certificates and keys using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 
 ```sh
-step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password
+step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password --kty=RSA
 ```
 
-2. Generate a leaf certificate with a five-year expiration
+2. Generate leaf certificates with a five-year expiration
 
 ```sh
 step certificate create kyverno-svc tls.crt tls.key --profile leaf \
             --ca rootCA.crt --ca-key rootCA.key \
-            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h --insecure --no-password
+            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
+
+
+step certificate create kyverno-cleanup-controller cleanup-tls.crt cleanup-tls.key --profile leaf \
+            --ca rootCA.crt --ca-key rootCA.key \
+            --san kyverno-cleanup-controller --san kyverno-cleanup-controller.kyverno --san kyverno-cleanup-controller.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
 ```
 
 3. Verify the contents of the certificate
@@ -102,23 +109,29 @@ You can now use the following files to create Secrets:
 * `rootCA.crt`
 * `tls.crt`
 * `tls.key`
+* `cleanup-tls.crt`
+* `cleanup-tls.key`
 
 To create the required Secrets, use the following commands (do not change the Secret names):
 
 ```sh
 kubectl create ns <namespace>
+
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+
+kubectl create secret tls kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair --cert=cleanup-tls.crt --key=cleanup-tls.key -n <namespace>
+kubectl create secret generic kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
 ```
 
 Secret | Data | Content
 ------------ | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
+`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (admission controller)
+`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (admission controller)
+`kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (cleanup controller)
+`kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (cleanup controller)
 
-Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
-
-This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission and cleanup webhook configurations.
 
 ##### Install Kyverno
 
