@@ -61,7 +61,7 @@ Preconditions are also used in mutate rules inside a `foreach` loop for more gra
 
 ## Any and All Statements
 
-Preconditions are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule with multiple `any` statements also being possible (multiple `all` statements would be redundant). For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, preconditions will not be satisfied and thus the rule will not be applicable.
+Preconditions are evaluated by nesting the expressions under `any` and/or `all` statements. This gives you further power in building more precise logic for how the rule is triggered. Either or both may be used simultaneously in the same rule. For each `any`/`all` statement, each block must overall evaluate to TRUE for the precondition to be processed. If any of the `any` / `all` statement blocks does not evaluate to TRUE, preconditions will not be satisfied and thus the rule will not be applicable.
 
 For example, consider a Deployment manifest which features many different labels as follows.
 
