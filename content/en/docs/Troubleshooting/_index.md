@@ -153,3 +153,11 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 **Solution**: There can be many reasons why a policy may fail to work as intended, assuming other policies work. One of the most common reasons is that the API server is sending different contents than what you have accounted for in your policy. To see the full contents of the AdmissionReview request the Kubernetes API server sends to Kyverno, add the `dumpPayload` [container flag](/docs/installation/customization/#container-flags) set to `true` and check the logs. This has performance impact so it should be removed or set back to `false` when complete.
 
 The second most common reason policies may fail to operate per design is due to variables. To see the values Kyverno is substituting for variables, increase logging to level `4` by setting the container flag `-v=4`. You can `grep` for the string `variable` (or use tools such as [stern](https://github.com/stern/stern)) and only see the values being substituted for those variables.
+
+## Admission reports are stacking up
+
+**Symptom**: Admission reports keep accumulating in the cluster, taking more and more ETCD space and slowing down requests.
+
+**Diagniose**: Please follow the [troubleshooting docs](https://github.com/kyverno/kyverno/blob/main/docs/dev/troubleshooting/reports.md) to determine if you are affected by this issue.
+
+**Solution**: Admission reports can accumulate if the reports controller is not working properly so the first thing to check is if the reports controller is working as expected. If the controller works as expected, another potential cause is that it fails to aggregate admission reports fast enough, this usually happens when the controller is throttled, you can fix this by increasing `QPS` and `Burst` for the controller by setting ``--clientRateLimitQPS=300` and `--clientRateLimitBurst=300`.
