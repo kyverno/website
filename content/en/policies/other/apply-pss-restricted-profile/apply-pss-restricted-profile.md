@@ -1,6 +1,6 @@
 ---
 title: "Apply PSS Restricted Profile"
-category: Other
+category: Other, PSP Migration
 version: 
 subject: Pod
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: apply-pss-restricted-profile
   annotations:
     policies.kyverno.io/title: Apply PSS Restricted Profile
-    policies.kyverno.io/category: Other
+    policies.kyverno.io/category: Other, PSP Migration
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
