@@ -1,6 +1,6 @@
 ---
 title: "Require Read-Only Root Filesystem"
-category: Best Practices, EKS Best Practices
+category: Best Practices, EKS Best Practices, PSP Migration
 version: 1.6.0
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: require-ro-rootfs
   annotations:
     policies.kyverno.io/title: Require Read-Only Root Filesystem
-    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/category: Best Practices, EKS Best Practices, PSP Migration
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.6.0
