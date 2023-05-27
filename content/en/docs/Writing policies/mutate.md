@@ -245,9 +245,11 @@ Conditional anchors are only supported with the `patchStrategicMerge` mutation m
 
 ### Conditional anchor
 
+Conditional anchors are used to control when a mutation should occur by using an "if" logical evaluation, for example if a field is not already present or if a value is not the desired value. Contrast this with the example from the strategic merge patch section [above](#strategic-merge-patch) where the mutation is applied regardless of any conditions.
+
 A conditional anchor evaluates to `true` if the anchor tag exists and if the value matches the specified value. Processing stops if a tag does not exist or when the value does not match. Once processing stops, any child elements or any remaining siblings in a list will not be processed.
 
-For example, this overlay will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure":
+For example, this will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure".
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -274,22 +276,42 @@ If the anchor tag value is an object or array, the entire object or array must m
 
 ### Add if not present anchor
 
-A variation of an anchor is to add a field value if it is not already defined. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
+One of the most common scenarios when mutating resources is to add/change a field to a specified value only if it is not already present. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
 
-An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource. This anchor should only be used on lists/arrays if inside a `foreach` loop as it is not intended to be an iterator.
+Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource. If the tag is already present then the mutation is not applied. This anchor should only be used on lists/arrays if inside a `foreach` loop as it is not intended to be an iterator. See the foreach section [below](#foreach) for an example.
 
-For example, this policy matches and mutates pods with an `emptyDir` volume to add the `safe-to-evict` annotation if it is not specified.
+In this example, the label `lfx-mentorship` will be assigned to ConfigMaps with a value of `kyverno` but _only_ if the label is not already present.
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: add-safe-to-evict
-  annotations:
-    pod-policies.kyverno.io/autogen-controllers: none
+  name: lfx-add-labels
 spec:
   rules:
-  - name: "annotate-empty-dir"
+  - name: lfx-mentorship
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            +(lfx-mentorship): kyverno
+```
+
+Multiple of these add anchors may also be combined in the same rule definition when they are used as siblings. Take this example which adds fields to the securityContext of a Pod if they are not found.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-securitycontext
+spec:
+  rules:
+  - name: add-default-securitycontext
     match:
       any:
       - resources:
@@ -297,12 +319,12 @@ spec:
           - Pod
     mutate:
       patchStrategicMerge:
-        metadata:
-          annotations:
-            +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
         spec:
-          volumes:
-          - <(emptyDir): {}
+          securityContext:
+            +(runAsNonRoot): true
+            +(runAsUser): 1000
+            +(runAsGroup): 3000
+            +(fsGroup): 2000
 ```
 
 ### Global Anchor
@@ -354,13 +376,42 @@ spec:
           protocol: TCP
 ```
 
-### Anchor processing flow
+### Processing flow and combinations
 
 The anchor processing behavior for mutate conditions is as follows:
 
-1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
+1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only if all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
 
 2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
+
+Anchors may also be combined in mutate rules for more control and flexibility.
+
+For example, this policy combines the global and add anchors to mutate pods containing an `emptyDir` volume to add the `cluster-autoscaler.kubernetes.io/safe-to-evict` annotation if it is not specified.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-safe-to-evict
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  rules:
+  - name: annotate-empty-dir
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
+        spec:
+          volumes:
+          - <(emptyDir): {}
+```
 
 ## Mutate Existing resources
 
@@ -818,6 +869,67 @@ spec:
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
+
+Loops which use the `patchStrategicMerge` method may also use conditional anchors as mentioned earlier. This policy uses the add [anchor](#add-if-not-present-anchor) inside a loop to add the `allowPrivilegeEscalation` field with a value set to `false` but only if it isn't present first. The conditional around the `name` field is required in this style of mutation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pss-migrate
+spec:
+  rules:
+  - name: set-allowprivescalation
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      foreach:
+      - list: "request.object.spec.containers[]"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - (name): "{{ element.name }}"
+              securityContext:
+                +(allowPrivilegeEscalation): false
+```
+
+As with conditional mutations outside the context of a loop, so too may multiple anchors be used inside, for example with this policy to add default resource requests to containers within a Pod if they are not specified.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-resources
+spec:
+  rules:
+  - name: add-default-requests
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
+        value:
+        - CREATE
+        - UPDATE
+    mutate:
+      foreach:
+      - list: "request.object.spec.containers[]"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - (name): "{{element.name}}"
+              resources:
+                requests:
+                  +(memory): "100Mi"
+                  +(cpu): "100m"
+```
 
 It is important to understand internally how Kyverno treats `foreach` rules. Some general statements to keep in mind:
 
