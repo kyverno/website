@@ -34,7 +34,7 @@ We've put together a comparison table below which allows you to see how the thre
 |     No support for Pod controllers              |     No support for Pod controllers**       |     Automatic support for Pod controllers      |
 |     No auditing                                 |     Audits in audit log                    |     Audits in Policy Reports                   |
 |     No message customization                    |     No message customization               |     Fully custom messages                      |
-|     No exclusions                               |     No exclusions                          |     Flexible exclusions                        |
+|     No exclusions                               |     Limited exclusions                     |     Flexible exclusions                        |
 |     Integrated                                  |     Integrated                             |     External                                   |
 
 \* No readOnlyRootFilesystem, runtimeClass (excludes deprecated options)<br>
@@ -55,6 +55,8 @@ We've put together a comparison table below which allows you to see how the thre
 **No auditing.** A PSP either blocks or it doesn't, there's no in between. PSA can audit, warn, or block, but the audits are locked up in the API server's audit log which isn't visible inside the cluster. Kyverno generates its audits as a cluster-visible, custom resource called a [Policy Report](/docs/policy-reports/) which is an open standard developed by the Kubernetes Policy Working Group and is adopted by other tools aside from just Kyverno. These Policy Reports are just another Kubernetes resource allowing them to be scraped by other tools and, importantly, read by other users in a way which can be controlled via RBAC.
 
 **No message customization.** When a PSP blocks a Pod the message can't be customized. Same situation with PSA. The message returned by Kyverno can be fully customized making it very useful to show, for example, a team name or email of someone for developers or users to contact.
+
+**No exclusions.** PSP has no ability to exclude a Pod once it is "caught" by a policy. PSA has only a few options here, all of which pertain to cluster-wide configuration. Kyverno basically exclude any criteria you can write. Its [policy exceptions](/docs/writing-policies/exceptions/) feature takes this even further.
 
 **Integrated.** PSP and PSA are both integrated into the control plane. Kyverno is an external component (a dynamic admission controller) and so must be run separately in your cluster. In order to do this, Kyverno uses webhooks.
 
