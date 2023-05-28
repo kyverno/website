@@ -14,7 +14,7 @@ The Kyverno team are proud to announce the release of Kyverno 1.10, a minor rele
 
 Kyverno 1.10 contains several new and significant features including decomposing Kyverno into smaller pieces, external service calls, Notary v2 support, and a major revamp of generate rules.
 
-### Decomposition
+### Increased Scalability with Service Decomposition
 
 In previous versions of Kyverno, everything except the cleanup controller (introduced in 1.9) was packaged in a single container. This made sense in the early days, but as Kyverno began to grow in capability and complexity, the single-deployment model just wasn't going to cut it. Users also wanted a way to only install what they needed and not get everything else that came along with it. Beginning in Kyverno 1.10, the major capabilities of Kyverno have been broken out into separate deployments allowing you to switch on or off the ones you want. What this looks like is shown below.
 
@@ -29,7 +29,7 @@ The four major components of Kyverno and their primary functions are as follows:
 
 Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](/docs/high-availability/) for more details on the internals of these controllers and how scale and availability are handled per controller.
 
-### External Service Calls
+### Extensibility via External Service Calls
 
 Kyverno is already able to gather data from external sources as a factor in its policy-making decisions, for example from the Kubernetes API, OCI image registries, and ConfigMaps. However, one of the most requested features has been the ability for it to make calls to services other than the Kubernetes API server for the same reasons. We're happy to say that as of Kyverno 1.10, this feature now exists! It is new and a bit limited at this point so we can get an understanding of how folks intend to use it, but it allows performing GET and POST requests against another service in the cluster along with specifying a certificate authority bundle for establishing trust against HTTPS servers. A sample of what this looks like is shown below.
 
@@ -72,11 +72,11 @@ spec:
 
 And, by the way, in addition to POST calls to external services, we've also enhanced the existing `apiCall` context variable to be able to POST to the Kubernetes API making it possible to [do things like](/policies/other/check-subjectaccessreview/check-subjectaccessreview/) pass a [SubjectAccessReview](https://kubernetes.io/docs/reference/kubernetes-api/authorization-resources/subject-access-review-v1/) which will make permissions assessments much easier.
 
-### Notary v2 Support
+### Software Supply Chain Security with CNCF Notary
 
-The [Notary project](https://notaryproject.dev/) is another project, like Sigstore, aiming to solve software supply chain security through OCI image signing. Notary is currently in its second version and differentiates itself from Sigstore by using OCI artifacts to store image signatures. Although Kyverno has had support for verifying signatures and attestations from Sigstore's Cosign project for a while now, we wanted to add support for Notary v2 so that no matter what technology you use to sign your images, Kyverno will be there for you.
+The [Notary project](https://notaryproject.dev/) is another project, like Sigstore, aiming to solve software supply chain security through OCI image signing. Notary is currently in its second version and differentiates itself from Sigstore by using OCI artifacts to store image signatures. Although Kyverno has had support for verifying signatures and attestations from Sigstore's Cosign project for a while now, we wanted to add support for Notary so that no matter what technology you use to sign your images, Kyverno will be there for you.
 
-Starting in Kyverno 1.10, we've added a new `type` field to verifyImages rules allowing you to specify the signatory used, either `NotaryV2` or `Cosign`. An example of what this looks like is shown below.
+Starting in Kyverno 1.10, we've added a new `type` field to verifyImages rules allowing you to specify the signatory used, either `Notary` or `Cosign`. An example of what this looks like is shown below.
 
 ```yaml
 apiVersion: kyverno.io/v2beta1
@@ -95,7 +95,7 @@ spec:
             kinds:
               - Pod
       verifyImages:
-      - type: NotaryV2
+      - type: Notary
         imageReferences:
         - "mytest.azurecr.io/user/net-monitor:v1"
         attestors:
