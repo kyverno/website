@@ -34,7 +34,7 @@ metadata:
       the cluster-admin ClusterRole may create Namespaces which assign the label
       `pod-security.kubernetes.io/enforce=privileged`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   - name: check-privileged
