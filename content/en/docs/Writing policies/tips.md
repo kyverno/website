@@ -1,7 +1,8 @@
 ---
 title: Tips & Tricks 
-description: Tips and tricks for writing more effective policy.
-weight: 120
+description: >
+  Tips and tricks for writing more effective policy.
+weight: 140
 ---
 
 These are some tips and tricks you can use when putting together your Kyverno policies.
@@ -56,7 +57,9 @@ These are some tips and tricks you can use when putting together your Kyverno po
 kubectl -n <kyverno_namespace> logs <pod_name>
 ```
 
-Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
+Depending on the level of detail needed, you may need to increase the log level. To see variable substitution messages, use log level 4. To see the full AdmissionReview payload sent by the Kubernetes API server to Kyverno, use the `--dumpPayload=true` [flag](/docs/installation/customization/#container-flags) and inspect the logs. Remember to remove this flag at the conclusion of your troubleshooting process.
+
+* Use the [Kyverno Playground](https://playground.kyverno.io/) to test out new or modified policies with your resources.
 
 ## Validate
 
@@ -64,7 +67,7 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 * Before deploying into production, ensure you have `validationFailureAction: Audit` so the policy doesn't have unintended consequences.
 
-* `validate` rules have no precedence/overriding behavior, so even though a rule may be written to either allow or deny a resource/action, one cannot counteract the other. For example, a rule written to ensure all images come from registry `reg.corp.com` and another rule written to ensure they do **not** come from `reg.corp.com` will effectively render all image pulls impossible and nothing will run. Where the rule is defined is irrelevant.
+* `validate` rules cannot counteract the other. For example, a rule written to ensure all images come from registry `reg.corp.com` and another rule written to ensure they do **not** come from `reg.corp.com` will effectively render all image pulls impossible and nothing will run. Where the rule is defined is irrelevant.
 
 * The choice between using a `pattern` statement or a `deny` statement depends largely on the data you need to consider; `pattern` works on incoming (new) objects while `deny` can additionally work on variable data such as the API operation (CREATE, UPDATE, etc.), old object data, and ConfigMap data.
 

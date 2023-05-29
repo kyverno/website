@@ -1,7 +1,8 @@
 ---
-title: Verify Images
-description: Check image signatures and add digests
-weight: 40
+title: Verify Images Rules
+description: >
+  Check container image signatures and attestations to ensure supply chain security.
+weight: 60
 ---
 
 {{% alert title="Warning" color="warning" %}}
@@ -21,10 +22,10 @@ Each rule contains:
 
 * One or more image reference patterns to match
 * Common configuration attributes:
-  * required: enforces that all matching images are verified
-  * mutateDigest: converts tags to digests for matching images
-  * verifyDigest: enforces that digests are used for matching images
-  * repository: use a different repository for fetching signatures
+  * `required`: enforces that all matching images are verified
+  * `mutateDigest`: converts tags to digests for matching images
+  * `verifyDigest`: enforces that digests are used for matching images
+  * `repository`: use a different repository for fetching signatures
 * Zero or more __attestors__ which can be public keys, certificates, and keyless configuration attributes used to identify trust authorities
 * Zero or more [in-toto attestation](https://github.com/in-toto/attestation/blob/main/spec/README.md) __statements__ to be verified. If attestations are provided, at least one attestor is required.
 
@@ -229,11 +230,37 @@ spec:
                   operator: Equals
                   value: "main"
                 - key: "{{ reviewers }}"
-                  operator: In
-                  value: ["ana@example.com", "bob@example.com"]
+                  operator: AnyIn
+                  value:
+                  - ana@example.com
+                  - bob@example.com
 ```
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/writing-policies/preconditions/#any-and-all-statements) to the predicate.
+
+Conditions which use the optional `message` field, when evaluating to FALSE and causing a blocking behavior, will result in the message being displayed.
+
+```yaml
+conditions:
+- all:
+  - key: "{{ time_since('','{{metadata.scanFinishedOn}}','') }}"
+    operator: LessThanOrEquals
+    value: "168h"
+    message: Scan finished at {{metadata.scanFinishedOn}} and is not younger than 7 days.
+```
+
+The above condition will show the message, including rendering any variables, if it is false.
+
+```sh
+Error from server: admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/mytestpod for resource violation: 
+
+require-vulnerability-scan:
+  scan-not-older-than-one-week: '.attestations[0].attestors[0].entries[0].keyless:
+    attestation checks failed for ghcr.io/myorg/mytestpod:v0.0.14 and predicate cosign.sigstore.dev/attestation/vuln/v1:
+    Scan finished at 2022-12-28T01:52:27.987177637Z and is not younger than 7 days.'
+```
 
 Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
 
@@ -801,6 +828,34 @@ spec:
               MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
               gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
               -----END PUBLIC KEY-----
+```
+
+For Custom Resources which reference container images in a non-standard way, an optional `jmesPath` field may be used to apply a filter to transform the value of the extracted field. For example, in the case of KubeVirt's `DataVolume` custom resource, the fielding referencing the image needing verification is located at `spec.source.registry.url` as seen below.
+
+```yaml
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: registry-image-datavolume
+spec:
+  source:
+    registry:
+      url: "docker://kubevirt/fedora-cloud-registry-disk-demo"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 5Gi
+```
+
+The value of the field contains a prefix of `docker://` which must be removed first. Applying a JMESPath expression in an extractor along with a Kyverno custom filter such as [`trim_prefix()`](/docs/writing-policies/jmespath/#trim_prefix) can be used to provide the container image for Kyverno to verify.
+
+```yaml
+imageExtractors:
+  DataVolume:
+    - path: /spec/source/registry/url
+      jmesPath: "trim_prefix(@, 'docker://')"
 ```
 
 ## Special Variables

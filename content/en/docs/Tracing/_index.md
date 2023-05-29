@@ -1,6 +1,7 @@
 ---
 title: Tracing
-description: Tracing Kyverno engine admission requests processing
+description: >
+  Using distributed tracing to introspect the internal operations of Kyverno.
 weight: 65
 ---
 
@@ -27,15 +28,55 @@ When you install Kyverno via Helm, you need to set a couple of values to enable 
 ```shell
 $ values.yaml
 
-...
-extraArgs:
-  # enable tracing
-  - --enableTracing
-  # configure tracing endpoint
-  - --tracingAddress=<backend url>
-  # configure tracing port
-  - --tracingPort=4317
-...
+# ...
+
+# Enable tracing in the admission controller
+admissionController:
+  tracing:
+    # -- Enable tracing
+    enabled: true
+    # -- Traces receiver address
+    address: <backend url>
+    # -- Traces receiver port
+    port: 4317
+
+# ...
+
+# Enable tracing in the background controller
+backgroundController:
+  tracing:
+    # -- Enable tracing
+    enabled: true
+    # -- Traces receiver address
+    address: <backend url>
+    # -- Traces receiver port
+    port: 4317
+
+# ...
+
+# Enable tracing in the cleanup controller
+cleanupController:
+  tracing:
+    # -- Enable tracing
+    enabled: true
+    # -- Traces receiver address
+    address: <backend url>
+    # -- Traces receiver port
+    port: 4317
+
+# ...
+
+# Enable tracing in the reports controller
+reportsController:
+  tracing:
+    # -- Enable tracing
+    enabled: true
+    # -- Traces receiver address
+    address: <backend url>
+    # -- Traces receiver port
+    port: 4317
+
+# ...
 ```
 
 Tracing is disabled by default and depending on the backend the associated cost can be significant.

@@ -16,7 +16,7 @@ In order to position yourself for success with JMESPath expressions inside Kyver
 
 2. `kyverno`, the Kyverno CLI [here](https://github.com/kyverno/kyverno/releases) or via [krew](https://krew.sigs.k8s.io/). Kyverno acts as a webhook (when run in-cluster) but also as a standalone CLI when run outside giving you the ability to test policies and, more recently, to test custom JMESPath filters which are endemic to only Kyverno. With the `jp` subcommand, it contains the functionality present in the upstream `jp` [CLI tool](https://github.com/jmespath/jp) and also newer capabilities. It effectively allows you to test out JMESPath expressions live in a command line interface by passing in a JSON document and seeing the results without having to repeatedly test Kyverno policies.
 
-3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
+3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand also accepts YAML files in addition to JSON.
 
 4. `jq`, the JSON processor [here](https://stedolan.github.io/jq/download/). `jq` is an extremely popular tool for working with JSON documents and has its own filter ability, but it's also useful in order to format JSON on the terminal for better visuals.
 
@@ -222,7 +222,7 @@ spec:
 Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/#jp).
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.containers[]"
+$ kyverno jp query -i pod.yaml "spec.containers[]"
 [
   {
     "image": "busybox",
@@ -238,7 +238,7 @@ $ kyverno jp -f pod.yaml "spec.containers[]"
 The above output shows the return of an array of objects as expected where each object is the container. But by using a [multi-select list](https://jmespath.org/specification.html#multiselect-list), the `initContainer[]` array may also be parsed.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers]"
 [
   [
     {
@@ -262,7 +262,7 @@ $ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
 In the above, a multi-select list `spec.[initContainers, containers]` "wraps" the results of both `initContainers[]` and `containers[]` in parent array thereby producing an array consisting of multiple arrays. By using the [flatten operator](https://jmespath.org/specification.html#flatten-operator), these results can be collapsed into just a single array.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers][]"
 [
   {
     "image": "redis",
@@ -282,7 +282,7 @@ $ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
 With just a single array in which all containers, regardless of where they are, occur in a single hierarchy, it becomes easier to process the data for relevant fields and take action. For example, if you wished to write a policy which forbid using the image named `busybox` in a Pod, by flattening all containers it becomes easier to isolate just the `image` field. Because it does not matter where `busybox` may be found, if found the entire Pod must be rejected. Therefore, while loops or other methods may work, a more efficient method is to simply gather all containers across the Pod and flatten them.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers][].image"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers][].image"
 [
   "redis",
   "busybox",
@@ -388,11 +388,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value: ["CREATE","UPDATE"]
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: "The total memory defined in requests and limits must not exceed 200Mi."
       foreach:
@@ -407,98 +405,6 @@ spec:
 
 </p>
 </details>
-
-### Sum
-
-<details><summary>Expand</summary>
-
-<p>
-
-The sum() filter is a customized version of the default filter present in [upstream JMESPath](https://jmespath.org/specification.html#sum) which brings, in addition to the support for scalars (integers), the ability to sum duration and quantities. sum() is similar to add() with the difference that sum() accepts an array as an input while add() does not.
-
-`sum()` is value-aware (based on the formatting used for the inputs) just as `add()` and is capable of adding list of numbers, quantities, and durations without any form of unit conversion.
-
-Arithmetic filters like `sum()` currently accept inputs in the following formats.
-
-* Number (ex., \`10\`)
-* Quantity (ex., '10Mi')
-* Duration (ex., '10h')
-
-Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
-
-| Input 1                | Output   |
-|----------------------- |----------|
-| Array/Number           | Number   |
-| Array/Quantity/Number  | Quantity |
-| Array/Duration/Number  | Duration |
-
-Some specific behaviors to note:
-
-* If a combination of duration ('1h') and  number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
-* Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
-
-For example, given the following map below
-
-```json
-{
-  "numbers": ['2Ki','5Ki','8Ki']
-}
-```
-
-the `sum()` filter can sum up this array of entities and produce a result in the same type of entity (in this case, Quantity).
-
-```sh
-$ echo '{"numbers": ['2Ki','5Ki','8Ki']}' |  kyverno jp query "sum(numbers)"
-#sum(numbers)
-"15Ki"
-```
-
-**Example:** This policy denies a Pod if the aggregated storage quota is greater than the one defined in a ConfigMap..
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: restrict-storage-quota
-spec:
-  validationFailureAction: Enforce
-  background: true
-  rules:
-  - name: restrict-storage
-    match:
-      any:
-      - resources:
-          kinds:
-          - Volume
-    preconditions:
-        all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: AnyIn
-          value: [ "CREATE", "UPDATE" ]
-    context:
-        - name: customer-resource-quota
-          configMap:
-            name: osc-resource-quota
-            namespace: "{{ request.namespace }}"
-        - name: storage-count
-          apiCall:
-            urlPath: "/apis/storage.api.onmetal.de/v1alpha1/namespaces/{{request.namespace }}/volumes/"
-            jmesPath: "items[*].metadata.labels.\"osc-storage-gb\" | sum([].to_number(@))"
-    validate:
-        message: "Only {{ \"customer-resource-quota\".data.\"
-limit.storage.gb\" }} GB storage are allowed. Already consumed {{
-\"storage-count\" }} GB onmetal storage. Trying to allocate additional {{
-request.object.metadata.labels.\"osc-storage-gb\" }} Gi of storage. Please
-contact the administrator to increase the quota."
-        deny:
-          conditions:
-            any:
-            - key: "{{add((request.object.metadata.labels.\"osc-storage-gb\").to_number(@),\"storage-count\") }}"
-              operator: GreaterThan
-              value: "{{ \"customer-resource-quota\".data.\"limit.storage.gb\"}}"
-```
-
-
 
 </p>
 
@@ -685,13 +591,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value:
-        - CREATE
-        - UPDATE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: Limits may not exceed 2.5x the requests.
       foreach:
@@ -753,12 +655,53 @@ spec:
 </p>
 </details>
 
+### Image_normalize
+
+<details><summary>Expand</summary>
+<p>
+
+The `image_normalize()` filter is used to output the canonical image string as it is known internally to Kyverno. This filter will render the internal values for the default image registry and tag (`latest`) if they apply to a given image. It is useful particularly in mutate rules where the full image value is needed to decide whether to mutate it. This filter cannot be tested with the Kyverno CLI because the runtime context is only available in webhook mode.
+
+For example, assuming the value of the default registry is left at its defaults of `docker.io` and a Pod is sent to Kyverno which has a single container the value of its `image` field being only `nginx`, when run through the `image_normalize()` filter will come out `docker.io/nginx:latest`.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| String             | String   |
+
+**Example:** This policy will mutate the value of the `image` field in a Pod's `containers[]` array if, after normalization, it begins with `docker.io`. The registry will be replaced with `harbor.corp.org`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: image-normalize-demo
+spec:
+  rules:
+    - name: replace-image-registry-pod-containers
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      mutate:
+        foreach:
+        - list: "request.object.spec.containers"
+          patchStrategicMerge:
+            spec:
+              containers:
+              - name: "{{ element.name }}"
+                image: "{{ regex_replace_all('^docker.io/(.*)$', image_normalize('{{element.image}}'), 'harbor.corp.org/$1' )}}"
+```
+
+</p>
+</details>
+
 ### Items
 
 <details><summary>Expand</summary>
 <p>
 
-The `items()` filter iterates on map keys (ex., annotations or labels) and converts them to an array of objects with key/value attributes with custom names.
+The `items()` filter iterates on map keys (ex., annotations or labels) or arrays and converts them to an array of objects with key/value attributes with custom names.
 
 For example, given the following map below
 
@@ -772,7 +715,7 @@ For example, given the following map below
 the `items()` filter can transform this into an array of objects which assigns a key and value of arbitrary name to each of the entries in the map.
 
 ```sh
-$ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@, 'key', 'value')"
+$ echo '{"team" : "apple" , "organization" : "banana" }' | kyverno jp query "items(@, 'key', 'value')"
 [
   {
     "key": "organization",
@@ -785,9 +728,32 @@ $ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@
 ]
 ```
 
+It can also work on an input source given as an array of objects.
+
+```sh
+$ echo '[{"team" : "apple"} , {"organization" : "banana"}]' |  kyverno jp query "items(@, 'key', 'value')"
+Reading from terminal input.
+Enter input object and hit Ctrl+D.
+# items(@, 'key', 'value')
+[
+  {
+    "key": 0,
+    "value": {
+      "team": "apple"
+    }
+  },
+  {
+    "key": 1,
+    "value": {
+      "organization": "banana"
+    }
+  }
+]
+```
+
 | Input 1                  | Input 2            | Input 3    | Output        |
 |--------------------------|--------------------|------------|---------------|
-| Map (Object)             | String             | String     | Array/Object  |
+| Map (Object) or Array    | String             | String     | Array/Object  |
 
 Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
 
@@ -818,7 +784,9 @@ spec:
         patchesJson6902: |-
           - path: "/spec/forProvider/tagging/tagSet/-1"
             op: add
-            value: {"key": "{{element.key}}", "value": "{{element.value}}"}
+            value:
+              key: "{{element.key}}"
+              value": "{{element.value}}"
 ```
 
 Given a Namespace which looks like the following
@@ -866,7 +834,7 @@ spec:
 the final `spec.forProvider.tagging.tagSet[]` will appear as below. Note that as of Kubernetes 1.21, the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#automatic-labelling) with key `kubernetes.io/metadata.name` and value equal to that of the Namespace name is automatically added to all Namespaces, hence the discrepancy when comparing Namespace with Bucket resource manifests above.
 
 ```sh
-$ k get bucket lambda-bucket -o json | k kyverno jp "spec.forProvider.tagging.tagSet[]"
+$ kubectl get bucket lambda-bucket -o json | kyverno jp query "spec.forProvider.tagging.tagSet[]"
 [
   {
     "key": "s3-bucket",
@@ -967,11 +935,8 @@ spec:
       - resources:
           kinds:
           - Deployment
-    preconditions:
-      any:
-      - key: "{{request.operation}}"
-        operator: Equals
-        value: CREATE
+          operations:
+          - CREATE
     context:
     - name: pdb_count
       apiCall:
@@ -1029,13 +994,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: In
-        value:
-        - CREATE
-        - UPDATE
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       message: Limits must be evenly divisible by the requests.
       foreach:
@@ -1141,7 +1102,7 @@ spec:
 you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_list()` filter will produce a map containing those entries.
 
 ```sh
-$ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
+$ kyverno jp query -i pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
 {
   "KEY": "123-456-789",
   "endpoint": "licensing.corp.org"
@@ -1214,7 +1175,7 @@ spec:
 after applying the policy the resulting label set on the Pod appears as shown below.
 
 ```sh
-$ k get pod/object-from-list-demo -o json | k kyverno jp "metadata.labels"
+$ kubectl get pod/object-from-list-demo -o json | kyverno jp query "metadata.labels"
 {
   "ENDPOINT": "licensing.corp.org",
   "KEY": "123-456-789",
@@ -1489,12 +1450,8 @@ spec:
       - resources:
           kinds:
           - Secret
-    preconditions:
-      all:
-      - key: "{{request.operation}}"
-        operator: In
-        value:
-        - CREATE
+          operations:
+          - CREATE
     context:
     - name: randomtest
       variable:
@@ -1800,9 +1757,12 @@ spec:
   rules:
     - name: check-path
       match:
-        resources:
-          kinds:
-            - Ingress
+        any:
+        - resources:
+            kinds:
+              - Ingress
+            operations:
+            - CREATE
       context:
         # Looks up the Ingress paths across the whole cluster.
         - name: allpaths
@@ -1814,10 +1774,6 @@ spec:
           apiCall:
             urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses"
             jmesPath: "items[].spec.rules[].http.paths[].path"
-      preconditions:
-        - key: "{{request.operation}}"
-          operator: Equals
-          value: "CREATE"
       validate:
         message: >-
           The root path /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/ exists
@@ -1884,6 +1840,56 @@ spec:
         metadata:
           labels:
             lessreplicas: "{{ subtract('{{ request.object.spec.replicas }}',`2`) }}"
+```
+
+</p>
+</details>
+
+### Sum
+
+<details><summary>Expand</summary>
+<p>
+
+The `sum()` filter takes an array of numbers, durations, or quantities and sums them together. This is a customized version of `sum()` found in the [upstream JMESPath specification](https://jmespath.org/specification.html#sum) but augmented to support inputs common to Kubernetes workloads, specifically durations and quantities. `sum()` is similar to `add()` with the difference that `sum()` accepts an array as an input while `add()` does not. Inputs must be of a homogenous type. For example, the query `echo '{"input":['2Ki','5Gi','8Mi']}' | kyverno jp query "sum(input)"` results in the value `"5251074Ki"`. The query `echo '{"input":['2h','50s','90s']}' | kyverno jp query "sum(input)"` results in the value `"2h2m20s"`. And the query `echo '{"input":[6,3,8]}' | kyverno jp query "sum(input)"` results in the value of `17`.
+
+Arithmetic filters like `sum()` currently accept inputs in the following formats.
+
+* Number (ex., \`10\`)
+* Quantity (ex., '10Mi')
+* Duration (ex., '10h')
+
+See the [Formatting](#formatting) section above for more details on how inputs are expected to be supplied. Durations cannot be expressed as minutes (i.e., `"5m"`) as the "m" unit is interpreted to be millicores.
+
+| Input 1            | Output   |
+|--------------------|----------|
+| Array/Number       | Number   |
+| Array/Quantity     | Quantity |
+| Array/Duration     | Duration |
+
+**Example:** This policy sums the memory requests of all containers in a Pod and denies it if it exceeds 1 gibibyte (1Gi).
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sum-demo
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: memory-requests-check
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      validate:
+        message: The sum of all memory requests in a Pod cannot exceed 1 gibibyte.
+        deny:
+          conditions:
+            all:
+            - key: "{{ sum(request.object.spec.containers[].resources.requests.memory) }}"
+              operator: GreaterThan
+              value: 1Gi
 ```
 
 </p>
@@ -2467,6 +2473,47 @@ spec:
 </p>
 </details>
 
+### To_boolean
+
+<details><summary>Expand</summary>
+<p>
+
+The `to_boolean()` filter converts a string to its boolean equivalent. Any strings which spell out "true" or "false" regardless of character case will be returned in boolean format. For example, the query `to_boolean('true')` will result in the output `true`. The query `to_boolean('FalsE')` will result in the output `false`.
+
+This filter can be helpful when needing to produce output for a field which only accepts boolean without requiring more complex string manipulation.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | Boolean |
+
+**Example:** This policy sets the `hostIPC` field of a Pod spec appropriately based on the value of a label (a string). Note that use of this filter may require setting the policy option `spec.schemaValidation` to `false` since there may be a type checking mismatch.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: to-boolean-demo
+spec:
+  schemaValidation: false
+  rules:
+  - name: canuseIPC
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              canuseIPC: "true"
+    mutate:
+      patchStrategicMerge:
+        spec:
+          hostIPC: "{{ to_boolean (request.object.metadata.labels.canuseIPC) }}"
+```
+
+</p>
+</details>
+
 ### To_lower
 
 <details><summary>Expand</summary>
@@ -2577,6 +2624,57 @@ spec:
 </p>
 </details>
 
+### Trim_prefix
+
+<details><summary>Expand</summary>
+<p>
+
+The `trim_prefix()` filter takes an input string and from it trims the beginning by the second string. For the trim to occur, the input string must begin with the trimmed string. This filter differs from `trim()` in that it only removes a string from the beginning of another. For example, the query `trim_prefix('docker://kubevirt/fedora-cloud-registry-disk-demo','docker://')` will result in the output of `kubevirt/fedora-cloud-registry-disk-demo`.
+
+The `trim_prefix()` filter can be useful to remove URIs found in container image values referenced by some custom resources, or anywhere else where a more strategic removal of a substring within a parent is required.
+
+| Input 1            | Input 2            | Output  |
+|--------------------|--------------------|---------|
+| String             | String             | String  |
+
+**Example:** This policy uses the `trim_prefix()` filter to remove `docker://` from the name of an image in a KubeVirt `DataVolume` custom resource through use of an image extractor.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-data-volume-image
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: verify-data-volume-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - DataVolume
+      imageExtractors:
+        DataVolume:
+          - path: /spec/source/registry/url
+            jmesPath: "trim_prefix(@, 'docker://')"
+      verifyImages:
+      - imageReferences:
+        - "*"
+        mutateDigest: true
+        verifyDigest: true
+        attestors:
+        - entries:
+          - keys:
+              publicKeys: |
+                -----BEGIN PUBLIC KEY-----
+                ...
+                -----END PUBLIC KEY-----
+```
+
+</p>
+</details>
+
 ### Truncate
 
 <details><summary>Expand</summary>
@@ -2618,7 +2716,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certificate, and outputs a JSON object with the decoded certificate details. It may often be required to first decode a base64-encoded string using [base64_decode()](#base64_decode). This filter can be used to check and validate attributes within a certificate such as subject, issuer, SAN fields, and expiration time. An example of such a decoded object may look like the following:
+The `x509_decode()` filter takes in a string which is a PEM-encoded X509 certificate or certificate signing request (CSR), and outputs a JSON object with the decoded details. It may often be required to first decode a base64-encoded string using [base64_decode()](#base64_decode). This filter can be used to check and validate attributes within a certificate or a CSR such as subject, issuer, SAN fields, and expiration time. An example of a decoded certificate may look like the following:
 
 ```json
 {

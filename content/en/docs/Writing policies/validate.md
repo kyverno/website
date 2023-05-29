@@ -1,7 +1,8 @@
 ---
-title: Validate Resources
-description: Check resource configurations for policy compliance.
-weight: 50
+title: Validate Rules
+description: >
+  Check resources configurations for policy compliance.
+weight: 30
 ---
 
 Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
@@ -493,11 +494,45 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validation rule can deny a request based on a set of conditions written as expressions. A `deny` condition, unlike a pattern overlay, is constructed of key, [operator](/docs/writing-policies/preconditions/#operators), and value combination and is useful for applying fine-grained access controls that cannot otherwise be performed using native Kubernetes RBAC, or when wanting to explicitly deny requests based upon operations performed against existing objects. `deny` conditions also have access to more advanced capabilities including [context variables](/docs/writing-policies/external-data-sources/), the full contents of the [AdmissionReview](/docs/introduction/), built-in [variables](/docs/writing-policies/variables/), and the complete [JMESPath filtering system](/docs/writing-policies/jmespath/).
+In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/writing-policies/preconditions/#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
 
-You can use `match` and `exclude` to select when the rule should be applied and then use additional conditions in the `deny` declaration to apply fine-grained controls.
+Deny rules are more powerful and expressive than simple patterns but are also more complex to write. Use deny rules when:
 
-Also see using [Preconditions](/docs/writing-policies/preconditions) for matching rules based on variables. `deny` statements can similarly use `any` and `all` blocks like those available to `preconditions`.
+* You need advanced selection logic with multiple "if" conditions.
+* You need access to the full contents of the [AdmissionReview](/docs/writing-policies/jmespath/#admissionreview).
+* You need access to more built-in [variables](/docs/writing-policies/variables/).
+* You need access to the complete [JMESPath filtering system](/docs/writing-policies/jmespath/).
+
+An example of a deny rule is shown below. In deny rules, you write expressions similar to those in Kubernetes resources such as selectors. Deny rules, or "conditions", must be nested under an `any`, `all`, or potentially both in order to control the decision-making logic. In this snippet, a resource will be denied if ANY of the following expressions are true.
+
+1. `{{ request.object.data.team }}` Equals eng
+2. `{{ request.object.data.unit }}` Equals green
+
+```yaml
+validate:
+  message: Main message is here.
+  deny:
+    conditions:
+      any:
+      - key: "{{ request.object.data.team }}"
+        operator: Equals
+        value: eng
+        message: The expression team = eng failed.
+      - key: "{{ request.object.data.unit }}"
+        operator: Equals
+        value: green
+        message: The expression unit = green failed.
+```
+
+Placing these two conditions under an `all` block instead would require that both of them be true to produce the deny behavior.
+
+Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) on deny conditions to abort processing when a decision can be reached. The first expression to evaluate to a `true` in an `any` block discontinues further evaluation. The first expression to evaluate to `false` in an `all` block does the same.
+
+If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
+
+Deny rules are incapable of producing a `pass` result in a Policy Report because the desired action is to deny so, therefore, the results will either be `skip` or `fail`.
+
+See also [Preconditions](/docs/writing-policies/preconditions).
 
 ### Deny DELETE requests based on labels
 

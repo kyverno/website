@@ -1,6 +1,7 @@
 ---
-title: Select Resources
-description: Use `match` and `exclude` to filter and select resources.
+title: Selecting Resources
+description: >
+  Identifying and filtering resources for policy evaluation.
 weight: 20
 ---
 
@@ -15,7 +16,7 @@ The `match` and `exclude` clauses have the same structure and can each contain *
 
 The following resource filters can be specified under an `any` or `all` clause.
 
-* `resources`: select resources by names, namespaces, kinds, label selectors, annotations, and namespace selectors.
+* `resources`: select resources by names, namespaces, kinds, , operations, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
@@ -52,7 +53,7 @@ Wildcards are supported with the following formats:
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
 {{% /alert %}}
 
-Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources can be specified with their own kind, for example `PodExecOptions` and `NodeProxyOptions` while some are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision.
+Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision. Specifying a subresource in the format `PodExecOptions` is not supported.
 
 When Kyverno receives an AdmissionReview request (i.e., from a validation or mutation webhook), it first checks to see if the resource and user information matches or should be excluded from processing. If both checks pass, then the rule logic to mutate, validate, or generate resources is applied.
 
@@ -73,11 +74,15 @@ spec:
           - Service
           names: 
           - staging
+          operations:
+          - CREATE
       - resources:
           kinds: 
           - Service
           namespaces:
           - prod
+          operations:
+          - CREATE
 ```
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
@@ -94,9 +99,13 @@ spec:
           - "staging"
           kinds:
           - Service
+          operations:
+          - CREATE
       - resources:
           kinds:
           - Service
+          operations:
+          - CREATE
         subjects:
         - kind: User
           name: dave
@@ -166,11 +175,8 @@ spec:
       - resources:
           kinds:
           - "*"
-    preconditions:
-      any:
-      - key: "{{ request.operation }}"
-        operator: Equals
-        value: CREATE
+          operations:
+          - CREATE
     validate:
       message: "The label `app.kubernetes.io/name` is required."
       pattern:
@@ -205,6 +211,9 @@ spec:
             kinds:
             - Deployment
             - StatefulSet
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -227,33 +236,35 @@ spec:
     - name: check-pod-controller-labels
       # Each rule matches specific resource described by "match" field.
       match:
-        resources:
-          kinds: # Required, list of kinds
-          - Deployment
-          - StatefulSet
-          # Optional resource names. Supports wildcards (* and ?)
-          names: 
-          - "mongo*"
-          - "postgres*"
-          # Optional list of namespaces. Supports wildcards (* and ?)
-          namespaces:
-          - "dev*"
-          - test
-          # Optional label selectors. Values support wildcards (* and ?)
-          selector:
-              matchLabels:
-                  app: mongodb
-              matchExpressions:
-                  - {key: tier, operator: In, values: [database]}
-        # Optional users or service accounts to be matched
-        subjects:
-        - kind: User
-          name: mary@somecorp.com
-        # Optional roles to be matched
-        roles:
-        # Optional clusterroles to be matched
-        clusterRoles: 
-        - cluster-admin
+        any:
+        - resources:
+            kinds: # Required, list of kinds
+            - Deployment
+            - StatefulSet
+            # Optional resource names. Supports wildcards (* and ?)
+            names: 
+            - "mongo*"
+            - "postgres*"
+            # Optional list of namespaces. Supports wildcards (* and ?)
+            operations:
+            - CREATE
+            - UPDATE
+            namespaces:
+            - "dev*"
+            - test
+            # Optional label selectors. Values support wildcards (* and ?)
+            selector:
+                matchLabels:
+                    app: mongodb
+                matchExpressions:
+                    - {key: tier, operator: In, values: [database]}
+          # Optional users or service accounts to be matched
+          subjects:
+          - kind: User
+            name: mary@somecorp.com
+          # Optional clusterroles to be matched
+          clusterRoles: 
+          - cluster-admin
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -277,6 +288,9 @@ spec:
             # OR inside list of kinds
             kinds:
             - Deployment
+            operations:
+            - CREATE
+            - UPDATE
             namespaceSelector:
               matchExpressions:
                 - key: type 
@@ -303,6 +317,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
       exclude:
         any:
         - clusterRoles:
@@ -314,7 +331,7 @@ spec:
 This rule matches all Pods except those in the `kube-system` Namespace.
 
 {{% alert title="Note" color="info" %}}
-The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
+The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/customization/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
 {{% /alert %}}
 
 ```yaml
@@ -326,6 +343,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
       exclude:
         any:
         - resources:
@@ -350,6 +370,9 @@ spec:
         - resources:
             kind:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -377,6 +400,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -404,4 +430,7 @@ spec:
               imageregistry: "https://hub.docker.com/"
             kinds:
               - Pod
+            operations:
+            - CREATE
+            - UPDATE
 ```

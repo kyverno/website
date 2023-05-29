@@ -1,7 +1,8 @@
 ---
-title: Cleanup
-description: Automate the resource cleanup process by using a CleanupPolicy. 
-weight: 67
+title: Cleanup Rules
+description: >
+  Remove Kubernetes resources. 
+weight: 70
 ---
 
 {{% alert title="Warning" color="warning" %}}
@@ -14,11 +15,9 @@ Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluste
 Since cleanup policies always operate against existing resources in a cluster, policies created with `subjects`, `Roles`, or `ClusterRoles` in the `match`/`exclude` block are not allowed since this information is only known at admission time.
 {{% /alert %}}
 
-The cleanup controller runs decoupled from Kyverno in a separate Deployment. Cleanup is executed by a CronJob which is automatically created and managed by the cleanup controller. Each cleanup policy maps to one CronJob. When the scheduled time occurs, the CronJob calls to the cleanup controller to execute the cleanup process defined in the policy.
+The cleanup controller runs decoupled from Kyverno in a separate Deployment. Cleanup is executed by a CronJob which is automatically created and managed by the cleanup controller. Each cleanup policy maps to one CronJob. When the scheduled time occurs, the CronJob calls to the cleanup controller to execute the cleanup process defined in the policy. As cleanup policies are either updated or removed, the CronJobs are updated accordingly.
 
-An example ClusterCleanupPolicy is shown below.
-
-This cleanup policy removes Deployments which have the label `canremove: "true"` if they have less than two replicas on a schedule of every 5 minutes.
+An example ClusterCleanupPolicy is shown below. This cleanup policy removes Deployments which have the label `canremove: "true"` if they have less than two replicas on a schedule of every 5 minutes.
 
 ```yaml
 apiVersion: kyverno.io/v2alpha1
@@ -42,16 +41,10 @@ spec:
   schedule: "*/5 * * * *"
 ```
 
-Values from resources to be evaluated during a policy may be referenced with `target.*`.
+Values from resources to be evaluated during a policy may be referenced with `target.*` similar to [mutate existing rules](/docs/writing-policies/mutate/#mutate-existing-resources).
 
-Because Kyverno follows the principal of least privilege, it may be necessary to grant the privileges needed in your case to the cleanup controller's ClusterRole. Role aggregation is supported allowing a separate ClusterRole to be created rather than editing an existing one. Creation of a (Cluster)CleanupPolicy will cause Kyverno to evaluate the permissions it needs and will warn if they are insufficient to successfully execute the desired cleanup.
-
-```sh
-Error from server: error when creating "ncleanpol.yaml": admission webhook "kyverno-cleanup-controller.kyverno.svc" denied the request: cleanup controller has no permission to delete kind Ingress
-```
+Because Kyverno follows the principal of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](http://localhost:1313/docs/installation/customization/#customizing-permissions) section for more details.
 
 {{% alert title="Warning" color="warning" %}}
 Be mindful of the validate policies in `Enforce` mode in your cluster as the CronJobs and their spawned Jobs/Pods may be subjected to and potentially blocked. You may wish to exclude based on the label `app.kubernetes.io/managed-by`.
 {{% /alert %}}
-
-As cleanup policies are either updated or removed, the CronJobs are updated accordingly.

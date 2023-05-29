@@ -1,11 +1,11 @@
 ---
 title: Variables
 description: >
-    Data-driven policies for reuse and intelligent decision making
-weight: 70
+  Defining and using variables in policies from multiple sources.
+weight: 90
 ---
 
-Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, and even OCI image registries.
+Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, OCI image registries, and even external service calls.
 
 Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/writing-policies/jmespath/). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
@@ -339,7 +339,7 @@ Reference the image properties of initContainer `vault`:
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
-Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`.
+Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization/#configmap-keys).
 
 {{% alert title="Note" color="info" %}}
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](/docs/writing-policies/jmespath/#formatting).
@@ -453,6 +453,7 @@ Kyverno policies can contain variables in:
   * Validation deny rules
   * Mutate strategic merge patches (`patchesStrategicMerge`)
   * Generate resource data definitions
+  * verifyImages definitions
 
 Variables are not supported in the `match` and `exclude` elements, so that rules can be matched quickly without having to load and process data. Variables are also not supported in the `patchesJson6902.path` key.
 
@@ -460,11 +461,10 @@ Since variables can be nested, it is important to understand the order in which 
 
 1. The set of matching rules is determined by creating a hash from the request information to retrieve all matching rules based on the rule and resource types.
 2. Each matched rule is further processed to fully evaluate the match and retrieve conditions.
-3. The rule context is then evaluated and variables are loaded from data sources.
-4. The preconditions are then checked.
-5. The rule body is processed.
+3. The preconditions are then checked.
+4. The rule body is processed.
 
-This ordering makes it possible to use request data when defining the context, and context variables in preconditions. Within the context itself, each variable is evaluated in the order of definition. Hence, if required, a variable can reference a prior variable but attempts to use a subsequent definition will result in errors.
+This ordering makes it possible to use request data when defining the context, and context variables in preconditions. Within the context itself, each variable is evaluated in the order of definition. Hence, if required, a variable can reference a prior variable but attempts to use a subsequent definition will result in errors. Context variables themselves are resolved when evaluated in the rule context except when the occur in a condition/expression.
 
 ## JMESPath custom functions
 
@@ -474,6 +474,6 @@ In addition to the list of [built-in functions](https://jmespath.org/specificati
 The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.
 {{% /alert %}}
 
-The special variable `{{@}}` may be used to refer to the current value in a given field, useful for source values.
+The special variable `{{ @ }}` may be used to refer to the current value in a given field, useful for source values.
 
 To find examples of some of these functions in action, see the [Kyverno policies library](/policies/). And for more complete information along with samples for each custom filter, see the JMESPath page [here](/docs/writing-policies/jmespath/).

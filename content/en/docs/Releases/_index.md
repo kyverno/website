@@ -1,7 +1,8 @@
 ---
 title: Releases
 linkTitle: "Releases"
-description: Kyverno Releases
+description: >
+    Understand how and when Kyverno releases software.
 weight: 120
 ---
 
@@ -37,9 +38,7 @@ Patch releases are for backwards-compatible bug fixes, very minor enhancements w
 
 Kyverno uses GitHub tags to manage versions. New releases and release candidates are published using the wildcard tag `v<major>.<minor>.<patch>*`.
 
-The dev images are pushed with tag `<major>.<minor>.dev-N-<git hash>`, where "N" is a two-digit number beginning at one for the major-minor combination and incremented by one on each subsequent tagged image. See [more](https://github.com/kyverno/kyverno/pkgs/container/kyverno/versions) examples. You can find published dev images for a specific commit via the GitHub workflow named [image](https://github.com/kyverno/kyverno/actions/workflows/image.yaml). For example, this [job](https://github.com/kyverno/kyverno/runs/4579160206?check_suite_focus=true) pushed images with tag `1.6-dev-7-gff99d92f` for PR [#2856](https://github.com/kyverno/kyverno/pull/2856).
-
-To test with the latest images for different release branches, the images are pushed with `<major>.<minor>-dev-latest`.
+Untagged pushes to both release branches and the `main` branch also result in images being built. For commits pushed to a release branch (a branch prefixed with `release-`), an image is built with a tag equaling the git SHA which produced the build. A rolling tag of the branch name will be re-applied to the latest image built from commits pushed to that branch. For example, the latest commit to the `release-1.10` branch is `19621b7a703935d6217a404ab5054687a84a3eda` results in an image built which is tagged with `19621b7a703935d6217a404ab5054687a84a3eda` and `release-1.10`. Commits to the `main` branch follow a similar versioning strategy except the rolling tag `latest` will be used instead.
 
 ### Issues
 
@@ -55,7 +54,7 @@ Release branches and PRs are managed as follows:
 - Branches are created for each major or minor release.
 - The branch name will contain the version, for example `release-1.5`.
 - Patch releases are created from a release branch.
-- For critical fixes that need to be included in a patch release, PRs should always be first merged to main and then cherry-picked to the release branch. The milestone label (for example `milestone-1.5`) must be added to PRs that are to be merged to a release branch, along with the `cherry-pick-required` label. When the PR is cherry picked (or merged), the `cherry-pick-completed` label is added.
+- For critical fixes that need to be included in a patch release, PRs should always be first merged to `main` and then cherry-picked to the release branch. The milestone label (for example `milestone-1.5`) must be added to PRs that are to be merged to a release branch, along with the `cherry-pick-required` label. When the PR is cherry picked (or merged), the `cherry-pick-completed` label is added.
 - For complex changes, or when branches diverge significantly, separate PRs may be required for `main` and release branches.
 - During PR review, the Assignee selection is used to indicate the reviewer.
 
