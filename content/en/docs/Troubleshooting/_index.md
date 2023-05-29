@@ -8,9 +8,11 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 ## API server is blocked
 
-**Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. This can happen if the Kyverno Pods are not gracefully terminated, or if there is a cluster outage, and policies were configure to [fail-closed](/docs/writing-policies/policy-settings/).
+**Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
 
-**Solution**: Delete the Kyverno validating and mutating webhook configurations and then restart Kyverno.
+**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/writing-policies/policy-settings/) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
+
+**Solution**: Delete the Kyverno validating and mutating webhook configurations. When Kyverno recovers, check your Namespace exclusions. Follow the steps below. Also consider running the admission controller component with 3 replicas.
 
 1. Delete the validating and mutating webhook configurations that instruct the API server to forward requests to Kyverno:
 
@@ -19,22 +21,22 @@ kubectl delete validatingwebhookconfiguration kyverno-resource-validating-webhoo
 kubectl delete  mutatingwebhookconfiguration kyverno-resource-mutating-webhook-cfg
 ```
 
-Note that these two webhook configurations are used for resources. Other Kyverno webhooks are for internal operations and typically do not need to be deleted.
+Note that these two webhook configurations are used for resources. Other Kyverno webhooks are for internal operations and typically do not need to be deleted. When Kyverno recovers, its webhooks will be recreated based on the currently-installed policies.
 
 2. Restart Kyverno
 
-Either delete the Kyverno Pods or scale the Deployment down to zero and then up. For example, for an installation with three replicas in the default Namespace use:
+This step is typically not necessary. In case it is, either delete the Kyverno Pods or scale the Deployment down to zero and then up. For example, for an installation with three replicas in the default Namespace use:
 
 ```sh
-kubectl scale deploy kyverno -n kyverno --replicas 0
-kubectl scale deploy kyverno -n kyverno --replicas 3
+kubectl scale deploy kyverno-admission-controller -n kyverno --replicas 0
+kubectl scale deploy kyverno-admission-controller -n kyverno --replicas 3
 ```
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/customization/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is the user's responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. The Kyverno Namespace is excluded by default.
+Use [Namespace selectors](/docs/installation/customization/#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is your responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/#security-vs-operability) section. The Kyverno Namespace is excluded by default. And if running Kyverno on certain PaaS platforms, additional Namespaces may need to be excluded as well, for example `kube-system`.
 
-## Policies not applied
+## Policies are not applied
 
 **Symptom**: My policies are created but nothing seems to happen when I create a resource that should trigger them.
 
@@ -45,8 +47,8 @@ Use [Namespace selectors](/docs/installation/customization/#namespace-selectors)
 
     ```sh
     $ kubectl get cpol,pol -A
-    NAME                                           BACKGROUND   VALIDATE ACTION   READY   AGE
-    clusterpolicy.kyverno.io/check-image-keyless   true         Enforce           true    116s
+    NAME                BACKGROUND   VALIDATE ACTION   READY   AGE   MESSAGE
+    inject-entrypoint   true         Audit             True    15s   Ready
     ```
 
 3. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
@@ -84,27 +86,30 @@ Use [Namespace selectors](/docs/installation/customization/#namespace-selectors)
 
 6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/customization/#resource-filters).
 
-## Kyverno consumes a lot of resources
+7. Check the same ConfigMap and ensure that the user/principal or group responsible for submission of your resource is not being excluded. Check the `excludeGroups` and `excludeUsernames` and others if they exist.
+
+## Kyverno consumes a lot of resources or I see OOMKills
 
 **Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?
 
-**Solution**: Follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling. Additionally, gather how many ConfigMap and Secret resources exist in your cluster by running the following command:
+**Solution**: It is important to understand how Kyverno experiences and processes work to know if what you deem as "too much" is, in fact, too much. Kyverno dynamically configures its webhooks (by default but configurable) according the policies which are loaded and on what resources they match. There is no easy rubric to follow where resource requirements are directly proportional to, for example, number of Pods or Nodes in a cluster. The following questions need to be asked and answered to build a full picture of the resources consumed by Kyverno.
 
-```sh
-kubectl get cm,secret -A | wc -l
-```
+1. What policies are in the cluster and on what types of resources do they match? Policies which match on wildcards (`"*"`) cause a tremendous load on Kyverno and should be avoided if possible as they instruct the Kubernetes API server to send to Kyverno _every action on every resource_ in the cluster. Even if Kyverno does not have matching policies for most of these resources, it is _required_ to respond to every single one. If even one policy matches on a wildcard, expect the resources needed by Kyverno to easily double, triple, or more.
+2. Which controller is experiencing the load? Each Kyverno controller has different responsibilities. See the [controller guide](/docs/high-availability/#controllers-in-kyverno) for more details. Each controller can be independently scaled, but before immediately scaling in any direction take the time to study the load.
+3. Are the default requests and limits still in effect? It is possible the amount of load Kyverno (any of its controllers) is experiencing is beyond the capabilities of the default requests and limits. These defaults have been selected based on a good mix of real-world usage and feedback but **may not suit everyone**. In extremely large and active clusters, from Kyverno's perspective, you may need to increase these.
+4. What do your monitoring metrics say? Kyverno is a critical piece of cluster infrastructure and must be monitored effectively just like other pieces. There are several metrics which give a sense of how active Kyverno is, the most important being [admission request count](/docs/monitoring/admission-requests/). Others include consumed memory and CPU utilization. Sizing should always be done based on peak consumption and not averages.
 
-After gathering this information, [create an issue](https://github.com/kyverno/kyverno/issues/new/choose) in the Kyverno GitHub repository and reference it.
+You can also follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling.
 
-**Symptom**: I'm using AKS and Kyverno is using too much memory or CPU
+**Symptom**: I'm using AKS and Kyverno is using too much memory or CPU or produces many audit logs
 
-**Solution**: On AKS the kyverno webhooks will be mutated by the AKS [Admissions Enforcer](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) Plugin, that can lead to an endless update loop. To prevent that behaviour, you can set the annotation `"admissions.enforcer/disabled": true` to all kyverno webhooks. When installing via Helm, you can add the annotation with `config.webhookAnnotations`.
+**Solution**: On AKS the Kyverno webhooks will be mutated by the AKS [Admissions Enforcer](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) plugin, that can lead to an endless update loop. To prevent that behavior, set the annotation `"admissions.enforcer/disabled": true` to all Kyverno webhooks. When installing via Helm, the annotation can be added with `config.webhookAnnotations`.
 
 ## Kyverno is slow to respond
 
 **Symptom**: Kyverno's operation seems slow in either mutating resources or validating them, causing additional time to create resources in the Kubernetes cluster.
 
-**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/customization/#container-flags), `--clientRateLimitQPS` and `--clientRateLimitBurst`. Try values `100` for each and increase as needed.
+**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/customization/#container-flags), `--clientRateLimitQPS` and `--clientRateLimitBurst`. While these flags have very sensible values after much field trials, in some cases they may need to be increased.
 
 ## Policies are partially applied
 
@@ -114,7 +119,7 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 1. Check the Pod logs from Kyverno. Assuming Kyverno was installed into the default Namespace called `kyverno` use the command `kubectl -n kyverno logs <kyverno_pod_name>` to show the logs. To watch the logs live, add the `-f` switch for the "follow" option.
 
-2. If no helpful information is being displayed at the default logging level, increase the level of verbosity by editing the Kyverno Deployment. To edit the Deployment, assuming Kyverno was installed into the default Namespace, use the command `kubectl -n kyverno edit deploy kyverno`. Find the `args` section for the container named `kyverno` and either add the `-v` switch or increase to a higher level. The flag `-v=6` will increase the logging level to its highest. Take care to revert this change once troubleshooting steps are concluded.
+2. If no helpful information is being displayed at the default logging level, increase the level of verbosity by editing the Kyverno Deployment. To edit the Deployment, assuming Kyverno was installed into the default Namespace, use the command `kubectl -n kyverno edit deploy kyverno-<controller_type>-controller`. Find the `args` section for the container named `kyverno` and either add the `-v` switch or increase to a higher level. The flag `-v=6` will increase the logging level to its highest. Take care to revert this change once troubleshooting steps are concluded.
 
 ## Kyverno exits
 
@@ -122,7 +127,7 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 
 **Solution**: In cases of very large scale, it may be required to increase the memory limit of the Kyverno Pod so it can keep track of these objects.
 
-1. Edit the Kyverno Deployment and increase the memory limit on the `kyverno` container by using the command `kubectl -n kyverno edit deploy kyverno`. Change the `resources.limits.memory` field to a larger value. Continue to monitor the memory usage by using something like the [Kubernetes metrics-server](https://github.com/kubernetes-sigs/metrics-server#installation).
+1. First, see the [above troubleshooting section](#kyverno-consumes-a-lot-of-resources-or-i-see-oomkills). If changes are required, edit the necessary Kyverno Deployment and increase the memory limit on the container. Change the `resources.limits.memory` field to a larger value. Continue to monitor the memory usage by using something like the [Kubernetes metrics-server](https://github.com/kubernetes-sigs/metrics-server#installation).
 
 ## Kyverno fails on GKE
 
@@ -153,3 +158,12 @@ After gathering this information, [create an issue](https://github.com/kyverno/k
 **Solution**: There can be many reasons why a policy may fail to work as intended, assuming other policies work. One of the most common reasons is that the API server is sending different contents than what you have accounted for in your policy. To see the full contents of the AdmissionReview request the Kubernetes API server sends to Kyverno, add the `dumpPayload` [container flag](/docs/installation/customization/#container-flags) set to `true` and check the logs. This has performance impact so it should be removed or set back to `false` when complete.
 
 The second most common reason policies may fail to operate per design is due to variables. To see the values Kyverno is substituting for variables, increase logging to level `4` by setting the container flag `-v=4`. You can `grep` for the string `variable` (or use tools such as [stern](https://github.com/stern/stern)) and only see the values being substituted for those variables.
+
+## Admission reports are stacking up
+
+**Symptom**: Admission reports keep accumulating in the cluster, taking more and more etcd space and slowing down requests.
+
+**Diagnose**: Please follow the [troubleshooting docs](https://github.com/kyverno/kyverno/blob/main/docs/dev/troubleshooting/reports.md) to determine if you are affected by this issue.
+
+**Solution**: Admission reports can accumulate if the reports controller is not working properly so the first thing to check is if the reports controller is running and does not continuously restarts. If the controller works as expected, another potential cause is that it fails to aggregate admission reports fast enough. This usually happens when the controller is throttled. You can fix this by increasing QPS and burst rates for the controller by setting `--clientRateLimitQPS=500` and `--clientRateLimitBurst=500`.
+Note that starting with Kyverno 1.10, two cron jobs are responsible for deleting admission reports automatically if they accumulate over a certain threshold.

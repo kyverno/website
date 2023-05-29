@@ -230,11 +230,37 @@ spec:
                   operator: Equals
                   value: "main"
                 - key: "{{ reviewers }}"
-                  operator: In
-                  value: ["ana@example.com", "bob@example.com"]
+                  operator: AnyIn
+                  value:
+                  - ana@example.com
+                  - bob@example.com
 ```
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/writing-policies/preconditions/#any-and-all-statements) to the predicate.
+
+Conditions which use the optional `message` field, when evaluating to FALSE and causing a blocking behavior, will result in the message being displayed.
+
+```yaml
+conditions:
+- all:
+  - key: "{{ time_since('','{{metadata.scanFinishedOn}}','') }}"
+    operator: LessThanOrEquals
+    value: "168h"
+    message: Scan finished at {{metadata.scanFinishedOn}} and is not younger than 7 days.
+```
+
+The above condition will show the message, including rendering any variables, if it is false.
+
+```sh
+Error from server: admission webhook "mutate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/mytestpod for resource violation: 
+
+require-vulnerability-scan:
+  scan-not-older-than-one-week: '.attestations[0].attestors[0].entries[0].keyless:
+    attestation checks failed for ghcr.io/myorg/mytestpod:v0.0.14 and predicate cosign.sigstore.dev/attestation/vuln/v1:
+    Scan finished at 2022-12-28T01:52:27.987177637Z and is not younger than 7 days.'
+```
 
 Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
 
