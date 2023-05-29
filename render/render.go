@@ -46,6 +46,7 @@ func getPolicyType(yaml string) string {
 	mutate := "mutate"
 	validate := "validate"
 	verifyImages := "verifyImages"
+	cleanUp := "cleanUp"
 
 	newYAML := strings.Split(yaml, "spec:")[1]
 
@@ -55,8 +56,10 @@ func getPolicyType(yaml string) string {
 		return mutate
 	} else if yamlContainsPolicy(newYAML, validate) {
 		return validate
-	} else {
+	} else if yamlContainsPolicy(newYAML, verifyImages) {
 		return verifyImages
+	} else {
+		return cleanUp
 	}
 }
 
@@ -64,6 +67,7 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *po
 	if !hasKyvernoAnnotation(p){
 		return nil
 	}
+
 	return &policyData{
 		Title:  buildTitle(p),
 		Policy: p,
@@ -152,7 +156,7 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
-		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy") {
+		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy" || policy.TypeMeta.Kind == "ClusterCleanupPolicy") {
 			continue
 		}
 
