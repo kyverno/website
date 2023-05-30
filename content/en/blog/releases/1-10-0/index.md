@@ -1,5 +1,5 @@
 ---
-date: 2023-05-27
+date: 2023-05-30
 title: "Kyverno 1.10 Released"
 linkTitle: "Kyverno 1.10"
 description: "Kyverno 1.10 released with featuring separate controllers, external service calls, Notary v2 support, and tons more!"
