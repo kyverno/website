@@ -194,7 +194,7 @@ spec:
                   operator: Equals
                   value: "main"
                 - key: "{{ reviewers }}"
-                  operator: In
+                  operator: AnyIn
                   value: ["ana@example.com", "bob@example.com"]
 ```
 
