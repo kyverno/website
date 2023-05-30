@@ -53,6 +53,22 @@ X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
           to:  2024-04-13T19:33:37Z
 ```
 
+#### Certificates rotation
+
+By default, Kyverno will generate and manage certificates. CA certificates validity is one year and TLS certificates validity is 150 days.
+
+At a minimum, managed certificates are checked for validity every 12 hours. Additionally, validity checks are performed when events occur on secrets containing the managed certificates.
+
+The renewal process runs as follows:
+1. Remove expired certificates contained in the secret
+1. Check if remaining certificates will become invalid in less than 60 hours
+1. If needed, generate a new certificate with the validity documented above
+1. The new certificates is added to the underlying secret along with current certificatess that are still valid
+1. Reconfigure webhooks with the new certificates bundle
+1. Update the Kyverno server to use the new certificate
+
+Basically, certificates will be renewed approximately 60 hours before expiry.
+
 #### Custom certificates
 
 You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign certificates for admission and cleanup controllers. Once you have a CA and X.509 certificate-key pairs, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
