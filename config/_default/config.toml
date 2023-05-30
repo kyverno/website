@@ -53,8 +53,12 @@ id = ""
 
 # Add your release versions here
 [[params.versions]]
-  version = "v1.9.0"
+  version = "v1.10.0"
   url = "https://kyverno.io"
+
+[[params.versions]]
+  version = "v1.9.0"
+  url = "https://release-1-9-0.kyverno.io"
 
 [[params.versions]]
   version = "v1.8.0"
