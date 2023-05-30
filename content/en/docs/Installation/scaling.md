@@ -60,8 +60,8 @@ For additional specifics on these tests along with a set of instructions which c
 |   17 PSS policies   |     53457     |       64Mi / 10Gi      |       2.55Gi       |     100m    |    7.66   |              3h / 2              |      1.10Gi     |         1077         |          52893          |           35520          |   50/50   |   500   |                  128Mi/1Gi                  |
 |                     |               |                        |                    |             |           |                                  |                 |                      |                         |                          |           |         |                                             |
 |   17 PSS policies   |     83716     |       64Mi / 10Gi      |                    |     100m    |           |              3h / 2              |                 |       1510/1305      |          82868          |           33768          |   50/50   |   800   |                  128Mi/1Gi                  |
-|   17 PSS policies   |     100392    |       64Mi / 10Gi      |       4.83Gi       |     100m    |   23.14   |              2h / 10             |      2.38Gi     |         1873         |          100033         |           73728          |   50/50   |   960   |                 128Mi/512Mi                 |
 |   17 PSS policies   |     80856     |       64Mi / 10Gi      |       2.20Gi       |     100m    |   19.13   |              2h / 10             |      2.24Gi     |         1573         |           n/a           |           80891          |   50/50   |   818   |                 128Mi/384Mi                 |
+|   17 PSS policies   |     100392    |       64Mi / 10Gi      |       4.83Gi       |     100m    |   23.14   |              2h / 10             |      2.38Gi     |         1873         |          100033         |           73728          |   50/50   |   960   |                 128Mi/512Mi                 |
 
 #### AdmissionReview Reference
 
