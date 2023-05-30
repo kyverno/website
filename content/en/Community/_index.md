@@ -63,11 +63,11 @@ This document highlights the roles and responsibilities for the Kyverno communit
 The table below summarizes project roles and responsibilities. Details are provided in the sections following the table:
 
 
-| Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
+| Role | Requirements | Ongoing Responsibilities | Defined by |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Contributors | Project contributions | Made at least five (5) contributions to the project.                                          | CONTRIBUTORS.md                                   |
-| Code Owner   | Active contributions, assist maintainers, review and approve contributions. | Made at least ten (10) significant contributions and appointed by 2 maintainers. Highly experienced and active reviewer + contributor to a subproject.                         | Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member.                                           |
-| Maintainer   | Code Owner, monitor project growth, set direction and priorities for a subproject. | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
+| Contributors | At least five (5) contributions to the project.   | None | CONTRIBUTORS.md                                   |
+| Code Owner   | At least ten (10) significant contributions and appointed by 2 maintainers. Highly experienced and active reviewer + contributor to a subproject. | Active contributions, assist maintainers, review and approve contributions.| Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member. |
+| Maintainer   | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Code Owner, monitor project growth, set direction and priorities for a subproject. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
 
 #### Contributors
 
