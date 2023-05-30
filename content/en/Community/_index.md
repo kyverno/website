@@ -60,7 +60,7 @@ This document highlights the roles and responsibilities for the Kyverno communit
 
 ### Project Roles
 
-The table below summarizes projects roles and responsibilities. Details are provides in the sections following the table:
+The table below summarizes project roles and responsibilities. Details are provided in the sections following the table:
 
 
 | Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
