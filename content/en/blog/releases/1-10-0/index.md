@@ -2,7 +2,7 @@
 date: 2023-05-30
 title: "Kyverno 1.10 Released"
 linkTitle: "Kyverno 1.10"
-description: "Kyverno 1.10 released with featuring separate controllers, external service calls, Notary v2 support, and tons more!"
+description: "Kyverno 1.10 released with featuring separate controllers, external service calls, Notary support, and tons more!"
 draft: false
 ---
 
@@ -12,7 +12,7 @@ The Kyverno team are proud to announce the release of Kyverno 1.10, a minor rele
 
 ## Key New Features of Kyverno 1.10
 
-Kyverno 1.10 contains several new and significant features including decomposing Kyverno into smaller pieces, external service calls, Notary v2 support, and a major revamp of generate rules.
+Kyverno 1.10 contains several new and significant features including decomposing Kyverno into smaller pieces, external service calls, Notary support, and a major revamp of generate rules.
 
 ### Increased Scalability with Service Decomposition
 
@@ -108,7 +108,7 @@ spec:
                 -----END CERTIFICATE-----
 ```
 
-While this addition supports simple Notary v2 verification, if needing to call an external service when using an extension, the external service call feature as shown earlier can be used.
+While this addition supports simple Notary verification, if needing to call an external service when using an extension, the external service call feature as shown earlier can be used.
 
 ### Generate Rule Refactoring
 
