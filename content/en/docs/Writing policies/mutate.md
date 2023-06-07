@@ -9,7 +9,7 @@ A `mutate` rule can be used to modify matching resources and is written as eithe
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
-Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](/docs/writing-policies/mutate/#mutate-existing-resources) policies.
+Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](#mutate-existing-resources) policies.
 
 This policy sets the `imagePullPolicy` to `IfNotPresent` if the image tag is `latest`:
 
@@ -187,7 +187,7 @@ Some other capabilities of the `patchesJson6902` method include:
 
 ## Strategic Merge Patch
 
-The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. Kyverno supports this style of patch to mutate resources. The `patchStrategicMerge` overlay resolves to a partial resource definition.
+The `kubectl` command uses a [strategic merge patch](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md) with special directives to control element merge behaviors. The `patchStrategicMerge` overlay resolves to a partial resource definition.
 
 This policy adds a new container to the Pod, sets the `imagePullPolicy`, adds a command, and sets a label with the key of `name` and value set to the name of the Pod from AdmissionReview data. Once again, the overlay in this case names a specific schema path which is relevant only to a Pod and not higher-level resources like a Deployment.
 
@@ -220,6 +220,8 @@ spec:
 
 Note that when using `patchStrategicMerge` to mutate the `pod.spec.containers[]` array, the `name` key must be specified as a conditional anchor (i.e., `(name): "*"`) in order for the merge to occur on other fields.
 
+Mutate rules written with this style, if they match exclusively on a Pod, are subject to [auto-generation rules](/docs/writing-policies/autogen/) for Pod controllers.
+
 ## Conditional logic using anchors
 
 Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/writing-policies/validate/#anchors) for more general information on conditionals.
@@ -231,7 +233,7 @@ The mutate overlay rules support three types of anchors:
 | Anchor             | Tag  | Behavior                                             |
 |--------------------|----- |----------------------------------------------------- |
 | Conditional        | ()   | Use the tag and value as an "if" condition           |
-| Add if not present | +()  | Add the tag value if the tag is not already present  |
+| Add if not present | +()  | Add the tag value if the tag is not already present. Not to be used for arrays/lists unless inside a [`foreach`](#foreach) statement.  |
 | Global             | <()  | Add the pattern when the global anchor is true       |
 
 The **anchors** values support **wildcards**:
@@ -243,9 +245,11 @@ Conditional anchors are only supported with the `patchStrategicMerge` mutation m
 
 ### Conditional anchor
 
+Conditional anchors are used to control when a mutation should occur by using an "if" logical evaluation, for example if a field is not already present or if a value is not the desired value. Contrast this with the example from the strategic merge patch section [above](#strategic-merge-patch) where the mutation is applied regardless of any conditions.
+
 A conditional anchor evaluates to `true` if the anchor tag exists and if the value matches the specified value. Processing stops if a tag does not exist or when the value does not match. Once processing stops, any child elements or any remaining siblings in a list will not be processed.
 
-For example, this overlay will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure":
+For example, this will add or replace the value `6443` for the `port` field, for all ports with a name value that starts with "secure".
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -272,22 +276,42 @@ If the anchor tag value is an object or array, the entire object or array must m
 
 ### Add if not present anchor
 
-A variation of an anchor is to add a field value if it is not already defined. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
+One of the most common scenarios when mutating resources is to add/change a field to a specified value only if it is not already present. This is done by using the **add** anchor (short for "add if not present" anchor) with the notation `+(...)` for the tag.
 
-An add anchor is processed as part of applying the mutation. Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource.
+Typically, every non-anchor tag-value is applied as part of the mutation. If the add anchor is set on a tag, the tag and value are only applied if they do not exist in the resource. If the tag is already present then the mutation is not applied. This anchor should only be used on lists/arrays if inside a `foreach` loop as it is not intended to be an iterator. See the foreach section [below](#foreach) for an example.
 
-For example, this policy matches and mutates pods with an `emptyDir` volume to add the `safe-to-evict` annotation if it is not specified.
+In this example, the label `lfx-mentorship` will be assigned to ConfigMaps with a value of `kyverno` but _only_ if the label is not already present.
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: add-safe-to-evict
-  annotations:
-    pod-policies.kyverno.io/autogen-controllers: none
+  name: lfx-add-labels
 spec:
   rules:
-  - name: "annotate-empty-dir"
+  - name: lfx-mentorship
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            +(lfx-mentorship): kyverno
+```
+
+Multiple of these add anchors may also be combined in the same rule definition when they are used as siblings. Take this example which adds fields to the securityContext of a Pod if they are not found.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-securitycontext
+spec:
+  rules:
+  - name: add-default-securitycontext
     match:
       any:
       - resources:
@@ -295,12 +319,12 @@ spec:
           - Pod
     mutate:
       patchStrategicMerge:
-        metadata:
-          annotations:
-            +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
         spec:
-          volumes:
-          - <(emptyDir): {}
+          securityContext:
+            +(runAsNonRoot): true
+            +(runAsUser): 1000
+            +(runAsGroup): 3000
+            +(fsGroup): 2000
 ```
 
 ### Global Anchor
@@ -352,19 +376,49 @@ spec:
           protocol: TCP
 ```
 
-### Anchor processing flow
+### Processing flow and combinations
 
 The anchor processing behavior for mutate conditions is as follows:
 
-1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only of all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
+1. First, all conditional anchors are processed. Processing stops when the first conditional anchor returns a `false`. Mutation proceeds only if all conditional anchors return a `true`. Note that for conditional anchor tags with complex (object or array) values, the entire value (child) object is treated as part of the condition as explained above.
 
 2. Next, all tag-values without anchors and all add anchor tags are processed to apply the mutation.
 
+Anchors may also be combined in mutate rules for more control and flexibility.
+
+For example, this policy combines the global and add anchors to mutate pods containing an `emptyDir` volume to add the `cluster-autoscaler.kubernetes.io/safe-to-evict` annotation if it is not specified.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-safe-to-evict
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  rules:
+  - name: annotate-empty-dir
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
+        spec:
+          volumes:
+          - <(emptyDir): {}
+```
+
 ## Mutate Existing resources
 
-In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchesStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself.
+In addition to mutation of "incoming" or "new" resources, Kyverno also supports mutation on existing resources with `patchStrategicMerge` and `patchesJson6902`. Unlike standard mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background (via the background controller) which update existing resources in the cluster. These mutate existing policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing--and even different--resources. They may also optionally be configured to apply upon updates to the policy itself. This has two important implications:
 
-Because these mutations occur on existing resources, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
+1. Mutation for existing resources is an asynchronous process. This means there will be a variable amount of delay between the period where the trigger was observed and the existing resource was mutated.
+2. Custom permissions are almost always required. Because these mutations occur on existing resources and not an AdmissionReview (which does not yet exist), Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization/#customizing-permissions) on how to grant additional permission to the Kyverno ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required.
 
 To define such a policy, trigger resources need to be specified in the `match` block. The target resources--resources that are mutated in the background--are specified in each mutate rule under `mutate.targets`. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
 
@@ -428,6 +482,59 @@ spec:
 
 {{% alert title="Note" color="warning" %}}
 Installation of a mutate existing policy affects the `ValidatingWebhookConfiguration` Kyverno manages as opposed to traditional mutate rules affecting the `MutatingWebhookConfiguration`.
+{{% /alert %}}
+
+When defining a list of `targets[]`, the fields `name` and `namespace` are not strictly required but encouraged. If omitted, it implies a wildcard (`"*"`) for the omitted field which can have unintended impact on other resources.
+
+In order to more precisely control the target resources, mutate existing rules support both [context variables](/docs/writing-policies/external-data-sources/) and [preconditions](/docs/writing-policies/preconditions/). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
+
+This sample below illustrates how to combine preconditions and conditional anchors within `targets[]` to precisely select the desired existing resources for mutation. This policy restarts existing Deployments if they are consuming a Secret that has been updated assigned label `kyverno.io/watch: "true"` AND have a name beginning with `testing-`.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: refresh-env-var-in-pods
+spec:
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - name: refresh-from-secret-env
+    match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+          selector:
+            matchLabels:
+              kyverno.io/watch: "true"
+          operations:
+          - UPDATE
+    mutate:
+      targets:
+        - apiVersion: apps/v1
+          kind: Deployment
+          namespace: "{{request.namespace}}"
+          preconditions:
+            all:
+            - key: "{{target.metadata.name}}"
+              operator: Equals
+              value: testing-*
+      patchStrategicMerge:
+        spec:
+          template:
+            metadata:
+              annotations:
+                corp.org/random: "{{ random('[0-9a-z]{8}') }}"
+            spec:
+              containers:
+              - env:
+                - valueFrom:
+                    secretKeyRef:
+                      <(name): "{{ request.object.metadata.name }}"
+```
+
+{{% alert title="Note" color="warning" %}}
+The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](/docs/installation/customization/#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
 {{% /alert %}}
 
 ### Variables Referencing Target Resources
@@ -529,7 +636,7 @@ metadata:
 
 To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
-For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field:
+For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field, however a permission check is performed when a policy is installed.
 
 ```
 $ kubectl get ur -n kyverno
@@ -695,6 +802,8 @@ patchStrategicMerge:
 
 When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing. The value of the `list` field may also resolve to a simple array of strings, for example as defined in a context variable. The value of the `list` field should not be enclosed in braces even though it is a JMESPath expression.
 
+`foreach` statements may also declare an optional `order` field for controlling whether to iterate over the `list` results in ascending or descending order.
+
 A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`.
 
 Each `foreach` declaration can optionally contain the following declarations:
@@ -719,7 +828,7 @@ spec:
             kinds:
               - Pod
             operation:
-            - CREATE
+              - CREATE
       mutate:
         foreach: 
         - list: "request.object.spec.containers"
@@ -760,6 +869,74 @@ spec:
 ```
 
 Note that the `patchStrategicMerge` is applied to the `request.object`. Hence, the patch needs to begin with `spec`. Since container names may have dashes in them (which must be escaped), the `{{element.name}}` variable is specified in double quotes.
+
+Loops which use the `patchStrategicMerge` method may also use conditional anchors as mentioned earlier. This policy uses the add [anchor](#add-if-not-present-anchor) inside a loop to add the `allowPrivilegeEscalation` field with a value set to `false` but only if it isn't present first. The conditional around the `name` field is required in this style of mutation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pss-migrate
+spec:
+  rules:
+  - name: set-allowprivescalation
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      foreach:
+      - list: "request.object.spec.containers[]"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - (name): "{{ element.name }}"
+              securityContext:
+                +(allowPrivilegeEscalation): false
+```
+
+As with conditional mutations outside the context of a loop, so too may multiple anchors be used inside, for example with this policy to add default resource requests to containers within a Pod if they are not specified.
+
+```yaml
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-resources
+spec:
+  rules:
+  - name: add-default-requests
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    preconditions:
+      any:
+      - key: "{{request.operation || 'BACKGROUND'}}"
+        operator: AnyIn
+        value:
+        - CREATE
+        - UPDATE
+    mutate:
+      foreach:
+      - list: "request.object.spec.containers[]"
+        patchStrategicMerge:
+          spec:
+            containers:
+            - (name): "{{element.name}}"
+              resources:
+                requests:
+                  +(memory): "100Mi"
+                  +(cpu): "100m"
+```
+
+It is important to understand internally how Kyverno treats `foreach` rules. Some general statements to keep in mind:
+
+* No internal patches are produced until all `foreach` iterations are complete.
+* `foreach` supports multiple loops but will be processed in declaration order and not independently or in parallel. The results of the first loop will be available internally to subsequent loops.
+* Cascading mutations as separate rules will be necessary for a mutation to be further mutated by other logic.
+* Use of the `order` field is required in some situations, for example when removing elements from an array use `Descending`.
 
 ### Nested foreach
 

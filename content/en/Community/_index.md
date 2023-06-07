@@ -60,31 +60,18 @@ This document highlights the roles and responsibilities for the Kyverno communit
 
 ### Project Roles
 
-**Contributors**:
+The table below summarizes project roles and responsibilities. Details are provided in the sections following the table:
 
-These are individuals who have made multiple contributions to the project; by authoring PRs, commenting on issues and pull requests, or participating in community discussions on Slack or the mailing list.
 
-**Code Owner**:
-
-These are individuals who remain as active contributors who have good experience and knowledge of the project. They are expected to proactively manage issues and pull requests without write access.
-
-**Maintainer**:
-
-Maintainers are individuals who go beyond the status of code owner who have shown good technical judgement in feature design/development in the past. Maintainers have overall knowledge of the project and features in the project. They can read, clone, and push to the repository. They can also manage issues, pull requests, and some repository settings.
-
-**Admin**:
-
-These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository. Admins can read, clone, and push to this repository. They can also manage issues, pull requests, and repository settings, including adding collaborators.
-
-| Role         | Responsibilities                                                      | Requirements                                                                                  | Defined by                                                                                                                   |
+| Role | Requirements | Ongoing Responsibilities | Defined by |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Contributors | None                                                                  | Made at least five (5) contributions to the project.                                          | CONTRIBUTORS.md                                   |
-| Code Owner   | Active contributions, assist maintainers, review and approve contributions. | Made at least ten (10) significant contributions and appointed by 2 maintainers. Highly experienced and active reviewer + contributor to a subproject.                         | Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member.                                           |
-| Maintainer   | Code Owner, monitor project growth, set direction and priorities for a subproject. | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
+| Contributors | At least five (5) contributions to the project.   | None | CONTRIBUTORS.md                                   |
+| Code Owner   | At least ten (10) significant contributions and appointed by 2 maintainers. Highly experienced and active reviewer + contributor to a subproject. | Active contributions, assist maintainers, review and approve contributions.| Maintainers, [CODEOWNERS](https://help.github.com/en/articles/about-code-owners), GitHub organization member. |
+| Maintainer   | Highly experienced and active contributor + Kyverno Certification + Voted in by Kyverno maintainers. | Code Owner, monitor project growth, set direction and priorities for a subproject. | Voted in by the Kyverno maintainers, listing in `MAINTAINERS.md`, GitHub organization member, and repository owner. |
 
 #### Contributors
 
-Contributors are community members who have made some contribution in the past to one or more subprojects. They can have issues and PRs assigned to them.
+Contributors are individuals who have made at least five (5) contributions to the project; by authoring PRs, commenting on issues and pull requests, and participating in community discussions on Slack or the mailing list.
 
 **Checklist before becoming a Contributor**
 
@@ -95,8 +82,13 @@ Contributors are community members who have made some contribution in the past t
 
 **Privileges of a Contributor**
 
-- Listed in the `CONTRIBUTORS.md` file in at least one (1) organization repository
+- Listed in the file in at least one (1) organization repository
 - Kyverno contributor badge issued
+
+To join the Kyverno project as a Contributor create a Pull Request (PR) in the [Kyverno repository](https://github.com/kyverno/kyverno) with the following:
+1. Changes to add yourself to the [CONTRIBUTORS.md](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTORS.md) file.
+2. Links to your prior contributions (at least five).
+3. Links to slack discussions, issue comments, etc.
 
 #### Code Owners
 
@@ -137,29 +129,9 @@ Code Owners are a special type of contributor and have _significantly_ contribut
 
 - Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in removal from `CODEOWNERS` and from organization membership.
 
-<!-- #### Approvers
-
-Approvers are contributors who provide active review and feedback on the issues and PRs. While code review is focused on code quality and correctness, approval is focused on holistic acceptance of a contribution including backwards and forwards compatibility, adhering to API and flag conventions, subtle performance and correctness issues, and interactions with other parts of the system. Approvers are encouraged to be active participants in project meetings, chat rooms, and other discussion forums.
-
-**Checklist before becoming an Approver**
-
-- Consistently monitors project activities such as issues created and new PRs
-- Has been active on the project for over two months
-- Successfully reviewed project codebase for at least one month
-- Has an in-depth understanding of the project's codebase
-- Sponsored by at least two maintainers
-
-**Responsibilities & Privileges**
-
-- Understands the project goals and workflows defined by maintainers
-- Creates new issues according to the project requirements
-- Assigns issues to contributors
-- Responds to new PRs and issues by asking clarifying questions
-- Organizes the backlog by applying labels, milestones, assignees, and projects
-- Is readily available to review and approve PRs by making meaningful suggestions
-- Applies code of conduct to edit and delete any inappropriate comments on commits, pull requests, and issues -->
-
 #### Maintainers
+
+Maintainers are individuals who go beyond the status of code owner who have shown good technical judgement in feature design/development in the past. Maintainers have overall knowledge of the project and features in the project. They can read, clone, and push to the repository. They can also manage issues, pull requests, and some repository settings.
 
 [Maintainers](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization#repository-access-for-each-permission-level) are the technical authority for a subproject and are considered leaders for the organization as a whole. They must have demonstrated both good judgement and responsibility towards the health of the subproject. Maintainers must set technical direction and make or approve design decisions for their subproject, either directly or through delegation of these responsibilities. Unlike contributors and code owners, maintainers have the highest degree of responsibility and ownership for the project. Maintainer status may be subject to a vote and, if the minimum level of activity is not maintained, may be moved to an _emeritus_ status.
 
@@ -207,6 +179,11 @@ The following responsibilities apply to the subproject for which one would be an
 **Off-boarding Criteria**
 
 - Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+
+#### Admins
+
+These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository. Admins can read, clone, and push to this repository. They can also manage issues, pull requests, and repository settings, including adding collaborators.
+
 
 #### Mapping Project Roles to GitHub Roles
 

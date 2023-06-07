@@ -1,55 +1,19 @@
 ---
-title: Verify Images Rules
+title: Sigstore
 description: >
-  Check container image signatures and attestations to ensure supply chain security.
-weight: 60
+  Verify Sigstore Cosign format signatures and attestations using keys, certificates, or keyless attestors.
+weight: 20
 ---
-
-{{% alert title="Warning" color="warning" %}}
-Image verification is a **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
-{{% /alert %}}
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.
 
-The Kyverno __verifyImages__ rule uses [Cosign](https://github.com/sigstore/cosign) to verify container image signatures and [in-toto attestations](https://github.com/in-toto/attestation/blob/main/spec/README.md) stored in an OCI registry.
-
-The logical structure of the rule is shown below:
-
-<img src="/images/image-verify-rule.png" alt="Image Verification Rule" width="75%"/>
-<br/><br/>
-
-Each rule contains:
-
-* One or more image reference patterns to match
-* Common configuration attributes:
-  * `required`: enforces that all matching images are verified
-  * `mutateDigest`: converts tags to digests for matching images
-  * `verifyDigest`: enforces that digests are used for matching images
-  * `repository`: use a different repository for fetching signatures
-* Zero or more __attestors__ which can be public keys, certificates, and keyless configuration attributes used to identify trust authorities
-* Zero or more [in-toto attestation](https://github.com/in-toto/attestation/blob/main/spec/README.md) __statements__ to be verified. If attestations are provided, at least one attestor is required.
-
-A verifyImages rule may also be used to perform tag-to-digest conversion (mutation) or require that images are verified via some other rule. While it is most common to actually perform signature or attestation verification, these are optional functionalities.
-
 ## Verifying Image Signatures
 
-Container images can be signed during the build phase of a CI/CD pipeline using Cosign. An image can be signed with multiple signatures, for example at the organization level and at the project level.
+Container images can be signed during the build phase of a CI/CD pipeline using the Cosign CLI. An image can be signed with multiple signatures, for example at the organization level and at the project level.
 
-The policy rule check fails if the signature is not found in the OCI registry, or if the image was not signed using the specified key.
+The policy rule check fails if the required signatures are not found in the OCI registry, or if the image was not signed using matching attestors.
 
 The rule mutates matching images to add the [image digest](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier), when `mutateDigest` is set to `true` (which is the default), if the digest is not already specified. Using an image digest has the benefit of making image references immutable. This helps ensure that the version of the deployed image does not change and, for example, is the same version that was scanned and verified by a vulnerability scanning and detection tool.
-
-The `imageVerify` rule first executes as part of the mutation webhook as the applying policy may insert the image digest. The `imageVerify` rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
-
-The rule is also executed as part of the validation webhook to apply the `required` and `verifyDigest` checks.
-
-When `required` is set to `true` (default) each image in the resource is checked to ensure that an immutable annotation that marks the image as verified is present.
-
-When `verifyDigest` rule is set to `true` (default) each image is checked for a digest.
-
-The `imageVerify` rule can be combined with [auto-gen](/docs/writing-policies/autogen/) so that policy rule checks are applied to Pod controllers.
-
-The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the required count of attestors in the `entries` list that must be verified. By default, and when not specified, all attestors are verified.
 
 Here is a sample image verification policy which ensures an image from the `ghcr.io/kyverno/test-verify-image` repository, using any tag, is signed with the corresponding public key as defined in the policy:
 
@@ -230,7 +194,7 @@ spec:
                   operator: Equals
                   value: "main"
                 - key: "{{ reviewers }}"
-                  operator: In
+                  operator: AnyIn
                   value: ["ana@example.com", "bob@example.com"]
 ```
 

@@ -21,7 +21,7 @@ To contribute changes, use the [fork & pull](https://movi.hashnode.dev/how-to-su
 2\. Next, create a local clone with the `--recurse-submodules` option:
 
 ```sh
-git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 ```
 
 3\. Then navigate to the local folder and build the website for local viewing of changes:
@@ -35,7 +35,12 @@ By default, Hugo runs the website at: http://localhost:1313 and will re-build th
 
 ## Update Docsy theme
 
+The project uses [Hugo Modules](https://gohugo.io/hugo-modules/) to manage the theme:
+
 Run `hugo mod get -u ./...` from project root.
+
+To clean the module cache use `hugo mod clean`.
+
 
 ## Rendering Policies to Markdown
 
