@@ -9,7 +9,7 @@ A [policy](/docs/kyverno-policies/) contains one or more rules, and the followin
 
 * **applyRules**: states how many of the rules in the parent policy should be applied to a matching resource. Values are `One` and `All` (default). If set to `One`, the first matching rule to be applied will stop further rules from being evaluated.
 
-* **background**: controls scanning of existing resources to find potential violations and generating Policy Reports. See the documentation [here](/docs/policy-reports/background/). Default to "true".
+* **background**: controls scanning of existing resources to find potential violations and generating Policy Reports. See the documentation [here](/docs/writing-policies/background/). Default to "true".
 
 * **failurePolicy**: defines the API server behavior if the webhook fails to respond. Allowed values are "Ignore" or "Fail". Defaults to "Fail". Additionally, if set to "Ignore" will allow failing calls to image registries to be ignored. This allows for rule types like verifyImages or others which use image data to not block if the registry is temporarily down, useful in situations where images already exist on the nodes.
 
