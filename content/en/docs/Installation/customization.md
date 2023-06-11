@@ -273,7 +273,7 @@ The following flags can be used to control the advanced behavior of the various 
 14. `enableConfigMapCaching` (ABR): enables the ConfigMap caching feature. Defaults to `true`.
 15. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
 16. `enableTracing` (ABCR): set to enable exposing traces. Default is `false`.
-17. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`.
+17. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted.
 18. `forceFailurePolicyIgnore` (A): set to force Failure Policy to `Ignore`. Default is `false`.
 19. `genWorkers` (B): the number of workers for processing generate policies concurrently. Default is `10`.
 20. `imagePullSecrets` (ABR): specifies secret resource names for image registry access credentials. Only a single value accepted currently.
