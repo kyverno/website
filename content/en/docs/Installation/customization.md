@@ -273,7 +273,7 @@ The following flags can be used to control the advanced behavior of the various 
 14. `enableConfigMapCaching` (ABR): enables the ConfigMap caching feature. Defaults to `true`.
 15. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
 16. `enableTracing` (ABCR): set to enable exposing traces. Default is `false`.
-17. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`.
+17. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted.
 18. `forceFailurePolicyIgnore` (A): set to force Failure Policy to `Ignore`. Default is `false`.
 19. `genWorkers` (B): the number of workers for processing generate policies concurrently. Default is `10`.
 20. `imagePullSecrets` (ABR): specifies secret resource names for image registry access credentials. Only a single value accepted currently.
@@ -300,7 +300,7 @@ The following flags can be used to control the advanced behavior of the various 
 41. `reportsChunkSize` (R): maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
 42. `serverIP` (AC): like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
 43. `servicePort` (AC): port used by the Kyverno Service resource and for webhook configurations. Default is `443`.
-44. `skipResourceFilters` (R): obey the ConfigMap's resourceFilters when performing background report scans. Default is `true`.
+44. `skipResourceFilters` (R): obey the ConfigMap's resourceFilters when performing background report scans. Default is `true`. When set to `true`, anything defined in the resourceFilters will function as the exclusion input filter for background reports. Ex., when set to `true` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will not be produced for anything in the `kube-system` Namespace. Set this value to `false` to ignore resourceFilters in background scan reports.
 45. `skip_headers` (ABCR): if true, avoid header prefixes in the log messages.
 46. `skip_log_headers` (ABCR): if true, avoid headers when opening log files (no effect when -logtostderr=true).
 47. `stderrthreshold` (ABCR): logs at or above this threshold go to stderr when writing to files and stderr (no effect when -logtostderr=true or -alsologtostderr=false). Default is `2`.
