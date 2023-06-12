@@ -1,5 +1,5 @@
 ---
-date: 2023-06-10
+date: 2023-06-12
 title: Using Kyverno with Pod Security Admission
 linkTitle: Using Kyverno with Pod Security Admission
 description: Using Pod Security Admission with Kyverno for the best of both worlds.
@@ -12,9 +12,9 @@ draft: false
 
 First, let's explain a bit about how PSA can be used for those not familiar. Although this won't be a full tutorial on how to use the technology, it'll at least establish a good set of boundaries to help you know where it begins and ends.
 
-PSA can basically be used in two ways: at the cluster level and at the Namespace level. Although it is "on" by default, it isn't "active" by default. Since PSA does not require an API resource similar to how PSP worked, it is "activated" in different ways. To activate PSA at the cluster level, one must create and install a specific file local to the control plane of the kind `AdmissionConfiguration` the contents of which will dictate how it works. Many Kubernetes PaaS providers have already done the work at the cluster level for you and, in many cases, there's nothing you can configure yourself. To activate PSA at the Namespace level, one need only label a Namespace. The two methods aren't mutually exclusive. In the case of the Namespace method, using PSA is extremely quick and simple.
+PSA can basically be used in two ways: at the cluster level and at the Namespace level. Although it is "on" by default, it isn't "active" by default. Since PSA does not require an API resource similar to how PSP worked, it is "activated" in different ways. To activate PSA at the cluster level, one must create and install a specific file local to the control plane of the kind `AdmissionConfiguration` the contents of which will dictate how it works. Many Kubernetes PaaS providers have already done the work at the cluster level for you and, in many cases, there's nothing you can configure yourself. For example, in cases like EKS, PSA is enabled at the cluster level but set to the privileged mode which allows insecure Pod configurations. To activate PSA at the Namespace level, one need only label a Namespace. The two methods aren't mutually exclusive. In the case of the Namespace method, using PSA is extremely quick and simple.
 
-Now on to the important point about profiles mentioned at the outset. PSA is the technology which implements the Pod Security Standards (PSS). Those standards are broken up into two **profiles**: [baseline](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) and [restricted](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). Each profile is a collection of different **controls**. Each control establishes which fields of a Pod's spec should or should not be set and with what value(s). The restricted profile is cumulative of the baseline profile, so by enabling restricted you implicitly get baseline.
+Now on to the important point about profiles mentioned at the outset. PSA is the technology which implements the Pod Security Standards (PSS). Those standards are broken up into three **profiles**: [privileged](https://kubernetes.io/docs/concepts/security/pod-security-standards/#privileged), which is effectively the lack of any security, [baseline](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline), and [restricted](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). Each profile is a collection of different **controls**. Each control establishes which fields of a Pod's spec should or should not be set and with what value(s). The restricted profile is cumulative of the baseline profile, so by enabling restricted you implicitly get baseline.
 
 Regardless of how PSA is activated and at what scope, it implements these profiles. Critical to understand is that **this is an all-or-nothing proposition**: a profile is implemented in its entirety and there is no possibility to cherry pick which controls in the profile are checked. Although each profile can be checked in either `audit`, `warn`, or `enforce` mode (even multiple modes simultaneously), you either get all of that profile or you get none of it.
 
@@ -26,7 +26,7 @@ With some of the mechanics of PSA out of the way, let's get into the use cases f
 
 Although there are many possible points of intersection between PSA and Kyverno, here are four we've identified and commonly see employed. For some, there can be many different variations which we won't all cover.
 
-### Use Kyverno to validate/mutate PSA Namespace labels
+### Use Kyverno to require PSA Namespace labels
 
 As mentioned in the beginning, one of PSA's methods of operation is through assignment of labels to Namespaces. Without at least one PSA-specific label, nothing will happen. Kyverno can assist in this process in a couple ways:
 
@@ -81,7 +81,7 @@ This is just one example and there are many variations for how these two technol
 
 And, by the way, one more benefit you get when using Kyverno to enforce its Pod Security Standards over PSA is that it allows you to block Pod controllers directly as a result of its [rule auto-generation](/docs/writing-policies/autogen/) capability. This is not something PSA allows and only non-compliant Pods will be blocked.
 
-### Use Kyverno reporting where PSA is not enforcing
+### Use Kyverno reporting for PSA
 
 PSA allows for assigning multiple labels to a Namespace (or configuring the same via the `AdmissionConfiguration` file) to get a union of the behaviors. For example, PSA can `enforce` at the baseline profile and `audit` and/or `warn` at the restricted profile. The audit mode means any violations will be allowed yet will be written in the Kubernetes audit log. There are a few down sides with this approach. The audit log is not accessible from inside the cluster because it's not a native Kubernetes resource, it's literally a log file written to the control plane or, optionally, sent to an external server. Audit logs also commonly cannot be enabled retroactively or to do so is cumbersome and disruptive. In the case of some cloud PaaS offerings, if audit logging wasn't enabled at the time the cluster was created then it can't be subsequently enabled, potentially forcing you to build another cluster just to gain these insights.
 
