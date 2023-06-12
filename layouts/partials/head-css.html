@@ -1,9 +1,0 @@
-{{ $scssMain := "scss/main.scss"}}
-{{ $css := resources.Get $scssMain | toCSS (dict "enableSourceMap" true) | minify | fingerprint  }}
-<link rel="preload" href="{{ $css.RelPermalink }}" as="style">
-<link href="{{ $css.RelPermalink }}" rel="stylesheet" integrity="{{ $css.Data.integrity }}">
-
-<!-- custom -->
-{{- $options := (dict "targetPath" "css/custom.css" "outputStyle" "compressed" "enableSourceMap" "true") -}}
-{{- $styles := resources.Get "scss/custom.scss"  | resources.ToCSS $options | resources.Fingerprint "sha512" }}
-<link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
