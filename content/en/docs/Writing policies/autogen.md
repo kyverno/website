@@ -168,7 +168,7 @@ spec:
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
 
-Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow_default_namespace/disallow_default_namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
+Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow-default-namespace/disallow-default-namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
 
 ```yaml
 pattern:
