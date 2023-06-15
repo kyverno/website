@@ -2,14 +2,23 @@
   min-height: auto;
 }
 
-.navbar-nav {
-  @media (max-width: 992px) {
-    font-size: .875rem;
-    .dropdown {
-      min-width: inherit;
+.navbar-{
+  &nav {
+    @media (max-width: 992px) {
+      font-size: .875rem;
+      .dropdown {
+        min-width: inherit;
+      }
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    &expand-md &collapse {
+      justify-content: flex-end;
     }
   }
 }
+
+
 footer {
   min-height: 150px;
 
