@@ -72,7 +72,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 {{% /blocks/lead %}}
 
 
-{{< blocks/lead color="dark" >}}
+{{% blocks/lead color="dark" %}}
 
 ## Kyverno is a CNCF Incubating Project { class="text-center mb-4" }
 
@@ -89,4 +89,4 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 	<small class="text-white">The Linux Foundation® (TLF) has registered trademarks and uses trademarks. For a list of TLF trademarks, see <a href="https://www.linuxfoundation.org/trademark-usage/">Trademark Usage</a>.</small>
 </div>
 
-{{< /blocks/lead >}}
+{{% /blocks/lead %}}
