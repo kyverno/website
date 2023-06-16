@@ -5,7 +5,7 @@ description: >
 weight: 110
 ---
 
-Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.
+Pods are one of the most common object types in Kubernetes and as such are the focus of most types of validation rules. But creation of Pods directly is almost never done as it is considered an anti-pattern. Instead, Kubernetes has many higher-level controllers that directly or indirectly manage Pods, namely the Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Third-party custom resources may also "wrap" or leverage the Pod template as part of their resources as well. Writing policy that targets Pods but must be written for every one of these controllers would be tedious and inefficient. Kyverno solves this issue by supporting automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. For rules which match on Pods in addition to other kinds, auto-generation is not activated.
 
 For example, when creating a validation policy like below which checks that all images come from an internal, trusted registry, the policy applies to all resources capable of generating Pods.
 
@@ -94,6 +94,8 @@ Auto-gen rules also cover ReplicaSet and ReplicationControllers. These two inter
 
 Rule auto-generation behavior is controlled by the policy annotation `pod-policies.kyverno.io/autogen-controllers`. You can change the value of the annotation to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates rules for a `Deployment` and `Job` if the annotation is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment,Job`. To disable auto-generating rules for Pod controllers entirely, set it to the value `none`.
 
+In addition to standard Kubernetes Pod controllers, auto-gen also supports custom resources where a Pod template has been embedded. For example, the [OpenKruise](https://openkruise.io/) custom resource `CloneSet` embeds a Pod template and may produce auto-gen rules when `CloneSet` is included in the value of the `pod-policies.kyverno.io/autogen-controllers` annotation.
+
 Kyverno skips generating Pod controller rules whenever the following `resources` fields/objects are specified in a `match` or `exclude` block as these filters may not be applicable to Pod controllers:
 
 * `names`
@@ -166,7 +168,7 @@ spec:
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
 
-Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow_default_namespace/disallow_default_namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
+Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](https://kyverno.io/policies/best-practices/disallow-default-namespace/disallow-default-namespace/) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
 
 ```yaml
 pattern:
