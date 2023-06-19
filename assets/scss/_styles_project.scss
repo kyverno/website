@@ -6,14 +6,42 @@ body {
   min-height: auto;
 }
 
+.collapsing {
+  overflow: initial;
+  height: initial !important;
+  transition: none !important;
+}
+
 .navbar-{
-  &nav {
-    @media (max-width: 992px) {
+  @media (max-width: 992px) {
+    &nav {
       font-size: .875rem;
       .dropdown {
         min-width: inherit;
       }
     }
+    &toggler {
+      display: initial !important;
+      position: absolute;
+      top: 0.75rem;
+      right: 1.5rem;
+    }
+    &collapse &nav{
+      display: none !important;
+      opacity: 0;
+      transition: 1s height cubic-bezier(0.19, 1, 0.22, 1) !important;
+    }
+    &collapse.show &nav{
+      flex-flow: column !important;
+      opacity: 1;
+      display: flex !important;
+      padding-top: 4.5rem !important;
+      width: 80%;
+      padding-left: 0.5rem;
+    }
+  }
+  &collapse {
+    max-width: 100%;
   }
   @media screen and (min-width: 1024px) {
     &expand-md &collapse {
@@ -686,7 +714,6 @@ code.noClass {
 
 .td-navbar .navbar-brand .navbar-logo svg {
   --length: 56px;
-  --top-margin: -5px;
   height: var(--length);
   width: var(--length);
   transform: translateY(var(--top-margin));
@@ -768,7 +795,6 @@ code.noClass {
 
               @include media-breakpoint-down(md) {
                   left: 16px;
-                  width: 80px;
                   height: auto;
                   padding: 6px;
               }
