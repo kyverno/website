@@ -6,6 +6,8 @@ command = "npm install --save-dev autoprefixer && npm install --save-dev postcss
 HUGO_VERSION = "0.114.0"
 HUGO_ENV = "production"
 HUGO_ENABLEGITINFO = "true"
+GO_VERSION = "1.20.5"
+NODE_VERSION = "18.16.0"
 
 [context.split1]
 command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify --enableGitInfo"
@@ -13,12 +15,16 @@ command = "npm install --save-dev autoprefixer && npm install --save-dev postcss
 [context.split1.environment]
 HUGO_VERSION = "0.114.0"
 HUGO_ENV = "production"
+GO_VERSION = "1.20.5"
+NODE_VERSION = "18.16.0"
 
 [context.deploy-preview]
 command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"
 
 [context.deploy-preview.environment]
 HUGO_VERSION = "0.114.0"
+GO_VERSION = "1.20.5"
+NODE_VERSION = "18.16.0"
 
 [context.branch-deploy]
 command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify -b $DEPLOY_PRIME_URL"
