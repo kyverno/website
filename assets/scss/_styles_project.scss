@@ -53,9 +53,10 @@ body {
 
 footer {
   min-height: 150px;
-
+  max-width: 100vw;
+  overflow: hidden;
   @include media-breakpoint-down(md) {
-       min-height: 200px;
+    min-height: 200px;
   }
 }
 
