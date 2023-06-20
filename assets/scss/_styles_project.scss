@@ -12,6 +12,19 @@ body {
   transition: none !important;
 }
 
+$button-types: "success", "primary", "secondary", "warning", "danger";
+
+@each $button-type in $button-types {
+  .btn-#{$button-type} {
+    color: #fff;
+    display: inline-flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.5rem;
+  }
+}
+
 .navbar-{
   @media (max-width: 992px) {
     &nav {
@@ -49,7 +62,6 @@ body {
     }
   }
 }
-
 
 footer {
   min-height: 150px;
