@@ -133,8 +133,8 @@ To create the required Secrets, use the following commands (do not change the Se
 ```sh
 kubectl create ns <namespace>
 
-kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
-kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+kubectl create secret tls kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
+kubectl create secret generic kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
 
 kubectl create secret tls kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair --cert=cleanup-tls.crt --key=cleanup-tls.key -n <namespace>
 kubectl create secret generic kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
@@ -142,8 +142,8 @@ kubectl create secret generic kyverno-cleanup-controller.kyverno.svc.kyverno-tls
 
 Secret | Data | Content
 ------------ | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (admission controller)
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (admission controller)
+`kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (admission controller)
+`kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (admission controller)
 `kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (cleanup controller)
 `kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (cleanup controller)
 
