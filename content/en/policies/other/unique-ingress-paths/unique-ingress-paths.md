@@ -53,8 +53,10 @@ spec:
       preconditions:
         any:
         - key: "{{request.operation || 'BACKGROUND'}}"
-          operator: Equals
-          value: "CREATE"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE
       validate:
         message: >-
           The root path /{{request.object.spec.rules[].http.paths[].path | [0] | to_string(@) | split(@, '/') | [1]}} exists

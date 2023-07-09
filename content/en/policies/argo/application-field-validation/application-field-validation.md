@@ -37,7 +37,7 @@ spec:
         any:
         - resources:
             kinds:
-              - Application
+            - Application
       validate:
         message: >-
           `spec.source.path` OR `spec.source.chart` should be specified but never both.
@@ -55,7 +55,7 @@ spec:
         any:
         - resources:
             kinds:
-              - Application
+            - Application
       validate:
         message: >-
           `spec.destination.server` OR `spec.destination.name` should be specified but never both.

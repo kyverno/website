@@ -47,7 +47,7 @@ spec:
           - Pod
     preconditions:
       any:
-      - key: "{{ request.object.spec.dnsPolicy }}"
+      - key: "{{ request.object.spec.dnsPolicy || '' }}"
         operator: AnyIn
         value: 
         - ClusterFirst
