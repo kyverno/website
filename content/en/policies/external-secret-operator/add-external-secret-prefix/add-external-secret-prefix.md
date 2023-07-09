@@ -39,7 +39,7 @@ spec:
       any:
       - resources:
           kinds:
-          - ExternalSecret
+          - external-secrets.io/v1beta1/ExternalSecret
     mutate:
       foreach: 
       - list: "request.object.spec.data"
