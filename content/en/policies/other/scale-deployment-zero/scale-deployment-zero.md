@@ -46,7 +46,7 @@ spec:
       - key: "{{request.operation || 'BACKGROUND'}}"
         operator: Equals
         value: UPDATE
-      - key: "{{request.object.status.containerStatuses[0].restartCount}}"
+      - key: "{{ sum(request.object.status.containerStatuses[*].restartCount || [`0`]) }}"
         operator: GreaterThan
         value: 1
     context:

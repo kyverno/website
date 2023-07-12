@@ -43,15 +43,17 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equals
-        value: CREATE
+        operator: AnyIn
+        value:
+        - CREATE
+        - UPDATE
     validate:
       message: "The host(s) in spec.rules[].host must match those in spec.tls[].hosts[]."
       deny:
         conditions:
           all:
           - key: "{{ (request.object.spec.rules[].host || `[]`) | sort(@) }}"
-            operator: AllNotIn
+            operator: AnyNotIn
             value: "{{ (request.object.spec.tls[].hosts[] || `[]`) | sort(@) }}"
 
 ```

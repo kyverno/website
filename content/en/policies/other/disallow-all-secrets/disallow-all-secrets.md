@@ -13,7 +13,7 @@ description: >
 
 ```yaml
 apiVersion: kyverno.io/v1
-kind: Policy
+kind: ClusterPolicy
 metadata:
   name: no-secrets
   annotations:

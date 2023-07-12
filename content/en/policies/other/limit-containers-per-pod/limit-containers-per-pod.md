@@ -31,29 +31,7 @@ spec:
   validationFailureAction: audit
   background: false
   rules:
-  - name: limit-containers-per-pod-controllers
-    match:
-      any:
-      - resources:
-          kinds:
-          - Deployment
-          - DaemonSet
-          - Job
-          - StatefulSet
-    preconditions:
-      all:
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equal
-        value: CREATE
-    validate:
-      message: "Pods can only have a maximum of 4 containers."
-      deny:
-        conditions:
-          any:
-          - key: "{{request.object.spec.template.spec.containers[] | length(@)}}"
-            operator: GreaterThan
-            value: "4"
-  - name: limit-containers-per-pod-bare
+  - name: limit-containers-per-pod
     match:
       any:
       - resources:
@@ -62,8 +40,10 @@ spec:
     preconditions:
       all:
       - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equal
-        value: CREATE
+        operator: AnyIn
+        value: 
+        - CREATE
+        - UPDATE
     validate:
       message: "Pods can only have a maximum of 4 containers."
       deny:
@@ -72,24 +52,4 @@ spec:
           - key: "{{request.object.spec.containers[] | length(@)}}"
             operator: GreaterThan
             value: "4"
-  - name: limit-containers-per-pod-cronjob
-    match:
-      any:
-      - resources:
-          kinds:
-          - CronJob
-    preconditions:
-      all:
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equal
-        value: CREATE
-    validate:
-      message: "Pods can only have a maximum of 4 containers."
-      deny:
-        conditions:
-          any:
-          - key: "{{request.object.spec.jobTemplate.spec.template.spec.containers[] | length(@)}}"
-            operator: GreaterThan
-            value: "4"
-
 ```
