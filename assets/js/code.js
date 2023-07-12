@@ -41,7 +41,7 @@ const highlightWrap = 'highlight_wrap'
 const highlight = 'highlight';
 
 function wrapOrphanedPreElements() {
-  const pres = elems('pre');
+  const pres = Array.from(elems('pre')).filter(el => !containsClass(el, 'mermaid'));
   Array.from(pres).forEach(function(pre){
     const parent = pre.parentNode;
     const isOrpaned = !containsClass(parent, highlight) ;
