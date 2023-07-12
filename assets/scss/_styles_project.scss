@@ -429,12 +429,18 @@ code.noClass {
 	overflow-x: auto;
 }
 
-.highlight {
+.td-content .highlight {
 	display: grid;
 	width: 100%;
 	border-radius: 0 0.2rem 0.2rem 0;
 	overflow-x: auto;
 	position: relative;
+  border: none;
+  box-shadow: none;
+  margin: 1rem 0;
+  &, pre {
+    background: transparent;
+  }
 }
 
 .highlight_wrap {
@@ -442,7 +448,7 @@ code.noClass {
 	background: var(--code-bg) !important;
 	border-radius: 0.5rem;
 	position: relative;
-	padding: 0 1rem;
+	padding: 1rem;
 	margin: 2.5rem auto 1rem auto;
   .highlight_wrap {
     padding: 0;
