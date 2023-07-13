@@ -325,10 +325,10 @@ To create the required Secrets, use the following commands (do not change the Se
 
 ```sh
 kubectl create ns <namespace>
-kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-pair self-signed-cert=true -n <namespace>
-kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
-kubectl annotate secret kyverno-svc.kyverno.svc.kyverno-tls-ca self-signed-cert=true -n <namespace>
+kubectl create secret tls kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
+kubectl annotate secret kyverno-svc.<namespace where Kyverno will be installed>.kyverno-tls-pair self-signed-cert=true -n <namespace>
+kubectl create secret generic kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+kubectl annotate secret kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-ca self-signed-cert=true -n <namespace>
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -337,8 +337,8 @@ The annotation on the TLS pair secret is used by Kyverno to identify the use of 
 
 Secret | Data | Content
 ------------ | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
+`kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
+`kyverno-svc.<namespace where Kyverno will be installed>.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
 
 Kyverno uses Secrets created above to setup TLS communication with the kube-apiserver and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
 
