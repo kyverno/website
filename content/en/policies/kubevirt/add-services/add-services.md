@@ -51,9 +51,9 @@ spec:
         spec:
           ports:
           - protocol: TCP
-            targetPort: 22
-            selector:
-              kubevirt.io/domain: "{{request.object.metadata.name}}"
+            port: 22
+          selector:
+            kubevirt.io/domain: "{{request.object.metadata.name}}"
           type: ClusterIP
 
 ```

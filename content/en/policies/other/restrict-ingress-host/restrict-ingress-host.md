@@ -44,9 +44,11 @@ spec:
             jmesPath: "items[].spec.rules[].host"
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: Equals
-          value: CREATE
+        - key: "{{request.operation || 'BACKGROUND'}}"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE
         - key: "{{ request.object.spec.rules[].host }}"
           operator: AnyIn
           value: "{{ hosts }}"
@@ -61,9 +63,11 @@ spec:
               - Ingress
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: Equals
-          value: CREATE
+        - key: "{{request.operation || 'BACKGROUND'}}"
+          operator: AnyIn
+          value:
+          - CREATE
+          - UPDATE
         - key: "{{ request.object.spec.rules[].host | length(@)}}"
           operator: GreaterThan
           value: 1
