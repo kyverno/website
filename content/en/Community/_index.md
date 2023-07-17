@@ -18,12 +18,12 @@ If you already have access to the Kubernetes Slack workspace simply select "sign
 
 To attend our community meetings, join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the agenda and meeting notes. Any member may suggest topics for discussion.
 
-### Community Meeting
+### Nirmata Office Hours
 
-This is a monthly meeting for the broader community in which upcoming features and road map discussions take place:
+This is a monthly meeting for the broader community where the Kyverno maintainers from [Nirmata](https://nirmata.com/) cover one or more topics with preference given to open community discussion, question and answer, etc. Meeting is live streamed on YouTube with recordings available after. Either join in person or attend in view-only mode:
 
-- Monthly on the second Thursday at 9:00 AM PST
-- [Agenda and meeting notes](https://docs.google.com/document/d/10Hu1qTip1KShi8Lf_v9C5UVQtp7vz_WL3WVxltTvdAc/edit#)
+- Monthly on the second Thursday at 7:00 AM PST
+- [Repo](https://github.com/nirmata/office-hours-for-kyverno)
 
 ### Contributors Meeting
 
