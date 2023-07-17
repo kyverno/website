@@ -43,7 +43,7 @@ spec:
 
 Values from resources to be evaluated during a policy may be referenced with `target.*` similar to [mutate existing rules](/docs/writing-policies/mutate/#mutate-existing-resources).
 
-Because Kyverno follows the principal of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](http://localhost:1313/docs/installation/customization/#customizing-permissions) section for more details.
+Because Kyverno follows the principal of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](/docs/installation/customization/#customizing-permissions) section for more details.
 
 {{% alert title="Warning" color="warning" %}}
 Be mindful of the validate policies in `Enforce` mode in your cluster as the CronJobs and their spawned Jobs/Pods may be subjected to and potentially blocked. You may wish to exclude based on the label `app.kubernetes.io/managed-by`.
