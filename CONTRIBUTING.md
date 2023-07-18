@@ -55,7 +55,7 @@ Head over to project repository on GitHub and click the **"Fork"** button. With 
 To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your GitHub ID.
 
 ```
-$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 
 ```
 
