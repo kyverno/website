@@ -78,9 +78,11 @@ Then navigate to the local folder and build the website for local viewing of cha
 cd kyverno-website
 
 
-hugo server -v
+hugo server
 
 ```
+**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
+
 
 5.  **Stage, Commit and Push changes:**
 
