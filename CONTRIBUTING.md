@@ -55,7 +55,7 @@ Head over to project repository on GitHub and click the **"Fork"** button. With 
 To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your GitHub ID.
 
 ```
-$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 
 ```
 
@@ -78,9 +78,11 @@ Then navigate to the local folder and build the website for local viewing of cha
 cd kyverno-website
 
 
-hugo server -v
+hugo server
 
 ```
+**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
+
 
 5.  **Stage, Commit and Push changes:**
 
