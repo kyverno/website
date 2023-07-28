@@ -67,6 +67,7 @@ spec:
     - name: metadataLabels
       variable:
         jmesPath: request.object.metadata.labels
+        default: {}
     - name: metadataLabels
       variable:
         jmesPath: merge(metadataLabels, extraLabels)
