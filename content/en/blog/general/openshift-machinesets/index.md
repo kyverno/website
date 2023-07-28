@@ -1,13 +1,16 @@
 ---
-date: 2023-07-11
-title: "Simplifying OpenShift MachineSet Management Using Kyverno
+date: 2023-07-28
+title: "Simplifying OpenShift MachineSet Management Using Kyverno"
 linkTitle: "Simplifying OpenShift MachineSet Management Using Kyverno"
+author: Andrew Block
 description: "Using Kyverno to mutate OpenShift MachineSet resources for easier automation."
 ---
 
+_(Guest post from Red Hat Distinguished Architect, [Andrew Block](https://twitter.com/sabre1041))_
+
 Managing infrastructure in a declarative fashion is one of the core principles that should be adopted when operating in any environment. In OpenShift, this paradigm for managing the underlying Node infrastructure is accomplished using the [Machine API](https://docs.openshift.com/container-platform/4.13/machine_management/index.html). This extension of the upstream [Cluster API project](https://cluster-api.sigs.k8s.io/) enables the provisioning and management of instances once the OpenShift cluster finishes deploying.
 
-While Machines are individual hosts provisioned as Nodes, cluster administrators typically interact with them via an abstraction -- a MachineSet. A MachineSet represents a group of compute instances that not only share similar traits, such as the definition of the desired cloud provider, but they can be scaled based on the desired number of instances. 
+While Machines are individual hosts provisioned as Nodes, cluster administrators typically interact with them via an abstraction -- a MachineSet. A MachineSet represents a group of compute instances that not only share similar traits, such as the definition of the desired cloud provider, but they can be scaled based on the desired number of instances.
 
 While MachineSets provide a mechanism for managing Machines at scale and represent a set of purpose-built instances within an OpenShift environment, there are limitations that inhibit one from being able to fully manage them declaratively.
 
