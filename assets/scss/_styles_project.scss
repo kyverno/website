@@ -429,6 +429,16 @@ code.noClass {
 	overflow-x: auto;
 }
 
+.td-content code {
+  color: var(--bs-red) !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+}
+
+.td-content pre code {
+  color: var(--bs-code-color) !important;
+}
+
 .td-content .highlight {
 	display: grid;
 	width: 100%;
@@ -482,16 +492,17 @@ code.noClass {
 	opacity: 0.1;
 }
 
-.highlight .highlight {
-	margin: 0;
+.highlight {
+  &, & & {
+    margin: 0 !important;
+  }
 }
 
 .highlight pre {
 	color: var(--text) !important;
 	border-radius: 4px;
 	font-family: 'Monaco', monospace;
-	padding-top: 1.5rem;
-	padding-bottom: 2rem;
+	padding: 0.5rem 0 !important;
   overflow: initial;
   display: initial;
   margin: 0;
