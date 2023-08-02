@@ -829,7 +829,7 @@ spec:
         - resources:
             kinds:
               - Pod
-            operation:
+            operations:
               - CREATE
       mutate:
         foreach: 
