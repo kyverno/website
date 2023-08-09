@@ -46,10 +46,10 @@ results:
 
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
 
-Policy reports are created in a 1:1 relationship with a Kyverno policy. The naming follows the convention `<policy_type>-<policy_name>` where `<report_type>` uses the alias `pol` (for `Policy`) or `cpol` (for `ClusterPolicy`).
+Policy reports are created in a 1:1 relationship with a Kyverno policy. The naming follows the convention `<policy_type>-<policy_name>` where `<policy_type>` uses the alias `pol` (for `Policy`) or `cpol` (for `ClusterPolicy`).
 
 {{% alert title="Note" color="info" %}}
-Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or look at events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
+Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
 Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization/#container-flags) section.
@@ -147,7 +147,6 @@ timestamp:
   nanos: 0
   seconds: 1.666095335e+09
 ```
-
 
 ## Report internals
 
