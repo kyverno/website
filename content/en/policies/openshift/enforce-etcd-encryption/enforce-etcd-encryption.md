@@ -5,7 +5,7 @@ version: 1.6.0
 subject: APIServer
 policyType: "validate"
 description: >
-    Encrption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.
+    Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.
 ---
 
 ## Policy Definition
@@ -25,7 +25,7 @@ metadata:
     kyverno.io/kubernetes-version: "1.20"
     policies.kyverno.io/subject: APIServer
     policies.kyverno.io/description: >-
-      Encrption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.
+      Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.
 spec:
   validationFailureAction: enforce
   background: true
