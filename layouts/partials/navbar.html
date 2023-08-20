@@ -14,7 +14,7 @@
 		<ul class="navbar-nav ml-auto pt-4 pt-md-0 my-2 my-md-1">
 			{{ $p := . }}
 			{{ range .Site.Menus.main }}
-			<li class="nav-item mr-2 mr-lg-4 mt-1 mt-lg-0">
+			<li class="nav-item mr-2 ml-5 pl-5 mr-lg-4 mt-1 mt-lg-0">
 				{{ $active := or ($p.IsMenuCurrent "main" .) ($p.HasMenuCurrent "main" .) }}
 				{{ with .Page }}
 				{{ $active = or $active ( $.IsDescendant .)  }}
