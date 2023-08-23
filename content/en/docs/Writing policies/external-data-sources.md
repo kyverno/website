@@ -224,7 +224,7 @@ rules:
 
 Calls to the Kubernetes API server may also perform `POST` operations in addition to `GET` which is the default method. The returned data from the API server can then be used for further policy decisions.
 
-For example, this snippet below shows making a call to the [SubjectAccessReview API](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/authorization-resources/subject-access-review-v1/) to determine if an actor is authorized. Performing a `POST` operation requires specifying the `method` field and the `data` object with the contents of the request given as a list of key/value pairs.
+For example, this snippet below shows making a call to the [SubjectAccessReview API](https://kubernetes.io/docs/reference/kubernetes-api/authorization-resources/subject-access-review-v1/) to determine if an actor is authorized. Performing a `POST` operation requires specifying the `method` field and the `data` object with the contents of the request given as a list of key/value pairs.
 
 ```yaml
 context:

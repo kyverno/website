@@ -53,11 +53,27 @@ X.509v3 Root CA Certificate (RSA 2048) [Serial: 0]
           to:  2024-04-13T19:33:37Z
 ```
 
+#### Certificates rotation
+
+By default, Kyverno will generate and manage certificates. CA certificates validity is one year and TLS certificates validity is 150 days.
+
+At a minimum, managed certificates are checked for validity every 12 hours. Additionally, validity checks are performed when events occur on secrets containing the managed certificates.
+
+The renewal process runs as follows:
+1. Remove expired certificates contained in the secret
+1. Check if remaining certificates will become invalid in less than 60 hours
+1. If needed, generate a new certificate with the validity documented above
+1. The new certificates is added to the underlying secret along with current certificatess that are still valid
+1. Reconfigure webhooks with the new certificates bundle
+1. Update the Kyverno server to use the new certificate
+
+Basically, certificates will be renewed approximately 60 hours before expiry.
+
 #### Custom certificates
 
-You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign a certificate. Once you have a CA and X.509 certificate-key pair, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
+You can install your own CA-signed certificate, or generate a self-signed CA and use it to sign certificates for admission and cleanup controllers. Once you have a CA and X.509 certificate-key pairs, you can install these as Kubernetes Secrets in your cluster. If Kyverno finds these Secrets, it uses them, otherwise it will fall back on the default certificate management method. When you bring your own certificates, it is your responsibility to manage the regeneration/rotation process. Only RSA is supported for the CA and leaf certificates.
 
-##### Generate a self-signed CA and signed certificate-key pair
+##### Generate a self-signed CA and signed certificate-key pairs
 
 {{% alert title="Note" color="warning" %}}
 Using a separate self-signed root CA is difficult to manage and not recommended for production use.
@@ -65,20 +81,27 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Below is a process which shows how to create a self-signed root CA, and generate a signed certificate and key using [step CLI](https://smallstep.com/cli/):
+Below is a process which shows how to create a self-signed root CA, and generate a signed certificates and keys using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 
 ```sh
-step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password
+step certificate create kyverno-ca rootCA.crt rootCA.key --profile root-ca --insecure --no-password --kty=RSA
 ```
 
-2. Generate a leaf certificate with a five-year expiration
+2. Generate leaf certificates with a five-year expiration
 
 ```sh
 step certificate create kyverno-svc tls.crt tls.key --profile leaf \
             --ca rootCA.crt --ca-key rootCA.key \
-            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h --insecure --no-password
+            --san kyverno-svc --san kyverno-svc.kyverno --san kyverno-svc.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
+
+
+step certificate create kyverno-cleanup-controller cleanup-tls.crt cleanup-tls.key --profile leaf \
+            --ca rootCA.crt --ca-key rootCA.key \
+            --san kyverno-cleanup-controller --san kyverno-cleanup-controller.kyverno --san kyverno-cleanup-controller.kyverno.svc --not-after 43200h \
+            --insecure --no-password --kty=RSA
 ```
 
 3. Verify the contents of the certificate
@@ -102,23 +125,29 @@ You can now use the following files to create Secrets:
 * `rootCA.crt`
 * `tls.crt`
 * `tls.key`
+* `cleanup-tls.crt`
+* `cleanup-tls.key`
 
 To create the required Secrets, use the following commands (do not change the Secret names):
 
 ```sh
 kubectl create ns <namespace>
+
 kubectl create secret tls kyverno-svc.kyverno.svc.kyverno-tls-pair --cert=tls.crt --key=tls.key -n <namespace>
 kubectl create secret generic kyverno-svc.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
+
+kubectl create secret tls kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair --cert=cleanup-tls.crt --key=cleanup-tls.key -n <namespace>
+kubectl create secret generic kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca --from-file=rootCA.crt -n <namespace>
 ```
 
 Secret | Data | Content
 ------------ | ------------- | -------------
-`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate
-`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate
+`kyverno-svc.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (admission controller)
+`kyverno-svc.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (admission controller)
+`kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair` | tls.key & tls.crt  | key and signed certificate (cleanup controller)
+`kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca` | rootCA.crt | root CA used to sign the certificate (cleanup controller)
 
-Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission webhook configurations.
-
-This process has been automated for you with a simple script that generates a self-signed CA, a TLS certificate-key pair, and the corresponding Kubernetes secrets: [helper script](https://github.com/kyverno/kyverno/blob/main/scripts/generate-self-signed-cert-and-k8secrets.sh)
+Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission and cleanup webhook configurations.
 
 ##### Install Kyverno
 
@@ -281,9 +310,66 @@ The following flags can be used to control the advanced behavior of the various 
 51. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
 52. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
 53. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
-54. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-55. `webhookTimeout` (A): specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
-56. `ttlReconciliationInterval` (C): specifies the interval after which the resource controller reconciliation should occur for the ttl-controller-manager.
+55. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+56. `webhookTimeout` (A): specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+57. `ttlReconciliationInterval` (C): specifies the interval after which the resource controller reconciliation should occur for the ttl-controller-manager.
+58. `aggregateReports` (R): enables the report aggregating ability of AdmissionReports (1.10.2+). Default is `true`.
+59. `allowInsecureRegistry` (ABR): allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
+60. `alsologtostderr` (ABCR): log to standard error as well as files (no effect when -logtostderr=true)
+61. `autoUpdateWebhooks` (A): set this flag to `false` to disable auto-configuration of the webhook. Default is `true`. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard.
+62. `backgroundServiceAccountName` (A): the name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.
+63. `backgroundScan` (R): enables/disables background reporting scans. Has no effect on background reconciliation by the background controller. `true` by default.
+64. `backgroundScanInterval` (R): sets the time interval when periodic background scans for reporting take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
+65. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time.
+66. `clientRateLimitBurst` (ABCR): configures the maximum burst for throttling. Uses the client default if zero. Default is `300`.
+67. `clientRateLimitQPS` (ABCR): configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. Default is `300`.
+68. `disableMetrics` (ABCR): specifies whether to enable exposing the metrics. Default is `false`.
+69. `dumpPayload` (AC): toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
+70. `enableConfigMapCaching` (ABR): enables the ConfigMap caching feature. Defaults to `true`.
+71. `enableDeferredLoading` (A): enables deferred (lazy) loading of variables (1.10.1+). Defaults to `true`. Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0.
+72. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
+73. `enableTracing` (ABCR): set to enable exposing traces. Default is `false`.
+74. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted.
+75. `forceFailurePolicyIgnore` (A): set to force Failure Policy to `Ignore`. Default is `false`.
+76. `genWorkers` (B): the number of workers for processing generate policies concurrently. Default is `10`.
+77. `imagePullSecrets` (ABR): specifies secret resource names for image registry access credentials. Only a single value accepted currently.
+78. `imageSignatureRepository` (AR): specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
+79. `kubeconfig` (ABCR): specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate. Only used when Kyverno is running outside of the cluster in which it services admission requests.
+80. `leaderElectionRetryPeriod` (ABCR): controls the leader election renewal frequency. Default is `2s`.
+81. `log_backtrace_at` (ABCR): when logging hits line file:N, emit a stack trace.
+82. `log_dir` (ABCR): if non-empty, write log files in this directory (no effect when -logtostderr=true).
+83. `log_file` (ABCR): if non-empty, use this log file (no effect when -logtostderr=true).
+84. `log_file_max_size` (ABCR): defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. Default is `1800`.
+85. `loggingFormat` (ABCR): determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
+86. `logtostderr` (ABCR): log to standard error instead of files. Default is `true`.
+87. `maxQueuedEvents` (ABR): defines the upper limit of events that are queued internally. Default is `1000`.
+88. `metricsPort` (ABCR): specifies the port to expose prometheus metrics. Default is `8000`.
+89. `omit-events` (ABR): specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is undefined (all events will be emitted).
+90. `one_output` (ABCR): If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true).
+91. `otelCollector` (ABCR): sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
+92. `otelConfig` (ABCR): sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
+93. `policyReports` (R): enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. Default is `true`.
+94. `profile` (ABCR): setting this flag to `true` will enable profiling. Default is `false`.
+95. `profileAddress` (ABCR): Configures the address of the profiling server. Default is `""`.
+96. `profilePort` (ABCR): specifies port to enable profiling. Default is `6060`.
+97. `protectManagedResources` (A): protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
+98. `registryCredentialHelpers` (ABR): enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`.
+99. `reportsChunkSize` (R): maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
+100. `serverIP` (AC): like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
+101. `servicePort` (AC): port used by the Kyverno Service resource and for webhook configurations. Default is `443`.
+102. `skipResourceFilters` (R): defines whether to obey the ConfigMap's resourceFilters when performing background report scans. Default is `true`. When set to `true`, anything defined in the resourceFilters will not be excluded in background reports. Ex., when set to `true` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will be produced for anything in the `kube-system` Namespace. Set this value to `false` to obey resourceFilters in background scan reports. Ex., when set to `false` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will NOT be produced for anything in the `kube-system` Namespace.
+103. `skip_headers` (ABCR): if true, avoid header prefixes in the log messages.
+104. `skip_log_headers` (ABCR): if true, avoid headers when opening log files (no effect when -logtostderr=true).
+105. `stderrthreshold` (ABCR): logs at or above this threshold go to stderr when writing to files and stderr (no effect when -logtostderr=true or -alsologtostderr=false). Default is `2`.
+106. `tracingAddress` (ABCR): tracing receiver address, defaults to `''`.
+107. `tracingCreds` (ABCR): set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used.
+108. `tracingPort` (ABCR): tracing receiver port. Default is `"4317"`.
+109. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+110. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+111. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
+112. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+113. `webhookTimeout` (A): specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+
 
 ### Policy Report access
 

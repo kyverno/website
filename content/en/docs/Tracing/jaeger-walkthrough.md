@@ -68,7 +68,7 @@ Jaeger is made of multiple components and is capable of using multiple storage s
 We can deploy Jaeger using Helm with the following command:
 
 ```shell
-helm upgrade --install jaeger --namespace monitoring --create-namespace --wait \
+helm install jaeger --namespace monitoring --create-namespace --wait \
   --repo https://jaegertracing.github.io/helm-charts jaeger \
   --values - <<EOF
 storage:
@@ -99,20 +99,37 @@ We now need to install Kyverno with tracing enabled and pointing to our Jaeger c
 We can deploy Kyverno using Helm with the following command:
 
 ```shell
-helm upgrade --install kyverno --namespace kyverno --create-namespace --wait \
+helm install kyverno --namespace kyverno --create-namespace --wait \
   --repo https://kyverno.github.io/kyverno kyverno \
   --values - <<EOF
-# kyverno controller
-extraArgs:
-  # enable tracing
-  - --enableTracing
-  # jaeger backend url
-  - --tracingAddress=jaeger-collector.monitoring
-  # jaeger backend port for opentelemetry traces
-  - --tracingPort=4317
+admissionController:
+  tracing:
+    # enable tracing
+    enabled: true
+    # jaeger backend url
+    address: jaeger-collector.monitoring
+    # jaeger backend port for opentelemetry traces
+    port: 4317
 
-# cleanup controller
+backgroundController:
+  tracing:
+    # enable tracing
+    enabled: true
+    # jaeger backend url
+    address: jaeger-collector.monitoring
+    # jaeger backend port for opentelemetry traces
+    port: 4317
+
 cleanupController:
+  tracing:
+    # enable tracing
+    enabled: true
+    # jaeger backend url
+    address: jaeger-collector.monitoring
+    # jaeger backend port for opentelemetry traces
+    port: 4317
+
+reportsController:
   tracing:
     # enable tracing
     enabled: true
@@ -130,7 +147,7 @@ Finally we need to deploy some policies in the cluster so that Kyverno can confi
 We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` profile of PSS) using the following command:
 
 ```shell
-helm upgrade --install kyverno-policies --namespace kyverno --create-namespace --wait \
+helm install kyverno-policies --namespace kyverno --create-namespace --wait \
   --repo https://kyverno.github.io/kyverno kyverno-policies \
   --values - <<EOF
 validationFailureAction: Enforce

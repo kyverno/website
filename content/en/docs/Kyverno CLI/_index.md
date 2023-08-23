@@ -39,11 +39,11 @@ brew install kyverno
 
 ### Manual Binary Installation
 
-The Kyverno CLI may also be installed by manually downloading the compiled binary available on the [releases page](https://github.com/kyverno/kyverno/releases). An example of installing the Kyverno CLI v1.7.2 on a Linux x86_64 system is shown below.
+The Kyverno CLI may also be installed by manually downloading the compiled binary available on the [releases page](https://github.com/kyverno/kyverno/releases). An example of installing the Kyverno CLI v1.10.0 on a Linux x86_64 system is shown below.
 
 ```sh
-curl -LO https://github.com/kyverno/kyverno/releases/download/v1.7.2/kyverno-cli_v1.7.2_linux_x86_64.tar.gz
-tar -xvf kyverno-cli_v1.7.2_linux_x86_64.tar.gz
+curl -LO https://github.com/kyverno/kyverno/releases/download/v1.10.0/kyverno-cli_v1.10.0_linux_x86_64.tar.gz
+tar -xvf kyverno-cli_v1.10.0_linux_x86_64.tar.gz
 sudo cp kyverno /usr/local/bin/
 ```
 
@@ -55,7 +55,7 @@ You can also build the CLI binary from the Git repository (requires Go).
 git clone https://github.com/kyverno/kyverno
 cd kyverno
 make build-cli
-mv ./cmd/cli/kubectl-kyverno/kyverno /usr/local/bin/kyverno
+sudo mv ./cmd/cli/kubectl-kyverno/kubectl-kyverno /usr/local/bin/
 ```
 
 ## CLI Commands

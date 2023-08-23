@@ -16,7 +16,7 @@ In order to position yourself for success with JMESPath expressions inside Kyver
 
 2. `kyverno`, the Kyverno CLI [here](https://github.com/kyverno/kyverno/releases) or via [krew](https://krew.sigs.k8s.io/). Kyverno acts as a webhook (when run in-cluster) but also as a standalone CLI when run outside giving you the ability to test policies and, more recently, to test custom JMESPath filters which are endemic to only Kyverno. With the `jp` subcommand, it contains the functionality present in the upstream `jp` [CLI tool](https://github.com/jmespath/jp) and also newer capabilities. It effectively allows you to test out JMESPath expressions live in a command line interface by passing in a JSON document and seeing the results without having to repeatedly test Kyverno policies.
 
-3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand's `-f` flag also accepts YAML files in addition to JSON.
+3. `yq`, the YAML processor [here](https://github.com/mikefarah/yq). `yq` allows reading from a Kubernetes manifest and converting to JSON, which is helpful in order to be piped to `jp` in order to test expressions. The Kyverno CLI `jp` subcommand also accepts YAML files in addition to JSON.
 
 4. `jq`, the JSON processor [here](https://stedolan.github.io/jq/download/). `jq` is an extremely popular tool for working with JSON documents and has its own filter ability, but it's also useful in order to format JSON on the terminal for better visuals.
 
@@ -222,7 +222,7 @@ spec:
 Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/#jp).
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.containers[]"
+$ kyverno jp query -i pod.yaml "spec.containers[]"
 [
   {
     "image": "busybox",
@@ -238,7 +238,7 @@ $ kyverno jp -f pod.yaml "spec.containers[]"
 The above output shows the return of an array of objects as expected where each object is the container. But by using a [multi-select list](https://jmespath.org/specification.html#multiselect-list), the `initContainer[]` array may also be parsed.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers]"
 [
   [
     {
@@ -262,7 +262,7 @@ $ kyverno jp -f pod.yaml "spec.[initContainers, containers]"
 In the above, a multi-select list `spec.[initContainers, containers]` "wraps" the results of both `initContainers[]` and `containers[]` in parent array thereby producing an array consisting of multiple arrays. By using the [flatten operator](https://jmespath.org/specification.html#flatten-operator), these results can be collapsed into just a single array.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers][]"
 [
   {
     "image": "redis",
@@ -282,7 +282,7 @@ $ kyverno jp -f pod.yaml "spec.[initContainers, containers][]"
 With just a single array in which all containers, regardless of where they are, occur in a single hierarchy, it becomes easier to process the data for relevant fields and take action. For example, if you wished to write a policy which forbid using the image named `busybox` in a Pod, by flattening all containers it becomes easier to isolate just the `image` field. Because it does not matter where `busybox` may be found, if found the entire Pod must be rejected. Therefore, while loops or other methods may work, a more efficient method is to simply gather all containers across the Pod and flatten them.
 
 ```sh
-$ kyverno jp -f pod.yaml "spec.[initContainers, containers][].image"
+$ kyverno jp query -i pod.yaml "spec.[initContainers, containers][].image"
 [
   "redis",
   "busybox",
@@ -715,7 +715,7 @@ For example, given the following map below
 the `items()` filter can transform this into an array of objects which assigns a key and value of arbitrary name to each of the entries in the map.
 
 ```sh
-$ echo '{"team" : "apple" , "organization" : "banana" }' | k kyverno jp "items(@, 'key', 'value')"
+$ echo '{"team" : "apple" , "organization" : "banana" }' | kyverno jp query "items(@, 'key', 'value')"
 [
   {
     "key": "organization",
@@ -834,7 +834,7 @@ spec:
 the final `spec.forProvider.tagging.tagSet[]` will appear as below. Note that as of Kubernetes 1.21, the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#automatic-labelling) with key `kubernetes.io/metadata.name` and value equal to that of the Namespace name is automatically added to all Namespaces, hence the discrepancy when comparing Namespace with Bucket resource manifests above.
 
 ```sh
-$ k get bucket lambda-bucket -o json | k kyverno jp "spec.forProvider.tagging.tagSet[]"
+$ kubectl get bucket lambda-bucket -o json | kyverno jp query "spec.forProvider.tagging.tagSet[]"
 [
   {
     "key": "s3-bucket",
@@ -1102,7 +1102,7 @@ spec:
 you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_list()` filter will produce a map containing those entries.
 
 ```sh
-$ k kyverno jp -f pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
+$ kyverno jp query -i pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
 {
   "KEY": "123-456-789",
   "endpoint": "licensing.corp.org"
@@ -1175,7 +1175,7 @@ spec:
 after applying the policy the resulting label set on the Pod appears as shown below.
 
 ```sh
-$ k get pod/object-from-list-demo -o json | k kyverno jp "metadata.labels"
+$ kubectl get pod/object-from-list-demo -o json | kyverno jp query "metadata.labels"
 {
   "ENDPOINT": "licensing.corp.org",
   "KEY": "123-456-789",

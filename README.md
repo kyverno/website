@@ -18,24 +18,30 @@ To contribute changes, use the [fork & pull](https://movi.hashnode.dev/how-to-su
 
 1\. First create a [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of the Kyverno website repository to your GitHub account. By default, the forked repository will be named `website` but can be changed in the settings for your repository if desired. You will later created a PR (pull request) using this fork.
 
-2\. Next, create a local clone with the `--recurse-submodules` option:
+2\. Next, create a local clone using the command:
 
 ```sh
-git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/ --recurse-submodules
+git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 ```
 
 3\. Then navigate to the local folder and build the website for local viewing of changes:
 
 ```sh
 cd kyverno-website
-hugo server -v
+hugo server
 ```
+**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
 
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
 
 ## Update Docsy theme
 
+The project uses [Hugo Modules](https://gohugo.io/hugo-modules/) to manage the theme:
+
 Run `hugo mod get -u ./...` from project root.
+
+To clean the module cache use `hugo mod clean`.
+
 
 ## Rendering Policies to Markdown
 

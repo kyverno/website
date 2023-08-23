@@ -32,7 +32,7 @@ Policies are managed as Kubernetes resources and **no new language is required**
 
 This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
 
-Kyverno policies can **validate, mutate, generate, and cleanup** Kubernetes resources plus ensure OCI image **supply chain security**.
+Kyverno policies can **validate, mutate, generate, and cleanup** Kubernetes resources, and **verify image** signatures and artifacts to help secure the software supply chain.
 
 The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
 
@@ -72,7 +72,7 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 {{% /blocks/lead %}}
 
 
-{{< blocks/lead color="dark" >}}
+{{% blocks/lead color="dark" %}}
 
 ## Kyverno is a CNCF Incubating Project { class="text-center mb-4" }
 
@@ -89,4 +89,4 @@ The Kyverno CLI can be used to test policies and validate resources as part of a
 	<small class="text-white">The Linux Foundation® (TLF) has registered trademarks and uses trademarks. For a list of TLF trademarks, see <a href="https://www.linuxfoundation.org/trademark-usage/">Trademark Usage</a>.</small>
 </div>
 
-{{< /blocks/lead >}}
+{{% /blocks/lead %}}

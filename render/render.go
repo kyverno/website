@@ -41,11 +41,21 @@ func yamlContainsPolicy(rawString string, substring string) bool {
 	return hasString >= 0
 }
 
+func yamlContainsKyvernoCR(rawString string, apiVersion string, kind string) bool {
+	hasApiVersion := strings.Index(rawString, ("apiVersion:" + apiVersion))
+	hasKind := strings.Index(rawString, ("kind:" + kind))
+	return hasApiVersion >=0 && hasKind>=0
+}
+
 func getPolicyType(yaml string) string {
 	generate := "generate"
 	mutate := "mutate"
 	validate := "validate"
 	verifyImages := "verifyImages"
+	cleanUp := "cleanUp"
+	cleanUpApiVersion := "kyverno.io/v2alpha1"
+	clusterCleanUpKind := "ClusterCleanupPolicy"
+	namespaceCleanUpKind := "CleanupPolicy"
 
 	newYAML := strings.Split(yaml, "spec:")[1]
 
@@ -55,8 +65,12 @@ func getPolicyType(yaml string) string {
 		return mutate
 	} else if yamlContainsPolicy(newYAML, validate) {
 		return validate
-	} else {
+	} else if yamlContainsPolicy(newYAML, verifyImages) {
 		return verifyImages
+	} else if yamlContainsKyvernoCR(yaml, cleanUpApiVersion, clusterCleanUpKind) || yamlContainsKyvernoCR(yaml, cleanUpApiVersion, namespaceCleanUpKind)  {
+		return cleanUp
+	} else {
+		return ""
 	}
 }
 
@@ -64,6 +78,7 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *po
 	if !hasKyvernoAnnotation(p){
 		return nil
 	}
+
 	return &policyData{
 		Title:  buildTitle(p),
 		Policy: p,
@@ -152,7 +167,7 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
-		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy") {
+		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy" || policy.TypeMeta.Kind == "ClusterCleanupPolicy") {
 			continue
 		}
 

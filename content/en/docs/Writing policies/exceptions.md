@@ -124,7 +124,7 @@ exceptions:
   - host-namespaces
 ```
 
-PolicyExceptions also support background scanning. An exception which defines `spec.background=true` will influence [Policy Reports](/docs/policy-reports/) when the exception is processed, allowing report results to change from a `Fail` to a `Skip` result.
+PolicyExceptions also support background scanning, enabled by default. An exception which either explicitly defines `spec.background=true` or does not define the field at all, will influence [Policy Reports](/docs/policy-reports/) when the exception is processed, allowing report results to change from a `Fail` to a `Skip` result. When background scans are enabled, PolicyExceptions forbid matching on the same types of fields as those forbidden by validate rules including Roles, ClusterRoles, and user information.
 
 Wildcards (`"*"`) are supported in the value of the `ruleNames[]` field allowing exception from any/all rules in the policy without having to name them explicitly.
 

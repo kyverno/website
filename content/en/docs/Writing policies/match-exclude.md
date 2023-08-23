@@ -74,11 +74,15 @@ spec:
           - Service
           names: 
           - staging
+          operations:
+          - CREATE
       - resources:
           kinds: 
           - Service
           namespaces:
           - prod
+          operations:
+          - CREATE
 ```
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
@@ -95,9 +99,13 @@ spec:
           - "staging"
           kinds:
           - Service
+          operations:
+          - CREATE
       - resources:
           kinds:
           - Service
+          operations:
+          - CREATE
         subjects:
         - kind: User
           name: dave
@@ -203,6 +211,9 @@ spec:
             kinds:
             - Deployment
             - StatefulSet
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -235,6 +246,9 @@ spec:
             - "mongo*"
             - "postgres*"
             # Optional list of namespaces. Supports wildcards (* and ?)
+            operations:
+            - CREATE
+            - UPDATE
             namespaces:
             - "dev*"
             - test
@@ -274,6 +288,9 @@ spec:
             # OR inside list of kinds
             kinds:
             - Deployment
+            operations:
+            - CREATE
+            - UPDATE
             namespaceSelector:
               matchExpressions:
                 - key: type 
@@ -300,6 +317,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
       exclude:
         any:
         - clusterRoles:
@@ -323,6 +343,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
       exclude:
         any:
         - resources:
@@ -347,6 +370,9 @@ spec:
         - resources:
             kind:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -374,6 +400,9 @@ spec:
         - resources:
             kinds:
             - Pod
+            operations:
+            - CREATE
+            - UPDATE
             selector:
               matchLabels:
                 app: critical
@@ -401,4 +430,7 @@ spec:
               imageregistry: "https://hub.docker.com/"
             kinds:
               - Pod
+            operations:
+            - CREATE
+            - UPDATE
 ```

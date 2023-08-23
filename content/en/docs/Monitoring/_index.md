@@ -18,20 +18,25 @@ When you install Kyverno via Helm, additional services are created inside the `k
 ```sh
 $ values.yaml
 
-...
-metricsService:
-  create: true
-  type: ClusterIP
-  ## Kyverno's metrics server will be exposed at this port
-  port: 8000
-  ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
-  nodePort:
-  ## Provide any additional annotations which may be required. This can be used to
-  ## set the LoadBalancer service type to internal only.
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
-  ##
-  annotations: {}
-...
+admissionController:
+  metricsService:
+    create: true
+  # ...
+
+backgroundController:
+  metricsService:
+    create: true
+  # ...
+
+cleanupController:
+  metricsService:
+    create: true
+  # ...
+
+reportsController:
+  metricsService:
+    create: true
+  # ...
 ```
 
 By default, the service type is going to be `ClusterIP` meaning that metrics can only be scraped by a Prometheus server sitting inside the cluster.
@@ -43,39 +48,73 @@ Services can be exposed to external clients via an Ingress, or using `LoadBalanc
 To expose your `kyverno-svc-metrics` service publicly as `NodePort` at host's/node's port number 8000, you can configure your `values.yaml` before Helm installation as follows:
 
 ```sh
-...
-metricsService:
-  create: true
-  type: NodePort
-  ## Kyverno's metrics server will be exposed at this port
-  port: 8000
-  ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
-  nodePort: 8000
-  ## Provide any additional annotations which may be required. This can be used to
-  ## set the LoadBalancer service type to internal only.
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
-  ##
-  annotations: {}
-...
+admissionController:
+  metricsService:
+    create: true
+    type: NodePort
+    port: 8000
+    nodePort: 8000
+  # ...
+
+backgroundController:
+  metricsService:
+    create: true
+    type: NodePort
+    port: 8000
+    nodePort: 8000
+  # ...
+
+cleanupController:
+  metricsService:
+    create: true
+    type: NodePort
+    port: 8000
+    nodePort: 8000
+  # ...
+
+reportsController:
+  metricsService:
+    create: true
+    type: NodePort
+    port: 8000
+    nodePort: 8000
+  # ...
 ```
 
 To expose the `kyverno-svc-metrics` service using a `LoadBalancer` type, you can configure your `values.yaml` before Helm installation as follows:
 
 ```sh
-...
-metricsService:
-  create: true
-  type: LoadBalancer
-  ## Kyverno's metrics server will be exposed at this port
-  port: 8000
-  ## The Node's port which will allow access Kyverno's metrics at the host level. Only used if service.type is NodePort.
+admissionController:
+  metricsService:
+    create: true
+    type: LoadBalancer
+    port: 8000
+    nodePort: 
+  # ...
+
+backgroundController:
+  metricsService:
+    create: true
+    type: LoadBalancer
+    port: 8000
+    nodePort: 
+  # ...
+
+cleanupController:
+  metricsService:
+    create: true
+    type: LoadBalancer
+    port: 8000
+    nodePort: 
+  # ...
+
+reportsController:
+  metricsService:
+    create: true
+    type: LoadBalancer
+    port: 8000
   nodePort: 
-  ## Provide any additional annotations which may be required. This can be used to
-  ## set the LoadBalancer service type to internal only.
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
-  ##
-  annotations: {}
-...
+  # ...
 ```
 
 ## Configuring the metrics
@@ -86,14 +125,13 @@ You can configure which Namespaces you want to `include` and/or `exclude` for me
 
 ```sh
 ...
-config:
-  metricsConfig:
-    namespaces: {
-      "include": [],
-      "exclude": []
-    }
-  # 'namespaces.include': list of namespaces to capture metrics for. Default: all namespaces included.
-  # 'namespaces.exclude': list of namespaces to NOT capture metrics for. Default: [], none of the namespaces excluded.
+metricsConfig:
+  namespaces: {
+    "include": [],
+    "exclude": []
+  }
+# 'namespaces.include': list of namespaces to capture metrics for. Default: all namespaces included.
+# 'namespaces.exclude': list of namespaces to NOT capture metrics for. Default: [], none of the namespaces excluded.
 ...
 ```
 
