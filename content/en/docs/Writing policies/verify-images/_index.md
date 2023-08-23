@@ -49,3 +49,100 @@ The `imageRegistryCredentials.secret` specifies a list of secrets that are provi
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
+### VerifyImage TTL cache:
+Applying a verifyImage policy to a resource triggers image verification on every occurrence. To enhance and streamline this verification process, Kyverno employs a cached approach for verified images, utilizing a TTL concept. This is grounded in the principle that once an image is confirmed as valid, its verification status can persist for a set duration. The cache is initially set to accommodate up to 1000 entries, with a default TTL of 60 minutes. Nevertheless, users retain the flexibility to adjust these parameters in alignment with their particular needs.
+
+User can set the following flags values in kyverno deployment : <br>
+`imageVerifyCacheEnabled` : Whether to use a TTL cache for storing verified images by default cache is set to true. <br>
+`imageVerifyCacheMaxSize` : Max size limit for the TTL cache, 0 means default 1000 size limit. <br>
+`imageVerifyCacheTTLDuration` : Max TTL value for a cache, 0 means default 1 hour TTL. ( Here the ttl values should be entered in minutes.) <br>
+
+#### Cosign/Notary signature and attestation verification using TTL cache:
+
+Cosider the following ClusterPolicy which contains a verifyImage rule. This policy checks the images in the repo `ghcr.io/kyverno/test-verify-image:*` and ensures that it has been signed by verifying its signature against the provided cosign.pub key :
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-verify-images
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: secret-in-keys
+spec:
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+  - name: check-secret-in-keys
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    verifyImages:
+    - imageReferences:
+      - "ghcr.io/kyverno/test-verify-image:*"
+      attestors:
+      - entries:
+        - keys:
+            secret:
+              name: testsecret
+              namespace: test-verify-images
+            rekor:
+              url: https://rekor.sigstore.dev
+              ignoreTlog: true
+```
+We are currently utilizing the `cosign.pub` key sourced from the mentioned secret. However, it's also possible to directly provide the `cosign.pub` key within the cluster policy :
+```apiVersion: v1
+kind: Secret
+metadata:
+  name: testsecret
+  namespace: test-verify-images
+data:
+  cosign.pub: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFOG5YUmg5NTBJWmJSajhSYS9OOXNicU9QWnJmTQo1L0tBUU4wL0tqSGNvcm0vSjV5Y3RWZDdpRWNuZXNzUlFqVTkxN2htS082SldWR0hwRGd1SXlha1pBPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t
+type: Opaque
+```
+
+After creating this policy now create the following pod resource : 
+```apiVersion: v1
+kind: Pod
+metadata:
+  name: test-secret-pod
+  namespace: test-verify-images
+spec:
+  containers:
+  - image: ghcr.io/kyverno/test-verify-image:signed
+    name: test-secret
+```
+
+Inside this pod, there's a container named *test-secret* that holds the image `ghcr.io/kyverno/test-verify-image:signed`. The said image has been signed using the cosign key pair as the one employed in our policy.
+After applying this pod now generate the Kyverno log by using : 
+```
+kubectl logs deployment/kyverno-admission-controller -n kyverno
+```
+Now You can check in logs that image verify operation has taken around `15 seconds`.
+
+```
+Time taken by the image verify operation : %!(EXTRA time.Duration=8.7720561s)
+```
+Now create another Pod resource by using the same image. 
+```apiVersion: v1
+kind: Pod
+metadata:
+  name: test-secret-pod-2
+  namespace: test-verify-images
+spec:
+  containers:
+  - image: ghcr.io/kyverno/test-verify-image:signed
+    name: test-secret-2
+```
+Once you have applied this new Pod, regenerate kyverno logs using the identical command. Then, examine the logs to verify that the image verification operation was completed within a mere `39 microseconds`.
+```
+Time taken by the image verify operation : %!(EXTRA time.Duration=39.892µs)
+```
+Imagine making thousands of similar calls; in such a scenario, substantial time savings could be achieved.
+
+Note : Similarly we can verify the notary signature and attestations by using TTL.
