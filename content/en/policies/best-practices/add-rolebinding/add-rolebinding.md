@@ -45,6 +45,7 @@ spec:
           - cluster-admin
       generate:
         synchronize: true
+        apiVersion: rbac.authorization.k8s.io/v1
         kind: RoleBinding
         name: "{{request.userInfo.username}}-admin-binding"
         namespace: "{{request.object.metadata.name}}"
