@@ -221,7 +221,7 @@ kubectl run newredis --image redis -l team=alpha
 Get this Pod back and check once again for labels.
 
 ```sh
-kubectl get pod myredis --show-labels
+kubectl get pod newredis --show-labels
 ```
 
 This time, you should see Kyverno did not add the `team` label with the value defined in the policy since one was already found on the Pod.
