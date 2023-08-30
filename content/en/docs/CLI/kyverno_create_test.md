@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno create test"
-slug: kyverno_create_test
-url: /commands/kyverno_create_test/
+weight: 35
 ---
 ## kyverno create test
 

@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno create metrics-config"
-slug: kyverno_create_metrics-config
-url: /commands/kyverno_create_metrics-config/
+weight: 35
 ---
 ## kyverno create metrics-config
 

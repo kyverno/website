@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno docs"
-slug: kyverno_docs
-url: /commands/kyverno_docs/
+weight: 35
 ---
 ## kyverno docs
 

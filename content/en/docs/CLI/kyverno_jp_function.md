@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno jp function"
-slug: kyverno_jp_function
-url: /commands/kyverno_jp_function/
+weight: 35
 ---
 ## kyverno jp function
 

@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno create"
-slug: kyverno_create
-url: /commands/kyverno_create/
+weight: 35
 ---
 ## kyverno create
 

@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno completion bash"
-slug: kyverno_completion_bash
-url: /commands/kyverno_completion_bash/
+weight: 35
 ---
 ## kyverno completion bash
 

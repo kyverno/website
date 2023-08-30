@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno jp query"
-slug: kyverno_jp_query
-url: /commands/kyverno_jp_query/
+weight: 35
 ---
 ## kyverno jp query
 

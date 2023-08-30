@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno completion fish"
-slug: kyverno_completion_fish
-url: /commands/kyverno_completion_fish/
+weight: 35
 ---
 ## kyverno completion fish
 

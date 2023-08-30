@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno completion powershell"
-slug: kyverno_completion_powershell
-url: /commands/kyverno_completion_powershell/
+weight: 35
 ---
 ## kyverno completion powershell
 

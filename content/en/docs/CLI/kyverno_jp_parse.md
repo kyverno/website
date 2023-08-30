@@ -1,8 +1,7 @@
 ---
-date: 2023-08-30T11:44:16+02:00
+date: 2023-08-30T11:48:37+02:00
 title: "kyverno jp parse"
-slug: kyverno_jp_parse
-url: /commands/kyverno_jp_parse/
+weight: 35
 ---
 ## kyverno jp parse
 
