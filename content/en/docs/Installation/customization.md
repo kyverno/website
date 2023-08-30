@@ -312,11 +312,21 @@ The following flags can be used to control the advanced behavior of the various 
 52. `tracingCreds` (ABCR): set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used.
 53. `tracingPort` (ABCR): tracing receiver port. Default is `"4317"`.
 54. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
+<<<<<<< HEAD
 55. `ttlReconciliationInterval` (C): defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. Default is `1m`. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details.
 56. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
 57. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
 58. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 59. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
+=======
+55. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+56. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
+57. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+58. `webhookTimeout` (A): specifies the timeout for webhooks. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Defaults is `10s`.
+59. `imageVerifyCacheEnabled` (A): specifies wheather the verifyImage cache is enable or not. Defaults is `true`. <br>
+60. `imageVerifyCacheMaxSize` (A): specifies the max size limit for the verifyImage cache. Defaults is `1000`. <br>
+61. `imageVerifyCacheTTLDuration` (A): specifies the TTL value for verifyImage cache. Defaults is `60m`. (Here the ttl values should be entered in minutes.) <br>
+>>>>>>> 90c4f3bf (added container flags)
 
 ### Policy Report access
 

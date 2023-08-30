@@ -50,12 +50,17 @@ The `imageRegistryCredentials.secret` specifies a list of secrets that are provi
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
 ### VerifyImage TTL cache:
-Applying a verifyImage policy to a resource triggers image verification on every occurrence. To enhance and streamline this verification process, Kyverno employs a cached approach for verified images, utilizing a TTL concept. This is grounded in the principle that once an image is confirmed as valid, its verification status can persist for a set duration. The cache is initially set to accommodate up to 1000 entries, with a default TTL of 60 minutes. Nevertheless, users retain the flexibility to adjust these parameters in alignment with their particular needs.
+Implementing the verifyImage policy on a resource currently triggers image verification each time the resource appears. However, to optimize and streamline this verification procedure, Kyverno introduces an innovative cached strategy for validated images, leveraging a concept known as "Time-to-Live" (TTL). This strategy is based on the notion that once an image's validity is confirmed, its verification status can endure for a specified period.
 
-User can set the following flags values in kyverno deployment : <br>
-`imageVerifyCacheEnabled` : Whether to use a TTL cache for storing verified images by default cache is set to true. <br>
-`imageVerifyCacheMaxSize` : Max size limit for the TTL cache, 0 means default 1000 size limit. <br>
-`imageVerifyCacheTTLDuration` : Max TTL value for a cache, 0 means default 1 hour TTL. ( Here the ttl values should be entered in minutes.) <br>
+Initially, the cache is configured to hold up to 1000 records, with a default TTL of 60 minutes. This approach offers an advantageous framework. Nonetheless, users have the flexibility to fine-tune these settings according to their specific requirements.
+
+Within Kyverno's deployment, users have the ability to define certain flags:
+
+`imageVerifyCacheEnabled`: Determines whether to adopt a TTL cache for storing verified images. By default, this is set to true.
+`imageVerifyCacheMaxSize`: Establishes a maximum capacity for the TTL cache. Defaults is `1000`.
+`imageVerifyCacheTTLDuration`: Specifies the TTL period in the cache. A value of 0 corresponds to the default TTL of 1 hour. (Note: The TTL duration should be provided in minutes.)
+
+The utilization of the verifyImage cache offers substantial benefits. It notably reduces the frequency of verifyImage operations, resulting in significant time savings.
 
 #### Cosign/Notary signature and attestation verification using TTL cache:
 
@@ -105,7 +110,6 @@ data:
   cosign.pub: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFOG5YUmg5NTBJWmJSajhSYS9OOXNicU9QWnJmTQo1L0tBUU4wL0tqSGNvcm0vSjV5Y3RWZDdpRWNuZXNzUlFqVTkxN2htS082SldWR0hwRGd1SXlha1pBPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t
 type: Opaque
 ```
-
 After creating this policy now create the following pod resource : 
 ```apiVersion: v1
 kind: Pod
@@ -143,6 +147,6 @@ Once you have applied this new Pod, regenerate kyverno logs using the identical 
 ```
 Time taken by the image verify operation : %!(EXTRA time.Duration=39.892µs)
 ```
-Imagine making thousands of similar calls; in such a scenario, substantial time savings could be achieved.
+Imagine a situation where thousands of similar calls are being made; in such a scenario, substantial time savings could be attained by using the verifyImage cache. This becomes especially pertinent when handling a high volume of requests.
 
-Note : Similarly we can verify the notary signature and attestations by using TTL.
+*Note* : Similarly we can verify the notary signature and attestations by using TTL.
