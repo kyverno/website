@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno jp query"
+slug: kyverno_jp_query
+url: /commands/kyverno_jp_query/
+---
 ## kyverno jp query
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions

@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno jp parse"
+slug: kyverno_jp_parse
+url: /commands/kyverno_jp_parse/
+---
 ## kyverno jp parse
 
 Parses jmespath expression and shows corresponding AST

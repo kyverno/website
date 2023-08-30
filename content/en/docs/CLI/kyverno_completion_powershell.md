@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno completion powershell"
+slug: kyverno_completion_powershell
+url: /commands/kyverno_completion_powershell/
+---
 ## kyverno completion powershell
 
 Generate the autocompletion script for powershell

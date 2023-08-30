@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno completion zsh"
+slug: kyverno_completion_zsh
+url: /commands/kyverno_completion_zsh/
+---
 ## kyverno completion zsh
 
 Generate the autocompletion script for zsh

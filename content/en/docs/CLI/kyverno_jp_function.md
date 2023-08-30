@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno jp function"
+slug: kyverno_jp_function
+url: /commands/kyverno_jp_function/
+---
 ## kyverno jp function
 
 Provides function informations

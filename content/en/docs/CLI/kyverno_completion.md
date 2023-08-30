@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno completion"
+slug: kyverno_completion
+url: /commands/kyverno_completion/
+---
 ## kyverno completion
 
 Generate the autocompletion script for the specified shell

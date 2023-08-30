@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno create test"
+slug: kyverno_create_test
+url: /commands/kyverno_create_test/
+---
 ## kyverno create test
 
 Create a Kyverno test file.

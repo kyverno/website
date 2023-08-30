@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno docs"
+slug: kyverno_docs
+url: /commands/kyverno_docs/
+---
 ## kyverno docs
 
 Generates documentation.

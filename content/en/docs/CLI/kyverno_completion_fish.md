@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno completion fish"
+slug: kyverno_completion_fish
+url: /commands/kyverno_completion_fish/
+---
 ## kyverno completion fish
 
 Generate the autocompletion script for fish

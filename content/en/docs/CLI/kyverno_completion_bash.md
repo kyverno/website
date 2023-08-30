@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno completion bash"
+slug: kyverno_completion_bash
+url: /commands/kyverno_completion_bash/
+---
 ## kyverno completion bash
 
 Generate the autocompletion script for bash

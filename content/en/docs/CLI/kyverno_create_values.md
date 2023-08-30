@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno create values"
+slug: kyverno_create_values
+url: /commands/kyverno_create_values/
+---
 ## kyverno create values
 
 Create a Kyverno values file.

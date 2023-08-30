@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno create"
+slug: kyverno_create
+url: /commands/kyverno_create/
+---
 ## kyverno create
 
 Provides a command-line interface to help with the creation of various Kyverno resources.

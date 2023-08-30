@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno jp"
+slug: kyverno_jp
+url: /commands/kyverno_jp/
+---
 ## kyverno jp
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.

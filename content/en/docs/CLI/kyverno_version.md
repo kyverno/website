@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno version"
+slug: kyverno_version
+url: /commands/kyverno_version/
+---
 ## kyverno version
 
 Shows current version of kyverno.

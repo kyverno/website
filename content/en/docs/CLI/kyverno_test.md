@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno test"
+slug: kyverno_test
+url: /commands/kyverno_test/
+---
 ## kyverno test
 
 Run tests from directory.

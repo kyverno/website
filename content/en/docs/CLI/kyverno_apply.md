@@ -1,3 +1,9 @@
+---
+date: 2023-08-30T11:44:16+02:00
+title: "kyverno apply"
+slug: kyverno_apply
+url: /commands/kyverno_apply/
+---
 ## kyverno apply
 
 Applies policies on resources.
