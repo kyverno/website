@@ -145,6 +145,8 @@ You can also follow the steps on the [Kyverno wiki](https://github.com/kyverno/k
 
 **Solution**: When using EKS with the VPC CNI, problems may arise if the CNI plug-in is outdated. Upgrade the VPC CNI plug-in to a version supported and compatible with the Kubernetes version running in the EKS cluster.
 
+If the EKS cluster uses your own security group, some of the network traffic from the control plane to the worker nodes might be blocked (documented [here](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)). Create an inbound rule in the security group attached to the EKS worker nodes, allowing communication on port 9443 from the EKS cluster security group. 
+
 ## Client-side throttling
 
 **Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side throttling`; the creation of mutated resources may be delayed.
