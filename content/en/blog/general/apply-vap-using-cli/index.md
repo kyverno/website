@@ -1,20 +1,20 @@
 ---
-date: 2023-09-04
+date: 2023-10-04
 title: "Applying Validating Admission Policies using Kyverno CLI"
 linkTitle: "Applying Validating Admission Policies using Kyverno CLI"
 author: Mariam Fahmy
 description: "Using Kyverno CLI to apply Validating Admission Policies"
 ---
-The [Kyverno Command Line Interface (CLI)](https://kyverno.io/docs/kyverno-cli/) is designed to validate and test policy behavior to resources prior to adding them to a cluster.
+The [Kyverno Command Line Interface (CLI)](/docs/kyverno-cli/) allows applying policies outside of Kuberentes clusters and can validate and test policy behavior prior to adding them to a cluster.
 
-One of the Kyverno CLI commands are apply and test commands.
+The two commands used for testing are “apply” and “test”:
+The apply command is used to perform a dry run on one or more policies for the given manifest(s).
+The test command is used to test a given set of resources against one or more policies to check the desired results.
 
-1. The apply command is used to perform a dry run on one or more policies for the given manifest(s).
-2. The test command is used to test a given set of resources against one or more policies to check the desired results.
+In this post, I will show you how the Kyverno CLI can now be used to apply/test Kubernetes Validating Admission Policies that were first introduced in 1.26.
 
-Kyverno CLI now can be used to apply/test Kubernetes Validating Admission Policies that were first introduced in 1.26.
+## Applying Validating Admission Policies using kyverno apply
 
-## Applying Validating Admission Policies using Kyverno apply
 In this section, you will create a validating admission policy that checks the number of deployment replicas. You will then apply this policy to two deployments, one of which violates the policy:
 
 ```sh
@@ -60,10 +60,13 @@ spec:
 EOF
 ```
 
-Let's apply the policy on the resource using kyverno apply as follows:
+Let's apply the policy to the resource using `kyverno apply` as follows:
 ```sh
 kyverno apply ./check-deployment-replicas.yaml --resource deployment-pass.yaml
+```
 
+The output should be:
+```sh
 Applying 1 policy rule(s) to 1 resource(s)...
 
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
@@ -92,17 +95,22 @@ spec:
 EOF
 ```
 
-Then apply the policy on the resource as follows:
+Then apply the policy to the resource as follows:
 ```sh
 kyverno apply ./check-deployment-replicas.yaml --resource deployment-fail.yaml 
+```
 
+The output should be:
+```sh
 Applying 1 policy rule(s) to 1 resource(s)...
 
 pass: 0, fail: 1, warn: 0, error: 0, skip: 0
 ```
 
-## Testing Validating Admission Policies using Kyverno test
-In this section, you will create a validating admission policy that ensures no `hostPath` volumes are in use for deployments. You will then create two deployments to test them aganist the policy and check the desired results. 
+## Testing Validating Admission Policies using kyverno test
+
+In this section, you will create a validating admission policy that ensures no `hostPath` volumes are in use for deployments. You will then create two deployments to test them against the policy and check the desired results. 
+
 To proceed, you need to create a directory containing the necessary manifests. In this example, I created a directory called `test-dir`.
 
 Let's start with creating the policy:
@@ -180,7 +188,7 @@ spec:
 EOF
 ```
 
-The tests are written in a file name `kyverno-test.yaml` so you will create two tests, one for each deployment and test them aganist the policy.
+The tests are written in a file name `kyverno-test.yaml` so you will create two tests, one for each deployment and test them against the policy.
 ```sh
 cat << EOF > ./test-dir/kyverno-test.yaml
 name: disallow-host-path-test
@@ -201,10 +209,13 @@ results:
     result: fail
 EOF
 ```
-Now, we’re ready to test the two deployments aganist validating admission policy.
+Now, we’re ready to test the two deployments against validating admission policy.
 ```sh
 kyverno test ./test-dir
+```
 
+The output should be:
+```sh
 Executing disallow-host-path-test...
 
 │────│────────────────────│──────│────────────────────────────│────────│────────│
@@ -219,4 +230,5 @@ Test Summary: 2 tests passed and 0 tests failed
 As expected, the two tests passed because the actual result of each test matches the desired result as defined in the test manifest.
 
 ## Conclusion
-This blog post explains how to apply validating admission policies to resources using Kyverno CLI.
+
+This blog post explains how to apply validating admission policies to resources using the Kyverno CLI. With Kyverno, it's easy to apply Kubernetes Validating Admission Policies in your CI/CD pipelines and to test new Validating Admission Policies before they are deployed to your clusters.
