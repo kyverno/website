@@ -48,9 +48,9 @@ The project contributors use a combination of [GitHub discussions](https://githu
 
 Kyverno is a CNCF incubating project and is growing fast. To qualify for the [graduation level](https://github.com/cncf/toc/blob/main/process/graduation_criteria.md#graduation-stage) the CNCF requires production usage by multiple end users.
 
-The goal of this adopters program is to gather real-world usage examples and help Kyverno graduate. We hope to achieve this by learning from the existing and new adopters of Kyverno who are willing to share their stories with CNCF.
+The goal of this adopters program is to gather real-world usage examples and help the Kyverno project grow. We hope to achieve this by learning from the existing and new adopters of Kyverno who are willing to share their stories with CNCF.
 
-To participate, fill out the [Kyverno adopters form](https://docs.google.com/forms/d/e/1FAIpQLSe1IBSxDFn_iAAq9vd0nQdjKbapvgGyM8j2IX_z4xSCu-OSNg/viewform?usp=sf_link).
+To participate, fill out the [Kyverno adopters form](https://forms.gle/K5CApcBAD5D4H1AG8).
 
 ## Project Governance
 
