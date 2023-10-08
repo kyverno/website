@@ -9,6 +9,10 @@ A `mutate` rule can be used to modify matching resources and is written as eithe
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
+{{% alert title="Note" color="info" %}}
+Kubernetes disallows changes to certain fields in resources including `name`, `namespace`, `uid`, `kind`, and `apiVersion`, therefore you cannot use Kyverno policy to effect any of these fields either during admission or once a resource has been persisted.
+{{% /alert %}}
+
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](#mutate-existing-resources) policies.
 
 This policy sets the `imagePullPolicy` to `IfNotPresent` if the image tag is `latest`:
