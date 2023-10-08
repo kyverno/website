@@ -1,7 +1,7 @@
 ---
 title: Mutate Rules
 description: >
-  Modify resource configurations.
+  Modify resource configurations during admission or retroactively against existing resources.
 weight: 40
 ---
 
