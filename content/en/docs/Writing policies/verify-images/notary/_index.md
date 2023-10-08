@@ -5,11 +5,11 @@ description: >
 weight: 10
 ---
 
-Notary (https://notaryproject.dev/) is a CNCF project that provides a specification and tooling for securing software supply chains.
+[Notary](https://notaryproject.dev/) is a CNCF project that provides a specification and tooling for securing software supply chains.
 
-The [Notation CLI](https://github.com/notaryproject/notation) can be used to sign images and attestations in a CI/CD pipeline. This quickstart guide provides a complete example of siging and verifying a container image using Notation: https://notaryproject.dev/docs/quickstart/.
+The [Notation CLI](https://github.com/notaryproject/notation) can be used to sign images and attestations in a CI/CD pipeline. A quick start guide providing a complete example of signing and verifying a container image using Notation can be found [here](https://notaryproject.dev/docs/quickstart/).
 
-The Notation CLI can also be used to inspect details of the container image signature:
+The Notation CLI can also be used to inspect details of the container image signature.
 
 ```sh
 notation inspect ghcr.io/kyverno/test-verify-image@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105
@@ -37,7 +37,7 @@ ghcr.io/kyverno/test-verify-image@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82b
             └── size: 938
 ```
 
-You can also use an OCI registry client to discover signatures and attestations for an image:
+You can also use an OCI registry client to discover signatures and attestations for an image.
 
 ```sh
 oras discover ghcr.io/kyverno/test-verify-image:signed -o tree
@@ -54,13 +54,11 @@ ghcr.io/kyverno/test-verify-image:signed
             └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
 ```
 
-
 ## Verifying Image Signatures
 
-The following policy checks whether an image is signed with a valid X.509 key that matches the provided public certificate:
+The following policy checks whether an image is signed with a valid X.509 key that matches the provided public certificate.
 
 ```yaml
----
 apiVersion: kyverno.io/v2beta1
 kind: ClusterPolicy
 metadata:
@@ -107,21 +105,21 @@ spec:
                 -----END CERTIFICATE-----
 ```
 
-With this policy configured, Kyverno will verify matching container image signatures and only allow the pod to be configured if the signatures are valid:
+With this policy configured, Kyverno will verify matching container image signatures and only allow the pod to be configured if the signatures are valid.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server
 pod/test created (server dry run)
 ```
 
-Kyverno will also mutate the pod to replace the image tag with its digest:
+Kyverno will also mutate the pod to replace the image tag with its digest.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server -o yaml | grep "image: "
   - image: ghcr.io/kyverno/test-verify-image:signed@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105
 ```
 
-Attempting to run a pod with an unsigned image will be blocked:
+Attempting to run a pod with an unsigned image will be blocked.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:unsigned --dry-run=server
@@ -142,4 +140,4 @@ You can manage public keys and certificates as external data in a ConfigMap. See
 
 ## Verifying Image Attestations
 
-Kyverno does not support verifying attestations signed by Notary. This feature is being implemented and scheduled for the [next minor release](https://github.com/kyverno/kyverno/milestones?direction=asc&sort=due_date&state=open).   
+Kyverno does not support verifying attestations signed by Notary. This feature is being implemented and scheduled for the [next minor release](https://github.com/kyverno/kyverno/milestones?direction=asc&sort=due_date&state=open).
