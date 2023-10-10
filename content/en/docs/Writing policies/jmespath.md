@@ -2879,3 +2879,42 @@ spec:
 
 </p>
 </details>
+
+### IsExternalURL
+
+<details><summary>Expand</summary>
+<p>
+
+The is_external_url() filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | boolean |
+
+**Example:** This policy looks for a field named `test` within the data section of ConfigMaps. It then runs a custom function called is_external_url to determine if the value associated with `test` is an external URL.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-url-in-configmap
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-external-url
+      match:
+        resources:
+          kinds:
+            - ConfigMap
+      validate:
+        message: "ConfigMap contains an external URL."
+        deny:
+          conditions:
+            - key: "{{ request.object.data.test | is_external_url(@) }}"
+              operator: Equals
+              value: true
+```
+
+</p>
+</details>
