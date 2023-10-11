@@ -182,6 +182,20 @@ Because Helm executes its templating routine prior to Kyverno, a Kyverno policy 
 {{`{{ request.userInfo.username }}`}}
 ```
 
+For Kyverno variables which use more complex JMESPath expressions including [existence checks](/docs/writing-policies/jmespath/#non-existence-checks), elements such as empty objects or arrays may also need to be escaped even within the overall expression. For example, the value of the below `value` field
+
+```
+value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+```
+
+would need to become
+
+```
+value: {{ `"{{ element.securityContext.capabilities.drop[].to_upper(@) || `}}`[]`{{` }}"` }}
+```
+
+in order to render properly.
+
 ## Variables from admission review requests
 
 Kyverno operates as a webhook inside Kubernetes. Whenever a new request is made to the Kubernetes API server, for example to create a Pod, the API server sends this information to the webhooks registered to listen to the creation of Pod resources. This incoming data to a webhook is passed as a [`AdmissionReview`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response) object. There are four commonly used data properties available in any AdmissionReview request:
