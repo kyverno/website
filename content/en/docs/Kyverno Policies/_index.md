@@ -11,7 +11,7 @@ A Kyverno policy is a collection of rules. Each rule consists of a [`match`](/do
 <br/>
 <br/>
 
-Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy`) or namespaced resources (using the kind `Policy`.) As expected, namespaced policies will only apply to resources within the namespace in which they are defined while cluster-wide policies are applied to matching resources across all namespaces. Otherwise, there is no difference between the two types.
+Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy`) or namespaced resources (using the kind `Policy`). As expected, namespaced policies will only apply to resources within the namespace in which they are defined while cluster-wide policies are applied to matching resources across all namespaces. Otherwise, there is no difference between the two types.
 
 Additional policy types include [Policy Exceptions](/docs/writing-policies/exceptions/) and [Cleanup Policies](/docs/writing-policies/cleanup/) which are separate resources and described further in the documentation.
 
