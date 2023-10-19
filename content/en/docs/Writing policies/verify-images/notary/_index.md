@@ -141,6 +141,7 @@ You can manage public keys and certificates as external data in a ConfigMap. See
 ## Verifying Image Attestations
 
 Consider the following image: `ghcr.io/kyverno/test-verify-image:signed`
+
 ```
 ghcr.io/kyverno/test-verify-image:signed
 ├── application/vnd.cncf.notary.signature
@@ -221,7 +222,7 @@ spec:
               
 ```
 
-After this policy is applied, kyverno will verify the signature on the sbom/cyclone-dx attestation and check if the license version of all the components in the SBOM is `GPL-3.0`.
+After this policy is applied, Kyverno will verify the signature on the sbom/cyclone-dx attestation and check if the license version of all the components in the SBOM is `GPL-3.0`.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server
