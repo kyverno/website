@@ -79,14 +79,18 @@ jobs:
 
 Upon pull request to the repository containing this file, the GitHub Actions workflow will be triggered. If all tests succeed, the output will show a success for all steps.
 
-![ci-pass](/images/ci-pass.png)
+![ci-pass][/images/ci-pass.png]
 
 Each step may be expanded for complete output.
 
 If a pull request fails in any of the steps in the job, for example if a new manifest is introduced into `resources/` which fails one or more policies defined in `policies/`, the pipeline will halt causing the entire run to fail.
 
-![ci-fail](/images/ci-fail.png)
+![ci-fail][/images/ci-fail.png]
 
 Again, each step may be inspected for output. In the above screenshot, a Deployment manifest did not pass a validate policy and therefore caused the overall failure.
 
 For full usage details of the Kyverno CLI, refer to the [documentation](/docs/kyverno-cli/).
+
+
+[/images/ci-pass.png]: https://github.com/kyverno/kyverno/assets/103727912/54dbc4e0-ee9d-4ec5-953e-7e49ea6290af
+[/images/ci-fail.png]: https://github.com/kyverno/kyverno/assets/103727912/eba9ec26-0560-4971-92c7-ad2d30468550
