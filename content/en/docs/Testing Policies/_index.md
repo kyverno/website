@@ -59,23 +59,22 @@ name: kyverno-policy-test
 on:
   - pull_request
   - workflow_dispatch
-env:
-  VERSION: v1.7.2
 jobs:
-  test:
+  example:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Download Kyverno CLI
-        run: |
-          curl -sLO https://github.com/kyverno/kyverno/releases/download/${{ env.VERSION }}/kyverno-cli_${{ env.VERSION }}_linux_x86_64.tar.gz
-          tar -xf kyverno-cli_${{ env.VERSION }}_linux_x86_64.tar.gz
-          ./kyverno version
+        uses: actions/checkout@v4
+      - name: Install Kyverno CLI
+        uses: kyverno/action-install-cli@v0.2.0
+        with:
+          release: 'v1.9.5'
+      - name: Check install
+        run: kyverno version
       - name: Test new resources against existing policies
-        run: ./kyverno apply policies/ -r resources/
-      - name: Test pre-defined cases
-        run: ./kyverno test tests/
+        run: kyverno apply policies/ -r resources/
 ```
 
 Upon pull request to the repository containing this file, the GitHub Actions workflow will be triggered. If all tests succeed, the output will show a success for all steps.
