@@ -51,8 +51,9 @@ The repository contains Kyverno policies stored in `policies/`, Kubernetes resou
 
 1. The repository is checked out.
 2. The GitHub action for Kyverno CLI is downloaded by naming a specific version. This can be changed to simulate the effect a Kyverno upgrade may have in a cluster. Please refer to [kyverno-cli-installer](https://github.com/marketplace/actions/kyverno-cli-installer) for more information on the GitHub action for Kyverno CLI.
-3. Tests the unknown manifests in `resources/` against the known policies stored in `policies/`.
-4. Tests the pre-defined test cases stored in `tests/` which contain Kyverno test manifests, policies, and resources separated by folder.
+3. Check the Kyverno CLI version
+4. Tests the unknown manifests in `resources/` against the known policies stored in `policies/`.
+5. Tests the pre-defined test cases stored in `tests/` which contain Kyverno test manifests, policies, and resources separated by folder.
 
 ```yaml
 name: kyverno-policy-test
