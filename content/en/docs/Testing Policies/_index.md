@@ -75,6 +75,8 @@ jobs:
         run: kyverno version
       - name: Test new resources against existing policies
         run: kyverno apply policies/ -r resources/
+      - name: Test pre-defined cases
+        run: kyverno test tests/
 ```
 
 Upon pull request to the repository containing this file, the GitHub Actions workflow will be triggered. If all tests succeed, the output will show a success for all steps.
