@@ -695,7 +695,7 @@ verifyImages:
 
 ## Ignoring Tlogs and SCT Verification
 
-Cosign 2.0 ( Kyverno version >= 1.11 ) verifies rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in kyverno policies:
+Cosign 2.0 verifies rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in kyverno policies:
 
 ```yaml
 verifyImages:
@@ -714,7 +714,7 @@ verifyImages:
           url: https://rekor.sigstore.dev
 ```
 
-Kyverno versions >= 1.11 also does SCT verification, a proof of inclusion in a certificate transparency log by default for verifying Fulcio certificates. To disable this, use `ignoreSCT: true`
+Kyverno versions >= 1.11 also does SCT verification, a proof of inclusion in a certificate transparency log by default for verifying Fulcio certificates. To disable this, use `ignoreSCT: true`:
 
 ```yaml
 verifyImages:
@@ -777,7 +777,7 @@ verifyImages:
 
 ## Using a custom TUF for custom sigstore deployements
 
-If you want to have your own Sigstore infrastructure to be fully in control of the entire signing and verification stack, including the root key material, you can set up your own root of trust to use using TUF. To configure kyverno to use your TUF, you can set `--tufRoot` and `--tufMirror` flags to configure tuf for custom sigstore deployments.
+If you want to have your own Sigstore infrastructure to be fully in control of the entire signing and verification stack, including the root key material, you can set up your own root of trust to use TUF. To configure Kyverno to use your TUF setup, use `--tufRoot` and `--tufMirror` flags for custom Sigstore deployments.
 
 ## Verifying images in Custom Resources
 
