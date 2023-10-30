@@ -24,6 +24,12 @@ Locate the Namespace and name of the release used to install Kyverno. Assuming y
 helm uninstall kyverno kyverno/kyverno -n kyverno
 ```
 
+Note, you need to uninstall the kyverno-policies chart to avoid getting errors from the API-server.
+
+```sh
+helm uninstall kyverno-policies kyverno/kyverno-policies -n kyverno 
+```
+
 ### Clean up Webhooks
 
 Kyverno by default will try to clean up all its webhooks when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
