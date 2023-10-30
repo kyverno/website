@@ -45,7 +45,7 @@ The `imageRegistryCredentials` attribute allows configuration of registry creden
 
 The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
-The `imageRegistryCredentials.secret` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace
+The `imageRegistryCredentials.secret` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
