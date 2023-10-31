@@ -25,9 +25,16 @@ This is a monthly meeting for the broader community where the Kyverno maintainer
 - Monthly on the second Thursday at 7:00 AM PST
 - [Repo](https://github.com/nirmata/office-hours-for-kyverno)
 
-### Contributors Meeting
+### Maintainers Meeting
 
-This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
+This is a public weekly meetings focused on topics relevant to plan and discuss upcoming releases, encouraging all contributors to actively participate and contribute to the discussions. It provides an opportunity for maintainers to come together with community members and collaborate on important topics related to the project. By fostering an inclusive environment, the Kyverno team aims to gather diverse perspectives, insights, and ideas that can further enhance the project's development and direction:
+
+- Weekly every Tuesday at 7:30 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
+
+### Community Meeting
+
+This is a weekly forum for Kyverno contributors and maintainers to discuss topics relevant to Kyverno development and other contributions. It’s meant for contributors and maintainers to meet, share, and get unblocked, peer review, and discuss all aspects of the Kyverno project:
 
 - Weekly every Wednesday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
@@ -100,7 +107,7 @@ Code Owners are a special type of contributor and have _significantly_ contribut
 - Member of the kyverno channel on Kubernetes and/or CNCF Slack
 - Attended five (5) Contributors Meetings as documented
 - Registered for the Kyverno [mailing list](https://groups.google.com/g/kyverno)
-- Create a pull request to add self to `CODEOWNERS` file in at least one (1) repository
+- Create a pull request to add self to [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) file in at least one (1) repository
 - Attained a minimum of two (2) positive votes from maintainers
 - Respond to reviews from maintainers on pull requests
 
@@ -116,18 +123,18 @@ Code Owners are a special type of contributor and have _significantly_ contribut
 **Privileges of a Code Owner**
 
 - Listed as an organization member
-- Listed in `CODEOWNERS` in at least one (1) repository
+- Listed in [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) in at least one (1) repository
 - Kyverno contributor badge issued
 - Have issues assigned to them
 - Have PRs assigned to them
 
 **On-boarding Criteria**
 
-- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to `CODEOWNERS`, during a voting period lasting seven (7) days
+- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS), during a voting period lasting seven (7) days
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in removal from `CODEOWNERS` and from organization membership.
+- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in removal from [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) and from organization membership.
 
 #### Maintainers
 
@@ -174,11 +181,11 @@ The following responsibilities apply to the subproject for which one would be an
 
 **On-boarding Criteria**
 
-- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to `MAINTAINERS.md`, during a voting period lasting seven (7) days
+- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to [MAINTAINERS.md](https://github.com/kyverno/kyverno/blob/main/MAINTAINERS.md), during a voting period lasting seven (7) days
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within [MAINTAINERS.md](https://github.com/kyverno/kyverno/blob/main/MAINTAINERS.md) and removal from organization membership.
 
 #### Admins
 
