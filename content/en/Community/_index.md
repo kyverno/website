@@ -107,7 +107,7 @@ Code Owners are a special type of contributor and have _significantly_ contribut
 - Member of the kyverno channel on Kubernetes and/or CNCF Slack
 - Attended five (5) Contributors Meetings as documented
 - Registered for the Kyverno [mailing list](https://groups.google.com/g/kyverno)
-- Create a pull request to add self to [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) file in at least one (1) repository
+- Create a pull request to add self to CODEOWNERS file in at least one (1) repository
 - Attained a minimum of two (2) positive votes from maintainers
 - Respond to reviews from maintainers on pull requests
 
@@ -123,18 +123,18 @@ Code Owners are a special type of contributor and have _significantly_ contribut
 **Privileges of a Code Owner**
 
 - Listed as an organization member
-- Listed in [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) in at least one (1) repository
+- Listed in CODEOWNERSin at least one (1) repository
 - Kyverno contributor badge issued
 - Have issues assigned to them
 - Have PRs assigned to them
 
 **On-boarding Criteria**
 
-- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS), during a voting period lasting seven (7) days
+- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to CODEOWNERS, during a voting period lasting seven (7) days
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in removal from [CODEOWNERS](https://github.com/kyverno/kyverno/blob/main/CODEOWNERS) and from organization membership.
+- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in removal from CODEOWNERS and from organization membership.
 
 #### Maintainers
 
@@ -181,11 +181,11 @@ The following responsibilities apply to the subproject for which one would be an
 
 **On-boarding Criteria**
 
-- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to [MAINTAINERS.md](https://github.com/kyverno/kyverno/blob/main/MAINTAINERS.md), during a voting period lasting seven (7) days
+- Voted in by a majority of current maintainers, raised in a PR by the proposed member to add themselves to MAINTAINERS.md, during a voting period lasting seven (7) days
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within [MAINTAINERS.md](https://github.com/kyverno/kyverno/blob/main/MAINTAINERS.md) and removal from organization membership.
+- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within MAINTAINERS.md and removal from organization membership.
 
 #### Admins
 
