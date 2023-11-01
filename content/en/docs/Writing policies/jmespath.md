@@ -755,7 +755,7 @@ Enter input object and hit Ctrl+D.
 |--------------------------|--------------------|------------|---------------|
 | Map (Object) or Array    | String             | String     | Array/Object  |
 
-Related filter to `items()` is its inverse, [`object_from_list()`](#object_from_list).
+Related filter to `items()` is its inverse, [`object_from_lists()`](#object_from_lists).
 
 **Example:** This policy will take the labels on a Namespace `foobar` where a Bucket is deployed and add them as key/value elements to the `spec.forProvider.tagging.tagSet[]` array.
 
@@ -1072,12 +1072,12 @@ spec:
 </p>
 </details>
 
-### Object_from_list
+### Object_from_lists
 
 <details><summary>Expand</summary>
 <p>
 
-The `object_from_list()` filter takes an array of objects and, based on the selected keys, produces a map. This is essentially the inverse of the [`items()`](#items) filter.
+The `object_from_lists()` filter takes an array of objects and, based on the selected keys, produces a map. This is essentially the inverse of the [`items()`](#items) filter.
 
 For example, given a Pod definition that looks like the following
 
@@ -1099,7 +1099,7 @@ spec:
       value: "licensing.corp.org"
 ```
 
-you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_list()` filter will produce a map containing those entries.
+you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_lists()` filter will produce a map containing those entries.
 
 ```sh
 $ kyverno jp query -i pod.yaml "object_from_lists(spec.containers[].env[].name,spec.containers[].env[].value)"
@@ -1113,7 +1113,7 @@ $ kyverno jp query -i pod.yaml "object_from_lists(spec.containers[].env[].name,s
 |--------------------|--------------------|---------------|
 | Array/string       | Array/string       | Map (Object)  |
 
-Related filter to `object_from_list()` is its inverse, [`items()`](#items).
+Related filter to `object_from_lists()` is its inverse, [`items()`](#items).
 
 **Example:** This policy converts all the environment variables across all containers in a Pod to labels and adds them to that same Pod. Any existing labels will not be replaced but rather augmented with the converted list.
 
