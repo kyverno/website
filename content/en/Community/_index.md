@@ -35,7 +35,7 @@ This is a public, weekly meetings for maintainers to discuss issues and PRs pert
 
 ### Community Meeting
 
-This is a public weekly for Kyverno maintainers to make announcements and provide project updates, and this forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working:
+This is a public, weekly for Kyverno maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 - Weekly every Wednesday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
