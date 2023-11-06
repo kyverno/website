@@ -28,7 +28,7 @@ This is a monthly meeting for the broader community where the Kyverno maintainer
 ### Maintainers Meeting
 
 
-This is a public weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Encouraging all contributors to actively participate and contribute to the discussions but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting as the venue.
+This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Contributors and end users are welcome to attend and participate but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting.
 
 - Weekly every Tuesday at 7:30 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
