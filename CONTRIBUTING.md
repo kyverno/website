@@ -1,171 +1,83 @@
 # How to Contribute
 
-We welcome all contributions, suggestions, and feedback, so please do not hesitate to reach out!.
-We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
+Thank you for expressing interest in contributing to the Kyverno documentation! We welcome all contributions, suggestions, and feedback! We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
 
 ## Contributor License Agreement
 
-Contributions to this project must be accompanied by a Contributor License
-Agreement. Project authors will retain the copyright to your contribution;
-this simply gives us permission to use and redistribute your contributions as
-part of the project. Head over to <https://identity.linuxfoundation.org/projects/cncf> to see your current agreements on file or to sign a new one.
-You generally only need to submit a CLA once, so if you've already submitted one
-(even if it was for a different project), you probably don't need to do it
-again.
+Contributions to this project must be accompanied by a [Contributor License Agreement](https://github.com/cncf/cla). Project authors will retain the copyright to your contribution; this simply gives us permission to use and redistribute your contributions as part of the project. You generally only need to submit a CLA once, so if you've already submitted one (even if it was for a different project), you probably don't need to do it again.
 
-## Code reviews
+## Code Reviews
 
-All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests.
+All submissions, including submissions by project members, require review. We use GitHub pull requests for this purpose. Consult [GitHub Help](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) for more information on using pull requests.
 
 ## Community Guidelines
 
-This project follows[CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
+This project follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/main/code-of-conduct.md).
 
-## Code of conduct
+## Ways To Contribute
 
-Before you contribute, please review and agree to abide by our community [Code of Conduct](/CODE_OF_CONDUCT.md).
+If you wish to contribute to this project, there are several options as outlined below.
 
-## Ways You Can Contribute/Engage
-
-If you wish to contribute to this project, follow these steps below:
-
-[Report Issues](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#report-issues)
-[Submit a Pull Request](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#submit-pull-requests)
-[Fix or Improve Documentation](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#fix-or-improve-documentation)
-[Join Our Community Meetings](https://github.com/kyverno/website/blob/main/CONTRIBUTING.md#join-our-community-meetings)
+[Report Issues](#report-issues)
+[Submit a Pull Request](#submit-a-pull-request)
+[Join Our Community Meetings](#community-meetings)
 
 ### Report issues
 
-If you see a bug or want to add new features please create an [issue](https://github.com/kyverno/kyverno/issues/new/choose).
-
-- Report potential bugs
-- Request a feature
-- Request a sample policy
+If you see a bug or want to suggest an enhancement, please create an [issue](https://github.com/kyverno/website/issues/new/choose). Issues are a great way to tell the Kyverno documentation team what you think can be improved or fixed. Even reporting a misspelling is appreciated!
 
 ### Submit a Pull Request
 
-Find [open issues](https://github.com/kyverno/kyverno/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and indicate interest.
+Find an [open issue](https://github.com/kyverno/website/issues) and indicate your interest by requesting assignment. We understand that sometimes priorities change, so if you've been assigned an issue but are no longer able to or interested in completing it, please unassign yourself so future contributors know it is available to take on.
 
-1.  **Fork the Kyverno repo:**
+If you are new to the git contribution flow or GitHub in general, please see the [excellent documentation](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) available on the Git website with easy, step-by-step instructions on how to create your first Pull Request on GitHub.
 
-Head over to project repository on GitHub and click the **"Fork"** button. With the forked copy, you can try new ideas and implement changes to the project.
+#### Overview
 
-2.  **Clone the repository to your device:**
+The Kyverno website is a static site designed and built using [Hugo](https://gohugo.io/). It uses Google's [Docsy theme](https://www.docsy.dev/) and is built and hosted on [Netlify](https://www.netlify.com/). The contents of the website are written as standard Markdown files allowing easy editing and contribution.
 
-To clone this repository, copy the link of below, paste it in your device terminal and replace the _YOUR-GITHUB-ID_ with your GitHub ID.
+#### Developing on GitHub Codespaces
 
-```
-$ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
+This repository contains a custom [Codespaces](https://github.com/features/codespaces) [devcontainer](https://containers.dev/) which allows you to quickly get started with contributing through a containerized environment with all the tools necessary, all of which runs inside GitHub. Creation of a Codespace on this repository will result in a fully-provisioned containerized environment with the repository contents and Hugo extended.
 
-```
+If you are new to Codespaces and devcontainers, please see the introductory guide [here](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers).
 
-3. **Create a branch:**
+#### Developing Locally
 
-Create a new branch and navigate to the branch using this command.
+The Kyverno website requires the Hugo extended version be installed. When developing locally and not in the provided GitHub devcontainer, you must ensure you have the extended version of Hugo and not the standard version. Additionally, this website currently requires a Hugo version of v0.100 or greater.
 
-```
-$ git checkout -b <new-branch>
-```
-
-Great, it's time to start hacking. You can now go ahead to make all the changes you want.
-
-4.  **Setup local development environments**
-
-Then navigate to the local folder and build the website for local viewing of changes using this command:
+To check and ensure you are using a compatible version of Hugo, both the version number and the extended edition, the output of the `hugo version` command should look something like below.
 
 ```sh
+$ hugo version
+hugo v0.119.0-b84644c008e0dc2c4b67bd69cccf87a41a03937e+extended darwin/amd64 BuildDate=2023-09-24T15:20:17Z VendorInfo=brew
+```
 
-cd kyverno-website
+#### Testing Changes
 
+Once you have made your changes, inspect them visually by rendering the website.
 
+```sh
 hugo server
-
-```
-**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
-
-
-5.  **Stage, Commit and Push changes:**
-
-Now that we have implemented the required changes, use the command below to stage the changes and commit them.
-
-```
-$ git add .
 ```
 
-```
-$ git commit -s -m "Commit message"
-```
+> [!Note]
+> On Windows, when running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
 
-The -s signifies that you have signed off the the commit.
+### Get In Touch
 
-Go ahead and push your changes to GitHub using this command.
+#### Slack
 
-```
-$ git push
-```
+Kyverno maintains a thriving community with two different opportunities to participate. The largest is the [Kubernetes Slack workspace](https://slack.k8s.io/#kyverno) and the other is the [CNCF Slack workspace](https://cloud-native.slack.com/#kyverno).
 
-### Fix or Improve Documentation
+#### Community Meetings
 
-- [Kyverno Docs](https://github.com/kyverno/website)
-
-### Join Our Community Meetings
-
-The easiest way to reach us is on the [Kubernetes slack #kyverno channel](https://slack.k8s.io/#kyverno).
+For the available Kyverno meetings, see [here](https://kyverno.io/community/#community-meetings).
 
 ## Developer Certificate of Origin (DCO) Sign off
 
-For contributors to certify that they wrote or otherwise have the right to submit the code they are contributing to the project, we are requiring everyone to acknowledge this by signing their work.
+For contributors to certify that they wrote or otherwise have the right to submit the code they are contributing to the project, we require everyone to acknowledge this by signing their work acknowledging the [DCO](https://developercertificate.org/).
 
-To sign your work, just add a line like this at the end of your commit message:
+For a complete guide on DCO, please see [this article](https://www.secondstate.io/articles/dco/).
 
-```
-Signed-off-by: Random J Developer <random@developer.example.org>
-```
-
-This can easily be done with the `-s` command line option to append this automatically to your commit message.
-
-```
-$ git commit -s -m 'This is my commit message'
-```
-
-By doing this you state that you can certify the following (https://developercertificate.org/):
-
-```
-Developer Certificate of Origin
-Version 1.1
-
-Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
-1 Letterman Drive
-Suite D4700
-San Francisco, CA, 94129
-
-Everyone is permitted to copy and distribute verbatim copies of this
-license document, but changing it is not allowed.
-
-
-Developer's Certificate of Origin 1.1
-
-By making a contribution to this project, I certify that:
-
-(a) The contribution was created in whole or in part by me and I
-    have the right to submit it under the open source license
-    indicated in the file; or
-
-(b) The contribution is based upon previous work that, to the best
-    of my knowledge, is covered under an appropriate open source
-    license and I have the right under that license to submit that
-    work with modifications, whether created in whole or in part
-    by me, under the same open source license (unless I am
-    permitted to submit under a different license), as indicated
-    in the file; or
-
-(c) The contribution was provided directly to me by some other
-    person who certified (a), (b) or (c) and I have not modified
-    it.
-
-(d) I understand and agree that this project and the contribution
-    are public and that a record of the contribution (including all
-    personal information I submit with it, including my sign-off) is
-    maintained indefinitely and may be redistributed consistent with
-    this project or the open source license(s) involved.
-```
+For users of Visual Studio Code, there is a convenient setting in the git extension named "Always Sign Off" which, when checked, allows VS Code to sign all commits.
