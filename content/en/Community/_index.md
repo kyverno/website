@@ -27,7 +27,6 @@ This is a monthly meeting for the broader community where the Kyverno maintainer
 
 ### Maintainers Meeting
 
-Maintainers Meeting is an internal but "open door" meeting where  The community are welcome to attend but may not raise agenda items. 
 
 This is a public weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Encouraging all contributors to actively participate and contribute to the discussions but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting as the venue.
 
