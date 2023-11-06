@@ -25,9 +25,17 @@ This is a monthly meeting for the broader community where the Kyverno maintainer
 - Monthly on the second Thursday at 7:00 AM PST
 - [Repo](https://github.com/nirmata/office-hours-for-kyverno)
 
-### Contributors Meeting
+### Maintainers Meeting
 
-This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
+
+This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Contributors and end users are welcome to attend and participate but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting.
+
+- Weekly every Tuesday at 7:30 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
+
+### Community Meeting
+
+This is a public, weekly for Kyverno maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 - Weekly every Wednesday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
