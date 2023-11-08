@@ -186,7 +186,21 @@ The following responsibilities apply to the subproject for which one would be an
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+An off-boarding vote may be called by any maintainer if any of the following criteria are met:
+- A maintainer has made less than 30 contributions over a span of 6 months.
+  - Contributions can be tracked using the [DevStats dashboard](https://kyverno.devstats.cncf.io/d/66/developer-activity-counts-by-companies?orgId=1&var-period_name=Last%206%20months&var-metric=contributions&var-repogroup_name=All&var-country_name=All&from=1522810884223&to=1680577284223&var-companies=All).
+  - Other relevant data will be collected and evaluated to assess the maintainer's contributions. This includes their involvement in discussions, conversations on Slack, and any other relevant interactions.
+
+
+The off-boarding process includes the following steps:
+- The off-boarding process is initiated by any currently active maintainer who conducts a review of the maintainers list and proceeds to initialize the off-boarding process if the above criteria are met.
+- The plans of off-boarding process is sent in a private Slack message or email to the candidate.
+- If the candidate for removal states plans to continue participating, another 6 months will be granted to the candidate to make contributions and the new cycle starts. No action is taken and this process terminates.
+- If the candidate fails to meet the criteria during the second attempt to make contributions, the off-boarding process continues.
+- A pull request (PR) proposing movement of the candidate is sent, initiating the public voting phase.
+- The vote passes if a majority of current maintainers vote yes during a voting period lasting seven (7) days.
+- A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+
 
 #### Admins
 
