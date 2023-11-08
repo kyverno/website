@@ -46,6 +46,9 @@ spec:
           value:
           - CREATE
           - UPDATE
+        - key: "{{ request.object.spec.replicas || `1` }}"
+          operator: GreaterThan
+          value: 0
       context:
         - name: minavailable
           apiCall:
