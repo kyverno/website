@@ -1174,6 +1174,18 @@ Test Summary: 1 tests passed and 0 tests failed
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
 
+### Docs
+
+The Kyverno CLI has a `docs` subcommand which makes it possible to generate Kyverno CLI reference documentation. It can be used to generate simple markdown files or markdown to be used for the website.
+
+Examples:
+
+To generate simple markdown documentation
+
+```sh
+kyverno docs -o . --autogenTag=false
+```
+
 ### Jp
 
 The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON or YAML documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
