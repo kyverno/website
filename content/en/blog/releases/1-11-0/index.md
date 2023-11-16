@@ -168,15 +168,15 @@ apiVersion: cli.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: mytest
- policies:
-   - policy.yaml
- resources:
-   - pod.yaml
- results:
- - policy: evil-policy-match-foreign-pods
-   rule: evil-validation
-   resource: nginx
-   status: pass
+  policies:
+  - policy.yaml
+  resources:
+  - pod.yaml
+  results:
+  - policy: evil-policy-match-foreign-pods
+    rule: evil-validation
+    resource: nginx
+    status: pass
 ```
 
 ```bash
