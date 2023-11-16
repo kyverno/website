@@ -164,7 +164,10 @@ Because this is a label, there is opportunity to chain other Kyverno functionali
 In Kyverno 1.11, we have made significant improvements to the CLI, enhancing its stability and usability. A new test manifest schema was introduced to the Kyverno `test` command, now you can validate your `test.yaml` and get helpful error reports during execution. Here’s a snippet of a `test.yaml` and an error is displayed as part of the execution result, note that the full schema such as apiVersion and kind is not supported in this release.
 
 ```yaml
-- name: mytest
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: mytest
  policies:
    - policy.yaml
  resources:
