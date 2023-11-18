@@ -1683,6 +1683,45 @@ spec:
 </p>
 </details>
 
+### Round
+
+<details><summary>Expand</summary>
+<p>
+
+The `round()` filter is used to round a number to a desired set of places. It can be useful when working with values such as currencies or measurements. For example, the expression ``round(`10.125`,`2`)`` would result in rounding the number `10.125` to two decimal places resulting in the value `10.13`. When using this filter, it may be necessary to convert inputs to the necessary type (number), most commonly string. JMESPath has a built-in filter called `to_number()` which can be used for this purpose. See the documentation [here](https://jmespath.org/specification.html#to-number) for more details.
+
+| Input 1            | Input 2            | Output        |
+|--------------------|--------------------|---------------|
+| Number             | Number             | Number        |
+
+**Example:** This policy uses `round()` to round the result of a variable named `input` to two decimal places.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: round-demo
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: round-input
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      context:
+      - name: input
+        variable:
+          value: 10.123456
+      validate:
+        message: The rounded value is {{ round(input, `2`) }}.
+        deny: {}
+```
+
+</p>
+</details>
+
 ### Semver_compare
 
 <details><summary>Expand</summary>
