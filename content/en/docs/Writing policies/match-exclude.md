@@ -16,16 +16,16 @@ The `match` and `exclude` clauses have the same structure and can each contain *
 
 The following resource filters can be specified under an `any` or `all` clause.
 
-* `resources`: select resources by names, namespaces, kinds, , operations, label selectors, annotations, and namespace selectors.
+* `resources`: select resources by names, namespaces, kinds, operations, label selectors, annotations, and namespace selectors.
 * `subjects`: select users, user groups, and service accounts
 * `roles`: select namespaced roles
 * `clusterRoles`: select cluster wide roles
 
 {{% alert title="Note" color="info" %}}
-Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. It is highly recommended you specify them under `any` or `all` blocks.
+Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. Matches and exclusions should always use `any` or `all` blocks.
 {{% /alert %}}
 
-At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `match.(any/all).resources.kinds` field.
+At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `resources.kinds` and `subjects` fields.
 
 In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
 
@@ -40,7 +40,7 @@ To resolve kind naming conflicts, specify the API group and version. For example
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
 
-Wildcards are supported with the following formats:
+Wildcards are supported with the following formats when used in the `resources.kinds` field:
 
 * `Group/*/Kind`
 * `Group/*/*`
