@@ -43,6 +43,7 @@ To resolve kind naming conflicts, specify the API group and version. For example
 Wildcards are supported with the following formats:
 
 * `Group/*/Kind`
+* `Group/*/*`
 * `*/Kind`
 * `*`
 

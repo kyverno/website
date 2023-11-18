@@ -21,6 +21,7 @@ Each rule contains the following common configuration attributes:
   * `mutateDigest`: converts tags to digests for matching images
   * `verifyDigest`: enforces that digests are used for matching images
   * `repository`: use a different repository for fetching signatures
+  * `imageRegistryCredentials`: use specific registry credentials for this policy.
 
 A verifyImages rule can contain a list of `attestors` or authorities used to check the attached image signature. The type of attestor supported will vary based on the tool used to sign the image. For example, Sigstore Cosign supports public keys, certificates, and keyless attestors.
 
@@ -39,6 +40,12 @@ The `imageVerify` rule can be combined with [auto-gen](/docs/writing-policies/au
 The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the required count of attestors in the `entries` list that must be verified. By default, and when not specified, all attestors are verified.
 
 The `attestors.count` specifies the required count of attestors in the entries list that must be verified. By default, and when not specified, all attestors are verified.
+
+The `imageRegistryCredentials` attribute allows configuration of registry credentials per policy. Kyverno falls back to global credentials if this is empty.
+
+The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
+
+The `imageRegistryCredentials.secret` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 

@@ -25,9 +25,17 @@ This is a monthly meeting for the broader community where the Kyverno maintainer
 - Monthly on the second Thursday at 7:00 AM PST
 - [Repo](https://github.com/nirmata/office-hours-for-kyverno)
 
-### Contributors Meeting
+### Maintainers Meeting
 
-This is a weekly forum for Kyverno contributors and maintainers to discuss project delivery and implementation topics such as feature designs, fixes, code, and documentation:
+
+This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Contributors and end users are welcome to attend and participate but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting.
+
+- Weekly every Tuesday at 7:30 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
+
+### Community Meeting
+
+This is a public, weekly for Kyverno maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 - Weekly every Wednesday at 9:00 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
@@ -48,9 +56,9 @@ The project contributors use a combination of [GitHub discussions](https://githu
 
 Kyverno is a CNCF incubating project and is growing fast. To qualify for the [graduation level](https://github.com/cncf/toc/blob/main/process/graduation_criteria.md#graduation-stage) the CNCF requires production usage by multiple end users.
 
-The goal of this adopters program is to gather real-world usage examples and help Kyverno graduate. We hope to achieve this by learning from the existing and new adopters of Kyverno who are willing to share their stories with CNCF.
+The goal of this adopters program is to gather real-world usage examples and help the Kyverno project grow. We hope to achieve this by learning from the existing and new adopters of Kyverno who are willing to share their stories with CNCF.
 
-To participate, fill out the [Kyverno adopters form](https://docs.google.com/forms/d/e/1FAIpQLSe1IBSxDFn_iAAq9vd0nQdjKbapvgGyM8j2IX_z4xSCu-OSNg/viewform?usp=sf_link).
+To participate, fill out the [Kyverno adopters form](https://forms.gle/K5CApcBAD5D4H1AG8).
 
 ## Project Governance
 
@@ -178,7 +186,21 @@ The following responsibilities apply to the subproject for which one would be an
 
 **Off-boarding Criteria**
 
-- Voted out by a majority of current maintainers via a GitHub issue during a voting period lasting seven (7) days. A vote may be called by any maintainer after the point at which the responsibilities have not been met. A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+An off-boarding vote may be called by any maintainer if any of the following criteria are met:
+- A maintainer has made less than 30 contributions over a span of 6 months.
+  - Contributions can be tracked using the [DevStats dashboard](https://kyverno.devstats.cncf.io/d/66/developer-activity-counts-by-companies?orgId=1&var-period_name=Last%206%20months&var-metric=contributions&var-repogroup_name=All&var-country_name=All&from=1522810884223&to=1680577284223&var-companies=All).
+  - Other relevant data will be collected and evaluated to assess the maintainer's contributions. This includes their involvement in discussions, conversations on Slack, and any other relevant interactions.
+
+
+The off-boarding process includes the following steps:
+- The off-boarding process is initiated by any currently active maintainer who conducts a review of the maintainers list and proceeds to initialize the off-boarding process if the above criteria are met.
+- The plans of off-boarding process is sent in a private Slack message or email to the candidate.
+- If the candidate for removal states plans to continue participating, another 6 months will be granted to the candidate to make contributions and the new cycle starts. No action is taken and this process terminates.
+- If the candidate fails to meet the criteria during the second attempt to make contributions, the off-boarding process continues.
+- A pull request (PR) proposing movement of the candidate is sent, initiating the public voting phase.
+- The vote passes if a majority of current maintainers vote yes during a voting period lasting seven (7) days.
+- A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
+
 
 #### Admins
 
