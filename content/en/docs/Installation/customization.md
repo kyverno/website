@@ -273,7 +273,7 @@ The following flags can be used to control the advanced behavior of the various 
 14. `dumpPayload` (AC): toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
 15. `enableConfigMapCaching` (ABR): enables the ConfigMap caching feature. Defaults to `true`.
 16. `enableDeferredLoading` (A): enables deferred (lazy) loading of variables (1.10.1+). Defaults to `true`. Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0.
-17. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `false`.
+17. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `true`.
 18. `enableTracing` (ABCR): set to enable exposing traces. Default is `false`.
 19. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted.
 20. `forceFailurePolicyIgnore` (A): set to force Failure Policy to `Ignore`. Default is `false`.
@@ -311,10 +311,11 @@ The following flags can be used to control the advanced behavior of the various 
 52. `tracingCreds` (ABCR): set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used.
 53. `tracingPort` (ABCR): tracing receiver port. Default is `"4317"`.
 54. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-55. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
-56. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
-57. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-58. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
+55. `ttlReconciliationInterval` (C): defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. Default is `1m`. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details.
+56. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
+57. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
+58. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
+59. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
 
 ### Policy Report access
 
