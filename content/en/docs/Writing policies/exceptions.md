@@ -6,7 +6,7 @@ weight: 80
 ---
 
 {{% alert title="Warning" color="warning" %}}
-Policy exceptions are an **alpha** feature and requires setting certain [container flags](/docs/installation/customization/#container-flags) to enable. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+Policy exceptions are a **beta** feature and requires setting certain container flags to enable. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/writing-policies/match-exclude/#match-statements), [preconditions](/docs/writing-policies/preconditions/) at multiple hierarchies, [anchors](/docs/writing-policies/validate/#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
@@ -63,7 +63,7 @@ Auto-generated rules for Pod controllers must be specified along with the Pod co
 {{% /alert %}}
 
 ```yaml
-apiVersion: kyverno.io/v2alpha1
+apiVersion: kyverno.io/v2beta1
 kind: PolicyException
 metadata:
   name: delta-exception
