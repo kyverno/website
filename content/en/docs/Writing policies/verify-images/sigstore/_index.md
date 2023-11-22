@@ -695,7 +695,7 @@ verifyImages:
 
 ## Ignoring Tlogs and SCT Verification
 
-Cosign uses rekor, a transparency log service to store signatures. In Cosign 2.0 verifies rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in kyverno policies:
+Cosign uses Rekor, a transparency log service to store signatures. In Cosign 2.0 verifies Rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in Kyverno policies:
 
 ```yaml
 verifyImages:
