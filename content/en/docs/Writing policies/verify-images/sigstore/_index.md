@@ -695,7 +695,7 @@ verifyImages:
 
 ## Ignoring Tlogs and SCT Verification
 
-Cosign 2.0 verifies rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in kyverno policies:
+Cosign uses rekor, a transparency log service to store signatures. In Cosign 2.0 verifies rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in kyverno policies:
 
 ```yaml
 verifyImages:
@@ -714,7 +714,7 @@ verifyImages:
           url: https://rekor.sigstore.dev
 ```
 
-Kyverno versions >= 1.11 also does SCT verification, a proof of inclusion in a certificate transparency log by default for verifying Fulcio certificates. To disable this, use `ignoreSCT: true`:
+Cosign also does SCT verification, a proof of inclusion in a certificate transparency log for verifying Fulcio certificates. In Cosign 2.0 it is done by default . To disable this, use `ignoreSCT: true`:
 
 ```yaml
 verifyImages:
@@ -747,7 +747,7 @@ verifyImages:
 
 ## Using custom Rekor public key and CTLogs public key
 
-You can also provide the rekor public key and ctlog public key instead of rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
+You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
 
 ```yaml
 verifyImages:
@@ -775,7 +775,7 @@ verifyImages:
           -----END PUBLIC KEY-----
 ```
 
-## Using a custom TUF for custom sigstore deployements
+## Using a custom TUF for custom Sigstore deployments
 
 If you want to have your own Sigstore infrastructure to be fully in control of the entire signing and verification stack, including the root key material, you can set up your own root of trust to use TUF. To configure Kyverno to use your TUF setup, use `--tufRoot` and `--tufMirror` flags for custom Sigstore deployments.
 
