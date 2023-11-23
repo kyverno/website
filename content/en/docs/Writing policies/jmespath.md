@@ -1,5 +1,5 @@
 ---
-title: JMESPath 
+title: JMESPath
 description: The JSON query language behind Kyverno.
 weight: 130
 ---
@@ -877,7 +877,7 @@ For example, the first collection compared to the second below results in `true`
 ```json
 {
   "color": "tan",
-  "dog": "lab"  
+  "dog": "lab"
 }
 ```
 
@@ -894,7 +894,7 @@ Likewise, these two below collections also result in `true` when compared becaus
 {
   "color": "tan",
   "weight":"chonky",
-  "dog": "lab"  
+  "dog": "lab"
 }
 ```
 
@@ -910,7 +910,7 @@ These last two collections when compared are `false` because one of the values o
 ```json
 {
   "color": "black",
-  "dog": "lab"  
+  "dog": "lab"
 }
 ```
 
@@ -950,6 +950,90 @@ spec:
           - key: "{{pdb_count}}"
             operator: LessThan
             value: 1
+```
+
+</p>
+</details>
+
+### Lookup
+
+<details><summary>Expand</summary>
+<p>
+
+The `lookup()` function returns the value for the given key/index in an object/array.
+While the JMESPath language allows lookups with constant keys/indexes only, the `lookup()` function supports arbitrary JMESPath expressions, thus enabling _dynamic_ lookups.
+
+**Parameters:**
+
+| Input 1       | Input 2        | Output         |
+|---------------|----------------|----------------|
+| Map (Object)  | String         | any            |
+| Array         | Number         | any            |
+
+- _Input 1_: The object or array to look into.
+- _Input 2_: The key of type String to look up in the object or the index of type Number to look up in the array. Array indexes must be integer numbers.
+- _Output_: The value corresponding to the key or index, or `null` if the key or index does not exist.
+
+Examples:
+
+| Expression | Result |
+|---|---|
+| ``lookup( `{"key1": "value1", "key2": "value2"}`, `"key2"` )`` | `"value2"` |
+| ``lookup( `["item0", "item1", "item2"]`, `1` )`` | `"item1"` |
+
+**Example object lookup**
+
+A policy denies a pod if at least one container [has an AppArmor profile](https://kubernetes.io/docs/tutorials/security/apparmor/) other than `runtime/default` configured via annotation `container.apparmor.security.beta.kubernetes.io/<container_name>`:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: lookup-demo
+spec:
+  rules:
+  - name: demo
+    match:
+      all:
+      - resources:
+          kinds:
+          - v1/Pod
+        namespaces:
+        - lookup-demo
+    validate:
+      message: Using AppArmor profiles other than 'runtime/default' is forbidden
+      deny:
+        conditions:
+          all:
+          - key: |-
+              request.object.spec.[initContainers,containers] || `[]`
+              |
+              []
+              |
+              [?
+                (
+                  lookup(
+                    `{{ request.object.metadata.annotations || `{}` }}`
+                    ,
+                    join('', ['container.apparmor.security.beta.kubernetes.io/', name])
+                  )
+                  || 'runtime/default'
+                ) != 'runtime/default'
+              ]
+            operator: NotEquals
+            value: []
+```
+
+**Example array lookup**
+
+Randomly select an entry from an array:
+
+```sh
+$ cat <<EOF | kubectl kyverno jp query "lookup(@, modulo(random('[0-9]{1,6}') | parse_json(@), length(@)))"
+- item1
+- item2
+- item3
+EOF
 ```
 
 </p>
@@ -1135,16 +1219,16 @@ spec:
           - Pod
     context:
     - name: envs
-      variable: 
+      variable:
         jmesPath: request.object.spec.containers[].env[]
     - name: envs_to_labels
-      variable: 
+      variable:
         jmesPath: object_from_lists(envs[].name, envs[].value)
     mutate:
       patchStrategicMerge:
         metadata:
           labels:
-            "{{envs_to_labels}}"        
+            "{{envs_to_labels}}"
 ```
 
 Given an incoming Pod that looks like the following
@@ -1632,9 +1716,9 @@ spec:
               - http:
                   paths:
                   - backend:
-                      service: 
+                      service:
                         name: kuard
-                        port: 
+                        port:
                           number: 8080
                     path: "{{ replace('{{element.path}}', '/cart', '/shoppingcart', `1`) }}"
                     pathType: ImplementationSpecific
@@ -2352,7 +2436,7 @@ kind: ClusterPolicy
 metadata:
   name: time-since-demo
 spec:
-  validationFailureAction: Audit 
+  validationFailureAction: Audit
   rules:
     - name: block-stale-images
       match:
@@ -2487,7 +2571,7 @@ The expression `time_utc('2021-01-02T18:04:05-05:00')` results in the output `"2
 |----------------------------------|----------------------------|
 | Time in RFC 3339 (string)        | Time in RFC 3339 (String)  |
 
-**Example:** This policy takes the time of the `thistime` annotation and rewrites it in UTC. 
+**Example:** This policy takes the time of the `thistime` annotation and rewrites it in UTC.
 
 ```yaml
 apiVersion: kyverno.io/v2beta1
