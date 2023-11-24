@@ -37,6 +37,10 @@ The Kyverno CLI can also be installed with [Homebrew](https://brew.sh/) as a [fo
 brew install kyverno
 ```
 
+### Install in GitHub Actions
+
+The Kyverno CLI can be installed in GitHub Actions using [kyverno-cli-installer](https://github.com/marketplace/actions/kyverno-cli-installer) from the GitHub Marketplace. Please refer to [kyverno-cli-installer](https://github.com/marketplace/actions/kyverno-cli-installer) for more information.
+
 ### Manual Binary Installation
 
 The Kyverno CLI may also be installed by manually downloading the compiled binary available on the [releases page](https://github.com/kyverno/kyverno/releases). An example of installing the Kyverno CLI v1.10.0 on a Linux x86_64 system is shown below.

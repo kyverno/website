@@ -1,13 +1,17 @@
 ---
 title: Mutate Rules
 description: >
-  Modify resource configurations.
+  Modify resource configurations during admission or retroactively against existing resources.
 weight: 40
 ---
 
 A `mutate` rule can be used to modify matching resources and is written as either a RFC 6902 JSON Patch or a strategic merge patch.
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
+
+{{% alert title="Note" color="info" %}}
+Kubernetes disallows changes to certain fields in resources including `name`, `namespace`, `uid`, `kind`, and `apiVersion`, therefore you cannot use Kyverno policy to effect any of these fields either during admission or once a resource has been persisted.
+{{% /alert %}}
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](#mutate-existing-resources) policies.
 
@@ -43,8 +47,6 @@ A [JSON Patch](http://jsonpatch.com/), implemented as a mutation method called `
 * `add`
 * `replace`
 * `remove`
-
-With Kyverno, the `add` and `replace` have the same behavior (i.e., both operations will add or replace the target element).
 
 The `patchesJson6902` method can be useful when a specific mutation is needed which cannot be performed by `patchesStrategicMerge`. For example, when needing to mutate a specific object within an array, the index can be specified as part of a `patchesJson6902` mutation rule.
 
