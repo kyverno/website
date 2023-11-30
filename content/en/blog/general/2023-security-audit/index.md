@@ -21,7 +21,7 @@ In total, 6 CVE’s were assigned during the audit for the following components:
 | ------ | ---------------------------- | ------------ |
 | CVE-2023-42816 | Notary verifier | Moderate | 
 | CVE-2023-42815 | Notary verifier | Low |
-| CVE-2023-42813 |  Notary verifier | Moderate |
+| CVE-2023-42813 | Notary verifier | Moderate |
 | CVE-2023-42814 | Notary verifier | Low |
 | CVE-2023-47630 | Kyverno Engine Image Loader | High |
 | CVE-2023-46737 | Cosign (upstream) | Low |
