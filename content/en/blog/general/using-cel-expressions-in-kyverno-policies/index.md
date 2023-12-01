@@ -143,7 +143,7 @@ spec:
         image: nginx
 EOF
 ```
-As expected, the statefulset creation is blocked because it violates the rule
+As expected, the Statefulset creation is blocked because it violates the rule
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
