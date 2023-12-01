@@ -9,7 +9,7 @@ Kyverno, in simple terms, is a policy engine for Kubernetes that can be used to 
 
 A Kyverno policy is a collection of rules. Whenever we receive an API request to our Kubernetes cluster, we validate it with a set of rules.
 
-A Policy consists of different clauses, such as:
+A policy consists of different clauses, such as:
 - Match: It selects resources that match the given criteria.
 - Exclude: It selects all but excludes resources that match the specified criteria.
 
