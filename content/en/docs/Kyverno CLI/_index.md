@@ -144,6 +144,10 @@ kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/re
 Format of `value.yaml` with all possible fields:
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: <policy1 name>
     rules:
@@ -176,6 +180,10 @@ namespaceSelector:
 Format of `user_info.yaml`:
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: UserInfo
+metadata:
+  name: user-info
 clusterRoles:
 - admin
 userInfo:
@@ -192,6 +200,7 @@ kind: ClusterPolicy
 metadata:
   name: add-networkpolicy
 spec:
+  background: false
   rules:
   - name: default-deny-ingress
     match:
@@ -235,6 +244,10 @@ Apply a policy to a resource using the `--values-file` or `-f` flag:
 YAML file containing variables (`value.yaml`):
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: add-networkpolicy
     resources:
@@ -263,6 +276,10 @@ Value files also support global values, which can be passed to all resources the
 Format of `value.yaml`:
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: <policy1 name>
     resources:
@@ -345,6 +362,10 @@ spec:
 YAML file containing variables (`value.yaml`):
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: cm-globalval-example
     resources:
@@ -372,6 +393,10 @@ kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/re
 Format of `value.yaml`:
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 namespaceSelector:
   - name: <namespace1 name>
     labels:
@@ -400,12 +425,12 @@ spec:
         - resources:
             kinds:
               - Pod
-          namespaceSelector:
-            matchExpressions:
-            - key: foo.com/managed-state
-              operator: In
-              values:
-              - managed
+            namespaceSelector:
+              matchExpressions:
+              - key: foo.com/managed-state
+                operator: In
+                values:
+                - managed
       validate:
         message: "The Pod must end with -nginx"
         pattern:
@@ -441,6 +466,10 @@ metadata:
 YAML file containing variables (`value.yaml`):
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 namespaceSelector:
   - name: test1
     labels:
@@ -508,6 +537,10 @@ spec:
 `value.yaml`
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: cm-variable-example
     rules:
@@ -727,10 +760,13 @@ The Kyverno CLI via the `test` command does not embed the Kubernetes control pla
 
 #### Test File Structures
 
-The test declaration file format of `kyverno-test.yaml` must be of the following format. In order to quickly generate a sample manifest which you can populate with your specified inputs, use either the `--manifest-mutate` or `--manifest-validate` command and output the result to a `kyverno-test.yaml` file.
+The test declaration file format of `kyverno-test.yaml` must be of the following format.
 
 ```yaml
-name: mytests
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test
 policies:
   - <path/to/policy.yaml>
   - <path/to/policy.yaml>
@@ -741,14 +777,14 @@ variables: variables.yaml # optional file for declaring variables. see below for
 userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 results:
 - policy: <name>
-  rule: <name>
-  resource: <name>
-  resources: # optional, primarily for `validate` rules. One of either `resource` or `resources[]` must be specified. Use `resources[]` when a number of different resources should all share the same test result.
-  - <name_1>
-  - <name_2>
-  namespace: <name> # when testing for a resource in a specific Namespace
+  isValidatingAdmissionPolicy: false # when the policy is ValidatingAdmissionPolicy, this field is required.
+  rule: <name> # when the policy is a Kyverno policy, this field is required.
+  resources: # optional, primarily for `validate` rules.
+  - <namespace_1/name_1>
+  - <namespace_2/name_2>
   patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
+  cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
   kind: <kind>
   result: pass
 ```
@@ -764,6 +800,10 @@ The test declaration consists of the following parts:
 If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](https://kyverno.io/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
   - name: exclude-namespaces-example
     rules:
@@ -782,6 +822,10 @@ policies:
 A variables file may also optionally specify global variable values without the need to name specific rules or resources avoiding repetition for the same variable and same value.
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 globalValues:
   request.operation: UPDATE
 ```
@@ -789,6 +833,10 @@ globalValues:
 If policies use a namespaceSelector, these can also be specified in the variables file.
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 namespaceSelector:
   - name: test1
     labels:
@@ -798,6 +846,10 @@ namespaceSelector:
 The user can also declare a `user_info.yaml` file that can be used to pass admission request information such as roles, cluster roles, and subjects.
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: UserInfo
+metadata:
+  name: user-info
 clusterRoles:
 - admin
 userInfo:
@@ -807,6 +859,10 @@ userInfo:
 Testing for subresources in `Kind/Subresource` matching format also requires a `subresources{}` section in the values file.
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 subresources:
   - subresource:
       name: <name of subresource>
@@ -823,6 +879,10 @@ subresources:
 Here is an example when testing for subresources:
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 subresources:
   - subresource:
       name: "deployments/scale"
@@ -940,7 +1000,10 @@ spec:
 Test manifest (`kyverno-test.yaml`):
 
 ```yaml
-name: disallow_latest_tag
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow_latest_tag
 policies:
   - disallow_latest_tag.yaml
 resources:
@@ -1039,6 +1102,10 @@ spec:
 Variables manifest (`values.yaml`):
 
 ```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
 policies:
 - name: add-default-resources
   resources:
@@ -1053,7 +1120,10 @@ policies:
 Test manifest (`kyverno-test.yaml`):
 
 ```yaml
-name: add-default-resources
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: add-default-resources
 policies:
   - add-default-resources.yaml
 resources:
@@ -1149,7 +1219,10 @@ spec:
 Test manifest (`kyverno-test.yaml`):
 
 ```yaml
-name: deny-all-traffic
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: deny-all-traffic
 policies:
   - add_network_policy.yaml
 resources:
