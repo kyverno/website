@@ -268,7 +268,7 @@ The following flags can be used to control the advanced behavior of the various 
 8. `backgroundScan` (R): enables/disables background reporting scans. Has no effect on background reconciliation by the background controller. `true` by default.
 9. `backgroundScanInterval` (R): sets the time interval when periodic background scans for reporting take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
 10. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time.
-11. `caSecretName` (AC): overwrites the default secret name of the RootCA certificate.
+11. `caSecretName` (AC): overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.
 12. `clientRateLimitBurst` (ABCR): configures the maximum burst for throttling. Uses the client default if zero. Default is `300`.
 13. `clientRateLimitQPS` (ABCR): configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. Default is `300`.
 14. `disableMetrics` (ABCR): specifies whether to enable exposing the metrics. Default is `false`.
