@@ -704,24 +704,27 @@ summary:
 
 The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
 
-1. metrics-config file
-2. test file
-3. user-info file
-4. values file
-5. exception file
+1. metrics-config file: Helps you create a configmap with namespaces to include or exclude for kyverno-metrics 
+2. test file: Helps you create test files to use with `kyverno test` command
+3. user-info file: Helps you create a userinfo file which contains user name, group, role and clusterrole
+4. values file: Helps you create a file that specifies global as well as local policy values
+5. exception file: Helps you create an exception to an existing policy using a [Policy Exception](/docs/writing-policies/exceptions/)
 
 Examples:
 
 To create a values file
+
 ```sh
 kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
 ```
 
 To create a policy exception file
+
 ```sh
 kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment,name=test-*"
 ```
 To create a test file
+
 ```sh
 kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
 ```
