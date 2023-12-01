@@ -323,7 +323,6 @@ The following flags can be used to control the advanced behavior of the various 
 63. `caSecretName` (AC): overwrites the default secret name of the RootCA certificate.
 64. `tlsSecretName` (AC): overwrites the default secret name of the TLS certificate.
 
-
 ### Policy Report access
 
 During a Kyverno installation, a ClusterRole named `kyverno:rbac:admin:policyreports` is created which has permissions to perform all operations the two main Policy Report custom resources, `policyreport` and `clusterpolicyreport`. To grant access to a Namespace admin, configure the following YAML manifest according to your needs then apply to the cluster.
