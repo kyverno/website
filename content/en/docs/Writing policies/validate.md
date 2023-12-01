@@ -1313,6 +1313,56 @@ CEL expressions have access to the contents of the Admission request/response, o
 
 Read [Supported evaluation on CEL](https://github.com/google/cel-spec/blob/v0.6.0/doc/langdef.md#evaluation) for more information about CEL rules.
 
+`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](/docs/writing-policies/autogen/) section for more information.
+
+```yaml
+status:
+  autogen:
+    rules:
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - DaemonSet
+            - Deployment
+            - Job
+            - StatefulSet
+            - ReplicaSet
+            - ReplicationController
+        resources: {}
+      mutate: {}
+      name: autogen-disallow-latest-tag
+      validate:
+        cel:
+          expressions:
+          - expression: object.spec.template.spec.containers.all(container, !container.image.contains('latest'))
+            message: Using a mutable image tag e.g. 'latest' is not allowed.
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - CronJob
+        resources: {}
+      mutate: {}
+      name: autogen-cronjob-disallow-latest-tag
+      validate:
+        cel:
+          expressions:
+          - expression: object.spec.jobTemplate.spec.template.spec.containers.all(container,
+              !container.image.contains('latest'))
+            message: Using a mutable image tag e.g. 'latest' is not allowed.
+```
+
 ### Parameter Resources
 
 Parameter resources enable a policy configuration to be separated from its definition. A policy can define `cel.paramKind`, which outlines the GVK of the parameter resource, and then associate the policy with a specific parameter resource via `cel.paramRef`.
