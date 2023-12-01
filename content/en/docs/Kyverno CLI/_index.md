@@ -797,6 +797,155 @@ Applying 1 policy rule(s) to 1 resource(s)...
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
 
+### Create
+
+The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
+
+1. metrics-config file: Helps you create a configmap with namespaces to include or exclude for kyverno-metrics 
+2. test file: Helps you create test files to use with `kyverno test` command
+3. user-info file: Helps you create a userinfo file which contains user name, group, role and clusterrole
+4. values file: Helps you create a file that specifies global as well as local policy values
+5. exception file: Helps you create an exception to an existing policy using a [Policy Exception](/docs/writing-policies/exceptions/)
+
+Examples:
+
+To create a metrics-config file
+
+```sh
+$ kyverno create metrics-config -i ns-included-1 -i ns-included-2 -e ns-excluded
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno-metrics
+  namespace: kyverno
+data:
+  namespaces: |
+    {
+      "include": [
+        "ns-included-1",
+        "ns-included-2"
+      ],
+      "exclude": [
+        "ns-excluded"
+      ]
+    }
+```
+
+To create a values file
+
+```sh
+$ kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
+
+# list of policy values
+policies:
+  - name: policy
+    rules:
+      - name: rule
+        values:
+          env: demo
+  - name: policy
+    resources:
+      - name: resource
+        values:
+          env: demo
+
+# list of global values
+globalValues:
+  request.mode: dev
+
+# list of namespace selectors
+namespaceSelector:
+  - name: prod
+    labels:
+      env: prod
+```
+
+To create a policy exception file
+
+```sh
+$ kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment"
+
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: my-exception
+  namespace: my-ns
+spec:
+  background: true
+  match:
+    any:
+    - kinds:
+        - Pod
+        - Deployment
+  exceptions:
+    - policyName: policy
+      ruleNames:
+        - rule-1
+        - rule-2
+```
+To create a test file
+
+```sh
+$ kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
+
+# test name
+name: test-name
+
+# list of policy files
+policies:
+  - policy.yaml
+
+# list of resource files
+resources:
+  - resource.yaml
+
+# variables file (optional)
+variables: values.yaml
+
+# list of expected results
+results:
+  - policy: policy-name
+    rule: rule-name
+    resource: resource-name
+    namespace: resource-namespace
+    kind: resource-kind
+    result: pass
+```
+To create a user-info file
+
+```sh
+$ kyverno create user-info -u molybdenum@somecorp.com -g basic-user -c admin  
+
+# list of roles
+roles:
+
+# list of cluster roles
+clusterRoles:
+  - admin
+
+userInfo:
+  # user name
+  username: molybdenum@somecorp.com
+
+  # list of groups
+  groups:
+    - basic-user
+```
+
+### Docs
+
+The Kyverno CLI has a `docs` subcommand which makes it possible to generate Kyverno CLI reference documentation. It can be used to generate simple markdown files or markdown to be used for the website.
+
+Examples:
+
+To generate simple markdown documentation
+
+```sh
+$ kyverno docs -o . --autogenTag=false
+
+```
+
 ### Test
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
@@ -812,7 +961,7 @@ In each test, there are four desired results which can be tested for. If the act
 3. fail: The resource does not pass the policy definition. Typically used for `validate` rules with pattern-style policy definitions.
 4. warn: Setting the annotation `policies.kyverno.io/scored` to `"false"` on a resource or policy which would otherwise fail will be considered a `warn`.
 
-For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
+Use `--detailed-results` for a comprehensive output (default value `false`). For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
 {{% alert title="Note" color="info" %}}
 The Kyverno CLI via the `test` command does not embed the Kubernetes control plane components and therefore is not able to perform the types of initial mutations subjected to a resource as part of an in-cluster creation flow. Take care to ensure the manifests you test account for these modifications.
