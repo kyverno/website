@@ -216,7 +216,7 @@ spec:
             message: "The only permitted hostPorts are in the range 5000-6000."
 EOF
 ```
-`spec.rules.celPreconditions` are CEL expressions. All celPreconditions must be evaluated to true for the resource to be evaluated. Therefore, any pod with nginx in its metadata.name will be evaluated.
+`spec.rules.celPreconditions` are CEL expressions. All celPreconditions must be evaluated to true for the resource to be evaluated. Therefore, any pod with nginx in its `metadata.name` will be evaluated.
 
 Let’s try deploying an Apache server with hostPort set to 80.
 ```yaml
