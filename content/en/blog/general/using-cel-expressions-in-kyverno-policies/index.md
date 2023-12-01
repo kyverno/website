@@ -22,7 +22,7 @@ A policy consists of different clauses, such as:
 
 > Each rule can contain only a single validate, mutate, generate, or verifyImages child declaration.
 
-In this post, I will show you how to write CEL expressions in Kyverno policies for resource validation. Common Expression Language (CEL) was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
+In this post, I will show you how to write CEL expressions in Kyverno policies for resource validation. Common Expression Language (CEL) was first introduced to Kubernetes for the validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
 
 ## CEL Expressions in validate rules
 ### Creating a policy to disallow host paths for Deployments
