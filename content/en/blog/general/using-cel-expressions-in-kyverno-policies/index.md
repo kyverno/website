@@ -152,7 +152,7 @@ resource StatefulSet/default/bad-statefulset was blocked due to the following po
 check-statefulset-namespace:
   statefulset-namespace: The StatefulSet must be created in the 'production' namespace.
 ```
-Let's create a statefulset in the production namespace
+Let's create a Statefulset in the production namespace
 ```yaml
 kubectl apply -f - << EOF
 apiVersion: apps/v1
