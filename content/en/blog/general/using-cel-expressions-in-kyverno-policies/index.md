@@ -84,7 +84,7 @@ spec:
 EOF
 ```
 
-We can see that our policy is enforced, great!
+We can see that our policy is enforced. Great!
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
