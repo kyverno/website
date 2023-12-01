@@ -20,14 +20,18 @@ A policy consists of different clauses, such as:
 - Generate: It creates additional resources.
 - Verify Images: It verifies container image signatures using Cosign and Notary.
 
+Refer to [Selecting Resources](https://kyverno.io/docs/writing-policies/match-exclude/) for more information.
+
 > Each rule can contain only a single validate, mutate, generate, or verifyImages child declaration.
 
 In this post, I will show you how to write CEL expressions in Kyverno policies for resource validation. Common Expression Language (CEL) was first introduced to Kubernetes for the validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
 
 ## CEL Expressions in validate rules
+
 ### Creating a policy to disallow host paths for Deployments
 
-The below policy ensures no hostPath volumes are in use for deployments.
+The below policy ensures no hostPath volumes are in use for Deployments.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
@@ -55,6 +59,7 @@ EOF
 `spec.rules.validate.cel` contains CEL expressions that use the Common Expression Language (CEL) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
 
 Now, let’s try deploying an app that uses a hostPath:
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -85,6 +90,7 @@ EOF
 ```
 
 We can see that our policy is enforced. Great!
+
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
@@ -96,7 +102,9 @@ disallow-host-path:
 ```
 
 ### Creating a policy to check StatefulSet Namespaces
-The below policy ensures that any StatefulSet is created in the production namespace
+
+The below policy ensures that any StatefulSet is created in the `production` Namespace
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
@@ -121,7 +129,8 @@ spec:
 EOF
 ```
 
-Let’s try creating a StatefulSet in the default namespace
+Let’s try creating a StatefulSet in the `default` Namespace.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -143,7 +152,9 @@ spec:
         image: nginx
 EOF
 ```
+
 As expected, the Statefulset creation is blocked because it violates the rule
+
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
@@ -152,7 +163,9 @@ resource StatefulSet/default/bad-statefulset was blocked due to the following po
 check-statefulset-namespace:
   statefulset-namespace: The StatefulSet must be created in the 'production' namespace.
 ```
-Let's create a Statefulset in the production namespace
+
+Let's create a Statefulset in the `production` Namespace.
+
 ```yaml
 kubectl apply -f - << EOF
 apiVersion: apps/v1
@@ -175,12 +188,14 @@ spec:
         image: nginx
 EOF
 ```
-The Statefulset is successfully created. Great!
+
+The StatefulSet is successfully created. Great!
+
 ```
 statefulset.apps/good-statefulset created
 ```
-In the previous two examples, we have used `object` in CEL expressions which refers to the incoming object and `namespaceObject` which refers to the namespace that the incoming object belongs to. 
 
+In the previous two examples, we have used `object` in CEL expressions which refers to the incoming object and `namespaceObject` which refers to the Namespace that the incoming object belongs to. 
 
 Some other useful variables that we can use in CEL expressions are
 1. oldObject: The existing object. The value is null for CREATE requests.
@@ -190,6 +205,7 @@ Some other useful variables that we can use in CEL expressions are
 ## CEL Preconditions in Kyverno Policies
 
 The below policy ensures the hostPort field is set to a value between 5000 and 6000 for pods whose `metadata.name` set to `nginx`
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
@@ -216,9 +232,11 @@ spec:
             message: "The only permitted hostPorts are in the range 5000-6000."
 EOF
 ```
-`spec.rules.celPreconditions` are CEL expressions. All celPreconditions must be evaluated to true for the resource to be evaluated. Therefore, any pod with nginx in its `metadata.name` will be evaluated.
+
+`spec.rules.celPreconditions` are CEL expressions. All celPreconditions must be evaluated to true for the resource to be evaluated. Therefore, any Pod with nginx in its `metadata.name` will be evaluated.
 
 Let’s try deploying an Apache server with hostPort set to 80.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -234,11 +252,15 @@ spec:
       hostPort: 80
 EOF
 ```
-You’ll see that it’s successfully created because the validation rule wasn’t applied on the new pod as it doesn’t satisfy the celPreconditions. That’s exactly what we need.
+
+You’ll see that it’s successfully created because the validation rule wasn’t applied on the new Pod as it doesn’t satisfy the celPreconditions. That’s exactly what we need.
+
 ```
-pod/apache created
+Pod/apache created
 ```
+
 Let’s try deploying an Nginx server with hostPort set to 80.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -254,7 +276,9 @@ spec:
       hostPort: 80
 EOF
 ```
-Since the new pod satisfies the celPreconditions, the validation rule will be applied. As a result, the creation of the pod will be blocked as it violates the rule.
+
+Since the new Pod satisfies the celPreconditions, the validation rule will be applied. As a result, the creation of the Pod will be blocked as it violates the rule.
+
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
@@ -267,6 +291,7 @@ disallow-host-port-range:
 ## Parameter Resources in Kyverno Policies
 
 The below policy ensures the deployment replicas are less than a specific value. This value is defined in a parameter resource.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
@@ -296,9 +321,11 @@ spec:
               messageExpression:  "'Deployment spec.replicas must be less than ' + string(params.maxReplicas)"
 EOF
 ```
+
 The `cel.paramKind` and `cel.paramRef` specify the resource used to parameterize this policy. For this example, it is configured by `ReplicaLimit` custom resources.
 
 The ReplicaLimit could be as follows:
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: rules.example.com/v1
@@ -308,7 +335,9 @@ metadata:
 maxReplicas: 3
 EOF
 ```
+
 Here’s the corresponding custom resource definition:
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apiextensions.k8s.io/v1
@@ -339,7 +368,9 @@ spec:
               type: integer
 EOF
 ```
+
 Now, let’s try deploying an app with five replicas.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -361,7 +392,9 @@ spec:
         image: nginx
 EOF
 ```
+
 As expected, the deployment creation will be blocked because it violates the rule.
+
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
@@ -370,7 +403,9 @@ resource Deployment/default/nginx was blocked due to the following policies
 check-deployment-replicas:
   deployment-replicas: Deployment spec.replicas must be less than 3
 ```
+
 Let’s try deploying an app with two replicas.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -392,17 +427,21 @@ spec:
         image: nginx
 EOF
 ```
+
 The deployment is created successfully. Great!
+
 ```
 deployment.apps/nginx created
 ```
 
 ## CEL Variables in Kyverno Policies
-If an expression grows too complicated, or part of the expression is reusable and computationally expensive to evaluate. We can extract some parts of the expressions into variables. A variable is a named expression that can be referred later as variables in other expressions.
+
+If an expression grows too complicated, or part of the expression is reusable and computationally expensive to evaluate, We can extract some parts of the expressions into variables. A variable is a named expression that can be referred later as variables in other expressions.
 
 The order of variables is important because a variable can refer to other variables defined before it. This ordering prevents circular references.
 
-The below policy enforces that image repo names match the environment defined in its namespace. It enforces that all containers of deployment have the image repo match the environment label of its namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
+The below policy enforces that image repo names match the environment defined in its Namespace. It enforces that all containers of deployment have the image repo match the environment label of its Namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the Namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
@@ -435,7 +474,9 @@ spec:
               messageExpression: "'only ' + variables.environment + ' images are allowed in namespace ' + namespaceObject.metadata.name"
 EOF
 ```
-Let’s start with creating a namespace that has a label of environment: staging
+
+Let’s start with creating a Namespace that has a label of environment: staging
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -446,7 +487,9 @@ metadata:
     environment: staging
 EOF
 ```
-And then create a deployment whose image is example.com/nginx in the staging-ns namespace
+
+And then create a deployment whose image is example.com/nginx in the `staging-ns` Namespace.
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -469,9 +512,11 @@ spec:
         image: example.com/nginx
 EOF
 ```
+
 As expected, the deployment creation will be blocked since its image must be staging.example.com/nginx
 
 Let's try setting the deployment image to staging.example.com/nginx instead
+
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -494,13 +539,18 @@ spec:
         image: staging.example.com/nginx
 EOF
 ```
+
 The deployment is created successfully. Great!
+
 ```
 deployment.apps/deployment-pass created
 ```
 
 ## Auto-Gen Rules for CEL Expressions
-Since Kubernetes has many higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources, it’d be inefficient to write a policy that targets Pods and every higher-level controller. Kyverno solves this issue by supporting the automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod.
+
+Since Kubernetes has many higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources, it’d be inefficient to write a policy that targets Pods and every higher-level controller. Kyverno solves this issue by supporting the automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod. 
+
+Check the [autogen rules](https://kyverno.io/docs/writing-policies/autogen/) for more information.
 
 For example, when creating a validation policy like below, which disallows latest image tags, the policy applies to all resources capable of generating Pods.
 
@@ -526,6 +576,7 @@ spec:
               message: "Using a mutable image tag e.g. 'latest' is not allowed."
 EOF
 ```
+
 Once the policy is created, these other resources can be shown in auto-generated rules which Kyverno adds to the policy under the status object.
 
 ```yaml
@@ -575,7 +626,9 @@ status:
               !container.image.contains('latest'))
             message: Using a mutable image tag e.g. 'latest' is not allowed.
 ```
+
 Let's try creating an nginx deployment with the latest tag.
+
 ```yaml
 kubectl apply -f - << EOF
 apiVersion: apps/v1
@@ -599,7 +652,9 @@ spec:
         image: nginx:latest
 EOF
 ```
+
 As expected the deployment creation is blocked.
+
 ```
 Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
 
@@ -610,5 +665,6 @@ disallow-latest-tag:
 ```
 
 ## Conclusion 
+
 This blog post explains how to use CEL expressions in Kyverno policies to validate resources covering all the features introduced in Kubernetes ValidatingAdmissionPolicies. 
 Stay tuned for our next post, where we'll show you how to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies.
