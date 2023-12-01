@@ -320,7 +320,8 @@ The following flags can be used to control the advanced behavior of the various 
 60. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
 61. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 62. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
-63. `caSecretName` and `tlsSecretName` (AC): overwrite default secret names of RootCA and TLS certificates.
+63. `caSecretName` (AC): overwrites the default secret name of the RootCA certificate.
+64. `tlsSecretName` (AC): overwrites the default secret name of the TLS certificate.
 
 
 ### Policy Report access
