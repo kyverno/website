@@ -175,7 +175,7 @@ spec:
         image: nginx
 EOF
 ```
-The statefulset is successfully created. Great!
+The Statefulset is successfully created. Great!
 ```
 statefulset.apps/good-statefulset created
 ```
