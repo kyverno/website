@@ -5,7 +5,7 @@ linkTitle: "Using CEL Expressions in Kyverno Policies"
 author: Mariam Fahmy
 description: "Using CEL Expressions in Kyverno Policies"
 ---
-Kyverno, in simple terms, is a policy engine for Kubernetes that can be used to describe policies and validate resource requests against those policies. It allows us to create Policies for our Kubernetes cluster on different levels. It enables us to validate, change, and create resources based on our defined policies.
+Kyverno, in simple terms, is a policy engine for Kubernetes that can be used to describe policies and validate resource requests against those policies. It allows us to create policies for our Kubernetes cluster on different levels. It enables us to validate, change, and create resources based on our defined policies.
 
 A Kyverno policy is a collection of rules. Whenever we receive an API request to our Kubernetes cluster, we validate it with a set of rules.
 
