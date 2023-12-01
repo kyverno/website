@@ -955,6 +955,7 @@ To fix a policy
 
 ```sh
 $ KYVERNO_EXPERIMENTAL=true kyverno fix policy ./fix-policy --save
+
 Processing file (fix-policy/policy.yaml)...
 Done.
 ```
