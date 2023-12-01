@@ -161,7 +161,7 @@ Because this is a label, there is opportunity to chain other Kyverno functionali
 
 ### CLI Refactoring and New Test Schema
 
-In Kyverno 1.11, we have made significant improvements to the CLI, enhancing its stability and usability. A new test manifest schema was introduced to the Kyverno `test` command, now you can validate your `test.yaml` and get helpful error reports during execution. Here’s a snippet of a `test.yaml` and an error is displayed as part of the execution result, note that the full schema such as apiVersion and kind is not supported in this release.
+In Kyverno 1.11, we have made significant improvements to the CLI, enhancing its stability and usability. A new test manifest schema was introduced to the Kyverno `test` command, now you can validate your `kyverno-test.yaml` and get helpful error reports during execution. Here’s a snippet of a `kyverno-test.yaml` and an error is displayed as part of the execution result.
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
@@ -186,7 +186,7 @@ Test errors:
    failed to load test file (json: cannot unmarshal array into Go value of type api.Test)
 ```
 
-Moreover, we have added three new commands to the Kyverno CLI: `create`, `docs` and an experimental `fix`. The `create` command creates various resources that can be used for the Kyverno CLI, including `test.yaml` and the values file that are used for the test command. With the `fix` command, you can now easily resolve any issues and ensure that your Kyverno resources are up-to-date and optimized. The `docs` command enables automatic generation of comprehensive documentation for the Kyverno CLI. It makes it a lot easier for users to access the information they need and stay up-to-date with all the CLI capabilities.
+Moreover, we have added three new commands to the Kyverno CLI: `create`, `docs` and an experimental `fix`. The `create` command creates various resources that can be used for the Kyverno CLI, including `kyverno-test.yaml` and the values file that are used for the test command. With the `fix` command, you can now easily resolve any issues and ensure that your Kyverno resources are up-to-date and optimized. The `docs` command enables automatic generation of comprehensive documentation for the Kyverno CLI. It makes it a lot easier for users to access the information they need and stay up-to-date with all the CLI capabilities.
 
 ## Other Additions
 
