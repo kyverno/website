@@ -1176,7 +1176,7 @@ For many more examples of test cases, please see the [kyverno/policies](https://
 
 ### Create
 
-The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
+The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources for use in both the webhook and the CLI. You can create:
 
 1. metrics-config file
 2. test file
