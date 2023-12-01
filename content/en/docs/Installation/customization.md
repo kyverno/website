@@ -317,7 +317,7 @@ The following flags can be used to control the advanced behavior of the various 
 57. `tracingPort` (ABCR): tracing receiver port. Default is `"4317"`.
 58. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
 59. `ttlReconciliationInterval` (C): defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. Default is `1m`. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details.
-60. `tlsSecretName` (AC): overwrites the default secret name of the TLS certificate.
+60. `tlsSecretName` (AC): overwrites the default secret name of the TLS certificate. See also the related flag `caSecretName`.
 61. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
 62. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
 63. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
