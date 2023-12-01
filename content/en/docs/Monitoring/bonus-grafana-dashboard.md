@@ -13,7 +13,7 @@ weight: 60
 * If your Grafana is configured with the discovery sidecar, set `grafana.enabled` value to `true`.
 * If you're using Grafana Operator, set `grafana.enabled` to `true` and `grafana.grafanaDashboard.enabled` value to `true`.
 
-See more configuration options at <https://github.com/kyverno/kyverno/tree/main/charts/kyverno#grafana>.
+See more configuration options [here](https://github.com/kyverno/kyverno/tree/main/charts/kyverno#grafana).
 
 #### Without Helm Chart
 
