@@ -179,7 +179,7 @@ The statefulset is successfully created. Great!
 ```
 statefulset.apps/good-statefulset created
 ```
-In the previous two examples, we have used object in CEL expressions which refers to the incoming object and namespaceObject which refers to the namespace that the incoming object belongs to. 
+In the previous two examples, we have used `object` in CEL expressions which refers to the incoming object and `namespaceObject` which refers to the namespace that the incoming object belongs to. 
 
 
 Some other useful variables that we can use in CEL expressions are
