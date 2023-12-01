@@ -96,7 +96,7 @@ disallow-host-path:
 ```
 
 ### Creating a policy to check StatefulSet Namespaces
-The below policy ensures that any statefulset is created in the production namespace
+The below policy ensures that any StatefulSet is created in the production namespace
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
