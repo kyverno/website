@@ -706,7 +706,7 @@ summary:
 
 #### ValidatingAdmissionPolicy
 
-With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied to resources as follows:
+With the `apply` command, Kubernetes ValidatingAdmissionPolicies (VAP) can be applied to resources as follows:
 
 Policy manifest (check-deployment-replicas.yaml):
 
