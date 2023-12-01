@@ -11,7 +11,7 @@ A Kyverno policy is a collection of rules. Whenever we receive an API request to
 
 A policy consists of different clauses, such as:
 - Match: It selects the resources to be included in a rule.
-- Exclude: It selects all but excludes resources that match the specified criteria.
+- Exclude: It selects a subset of the resources from the match block which should be excluded from a rule.
 
 > Match and Exclude are used to select resources, users, user groups, service accounts, namespaced roles, and cluster-wide roles.
 
