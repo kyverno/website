@@ -18,7 +18,7 @@ By default, Kyverno will automatically generate self-signed Certificate Authorit
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
-Get all Secrets in Kyverno's Namespace. The secret names are configurable, see the [container flags section](/docs/installation/customization/#container-flags) for more details.
+Get all Secrets in Kyverno's Namespace. The Secret names are configurable, see the [container flags section](/docs/installation/customization/#container-flags) for more details.
 
 ```sh
 $ kubectl -n kyverno get secret
