@@ -121,7 +121,7 @@ spec:
 EOF
 ```
 
-Let’s try creating a statefulset in the default namespace
+Let’s try creating a StatefulSet in the default namespace
 ```yaml
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
