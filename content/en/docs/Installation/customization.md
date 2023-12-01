@@ -18,7 +18,7 @@ By default, Kyverno will automatically generate self-signed Certificate Authorit
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
-Get all Secrets in Kyverno's Namespace.
+Get all Secrets in Kyverno's Namespace. The secret names are configurable, see the [container flags section](/docs/installation/customization/#container-flags) for more details.
 
 ```sh
 $ kubectl -n kyverno get secret
@@ -317,6 +317,7 @@ The following flags can be used to control the advanced behavior of the various 
 57. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
 58. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
 59. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
+60. `caSecretName` and `tlsSecretName` (AC): overwrite default secret names of RootCA and TLS certificates.
 
 ### Policy Report access
 
