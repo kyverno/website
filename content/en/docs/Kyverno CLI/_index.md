@@ -700,6 +700,44 @@ summary:
   warn: 0
 ```
 
+### Create
+
+The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
+
+1. metrics-config file
+2. test file
+3. user-info file
+4. values file
+5. exception file
+
+Examples:
+
+To create a values file
+```sh
+kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
+```
+
+To create a policy exception file
+```sh
+kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment,name=test-*"
+```
+To create a test file
+```sh
+kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
+```
+
+### Docs
+
+The Kyverno CLI has a `docs` subcommand which makes it possible to generate Kyverno CLI reference documentation. It can be used to generate simple markdown files or markdown to be used for the website.
+
+Examples:
+
+To generate simple markdown documentation
+
+```sh
+kyverno docs -o . --autogenTag=false
+```
+
 ### Test
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
@@ -1173,44 +1211,6 @@ Test Summary: 1 tests passed and 0 tests failed
 ```
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
-
-### Create
-
-The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
-
-1. metrics-config file
-2. test file
-3. user-info file
-4. values file
-5. exception file
-
-Examples:
-
-To create a values file
-```sh
-kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
-```
-
-To create a policy exception file
-```sh
-kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment,name=test-*"
-```
-To create a test file
-```sh
-kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
-```
-
-### Docs
-
-The Kyverno CLI has a `docs` subcommand which makes it possible to generate Kyverno CLI reference documentation. It can be used to generate simple markdown files or markdown to be used for the website.
-
-Examples:
-
-To generate simple markdown documentation
-
-```sh
-kyverno docs -o . --autogenTag=false
-```
 
 ### Jp
 
