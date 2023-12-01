@@ -49,7 +49,7 @@ The `imageRegistryCredentials.secret` specifies a list of secrets that are provi
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
-### Cache:
+### Cache
 
 Image verification requires multiple network calls and can be time consuming. Kyverno has a TTL based cache for image verification which caches successful outcomes of image verification. When cache is enabled, an image once verified by a policy will be considerd to be verified until TTL duration expires or there is a change in policy.
 
