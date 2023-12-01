@@ -712,21 +712,128 @@ The Kyverno CLI has a `create` subcommand which makes it possible to create vari
 
 Examples:
 
+To create a metrics-config file
+
+```sh
+$ kyverno create metrics-config -i ns-included-1 -i ns-included-2 -e ns-excluded
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno-metrics
+  namespace: kyverno
+data:
+  namespaces: |
+    {
+      "include": [
+        "ns-included-1",
+        "ns-included-2"
+      ],
+      "exclude": [
+        "ns-excluded"
+      ]
+    }
+```
+
 To create a values file
 
 ```sh
-kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
+$ kyverno create values -g request.mode=dev -n prod,env=prod --rule policy,rule,env=demo --resource policy,resource,env=demo
+
+# list of policy values
+policies:
+  - name: policy
+    rules:
+      - name: rule
+        values:
+          env: demo
+  - name: policy
+    resources:
+      - name: resource
+        values:
+          env: demo
+
+# list of global values
+globalValues:
+  request.mode: dev
+
+# list of namespace selectors
+namespaceSelector:
+  - name: prod
+    labels:
+      env: prod
 ```
 
 To create a policy exception file
 
 ```sh
-kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment,name=test-*"
+$ kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment"
+
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: my-exception
+  namespace: my-ns
+spec:
+  background: true
+  match:
+    any:
+    - kinds:
+        - Pod
+        - Deployment
+  exceptions:
+    - policyName: policy
+      ruleNames:
+        - rule-1
+        - rule-2
 ```
 To create a test file
 
 ```sh
-kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
+$ kyverno create test -p policy.yaml -r resource.yaml -f values.yaml --pass policy-name,rule-name,resource-name,resource-namespace,resource-kind
+
+# test name
+name: test-name
+
+# list of policy files
+policies:
+  - policy.yaml
+
+# list of resource files
+resources:
+  - resource.yaml
+
+# variables file (optional)
+variables: values.yaml
+
+# list of expected results
+results:
+  - policy: policy-name
+    rule: rule-name
+    resource: resource-name
+    namespace: resource-namespace
+    kind: resource-kind
+    result: pass
+```
+To create a user-info file
+
+```sh
+$ kyverno create user-info -u molybdenum@somecorp.com -g basic-user -c admin  
+
+# list of roles
+roles:
+
+# list of cluster roles
+clusterRoles:
+  - admin
+
+userInfo:
+  # user name
+  username: molybdenum@somecorp.com
+
+  # list of groups
+  groups:
+    - basic-user
 ```
 
 ### Docs
@@ -738,7 +845,7 @@ Examples:
 To generate simple markdown documentation
 
 ```sh
-kyverno docs -o . --autogenTag=false
+$ kyverno docs -o . --autogenTag=false
 ```
 
 ### Test
