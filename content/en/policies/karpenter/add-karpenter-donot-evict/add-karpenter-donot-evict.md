@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
-    If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node, and a request is made to delete the Node, Karpenter will not drain any Pods from that Node or otherwise try to delete the Node. This is useful for Pods that should run interrupted to completion. This policy mutates Jobs and CronJobs so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation.
+    If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node, and a request is made to delete the Node, Karpenter will not drain any Pods from that Node or otherwise try to delete the Node. This is useful for Pods that should run uninterrupted to completion. This policy mutates Jobs and CronJobs so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation.
 ---
 
 ## Policy Definition
@@ -28,7 +28,7 @@ metadata:
       If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node,
       and a request is made to delete the Node, Karpenter will not drain any Pods from
       that Node or otherwise try to delete the Node. This is useful for Pods that should
-      run interrupted to completion. This policy mutates Jobs and CronJobs
+      run uninterrupted to completion. This policy mutates Jobs and CronJobs
       so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation.
 spec:
   rules:
@@ -60,4 +60,5 @@ spec:
                 metadata:
                   annotations:
                     karpenter.sh/do-not-evict: "true"
+
 ```
