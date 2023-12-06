@@ -5,26 +5,15 @@ description: >
 weight: 60
 ---
 
-Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources.
-They are created for `validate` and `verifyImages` rules when a resource is matched by one or more rules according to the policy definition.
-If resources violate multiple rules, there will be multiple entries.
-When resources are deleted, their entry will be removed from the report.
-Reports, therefore, always represent the current state of the cluster and do not record historical information.
+Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate` and `verifyImages` rules when a resource is matched by one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. Reports, therefore, always represent the current state of the cluster and do not record historical information.
 
-For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule.
-Policies configured with `spec.validationFailureAction: Enforce` immediately block violating resources and results will only be reported for `pass` evaluations.
-Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption.
-The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode.
-Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
+For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule. Policies configured with `spec.validationFailureAction: Enforce` immediately block violating resources and results will only be reported for `pass` evaluations. Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption. The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode. Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
 
-Policy reports are created based on two different triggers: an admission event (a `CREATE`, `UPDATE`, or `DELETE` action performed against a resource) or the result of a background scan discovering existing resources.
-Policy reports, like Kyverno policies, have both Namespaced and cluster-scoped variants; a `PolicyReport` is a Namespaced resource while a `ClusterPolicyReport` is a cluster-scoped resource.
+Policy reports are created based on two different triggers: an admission event (a `CREATE`, `UPDATE`, or `DELETE` action performed against a resource) or the result of a background scan discovering existing resources. Policy reports, like Kyverno policies, have both Namespaced and cluster-scoped variants; a `PolicyReport` is a Namespaced resource while a `ClusterPolicyReport` is a cluster-scoped resource.
 
-Reports are stored in the cluster on a per resource basis.
-Every namespaced resource will have an associated `PolicyReport` and every clustered resource will have an associated `ClusterPolicyReport`.
+Reports are stored in the cluster on a per resource basis. Every namespaced resource will (eventually) have an associated `PolicyReport` and every clustered resource will (eventually) have an associated `ClusterPolicyReport`.
 
-Kyverno uses a standard and open format published by the [Kubernetes Policy working group](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
-Below is an example of a `PolicyReport` generated for a `Pod` which shows passing and failed rules.
+Kyverno uses a standard and open format published by the [Kubernetes Policy working group](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools. Below is an example of a `PolicyReport` generated for a `Pod` which shows passing and failed rules.
 
 ```yaml
 apiVersion: wgpolicyk8s.io/v1alpha2
@@ -115,14 +104,29 @@ You can view a summary of the Namespaced policy reports using the following comm
 kubectl get policyreport -A
 ```
 
-For example, below are the policy reports for a small test cluster (`polr` is the alias for `PolicyReports`) in which the only policy installed is named `disallow-privileged-containers`.
+For example, below are the policy reports found in the `kube-system` namespace of a small test cluster created with kind.
 
 ```sh
-$ kubectl get polr -A
-NAMESPACE     NAME                                  PASS   FAIL   WARN   ERROR   SKIP   AGE
-kube-system   cpol-disallow-privileged-containers   14     0      0      0       0      6s
-kyverno       cpol-disallow-privileged-containers   2      0      0      0       0      5s
-default       cpol-disallow-privileged-containers   0      1      0      0       0      5s
+$ kubectl get polr -n kube-system -o wide
+NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
+049a4ec1-32a5-4417-9184-1a59cfaa1ca6   DaemonSet    kindnet                                      9      3      0      0       0      16m
+049d2cca-c30f-4f26-a70a-dfcc2cc5f433   DaemonSet    kube-proxy                                   9      3      0      0       0      16m
+1d491ec4-ca84-4b3a-960a-a2aefa3219ba   Pod          kube-controller-manager-kind-control-plane   10     2      0      0       0      16m
+34fa05b8-40cc-4bd3-836e-077abf4c126e   Pod          kindnet-qtq54                                9      3      0      0       0      16m
+3997d5d0-363a-4820-8768-4be3788b3968   Pod          kube-proxy-tcgcz                             9      3      0      0       0      16m
+4434c0ac-e27f-41eb-b4c2-b1a7aca8056a   ReplicaSet   coredns-5dd5756b68                           12     0      0      0       0      16m
+487df031-11d8-4ab4-b089-dfc0db1e533e   Pod          kube-apiserver-kind-control-plane            10     2      0      0       0      16m
+553c0601-b995-4ed8-a36b-11e7cb38893b   Pod          kube-proxy-jdsck                             9      3      0      0       0      16m
+89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          kindnet-7rrns                                9      3      0      0       0      16m
+9eb8c5c0-fe5c-4c7d-96c3-3ff65c361f4f   Pod          etcd-kind-control-plane                      10     2      0      0       0      16m
+b7968d37-4337-4756-bfe8-3c111f7a7356   Pod          kube-proxy-ncvxk                             9      3      0      0       0      16m
+cc894ef1-6a45-44e0-99f6-3765a59088e7   Pod          kube-scheduler-kind-control-plane            10     2      0      0       0      16m
+cf538bcc-4752-45d4-9712-480c425dc8d3   Pod          kindnet-c8fv6                                9      3      0      0       0      16m
+d9ea5169-17a7-458d-a971-09028a73cddd   Pod          coredns-5dd5756b68-z5whj                     12     0      0      0       0      16m
+e23946aa-17c3-4b96-b72b-eb7fd72eba62   Deployment   coredns                                      12     0      0      0       0      16m
+e666a741-c9cf-499c-a9c7-b8e0c600239a   Pod          kindnet-2rkgr                                9      3      0      0       0      16m
+e6f5aa6a-74e0-4c30-bb2b-1a6ee046e5ad   Pod          coredns-5dd5756b68-tnv25                     12     0      0      0       0      16m
+fd2aa944-3fc7-42b0-a6c0-1304e0aa473f   Pod          kube-proxy-p4x82                             9      3      0      0       0      16m
 ```
 
 Similarly, you can view the cluster-wide report using:
@@ -132,56 +136,12 @@ kubectl get clusterpolicyreport
 ```
 
 {{% alert title="Tip" color="info" %}}
-For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
+Note that the name of the report is mostly random, don't forget to add `-o wide` to  show additional informations that will help identify the resource associated with the report.
 {{% /alert %}}
 
-## Viewing policy violations
-
-Since the report provides information on all rule and resource execution, returning only select entries requires a filter expression.
-
-Policy reports can be inspected using either `kubectl describe` or `kubectl get`. For example, here is a command, requiring `yq`, to view only failures for the (Namespaced) report called `cpol-disallow-privileged-containers`:
-
-```sh
-kubectl get polr cpol-disallow-privileged-containers -o jsonpath='{.results[?(@.result=="fail")]}' | yq -p json -
-```
-
-```yaml
-category: Pod Security Standards (Baseline)
-message: 'validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/'
-policy: disallow-privileged-containers
-resources:
-  - apiVersion: v1
-    kind: Pod
-    name: h0nk
-    namespace: default
-    uid: 71a4a8c8-8e02-46ed-af3d-db38f590a5b6
-result: fail
-rule: privileged-containers
-scored: true
-severity: medium
-source: kyverno
-timestamp:
-  nanos: 0
-  seconds: 1.666094801e+09
----
-category: Pod Security Standards (Baseline)
-message: 'validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/'
-policy: disallow-privileged-containers
-resources:
-  - apiVersion: v1
-    kind: Pod
-    name: badpod
-    namespace: default
-    uid: 8ef79afd-f2b4-44f8-8c50-dabdda45b8c0
-result: fail
-rule: privileged-containers
-scored: true
-severity: medium
-source: kyverno
-timestamp:
-  nanos: 0
-  seconds: 1.666095335e+09
-```
+{{% alert title="Tip" color="info" %}}
+For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
+{{% /alert %}}
 
 ## Report internals
 

@@ -125,14 +125,14 @@ This Pod configuration is compliant with the policy and is allowed.
 Now that the Pod exists, wait just a few seconds longer and see what other action Kyverno took. Run the following command to retrieve the Policy Report that Kyverno just created.
 
 ```sh
-kubectl get policyreport
+kubectl get policyreport -o wide
 ```
 
 Notice that there is a single Policy Report with just one result listed under the "PASS" column. This result is due to the Pod we just created having passed the policy.
 
 ```sh
-NAME                  PASS   FAIL   WARN   ERROR   SKIP   AGE
-cpol-require-labels   1      0      0      0       0      2m46s
+NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
+89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          nginx                                        1      0      0      0       0      15s
 ```
 
 If you were to describe the above policy report you would see more information about the policy and resource.
