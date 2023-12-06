@@ -1360,3 +1360,320 @@ Pods which are blocked by PSA in enforce mode do not result in an AdmissionRevie
 6. Simplifying Policy Management and increasing efficiency through Selective Exclusions:
 
     **Advantage**: The fine-grained exemption feature simplifies policy management when used alongside PSA. Instead of creating multiple policies for each control in PSA, users can leverage Kyverno to provide detailed and selective exclusions, reducing policy overhead and enhancing overall manageability.
+
+## Common Expression Language (CEL)
+
+Starting in Kyverno 1.11, a new subrule type called `cel` is available. This subrule type allows users to write CEL expressions for resource validation. CEL was initially introduced to Kubernetes for the validation rules of CustomResourceDefinitions and is now also utilized by Kubernetes `ValidatingAdmissionPolicies`. Standard `match` and `exclude` processing is available just like with other rules. This subrule type is enabled when a validate rule is written with a `cel` object, detailed below.
+
+For example, this policy ensures that deployment replicas are less than 4.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-deployment-replicas
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: check-deployment-replicas
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        cel:
+          expressions:
+            - expression: "object.spec.replicas < 4"
+              message:  "Deployment spec.replicas must be less than 4."
+```
+
+The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
+
+{{% alert title="Note" color="info" %}}
+You can quickly test CEL expressions in [CEL Playground](https://playcel.undistro.io/).
+{{% /alert %}}
+
+When trying to create a Deployment with replicas set not satisfying the validation expression, the creation of the Deployment will be blocked.
+
+```
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+resource Deployment/default/nginx was blocked due to the following policies
+
+check-deployment-replicas:
+  check-deployment-replicas: Deployment spec.replicas must be less than 4.
+```
+
+The following policy ensures that any StatefulSet is created in the `production` namespace. The CEL expression access the namespace that the incoming object belongs to via `namespaceObject`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-statefulset-namespace
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: statefulset-namespace
+      match:
+        any:
+        - resources:
+            kinds:
+              - StatefulSet
+      validate:
+        cel:
+          expressions:
+            - expression: "namespaceObject.metadata.name == 'production'"
+              message: "The StatefulSet must be created in the 'production' namespace."
+```
+
+When trying to create a StatefulSet in the `default` namespace, the creation of the StatefulSet will be blocked.
+
+```
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+resource StatefulSet/default/bad-statefulset was blocked due to the following policies 
+
+check-statefulset-namespace:
+  statefulset-namespace: The StatefulSet must be created in the 'production' namespace.
+```
+
+CEL expressions have access to the contents of the Admission request/response, organized into CEL variables as well as some other useful variables:
+
+- `object` - The object from the incoming request. The value is null for DELETE requests.
+- `oldObject` - The existing object. The value is null for CREATE requests.
+- `request` - Attributes of the [admission request](https://kubernetes.io/docs/reference/config-api/apiserver-admission.v1/#admission-k8s-io-v1-AdmissionRequest).
+- `params` - Parameter resource referred to by `cel.paramKind` and `cel.paramRef`.
+- `namespaceObject` - The namespace, as a Kubernetes resource, that the incoming object belongs to. The value is null if the incoming object is cluster-scoped.
+- `authorizer` - It can be used to perform authorization checks.
+- `authorizer.requestResource` - A shortcut for an authorization check configured with the request resource (group, resource, (subresource), namespace, name).
+
+Read [Supported evaluation on CEL](https://github.com/google/cel-spec/blob/v0.6.0/doc/langdef.md#evaluation) for more information about CEL rules.
+
+`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](/docs/writing-policies/autogen/) section for more information.
+
+```yaml
+status:
+  autogen:
+    rules:
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - DaemonSet
+            - Deployment
+            - Job
+            - StatefulSet
+            - ReplicaSet
+            - ReplicationController
+        resources: {}
+      mutate: {}
+      name: autogen-disallow-latest-tag
+      validate:
+        cel:
+          expressions:
+          - expression: object.spec.template.spec.containers.all(container, !container.image.contains('latest'))
+            message: Using a mutable image tag e.g. 'latest' is not allowed.
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        any:
+        - resources:
+            kinds:
+            - CronJob
+        resources: {}
+      mutate: {}
+      name: autogen-cronjob-disallow-latest-tag
+      validate:
+        cel:
+          expressions:
+          - expression: object.spec.jobTemplate.spec.template.spec.containers.all(container,
+              !container.image.contains('latest'))
+            message: Using a mutable image tag e.g. 'latest' is not allowed.
+```
+
+### Parameter Resources
+
+Parameter resources enable a policy configuration to be separated from its definition. A policy can define `cel.paramKind`, which outlines the GVK of the parameter resource, and then associate the policy with a specific parameter resource via `cel.paramRef`.
+
+For example, the above policy can be modified to make it configurable:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-deployment-replicas
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: check-deployment-replicas
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        cel:
+          paramKind: 
+            apiVersion: rules.example.com/v1
+            kind: ReplicaLimit
+          paramRef:
+            name: "replica-limit"
+            parameterNotFoundAction: "Deny"
+          expressions:
+            - expression: "object.spec.replicas < params.maxReplicas"
+              messageExpression:  "'Deployment spec.replicas must be less than ' + string(params.maxReplicas)"
+```
+
+Here, `cel.paramKind` defines the resources used to configure the policy and the expression uses the `params` variable to access the parameter resource. The `cel.paramRef` is used to bind the policy to a specific resource. 
+
+The parameter resource could be as following:
+
+```yaml
+apiVersion: rules.example.com/v1
+kind: ReplicaLimit
+metadata:
+  name: "replica-limit"
+maxReplicas: 4
+```
+
+This policy parameter resource limits deployments to a max of 4 replicas.
+
+{{% alert title="Note" color="info" %}}
+The native types such like ConfigMap could also be used as parameter reference.
+{{% /alert %}}
+
+#### Per-namespace Parameters 
+
+There are two types of parameter resources: cluster-wide parameters and per-namespace parameters. If you specify a namespace for the policy `cel.paramRef`, then Kyverno only searches for parameters in that namespace.
+
+However, if namespace is not specified in `cel.paramRef`, then Kyverno can search for relevant parameters in the namespace that a request is against. For example, if you make a request to modify a ConfigMap in the default namespace and there is a relevant policy with no namespace set in `cel.paramRef`, then Kyverno looks for a parameter object in default.
+
+#### Parameter selector
+
+In addition to specify a parameter in `cel.paramRef` by name, you may choose instead to specify label selector, such that all resources of the policy's `paramKind`, and the param's namespace (if applicable) that match the label selector are selected for evaluation.
+
+If multiple parameters are found to meet the condition, the policy's rule is evaluated for each parameter found and the results will be ANDed together.
+
+If `cel.paramRef.namespace` is provided, only objects of the `paramKind` in the provided namespace are eligible for selection. Otherwise, when namespace is empty and `paramKind` is namespace-scoped, the namespace used in the request being admitted will be used.
+
+### CEL Preconditions
+
+CEL Preconditions allow for more fine-grained selection of resources than the options allowed by match and exclude statements. Preconditions consist of one or more CEL expressions which are evaluated after a resource has been successfully matched (and not excluded) by a rule. When preconditions are evaluated to an overall TRUE result, processing of the rule body begins.
+
+For example, if you wished to apply policy to all Kubernetes Services which were of type NodePort, since neither the match/exclude blocks provide access to fields within a resource’s spec, a CEL precondition could be used. In the below rule, while all Services are initially selected by Kyverno, only the ones which have the field `spec.type` set to NodePort will go on to be processed to ensure the field `spec.externalTrafficPolicy` equals a value of `Local`.
+
+```yaml
+rules:
+  - name: validate-nodeport-trafficpolicy
+    match:
+      any:
+      - resources:
+          kinds:
+            - Service
+    celPreconditions:
+        - name: check-service-type
+          expression: "object.spec.type.matches('NodePort')"
+    validate:
+      cel:
+        expressions:
+        - expression: "object.spec.externalTrafficPolicy.matches('Local')"
+          message: "All NodePort Services must use an externalTrafficPolicy of Local."
+```
+
+Attempting to apply a `Service` of type `NodePort` with `externalTrafficPolicy` set to `Cluster` will result in a blocking action.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: "NodePort"
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - port: 80
+      targetPort: 80
+  externalTrafficPolicy: "Cluster"
+```
+
+{{% alert title="Note" color="info" %}}
+CEL Preconditions can be used only with `validate.cel` subrules.
+{{% /alert %}}
+
+### CEL Variables
+
+If an expression grows too complicated, or part of the expression is reusable and computationally expensive to evaluate. We can extract some parts of the expressions into variables. A variable is a named expression that can be referred later as variables in other expressions.
+
+The order of variables is important because a variable can refer to other variables defined before it. This ordering prevents circular references.
+
+The below policy enforces that image repo names match the environment defined in its namespace. It enforces that all containers of deployment have the image repo match the environment label of its namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: image-matches-namespace-environment.policy.example.com
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: image-matches-namespace-environment
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        cel:
+          variables:
+            - name: environment
+              expression: "'environment' in namespaceObject.metadata.labels ? namespaceObject.metadata.labels['environment'] : 'prod'"
+            - name: exempt
+              expression: "has(object.metadata.labels) && 'exempt' in object.metadata.labels && object.metadata.labels['exempt'] == 'true'"
+            - name: containers
+              expression: "object.spec.template.spec.containers"
+            - name: containersToCheck
+              expression: "variables.containers.filter(c, c.image.contains('example.com/'))"
+          expressions:
+            - expression: "variables.exempt || variables.containersToCheck.all(c, c.image.startsWith(variables.environment + '.'))"
+              messageExpression: "'only ' + variables.environment + ' images are allowed in namespace ' + namespaceObject.metadata.name"
+```
+
+Attempting to apply a deployment whose image is `example.com/nginx` in the `staging-ns` namespace will result in a blocking action.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-fail
+  namespace: staging-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container2
+        image: example.com/nginx
+```
+
+However, setting the deployment image as `staging.example.com/nginx` will allow it to be created.
