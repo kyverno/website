@@ -24,37 +24,63 @@ Reports are stored in the cluster on a per resource basis.
 Every namespaced resource will have an associated `PolicyReport` and every clustered resource will have an associated `ClusterPolicyReport`.
 
 Kyverno uses a standard and open format published by the [Kubernetes Policy working group](https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report) which proposes a common policy report format across Kubernetes tools.
-Below is an example of a `ClusterPolicyReport` which shows Namespaces in violation of a validate rule which requires the `team` label be present.
+Below is an example of a `PolicyReport` generated for a `Pod` which shows passing and failed rules.
 
 ```yaml
 apiVersion: wgpolicyk8s.io/v1alpha2
-kind: ClusterPolicyReport
+kind: PolicyReport
 metadata:
-  creationTimestamp: "2022-10-18T11:55:20Z"
-  generation: 1
+  creationTimestamp: "2023-12-06T13:19:03Z"
+  generation: 2
   labels:
     app.kubernetes.io/managed-by: kyverno
-  name: cpol-require-ns-labels
-  resourceVersion: "950"
-  uid: 6dde3d0d-d2e8-48d9-8b56-47b3c5e7a3b3
-results:
-- category: Best Practices
-  message: 'validation error: The label `team` is required. rule check-for-ns-labels
-    failed at path /metadata/labels/team/'
-  policy: require-ns-labels
-  resources:
+  name: 487df031-11d8-4ab4-b089-dfc0db1e533e
+  namespace: kube-system
+  ownerReferences:
   - apiVersion: v1
-    kind: Namespace
-    name: kube-node-lease
-    uid: 06e5056f-76a3-461a-8d45-2793b8bd5bbc
-  result: fail
-  rule: check-for-ns-labels
+    kind: Pod
+    name: kube-apiserver-kind-control-plane
+    uid: 487df031-11d8-4ab4-b089-dfc0db1e533e
+  resourceVersion: "720507"
+  uid: 0ec04a57-4c3d-492d-9278-951cd1929fe3
+results:
+- category: Pod Security Standards (Baseline)
+  message: validation rule 'adding-capabilities' passed.
+  policy: disallow-capabilities
+  result: pass
+  rule: adding-capabilities
   scored: true
   severity: medium
   source: kyverno
   timestamp:
     nanos: 0
-    seconds: 1666094105
+    seconds: 1701868762
+- category: Pod Security Standards (Baseline)
+  message: 'validation error: Sharing the host namespaces is disallowed. The fields
+    spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.
+    rule host-namespaces failed at path /spec/hostNetwork/'
+  policy: disallow-host-namespaces
+  result: fail
+  rule: host-namespaces
+  scored: true
+  severity: medium
+  source: kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1701868762
+# ...
+scope:
+  apiVersion: v1
+  kind: Pod
+  name: kube-apiserver-kind-control-plane
+  namespace: kube-system
+  uid: 487df031-11d8-4ab4-b089-dfc0db1e533e
+summary:
+  error: 0
+  fail: 2
+  pass: 10
+  skip: 0
+  warn: 0
 ```
 
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
