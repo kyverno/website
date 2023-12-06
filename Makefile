@@ -5,6 +5,7 @@
 
 .PHONY: render-policies
 render-policies: ## Render policies
+	@rm -rf ./content/en/policies/*
 	@cd render && go run . -- https://github.com/kyverno/policies/main ../content/en/policies/
 
 ########
