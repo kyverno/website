@@ -136,7 +136,7 @@ kubectl get clusterpolicyreport
 ```
 
 {{% alert title="Tip" color="info" %}}
-Note that the name of the report is mostly random, don't forget to add `-o wide` to  show additional informations that will help identify the resource associated with the report.
+Note that the name of the report is mostly random. Add `-o wide` to  show additional information that will help identify the resource associated with the report.
 {{% /alert %}}
 
 {{% alert title="Tip" color="info" %}}
