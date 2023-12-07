@@ -134,7 +134,7 @@ NAME                                   KIND         NAME                        
 ```
 
 {{% alert title="Note" color="info" %}}
-Note that a namespaced `Policy` applies only to namespaced resources and only in the namespace they are created in. This example would have been exactly the same if we had used a `Policy` instead of `ClusterPolicy`.
+Note that a namespaced `Policy` applies only to namespaced resources and only in the Namespace in which they are created. This example would have been exactly the same if we had used a `Policy` instead of `ClusterPolicy`.
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
