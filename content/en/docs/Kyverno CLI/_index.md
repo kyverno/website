@@ -943,7 +943,21 @@ To generate simple markdown documentation
 
 ```sh
 $ kyverno docs -o . --autogenTag=false
+```
 
+### Fix (experimental)
+
+The Kyverno CLI has an experimental `fix` subcommand which provides a command-line interface to fix inconsistencies and deprecated usage of Kyverno resources. It can be used to fix Kyverno test files. Use `--save` to save the fixed file
+
+Examples:
+
+To fix a policy
+
+```sh
+$ KYVERNO_EXPERIMENTAL=true kyverno fix policy ./fix-policy --save
+
+Processing file (fix-policy/policy.yaml)...
+Done.
 ```
 
 ### Test
