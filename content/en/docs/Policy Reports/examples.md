@@ -123,7 +123,7 @@ summary:
   warn: 0
 ```
 
-Lastly, delete the Pod called `secret-pod` and check the PolicyReport object was also deleted.
+Lastly, delete the Pod called `secret-pod` and check that the PolicyReport object was also deleted.
 
 ```sh
 $ kubectl delete po secret-pod
