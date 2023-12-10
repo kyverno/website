@@ -10,8 +10,6 @@ In Kubernetes, Admission Controllers are responsible for intercepting requests c
 
 For Example, whenever we create a new Pod, a request is sent to the Kubernetes API server and an Admission controller intercepts the request and it may validate, mutate or do both with the request.
 
-When using kOps (Kubernetes Operations), Admission Controllers can be configured using .yaml file or by passing an argument after minikube start.
-
 <img src="assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
 
 ## Admission Controllers Phases
@@ -19,21 +17,6 @@ When using kOps (Kubernetes Operations), Admission Controllers can be configured
 Admission Controllers can be thought of as a gatekeeper to the API server. They intercept incoming API requests and may change the request object or deny the request altogether. This process of admission control has two phases: the mutating phase (where mutating admission controllers are run), followed by the validating phase (where validating admission controllers are run). Some of the admission controllers act as a combination of both. If any of the admission controllers reject the request, the entire request is rejected and an error is returned to the end-user.
 
 For example, the LimitRanger admission controller can augment pods with default resource requests and limits (mutating phase) if the request doesn't specify it already, as well as it can verify that the pods with explicitly set resource requirements do not exceed the per-namespace limits specified in the LimitRange object (validating phase). Thus acting as a combination of both Mutating as well as Validating admission controller.
-
-## Extra
-
-The mutating Webhook invokes the Webhook which can be a custom piece of software that can mutate the request.
-
-mutating admission invokes the web hook which can be a custom piece of software that might mutate the request then you have the object schema validation validating admission might add some extra validations and only then it is persisted to etcd and when it's persisted it might actually have added it might have modified your object it might have injected a container for example so that's it for admission controllers and then in the next lecture I will talk a little bit about the put security policy admission controller
-
-Two of the more important Admission Controllers because of their nearly limitless flexibility are - ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks. 
-as they do not implement any policy decision logic themselves. Instead, the respective action is obtained from a REST endpoint (a webhook) of a service running inside the cluster. This approach decouples the admission controller logic from the Kubernetes API server, thus allowing users to implement custom logic to be executed whenever resources are created, updated, or deleted in a Kubernetes cluster.
- mutating admission webhooks may mutate the objects, while validating admission webhooks may not. However, even a mutating admission webhook can reject requests and thus act in a validating fashion.
-
- --enable-admission-plugins=ValidatingAdmissionWebhook,MutatingAdmissionWebhook
-Kubernetes recommends the following admission controllers to be enabled by default.
-
---enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,Priority,ResourceQuota,PodSecurityPolicy
 
 ## Why do we need admission controllers?
 
@@ -47,13 +30,35 @@ Following is the list of use cases of admission controllers:
 
 - **Governance:** Using Admission controllers you can enforce the adherence to certain practices like having good labels, annotations, resource limits, or other settings. For example, you can enforce label validation on different objects to ensure proper labels are being used, such as every object being assigned to a team or project, or every deployment specifying an app label. In another example, You can enforce annotations automatically being added to objects, such as attributing the correct cost center for a “dev” deployment resource.
 
-- **Configuration management:** Admission controllers allow you to validate the configuration of the objects running in the cluster and prevent any obvious misconfigurations from hitting your cluster. Admission controllers can be useful in detecting and fixing images deployed without semantic tags, such as by: automatically adding resource limits or validating resource limits, ensuring reasonable labels are added to pods, or ensuring image references used in production deployments are not using the latest tags, or tags with a -dev suffix.
-  
-In this way, admission controllers and policy management help make sure that applications stay in compliance within an ever-changing landscape of controls.
+- **Configuration management:** Admission controllers allow you to validate the configuration of the objects running in the cluster and prevent any obvious misconfigurations from hitting your cluster. Admission controllers can be useful in detecting and fixing images deployed without semantic tags, such as by automatically adding resource limits or validating resource limits, ensuring reasonable labels are added to pods, or ensuring image references used in production deployments are not using the latest tags, or tags with a -dev suffix.
 
-## How do I turn on an admission controller?
+In this way, admission controllers help in ensuring that applications stay in compliance within an ever-changing landscape of controls.
 
-## How do I turn off an admission controller?
+## Using Admission Controllers
+
+Admission Controllers can be added by the administrator typically at the time of cluster creating by passing a flag to the `kube-apiserver`.
+
+```sh
+kube-apiserver --enable-admision-plugins=NamespaceLifecycle
+```
+
+Kubernetes recommends the following admission controllers to be enabled by default.
+
+```sh
+--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,Priority,ResourceQuota,PodSecurityPolicy
+```
+
+ You can find which admission plugins are enabled by:
+
+```sh
+kube-apiserver -h | grep enable-admission-plugins
+```
+
+disable-admission-plugins flag is used to disable a comma-delimited list of admission controllers. This list may also include admission controllers enabled by default.
+
+```sh
+kube-apiserver --disable-admission-plugins=PodNodeSelector,AlwaysDeny
+```
 
 ## Admission Controllers (Kubernetes v1.28)
 
@@ -82,16 +87,4 @@ These are a list of admission controllers that are enabled by default in the Kub
 | CertificateSubjectRestriction | This admission controller observes creation of CertificateSigningRequest resources that have a `spec.signerName` of `kubernetes.io/kube-apiserver-client`. It rejects any request that specifies a 'group' (or 'organization attribute') of `system:masters` |
 | PersistentVolumeClaimResize | This admission controller implements additional validations for checking incoming `PersistentVolumeClaim` resize requests. |
 
-The complete list of admission controllers with their descriptions can be found in [the official Kubernetes docs](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do). You can find which admission plugins are enabled by:
-
-```sh
-kube-apiserver -h | grep enable-admission-plugins
-```
-
-## How to add Admission Controllers
-
-Admission Controllers can be added by the administrator typically at the time of cluster creating by passing an argument to the kube-apiserver
-
-`kube-apiserver --enable-admision-plugins=NamespaceLifecycle,...`
-
- a webhook is a customized controller that can change or validate objects.
+The complete list of admission controllers with their descriptions can be found in [the official Kubernetes docs](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do).
