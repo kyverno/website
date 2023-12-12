@@ -143,7 +143,7 @@ An important point in this manifest is that it doesn't contain a name. This mani
 To summarize, the test we want to write should do:
 
 1. Apply the `RBACDefinition` in the cluster
-1. Verify the corresponding `ClusterRoleBinding` is created by the operator
+1. Verify the corresponding ClusterRoleBinding is created by the operator
 1. Cleanup and move to the next test
 
 Such a Chainsaw test can be written like this:
