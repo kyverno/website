@@ -83,7 +83,7 @@ A test step can consist in one or more operations:
 - To assert one or more resources in a cluster meet the expectations (or the opposite)
 - To run arbitrary commands or scripts
 
-In Chainsaw, tests are entirely declarative and created with yaml files.
+In Chainsaw, tests are entirely declarative and created with YAML files.
 
 ## Our first test
 
