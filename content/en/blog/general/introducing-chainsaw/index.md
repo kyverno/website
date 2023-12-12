@@ -87,7 +87,7 @@ In Chainsaw, tests are entirely declarative and created with yaml files.
 
 ## Our first test
 
-In this first test, we're going to create an `RBACDefinition` and verify the `rbac-manager` operator created the corresponding `ClusterRoleBinding` in the cluster.
+In this first test, we're going to create an `RBACDefinition` and verify the `rbac-manager` operator created the corresponding ClusterRoleBinding in the cluster.
 
 ### RBACDefinition
 
