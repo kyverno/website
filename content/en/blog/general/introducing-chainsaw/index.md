@@ -112,7 +112,7 @@ EOF
 
 ### ClusterRoleBinding
 
-If we apply the `RBACDefinition` definition above, the operator is expected to create the corresponding `ClusterRoleBinding`.
+If we apply the `RBACDefinition` definition above, the operator is expected to create the corresponding ClusterRoleBinding.
 
 ```sh
 $ cat > expected.yaml << EOF
