@@ -49,7 +49,7 @@ $ kind create cluster
 $ helm install rbac-manager --repo https://charts.fairwinds.com/stable rbac-manager --namespace rbac-manager --create-namespace
 ```
 
-Once the operator installed, you should see a new Custom Resource Definition in the cluster:
+Once the operator is installed, you should see a new Custom Resource Definition in the cluster:
 
 ```sh
 $ kubectl get crd
