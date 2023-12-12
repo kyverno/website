@@ -76,7 +76,7 @@ To put it simply, a test can be represented as **an ordered sequence of test ste
 
 Test steps within a test are run sequentially: **if any of the test steps fail, the entire test is considered failed**.
 
-A test step can consist in one or more operations:
+A test step can consist of one or more operations:
 
 - To delete resources present in a cluster
 - To create or update resources in a cluster
