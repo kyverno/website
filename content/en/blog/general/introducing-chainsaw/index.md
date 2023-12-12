@@ -232,7 +232,7 @@ Chainsaw will discover tests and run them, either concurrently or sequentially d
 
 ## A more advanced test
 
-In the test above, we only covered the creation of `RBACDefinition` resources. While it's a good starting point, we also want to test updates and deletion. If we delete an `RBACDefinition` resource for example, the corresponding ClusterRoleBinding should be deleted from the cluster by the operator.
+In the test above, we only covered the creation of `RBACDefinition` resources. While it's a good starting point, we also want to test updates and deletions. If we delete an `RBACDefinition` resource for example, the corresponding ClusterRoleBinding should be deleted from the cluster by the operator.
 
 Chainsaw can easily do that, we just need to add two more steps to our test to delete the `RBACDefinition` and verify the ClusterRoleBinding is deleted accordingly.
 
