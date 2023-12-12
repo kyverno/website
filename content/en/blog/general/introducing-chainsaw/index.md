@@ -6,11 +6,11 @@ description: Have fun testing Kubernetes operators!
 draft: false
 ---
 
-Creating Kubernetes operators is hard, testing Kubernetes operators is also hard.
-Of course creating, maintaining and testing a Kubernetes operator is even harder.
+![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
 
-It often requires writing and maintaining additional code to get proper end to end testing, it takes time, is a cumbersome process, and making changes becomes a pain.
-All this often leads to poor operator testing and can impact the operator quality.
+Creating Kubernetes operators is hard, testing Kubernetes operators is also hard. Of course creating, maintaining and testing a Kubernetes operator is even harder.
+
+It often requires writing and maintaining additional code to get proper end to end testing, it takes time, is a cumbersome process, and making changes becomes a pain. All this often leads to poor operator testing and can impact the operator quality.
 
 Today we are extremely proud to release the first stable version of Kyverno Chainsaw, a tool to make end to end testing Kubernetes operators entirely declarative, simple and almost fun.
 
@@ -29,8 +29,7 @@ They often rely on Custom Resource Definitions and continuously reconcile the cl
 
 An operator is essentially responsible for watching certain resources in a cluster and reacting to maintain a state matching the spec described in the Custom Resources.
 
-Testing an operator boils down to creating, updating, or deleting certain resources and veriifying the state of the cluster changes accordingly.
-
+Testing an operator boils down to creating, updating, or deleting certain resources and verifying the state of the cluster changes accordingly.
 
 For example, an operator could be responsible for managing role bindings and service accounts in a cluster based on a simplified definition of permissions. This operator exists, see [rbac-manager](https://github.com/FairwindsOps/rbac-manager) from FairWinds.
 
@@ -38,22 +37,23 @@ In the next sections of this blog post I will demonstrate how Chainsaw can help 
 
 ## Getting started
 
-Before we can look at Chainsaw we need a Kubernetes cluster with `rbac-manager` installed.
-We can create a local cluster with [KinD](https://kind.sigs.k8s.io) and use [Helm](https://helm.sh) to install the operator.
+Before we can look at Chainsaw we need a Kubernetes cluster with `rbac-manager` installed. We can create a local cluster with [KinD](https://kind.sigs.k8s.io) and use [Helm](https://helm.sh) to install the operator.
 
 ```sh
 # create a cluster
-$ kind create cluster
+kind create cluster
 
 # deploy rbac-manager
-$ helm install rbac-manager --repo https://charts.fairwinds.com/stable rbac-manager --namespace rbac-manager --create-namespace
+helm install rbac-manager --repo https://charts.fairwinds.com/stable rbac-manager --namespace rbac-manager --create-namespace
 ```
 
 Once the operator is installed, you should see a new Custom Resource Definition in the cluster:
 
 ```sh
-$ kubectl get crd
+kubectl get crd
+```
 
+```sh
 NAME                                         CREATED AT
 rbacdefinitions.rbacmanager.reactiveops.io   2023-12-12T12:20:19Z
 ```
@@ -64,13 +64,13 @@ Chainsaw can be installed in [different ways](https://kyverno.github.io/chainsaw
 
 ```sh
 # add the chainsaw tap
-$ brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
+brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
 
 # install chainsaw
-$ brew install kyverno/chainsaw/chainsaw
+brew install kyverno/chainsaw/chainsaw
 ```
 
-## What is a test ?
+## What is a test
 
 To put it simply, a test can be represented as **an ordered sequence of test steps**.
 
@@ -94,7 +94,7 @@ In this first test, we're going to create an `RBACDefinition` and verify the `rb
 The `RBACDefinition` below states that the service account `rbac-manager/test-rbac-manager` should be bound to a `test-rbac-manager` cluster role.
 
 ```sh
-$ cat > resources.yaml << EOF
+cat > resources.yaml << EOF
 apiVersion: rbacmanager.reactiveops.io/v1beta1
 kind: RBACDefinition
 metadata:
@@ -115,7 +115,7 @@ EOF
 If we apply the `RBACDefinition` definition above, the operator is expected to create the corresponding ClusterRoleBinding.
 
 ```sh
-$ cat > expected.yaml << EOF
+cat > expected.yaml << EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -149,7 +149,7 @@ To summarize, the test we want to write should do:
 Such a Chainsaw test can be written like this:
 
 ```sh
-$ cat > chainsaw-test.yaml << EOF
+cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
@@ -173,8 +173,10 @@ Please note that the file containing the test is named `chainsaw-test.yaml`.
 To execute the test we just created against the local cluster, we need to invoke Chainsaw with the `test` command.
 
 ```sh
-$ chainsaw test
+chainsaw test
+```
 
+```sh
 Version: 0.1.0
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
@@ -230,13 +232,12 @@ Chainsaw will discover tests and run them, either concurrently or sequentially d
 
 ## A more advanced test
 
-In the test above, we only covered the creation of `RBACDefinition` resources. While it's a good starting point, we also want to test updates and deletion.
-If we delete an `RBACDefinition` resource for example, the corresponding ClusterRoleBinding should be deleted from the cluster by the operator.
+In the test above, we only covered the creation of `RBACDefinition` resources. While it's a good starting point, we also want to test updates and deletion. If we delete an `RBACDefinition` resource for example, the corresponding ClusterRoleBinding should be deleted from the cluster by the operator.
 
 Chainsaw can easily do that, we just need to add two more steps to our test to delete the `RBACDefinition` and verify the ClusterRoleBinding is deleted accordingly.
 
 ```sh
-$ cat > chainsaw-test.yaml << EOF
+cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
@@ -267,8 +268,10 @@ EOF
 If we execute this new test, Chainsaw will now verify that deleting a resource has the expected effect in the cluster.
 
 ```sh
-$ chainsaw test
+chainsaw test
+```
 
+```sh
 Version: 0.1.0
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
@@ -334,6 +337,5 @@ If you're writing an operator, chances are you need to write end to end tests an
 
 Using it within the Kyverno project helped improve the test coverage by orders of magnitude. Converting issues into end to end tests is often a matter of copying-and-pasting a couple of manifests. Such simplicity guarantees more than just fixing issues but prevents regressions by having a test that continuously verifies they don't happen again.
 
-🔗 Check out the project on GitHub: https://github.com/kyverno/chainsaw
-
-📚 Browse the documentation: https://kyverno.github.io/chainsaw
+- 🔗 Check out the project on GitHub: https://github.com/kyverno/chainsaw
+- 📚 Browse the documentation: https://kyverno.github.io/chainsaw
