@@ -29,7 +29,7 @@ They often rely on Custom Resource Definitions and continuously reconcile the cl
 
 An operator is essentially responsible for watching certain resources in a cluster and reacting to maintain a state matching the spec described in the Custom Resources.
 
-Testing an operator boils down to creating, updating or deleting certain resources and veriify the state of the cluster changes accordingly.
+Testing an operator boils down to creating, updating, or deleting certain resources and veriifying the state of the cluster changes accordingly.
 
 
 For example, an operator could be responsible for managing role bindings and service accounts in a cluster based on a simplified definition of permissions. This operator exists, see [rbac-manager](https://github.com/FairwindsOps/rbac-manager) from FairWinds.
