@@ -25,7 +25,7 @@ Kubernetes operators are described in this [Kubernetes documentation page](https
 
 They often rely on Custom Resource Definitions and continuously reconcile the cluster state with the spec of Custom Resources.
 
-## How do we test a Kubernetes operator ?
+## How do we test a Kubernetes operator
 
 An operator is essentially responsible for watching certain resources in a cluster and reacting to maintain a state matching the spec described in the Custom Resources.
 
