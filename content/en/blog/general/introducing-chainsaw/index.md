@@ -326,7 +326,7 @@ Done.
 
 ## Conclusion
 
-In this short blog post we demonstrate how Chainsaw can be useful to test Kubernetes operators.
+In this short blog post we demonstrated how Chainsaw can be useful to test Kubernetes operators.
 
 Chainsaw can go a lot deeper and offers much more features than what we demonstrated here.
 
