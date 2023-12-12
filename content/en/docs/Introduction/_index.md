@@ -53,7 +53,7 @@ These guides are intended for proof-of-concept or lab demonstrations only and no
 First, install Kyverno from the latest release manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.11.1/install.yaml
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.
@@ -131,8 +131,8 @@ kubectl get policyreport -o wide
 Notice that there is a single Policy Report with just one result listed under the "PASS" column. This result is due to the Pod we just created having passed the policy.
 
 ```sh
-NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
-89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          nginx                                        1      0      0      0       0      15s
+NAME                                   KIND         NAME     PASS   FAIL   WARN   ERROR   SKIP   AGE
+89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          nginx    1      0      0      0       0      15s
 ```
 
 If you were to describe the above policy report you would see more information about the policy and resource.
