@@ -15,7 +15,7 @@ All this often leads to poor operator testing and can impact the operator qualit
 Today we are extremely proud to release the first stable version of Kyverno Chainsaw, a tool to make end to end testing Kubernetes operators entirely declarative, simple and almost fun.
 
 In this blog post, we will introduce [Chainsaw](https://github.com/kyverno/chainsaw), how it works, and what problems it is solving.
-Hopefully after reading it you will never consider writing end to end tests the same !
+Hopefully after reading it you will never consider writing end to end tests the same!
 
 ## What are Kubernetes operators ?
 
