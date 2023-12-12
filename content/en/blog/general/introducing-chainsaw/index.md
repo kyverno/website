@@ -333,7 +333,7 @@ In this short blog post we demonstrated how Chainsaw can be useful to test Kuber
 
 Chainsaw can go a lot deeper and offers much more features than what we demonstrated here.
 
-If you're writing an operator, chances are you need to write end to end tests and this can be painful. Chainsaw can help tremendously focusing on the tests needed rather than messing with writing and maintaining a test framework.
+If you're writing an operator, chances are you need to write end to end tests and this can be painful. Chainsaw can help tremendously in focusing on the tests needed rather than messing with writing and maintaining a test framework.
 
 Using it within the Kyverno project helped improve the test coverage by orders of magnitude. Converting issues into end to end tests is often a matter of copying-and-pasting a couple of manifests. Such simplicity guarantees more than just fixing issues but prevents regressions by having a test that continuously verifies they don't happen again.
 
