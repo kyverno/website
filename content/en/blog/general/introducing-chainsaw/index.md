@@ -17,7 +17,7 @@ Today we are extremely proud to release the first stable version of Kyverno Chai
 In this blog post, we will introduce [Chainsaw](https://github.com/kyverno/chainsaw), how it works, and what problems it is solving.
 Hopefully after reading it you will never consider writing end to end tests the same!
 
-## What are Kubernetes operators ?
+## What are Kubernetes operators
 
 Kubernetes operators are described in this [Kubernetes documentation page](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/).
 
