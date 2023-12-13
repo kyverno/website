@@ -6,7 +6,7 @@ author: Charles-Edouard Brétéché
 description: The Chainsaw secret sauce!
 ---
 
-![Kyverno Chainsaw](../introducing-chainsaw/kyverno-chainsaw-horizontal.png)
+![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
 
 While the [Chainsaw documentation](https://kyverno.github.io/chainsaw) is nice and comprehensive, I feel like the most important feature of Chainsaw deserves its own blog post for a couple of reasons:
 
@@ -44,7 +44,7 @@ In this specific case, if `spec.replicas` is set to 2 in the existing resource, 
 
 This is the most basic assertion Chainsaw can evaluate.
 
-## A slightly less basic assertion
+### A slightly less basic assertion
 
 A slightly less basic assertion is shown below.
 
@@ -61,9 +61,9 @@ spec:
 
 This time we are not providing a resource name.
 
-Chainsaw will lookup all Deployments with the `k8s-app: kube-dns` label in the `kube-system` namespace. The assertion will be considered valid if **at least one** Deployment matches with the (partial) resource definition contained in the assertion, if none matches the assertion will be considered failed.
+Chainsaw will look up all Deployments with the `k8s-app: kube-dns` label in the `kube-system` namespace. The assertion will be considered valid if **at least one** Deployment matches with the (partial) resource definition contained in the assertion, if none matches the assertion will be considered failed.
 
-Apart from the resource lookup process being a little bit more interesting, this kind of assertion is essentially the same as the previous one. It's basically taking a decision by comparing an actual and expected resource.
+Apart from the resource lookup process being a little bit more interesting, this kind of assertion is essentially the same as the previous one. Chainsaw is basically taking a decision by comparing an actual and expected resource.
 
 ### A word on timeout
 
@@ -76,15 +76,15 @@ Now we covered the basic assertions we can look at their limitations and how Cha
 Basic assertions cover the simple cases but:
 
 - Working with arrays is not easy
-    - How are we supposed to compare arrays with different sizes ?
-    - How can we check a specific item in an array is present ?
+    - How are we supposed to compare arrays with different sizes?
+    - How can we check a specific item in an array is present?
 - Matching exact values is not always what we want
-    - How can we verify the number of replicas is above a certain number (not exactly this number) ?
-    - How can we apply a regex to a label ?
+    - How can we verify the number of replicas is above a certain number (not exactly this number)?
+    - How can we apply a regex to a label?
 
-The examples above are the most obvious ones, still they clearly demonstrate that an assertion model needs to be more rich and flexible than simple comparisons.
+The examples above are the most obvious ones, still they demonstrate that an assertion model needs to be more rich and more flexible than simple comparisons.
 
-### Overview of the Chainsaw assertion model
+### Overview of the Chainsaw Assertion Model
 
 Let's see how Chainsaw can assert that the number of replicas of a Deployment is greater than a certain threshold, let's look at how it can be written.
 
@@ -101,7 +101,7 @@ spec:
 
 In the assertion above the **key part** of the YAML syntax contains a [JMESPath](https://jmespath.site) expression, the evaluation of this expression will be compared to the **value part** of the YAML syntax.
 
-In this case the expression is simple but represents the main concept behind the Chainsaw assertion model. At every node in the YAML tree Chainsaw can create a projection of the being processed element and pass the result of this projection to the descendants. When a leaf of the tree is reached a comparison happens and if the comparison fails the assertion will be considered failed. If all comparisons succeed the assertion will be considered valid.
+In this case, the expression is simple but represents the main concept behind the Chainsaw assertion model. At every node in the YAML tree, Chainsaw can create a projection of the being processed element and pass the result of this projection to the descendants. When a leaf of the tree is reached a comparison happens and if the comparison fails the assertion will be considered failed. If all comparisons succeed the assertion will be considered valid.
 
 ### Working with arrays
 
@@ -127,7 +127,7 @@ In the assertion above, the first three fields `spec`, `template`, and `spec` ar
 
 `(containers[?securityContext == null])` is a JMESPath expression filtering the `containers` array, selecting only the element where `securityContext` is `null`. This projection results in a new array that is passed to the descendant (`(len(@))` in this case).
 
-Finally `(len(@))` is reached, it's another JMESPath expression that computes the length of the array. There's no more descendant at this point, we're of a leaf of the YAML tree, the array length we just computed is then compared against 0.
+Finally `(len(@))` is reached, it's another JMESPath expression that computes the length of the array. There's no more descendant at this point, we're of a leaf of the YAML tree, and the array length we just computed is then compared against 0.
 
 If the comparison matches, the assertion will be considered valid, if not it will be considered failed.
 
@@ -162,7 +162,7 @@ This assertion uses the `~` modifier and Chainsaw will evaluate descendants once
 
 When passing from a parent node to descendant nodes, it can be useful to keep a reference to one or more parent nodes.
 
-Let's say we want to consider the pod level security context too, we can write such an assertion using:
+Let's say we want to consider the pod level security context too, we can write such an assertion with the syntax below:
 
 ```yaml
 apiVersion: apps/v1
@@ -187,9 +187,9 @@ Now we can use the binding to write the assertion check taking the pod level sec
 
 We covered all major features of assertion trees in this blog post.
 
-Chainsaw doesn't directly implement assertion trees but relies on the [kyverno-json package](https://kyverno.github.io/kyverno-json/policies/asserts/#assertion-trees). You can browse this documentation to learn more about assertion trees, this documentation also applies to Chainsaw.
+Chainsaw doesn't directly implement assertion trees but relies on the [kyverno-json package](https://github.com/kyverno/kyverno-json). You can browse [this documentation](https://kyverno.github.io/kyverno-json/policies/asserts/#assertion-trees) to learn more about assertion trees, this also applies to Chainsaw.
 
-JMESpath supports functions and also allows custom functions to be registered in the JMESPath interpreter. The supported functions list is available in this [documentation page](https://kyverno.github.io/chainsaw/latest/jp/functions/).
+JMESpath supports functions and also allows custom functions to be registered in the JMESPath interpreter. The supported functions list is available on this [documentation page](https://kyverno.github.io/chainsaw/latest/jp/functions/).
 
 ## Conclusion
 
@@ -197,4 +197,4 @@ I hope this blog post will help understand what assertion trees are and how they
 
 Simple tests usually don't need that level of flexibility but it comes very handy when your tests need to become more complex.
 
-In the future we plan to support CEL as well as JMESPath as the underlying evaluation engine. While JMESPath works well, the fact that Kubernetes adopted CEL makes it an excellent choice for Chainsaw too.
+In the future, we plan to support CEL as well as JMESPath as the underlying evaluation engine. While JMESPath works well, the fact that Kubernetes adopted CEL makes it an excellent choice for Chainsaw too.
