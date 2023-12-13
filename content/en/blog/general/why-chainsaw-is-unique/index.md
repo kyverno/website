@@ -123,7 +123,7 @@ spec:
         (len(@)): 0
 ```
 
-In the assertion above, the first three fileds `spec`, `template`, and `spec` are basic projections that simply take the content of their respective fields and pass that to descendants.
+In the assertion above, the first three fields `spec`, `template`, and `spec` are basic projections that simply take the content of their respective fields and pass that to descendants.
 
 `(containers[?securityContext == null])` is a JMESPath expression filtering the `containers` array, selecting only the element where `securityContext` is `null`. This projection results in a new array that is passed to the descendant (`(len(@))` in this case).
 
