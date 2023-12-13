@@ -158,7 +158,7 @@ spec:
 
 This assertion uses the `~` modifier and Chainsaw will evaluate descendants once per element in the array.
 
-### Explict bindings and reference
+### Explicit bindings and reference
 
 When passing from a parent node to descendant nodes, it can be useful to keep a reference to one or more parent nodes.
 
