@@ -187,7 +187,7 @@ Now we can use the binding to write the assertion check taking the pod level sec
 
 We covered all major features of assertion trees in this blog post.
 
-Chainsaw doesn't directly implements assertion trees but relies on the [kyverno-json package](https://kyverno.github.io/kyverno-json/policies/asserts/#assertion-trees). You can browse this documentation to learn more about assertion trees, this documentation also applies to Chainsaw.
+Chainsaw doesn't directly implement assertion trees but relies on the [kyverno-json package](https://kyverno.github.io/kyverno-json/policies/asserts/#assertion-trees). You can browse this documentation to learn more about assertion trees, this documentation also applies to Chainsaw.
 
 JMESpath supports functions and also allows custom functions to be registered in the JMESPath interpreter. The supported functions list is available in this [documentation page](https://kyverno.github.io/chainsaw/latest/jp/functions/).
 
