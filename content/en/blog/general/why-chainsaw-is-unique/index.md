@@ -193,7 +193,7 @@ JMESpath supports functions and also allows custom functions to be registered in
 
 ## Conclusion
 
-I hope this blog post will help understanding what assertion trees are and how they work.
+I hope this blog post will help understand what assertion trees are and how they work.
 
 Simple tests usually don't need that level of flexibility but it comes very handy when your tests need to become more complex.
 
