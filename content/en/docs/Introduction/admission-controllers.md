@@ -22,7 +22,7 @@ For example, the LimitRanger admission controller can augment pods with default 
 
 Admission controllers were introduced in Kubernetes as a set of Plugins for improving the cluster security. Admission controllers must be enabled to use some of the more advanced security features of Kubernetes such as Pod security Policies.
 
-Some aspects of the built-in Kubernetes’ operations are in fact governed by admission controllers. For example, when a namespace is deleted and subsequently enters the Terminating state, the NamespaceLifecycle admission controller is what prevents any new objects from being created in this namespace.
+Some aspects of the built-in Kubernetes operations are in fact governed by admission controllers. For example, when a namespace is deleted and subsequently enters the Terminating state, the NamespaceLifecycle admission controller is what prevents any new objects from being created in this namespace.
 
 Following is the list of use cases of admission controllers:
 
