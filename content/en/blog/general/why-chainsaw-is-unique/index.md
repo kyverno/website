@@ -137,7 +137,7 @@ In simple words, the assertion above checks that all containers in the Deploymen
 
 Being able to filter arrays allows selecting the elements to be processed.
 
-On top of that Chainsaw allows iterating over array elements to validate each item separately.
+On top of that, Chainsaw allows iterating over array elements to validate each item separately.
 
 The assertion above can be rewritten using an iterator:
 
