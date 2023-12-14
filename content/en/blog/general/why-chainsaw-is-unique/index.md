@@ -177,6 +177,7 @@ spec:
     (spec)->podSpec:
       # the `~` modifier tells Chainsaw to iterate over the array elements
       ~.(containers):
+        # `$podSpec` references the binding created above
         ($podSpec.securityContext != null || securityContext != null): true
 ```
 
