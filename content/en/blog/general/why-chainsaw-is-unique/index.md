@@ -82,7 +82,7 @@ Basic assertions cover the simple cases but:
     - How can we verify the number of replicas is above a certain number (not exactly this number)?
     - How can we apply a regex to a label?
 
-The examples above are the most obvious ones, still they demonstrate that an assertion model needs to be more rich and more flexible than simple comparisons.
+While the examples above are the most obvious ones, they demonstrate that an assertion model needs to be more rich and more flexible than simple comparisons.
 
 ### Overview of the Chainsaw Assertion Model
 
