@@ -3,7 +3,7 @@ title: "Cleanup Empty ReplicaSets"
 category: Other
 version: 1.9.0
 subject: ReplicaSet
-policyType: ""
+policyType: "cleanUp"
 description: >
     ReplicaSets are an intermediary controller to several Pod controllers such as Deployments. When a new version of a Deployment is created, it spawns a new ReplicaSet with the desired number of replicas and scale the current one to zero. This can have the effect of leaving many empty ReplicaSets in the cluster which can create clutter and false positives if policy reports are enabled. This cleanup policy removes all empty ReplicaSets across the cluster. Note that removing empty ReplicaSets may prevent rollbacks.
 ---
