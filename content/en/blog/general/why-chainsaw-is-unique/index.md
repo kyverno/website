@@ -127,7 +127,7 @@ In the assertion above, the first three fields `spec`, `template`, and `spec` ar
 
 `(containers[?securityContext == null])` is a JMESPath expression filtering the `containers` array, selecting only the element where `securityContext` is `null`. This projection results in a new array that is passed to the descendant (`(len(@))` in this case).
 
-Finally `(len(@))` is reached, it's another JMESPath expression that computes the length of the array. There's no more descendant at this point, we're of a leaf of the YAML tree, and the array length we just computed is then compared against 0.
+`(len(@))` is another JMESPath expression that computes the length of the array. There's no more descendant at this point. We're at a leaf of the YAML tree and the array length we just computed is then compared against 0.
 
 If the comparison matches, the assertion will be considered valid; if not, it will be considered failed.
 
