@@ -61,7 +61,7 @@ spec:
 
 This time we are not providing a resource name.
 
-Chainsaw will look up all Deployments with the `k8s-app: kube-dns` label in the `kube-system` namespace. The assertion will be considered valid if **at least one** Deployment matches with the (partial) resource definition contained in the assertion, if none matches the assertion will be considered failed.
+Chainsaw will look up all Deployments with the `k8s-app: kube-dns` label in the `kube-system` namespace. The assertion will be considered valid if **at least one** Deployment matches with the (partial) resource definition contained in the assertion. If none matches the assertion will be considered failed.
 
 Apart from the resource lookup process being a little bit more interesting, this kind of assertion is essentially the same as the previous one. Chainsaw is basically taking a decision by comparing an actual and expected resource.
 
