@@ -56,7 +56,7 @@ spec:
         spec:
           =(volumes):
             - =(hostPath):
-                path: "!/var/run/containerd.sock"
+                path: "!/var/run/containerd/containerd.sock"
   - name: validate-crio-sock-mount
     match:
       any:
@@ -69,7 +69,7 @@ spec:
         spec:
           =(volumes):
             - =(hostPath):
-                path: "!/var/run/crio.sock"
+                path: "!/var/run/crio/crio.sock"
   - name: validate-dockerd-sock-mount
     match:
       any:
