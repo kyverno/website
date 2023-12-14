@@ -99,7 +99,7 @@ spec:
   (replicas > 2): true
 ```
 
-In the assertion above the **key part** of the YAML syntax contains a [JMESPath](https://jmespath.site) expression, the evaluation of this expression will be compared to the **value part** of the YAML syntax.
+In the assertion above, the **key part** of the YAML syntax contains a [JMESPath](https://jmespath.site) expression. The evaluation of this expression will be compared to the **value part** of the YAML syntax.
 
 In this case, the expression is simple but represents the main concept behind the Chainsaw assertion model. At every node in the YAML tree, Chainsaw can create a projection of the being processed element and pass the result of this projection to the descendants. When a leaf of the tree is reached a comparison happens and if the comparison fails the assertion will be considered failed. If all comparisons succeed the assertion will be considered valid.
 
