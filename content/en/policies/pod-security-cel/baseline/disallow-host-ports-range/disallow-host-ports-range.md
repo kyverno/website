@@ -5,7 +5,7 @@ version: 1.11.0
 subject: Pod
 policyType: "validate"
 description: >
-    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is set to one in the designated list. 
+    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is set to one in the designated list. Note that Kubernetes Pod Security Admission does not support this rule.
 ---
 
 ## Policy Definition
@@ -26,7 +26,8 @@ metadata:
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
-      field is set to one in the designated list. 
+      field is set to one in the designated list. Note that Kubernetes Pod Security Admission
+      does not support this rule.
 spec:
   validationFailureAction: Audit
   background: true
