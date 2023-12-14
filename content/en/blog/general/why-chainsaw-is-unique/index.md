@@ -18,7 +18,7 @@ What makes Chainsaw unique is its **_assertion model_**.
 
 In this blog post we will deep dive into the assertion model used by Chainsaw, how it works, and how we extended something that looks like YAML but is more than that.
 
-After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive. There are tools which do that already and Chainsaw would be more or less redundant.
+After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive. There are tools which can do that today and Chainsaw would be more or less redundant.
 
 ## Basic assertions
 
@@ -184,7 +184,7 @@ In the assertion above, `(spec)->podSpec` means that Chainsaw will keep a refere
 
 Now we can use the binding to write an assertion check taking the pod-level security context into account like this `($podSpec.securityContext != null || securityContext != null): true`. This enhanced assertion check will ensure that, if any container's securityContext is not defined, the pod-level securityContext is defined.
 
-### Give me more
+### What else
 
 We covered all major features of assertion trees in this blog post.
 
