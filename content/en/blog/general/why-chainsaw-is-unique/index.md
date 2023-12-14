@@ -162,7 +162,7 @@ This assertion uses the `~` modifier and Chainsaw will evaluate descendants once
 
 When passing from a parent node to descendant nodes, it can be useful to keep a reference to one or more parent nodes.
 
-Let's say we want to consider the pod level security context too, we can write such an assertion with the syntax below:
+Let's say we want to consider the pod-level security context in addition to the container-level security context. We can write such an assertion with the syntax below:
 
 ```yaml
 apiVersion: apps/v1
