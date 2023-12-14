@@ -40,7 +40,7 @@ spec:
 
 When asking Chainsaw to execute the assertion above, it will look for a Deployment named `coredns` in the `kube-system` namespace and will compare the existing resource with the (partial) resource definition contained in the assertion.
 
-In this specific case, if `spec.replicas` is set to 2 in the existing resource, the assertion will be considered valid, if it is not equal to 2 the assertion will be considered failed.
+In this specific case, if `spec.replicas` is set to 2 in the existing resource, the assertion will be considered valid. If it is not equal to 2 the assertion will be considered failed.
 
 This is the most basic assertion Chainsaw can evaluate.
 
