@@ -129,7 +129,7 @@ In the assertion above, the first three fields `spec`, `template`, and `spec` ar
 
 Finally `(len(@))` is reached, it's another JMESPath expression that computes the length of the array. There's no more descendant at this point, we're of a leaf of the YAML tree, and the array length we just computed is then compared against 0.
 
-If the comparison matches, the assertion will be considered valid, if not it will be considered failed.
+If the comparison matches, the assertion will be considered valid; if not, it will be considered failed.
 
 In simple words, the assertion above checks that all containers in the Deployment have a security context configured.
 
