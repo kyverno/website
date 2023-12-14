@@ -195,6 +195,6 @@ JMESPath supports functions and also allows custom functions to be registered in
 
 I hope this blog post will help understand what assertion trees are and how they work.
 
-Simple tests usually don't need that level of flexibility but it comes very handy when your tests need to become more complex.
+Simple tests usually only need simple capabilities, but assertion trees can come in very handy when your tests become more complex.
 
 In the future, we plan to support CEL as well as JMESPath as the underlying evaluation engine. While JMESPath works well, the fact that Kubernetes adopted CEL makes it an excellent choice for Chainsaw too.
