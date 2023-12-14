@@ -71,7 +71,7 @@ Keep in mind that Chainsaw won't consider an assertion valid or failed in one sh
 
 ## It's good but it's not enough
 
-Now we covered the basic assertions we can look at their limitations and how Chainsaw solves them.
+Now that we covered the basic assertions we can look at their limitations and how Chainsaw solves them.
 
 Basic assertions cover the simple cases but:
 
