@@ -41,10 +41,10 @@ func yamlContainsPolicy(rawString string, substring string) bool {
 	return hasString >= 0
 }
 
-func yamlContainsKyvernoCR(rawString string, apiVersion string, kind string) bool {
-	hasApiVersion := strings.Index(rawString, ("apiVersion:" + apiVersion))
-	hasKind := strings.Index(rawString, ("kind:" + kind))
-	return hasApiVersion >=0 && hasKind>=0
+func yamlContainsKyvernoCR(rawString string, kind string) bool {
+	fmt.Println(rawString)
+	hasKind := strings.Index(rawString, ("kind: " + kind))
+	return hasKind >= 0
 }
 
 func getPolicyType(yaml string) string {
@@ -53,7 +53,6 @@ func getPolicyType(yaml string) string {
 	validate := "validate"
 	verifyImages := "verifyImages"
 	cleanUp := "cleanUp"
-	cleanUpApiVersion := "kyverno.io/v2alpha1"
 	clusterCleanUpKind := "ClusterCleanupPolicy"
 	namespaceCleanUpKind := "CleanupPolicy"
 
@@ -67,7 +66,7 @@ func getPolicyType(yaml string) string {
 		return validate
 	} else if yamlContainsPolicy(newYAML, verifyImages) {
 		return verifyImages
-	} else if yamlContainsKyvernoCR(yaml, cleanUpApiVersion, clusterCleanUpKind) || yamlContainsKyvernoCR(yaml, cleanUpApiVersion, namespaceCleanUpKind)  {
+	} else if yamlContainsKyvernoCR(yaml, clusterCleanUpKind) || yamlContainsKyvernoCR(yaml, namespaceCleanUpKind) {
 		return cleanUp
 	} else {
 		return ""
@@ -75,7 +74,7 @@ func getPolicyType(yaml string) string {
 }
 
 func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *policyData {
-	if !hasKyvernoAnnotation(p){
+	if !hasKyvernoAnnotation(p) {
 		return nil
 	}
 
@@ -90,12 +89,12 @@ func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *po
 }
 
 func hasKyvernoAnnotation(p *kyvernov1.ClusterPolicy) bool {
-    for k := range p.Annotations {
-        if strings.HasPrefix(k, "policies.kyverno.io") {
-            return true
-        }
-    }
-    return false
+	for k := range p.Annotations {
+		if strings.HasPrefix(k, "policies.kyverno.io") {
+			return true
+		}
+	}
+	return false
 }
 
 func buildTitle(p *kyvernov1.ClusterPolicy) string {
@@ -187,7 +186,7 @@ func render(git *gitInfo, outdir string) error {
 		pd := newPolicyData(policy, string(bytes), rawURL, relPath)
 
 		if pd == nil {
-					continue
+			continue
 		}
 		outFile, err := createOutFile(filepath.Dir(yamlFilePath), outdir, filepath.Base(file.Name()))
 		if err != nil {
