@@ -86,7 +86,7 @@ While the examples above are the most obvious ones, they demonstrate that an ass
 
 ### Overview of the Chainsaw Assertion Model
 
-Let's see how Chainsaw can assert that the number of replicas of a Deployment is greater than a certain threshold, let's look at how it can be written.
+Let's see how Chainsaw can assert that the number of replicas of a Deployment is greater than a certain threshold. Let's look at how it can be written.
 
 ```yaml
 apiVersion: apps/v1
