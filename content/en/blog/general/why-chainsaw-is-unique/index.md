@@ -151,7 +151,7 @@ metadata:
 spec:
   template:
     spec:
-      # the ~ modifier tells Chainsaw to iterate over the array elements
+      # the `~` modifier tells Chainsaw to iterate over the array elements
       ~.(containers):
         securityContext: {}
 ```
@@ -173,15 +173,16 @@ metadata:
   namespace: kube-system
 spec:
   template:
-    (spec)->specBinding:
-      # the ~ modifier tells Chainsaw to iterate over the array elements
+    # `->podSpec` creates a binding to the pod spec, accessible in descendant nodes
+    (spec)->podSpec:
+      # the `~` modifier tells Chainsaw to iterate over the array elements
       ~.(containers):
-        ($specBinding.securityContext != null || securityContext != null): true
+        ($podSpec.securityContext != null || securityContext != null): true
 ```
 
-In the assertion above, `(spec)->specBinding` means that Chainsaw will keep a reference to the result of the expression evaluation and will make it available to descendants under the `$specBinding` binding.
+In the assertion above, `(spec)->podSpec` means that Chainsaw will keep a reference to the result of the expression evaluation and will make it available to descendants under the `$podSpec` binding.
 
-Now we can use the binding to write the assertion check taking the pod level security context into account like this `($specBinding.securityContext != null || securityContext != null): true`.
+Now we can use the binding to write an assertion check taking the pod-level security context into account like this `($podSpec.securityContext != null || securityContext != null): true`. This enhanced assertion check will ensure that, if any container's securityContext is not defined, the pod-level securityContext is defined.
 
 ### Give me more
 
