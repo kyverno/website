@@ -1,9 +1,9 @@
 ---
 date: 2023-12-13
-title: Kyverno Chainsaw - The one and only thing making Chainsaw unique!
-linkTitle: Kyverno Chainsaw - The one and only thing making Chainsaw unique
+title: Kyverno Chainsaw - Exploring the Assertion Model that Makes it Unique!
+linkTitle: Kyverno Chainsaw - Exploring the Assertion Model that Makes it Unique
 author: Charles-Edouard Brétéché
-description: The Chainsaw secret sauce!
+description: The Chainsaw Secret Sauce!
 ---
 
 ![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
