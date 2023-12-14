@@ -18,7 +18,7 @@ What makes Chainsaw unique is its **_assertion model_**.
 
 In this blog post we will deep dive into the assertion model used by Chainsaw, how it works, and how we extended something that looks like YAML but is more than that.
 
-After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive, some tools doing just that already exist and Chainsaw would be more or less a duplicate of those tools.
+After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive. There are tools which do that already and Chainsaw would be more or less redundant.
 
 ## Basic assertions
 
