@@ -193,7 +193,7 @@ JMESPath supports functions and also allows custom functions to be registered in
 
 ## Conclusion
 
-I hope this blog post will help understand what assertion trees are and how they work.
+I hope this blog post helps you understand what assertion trees are and how they work.
 
 Simple tests usually only need simple capabilities, but assertion trees can come in very handy when your tests become more complex.
 
