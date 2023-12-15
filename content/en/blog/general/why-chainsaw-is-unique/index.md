@@ -10,7 +10,7 @@ description: The Chainsaw Secret Sauce!
 
 While the [Chainsaw documentation](https://kyverno.github.io/chainsaw) is nice and comprehensive, I feel like the most powerful feature of Chainsaw deserves its own blog post for a couple of reasons:
 
-- This is hard to make it shine out of pure documentation
+- Its hard to make it standout in the documentation
 - You can't appreciate Chainsaw until you understand what makes it so unique
 - Seeing the feature in action is the best way to learn about it
 
