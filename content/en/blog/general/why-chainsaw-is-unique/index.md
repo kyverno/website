@@ -69,7 +69,7 @@ Apart from the resource lookup process being a little bit more interesting, this
 
 Keep in mind that Chainsaw won't consider an assertion valid or failed in one shot. The assertion will be continuously evaluated during a predetermined period of time until the assertion succeeds or the timeout expires.
 
-## It's good but it's not enough
+## It's good, but not enough
 
 Now that we covered the basic assertions we can look at their limitations and how Chainsaw solves them.
 
