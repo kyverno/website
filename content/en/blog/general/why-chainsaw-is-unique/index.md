@@ -1,14 +1,14 @@
 ---
 date: 2023-12-13
-title: Kyverno Chainsaw - Exploring the Assertion Model that Makes it Unique!
-linkTitle: Kyverno Chainsaw - Exploring the Assertion Model that Makes it Unique
+title: Kyverno Chainsaw - Exploring the Power of Assertion Trees!
+linkTitle: Kyverno Chainsaw - Exploring the Power of Assertion Trees
 author: Charles-Edouard Brétéché
 description: The Chainsaw Secret Sauce!
 ---
 
 ![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
 
-While the [Chainsaw documentation](https://kyverno.github.io/chainsaw) is nice and comprehensive, I feel like the most important feature of Chainsaw deserves its own blog post for a couple of reasons:
+While the [Chainsaw documentation](https://kyverno.github.io/chainsaw) is nice and comprehensive, I feel like the most powerful feature of Chainsaw deserves its own blog post for a couple of reasons:
 
 - This is hard to make it shine out of pure documentation
 - You can't appreciate Chainsaw until you understand what makes it so unique
@@ -18,7 +18,7 @@ What makes Chainsaw unique is its **_assertion model_**.
 
 In this blog post we will deep dive into the assertion model used by Chainsaw, how it works, and how we extended something that looks like YAML but is more than that.
 
-After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive. There are tools which can do that today and Chainsaw would be more or less redundant.
+After all, if Chainsaw was only about applying resources in a cluster and checking fields are set correctly on those resources it would be deceptive. There are other tools which can do that today and Chainsaw would be more or less redundant.
 
 ## Basic assertions
 
