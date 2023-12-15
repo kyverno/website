@@ -22,7 +22,7 @@ To generate ValidatingAdmissionPolicies, make sure to:
    
 3. grant the Kyverno admission controller’s ServiceAccount additional permissions to generate ValidatingAdmissionPolicies.
 
-```
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
