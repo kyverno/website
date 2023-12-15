@@ -5,7 +5,7 @@ description: >
 weight: 50
 ---
 {{% alert title="Warning" color="warning" %}}
-Generating Kubernetes ValidatingAdmissionPolicies is an alpha feature and requires setting certain [container flags](/docs/installation/customization/#container-flags) to enable. It is disabled by default, and can only be generated from `validate.cel` subrules.
+Generating Kubernetes ValidatingAdmissionPolicies is an alpha feature and requires configuring the flag `--generateValidatingAdmissionPolicy=true` in the admission controller. It is disabled by default. ValidatingAdmissionPolicies can only be generated from `validate.cel` subrules.
 {{% /alert %}}
 
 Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it's not fully enabled by default as of Kubernetes versions up to and including 1.28. While it provides a declarative, in-process option for validating admission webhooks and uses the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server, it falls short of the features that can be provided by Kyverno policies. Kyverno policies are capable of performing complex validation, mutation, generation, image verification, reporting, and off-cluster validation, whereas ValidatingAdmissionPolicies cannot. Since it is important to unify the policy management used in clusters, Kyverno policies can be used to generate Kubernetes ValidatingAdmissionPolicies. This feature allows the process of resource validation to take place in the API server instead.
@@ -14,7 +14,35 @@ Because Kyverno can be used to generate ValidatingAdmissionPolicies and their bi
 
 To generate ValidatingAdmissionPolicies, make sure to:
 1. enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
-2. enable either `admissionregistration.k8s.io/v1alpha1` or `admissionregistration.k8s.io/v1beta1` API depending on the version of Kubernetes you are running.
+2. for 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+
+   ```
+   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
+   ```
+   
+3. grant the Kyverno admission controller’s ServiceAccount additional permissions to generate ValidatingAdmissionPolicies.
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/instance: kyverno
+    app.kubernetes.io/part-of: kyverno
+  name: kyverno:generate-validatingadmissionpolicy
+rules:
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - validatingadmissionpolicies
+  - validatingadmissionpolicybindings
+  verbs:
+  - create
+  - update
+  - delete
+  - list
+```
 
 The ValidatingAdmissionPolicies can only be generated from the `validate.cel` subrules in Kyverno policies. Refer to the [CEL subrule](/docs/writing-policies/validate/#common-expression-language-cel) section on the validate page for more information.
 
