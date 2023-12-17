@@ -3002,3 +3002,37 @@ spec:
 
 </p>
 </details>
+
+### SHA256
+
+<details><summary>Expand</summary>
+<p>
+
+The `sha256()` filter takes a string of any length and returns a fixed hash value. For example, when `sha256()` is applied to the string `alertmanager-kube-prometheus-stack-alertmanager`, which exceeds the character limit, it returns a fixed hash value of `75c07bb807f2d80a85d34880b8af0c5f29f7c27577076ed5d0e4b427dee7dbcc`. This feature is particularly useful for situations where the length of a string surpasses Kyverno's 52-character limit. It can be employed to generate resource names and to create resources for deployments whose names are not under our control.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+**Example:** This policy mutates the names of specified resources to their SHA256 hash values.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sha256-demo
+spec:
+  rules:
+    - name: convert-name-to-hash
+      match:
+        resources:
+          kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ sha256(request.object.metadata.name) }}"
+```
+
+</p>
+</details>
