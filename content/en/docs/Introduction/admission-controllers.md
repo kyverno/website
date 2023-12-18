@@ -1,6 +1,8 @@
 ---
 title: Admission Controllers
 description: A Guide to Kubernetes Admission Controllers
+resources:
+- src: "content/en/doc/introduction/kubernetes-admission-controllers.png"
 weight: 35
 ---
 
@@ -10,7 +12,15 @@ In Kubernetes, Admission Controllers are responsible for intercepting requests c
 
 For example, whenever a new Pod gets created, a request will be sent to the Kubernetes API server. If configured, an admission controller intercepts the request and it may validate, mutate, or do both with the request.
 
-<img src="assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
+<img src="./assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
+<br></br>
+
+Kubernetes provides us with compiled-in admission controllers like LimitRanger that validates if any object in a Kubernetes deployment violates the constraints specified in the LimitRange object. However, these highly specific controllers may not be enough for many organizations with their own policies and default set of practices. For that, in addition to compiled-in admission controllers, dynamic admission controllers can be developed as extensions and run as webhooks configured at runtime.
+
+There are two specific admission controllers that enables expanding the API functionality via webhooks:
+
+- MutatingAdmissionWebhook: can modify a request.
+- ValidatingAdmissionWebhook: can validate whether the request should be allowed to run at all.
 
 ## Why do we need admission controllers?
 
@@ -62,29 +72,15 @@ kube-apiserver --disable-admission-plugins=PodNodeSelector,AlwaysDeny
 
 ## Admission Controllers (Kubernetes v1.28)
 
-Following is a list of admission controllers enabled by default in the Kubernetes v1.28
+Following is a list of some of the admission controllers enabled by default in the Kubernetes v1.28
 
 | Admission Controllers | Description |
 | --- | --- | --- |
 | NamespaceLifecycle | Enforces that no new objects can be created when a namespace is in the terminating state |
 | LimitRanger | Using the "LimitRange" object type, you set the default and limit CPU/memory resources within a namespace. The LimitRanger admission controller will ensure these defaults and limits are applied |
 | ServiceAccount | Implements the ServiceAccount feature |
-| StorageObjectInUseProtection | The StorageObjectInUseProtection plugin adds the `kubernetes.io/pvc-protection` or `kubernetes.io/pv-protection` finalizers to newly created Persistent Volume Claims (PVCs) or Persistent Volumes (PV). In case a user deletes a PVC or PV the PVC or PV is not removed until the finalizer is removed from the PVC or PV by PVC or PV Protection Controller. |
 | DefaultIngressClass | This admission controller observes creation of Ingress objects that do not request any specific ingress class and automatically adds a default ingress class to them. |
-| TaintNodesByCondition | This admission controller taints newly created Nodes as `NotReady` and `NoSchedule`. |
-| DefaultStorageClass | If a Persistent VolumeClaim is created and it doesn't specify any specific storage, then this admission controller will add the default storage class to the PersistentVolumeClaim |
-| DefaultTolerationSeconds | Sets a default toleration in seconds if not explicitly defined in the pod specification |
-| NodeRestriction | Makes sure that kubelets (that run on every node) can only modify their own Node/Pod objects (objects that run on that specific node) |
 | PodSecurity | The PodSecurity admission controller checks new Pods before they are admitted, determines if it should be admitted based on the requested security context and the restrictions on permitted Pod Security Standards for the namespace that the Pod would be in. |
-| Priority | The priority admission controller uses the priorityClassName field and populates the integer value of the priority. If the priority class is not found, the Pod is rejected. |
-| MutatingAdmissionWebhook | You can setup a webhook that can modify the object being sent to the kube-apiserver. The MutatingAdmissionWebhook ensures that matching objects will be sent to this webhook for modification |
-| ValidatingAdmissionWebhook | You can setup a webhook that can validate the objects being sent to the kube-apiserver. If the ValidatingAdmissionWebhook rejects the request, the request fails |
-| ValidatingAdmissionPolicy | This admission controller implements the CEL validation for incoming matched requests. It is enabled when both feature gate `validatingadmissionpolicy` and `admissionregistration.k8s.io/v1alpha1` group/version are enabled. |
-| ResourceQuota | Will check incoming requests to see if it doesn't violate constraints defined in the ResourceQuota object in a namespace |
-| RuntimeClass | If you define a RuntimeClass with Pod overhead configured, this admission controller checks incoming Pods. When enabled, this admission controller rejects any Pod create requests that have the overhead already set. |
-| CertificateApproval | This admission controller observes requests to approve CertificateSigningRequest resources and performs additional authorization checks to ensure the approving user has permission to approve certificate requests with the `spec.signerName` requested on the CertificateSigningRequest resource. |
-| CertificateSigning | This admission controller observes updates to the status.certificate field of CertificateSigningRequest resources and performs an additional authorization checks to ensure the signing user has permission to sign certificate requests with the `spec.signerName` requested on the CertificateSigningRequest resource. |
-| CertificateSubjectRestriction | This admission controller observes creation of CertificateSigningRequest resources that have a `spec.signerName` of `kubernetes.io/kube-apiserver-client`. It rejects any request that specifies a 'group' (or 'organization attribute') of `system:masters` |
-| PersistentVolumeClaimResize | This admission controller implements additional validations for checking incoming `PersistentVolumeClaim` resize requests. |
+
 
 The complete list of admission controllers with their descriptions can be found in [the official Kubernetes docs](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do).
