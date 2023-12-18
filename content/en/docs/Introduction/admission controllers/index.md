@@ -1,8 +1,6 @@
 ---
 title: Admission Controllers
 description: A Guide to Kubernetes Admission Controllers
-resources:
-- src: "content/en/doc/introduction/kubernetes-admission-controllers.png"
 weight: 35
 ---
 
@@ -13,14 +11,15 @@ In Kubernetes, Admission Controllers are responsible for intercepting requests c
 For example, whenever a new Pod gets created, a request will be sent to the Kubernetes API server. If configured, an admission controller intercepts the request and it may validate, mutate, or do both with the request.
 
 <img src="./assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
-<br></br>
+
+_The Diagram above is inspired from Kubernetes Docs_
 
 Kubernetes provides us with compiled-in admission controllers like LimitRanger that validates if any object in a Kubernetes deployment violates the constraints specified in the LimitRange object. However, these highly specific controllers may not be enough for many organizations with their own policies and default set of practices. For that, in addition to compiled-in admission controllers, dynamic admission controllers can be developed as extensions and run as webhooks configured at runtime.
 
 There are two specific admission controllers that enables expanding the API functionality via webhooks:
 
-- MutatingAdmissionWebhook: can modify a request.
-- ValidatingAdmissionWebhook: can validate whether the request should be allowed to run at all.
+- _MutatingAdmissionWebhook_: can modify a request.
+- _ValidatingAdmissionWebhook_: can validate whether the request should be allowed to run at all.
 
 ## Why do we need admission controllers?
 
@@ -52,12 +51,6 @@ Admission Controllers can be added by the administrator typically at the time of
 kube-apiserver --enable-admision-plugins=NamespaceLifecycle
 ```
 
-Kubernetes recommends the following admission controllers to be enabled by default.
-
-```sh
---enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,Priority,ResourceQuota,PodSecurityPolicy
-```
-
  You can find which admission plugins are enabled by:
 
 ```sh
@@ -70,6 +63,32 @@ disable-admission-plugins flag is used to disable a comma-delimited list of admi
 kube-apiserver --disable-admission-plugins=PodNodeSelector,AlwaysDeny
 ```
 
+Other than compiled-in admission controllers, you can dynamically configure what resources are subject to what admission webhooks via `ValidatingWebhookConfiguration` or `MutatingWebhookConfiguration`.
+
+Admission webhooks are HTTP callbacks that receive admission requests and do something with them. You can define two types of admission webhooks - validating admission webhook and mutating admission webhook. The following is an example `MutatingWebhookConfiguration`, a validating webhook configuration is similar to this.
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: demo-webhook
+webhooks:
+  - name: webhook-server.webhook-demo.svc
+    clientConfig:
+      service:
+        name: webhook-server
+        namespace: example-namespace
+        path: "/mutate"
+      caBundle: ${CA_PEM_B64}
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+```
+
+The configuration defines a webhook `webhook-server.webhook-demo.svc`, and instructs the Kubernetes API server to consult the service `webhook-server` in namespace `example-namespace` whenever a pod is created by making a HTTP POST request to the */mutate* URL.
+
 ## Admission Controllers (Kubernetes v1.28)
 
 Following is a list of some of the admission controllers enabled by default in the Kubernetes v1.28
@@ -81,6 +100,5 @@ Following is a list of some of the admission controllers enabled by default in t
 | ServiceAccount | Implements the ServiceAccount feature |
 | DefaultIngressClass | This admission controller observes creation of Ingress objects that do not request any specific ingress class and automatically adds a default ingress class to them. |
 | PodSecurity | The PodSecurity admission controller checks new Pods before they are admitted, determines if it should be admitted based on the requested security context and the restrictions on permitted Pod Security Standards for the namespace that the Pod would be in. |
-
 
 The complete list of admission controllers with their descriptions can be found in [the official Kubernetes docs](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do).
