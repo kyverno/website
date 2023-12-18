@@ -21,6 +21,8 @@ A [policy](/docs/kyverno-policies/) contains one or more rules, and the followin
 
 * **schemaValidation**: controls whether policy validation checks are applied. Defaults to "true". Kyverno will attempt to validate the schema of a policy and fail if it cannot determine it satisfies the OpenAPI schema definition for that resource. Can occur on either validate or mutate policies. Set to "false" to skip schema validation. This field is deprecated as of 1.11 and currently has no effect. Scheduled to be removed in a future version.
 
+* **skipBackgroundRequests** *: bypasses admission requests that are sent by the background controller. The default value is set to "true", it must be set to "false" to apply generate and mutateExisting rules to those requests.
+
 * **userServerSideApply**: controls whether to use server-side apply for generate rules. Defaults to `false`. If set to `true`, Kyverno will use server-side apply when generating resources allowing other controllers to know which fields Kyverno owns.
 
 * **validationFailureAction**: controls if a validation policy rule failure should block the admission review request (`Enforce`) or allow (`Audit`) the admission review request and report the policy failure in a policy report. Defaults to `Audit`.
