@@ -10,9 +10,12 @@ In Kubernetes, Admission Controllers are responsible for intercepting requests c
 
 For example, whenever a new Pod gets created, a request will be sent to the Kubernetes API server. If configured, an admission controller intercepts the request and it may validate, mutate, or do both with the request.
 
-<img src="../assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
+<img src="/images/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
 
-_The Diagram above is inspired from Kubernetes Docs._
+<center>
+<i>Diagram inspired from Kubernetes Docs.</i>
+</center>
+<br></br>
 
 Kubernetes provides us with compiled-in admission controllers like LimitRanger that validates if any object in a Kubernetes deployment violates the constraints specified in the LimitRange object. However, these highly specific controllers may not be enough for many organizations with their own policies and default set of practices. For that, in addition to compiled-in admission controllers, dynamic admission controllers can be developed as extensions and run as webhooks configured at runtime.
 
