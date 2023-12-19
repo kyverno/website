@@ -66,7 +66,7 @@ sudo mv ./cmd/cli/kubectl-kyverno/kubectl-kyverno /usr/local/bin/
 
 When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "[standalone](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)" version as opposed to the version embedded inside `kubectl`.
 
-### Apply
+### apply
 
 The `apply` command is used to perform a dry run on one or more policies with a given set of input resources. This can be useful to determine a policy's effectiveness prior to committing to a cluster. In the case of mutate policies, the `apply` command can show the mutated resource as an output. The input resources can either be resource manifests (one or multiple) or can be taken from a running Kubernetes cluster. The  `apply` command supports files from URLs both as policies and resources.
 
@@ -737,9 +737,9 @@ summary:
   warn: 0
 ```
 
-#### ValidatingAdmissionPolicy
+#### Applying ValidatingAdmissionPolicies
 
-With the `apply` command, Kubernetes ValidatingAdmissionPolicies (VAP) can be applied to resources as follows:
+With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied to resources as follows:
 
 Policy manifest (check-deployment-replicas.yaml):
 
@@ -797,7 +797,7 @@ Applying 1 policy rule(s) to 1 resource(s)...
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
 
-### Create
+### create
 
 The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
 
@@ -933,7 +933,7 @@ userInfo:
     - basic-user
 ```
 
-### Docs
+### docs
 
 The Kyverno CLI has a `docs` subcommand which makes it possible to generate Kyverno CLI reference documentation. It can be used to generate simple markdown files or markdown to be used for the website.
 
@@ -946,7 +946,7 @@ $ kyverno docs -o . --autogenTag=false
 
 ```
 
-### Test
+### test
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
 
@@ -1460,7 +1460,7 @@ Test Summary: 1 tests passed and 0 tests failed
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
 
-#### ValidatingAdmissionPolicy
+#### Testing ValidatingAdmissionPolicies
 
 Below is an example of testing a ValidatingAdmissionPolicy against two resources, one of which violates the policy.
 
@@ -1582,7 +1582,7 @@ Loading test  ( kyverno-test.yaml ) ...
 Test Summary: 2 tests passed and 0 tests failed
 ```
 
-### Jp
+### jp
 
 The Kyverno CLI has a `jp` subcommand which makes it possible to test not only the custom filters endemic to Kyverno but also the full array of capabilities of JMESPath included in the `jp` tool itself [here](https://github.com/jmespath/jp). By passing in either through stdin or a file, both for input JSON or YAML documents and expressions, the `jp` subcommand will evaluate any JMESPath expression and supply the output.
 
@@ -1726,7 +1726,7 @@ ASTPipe {
 
 For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/writing-policies/jmespath/).
 
-### Oci
+### oci
 
 The Kyverno CLI has experimental ability to now push and pull Kyverno policies as OCI artifacts from an OCI-compliant registry. This ability allows one to store policies in a registry similar to how they are commonly stored in a git repository today. In a future release, the Kyverno admission controller will be able to directly reference this OCI image bundle to fetch policies.
 
@@ -1768,7 +1768,7 @@ Pull the `ghcr.io/acme/mypolicybundle:0.0.1` Kyverno policy bundle to a director
 kyverno oci pull -i ghcr.io/acme/mypolicybundle:0.0.1 -d foodir/
 ```
 
-### Version
+### version
 
 Prints the version of Kyverno CLI.
 
