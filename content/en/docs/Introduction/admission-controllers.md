@@ -10,7 +10,7 @@ In Kubernetes, Admission Controllers are responsible for intercepting requests c
 
 For example, whenever a new Pod gets created, a request will be sent to the Kubernetes API server. If configured, an admission controller intercepts the request and it may validate, mutate, or do both with the request.
 
-<img src="./assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
+<img src="../assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
 
 _The Diagram above is inspired from Kubernetes Docs._
 
