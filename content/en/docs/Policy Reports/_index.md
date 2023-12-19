@@ -82,6 +82,10 @@ Policy reports have a few configuration options available. For details, see the 
 Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization/#configmap-keys).
 {{% /alert %}}
 
+{{% alert title="Note" color="info" %}}
+To configure Kyverno to generate reports for Kubernetes ValidatingAdmissionPolicies enable the `--validatingAdmissionPolicyReports` flag in the reports controller. 
+{{% /alert %}}
+
 ## Report result logic
 
 Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
