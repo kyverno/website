@@ -1570,7 +1570,7 @@ To generate ValidatingAdmissionPolicies, make sure to:
    minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
    ```
 
-3. Configure theKyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admissions controller.
+3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
 
 4. Configure Kyverno to generate reports for ValidatingAdmissionPolicies using the `--validatingAdmissionPolicyReports=true` flag in the reports controller.
 
