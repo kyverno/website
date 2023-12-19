@@ -12,7 +12,7 @@ For example, whenever a new Pod gets created, a request will be sent to the Kube
 
 <img src="./assets/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
 
-_The Diagram above is inspired from Kubernetes Docs_
+_The Diagram above is inspired from Kubernetes Docs._
 
 Kubernetes provides us with compiled-in admission controllers like LimitRanger that validates if any object in a Kubernetes deployment violates the constraints specified in the LimitRange object. However, these highly specific controllers may not be enough for many organizations with their own policies and default set of practices. For that, in addition to compiled-in admission controllers, dynamic admission controllers can be developed as extensions and run as webhooks configured at runtime.
 
