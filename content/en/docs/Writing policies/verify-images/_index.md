@@ -1,5 +1,5 @@
 ---
-title: Verify Images Rules
+title: "Verify Images Rules"
 description: >
   Check container image signatures and attestations for software supply chain security.
 weight: 60

@@ -1,7 +1,7 @@
 ---
 title: "Resource Definitions"
 weight: 80
-description: >-
+description: >
   Custom Resource Definitions (CRDs) for Kyverno policies and other types.
 ---
 

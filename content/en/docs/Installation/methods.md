@@ -1,6 +1,7 @@
 ---
-title: Installation Methods
-description: Methods for installing Kyverno
+title: "Installation Methods"
+description: >
+    Methods for installing Kyverno
 weight: 15
 ---
 

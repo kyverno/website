@@ -1,6 +1,7 @@
 ---
-title: Tracing Tutorial with Jaeger
-description: A short proof-of-concept tutorial of tracing using Jaeger.
+title: "Tracing Tutorial with Jaeger"
+description: >
+    A short proof-of-concept tutorial of tracing using Jaeger.
 weight: 10
 ---
 

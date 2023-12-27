@@ -1,6 +1,7 @@
 ---
-title: Cleanup Controller Errors Count
-description: This metric can be used to track the number of errors encountered by the cleanup controller while trying to delete objects.
+title: "Cleanup Controller Errors Count"
+description: >
+    This metric can be used to track the number of errors encountered by the cleanup controller while trying to delete objects.
 weight: 45
 ---
 

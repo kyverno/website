@@ -1,5 +1,5 @@
 ---
-title: Cleanup Rules
+title: "Cleanup Rules"
 description: >
   Remove Kubernetes resources.
 weight: 70

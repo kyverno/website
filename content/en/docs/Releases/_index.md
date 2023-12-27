@@ -1,5 +1,5 @@
 ---
-title: Releases
+title: "Releases"
 linkTitle: "Releases"
 description: >
     Understand how and when Kyverno releases software.

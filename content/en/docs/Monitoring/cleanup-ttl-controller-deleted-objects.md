@@ -1,6 +1,7 @@
 ---
-title: Cleanup Controller Deleted Objects
-description: This metric can be used to track the number of objects deleted by the cleanup TTL controller.
+title: "Cleanup Controller Deleted Objects"
+description: >
+    This metric can be used to track the number of objects deleted by the cleanup TTL controller.
 weight: 45
 ---
 

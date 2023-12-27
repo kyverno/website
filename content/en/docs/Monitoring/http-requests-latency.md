@@ -1,6 +1,7 @@
 ---
-title: HTTP Requests Latency
-description: This metric can be used to track the latencies associated with HTTP requests.
+title: "HTTP Requests Latency"
+description: >
+    This metric can be used to track the latencies associated with HTTP requests.
 weight: 30
 ---
 

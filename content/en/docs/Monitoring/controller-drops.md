@@ -1,6 +1,7 @@
 ---
-title: Controller Drops Count
-description: This metric can be used to track the number of times a controller drops elements. Dropping usually indicates an unrecoverable error, the controller retried to process an item a couple of times and after failing every try drop the item.
+title: "Controller Drops Count"
+description: >
+    This metric can be used to track the number of times a controller drops elements. Dropping usually indicates an unrecoverable error, the controller retried to process an item a couple of times and after failing every try drop the item.
 weight: 45
 ---
 

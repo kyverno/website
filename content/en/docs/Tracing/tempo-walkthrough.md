@@ -1,6 +1,7 @@
 ---
-title: Tracing Tutorial with Grafana Tempo
-description: A short proof-of-concept tutorial of tracing using Grafana Tempo.
+title: "Tracing Tutorial with Grafana Tempo"
+description: >
+    A short proof-of-concept tutorial of tracing using Grafana Tempo.
 weight: 10
 ---
 

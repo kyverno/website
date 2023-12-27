@@ -1,5 +1,5 @@
 ---
-title: Selecting Resources
+title: "Selecting Resources"
 description: >
   Identifying and filtering resources for policy evaluation.
 weight: 20

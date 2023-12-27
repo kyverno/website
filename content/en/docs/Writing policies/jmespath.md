@@ -1,6 +1,7 @@
 ---
-title: JMESPath
-description: The JSON query language behind Kyverno.
+title: "JMESPath"
+description: >
+    The JSON query language behind Kyverno.
 weight: 130
 ---
 

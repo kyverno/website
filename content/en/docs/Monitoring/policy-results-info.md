@@ -1,6 +1,7 @@
 ---
-title: Policy and Rule Execution
-description: This metric can be used to track the results associated with the rules executing as a part of incoming resource requests and even background scans. This metric can be further aggregated to track policy-level results as well.
+title: "Policy and Rule Execution"
+description: >
+    This metric can be used to track the results associated with the rules executing as a part of incoming resource requests and even background scans. This metric can be further aggregated to track policy-level results as well.
 weight: 20
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: Example Scenarios 
+title: "Example Scenarios" 
 description: >
   Follow along scenarios for creating and viewing your first policy reports.
 weight: 25

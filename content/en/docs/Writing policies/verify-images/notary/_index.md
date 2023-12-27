@@ -1,5 +1,5 @@
 ---
-title: Notary
+title: "Notary"
 description: >
   Verify CNCF Notary format signatures using X.509 certificates.
 weight: 10

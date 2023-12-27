@@ -1,6 +1,7 @@
 ---
-title: Security
-description: Security Processes and Guidelines
+title: "Security"
+description: >
+    Security Processes and Guidelines
 weight: 68
 ---
 

@@ -1,6 +1,7 @@
 ---
-title: HTTP Requests Count
-description: This metric can be used to track the number of http requests which were triggered as a part of Kyverno.
+title: "HTTP Requests Count"
+description: >
+    This metric can be used to track the number of http requests which were triggered as a part of Kyverno.
 weight: 45
 ---
 

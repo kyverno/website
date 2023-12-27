@@ -1,6 +1,7 @@
 ---
-title: Upgrading Kyverno
-description: Upgrading Kyverno.
+title: "Upgrading Kyverno"
+description: >
+    Upgrading Kyverno.
 weight: 55
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: Tips & Tricks 
+title: "Tips & Tricks"
 description: >
   Tips and tricks for writing more effective policy.
 weight: 140

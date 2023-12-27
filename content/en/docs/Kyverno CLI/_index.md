@@ -1,7 +1,7 @@
 ---
-title: Kyverno CLI
+title: "Kyverno CLI"
 description: >
-  Apply and test policies outside a cluster.
+    Apply and test policies outside a cluster.
 weight: 70
 ---
 

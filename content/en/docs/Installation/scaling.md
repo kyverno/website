@@ -1,6 +1,7 @@
 ---
-title: Scaling Kyverno
-description: Scaling considerations for a Kyverno installation.
+title: "Scaling Kyverno"
+description: >
+    Scaling considerations for a Kyverno installation.
 weight: 45
 ---
 

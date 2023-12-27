@@ -1,5 +1,5 @@
 ---
-title: Reporting
+title: "Reporting"
 description: >
     View and audit Kyverno policy results with reports.
 weight: 60

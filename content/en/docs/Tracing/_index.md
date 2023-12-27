@@ -1,5 +1,5 @@
 ---
-title: Tracing
+title: "Tracing"
 description: >
   Using distributed tracing to introspect the internal operations of Kyverno.
 weight: 65

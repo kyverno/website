@@ -1,6 +1,7 @@
 ---
-title: Configuring Kyverno
-description: Configuration options for a Kyverno installation.
+title: "Configuring Kyverno"
+description: >
+  Configuration options for a Kyverno installation.
 weight: 35
 ---
 

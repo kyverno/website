@@ -1,6 +1,7 @@
 ---
-title: Policy Rule Execution Latency
-description: This metric can be used to track the latencies associated with the execution/processing of the individual rules whenever they evaluate incoming resource requests or execute background scans. This metric can be further aggregated to present latencies at the policy-level.
+title: "Policy Rule Execution Latency"
+description: >
+    This metric can be used to track the latencies associated with the execution/processing of the individual rules whenever they evaluate incoming resource requests or execute background scans. This metric can be further aggregated to present latencies at the policy-level.
 weight: 30
 ---
 

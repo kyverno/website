@@ -1,6 +1,7 @@
 ---
-title: Uninstalling Kyverno
-description: Uninstalling Kyverno.
+title: "Uninstalling Kyverno"
+description: >
+    Uninstalling Kyverno.
 weight: 65
 ---
 

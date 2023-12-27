@@ -1,6 +1,7 @@
 ---
-title: OpenTelemetry
-description: OpenTelemetry integration in Kyverno.
+title: "OpenTelemetry"
+description: >
+    OpenTelemetry integration in Kyverno.
 weight: 61
 ---
 

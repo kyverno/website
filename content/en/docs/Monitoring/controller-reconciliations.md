@@ -1,6 +1,7 @@
 ---
-title: Controller Reconciliations Count
-description: This metric can be used to track the number of reconciliations performed by various Kyverno controllers.
+title: "Controller Reconciliations Count"
+description: >
+    This metric can be used to track the number of reconciliations performed by various Kyverno controllers.
 weight: 45
 ---
 

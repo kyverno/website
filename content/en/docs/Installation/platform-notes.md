@@ -1,6 +1,7 @@
 ---
-title: Platform Notes
-description: Special considerations for certain Kubernetes platforms.
+title: "Platform Notes"
+description: >
+    Special considerations for certain Kubernetes platforms.
 weight: 25
 ---
 

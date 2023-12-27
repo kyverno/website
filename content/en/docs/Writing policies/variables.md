@@ -1,5 +1,5 @@
 ---
-title: Variables
+title: "Variables"
 description: >
   Defining and using variables in policies from multiple sources.
 weight: 90

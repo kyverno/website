@@ -1,6 +1,7 @@
 ---
-title: Troubleshooting 
-description: Processes for troubleshooting and recovery of Kyverno.
+title: "Troubleshooting" 
+description: >
+    Processes for troubleshooting and recovery of Kyverno.
 weight: 110
 ---
 

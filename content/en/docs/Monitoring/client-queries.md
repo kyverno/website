@@ -1,6 +1,7 @@
 ---
-title: Client Queries
-description: This metric can be used to track the number of queries per second (QPS) from Kyverno.
+title: "Client Queries"
+description: >
+    This metric can be used to track the number of queries per second (QPS) from Kyverno.
 weight: 55
 ---
 

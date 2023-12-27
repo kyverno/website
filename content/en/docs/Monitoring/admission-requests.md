@@ -1,6 +1,7 @@
 ---
-title: Admission Requests Count
-description: This metric can be used to track the number of admission requests which were triggered as a part of Kyverno.
+title: "Admission Requests Count"
+description: >
+    This metric can be used to track the number of admission requests which were triggered as a part of Kyverno.
 weight: 45
 ---
 

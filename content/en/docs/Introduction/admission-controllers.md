@@ -1,6 +1,7 @@
 ---
-title: Admission Controllers
-description: A Guide to Kubernetes Admission Controllers
+title: "Admission Controllers"
+description: >
+    A Guide to Kubernetes Admission Controllers
 weight: 35
 ---
 
