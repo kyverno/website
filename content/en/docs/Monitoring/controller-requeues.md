@@ -1,7 +1,7 @@
 ---
 title: "Controller Requeues Count"
-description: 
->   This metric can be used to track the number of times a controller requeues elements to be processed. Requeueing usually indicates that an error occured and that the controller enqueued the same item to retry processing it a bit later.
+description: >
+    This metric can be used to track the number of times a controller requeues elements to be processed. Requeueing usually indicates that an error occured and that the controller enqueued the same item to retry processing it a bit later.
 weight: 45
 ---
 
