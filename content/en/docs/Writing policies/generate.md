@@ -410,6 +410,8 @@ A `UpdateRequest` status can have one of four values:
 * `Pending`: the request is yet to be processed or the resource has not been created
 * `Skip`: marked when triggering the generate policy by adding a label/annotation to the existing resource, while the selector is not defined in the policy itself.
 
+Note that Kyverno will retry up to three times to reconcile an `UpdateRequest` in a `Failed` status. The `UpdateRequest` will be garbage collected if it exceeds the retry threshold.
+
 Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/high-availability/) page.
 
 ## Troubleshooting
