@@ -1677,3 +1677,199 @@ spec:
 ```
 
 However, setting the deployment image as `staging.example.com/nginx` will allow it to be created.
+
+## Validating Admission Policies
+
+A ValidatingAdmissionPolicy provides a declarative, in-process option for validating admission webhooks using the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server.
+
+Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it's not fully enabled by default as of Kubernetes versions up to and including 1.28.
+
+{{% alert title="Tip" color="info" %}}
+The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
+
+Check the below sections for more information:
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/#testing-validatingadmissionpolicies)
+{{% /alert %}}
+
+The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
+
+To unify the policy management, Kyverno policies can be used to generate and manage the lifecycle of Kubernetes ValidatingAdmissionPolicies. This allows the process of resource validation to take place directly in the API server, whenever possible, and extends Kyverno's reporting and testing capabilities for ValidatingAdmissionPolicy resources.
+
+When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization/#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
+
+To generate ValidatingAdmissionPolicies, make sure to:
+
+1. Enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
+
+2. For 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+
+    Here is the minikube command to enable ValidatingAdmissionPolicy:
+
+   ```
+   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
+   ```
+
+3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
+
+4. Configure Kyverno to generate reports for ValidatingAdmissionPolicies using the `--validatingAdmissionPolicyReports=true` flag in the reports controller.
+
+5. Grant the admission controller’s ServiceAccount permissions to manage ValidatingAdmissionPolicies.
+
+    Here is an aggregated cluster role you can apply:
+
+    ```yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      labels:
+        app.kubernetes.io/component: admission-controller
+        app.kubernetes.io/instance: kyverno
+        app.kubernetes.io/part-of: kyverno
+      name: kyverno:generate-validatingadmissionpolicy
+    rules:
+    - apiGroups:
+      - admissionregistration.k8s.io
+      resources:
+      - validatingadmissionpolicies
+      - validatingadmissionpolicybindings
+      verbs:
+      - create
+      - update
+      - delete
+      - list
+    ```
+
+ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](/docs/writing-policies/validate/#common-expression-language-cel) section on the validate page for more information.
+
+Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-path
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: host-path
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        cel:
+          expressions:
+            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
+              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+```
+
+Once the policy is created, it is possible to check whether there is a corresponding ValidatingAdmissionPolicy was generated under the `status` object.
+
+```yaml
+status:
+  validatingadmissionpolicy:
+    generated: true
+    message: ""
+```
+
+The generated ValidatingAdmissionPolicy:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    matchPolicy: Equivalent
+    namespaceSelector: {}
+    objectSelector: {}
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      scope: '*'
+  validations:
+  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+      !has(volume.hostPath))'
+    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+      must be unset.
+```
+
+The generated ValidatingAdmissionPolicyBinding:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path-binding
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  policyName: disallow-host-path
+  validationActions:
+  - Deny
+```
+
+Both the ValidatingAdmissionPolicy and its binding have the same naming convention as the Kyverno policy they originate from, with the binding having a "-binding" suffix.
+
+If there is a request to create the following deployment given the generated ValidatingAdmissionPolicy above, it will be denied by the API server.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-server
+        image: nginx
+        volumeMounts:
+          - name: udev
+            mountPath: /data
+      volumes:
+      - name: udev
+        hostPath:
+          path: /etc/udev
+```
+
+The response returned from the API server.
+
+```sh
+The deployments "nginx" is invalid:  ValidatingAdmissionPolicy 'disallow-host-path' with binding 'disallow-host-path-binding' denied request: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.
+```
+
+{{% alert title="Warning" color="warning" %}}
+Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, ClusterPolicies can only be used to generate them.
+{{% /alert %}}
+
+The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.

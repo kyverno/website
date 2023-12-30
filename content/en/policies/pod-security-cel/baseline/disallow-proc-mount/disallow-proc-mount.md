@@ -1,7 +1,7 @@
 ---
 title: "Disallow procMount in CEL expressions"
 category: Pod Security Standards (Baseline) in CEL
-version: 
+version: 1.11.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -21,6 +21,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
     kyverno.io/kubernetes-version: "1.26-1.27"
     policies.kyverno.io/description: >-
