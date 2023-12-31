@@ -31,7 +31,7 @@ All security related issues are labeled as `security` and can be viewed [here](h
 
 The Kyverno container images are available [here](https://github.com/orgs/kyverno/packages).
 
-With each release, the following artifacts are uploaded:
+With each release, the following artifacts are uploaded (where CLI binaries include signature and PEM files):
 
 - checksums.txt
 - install.yaml
@@ -43,6 +43,7 @@ With each release, the following artifacts are uploaded:
 - kyverno-cli_v<version_number>_linux_x86_64.tar.gz
 - kyverno-cli_v<version_number>_windows_arm64.zip
 - kyverno-cli_v<version_number>_windows_x86_64.zip
+- <CRDs>
 - Source code (zip)
 - Source code (tar.gz)
 
@@ -74,7 +75,7 @@ COSIGN_REPOSITORY=ghcr.io/kyverno/signatures cosign verify ghcr.io/kyverno/kyver
 If the container image was properly signed, the output should be similar to:
 
 ```sh
-Verification for ghcr.io/kyverno/kyverno:v1.10.0-beta.1 --
+Verification for ghcr.io/kyverno/kyverno:v1.11.2 --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
   - Existence of the claims in the transparency log was verified offline
@@ -86,34 +87,34 @@ The following checks were performed on each of these signatures:
         "docker-reference": "ghcr.io/kyverno/kyverno"
       },
       "image": {
-        "docker-manifest-digest": "sha256:7797bbed4b7232909bbb2cf83a08507b980f3f771f5246c5edb8d63207e0aa66"
+        "docker-manifest-digest": "sha256:c2d33cc05ca2c7bab7ca13f4ef24276f4f1a83687e13a971945475b0e931bde8"
       },
       "type": "cosign container image signature"
     },
     "optional": {
       "1.3.6.1.4.1.57264.1.1": "https://token.actions.githubusercontent.com",
       "1.3.6.1.4.1.57264.1.2": "push",
-      "1.3.6.1.4.1.57264.1.3": "8a350ab5cb1f2af024510ae2c2ee723efb8b964c",
+      "1.3.6.1.4.1.57264.1.3": "5f9ed6f0f81e36a5f94a8bcece67ff94f7777a1a",
       "1.3.6.1.4.1.57264.1.4": "releaser",
       "1.3.6.1.4.1.57264.1.5": "kyverno/kyverno",
-      "1.3.6.1.4.1.57264.1.6": "refs/tags/v1.10.0-beta.1",
+      "1.3.6.1.4.1.57264.1.6": "refs/tags/v1.11.2",
       "Bundle": {
-        "SignedEntryTimestamp": "MEQCIC+eaKaB0IhtsVt31wNjLnh8ChitHYr3LjbkoqByp7khAiAy7ypRb1cgSu+hegaa/8esT73xKxDiTV9nvvNd786KQA==",
+        "SignedEntryTimestamp": "MEQCIH+Nnu89Mzm9XEb/f8n868uaQAGd631+kkx9mjcdYU+gAiAVPMEfIBGT5A+QBRfGR+X/Majgt+Jh5tsVNvlyvUu99A==",
         "Payload": {
-          "body": "eyJhcGlWZXJza<snip>",
-          "integratedTime": 1683795528,
-          "logIndex": 20297620,
+          "body": "eyJhcGlWZXJzaW9uIjoiMC4w<snip>",
+          "integratedTime": 1703770792,
+          "logIndex": 59820453,
           "logID": "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"
         }
       },
       "Issuer": "https://token.actions.githubusercontent.com",
-      "Subject": "https://github.com/kyverno/kyverno/.github/workflows/release.yaml@refs/tags/v1.10.0-beta.1",
+      "Subject": "https://github.com/kyverno/kyverno/.github/workflows/release.yaml@refs/tags/v1.11.2",
       "githubWorkflowName": "releaser",
-      "githubWorkflowRef": "refs/tags/v1.10.0-beta.1",
+      "githubWorkflowRef": "refs/tags/v1.11.2",
       "githubWorkflowRepository": "kyverno/kyverno",
-      "githubWorkflowSha": "8a350ab5cb1f2af024510ae2c2ee723efb8b964c",
+      "githubWorkflowSha": "5f9ed6f0f81e36a5f94a8bcece67ff94f7777a1a",
       "githubWorkflowTrigger": "push",
-      "ref": "8a350ab5cb1f2af024510ae2c2ee723efb8b964c",
+      "ref": "5f9ed6f0f81e36a5f94a8bcece67ff94f7777a1a",
       "repo": "kyverno/kyverno",
       "workflow": "releaser"
     }
@@ -148,18 +149,18 @@ cosign verify-attestation --type slsaprovenance \
 The output will look something similar to the below.
 
 ```sh
-Verification for ghcr.io/kyverno/kyverno:v1.10.0-beta.1 --
+Verification for ghcr.io/kyverno/kyverno:v1.11.2 --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
   - Existence of the claims in the transparency log was verified offline
   - The code-signing certificate was verified using trusted certificate authority certificates
-Certificate subject: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.5.0
+Certificate subject: https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.9.0
 Certificate issuer URL: https://token.actions.githubusercontent.com
 GitHub Workflow Trigger: push
-GitHub Workflow SHA: 8a350ab5cb1f2af024510ae2c2ee723efb8b964c
+GitHub Workflow SHA: 5f9ed6f0f81e36a5f94a8bcece67ff94f7777a1a
 GitHub Workflow Name: releaser
 GitHub Workflow Repository: kyverno/kyverno
-GitHub Workflow Ref: refs/tags/v1.10.0-beta.1
+GitHub Workflow Ref: refs/tags/v1.11.2
 {
   "_type": "https://in-toto.io/Statement/v0.1",
   "predicateType": "https://slsa.dev/provenance/v0.2",
@@ -167,26 +168,25 @@ GitHub Workflow Ref: refs/tags/v1.10.0-beta.1
     {
       "name": "ghcr.io/kyverno/kyverno",
       "digest": {
-        "sha256": "7797bbed4b7232909bbb2cf83a08507b980f3f771f5246c5edb8d63207e0aa66"
+        "sha256": "c2d33cc05ca2c7bab7ca13f4ef24276f4f1a83687e13a971945475b0e931bde8"
       }
     }
   ],
   "predicate": {
     "builder": {
-      "id": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.5.0"
+      "id": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.9.0"
     },
     "buildType": "https://github.com/slsa-framework/slsa-github-generator/container@v1",
     "invocation": {
       "configSource": {
-        "uri": "git+https://github.com/kyverno/kyverno@refs/tags/v1.10.0-beta.1",
+        "uri": "git+https://github.com/kyverno/kyverno@refs/tags/v1.11.2",
         "digest": {
-          "sha1": "8a350ab5cb1f2af024510ae2c2ee723efb8b964c"
+          "sha1": "5f9ed6f0f81e36a5f94a8bcece67ff94f7777a1a"
         },
         "entryPoint": ".github/workflows/release.yaml"
       },
       "parameters": {},
       "environment": {
-      <snip>
 ```
 
 ## Fetching the SBOM for Kyverno
@@ -254,7 +254,7 @@ Kyverno requires the following network communications to be allowed:
 
 ### Webhooks
 
-Use the following command to view all Kyverno Roles:
+Use the following command to view all Kyverno webhooks:
 
 ```sh
 kubectl get mutatingwebhookconfigurations,validatingwebhookconfigurations | grep kyverno
@@ -289,7 +289,7 @@ At a minimum, the [Pod Security Standards](/policies/pod-security/) and [best pr
 
 ### Securing policies
 
-Kyverno policies can be used to mutate and generate namespaced and cluster-wide resources. Hence, policies should be treated as critical resources and access to policies should be protected using RBAC.
+Kyverno policies can be used to mutate and generate namespaced and cluster-wide resources. Hence, policies should be treated as critical resources and access to policies should be protected using RBAC. Note that some policies in these sets may have alternate versions. All policies should be inspected before being installed.
 
 ## Threat Model
 
@@ -329,7 +329,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 8 - Regular reviews of webhook configuration catch issues](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-8---regular-reviews-of-webhook-configuration-catch-issues)
 
-  Kyverno automatically generates webhook configurations based on the configured policy set. This ensures that webhooks are always updates and minimally configured.
+  Kyverno automatically generates webhook configurations based on the configured policy set. This ensures that webhooks are always current and minimally configured.
 
 ### Threat ID 4 - Attacker has rights to delete or modify the Kubernetes webhook object
 
@@ -409,7 +409,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
   Kyverno RBAC configurations are described in the [configuration section](/docs/installation/customization/#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
 
-  Kyverno does not exempt any Namespaces by default. It allows configuration of exempt Namespaces via a [ConfigMap](/docs/installation/customization/#configmap-keys).
+  Kyverno excludes certain critical system Namespaces by default including the Kyverno Namespace itself. These exclusions can be managed and configured via the [ConfigMap](/docs/installation/customization/#configmap-keys).
 
 ### Threat ID 12 - Block rule can be bypassed due to missing match (e.g. missing initContainers)
 
