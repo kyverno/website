@@ -1,6 +1,6 @@
 ---
 title: "Block a Cluster Admin/s from CREATE/UPDATE/DELETE any object in a Namespace"
-category: other
+category: Other
 version: 1.9.0
 subject: Namespace, ClusterRole, User
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: block-cluster-admin-from-ns
   annotations:
     policies.kyverno.io/title: Block a Cluster Admin/s from CREATE/UPDATE/DELETE any object in a Namespace
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Namespace, ClusterRole, User 
     policies.kyverno.io/minversion: 1.9.0
     policies.kyverno.io/description: >-
