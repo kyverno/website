@@ -1,6 +1,6 @@
 ---
 title: "Concatenate ConfigMaps"
-category: other
+category: Other
 version: 1.7.0
 subject: ConfigMap
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: concatenate-configmaps
   annotations:
     policies.kyverno.io/title: Concatenate ConfigMaps
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ConfigMap
     kyverno.io/kyverno-version: 1.7.0

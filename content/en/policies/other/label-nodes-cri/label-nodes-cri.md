@@ -1,6 +1,6 @@
 ---
 title: "Label Nodes with CRI Runtime"
-category: other
+category: Other
 version: 1.7.0
 subject: Node, Label
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: label-nodes-cri
   annotations:
     policies.kyverno.io/title: Label Nodes with CRI Runtime
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Node, Label
     kyverno.io/kyverno-version: 1.7.2

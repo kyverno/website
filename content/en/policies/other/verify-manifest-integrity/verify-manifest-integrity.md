@@ -1,6 +1,6 @@
 ---
 title: "Verify Manifest Integrity"
-category: other
+category: Other
 version: 1.8.0
 subject: Deployment
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: verify-manifest-integrity
   annotations:
     policies.kyverno.io/title: Verify Manifest Integrity
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
     kyverno.io/kyverno-version: 1.8.0
