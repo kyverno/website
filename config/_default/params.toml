@@ -11,13 +11,13 @@ showLineNumbers = false
 # This menu appears only if you have at least one [versions] set.
 version_menu = "main"
 
-# Flag used in the "version-banner" partial to decide whether to display a 
+# Flag used in the "version-banner" partial to decide whether to display a
 # banner on every page indicating that this is an archived version of the docs.
 # Set this flag to "true" if you want to display the banner.
 archived_version = false
 
 # The version number for the version of the docs represented in this doc set.
-# Used in the "version-banner" partial to display a version number for the 
+# Used in the "version-banner" partial to display a version number for the
 # current doc set.
 version = "main"
 
@@ -47,10 +47,11 @@ offlineSearch = true
 # Enable syntax highlighting and copy buttons on code blocks with Prism
 prism_syntax_highlighting = false
 
-# version_menu = "Versions"
-
 time_format_blog = "Monday, January 02, 2006"
 time_format_default = "January 02, 2006 at 3:04 PM PST"
+
+[mermaid]
+enable = true
 
 [[policyFilters]]
 title = "Policy Type"
@@ -65,12 +66,12 @@ weight = 2
 
 [[policyFilters]]
 title = "Minimum Version" # title on the UI
-filterID = "version" # key you used inside index.json 
+filterID = "version" # key you used inside index.json
 weight = 3
 
 [[policyFilters]]
 title = "Subject" # title on the UI
-filterID = "subject" # key you used inside index.json 
+filterID = "subject" # key you used inside index.json
 weight = 4
 
 # User interface configuration
@@ -103,7 +104,7 @@ yes = 'Glad to hear it! Please <a href="https://github.com/kyverno/kyverno/issue
 no = 'Sorry to hear that. Please <a href="https://github.com/kyverno/kyverno/issues/new">tell us how we can improve</a>.'
 
 # Adds a reading time to the top of each doc.
-# If you want this feature, but occasionally need to remove the Reading time from a single page, 
+# If you want this feature, but occasionally need to remove the Reading time from a single page,
 # add "hide_readingtime: true" to the page's front matter
 [ui.readingtime]
 enable = false
@@ -141,3 +142,21 @@ css = [
 js = [
   "script"
 ]
+
+# version_menu = "Versions"
+# Add your release versions here
+[[versions]]
+  version = "v1.11.0"
+  url = "https://kyverno.io"
+
+[[versions]]
+  version = "v1.10.0"
+  url = "https://release-1-10-0.kyverno.io"
+
+[[versions]]
+  version = "v1.9.0"
+  url = "https://release-1-9-0.kyverno.io"
+
+[[versions]]
+  version = "main"
+  url = "https://main.kyverno.io"
