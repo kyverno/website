@@ -1,6 +1,6 @@
 ---
 title: "Generate NetworkPolicy to Existing Namespaces"
-category: other
+category: Other
 version: 1.7.0
 subject: Namespace, NetworkPolicy
 policyType: "generate"
@@ -18,7 +18,7 @@ metadata:
   name: generate-networkpolicy-existing
   annotations:
     policies.kyverno.io/title: Generate NetworkPolicy to Existing Namespaces
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace, NetworkPolicy
     kyverno.io/kyverno-version: 1.7.0
