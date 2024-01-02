@@ -1,6 +1,6 @@
 ---
 title: "Cordon and Drain Node"
-category: other
+category: Other
 version: 1.10.0
 subject: Node
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: cordon-and-drain-node
   annotations:
     policies.kyverno.io/title: Cordon and Drain Node
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Node
     kyverno.io/kyverno-version: 1.10.1
     policies.kyverno.io/minversion: 1.10.0
