@@ -1,6 +1,6 @@
 module github.com/kyverno/website
 
-go 1.21.4
+go 1.19
 
 require (
 	github.com/FortAwesome/Font-Awesome v0.0.0-20230327165841-0698449d50f2 // indirect
