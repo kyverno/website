@@ -1,6 +1,6 @@
 ---
 title: "Require Unique UID per Workload"
-category: other
+category: Other
 version: 
 subject: Pod
 policyType: "validate"
@@ -18,7 +18,7 @@ metadata:
   name: require-unique-uid-per-workload
   annotations:
     policies.kyverno.io/title: Require Unique UID per Workload
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Two distinct workloads should not share a UID so that in a multitenant environment, applications 

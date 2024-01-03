@@ -1,6 +1,6 @@
 ---
 title: "Restart Deployment On Secret Change"
-category: other
+category: Other
 version: 1.7.0
 subject: Deployment
 policyType: "mutate"
@@ -18,7 +18,7 @@ metadata:
   name: restart-deployment-on-secret-change
   annotations:
     policies.kyverno.io/title: Restart Deployment On Secret Change
-    policies.kyverno.io/category: other
+    policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
     kyverno.io/kyverno-version: 1.7.0
