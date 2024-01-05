@@ -281,6 +281,8 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
 - `name`
 - `tag`
 - `digest`
+- `reference`
+- `referenceWithTag`
 
 Here is an example:
 
@@ -329,6 +331,14 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.digest}}`
 
+6. Reference the readable reference for the image
+
+`{{images.containers.tomcat.reference}}`
+
+7. Reference the readable reference for the image along with the image tag 
+
+`{{images.containers.tomcat.referenceWithTag}}`
+
 Reference the image properties of initContainer `vault`:
 
 1. Reference the registry URL
@@ -350,6 +360,14 @@ Reference the image properties of initContainer `vault`:
 5. Reference the digest
 
 `{{images.initContainers.vault.digest}}`
+
+6. Reference the readable reference for the image
+
+`{{images.initContainers.vault.reference}}`
+
+7. Reference the readable reference for the image along with image tag 
+
+`{{images.initContainers.vault.referenceWithTag}}`
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
