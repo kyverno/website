@@ -339,7 +339,7 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.referenceWithTag}}`
 
-For container `tomcat`,`referenceWithTag` corresponds to `https://ghcr.io/tomcat:9`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value. `reference` enables referencing the image using the image `digest` and when the image is specified with a `tag`,  `reference` enables referencing it using the image `tag` similar to `referenceWithTag`.
+For container `tomcat`, `referenceWithTag` corresponds to `https://ghcr.io/tomcat:9`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value. `reference` enables referencing the image using the image `digest` and when the image is specified with a `tag`,  `reference` enables referencing it using the image `tag` similar to `referenceWithTag`.
 
 Reference the image properties of initContainer `vault`:
 
@@ -363,15 +363,15 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.digest}}`
 
-6. Reference the readable reference for the image
+6. Reference the readable reference for the image (along with the image digest)
 
 `{{images.initContainers.vault.reference}}`
 
-7. Reference the readable reference for the image along with the image tag 
+7. Reference the readable reference for the image (along with the image tag)
 
 `{{images.initContainers.vault.referenceWithTag}}`
 
-For initContainer `vault`,`referenceWithTag` corresponds to `https://ghcr.io/vault:v3`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value.
+For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/vault:v3`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value.
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
