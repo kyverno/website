@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "mutate"
 description: >
-    A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. This policy adds the priorityClassName of `non-production` to any Pod deployed into a Namespace that does not have the label env=production.
+    A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. This policy adds the priorityClassName of `non-production` to any Pod controller deployed into a Namespace that does not have the label env=production.
 ---
 
 ## Policy Definition
@@ -27,30 +27,11 @@ metadata:
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >- 
       A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others.
-      This policy adds the priorityClassName of `non-production` to any Pod deployed
+      This policy adds the priorityClassName of `non-production` to any Pod controller deployed
       into a Namespace that does not have the label env=production.
 spec:
   background: false
   rules:
-    - name: add-priorityclass-pods
-      match:
-        any:
-        - resources:
-            kinds:
-            - Pod
-            namespaceSelector:
-              matchExpressions:
-                - key: env
-                  operator: NotIn
-                  values:
-                  - production
-      mutate:
-        patchesJson6902: |-
-          - op: remove
-            path: '/spec/priority'
-          - op: add
-            path: /spec/priorityClassName
-            value: 'non-production'
     - name: add-priorityclass-controllers
       match:
         any:
