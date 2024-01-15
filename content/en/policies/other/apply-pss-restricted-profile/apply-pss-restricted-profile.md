@@ -5,7 +5,7 @@ version:
 subject: Pod
 policyType: "mutate"
 description: >
-    Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile.
+    Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile. Note that it does not attempt to remove non-compliant volumes and volumeMounts. Additional policies may be employed for this purpose.
 ---
 
 ## Policy Definition
@@ -28,7 +28,9 @@ metadata:
       these are typically validation policies, workloads will either be accepted or
       rejected based upon what has already been defined. It is also possible to mutate
       incoming Pods to achieve the desired PSS level rather than reject. This policy
-      sets all the fields necessary to pass the PSS Restricted profile.
+      sets all the fields necessary to pass the PSS Restricted profile. Note that it does
+      not attempt to remove non-compliant volumes and volumeMounts. Additional policies
+      may be employed for this purpose.
 spec:
   rules:
   - name: add-pss-fields
