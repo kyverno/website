@@ -13,7 +13,7 @@ For example, whenever a new Pod gets created, a request will be sent to the Kube
 <img src="/images/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
 
 <center>
-<i>Credits: Kubernetes Docs.</i>
+<i>Credit: Kubernetes documentation.</i>
 </center>
 <br></br>
 
