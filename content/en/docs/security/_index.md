@@ -4,7 +4,7 @@ description: Security Processes and Guidelines
 weight: 68
 ---
 
-Kyverno serves an admission controller and is a critical component of the Kubernetes control plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
+Kyverno serves as an admission controller and is a critical component of the Kubernetes control plane. It is important to properly secure and monitor Kyverno. This section provides guidance on securing Kyverno and the security processes for the Kyverno project.
 
 ## Disclosure Process
 
