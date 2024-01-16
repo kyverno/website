@@ -30,7 +30,7 @@ Admission controllers were introduced in Kubernetes as a set of plugins for impr
 
 Some aspects of the built-in Kubernetes operations are in fact governed by admission controllers. For example, when a namespace is deleted and subsequently enters the Terminating state, the NamespaceLifecycle admission controller is what prevents any new objects from being created in this namespace.
 
-Following is the list of use cases of admission controllers:
+The following is the list of some use cases for admission controllers:
 
 - **Security:** Admission controllers can increase security by mandating a reasonable security baseline across an entire namespace or cluster. For Example, PodSecurityPolicy is a built-in admission controller that can be used for disallowing containers from running as root or making sure the container’s root filesystem is always mounted read-only (for example). Furthermore, you can use webhook-based admission controllers to achieve use cases like allowing pulling of images only from specific registries known to the enterprise. Or Rejecting deployments that do not meet security standards.
 
