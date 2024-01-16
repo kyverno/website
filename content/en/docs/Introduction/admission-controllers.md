@@ -26,7 +26,7 @@ There are two specific admission controllers which enable extending the API func
 
 ## Why do we need admission controllers?
 
-Admission controllers were introduced in Kubernetes as a set of Plugins for improving the cluster security. Admission controllers must be enabled to use some of the more advanced security features of Kubernetes such as Pod security Policies.
+Admission controllers were introduced in Kubernetes as a set of plugins for improving cluster security. While some are enabled by default, others must be explicitly enabled by cluster creators or operators.
 
 Some aspects of the built-in Kubernetes operations are in fact governed by admission controllers. For example, when a namespace is deleted and subsequently enters the Terminating state, the NamespaceLifecycle admission controller is what prevents any new objects from being created in this namespace.
 
