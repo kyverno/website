@@ -19,7 +19,7 @@ For example, whenever a new Pod gets created, a request will be sent to the Kube
 
 Kubernetes provides us with compiled-in admission controllers like LimitRanger that validates if any object in a Kubernetes deployment violates the constraints specified in the LimitRange object. However, these highly specific controllers may not be enough for many organizations with their own policies and default set of practices. For that, in addition to compiled-in admission controllers, dynamic admission controllers can be developed as extensions and run as webhooks configured at runtime.
 
-There are two specific admission controllers that enables expanding the API functionality via webhooks:
+There are two specific admission controllers which enable extending the API functionality via webhooks:
 
 - _MutatingAdmissionWebhook_: can modify a request.
 - _ValidatingAdmissionWebhook_: can validate whether the request should be allowed to run at all.
