@@ -314,7 +314,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `forceFailurePolicyIgnore` (A) | false | Set to force Failure Policy to `Ignore`. |
 | `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
 | `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
-| `imagePullSecrets` (ABR) | | Specifies secret resource names for image registry access credentials. Only a single value accepted currently. |
+| `imagePullSecrets` (ABR) | | Specifies secret resource names for image registry access credentials. All referenced secrets must exist in Kyverno's Namespace. Multiple values are accepted but must be comma separated. |
 | `imageSignatureRepository` (AR) | | Specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`. |
 | `imageVerifyCacheEnabled` (A) | true | Enable a TTL cache for verified images. |
 | `imageVerifyCacheMaxSize` (A) | 1000 | Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. `0` sets the value to default. |
