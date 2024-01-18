@@ -21,7 +21,7 @@ The Kyverno security response team will send an initial acknowledgement of the d
 
 ## Security Audits
 
-Kyverno has completed successful security audits, providing a comprehensive evaluation of the project's security posture. These Security audits were conducted by [Ada Logics](https://adalogics.com/). You can find the Kyverno 2023 security audit report [here](https://github.com/kyverno/website/blob/main/content/en/blog/general/2023-security-audit/kyverno-2023-security-audit-report.pdf).
+The Kyverno project participates in 3rd party security audits and review that help provide a comprehensive evaluation of the project's security posture.  These are listed below:
 
 ## Kyverno Third-Party Security Audit 2023
 
