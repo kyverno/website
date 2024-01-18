@@ -21,7 +21,7 @@ The Kyverno security response team will send an initial acknowledgement of the d
 
 ## Security Audits
 
-The Kyverno project participates in 3rd party security audits and review that help provide a comprehensive evaluation of the project's security posture.  These are listed below:
+The Kyverno project participates in 3rd party security audits and reviews that help provide a comprehensive evaluation of the project's security posture.  These are listed below:
 
 ## Kyverno Third-Party Security Audit 2023
 
