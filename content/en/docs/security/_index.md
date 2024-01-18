@@ -29,7 +29,7 @@ A Kyverno Third-Party Security Audit was conducted by [Ada Logics](https://adalo
 
 ## Kyverno Fuzzing Security Audit 2023
 
-The Kyverno Fuzzing Security Audit 2023 was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs.  Post-audit, Kyverno continues to test for bugs and vulnerabilities using  [OSS-Fuzz](https://github.com/google/oss-fuzz). 
+The Kyverno Fuzzing Security Audit was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs.  Post-audit, Kyverno continues to test for bugs and vulnerabilities using  [OSS-Fuzz](https://github.com/google/oss-fuzz). 
 The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](https://kyverno.io/blog/2023/09/06/kyverno-completes-fuzzing-security-audit/).
 
 ## Contact Us
