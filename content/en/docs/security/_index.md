@@ -19,6 +19,19 @@ If you find or suspect a vulnerability, please email the security group at kyver
 
 The Kyverno security response team will send an initial acknowledgement of the disclosure in 3-5 working days. Once the vulnerability and mitigation are confirmed, the team will plan to release any necessary changes based on the severity and complexity. Additional details on the security policy and processes are available in the Kyverno [git repo](https://github.com/kyverno/kyverno/blob/main/SECURITY.md).
 
+## Security Audits
+
+The Kyverno project participates in 3rd party security audits and reviews that help provide a comprehensive evaluation of the project's security posture.  These are listed below:
+
+## Kyverno Third-Party Security Audit 2023
+
+A Kyverno Third-Party Security Audit was conducted by [Ada Logics](https://adalogics.com/), in collaboration with the project maintainers and was funded by [the Cloud Native Computing Foundation](https://www.cncf.io/). The audit identified and addressed ten security issues, including six CVEs, with fixes in Kyverno v1.10.6 and v1.11.1. Notably, users of official releases were unaffected by CVEs in the Notary verifier. The audit did not reveal any policy by-pass situations, but did identify two security bugs with a third-party dependency. Kyverno was found to demonstrate strong compliance with [SLSA](https://slsa.dev/), earning the highest score, and ensuring tamper-proof build artifacts. More information is available in this [blog post](https://kyverno.io/blog/2023/11/28/kyverno-completes-third-party-security-audit/).  You can also review the complete Kyverno 2023 security audit report [here](https://github.com/kyverno/website/blob/main/content/en/blog/general/2023-security-audit/kyverno-2023-security-audit-report.pdf).
+
+## Kyverno Fuzzing Security Audit 2023
+
+The Kyverno Fuzzing Security Audit was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs.  Post-audit, Kyverno continues to test for bugs and vulnerabilities using  [OSS-Fuzz](https://github.com/google/oss-fuzz). 
+The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](https://kyverno.io/blog/2023/09/06/kyverno-completes-fuzzing-security-audit/).
+
 ## Contact Us
 
 To communicate with the Kyverno team, for any questions or discussions, use [Slack](https://slack.k8s.io/#kyverno) or [GitHub](https://github.com/kyverno/kyverno).
