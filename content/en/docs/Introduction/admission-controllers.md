@@ -44,10 +44,6 @@ The following is the list of some use cases for admission controllers:
 
 - **Cost control:** you can limit specific resources that may have cost implications on your infrastructure. A Predominant cost control measure is to enforce restriction that only one Service of type LoadBalancer can be created.
 
-- **Ops automation:** you can enable syncing of config maps across all instances upon certificate updates. Kyverno can monitor these changes and perform synchronizations and create new resources.
-
-- **Fined-grained RBAC:** With Kyverno you can enforce policies where only specific user roles can create configuration objects (like Secrets) with specific label key-value pairs. Unlike the current constraints of Kubernetes RBAC, this capability is achievable through Kyverno.
-
 - **Supply chain security:** Admission controllers act as gatekeepers, validating and authorizing requests based on predefined policies before allowing resources to be admitted into the cluster. Admission controllers can help incorparte supply chain security measures like ensuring images originate from trusted sources, preventing unauthorized modifications, enforcing security policies and much more. For example, with Kyverno you can enforce all images with a specific criteria, such as name, registry or repository etc. must be signed and attested using a specified key.
 
 ## Admission Controllers Phases
