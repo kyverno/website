@@ -34,19 +34,19 @@ Some aspects of the built-in Kubernetes operations are in fact governed by admis
 
 The following is the list of some use cases for admission controllers:
 
-- **Pod security:** Admission controllers can increase security by mandating a reasonable security baseline across an entire namespace or cluster. For example, PodSecurityPolicy is a built-in admission controller that can be used for disallowing containers from running as root or making sure the container’s root filesystem is always mounted read-only (for example).
+- **Pod security:** Admission controllers can increase security by mandating a reasonable security baseline across an entire namespace or cluster. For example, `PodSecurityPolicy` is a built-in admission controller that can be used for disallowing containers from running as root or making sure the container’s root filesystem is always mounted read-only (for example).
 
 - **Governance:** Using Admission controllers you can enforce the adherence to certain practices like having good labels, annotations, resource limits, or other settings. For example, you can enforce label validation on different objects to ensure proper labels are being used, such as every object being assigned to a team or project, or every deployment specifying an app label. In another example, You can enforce annotations automatically being added to objects, such as attributing the correct cost center for a “dev” deployment resource.
 
 - **Configuration management:** Admission controllers allow you to validate the configuration of the objects running in the cluster and prevent any obvious misconfigurations from hitting your cluster. Admission controllers can be useful in detecting and fixing images deployed without semantic tags, such as by automatically adding resource limits or validating resource limits, ensuring reasonable labels are added to pods, or ensuring image references used in production deployments are not using the latest tags, or tags with a -dev suffix.
+
+- **Multi-tenancy:** Multi-tenancy enhances resource utilization, reduces operational costs, and promotes agility and collaboration as multiple teams share the same cluster. Many organizations operate internally as multi-tenanted businesses. Kubernetes doesn’t have a native way to enforce boundaries between these tenants, hence admission controllers (like `ResourceQuota` and `LimitRanger`) can be used to enforce limits on consumption and creation of cluster resources (such as CPU time, memory, and persistent storage) within a specified namespace.
 
 - **Cost control:** you can limit specific resources that may have cost implications on your infrastructure. A Predominant cost control measure is to enforce restriction that only one Service of type LoadBalancer can be created.
 
 - **Ops automation:** you can enable syncing of config maps across all instances upon certificate updates. Kyverno can monitor these changes and perform synchronizations and create new resources.
 
 - **Fined-grained RBAC:** With Kyverno you can enforce policies where only specific user roles can create configuration objects (like Secrets) with specific label key-value pairs. Unlike the current constraints of Kubernetes RBAC, this capability is achievable through Kyverno.
-
-- **Multi-tenancy:** Many organizations operate internally as multi-tenanted businesses. Kyverno simplifies the journey to achieve multi-tenancy by eliminating some manual steps like creating specific resources every time a new namespace is created.
 
 - **Supply chain security:** Kyverno offers comprehensive support for supply chain security. For example, with Kyverno you can enforce all images with a specific criteria, such as name, registry or repository etc. must be signed and attested using a specified key.
 
