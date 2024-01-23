@@ -89,7 +89,7 @@ check-image:
 
 ### Skipping Image References
 
-`skipImageReferences` can be used for precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
+`skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
 
 ```yaml
 apiVersion: kyverno.io/v2beta1
