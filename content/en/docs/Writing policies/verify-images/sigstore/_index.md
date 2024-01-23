@@ -102,27 +102,25 @@ spec:
   failurePolicy: Fail  
   rules:
     - name: exclude-refs
-      context:
-      - name: keys
-        configMap:
-          name: keys
-          namespace: exclude-refs
       match:
         any:
         - resources:
             kinds:
               - Pod
       verifyImages:
-      - type: Notary
-        imageReferences:
+      - imageReferences:
         - "ghcr.io/*"
         skipImageReferences:
         - "ghcr.io/trusted/*"
         attestors:
         - count: 1
           entries:
-          - certificates:
-              cert: "{{ keys.data.certificate }}"
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
 ```
 
 ### Signing images
