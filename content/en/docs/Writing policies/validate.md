@@ -530,8 +530,6 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-Deny rules are incapable of producing a `pass` result in a Policy Report because the desired action is to deny so, therefore, the results will either be `skip` or `fail`.
-
 See also [Preconditions](/docs/writing-policies/preconditions).
 
 ### Deny DELETE requests based on labels
@@ -1560,9 +1558,9 @@ When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necess
 
 To generate ValidatingAdmissionPolicies, make sure to:
 
-1. enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
+1. Enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
 
-2. for 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+2. For 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
 
     Here is the minikube command to enable ValidatingAdmissionPolicy:
 
@@ -1570,9 +1568,11 @@ To generate ValidatingAdmissionPolicies, make sure to:
    minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
    ```
 
-3. Configure Kyverno to manage ValidatingAdmissionPolicies using `--generateValidatingAdmissionPolicy=true`.
+3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
 
-4. grant the Kyverno admission controller’s ServiceAccount additional permissions to manage ValidatingAdmissionPolicies.
+4. Configure Kyverno to generate reports for ValidatingAdmissionPolicies using the `--validatingAdmissionPolicyReports=true` flag in the reports controller.
+
+5. Grant the admission controller’s ServiceAccount permissions to manage ValidatingAdmissionPolicies.
 
     Here is an aggregated cluster role you can apply:
 

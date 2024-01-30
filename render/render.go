@@ -42,7 +42,6 @@ func yamlContainsPolicy(rawString string, substring string) bool {
 }
 
 func yamlContainsKyvernoCR(rawString string, kind string) bool {
-	fmt.Println(rawString)
 	hasKind := strings.Index(rawString, ("kind: " + kind))
 	return hasKind >= 0
 }
