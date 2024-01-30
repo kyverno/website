@@ -87,6 +87,42 @@ check-image:
     invalid signature'
 ```
 
+### Skipping Image References
+
+`skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: exclude-refs
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail  
+  rules:
+    - name: exclude-refs
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/*"
+        skipImageReferences:
+        - "ghcr.io/trusted/*"
+        attestors:
+        - count: 1
+          entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+```
+
 ### Signing images
 
 To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair.
@@ -692,6 +728,92 @@ verifyImages:
           -----END PUBLIC KEY-----
 ...
 ```
+
+## Ignoring Tlogs and SCT Verification
+
+Cosign uses Rekor, a transparency log service to store signatures. In Cosign 2.0 verifies Rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in Kyverno policies:
+
+```yaml
+verifyImages:
+- imageReferences:
+  - '*'
+  attestors:
+  - entries:
+    - keys:
+        publicKeys: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+        rekor:
+          ignoreTlog: true
+          url: https://rekor.sigstore.dev
+```
+
+Cosign also does SCT verification, a proof of inclusion in a certificate transparency log for verifying Fulcio certificates. In Cosign 2.0 it is done by default . To disable this, use `ignoreSCT: true`:
+
+```yaml
+verifyImages:
+- imageReferences:
+  - '*'
+  attestors:
+  - entries:
+    - keys:
+        publicKeys: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+        rekor:
+          ignoreTlog: true
+          url: https://rekor.sigstore.dev
+          pubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+        ctlog:
+          ignoreSCT: true
+          pubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+```
+
+## Using custom Rekor public key and CTLogs public key
+
+You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
+
+```yaml
+verifyImages:
+- imageReferences:
+  - '*'
+  attestors:
+  - entries:
+    - keys:
+        publicKeys: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+        rekor:
+          pubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
+          BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
+          -----END PUBLIC KEY-----
+        ctlog:
+          pubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
+          -----END PUBLIC KEY-----
+```
+
+## Using a custom TUF for custom Sigstore deployments
+
+If you want to have your own Sigstore infrastructure to be fully in control of the entire signing and verification stack, including the root key material, you can set up your own root of trust to use TUF. To configure Kyverno to use your TUF setup, use `--tufRoot` and `--tufMirror` flags for custom Sigstore deployments.
 
 ## Verifying images in Custom Resources
 
