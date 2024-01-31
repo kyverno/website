@@ -2983,7 +2983,7 @@ kind: ClusterPolicy
 metadata:
   name: check-external-url-in-configmap
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-external-url
