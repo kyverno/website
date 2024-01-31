@@ -463,6 +463,8 @@ spec:
 
 By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
 
+Note that the mutate existing rules are force reconciled every hour by default regardless of `mutateExistingOnPolicyUpdate` settings. The reconciliation interval can be customized through use of environment variable `BACKGROUND_SCAN_INTERVAL` of the background controller.
+
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy

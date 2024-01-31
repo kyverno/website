@@ -90,6 +90,42 @@ check-image:
     invalid signature'
 ```
 
+### Skipping Image References
+
+`skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: exclude-refs
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail  
+  rules:
+    - name: exclude-refs
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/*"
+        skipImageReferences:
+        - "ghcr.io/trusted/*"
+        attestors:
+        - count: 1
+          entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+```
+
 ### Signing images
 
 To sign images, install [Cosign](https://github.com/sigstore/cosign#installation) and generate a public-private key pair.
