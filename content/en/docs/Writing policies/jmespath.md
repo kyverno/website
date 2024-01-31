@@ -2384,7 +2384,11 @@ spec:
 
 The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. The first input is any time in the source format, the second input is the actual time to convert which is expected to be in the format specified by the first input. The output is always the second input converted to RFC 3339.
 
-The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+- The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. 
+
+- The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+
+- The expression `time_parse('1702691171', '1702691171')` (epoch time) results in the output of `"2023-12-16T01:46:11Z"` (UTC).
 
 | Input 1                          | Input 2                         | Output                     |
 |----------------------------------|---------------------------------|----------------------------|
