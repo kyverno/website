@@ -334,12 +334,13 @@ The following flags can be used to control the advanced behavior of the various 
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
 | `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
-| `policyReports` (R) | true | Snables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
+| `policyReports` (R) | true | Enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
 | `profile` (ABCR) | false | Setting this flag to `true` will enable profiling. |
 | `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (A) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
+| `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
