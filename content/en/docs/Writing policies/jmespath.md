@@ -2988,7 +2988,7 @@ spec:
   rules:
     - name: validate-external-url
       match:
-      any:
+        any:
       - resources:
           kinds:
             - ConfigMap
