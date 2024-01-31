@@ -2989,9 +2989,9 @@ spec:
     - name: validate-external-url
       match:
         any:
-      - resources:
-          kinds:
-            - ConfigMap
+        - resources:
+            kinds:
+              - ConfigMap
       validate:
         message: "ConfigMap contains an external URL."
         deny:
