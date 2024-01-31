@@ -2996,7 +2996,7 @@ spec:
         message: "ConfigMap contains an external URL."
         deny:
           conditions:
-           all:
+            all:
              - key: "{{ request.object.data.test | is_external_url(@) }}"
               operator: Equals
               value: true
