@@ -5,7 +5,7 @@ version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
-    Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
+    Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used. In addition to or replacement of this policy, preventing users from mounting the parent directories (/var/run and /var) may be necessary to completely prevent socket bind mounts.
 ---
 
 ## Policy Definition
@@ -26,7 +26,9 @@ metadata:
       Container daemon socket bind mounts allows access to the container engine on the
       node. This access can be used for privilege escalation and to manage containers
       outside of Kubernetes, and hence should not be allowed. This policy validates that
-      the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
+      the sockets used for CRI engines Docker, Containerd, and CRI-O are not used. In addition
+      to or replacement of this policy, preventing users from mounting the parent directories
+      (/var/run and /var) may be necessary to completely prevent socket bind mounts.
 spec:
   validationFailureAction: audit
   background: true
@@ -56,7 +58,7 @@ spec:
         spec:
           =(volumes):
             - =(hostPath):
-                path: "!/var/run/containerd.sock"
+                path: "!/var/run/containerd/containerd.sock"
   - name: validate-crio-sock-mount
     match:
       any:
@@ -69,7 +71,7 @@ spec:
         spec:
           =(volumes):
             - =(hostPath):
-                path: "!/var/run/crio.sock"
+                path: "!/var/run/crio/crio.sock"
   - name: validate-dockerd-sock-mount
     match:
       any:

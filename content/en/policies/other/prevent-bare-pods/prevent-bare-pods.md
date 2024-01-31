@@ -1,23 +1,23 @@
 ---
-title: "Prevent Naked Pods"
+title: "Prevent Bare Pods"
 category: Other, EKS Best Practices
 version: 1.6.0
 subject: Pod
 policyType: "validate"
 description: >
-    Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "naked" Pods from being created unless they originate from a higher-level workload controller of some sort.
+    Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/prevent-naked-pods/prevent-naked-pods.yaml" target="-blank">/other/prevent-naked-pods/prevent-naked-pods.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other/prevent-bare-pods/prevent-bare-pods.yaml" target="-blank">/other/prevent-bare-pods/prevent-bare-pods.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: prevent-naked-pods
+  name: prevent-bare-pods
   annotations:
-    policies.kyverno.io/title: Prevent Naked Pods
+    policies.kyverno.io/title: Prevent Bare Pods
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/severity: medium
@@ -28,13 +28,13 @@ metadata:
     policies.kyverno.io/description: >-
       Pods not created by workload controllers such as Deployments
       have no self-healing or scaling abilities and are unsuitable for production.
-      This policy prevents such "naked" Pods from being created unless they originate
+      This policy prevents such "bare" Pods from being created unless they originate
       from a higher-level workload controller of some sort.
 spec:
   validationFailureAction: audit
   background: true
   rules:
-  - name: naked-pods
+  - name: bare-pods
     match:
       any:
       - resources:
@@ -46,7 +46,7 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
-      message: "Naked Pods are not allowed. They must be created by Pod controllers."
+      message: "Bare Pods are not allowed. They must be created by Pod controllers."
       deny:
         conditions:
           any:

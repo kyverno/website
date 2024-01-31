@@ -201,11 +201,15 @@ The following `ClusterRoles` provide Kyverno with permissions to policies and ot
 * `kyverno:rbac:view:reports`: aggregates to view the ability to view intermediary admission and background reports
 * `kyverno:rbac:view:updaterequests`: aggregates to view the ability to view UpdateRequests, intermediary resource for generate rules
 
+{{% alert title="Note" color="info" %}}
+Most Kyverno controllers' ClusterRoles include a rule which allows for `get`, `list`, and `read` permissions to all resources in the cluster. This is to ensure Kyverno functions smoothly despite the type and subject of future-installed policies. If this rule is removed, users must manually create and manage a number of different ClusterRoles applicable across potentially multiple controllers depending on the type and configuration of installed policies.
+{{% /alert %}}
+
 #### Customizing Permissions
 
-Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules or generating ValidatingAdmissionPolicies is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is not necessary to modify any existing ClusterRoles created as part of the Kyverno installation. Doing so is not recommended as changes may be wiped during an upgrade. Since there are multiple controllers each with its own ServiceAccount, granting Kyverno additional permissions involves identifying to correct controller and using the labels needed to aggregate to that ClusterRole.
+Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules or generating ValidatingAdmissionPolicies is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is not necessary to modify any existing ClusterRoles created as part of the Kyverno installation. Doing so is not recommended as changes may be lost during an upgrade. Since there are multiple controllers each with their own ServiceAccount, granting Kyverno additional permissions involves identifying the correct controller and using the labels needed to aggregate to that ClusterRole.
 
-For example, if a new Kyverno generate policy introduced into the cluster requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno carries by default. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels for the background in order for those permissions to take effect.
+For example, if a new Kyverno generate policy requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno has by default. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels specific to the background controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno background controller additional permissions to create Deployments:
 
@@ -233,7 +237,7 @@ Once a supplemental ClusterRole has been created, get the top-level ClusterRole 
 kubectl get clusterrole kyverno:background-controller -o yaml
 ```
 
-Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it will be necessary to grant the controller the required permissions to generate these types. In this scenario, a ClusterRole should be created and assigned the aggregation labels for the admission in order for those permissions to take effect.
+Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it will be necessary to grant the controller the required permissions to generate these types. In this scenario, a ClusterRole should be created and assigned the aggregation labels for the admission controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno admission controller additional permissions to create ValidatingAdmissionPolicies and ValidatingAdmissionPolicyBindings:
 
@@ -274,6 +278,7 @@ The following keys are used to control the behavior of Kyverno and must be set i
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
 10. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector": {"matchExpressions": [{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'`.
 11. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](/docs/installation/platform-notes/#notes-for-aks-users) section for details.
+12. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
 
@@ -284,75 +289,78 @@ The following flags can be used to control the advanced behavior of the various 
 * C: Cleanup controller
 * R: Reports controller
 
-1. `add_dir_header` (ABCR): adds the file directory to the header of the log messages.
-2. `admissionReports` (AR): enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. Default is `true`.
-3. `aggregateReports` (R): enables the report aggregating ability of AdmissionReports (1.10.2+). Default is `true`.
-4. `allowInsecureRegistry` (ABR): allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.
-5. `alsologtostderr` (ABCR): log to standard error as well as files (no effect when -logtostderr=true)
-6. `autoUpdateWebhooks` (A): set this flag to `false` to disable auto-configuration of the webhook. Default is `true`. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard.
-7. `backgroundServiceAccountName` (A): the name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.
-8. `backgroundScan` (R): enables/disables background reporting scans. Has no effect on background reconciliation by the background controller. `true` by default.
-9. `backgroundScanInterval` (R): sets the time interval when periodic background scans for reporting take place. Default is `1h`. Supports minute durations as well (e.g., `10m`).
-10. `backgroundScanWorkers` (R): defines the number of internal worker threads to use when processing background scan reports. Default is `2`. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time.
-11. `caSecretName` (AC): overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.
-12. `clientRateLimitBurst` (ABCR): configures the maximum burst for throttling. Uses the client default if zero. Default is `300`.
-13. `clientRateLimitQPS` (ABCR): configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. Default is `300`.
-14. `disableMetrics` (ABCR): specifies whether to enable exposing the metrics. Default is `false`.
-15. `dumpPayload` (AC): toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Default is `false`. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled.
-16. `enableConfigMapCaching` (ABR): enables the ConfigMap caching feature. Defaults to `true`.
-17. `enableDeferredLoading` (A): enables deferred (lazy) loading of variables (1.10.1+). Defaults to `true`. Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0.
-18. `enablePolicyException` (ABR): set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). Default is `true`.
-19. `enableTracing` (ABCR): set to enable exposing traces. Default is `false`.
-20. `enableTuf` (AR): enable tuf for private sigstore deployments.
-21. `exceptionNamespace` (ABR): set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted.
-22. `forceFailurePolicyIgnore` (A): set to force Failure Policy to `Ignore`. Default is `false`.
-23. `generateValidatingAdmissionPolicy` (A): specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. Default is `false`.
-24. `genWorkers` (B): the number of workers for processing generate policies concurrently. Default is `10`.
-25. `imagePullSecrets` (ABR): specifies secret resource names for image registry access credentials. Only a single value accepted currently.
-26. `imageSignatureRepository` (AR): specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`.
-27. `imageVerifyCacheEnabled` (A): Enable a TTL cache for verified images. Default is `true`.
-28. `imageVerifyCacheMaxSize` (A): Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. Default is `1000`. `0` sets the value to default.
-29. `imageVerifyCacheTTLDuration` (A): Maximum TTL value for a cache expressed as duration. Default is `60m`. `0` sets the value to default.
-30. `kubeconfig` (ABCR): specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate. Only used when Kyverno is running outside of the cluster in which it services admission requests.
-31. `leaderElectionRetryPeriod` (ABCR): controls the leader election renewal frequency. Default is `2s`.
-32. `log_backtrace_at` (ABCR): when logging hits line file:N, emit a stack trace.
-33. `log_dir` (ABCR): if non-empty, write log files in this directory (no effect when -logtostderr=true).
-34. `log_file` (ABCR): if non-empty, use this log file (no effect when -logtostderr=true).
-35. `log_file_max_size` (ABCR): defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. Default is `1800`.
-36. `loggingFormat` (ABCR): determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively. Default is `text`.
-37. `logtostderr` (ABCR): log to standard error instead of files. Default is `true`.
-38. `maxQueuedEvents` (ABR): defines the upper limit of events that are queued internally. Default is `1000`.
-39. `metricsPort` (ABCR): specifies the port to expose prometheus metrics. Default is `8000`.
-40. `omit-events` (ABR): specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is undefined (all events will be emitted).
-41. `one_output` (ABCR): If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true).
-42. `otelCollector` (ABCR): sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`.
-43. `otelConfig` (ABCR): sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. Default is `prometheus`.
-44. `policyReports` (R): enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. Default is `true`.
-45. `profile` (ABCR): setting this flag to `true` will enable profiling. Default is `false`.
-46. `profileAddress` (ABCR): Configures the address of the profiling server. Default is `""`.
-47. `profilePort` (ABCR): specifies port to enable profiling. Default is `6060`.
-48. `protectManagedResources` (A): protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Defaults to `false`. Set to `true` to enable.
-49. `registryCredentialHelpers` (ABR): enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`.
-50. `reportsChunkSize` (R): maximum number of results in generated reports before splitting occurs if there are more results to be stored. Default is `1000`.
-51. `serverIP` (AC): like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves.
-52. `servicePort` (AC): port used by the Kyverno Service resource and for webhook configurations. Default is `443`.
-53. `skipResourceFilters` (R): defines whether to obey the ConfigMap's resourceFilters when performing background report scans. Default is `true`. When set to `true`, anything defined in the resourceFilters will not be excluded in background reports. Ex., when set to `true` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will be produced for anything in the `kube-system` Namespace. Set this value to `false` to obey resourceFilters in background scan reports. Ex., when set to `false` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will NOT be produced for anything in the `kube-system` Namespace.
-54. `skip_headers` (ABCR): if true, avoid header prefixes in the log messages.
-55. `skip_log_headers` (ABCR): if true, avoid headers when opening log files (no effect when -logtostderr=true).
-56. `stderrthreshold` (ABCR): logs at or above this threshold go to stderr when writing to files and stderr (no effect when -logtostderr=true or -alsologtostderr=false). Default is `2`.
-57. `tlsSecretName` (AC): overwrites the default secret name of the TLS certificate. See also the related flag `caSecretName`.
-58. `tracingAddress` (ABCR): tracing receiver address, defaults to `''`.
-59. `tracingCreds` (ABCR): set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used.
-60. `tracingPort` (ABCR): tracing receiver port. Default is `"4317"`.
-61. `transportCreds` (ABCR): set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. Default is `""`.
-62. `ttlReconciliationInterval` (C): defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. Default is `1m`. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details.
-63. `tufMirror` (AR): specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification.
-64. `tufRoot` (AR): specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification.
-65. `v` (ABCR): sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. Default is `2`.
-66. `validatingAdmissionPolicyReports` (R): specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. Default is `false`.
-67. `vmodule` (ABCR): comma-separated list of pattern=N settings for file-filtered logging.
-68. `webhookRegistrationTimeout` (A): specifies the length of time Kyverno will try to register webhooks with the API server. Defaults to `120s`.
-69. `webhookTimeout` (A): specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). Defaults is `10`.
+| Flag                         | Default      | Description                                                            |
+|------------------------------|--------------|------------------------------------------------------------------------|
+| `add_dir_header` (ABCR) | | Adds the file directory to the header of the log messages. |
+| `admissionReports` (AR) | true | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. |
+| `aggregateReports` (R) | true | Enables the report aggregating ability of AdmissionReports (1.10.2+). |
+| `allowInsecureRegistry` (ABR)| | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
+| `alsologtostderr` (ABCR) | | Log to standard error as well as files (no effect when -logtostderr=true) |
+| `autoUpdateWebhooks` (A) | true | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard. |
+| `backgroundServiceAccountName` (A) | | The name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.|
+| `backgroundScan` (R) | true | Enables/disables background reporting scans. Has no effect on background reconciliation by the background controller.|
+|`backgroundScanInterval` (R) | 1h | Sets the time interval when periodic background scans for reporting take place. Supports minute durations as well (e.g., `10m`).|
+| `backgroundScanWorkers` (R) | 2 | Defines the number of internal worker threads to use when processing background scan reports. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time. |
+| `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
+| `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
+| `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
+| `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
+| `dumpPayload` (AC) | false | Toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled. |
+| `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
+| `enableDeferredLoading` (A) | true | Enables deferred (lazy) loading of variables (1.10.1+). Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0. |
+| `enablePolicyException` (ABR) | true | Set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). |
+| `enableTracing` (ABCR) | false | Set to enable exposing traces. |
+| `enableTuf` (AR) | | Enable tuf for private sigstore deployments. |
+| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted. |
+| `forceFailurePolicyIgnore` (A) | false | Set to force Failure Policy to `Ignore`. |
+| `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
+| `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
+| `imagePullSecrets` (ABR) | | Specifies secret resource names for image registry access credentials. All referenced secrets must exist in Kyverno's Namespace. Multiple values are accepted but must be comma separated. |
+| `imageSignatureRepository` (AR) | | Specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`. |
+| `imageVerifyCacheEnabled` (A) | true | Enable a TTL cache for verified images. |
+| `imageVerifyCacheMaxSize` (A) | 1000 | Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. `0` sets the value to default. |
+| `imageVerifyCacheTTLDuration` (A) | 60m | Maximum TTL value for a cache expressed as duration. `0` sets the value to default. |
+| `kubeconfig` (ABCR) | | Specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate. Only used when Kyverno is running outside of the cluster in which it services admission requests. |
+| `leaderElectionRetryPeriod` (ABCR) | `2s` | Controls the leader election renewal frequency. |
+| `log_backtrace_at` (ABCR) | | When logging hits line file:N, emit a stack trace. |
+| `log_dir` (ABCR) | | If non-empty, write log files in this directory (no effect when -logtostderr=true). |
+| `log_file` (ABCR) | | If non-empty, use this log file (no effect when -logtostderr=true). |
+| `log_file_max_size` (ABCR) | `1800` | Defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. |
+| `loggingFormat` (ABCR) | `text` | Determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively.
+| `logtostderr` (ABCR) | true | Log to standard error instead of files. |
+| `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
+| `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
+| `omit-events` (ABR) | | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is undefined (all events will be emitted). |
+| `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
+| `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
+| `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
+| `policyReports` (R) | true | Enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
+| `profile` (ABCR) | false | Setting this flag to `true` will enable profiling. |
+| `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
+| `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
+| `protectManagedResources` (A) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
+| `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
+| `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
+| `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
+| `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
+| `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
+| `skipResourceFilters` (R) | true | Defines whether to obey the ConfigMap's resourceFilters when performing background report scans. When set to `true`, anything defined in the resourceFilters will not be excluded in background reports. Ex., when set to `true` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will be produced for anything in the `kube-system` Namespace. Set this value to `false` to obey resourceFilters in background scan reports. Ex., when set to `false` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will NOT be produced for anything in the `kube-system` Namespace. |
+| `skip_headers` (ABCR) | | If true, avoid header prefixes in the log messages. |
+| `skip_log_headers` (ABCR) | | If true, avoid headers when opening log files (no effect when -logtostderr=true). |
+| `stderrthreshold` (ABCR) | `2` | Logs at or above this threshold go to stderr when writing to files and stderr (no effect when -logtostderr=true or -alsologtostderr=false). |
+| `tlsSecretName` (AC) | | Overwrites the default secret name of the TLS certificate. See also the related flag `caSecretName`. |
+|`tracingAddress` (ABCR) | `''` | Tracing receiver address.|
+| `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
+| `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
+| `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details. |
+| `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
+| `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
+| `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |
+| `validatingAdmissionPolicyReports` (R) | false | Specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. |
+| `vmodule` (ABCR) | | Comma-separated list of pattern=N settings for file-filtered logging. |
+| `webhookRegistrationTimeout` (A) | `120s` | Specifies the length of time Kyverno will try to register webhooks with the API server. |
+| `webhookTimeout` (A) | `10` | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). |
 
 ### Policy Report access
 
@@ -404,11 +412,7 @@ graph LR
 
 Resource filters, unlike webhooks, may effect more than just admission requests--they have the ability to effect policy reports in background scans as well. By default, however, the configured resource filters are taken into account during background reporting scans. Filters listed will prevent policy report results from being created. Also note that resource filters do not effect mutations for existing resources.
 
-The Kubernetes kinds that should be ignored by policies can be filtered out by modifying the value of `data.resourceFilters` in Kyverno's ConfigMap stored in its Namespace. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard. Thus, an item `[Secret,*,*]` means that admissions of kind `Secret` in any Namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, this sequence filters out kind `Pod` in Namespace `foo-system` having names beginning with `redis`.
-
-```yaml
-[Pod,foo-system,redis*]
-```
+The Kubernetes kinds that should be ignored by policies can be filtered out by modifying the value of `data.resourceFilters` in Kyverno's ConfigMap stored in its Namespace. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard (`*/*` indicates all subresources within all kinds). Thus, an item `[Secret,*,*]` means that admissions of kind `Secret` in any Namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, the sequence `[Pod,foo-system,redis*]` filters out kind `Pod` in Namespace `foo-system` having names beginning with `redis`.
 
 By default, a number of kinds are skipped in the default configuration including Nodes, Events, APIService, SubjectAccessReview, and more. Filters may be added and removed according to your needs.
 
