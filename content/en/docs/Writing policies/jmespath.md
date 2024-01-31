@@ -2988,7 +2988,8 @@ spec:
   rules:
     - name: validate-external-url
       match:
-        resources:
+      any:
+      - resources:
           kinds:
             - ConfigMap
       validate:
