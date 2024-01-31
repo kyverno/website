@@ -13,7 +13,7 @@ To uninstall Kyverno, use either the raw YAML manifest or Helm. The Kyverno Depl
 Use the tagged release manifest corresponding to your version to fully uninstall Kyverno. After removal, verify that all webhooks have been removed as shown [below](#clean-up-webhooks).
 
 ```sh
-kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
+kubectl delete -f https://github.com/kyverno/kyverno/releases/download/v1.11.1/install.yaml
 ```
 
 ### Uninstall Kyverno with Helm

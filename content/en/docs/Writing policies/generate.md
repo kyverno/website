@@ -22,7 +22,7 @@ Generate rules come in two flavors. They can either apply to admission events th
 
 Generate rules support `match` and `exclude` blocks and many of the other common Kyverno policy constructs such as [preconditions](/docs/writing-policies/preconditions/), [context variables](/docs/writing-policies/external-data-sources/), and more.
 
-Kyverno can keep generated resources in sync to prevent tampering by use of a `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource. Synchronization is beneficial in that modifications to the generated resource may be reverted, and changes to the source resource will be propagated. In addition to these effects, synchronization will ensure that the matching resource responsible for the triggering of the generation behavior is watched for changes. Should those changes result in a false match (including deletion), then it will result in the generated resource being removed to ensure the desired state is always maintained.
+Kyverno can keep generated resources in sync to prevent tampering by use of a `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource. Synchronization is beneficial in that modifications to the generated resource may be reverted, and changes to the source resource will be propagated. In addition to these effects, synchronization will ensure that the matching resource responsible for the triggering of the generation behavior is watched for changes. Should those changes result in a false match (including deletion), then it will result in the generated resource being removed to ensure the desired state is always maintained. In cases where the generated resource being synchronized must be modified by other controllers in the cluster, Kyverno can optionally use [server-side apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/) when generating the resource through the field `spec.useServerSideApply`.
 
 When using a generate rule, the source resource can either be an existing resource in the cluster, or a new resource defined in the rule itself. When the source is an existing resource in the cluster such as a ConfigMap or Secret, for example, the `clone` object is used. See the [Clone Source](#clone-source) section for more details. When the source is defined directly in the rule, the `data` object is used. See the [Data Source](#data-source) section for more details. These are mutually exclusive and only one may be specified per rule.
 
@@ -134,6 +134,10 @@ When a generate policy should take the source from a resource which already exis
 
 {{% alert title="Tip" color="info" %}}
 In situations where it may be required to slightly modify the cloned resource, for example to add labels or annotations, an additional mutate rule may be added to the policy so that Kyverno modifies the resource in flight.
+{{% /alert %}}
+
+{{% alert title="Warning" color="warning" %}}
+For clone-type generate rules, Kyverno must be able to add labels to the clone source in order to track changes. If another operator or controller owns the source, you must ensure it is configured in such a way that these Kyverno labels are not modified/removed.
 {{% /alert %}}
 
 The following table shows the behavior of deletion and modification events on components of a generate rule with a clone source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks. "Source" refers to the clone source. Note that when using a clone source with sync enabled, deletion of the rule/policy responsible for a resource's generation or deletion of the clone source will NOT cause deletion of any downstream resources. This behavior differs when compared to [data declarations](#data-source).
@@ -409,6 +413,8 @@ A `UpdateRequest` status can have one of four values:
 * `Failed`: the `UpdateRequest` controller failed to process the rules
 * `Pending`: the request is yet to be processed or the resource has not been created
 * `Skip`: marked when triggering the generate policy by adding a label/annotation to the existing resource, while the selector is not defined in the policy itself.
+
+Note that Kyverno will retry up to three times to reconcile an `UpdateRequest` in a `Failed` status. The `UpdateRequest` will be garbage collected if it exceeds the retry threshold.
 
 Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/high-availability/) page.
 
