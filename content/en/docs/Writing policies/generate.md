@@ -34,14 +34,17 @@ The source of a generated resource may be defined in the Kyverno policy/rule dir
 
 The following table shows the behavior of deletion and modification events on components of a generate rule with a data source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks. Note that when using a data source with sync enabled, deletion of the rule/policy responsible for a resource's generation will cause immediate deletion of any/all downstream resources.
 
-| Action             | Sync Effect          | NoSync Effect         |
-|--------------------|----------------------|-----------------------|
-| Delete Downstream  | Downstream recreated | Downstream deleted    |
-| Delete Rule/Policy | Downstream deleted   | Downstream retained   |
-| Delete Trigger     | Downstream deleted   | None                  |
-| Modify Downstream  | Downstream reverted  | Downstream modified   |
-| Modify Rule/Policy | Downstream synced    | Downstream unmodified |
-| Modify Trigger     | Downstream deleted   | None                  |
+| Action             | Sync Effect                                                | NoSync Effect         |
+|--------------------|------------------------------------------------------------|-----------------------|
+| Delete Downstream  | Downstream recreated                                       | Downstream deleted    |
+| Delete Rule/Policy | Downstream retained (orphanDownstreamOnPolicyDelete=true)  | Downstream retained   |
+| Delete Rule/Policy | Downstream deleted (orphanDownstreamOnPolicyDelete=false)  | Downstream retained   |
+| Delete Trigger     | Downstream deleted                                         | None                  |
+| Modify Downstream  | Downstream reverted                                        | Downstream modified   |
+| Modify Rule/Policy | Downstream synced                                          | Downstream unmodified |
+| Modify Trigger     | Downstream deleted                                         | None                  |
+
+The `orphanDownstreamOnPolicyDelete` property can be used to preserve generated resources on policy/rule deletion when synchronization is enabled. Default is set to `false`. When enabled, the generate resource will be retained in the cluster.
 
 ### Data Examples
 
