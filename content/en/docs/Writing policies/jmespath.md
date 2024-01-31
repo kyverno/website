@@ -2384,7 +2384,11 @@ spec:
 
 The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. The first input is any time in the source format, the second input is the actual time to convert which is expected to be in the format specified by the first input. The output is always the second input converted to RFC 3339.
 
-The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+- The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. 
+
+- The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+
+- The expression `time_parse('1702691171', '1702691171')` (epoch time) results in the output of `"2023-12-16T01:46:11Z"` (UTC).
 
 | Input 1                          | Input 2                         | Output                     |
 |----------------------------------|---------------------------------|----------------------------|
@@ -2998,6 +3002,47 @@ spec:
             - key: "{{ base64_decode('{{ request.object.webhooks[0].clientConfig.caBundle }}').x509_decode(@).time_since('',NotBefore,NotAfter) }}"
               operator: LessThan
               value: 168h0m0s
+```
+
+</p>
+</details>
+
+### IsExternalURL
+
+<details><summary>Expand</summary>
+<p>
+
+The is_external_url() filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | boolean |
+
+**Example:** This policy looks for a field named `test` within the data section of ConfigMaps. It then runs a custom function called is_external_url to determine if the value associated with `test` is an external URL.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-url-in-configmap
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: validate-external-url
+      match:
+        any:
+        - resources:
+            kinds:
+              - ConfigMap
+      validate:
+        message: "ConfigMap contains an external URL."
+        deny:
+          conditions:
+            all:
+             - key: "{{ request.object.data.test | is_external_url(@) }}"
+              operator: Equals
+              value: true
 ```
 
 </p>

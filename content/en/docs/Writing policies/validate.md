@@ -530,8 +530,6 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-Deny rules are incapable of producing a `pass` result in a Policy Report because the desired action is to deny so, therefore, the results will either be `skip` or `fail`.
-
 See also [Preconditions](/docs/writing-policies/preconditions).
 
 ### Deny DELETE requests based on labels
