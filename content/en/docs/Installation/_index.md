@@ -35,7 +35,7 @@ A standard Kyverno installation consists of a number of different components, so
 * **Webhooks**
   * ValidatingWebhookConfigurations for receiving both policy and resource validation requests.
   * MutatingWebhookConfigurations for receiving both policy and resource mutating requests.
-      * Note: Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied.
+      * Note: Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied. If for a resource no operations are set in match or exclude blocks, all default operations are applied in the webhooks rules.
 * **CustomResourceDefinitions**
   * CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
 
