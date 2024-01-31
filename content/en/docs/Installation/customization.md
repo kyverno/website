@@ -304,6 +304,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
+| `eventsRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling for events. Uses the client default if zero. |
+| `eventsRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
 | `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
 | `dumpPayload` (AC) | false | Toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
