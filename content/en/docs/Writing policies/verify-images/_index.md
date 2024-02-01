@@ -17,6 +17,7 @@ The logical structure of an verifyImages rule is shown below:
 Each rule contains the following common configuration attributes:
   * `type`: the signature type. Sigstore Cosign and Notary are supported. 
   * `imageReferences`: a list of image reference patterns to match
+  * `skipImageReferences`: a list of image reference patterns that should be skipped.
   * `required`: enforces that all matching images are verified
   * `mutateDigest`: converts tags to digests for matching images
   * `verifyDigest`: enforces that digests are used for matching images
