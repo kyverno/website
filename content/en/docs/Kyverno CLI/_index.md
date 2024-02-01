@@ -100,6 +100,17 @@ Apply multiple policies to multiple resources:
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --cluster
 ```
 
+Apply a policy to a resource with exception: 
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
+```
+Apply multiple policies to multiple resources with exceptions:
+
+```sh
+kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exception /path/to/exception1.yaml --exception /path/to/exception2.yaml 
+```
+
 Apply a mutation policy to a specific resource:
 
 ```sh
@@ -735,6 +746,113 @@ summary:
   pass: 1
   skip: 0
   warn: 0
+```
+
+ Example: 
+
+ Applying Policy on a resource with a policy exception 
+
+ Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: max-containers
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: max-two-containers
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "A maximum of 2 containers are allowed inside a Pod."
+      deny:
+        conditions:
+          any:
+          - key: "{{request.object.spec.containers[] | length(@)}}"
+            operator: GreaterThan
+            value: "2"
+```
+
+Policy Exception manifest (`exception.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: container-exception
+spec:
+  exceptions:
+  - policyName: max-containers
+    ruleNames:
+    - max-two-containers
+    - autogen-max-two-containers
+  match:
+    any:
+    - resources:
+        kinds:
+        - Pod
+        - Deployment
+  conditions:
+    any:
+    - key: "{{ request.object.metadata.labels.color || '' }}"
+      operator: Equals
+      value: blue
+```
+
+Resource manifest (`resource.yaml`):
+
+A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule’s definition.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: three-containers-deployment
+  labels:
+    app: my-app
+    color: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+        color: blue
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+        - name: redis-container
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+        - name: busybox-container
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "while true; do echo 'Hello from BusyBox'; sleep 10; done"]    
+```
+Apply the above policy on resource with exception 
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
+```
+
+The following output will be generated:
+
+```yaml
+Applying 3 policy rule(s) to 1 resource(s) with 1 exception(s)...
+
+pass: 0, fail: 0, warn: 0, error: 0, skip: 1 
 ```
 
 #### Applying ValidatingAdmissionPolicies
@@ -1533,6 +1651,8 @@ spec:
 ```
 
 Resource manifest (`resource.yaml`):
+
+A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule’s definition.
 
 ```yaml
 apiVersion: apps/v1
