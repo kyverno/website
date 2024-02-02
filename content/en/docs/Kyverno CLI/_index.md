@@ -1652,7 +1652,7 @@ spec:
 
 Resource manifest (`resource.yaml`):
 
-A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule’s definition.
+Both deployments violate the policy rule but one of which matches an exception. Thus it will be successfully created.
 
 ```yaml
 apiVersion: apps/v1
