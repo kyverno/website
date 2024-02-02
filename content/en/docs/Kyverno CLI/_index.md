@@ -1594,7 +1594,7 @@ applying 1 policy to 1 resource...
 Test Summary: 1 tests passed and 0 tests failed
 ```
 
-In the following policy test, A Cluster policy exisit containing a single `validate` rule which requires all Pods must not use any host namespaces via the fields `hostPID`, `hostIPC`, or `hostNetwork` is applied against two resources with an Policy Exception which is defined in `exceptions` field in Test manifest. Notice that the resource which matches the characteristics defined in PolicyException that will be skiped and the resource which does not matches the characteristics defined in PolicyException that will be failed
+In the following policy test, a `validate` policy rule ensures that Pods isn't allowed to access the host namespaces except for those named `important-tool*` in the `delta` namespace. This is achieved by creating a Policy Exception and defining its file path in the `exceptions` field in the Test manifest. It is expected that resources that violate the policy rule but match policy exceptions will be skipped. Otherwise, they will fail.
 
 Policy manifest (`disallow-host-namespaces.yaml`):
 
