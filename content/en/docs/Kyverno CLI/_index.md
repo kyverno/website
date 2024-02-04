@@ -849,7 +849,7 @@ spec:
           image: busybox:latest
           command: ["/bin/sh", "-c", "while true; do echo 'Hello from BusyBox'; sleep 10; done"]    
 ```
-Apply the above policy on resource with exception 
+Apply the above policy to the resource with the exception 
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
