@@ -313,8 +313,8 @@ Here is an example:
       "registry": "https://docker.io",
       "path": "library/nginx",
       "name": "nginx",
-      "digest": "sha256:abcdef1234567890",
-      "reference": "https://docker.io/library/nginx@sha256:abcdef1234567890",
+      "digest": "sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
+      "reference": "https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
       "referenceWithTag": "https://docker.io/library/nginx:"
     }
   }
