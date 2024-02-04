@@ -784,7 +784,7 @@ spec:
           any:
           - key: "{{request.object.spec.containers[] | length(@)}}"
             operator: GreaterThan
-            value: "2"
+            value: 2
 ```
 
 Policy Exception manifest (`exception.yaml`):
