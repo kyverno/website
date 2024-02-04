@@ -1122,7 +1122,7 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
-exceptions: # optional file for specifying exceptions. see below for example.
+exceptions: # optional files for specifying exceptions. See below for an example.
   - <path/to/exception.yaml>
   - <path/to/exception.yaml>
 variables: variables.yaml # optional file for declaring variables. see below for example.
