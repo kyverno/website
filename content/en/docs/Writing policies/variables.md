@@ -343,7 +343,7 @@ Reference the image properties of container `tomcat`:
 
 `{{images.containers.tomcat.referenceWithTag}}`
 
-For container `tomcat`, `referenceWithTag` corresponds to `https://ghcr.io/tomcat:9`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value. `reference` enables referencing the image using the image `digest` and when the image is specified with a `tag`,  `reference` enables referencing it using the image `tag` similar to `referenceWithTag`.
+For the container `tomcat`, `referenceWithTag` corresponds to `https://ghcr.io/tomcat:9` since the image was specified with a tag and not a digest. The `reference` variable will also hold the same value. `reference` enables referencing the image depending on how it was originally specified: if it was specified with a tag then `reference` will contain the tag; if specified with digest then `reference` will contain the digest.
 
 Reference the image properties of initContainer `vault`:
 
