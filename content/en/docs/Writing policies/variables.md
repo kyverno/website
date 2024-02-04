@@ -293,7 +293,9 @@ Here is an example:
       "registry": "https://ghcr.io",
       "path": "tomcat",
       "name": "tomcat",
-      "tag": "9"
+      "tag": "9",
+      "reference":"https://ghcr.io/tomcat:9",
+      "referenceWithTag":"https://ghcr.io/tomcat:9"
     }
   },
   "initContainers": {
@@ -301,7 +303,9 @@ Here is an example:
       "registry": "https://ghcr.io",
       "path": "vault",
       "name": "vault",
-      "tag": "v3"
+      "tag": "v3",
+      "reference":"https://ghcr.io/vault:v3",
+      "referenceWithTag":"https://ghcr.io/vault:v3"
     }
   }
 }
