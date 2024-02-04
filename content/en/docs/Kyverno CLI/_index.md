@@ -758,7 +758,7 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception
 
 Example:
 
- Applying Policy on a resource with a policy exception 
+Applying a policy to a resource with a policy exception 
 
  Policy manifest (`policy.yaml`):
 
