@@ -1145,7 +1145,7 @@ The test declaration consists of the following parts:
 
 1. The `policies` element which lists one or more policies to be applied.
 2. The `resources` element which lists one or more resources to which the policies are applied.
-3. The `exceptions` element which lists one or more policy exceptions to the policies and can't be used along with ValidatingAdmissionPolicy. Optional.
+3. The `exceptions` element which lists one or more policy exceptions. Cannot be used with ValidatingAdmissionPolicy. Optional.
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
