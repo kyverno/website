@@ -387,6 +387,38 @@ Reference the image properties of initContainer `vault`:
 
 For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/vault:v3` since the image was specified with a tag and not a digest. The `reference` variable will also hold the same value.
 
+Reference the image properties of container `nginx`:
+
+1. Reference the registry URL
+
+`{{images.containers.nginx.registry}}`
+
+2. Reference the path to the image
+
+`{{images.containers.nginx.path}}`
+
+3. Reference the image name
+
+`{{images.containers.nginx.name}}`
+
+4. Reference the image tag
+
+`{{images.containers.nginx.tag}}`
+
+5. Reference the digest
+
+`{{images.containers.nginx.digest}}`
+
+6. Reference the readable reference for the image (along with the image digest)
+
+`{{images.containers.nginx.reference}}`
+
+7. Reference the readable reference for the image (along with the image tag)
+
+`{{images.containers.nginx.referenceWithTag}}`
+
+For the container `nginx`, `referenceWithTag` corresponds to `https://docker.io/library/nginx:`. Since the image was specified with a digest, `reference` corresponds to `https://docker.io/library/nginx@sha256:abcdef1234567890`.
+
 This same pattern and image variable arrangement also works for ephemeral containers.
 
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization/#configmap-keys).
