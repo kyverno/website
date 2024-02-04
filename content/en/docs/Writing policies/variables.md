@@ -375,7 +375,7 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.referenceWithTag}}`
 
-For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/vault:v3`. Since the image is specified with a `tag` and not a `digest`, `reference` variable will also hold the same value.
+For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/vault:v3` since the image was specified with a tag and not a digest. The `reference` variable will also hold the same value.
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
