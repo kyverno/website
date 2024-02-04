@@ -750,7 +750,7 @@ summary:
 
 #### Applying Policy Exceptions 
 
-Apply a policy manifest to a resource manifest with a policy exception, using `--exceptions` flag to pass the Policy Exception manifest.
+[Policy Exceptions](/docs/writing-policies/exceptions/) can be applied alongside policies by using the `--exceptions` flag to pass the Policy Exception manifest.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
