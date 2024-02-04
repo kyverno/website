@@ -1602,7 +1602,7 @@ applying 1 policy to 1 resource...
 Test Summary: 1 tests passed and 0 tests failed
 ```
 
-In the following policy test, a `validate` policy rule ensures that Pods isn't allowed to access the host namespaces except for those named `important-tool*` in the `delta` namespace. This is achieved by creating a Policy Exception and defining its file path in the `exceptions` field in the Test manifest. It is expected that resources that violate the policy rule but match policy exceptions will be skipped. Otherwise, they will fail.
+In the following policy test, a `validate` rule ensures that Pods aren't allowed to access host namespaces. A Policy Exception is used to exempt Pods and Deployments beginning with the name `important-tool` in the `delta` namespace from this rule. The `exceptions` field is used in the Test manifest to declare a Policy Exception manifest. It is expected that resources that violate the rule but match policy exceptions will be skipped. Otherwise, they will fail.
 
 Policy manifest (`disallow-host-namespaces.yaml`):
 
