@@ -696,6 +696,47 @@ spec:
 </p>
 </details>
 
+### Is_external_url
+
+<details><summary>Expand</summary>
+<p>
+
+The `is_external_url()` filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | boolean |
+
+**Example:** This policy looks for a field named `test` within the data section of ConfigMaps and runs `is_external_url()` to determine if the value associated with `test` is an external URL.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-url-in-configmap
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: validate-external-url
+      match:
+        any:
+        - resources:
+            kinds:
+              - ConfigMap
+      validate:
+        message: "ConfigMap contains an external URL."
+        deny:
+          conditions:
+            all:
+             - key: "{{ request.object.data.test | is_external_url(@) }}"
+              operator: Equals
+              value: true
+```
+
+</p>
+</details>
+
 ### Items
 
 <details><summary>Expand</summary>
@@ -3007,42 +3048,35 @@ spec:
 </p>
 </details>
 
-### IsExternalURL
+### SHA256
 
 <details><summary>Expand</summary>
 <p>
 
-The is_external_url() filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+The `sha256()` filter takes a string of any length and returns a fixed hash value. For example, when `sha256()` is applied to the string `alertmanager-kube-prometheus-stack-alertmanager`, which exceeds the character limit, it returns a fixed hash value of `75c07bb807f2d80a85d34880b8af0c5f29f7c27577076ed5d0e4b427dee7dbcc`. This feature is particularly useful for situations where the length of a string surpasses Kyverno's 52-character limit. It can be employed to generate resource names and to create resources for deployments whose names are not under our control.
 
 | Input 1            | Output  |
 |--------------------|---------|
-| String             | boolean |
+| String             | String  |
 
-**Example:** This policy looks for a field named `test` within the data section of ConfigMaps. It then runs a custom function called is_external_url to determine if the value associated with `test` is an external URL.
+**Example:** This policy mutates the names of specified resources to their SHA256 hash values.
 
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: check-external-url-in-configmap
+  name: sha256-demo
 spec:
-  validationFailureAction: Enforce
-  background: false
   rules:
-    - name: validate-external-url
+    - name: convert-name-to-hash
       match:
-        any:
-        - resources:
-            kinds:
-              - ConfigMap
-      validate:
-        message: "ConfigMap contains an external URL."
-        deny:
-          conditions:
-            all:
-             - key: "{{ request.object.data.test | is_external_url(@) }}"
-              operator: Equals
-              value: true
+        resources:
+          kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ sha256(request.object.metadata.name) }}"
 ```
 
 </p>

@@ -304,6 +304,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
+| `eventsRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling for events. Uses the client default if zero. |
+| `eventsRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
 | `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
 | `dumpPayload` (AC) | false | Toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
@@ -327,6 +329,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `log_file` (ABCR) | | If non-empty, use this log file (no effect when -logtostderr=true). |
 | `log_file_max_size` (ABCR) | `1800` | Defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. |
 | `loggingFormat` (ABCR) | `text` | Determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively.
+| `loggingtsFormat` (ABCR) | `nanos` | Determines the timestamp format of logs. Logs can be formatted to have different timestamps by setting the flag to `iso8601` for ISO8601, `rfc3339` for RFC3339, `rfc3339nano` for RFC3339NANO, `millis` for Epoch Millis, `nanos` for Epoch Nanos time formats. If omitted, defaults to `nanos`. |
 | `logtostderr` (ABCR) | true | Log to standard error instead of files. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
@@ -334,12 +337,13 @@ The following flags can be used to control the advanced behavior of the various 
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
 | `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
-| `policyReports` (R) | true | Snables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
+| `policyReports` (R) | true | Enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
 | `profile` (ABCR) | false | Setting this flag to `true` will enable profiling. |
 | `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (A) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
+| `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
@@ -392,7 +396,7 @@ subjects:
 
 ### Webhooks
 
-Kyverno requires a few different webhooks to function. The main resource validating and mutating webhooks, those responsible for directing the Kubernetes API server to send the resources which are the subject of policies, are registered and managed dynamically by Kyverno based on the configured policies. With Kyverno-managed webhooks, Kyverno only receives admission requests for the matching resources defined in the policies, thereby preventing unnecessary admission requests being forwarded to Kyverno. For example, after an installation of Kyverno and before installing any policies, the ValidatingWebhookConfiguration named `kyverno-resource-validating-webhook-cfg` will be effectively empty. Creation of the first policy which matches on `Pod` will result in Kyverno configuring its webhook with one rule which instructs the API server to send all Pods to Kyverno. The matching can be further restricted on compatible versions of Kubernetes (v1.27+) by using the `matchConditions` [ConfigMap setting](#configmap-keys).
+Kyverno requires a few different webhooks to function. The main resource validating and mutating webhooks, those responsible for directing the Kubernetes API server to send the resources which are the subject of policies, are registered and managed dynamically by Kyverno based on the configured policies. With Kyverno-managed webhooks, Kyverno only receives admission requests for the matching resources defined in the policies, thereby preventing unnecessary admission requests being forwarded to Kyverno. For example, after an installation of Kyverno and before installing any policies, the ValidatingWebhookConfiguration named `kyverno-resource-validating-webhook-cfg` will be effectively empty. Creation of the first policy which matches on `Pod` will result in Kyverno configuring its webhook with one rule which instructs the API server to send all Pods to Kyverno. As resources have different scopes (`Namespaced` vs `Cluster`) the [webhook rule scope](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-rules) is defined by the resource type itself. For `Cluster` scoped resources the default webhook rule scope `*` will be used. For `Namespaced` resources, the rule scope will be set to `Namespaced`. In case of wildcard `*` resources are used in a policy, the scope is derived from the policy type (`ClusterPolicy` will result in `*` and `Policy` will result in `Namespaced` rule scope). The matching of webhooks in general can be further restricted on compatible versions of Kubernetes (v1.27+) by using the `matchConditions` [ConfigMap setting](#configmap-keys).
 
 The dynamic management of resource webhooks is enabled by default but can be turned off by the flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forward admission requests for all resources and with `FailurePolicy` set to `Ignore`. In the majority of cases, these dynamically-managed webhooks should not be disabled. Understand that using statically-configured webhooks instead means that you, the operator, are now responsible for their configuration and, if left at their default, will result in the Kubernetes API server sending *every* type of resource (including subresources like `/status`) creates, updates, deletes, and connect operations. This will dramatically increase the processing required by Kyverno, even if few policies exist.
 
