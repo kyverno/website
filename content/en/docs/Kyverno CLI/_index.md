@@ -760,7 +760,7 @@ Example:
 
 Applying a policy to a resource with a policy exception 
 
- Policy manifest (`policy.yaml`):
+Policy manifest (`policy.yaml`):
 
 ```yaml
 apiVersion: kyverno.io/v1
