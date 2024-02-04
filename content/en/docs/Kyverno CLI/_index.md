@@ -100,7 +100,7 @@ Apply multiple policies to multiple resources:
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --cluster
 ```
 
-Apply a policy to a resource with exception: 
+Apply a policy to a resource with a policy exception: 
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
