@@ -307,6 +307,16 @@ Here is an example:
       "reference":"https://ghcr.io/vault:v3",
       "referenceWithTag":"https://ghcr.io/vault:v3"
     }
+  },
+  "containers": {
+    "nginx": {
+      "registry": "https://docker.io",
+      "path": "library/nginx",
+      "name": "nginx",
+      "digest": "sha256:abcdef1234567890",
+      "reference": "https://docker.io/library/nginx@sha256:abcdef1234567890",
+      "referenceWithTag": "https://docker.io/library/nginx:"
+    }
   }
 }
 ```
