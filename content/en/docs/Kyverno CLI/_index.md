@@ -1660,7 +1660,7 @@ spec:
 
 Resource manifest (`resource.yaml`):
 
-Both deployments violate the policy rule but one of which matches an exception. Thus it will be successfully created.
+Both Deployments violate the policy but only one matches an exception. The Deployment without an exception will fail while the one with an exception will be skipped.
 
 ```yaml
 apiVersion: apps/v1
