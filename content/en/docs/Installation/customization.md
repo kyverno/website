@@ -341,7 +341,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profile` (ABCR) | false | Setting this flag to `true` will enable profiling. |
 | `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
-| `protectManagedResources` (A) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
+| `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
 | `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
