@@ -1017,9 +1017,33 @@ However, as dry-run mode causes mutation webhooks to be invoked just as if not i
 
 ### ArgoCD
 
-[Argo CD](https://argoproj.github.io/cd) does not currently support server-side apply dry-run mode in its diff calculations like [Flux](#flux) does. While this is currently a [roadmap item](https://github.com/argoproj/argo-cd/issues/11574), it means using Argo CD with Kyverno mutate rules requires some specific configurations. See the [platform notes](/docs/installation/platform-notes/#notes-for-argocd-users) page for general recommendations with Argo CD first.
+See the [platform notes](/docs/installation/platform-notes/#notes-for-argocd-users) page for general recommendations with Argo CD first.
 
-In order to use Argo CD with Kyverno, it will require configuring the `Application` custom resource with one or more `ignoreDifferences` entries to [instruct Argo CD](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/) to ignore the mutations created by Kyverno. Some of these options include `jqPathExpressions`, `jsonPointers`, and `managedFieldsManagers`. For example, if a Kyverno mutate rule is expected to add a label `foo` to all Deployments, the Argo CD `Application` may need a section as follows.
+#### ArgoCD v2.10+ 
+
+ArgoCD version 2.10 added support for [sever side diff](https://argo-cd.readthedocs.io/en/latest/user-guide/diff-strategies/#server-side-diff) which leverage the Kubernetes Server Side Apply feature.
+
+Enabling SSA based diffs, requires an annotation to be specified on the application or globally via the “argocd-cmd-params-cm” config map.
+
+Here is a YAML fragment that shows the annotation in an ArgoCD Application resource:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
+
+    ...
+
+```
+
+This [CNCF blog post](https://www.cncf.io/blog/2024/01/18/gitops-and-mutating-policies-the-tale-of-two-loops/) provides a complete example.
+
+
+#### ArgoCD v2.9 and below 
+
+In order to use older versions of Argo CD with Kyverno Mutate policy rules, it will require configuring the `Application` custom resource with one or more `ignoreDifferences` entries to [instruct Argo CD](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/) to ignore the mutations created by Kyverno. Some of these options include `jqPathExpressions`, `jsonPointers`, and `managedFieldsManagers`. For example, if a Kyverno mutate rule is expected to add a label `foo` to all Deployments, the Argo CD `Application` may need a section as follows.
 
 ```yaml
 ignoreDifferences:
