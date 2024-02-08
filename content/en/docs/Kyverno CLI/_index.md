@@ -923,6 +923,113 @@ Applying 1 policy rule(s) to 1 resource(s)...
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
 
+Applying a `ValidatingAdmissionPolicyBinding` along with the policy to a resource requires the `--cluster` flag to be set.
+
+Policy manifest (check-deployment-replicas.yaml):
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: "check-deployment-replicas"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+  validations:
+  - expression: object.spec.replicas <= 5
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: "check-deployment-replicas-binding"
+spec:
+  policyName: "check-deployment-replicas"
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: staging
+```
+
+The above policy verifies that the number of deployment replicas is not greater than 5 and is limited to a namespace labeled `environment: staging`.
+
+Create a Namespace with the label `environment: staging`:
+
+```bash
+kubectl create ns staging
+kubectl label ns staging environment=staging
+```
+
+Create two Deployments that violate policy, one of them in the `staging` namespace.
+
+```bash
+kubectl create deployment nginx-1 --image=nginx --replicas=6 -n staging
+kubectl create deployment nginx-2 --image=nginx --replicas=6
+```
+
+Get all Deployments from the cluster:
+
+```bash
+kubectl get deployments -A
+
+NAMESPACE            NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+default              nginx-2                  6/6     6            6           7m26s
+kube-system          coredns                  2/2     2            2           13m
+local-path-storage   local-path-provisioner   1/1     1            1           13m
+staging              nginx-1                  6/6     6            6           7m44s
+```
+
+Apply the ValidatingAdmissionPolicy with its binding to all resources in the cluster:
+
+```bash
+kyverno apply /path/to/check-deployment-replicas.yaml --cluster --policy-report
+```
+
+The following output will be generated:
+
+```bash
+Applying 1 policy rule(s) to 4 resource(s)...
+----------------------------------------------------------------------
+POLICY REPORT:
+----------------------------------------------------------------------
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  creationTimestamp: null
+  name: merged
+results:
+- message: 'failed expression: object.spec.replicas <= 5'
+  policy: check-deployment-replicas
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-1
+    namespace: staging
+    uid: a95d1594-44a7-4c8a-9225-04ac34cb9494
+  result: fail
+  scored: true
+  source: kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1707394871
+summary:
+  error: 0
+  fail: 1
+  pass: 0
+  skip: 0
+  warn: 0
+```
+
+As expected, the policy is only applied to `nginx-1` as it matches both the policy definition and its binding.
+
 ### create
 
 The Kyverno CLI has a `create` subcommand which makes it possible to create various Kyverno resources. You can create:
