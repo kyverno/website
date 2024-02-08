@@ -696,6 +696,47 @@ spec:
 </p>
 </details>
 
+### Is_external_url
+
+<details><summary>Expand</summary>
+<p>
+
+The `is_external_url()` filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | boolean |
+
+**Example:** This policy looks for a field named `test` within the data section of ConfigMaps and runs `is_external_url()` to determine if the value associated with `test` is an external URL.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-url-in-configmap
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: validate-external-url
+      match:
+        any:
+        - resources:
+            kinds:
+              - ConfigMap
+      validate:
+        message: "ConfigMap contains an external URL."
+        deny:
+          conditions:
+            all:
+             - key: "{{ request.object.data.test | is_external_url(@) }}"
+              operator: Equals
+              value: true
+```
+
+</p>
+</details>
+
 ### Items
 
 <details><summary>Expand</summary>
@@ -2384,7 +2425,11 @@ spec:
 
 The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. The first input is any time in the source format, the second input is the actual time to convert which is expected to be in the format specified by the first input. The output is always the second input converted to RFC 3339.
 
-The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+- The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. 
+
+- The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+
+- The expression `time_parse('1702691171', '1702691171')` (epoch time) results in the output of `"2023-12-16T01:46:11Z"` (UTC).
 
 | Input 1                          | Input 2                         | Output                     |
 |----------------------------------|---------------------------------|----------------------------|
@@ -2998,6 +3043,40 @@ spec:
             - key: "{{ base64_decode('{{ request.object.webhooks[0].clientConfig.caBundle }}').x509_decode(@).time_since('',NotBefore,NotAfter) }}"
               operator: LessThan
               value: 168h0m0s
+```
+
+</p>
+</details>
+
+### SHA256
+
+<details><summary>Expand</summary>
+<p>
+
+The `sha256()` filter takes a string of any length and returns a fixed hash value. For example, when `sha256()` is applied to the string `alertmanager-kube-prometheus-stack-alertmanager`, which exceeds the character limit, it returns a fixed hash value of `75c07bb807f2d80a85d34880b8af0c5f29f7c27577076ed5d0e4b427dee7dbcc`. This feature is particularly useful for situations where the length of a string surpasses Kyverno's 52-character limit. It can be employed to generate resource names and to create resources for deployments whose names are not under our control.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+**Example:** This policy mutates the names of specified resources to their SHA256 hash values.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sha256-demo
+spec:
+  rules:
+    - name: convert-name-to-hash
+      match:
+        resources:
+          kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ sha256(request.object.metadata.name) }}"
 ```
 
 </p>

@@ -450,7 +450,7 @@ spec:
       message: >-
         Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
         spec.containers[*].securityContext.runAsNonRoot, and
-        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.        
+        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.
       anyPattern:
       # spec.securityContext.runAsNonRoot must be set to true. If containers and/or initContainers exist which declare a securityContext field, those must have runAsNonRoot also set to true.
       - spec:
@@ -529,8 +529,6 @@ Placing these two conditions under an `all` block instead would require that bot
 Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) on deny conditions to abort processing when a decision can be reached. The first expression to evaluate to a `true` in an `any` block discontinues further evaluation. The first expression to evaluate to `false` in an `all` block does the same.
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
-
-Deny rules are incapable of producing a `pass` result in a Policy Report because the desired action is to deny so, therefore, the results will either be `skip` or `fail`.
 
 See also [Preconditions](/docs/writing-policies/preconditions).
 
@@ -681,11 +679,11 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
-      message: "unknown registry"  
+      message: "unknown registry"
       foreach:
       - list: "request.object.spec.initContainers"
         pattern:
-          image: "trusted-registry.io/*"      
+          image: "trusted-registry.io/*"
       - list: "request.object.spec.containers"
         pattern:
           image: "trusted-registry.io/*"
@@ -715,7 +713,7 @@ spec:
           kinds:
           - Ingress
     validate:
-      message: "All TLS hosts must use a domain of old.com."  
+      message: "All TLS hosts must use a domain of old.com."
       foreach:
       - list: request.object.spec.tls[]
         foreach:
@@ -743,9 +741,9 @@ spec:
     http:
       paths:
       - backend:
-          service: 
+          service:
             name: kuard
-            port: 
+            port:
               number: 8080
         path: /
         pathType: ImplementationSpecific
@@ -753,9 +751,9 @@ spec:
     http:
       paths:
       - backend:
-          service: 
+          service:
             name: kuard
-            port: 
+            port:
               number: 8090
         path: /myhr
         pathType: ImplementationSpecific
@@ -787,7 +785,7 @@ Sign the YAML manifest using the private key generated in the first step.
 
 ```sh
 $ kubectl-sigstore sign -f secret.yaml -k cosign.key --tarball no -o secret-signed.yaml
-Enter password for private key: 
+Enter password for private key:
 Using payload from: /tmp/kubectl-sigstore-temp-dir1572288324/tmp-blob-file
 0D 7ѫO2�Ď��D)�I��!@t�0���X� Xmj���7���+u
                                         ���_ڑ)ۆ�d�0�qHINFO[0004] signed manifest generated at secret-signed.yaml
@@ -843,10 +841,10 @@ spec:
 To test the operation of this rule, modify the signed Secret to change some aspect of the manifest. For example, by changing even the value of the `location` label from `europe` to `asia` will cause the signed manifest to be invalid. Kyverno will reject the altered manifest because the signature was only valid for the original Secret manifest.
 
 ```sh
-$ kubectl apply -f secret-signed.yaml 
-Error from server: error when creating "secret-signed.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+$ kubectl apply -f secret-signed.yaml
+Error from server: error when creating "secret-signed.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Secret/default/mysecret for resource violation: 
+policy Secret/default/mysecret for resource violation:
 
 validate-secrets:
   validate-secrets: 'manifest verification failed; verifiedCount 0; requiredCount
@@ -859,7 +857,7 @@ The difference between the signed manifest and supplied manifest is shown as par
 Change the value of the `location` label back to `europe` and attempt to create the manifest once again.
 
 ```sh
-$ kubectl apply -f secret-signed.yaml 
+$ kubectl apply -f secret-signed.yaml
 secret/mysecret created
 ```
 
@@ -909,7 +907,7 @@ Rather than using ignoreFields to handle expected controller mutations, the `dry
 ```yaml
 validate:
   manifests:
-    dryRun: 
+    dryRun:
       enable: true
       namespace: my-dryrun-ns
 ```
@@ -974,9 +972,9 @@ spec:
 The failure message returned indicates which level, version, and specific control(s) were responsible for the failure.
 
 ```sh
-Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   baseline: |
@@ -1009,9 +1007,9 @@ spec:
 Applying the same Pod as above will now return additional information in the message about the cumulative violations.
 
 ```
-Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   baseline: |
@@ -1025,6 +1023,14 @@ psa:
 {{% alert title="Note" color="info" %}}
 The `restricted` profile is inclusive of the `baseline` profile. Therefore, any Pod in violation of `baseline` is implicitly in violation of `restricted`.
 {{% /alert %}}
+
+In the ever-evolving landscape of Kubernetes security, achieving a balance between robust enforcement and nuanced control is paramount. Kyverno, starting from version `1.12.0`, introduces an advanced feature for even finer-grained pod security control. This innovative capability empowers users to apply precise security configurations at an unprecedented level, allowing for the exemption of specific controls within a profile.
+
+The need often arises to grant specific permissions for individual services or apply tailored security controls to certain pods. By seamlessly integrating with `PSa`, Kyverno complements and extends its capabilities, allowing users to apply security controls at a more granular level within namespaces.
+
+Key Features:
+1. The Fine-Grained Pod Security Control enables users to navigate beyond uniform security enforcement, offering the ability to exempt specific controls within a pod security profile. This newfound precision is essential for tailoring security configurations to the unique requirements of individual pods.
+2. Recognizing the operational intricacies of PSA, this integration ensures that Kyverno's fine-grained exemptions strategically manage policies for pods affected by PSA restrictions, maintaining a resilient security posture.
 
 ### Exemptions
 
@@ -1125,9 +1131,9 @@ spec:
 The same policy would result in blocking a Pod in which a container running the `busybox:1.28` image attempted the same thing.
 
 ```
-Error from server: error when creating "temp.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "temp.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   restricted: |
@@ -1195,6 +1201,130 @@ spec:
 
 Regardless of where the disallowed `type: Unconfined` field is specified, Kyverno allows the Pod.
 
+In situations where a more nuanced approach to pod security is required, Kyverno introduces the `exclude.restrictedFields` and `exclude.values[]` object. They allow users to exempt specific controls within a profile while applying others, providing flexibility to tailor security configurations based on the specific requirements of each pod or container.
+
+To leverage fine-grained exemptions effectively, users can utilize the `podSecurity.exclude[]` object in their pod configuration YAML. This allows for the exclusion of specific controls, providing a customized security approach without compromising overall compliance with Pod Security Standards.
+
+For example, the Capabilities control in the baseline profile mandates that the `securityContext.capabilities[]` field be not set to anything other than the defined values; `FOO` and `BAR` not being among those. The below policy enforces the baseline profile across the entire cluster while exempting the Capabilities control from all nginx images that have values `FOO` and/or `BAR`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+    - name: baseline
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
+          exclude:
+            - controlName: Capabilities
+              images:
+                - nginx*
+              restrictedField: spec.containers[*].securityContext.capabilities.add
+              values:
+                - FOO
+                - BAR
+```
+
+The following pod would be allowed even though it has restricted fields in `capabilities.add[]` object as they have been specifically exempted.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      capabilities:
+        add:
+        - FOO
+```
+
+For example, in case of multiple exemptions in both pod and container level, we define the `restrictedFields` multiple times, hence, exempting all required values. The below policy enforces the baseline profile across the entire cluster while exempting specific values under Seccomp control from all nginx images as well as the pod.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+    - name: baseline
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
+          exclude:
+            - controlName: Seccomp
+					    restrictedField: spec.securityContext.seccompProfile.type
+					    values:
+              - Unconfined
+					  - controlName: Seccomp
+					    images:
+						  - nginx*
+					    restrictedField: spec.containers[*].securityContext.seccompProfile.type
+					    values:
+              - Unconfined
+```
+
+An example Pod which satisfies all controls in the baseline profile except the Seccomp control is therefore allowed if the values matche the excluded value field.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    seccompProfile:
+			type: Unconfined
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      seccompProfile:
+				type: Unconfined
+```
+
+The following pod would not be allowed as the value `securityContext.seccompProfile.type` is not `Unconfined`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    seccompProfile:
+			type: unknown
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      seccompProfile:
+				type: Unconfined
+```
+
 Multiple control names may be excluded by listing them individually keeping in mind the previously-described rules. Refer to the [Pod Security Standards documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/) for a listing of all present controls, restricted fields, and allowed values.
 
 ### PSA Interoperability
@@ -1220,6 +1350,14 @@ Pods which are blocked by PSA in enforce mode do not result in an AdmissionRevie
 4. Use both PSA and Kyverno to enforce the same profile at the same scope.
 
     **Advantage**: Provides a safety net in case either technology is inadvertently/maliciously disabled or becomes unavailable.
+
+5. Fine-Grained Exclusions for precision in Security Management:
+
+    **Advantage**: The integration of Kyverno introduces the capability to apply fine-grained exclusions, allowing users to exempt specific controls within a profile. This feature provides a level of precision and customization that complements PSA's broader enforcement, offering a nuanced approach to security policies.
+
+6. Simplifying Policy Management and increasing efficiency through Selective Exclusions:
+
+    **Advantage**: The fine-grained exemption feature simplifies policy management when used alongside PSA. Instead of creating multiple policies for each control in PSA, users can leverage Kyverno to provide detailed and selective exclusions, reducing policy overhead and enhancing overall manageability.
 
 ## Common Expression Language (CEL)
 

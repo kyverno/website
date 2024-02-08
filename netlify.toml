@@ -41,3 +41,8 @@ HUGO_ENABLEGITINFO = "true"
 from = "/npmjs/*"
 to = "/npmjs/"
 status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
