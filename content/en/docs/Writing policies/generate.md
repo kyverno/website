@@ -136,6 +136,10 @@ When a generate policy should take the source from a resource which already exis
 In situations where it may be required to slightly modify the cloned resource, for example to add labels or annotations, an additional mutate rule may be added to the policy so that Kyverno modifies the resource in flight.
 {{% /alert %}}
 
+{{% alert title="Warning" color="warning" %}}
+For clone-type generate rules, Kyverno must be able to add labels to the clone source in order to track changes. If another operator or controller owns the source, you must ensure it is configured in such a way that these Kyverno labels are not modified/removed.
+{{% /alert %}}
+
 The following table shows the behavior of deletion and modification events on components of a generate rule with a clone source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks. "Source" refers to the clone source. Note that when using a clone source with sync enabled, deletion of the rule/policy responsible for a resource's generation or deletion of the clone source will NOT cause deletion of any downstream resources. This behavior differs when compared to [data declarations](#data-source).
 
 | Action             | Sync Effect           | NoSync Effect         |

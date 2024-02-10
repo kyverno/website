@@ -100,6 +100,17 @@ Apply multiple policies to multiple resources:
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --cluster
 ```
 
+Apply a policy to a resource with a policy exception: 
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
+```
+Apply multiple policies to multiple resources with exceptions:
+
+```sh
+kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exception /path/to/exception1.yaml --exception /path/to/exception2.yaml 
+```
+
 Apply a mutation policy to a specific resource:
 
 ```sh
@@ -737,6 +748,121 @@ summary:
   warn: 0
 ```
 
+#### Applying Policy Exceptions 
+
+[Policy Exceptions](/docs/writing-policies/exceptions/) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
+```
+
+Example:
+
+Applying a policy to a resource with a policy exception 
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: max-containers
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: max-two-containers
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "A maximum of 2 containers are allowed inside a Pod."
+      deny:
+        conditions:
+          any:
+          - key: "{{request.object.spec.containers[] | length(@)}}"
+            operator: GreaterThan
+            value: 2
+```
+
+Policy Exception manifest (`exception.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: container-exception
+spec:
+  exceptions:
+  - policyName: max-containers
+    ruleNames:
+    - max-two-containers
+    - autogen-max-two-containers
+  match:
+    any:
+    - resources:
+        kinds:
+        - Pod
+        - Deployment
+  conditions:
+    any:
+    - key: "{{ request.object.metadata.labels.color || '' }}"
+      operator: Equals
+      value: blue
+```
+
+Resource manifest (`resource.yaml`):
+
+A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule’s definition.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: three-containers-deployment
+  labels:
+    app: my-app
+    color: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+        color: blue
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+        - name: redis-container
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+        - name: busybox-container
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "while true; do echo 'Hello from BusyBox'; sleep 10; done"]    
+```
+Apply the above policy to the resource with the exception 
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
+```
+
+The following output will be generated:
+
+```yaml
+Applying 3 policy rule(s) to 1 resource(s) with 1 exception(s)...
+
+pass: 0, fail: 0, warn: 0, error: 0, skip: 1 
+```
+
 #### Applying ValidatingAdmissionPolicies
 
 With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied to resources as follows:
@@ -996,6 +1122,9 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
+exceptions: # optional files for specifying exceptions. See below for an example.
+  - <path/to/exception.yaml>
+  - <path/to/exception.yaml>
 variables: variables.yaml # optional file for declaring variables. see below for example.
 userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 results:
@@ -1016,9 +1145,10 @@ The test declaration consists of the following parts:
 
 1. The `policies` element which lists one or more policies to be applied.
 2. The `resources` element which lists one or more resources to which the policies are applied.
-3. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
-4. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
-5. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
+3. The `exceptions` element which lists one or more policy exceptions. Cannot be used with ValidatingAdmissionPolicy. Optional.
+4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
+5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
+6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
 
 If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](https://kyverno.io/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
@@ -1470,6 +1600,164 @@ applying 1 policy to 1 resource...
 │ 1 │ add-networkpolicy │ default-deny │ /Namespace/hello-world-namespace │ Pass   │
 │───│───────────────────│──────────────│──────────────────────────────────│────────│
 Test Summary: 1 tests passed and 0 tests failed
+```
+
+In the following policy test, a `validate` rule ensures that Pods aren't allowed to access host namespaces. A Policy Exception is used to exempt Pods and Deployments beginning with the name `important-tool` in the `delta` namespace from this rule. The `exceptions` field is used in the Test manifest to declare a Policy Exception manifest. It is expected that resources that violate the rule but match policy exceptions will be skipped. Otherwise, they will fail.
+
+Policy manifest (`disallow-host-namespaces.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-namespaces
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: host-namespaces
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      validate:
+        message: >-
+          Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+          spec.hostIPC, and spec.hostPID must be unset or set to `false`.          
+        pattern:
+          spec:
+            =(hostPID): "false"
+            =(hostIPC): "false"
+            =(hostNetwork): "false"
+```
+
+Policy Exception manifest (`delta-exception.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: delta-exception
+  namespace: delta
+spec:
+  exceptions:
+  - policyName: disallow-host-namespaces
+    ruleNames:
+    - host-namespaces
+    - autogen-host-namespaces
+  match:
+    any:
+    - resources:
+        kinds:
+        - Pod
+        - Deployment
+        namespaces:
+        - delta
+        names:
+        - important-tool*
+```
+
+Resource manifest (`resource.yaml`):
+
+Both Deployments violate the policy but only one matches an exception. The Deployment without an exception will fail while the one with an exception will be skipped.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: important-tool
+  namespace: delta
+  labels:
+    app: busybox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      hostIPC: true
+      containers:
+      - image: busybox:1.35
+        name: busybox
+        command: ["sleep", "1d"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-important
+  namespace: gamma
+  labels:
+    app: busybox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      hostIPC: true
+      containers:
+      - image: busybox:1.35
+        name: busybox
+        command: ["sleep", "1d"]        
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-host-namespaces-test-exception
+policies:
+- disallow-host-namespace.yaml
+resources:
+- resource.yaml
+exceptions: 
+- delta-exception.yaml
+results:
+  - kind: Deployment
+    policy: disallow-host-namespaces
+    resources: 
+    - important-tool
+    rule: host-namespaces
+    result: skip
+  - kind: Deployment
+    policy: disallow-host-namespaces
+    resources:
+    - not-important
+    rule: host-namespaces
+    result: fail
+```
+
+```sh
+kyverno test .
+
+Loading test  ( .kyverno-test/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 2 resources with 1 exception ...
+  Checking results ...
+
+│────│──────────────────────────│─────────────────│───────────────────────────│────────│────────│
+│ ID │ POLICY                   │ RULE            │ RESOURCE                  │ RESULT │ REASON │
+│────│──────────────────────────│─────────────────│───────────────────────────│────────│────────│
+│ 1  │ disallow-host-namespaces │ host-namespaces │ Deployment/important-tool │ Pass   │ Ok     │
+│ 2  │ disallow-host-namespaces │ host-namespaces │ Deployment/not-important  │ Pass   │ Ok     │
+│────│──────────────────────────│─────────────────│───────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
 ```
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](https://kyverno.io/policies/).
