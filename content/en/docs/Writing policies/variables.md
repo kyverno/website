@@ -367,7 +367,7 @@ Reference the image properties of initContainer `vault`:
 
 `{{images.initContainers.vault.digest}}`
 
-6. Reference the readable reference for the image (along with the image digest)
+6. Reference the readable reference for the image (along with the image digest(preferable) or tag)
 
 `{{images.initContainers.vault.reference}}`
 
