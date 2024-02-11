@@ -289,13 +289,13 @@ Here is an example:
 ```json
 {
   "containers": {
-    "tomcat": {
-      "registry": "https://ghcr.io",
-      "path": "tomcat",
-      "name": "tomcat",
-      "tag": "9",
-      "reference":"https://ghcr.io/tomcat:9",
-      "referenceWithTag":"https://ghcr.io/tomcat:9"
+    "nginx": {
+      "registry": "https://docker.io",
+      "path": "library/nginx",
+      "name": "nginx",
+      "digest": "sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
+      "reference": "https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
+      "referenceWithTag": "https://docker.io/library/nginx:"
     }
   },
   "initContainers": {
@@ -306,16 +306,6 @@ Here is an example:
       "tag": "v3",
       "reference":"https://ghcr.io/vault:v3",
       "referenceWithTag":"https://ghcr.io/vault:v3"
-    }
-  },
-  "containers": {
-    "nginx": {
-      "registry": "https://docker.io",
-      "path": "library/nginx",
-      "name": "nginx",
-      "digest": "sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
-      "reference": "https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
-      "referenceWithTag": "https://docker.io/library/nginx:"
     }
   }
 }
