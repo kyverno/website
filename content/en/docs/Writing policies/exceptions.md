@@ -5,17 +5,13 @@ description: >
 weight: 80
 ---
 
-{{% alert title="Warning" color="warning" %}}
-Policy exceptions are a **beta** feature and requires setting certain container flags to enable. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
-{{% /alert %}}
-
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/writing-policies/match-exclude/#match-statements), [preconditions](/docs/writing-policies/preconditions/) at multiple hierarchies, [anchors](/docs/writing-policies/validate/#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
 
 For example, in organizations where multiple teams must interact with the same cluster, a team responsible for policy authoring and administration may not be the same team responsible for submission of resources. In these cases, it can be advantageous to decouple the policy definition from certain exclusions. Additionally, there are often times where an organization or team must allow certain exceptions which would violate otherwise valid rules but on a one-time basis if the risks are known and acceptable.
 
 Imagine a validate policy exists in `Enforce` mode which mandates all Pods must not mount host namespaces. A separate team has a legitimate need to run a specific tool in this cluster for a limited time which violates this policy. Normally, the policy would block such a "bad" Pod if the policy was not previously altered in such a way to allow said Pod to run. Rather than making adjustments to the policy, an exception may be granted. Both of these examples are use cases for a **PolicyException** resource described below.
 
-A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. It can be used to exempt any resource from any Kyverno rule type although it is primarily intended for use with validate rules. A PolicyException encapsulates the familiar `match`/`exclude` statements used in `Policy` and `ClusterPolicy` resources but adds an `exceptions{}` object to select the policy and rule name(s) used to form the exception. The logical flow of how a PolicyException works in tandem with a validate policy is depicted below.
+A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. It can be used to exempt any resource from any Kyverno rule type although it is primarily intended for use with validate rules. A PolicyException encapsulates the familiar `match`/`exclude` statements used in `Policy` and `ClusterPolicy` resources but adds an `exceptions{}` object to select the policy and rule name(s) used to form the exception. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/writing-policies/preconditions/) and [deny rules](/docs/writing-policies/validate/#deny-rules) to query the contents of the selected resources in order to refine the selection process. The logical flow of how a PolicyException works in tandem with a validate policy is depicted below.
 
 ```mermaid
 graph TD
@@ -84,6 +80,11 @@ spec:
         - delta
         names:
         - important-tool*
+  conditions:
+    any:
+    - key: "{{ request.object.metadata.labels.app || '' }}"
+      operator: Equals
+      value: busybox
 ```
 
 A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule's definition.
@@ -165,4 +166,188 @@ spec:
             =(all):
             - resources:
                 names: "?*"
+```
+
+## Pod Security Exemptions
+
+Kyverno policies can be used to apply Pod Security Standards profiles and controls via the [validate.podSecurity](/docs/writing-policies/validate/#pod-security) subrule. However, there are cases where certain Pods need to be exempted from these policies. For example, a Pod may need to run as `root` or require privileged access. In such cases, a PolicyException can be used to define an exemption for the Pod through the `podSecurity{}` block. It can be used to define controls that are exempted from the policy.
+
+Given the following  policy that enforces the latest version of the Pod Security Standards restricted profile in a single rule across the entire cluster.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+  - name: restricted
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: restricted
+        version: latest
+```
+
+There is a case where all Pods exist in the `delta` Namespace needs to run as a root. A PolicyException can be used to exempt all Pods whose namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - restricted
+  match:
+    any:
+    - resources:
+        namespaces:
+        - delta
+  podSecurity:
+    - controlName: "Running as Non-root"
+```
+
+The following Pod satisfies all controls in the restricted profile except the `Running as Non-root` control but it matches the exception. Hence, it will be successfully created.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: delta
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    args:
+    - sleep
+    - 1d
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+```
+
+PolicyExceptions `podSecurity{}` block has the same functionality as the [validate.podSecurity.exclude](/docs/writing-policies/validate/#exemptions) block in the policy itself. They can be used to exempt controls that can only be defined in the container level fields.
+
+For example, the following PolicyException exempts the containers running either the `nginx` or `redis` image from following the Capabilities control.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - restricted
+  match:
+    any:
+    - resources:
+        namespaces:
+        - delta
+  podSecurity:
+    - controlName: Capabilities
+      images:
+          - nginx*
+          - redis*
+```
+
+There might be a case where it is required to have specific values for the controls in the PodSecurity profile. In such cases, the `podSecurity.restrictedField` field can be used to define these values for the controls that are exempted from the policy.
+
+For example, the Capabilities control in the restricted profile mandates that the `securityContext.capabilities[]` field be not set to anything other than the defined values; `Undefined/nil` and `NET_BIND_SERVICE`. However, there is a case where all Pods in the `delta` Namespace need to have the `securityContext.capabilities.add` field set to either `KILL` or `CHOWN`. A PolicyException can be used to define this exemption allowing the values; `KILL` and `CHOWN` using both `podSecurity.restrictedField` and `podSecurity.restrictedField.values` field.
+
+The below PolicyException exempts the containers running either the `nginx` or `redis` image and allows setting the `securityContext.capabilities.add` field to either `KILL` or `CHOWN`.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - restricted
+  match:
+    any:
+    - resources:
+        namespaces:
+        - delta
+  podSecurity:
+    - controlName: Capabilities
+      images:
+          - nginx*
+          - redis*
+      restrictedField: spec.containers[*].securityContext.capabilities.add
+      values:
+        - KILL
+        - CHOWN
+```
+
+The following Pod satisfies all controls in the restricted profile except the `Capabilities` control but it matches the exception that allows setting the `spec.containers[*].securityContext.capabilities.add` to `KILL`. Hence, it will be successfully created.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: delta
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    args:
+    - sleep
+    - 1d
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - KILL
+```
+
+The following Pod satisfies all controls in the restricted profile except the `Capabilities` control and it matches the exception but it sets the `spec.containers[*].securityContext.capabilities.add` to `SYS_CHROOT` which isn't an allowed value. Hence, it will be rejected.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: delta
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    args:
+    - sleep
+    - 1d
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - SYS_CHROOT
 ```
