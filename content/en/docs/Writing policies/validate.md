@@ -1205,7 +1205,7 @@ In situations where a more nuanced approach to pod security is required, Kyverno
 
 To leverage fine-grained exemptions effectively, users can utilize the `podSecurity.exclude[]` object in their pod configuration YAML. This allows for the exclusion of specific controls, providing a customized security approach without compromising overall compliance with Pod Security Standards.
 
-For example, the Capabilities control in the baseline profile mandates that the `securityContext.capabilities[]` field be not set to anything other than the defined values; `FOO` and `BAR` not being among those. The below policy enforces the baseline profile across the entire cluster while exempting the Capabilities control from all nginx images that have values `FOO` and/or `BAR`.
+For example, the baseline profile includes a control called Capabilities, which requires the `securityContext.capabilities[]` field to only have certain values. However, it doesn't allow `FOO` and `BAR` as valid values. The following policy enforces the baseline profile for the entire cluster but exempts the Capabilities control for all nginx images that have values `FOO` and/or `BAR`.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -1236,7 +1236,7 @@ spec:
                 - BAR
 ```
 
-The following pod would be allowed even though it has restricted fields in `capabilities.add[]` object as they have been specifically exempted.
+The following pod would be allowed even though it violates the Capabilities control but it sets the `spec.containers[*].securityContext.capabilities.add` field to `FOO` which matches the exemption defined in the policy.
 
 ```yaml
 apiVersion: v1
@@ -1253,7 +1253,24 @@ spec:
         - FOO
 ```
 
-For example, in case of multiple exemptions in both pod and container level, we define the `restrictedFields` multiple times, hence, exempting all required values. The below policy enforces the baseline profile across the entire cluster while exempting specific values under Seccomp control from all nginx images as well as the pod.
+Although the following pod violates the Capabilities control for the nginx image, it would be rejected as it sets the `spec.containers[*].securityContext.capabilities.add` field to `BAZ` which does not match the exemption defined in the policy.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      capabilities:
+        add:
+        - BAZ
+```
+
+In case of multiple exemptions in both pod and container level, we define the `restrictedFields` multiple times, hence, exempting all required values. The below policy enforces the baseline profile across the entire cluster while exempting specific values under Seccomp control from all nginx images as well as the pod.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -1267,27 +1284,27 @@ spec:
     - name: baseline
       match:
         any:
-          - resources:
-              kinds:
-                - Pod
+        - resources:
+            kinds:
+            - Pod
       validate:
         podSecurity:
           level: baseline
           version: latest
           exclude:
-            - controlName: Seccomp
-					    restrictedField: spec.securityContext.seccompProfile.type
-					    values:
-              - Unconfined
-					  - controlName: Seccomp
-					    images:
-						  - nginx*
-					    restrictedField: spec.containers[*].securityContext.seccompProfile.type
-					    values:
-              - Unconfined
+          - controlName: Seccomp
+            restrictedField: spec.securityContext.seccompProfile.type
+            values:
+            - Unconfined
+          - controlName: Seccomp
+            images:
+            - nginx*
+            restrictedField: spec.containers[*].securityContext.seccompProfile.type
+            values:
+            - Unconfined
 ```
 
-An example Pod which satisfies all controls in the baseline profile except the Seccomp control is therefore allowed if the values matche the excluded value field.
+An example Pod which satisfies all controls in the baseline profile except the Seccomp control is therefore allowed if its `type` match the excluded value field defined in the policy.
 
 ```yaml
 apiVersion: v1
@@ -1297,16 +1314,16 @@ metadata:
 spec:
   securityContext:
     seccompProfile:
-			type: Unconfined
+      type: Unconfined
   containers:
   - name: nginx
     image: nginx:latest
     securityContext:
       seccompProfile:
-				type: Unconfined
+        type: Unconfined
 ```
 
-The following pod would not be allowed as the value `securityContext.seccompProfile.type` is not `Unconfined`:
+The following pod would be rejected as the value `securityContext.seccompProfile.type` is not `Unconfined`:
 
 ```yaml
 apiVersion: v1
@@ -1316,13 +1333,13 @@ metadata:
 spec:
   securityContext:
     seccompProfile:
-			type: unknown
+      type: Unknown
   containers:
   - name: nginx
     image: nginx:latest
     securityContext:
       seccompProfile:
-				type: Unconfined
+        type: Unconfined
 ```
 
 Multiple control names may be excluded by listing them individually keeping in mind the previously-described rules. Refer to the [Pod Security Standards documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/) for a listing of all present controls, restricted fields, and allowed values.
