@@ -5,11 +5,11 @@ linkTitle: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Polic
 author: Mariam Fahmy
 description: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies"
 ---
-In the previous blog post, we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
+In the [previous blog post](/blog/2023/11/13/using-cel-expressions-in-kyverno-policies/), we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
 
-> ValidatingAdmissionPolicies offer a declarative, in-process alternative to validating admission webhooks.
+ValidatingAdmissionPolicies offer a declarative, in-process alternative to validating admission webhooks.
 
-> ValidatingAdmissionPolicies use the Common Expression Language (CEL) to declare the validation rules of a policy. Validation admission policies are highly configurable, enabling policy authors to define policies that can be parameterized and scoped to resources as needed by cluster administrators.
+ValidatingAdmissionPolicies use the Common Expression Language (CEL) to declare the validation rules of a policy. Validation admission policies are highly configurable, enabling policy authors to define policies that can be parameterized and scoped to resources as needed by cluster administrators.
 
 This post will show you how to generate Kubernetes ValidatingAdmissionPolicies and their bindings from Kyverno policies.
 
@@ -17,13 +17,13 @@ This post will show you how to generate Kubernetes ValidatingAdmissionPolicies a
 Generating Kubernetes ValidatingAdmissionPolicies require the following:
 1. A cluster with Kubernetes 1.26 or higher.
 2. Enable the `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
-3. Enable the `admissionregistration.k8s.io/v1beta1` API for v1.28.
+3. Enable the `admissionregistration.k8s.io/v1beta1` API for v1.28 and v1.29.
    OR 
    Enable the `admissionregistration.k8s.io/v1alpha1` API for v1.26 and v1.27.
 4. Set the `--generateValidatingAdmissionPolicy` flag in the Kyverno admission controller.
 5. Grant the admission controller service account the required permissions to generate ValidatingAdmissionPolicies and their bindings.
 
-In this post, we will use the beta version of Kubernetes 1.28.
+In this post, we will use the beta version of Kubernetes 1.29.
 
 ## Installation & Setup
 1. Create a local cluster
@@ -78,13 +78,13 @@ EOF
 4. Deploy Kyverno
 
 ```bash
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace --values new-values.yaml
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --version v3.1.4 --values new-values.yaml
 ```
 
 We are now ready to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies.
 
 ## Generating Kubernetes ValidatingAdmissionPolicies
-In this section, we will create a Kyverno policy that ensures no hostPath volumes are in use for deployments, and then we will have a look at the generated ValidatingAdmissionPolicy and its binding. Finally, we will create a deployment that violates the policy.
+In this section, we will create a Kyverno policy that ensures no hostPath volumes are in use for Deployments, and then we will have a look at the generated ValidatingAdmissionPolicy and its binding. Finally, we will create a Deployment that violates the policy.
 
 Let’s start with creating the Kyverno policy.
 
@@ -280,16 +280,9 @@ disallow-host-path    1                        <unset>        11s
 
 In addition, you can update the Kyverno policy, and the controller will re-generate the ValidatingAdmissionPolicy accordingly. For example, you can change the Kyverno policy to match statefulsets too.
 
-```bash
-$ kubectl edit cpol disallow-host-path
-
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: disallow-host-path
+patch.yaml:
+```yaml
 spec:
-  validationFailureAction: Enforce
-  background: false
   rules:
     - name: host-path
       match:
@@ -303,6 +296,10 @@ spec:
           expressions:
             - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
               message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+```
+
+```bash
+kubectl patch cpol disallow-host-path --type merge --patch-file patch.yaml
 ```
 
 The ValidatingAdmissionPolicy will be updated to match StatefulSets too.
