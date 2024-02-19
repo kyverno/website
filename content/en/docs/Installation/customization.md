@@ -329,6 +329,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `log_file` (ABCR) | | If non-empty, use this log file (no effect when -logtostderr=true). |
 | `log_file_max_size` (ABCR) | `1800` | Defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. |
 | `loggingFormat` (ABCR) | `text` | Determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively.
+| `loggingtsFormat` (ABCR) | `nanos` | Determines the timestamp format of logs. Logs can be formatted to have different timestamps by setting the flag to `iso8601` for ISO8601, `rfc3339` for RFC3339, `rfc3339nano` for RFC3339NANO, `millis` for Epoch Millis, `nanos` for Epoch Nanos time formats. If omitted, defaults to `nanos`. |
 | `logtostderr` (ABCR) | true | Log to standard error instead of files. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
@@ -340,7 +341,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profile` (ABCR) | false | Setting this flag to `true` will enable profiling. |
 | `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
-| `protectManagedResources` (A) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
+| `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
 | `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
