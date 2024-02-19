@@ -393,4 +393,4 @@ spec:
 
 ## Closing
 
-This was a lot of information but hopefully you learned something, even if you aren't a Kyverno user. To sum this blog post up, if you want to consume Node info in a Pod at runtime via environment variables or volumes, you should be mutating the Pod/binding subresource. For all other use cases you should be mutating the existing Pod. Both can also be combined if need be. Example policies for both are provided but before selecting one you should know what they do and the result you can expect.
+This was a lot of information but hopefully you learned something, even if you aren't a Kyverno user. To sum this blog post up, if you want to consume Node info in a Pod at runtime via environment variables or volumes, you should be mutating the Pod/binding subresource. Only annotations may be directly added to a Pod/binding. For all other use cases you should be mutating the existing Pod. Both can also be combined if need be. Example policies for both are provided but before selecting one you should know what they do and the result you can expect.
