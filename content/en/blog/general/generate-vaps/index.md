@@ -1,5 +1,5 @@
 ---
-date: 2024-02-08
+date: 2024-02-26
 title: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies"
 linkTitle: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies"
 author: Mariam Fahmy
