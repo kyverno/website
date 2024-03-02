@@ -343,7 +343,7 @@ Reference the image properties of container `nginx`:
 
 `{{images.containers.nginx.referenceWithTag}}`
 
-For the container `nginx`, `referenceWithTag` corresponds to `https://docker.io/library/nginx:`. Since the image was specified with a digest, `reference` corresponds to `https://docker.io/library/nginx@sha256:abcdef1234567890`. `reference` enables referencing the image depending on how it was originally specified: if it was specified with a tag then `reference` will contain the tag; if specified with digest then `reference` will contain the digest.
+For the container `nginx`, `referenceWithTag` corresponds to `https://docker.io/library/nginx:`. Since the image was specified with a digest, `reference` corresponds to `https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d`. `reference` enables referencing the image depending on how it was originally specified: if it was specified with a tag then `reference` will contain the tag; if specified with digest then `reference` will contain the digest.
 
 Reference the image properties of initContainer `vault`:
 
