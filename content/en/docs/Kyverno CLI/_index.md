@@ -1128,7 +1128,7 @@ exceptions: # optional files for specifying exceptions. See below for an example
 variables: variables.yaml # optional file for declaring variables. see below for example.
 userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 results:
-- policy: <name>
+- policy: <name> # Namespaced Policy is specified as <namespace>/<name>
   isValidatingAdmissionPolicy: false # when the policy is ValidatingAdmissionPolicy, this field is required.
   rule: <name> # when the policy is a Kyverno policy, this field is required.
   resources: # optional, primarily for `validate` rules.
