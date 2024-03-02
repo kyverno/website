@@ -156,7 +156,7 @@ Format of `value.yaml` with all possible fields:
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -256,7 +256,7 @@ YAML file containing variables (`value.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -288,7 +288,7 @@ Format of `value.yaml`:
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -374,7 +374,7 @@ YAML file containing variables (`value.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -405,7 +405,7 @@ Format of `value.yaml`:
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 namespaceSelector:
@@ -478,7 +478,7 @@ YAML file containing variables (`value.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 namespaceSelector:
@@ -549,7 +549,7 @@ spec:
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -1154,7 +1154,7 @@ If needing to pass variables, such as those from [external data sources](/docs/w
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
@@ -1176,7 +1176,7 @@ A variables file may also optionally specify global variable values without the 
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 globalValues:
@@ -1187,7 +1187,7 @@ If policies use a namespaceSelector, these can also be specified in the variable
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 namespaceSelector:
@@ -1213,7 +1213,7 @@ Testing for subresources in `Kind/Subresource` matching format also requires a `
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 subresources:
@@ -1233,7 +1233,7 @@ Here is an example when testing for subresources:
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 subresources:
@@ -1456,7 +1456,7 @@ Variables manifest (`values.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 policies:
