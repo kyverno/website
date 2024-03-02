@@ -324,7 +324,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `imageVerifyCacheTTLDuration` (A) | 60m | Maximum TTL value for a cache expressed as duration. `0` sets the value to default. |
 | `kubeconfig` (ABCR) | | Specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate. Only used when Kyverno is running outside of the cluster in which it services admission requests. |
 | `leaderElectionRetryPeriod` (ABCR) | `2s` | Controls the leader election renewal frequency. |
-| `log_backtrace_at` (ABCR) | | When logging hits line file:N, emit a stack trace. |
+| `log_backtrace_at` (ABCR) | | When logging hits line file:N, emit a stack trace. May only be specified once. |
 | `log_dir` (ABCR) | | If non-empty, write log files in this directory (no effect when -logtostderr=true). |
 | `log_file` (ABCR) | | If non-empty, use this log file (no effect when -logtostderr=true). |
 | `log_file_max_size` (ABCR) | `1800` | Defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. |
