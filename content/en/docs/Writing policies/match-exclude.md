@@ -86,6 +86,8 @@ spec:
           - CREATE
 ```
 
+The `operations[]` list is optional but recommended. When `operations[]` is absent, the default behavior is to match on `CREATE` and `UPDATE` requests.
+
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
 
 ```yaml
