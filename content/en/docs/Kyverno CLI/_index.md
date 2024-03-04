@@ -923,7 +923,7 @@ Applying 1 policy rule(s) to 1 resource(s)...
 pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
 ```
 
-Applying a `ValidatingAdmissionPolicyBinding` along with the policy to a resource requires the `--cluster` flag to be set.
+The below example applies a `ValidatingAdmissionPolicyBinding` along with the policy to all resources in the cluster.
 
 Policy manifest (check-deployment-replicas.yaml):
 ```yaml
@@ -1989,6 +1989,266 @@ Loading test  ( kyverno-test.yaml ) ...
 
 
 Test Summary: 2 tests passed and 0 tests failed
+```
+
+In the below example, a `ValidatingAdmissionPolicy` and its corresponding `ValidatingAdmissionPolicyBinding` are tested against six resources. Two of these resources do not match the binding, two match the binding but violate the policy, and the remaining two match the binding and do not violate the policy.
+
+Policy manifest (`check-deployment-replicas.yaml`):
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: "check-deployment-replicas"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+  validations:
+  - expression: object.spec.replicas <= 2
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: "check-deployment-replicas-binding"
+spec:
+  policyName: "check-deployment-replicas"
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: environment
+        operator: In
+        values:
+        - staging
+        - production
+```
+
+Resource manifest (`resource.yaml`):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testing-deployment-1
+  namespace: testing
+  labels:
+    app: busybox
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testing-deployment-2
+  namespace: testing
+  labels:
+    app: busybox
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staging-deployment-1
+  namespace: staging
+  labels:
+    app: nginx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staging-deployment-2
+  namespace: staging
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: production-deployment-1
+  namespace: production
+  labels:
+    app: nginx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: production-deployment-2
+  namespace: production
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+The above resource manifest contains the following:
+
+1. Two Deployments named `testing-deployment-1` and `testing-deployment-2` in the `testing` namespace. The first Deployment has four replicas, while the second Deployment has two.
+
+2. Two Deployments named `staging-deployment-1` and `staging-deployment-2` in the `staging` namespace. The first Deployment has four replicas, while the second Deployment has two.
+
+3. Two Deployments named `production-deployment-1` and `production-deployment-2` in the `production` namespace. The first Deployment has four replicas, while the second Deployment has two replicas.
+
+Variables manifest (`values.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+namespaceSelector:
+  - name: staging
+    labels:
+      environment: staging
+  - name: production
+    labels:
+      environment: production
+  - name: testing
+    labels:
+      environment: testing
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test.yaml
+policies:
+- policy.yaml
+resources:
+- resource.yaml
+variables: values.yaml
+results:
+- kind: Deployment
+  policy: check-deployment-replicas
+  isValidatingAdmissionPolicy: true
+  resources:
+  - testing-deployment-1
+  - testing-deployment-2
+  result: skip
+- kind: Deployment
+  policy: check-deployment-replicas
+  isValidatingAdmissionPolicy: true
+  resources:
+  - staging-deployment-1
+  - production-deployment-1
+  result: fail
+- kind: Deployment
+  policy: check-deployment-replicas
+  isValidatingAdmissionPolicy: true
+  resources:
+  - staging-deployment-2
+  - production-deployment-2
+  result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 6 resources ...
+  Checking results ...
+
+│────│───────────────────────────│──────│────────────────────────────────────│────────│──────────│
+│ ID │ POLICY                    │ RULE │ RESOURCE                           │ RESULT │ REASON   │
+│────│───────────────────────────│──────│────────────────────────────────────│────────│──────────│
+│ 1  │ check-deployment-replicas │      │ Deployment/testing-deployment-1    │ Pass   │ Excluded │
+│ 2  │ check-deployment-replicas │      │ Deployment/testing-deployment-2    │ Pass   │ Excluded │
+│ 3  │ check-deployment-replicas │      │ Deployment/staging-deployment-1    │ Pass   │ Ok       │
+│ 4  │ check-deployment-replicas │      │ Deployment/production-deployment-1 │ Pass   │ Ok       │
+│ 5  │ check-deployment-replicas │      │ Deployment/staging-deployment-2    │ Pass   │ Ok       │
+│ 6  │ check-deployment-replicas │      │ Deployment/production-deployment-2 │ Pass   │ Ok       │
+│────│───────────────────────────│──────│────────────────────────────────────│────────│──────────│
+
+
+Test Summary: 6 tests passed and 0 tests failed
 ```
 
 ### jp
