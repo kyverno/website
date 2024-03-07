@@ -172,7 +172,7 @@ spec:
 
 Kyverno policies can be used to apply Pod Security Standards profiles and controls via the [validate.podSecurity](/docs/writing-policies/validate/#pod-security) subrule. However, there are cases where certain Pods need to be exempted from these policies. For example, a Pod may need to run as `root` or require privileged access. In such cases, a PolicyException can be used to define an exemption for the Pod through the `podSecurity{}` block. It can be used to define controls that are exempted from the policy.
 
-Given the following  policy that enforces the latest version of the Pod Security Standards restricted profile in a single rule across the entire cluster.
+Given the following policy that enforces the latest version of the Pod Security Standards restricted profile in a single rule across the entire cluster.
 
 ```yaml
 apiVersion: kyverno.io/v1
