@@ -271,9 +271,11 @@ spec:
 
 There might be a case where it is required to have specific values for the controls in the PodSecurity profile. In such cases, the `podSecurity.restrictedField` field can be used to define these values for the controls that are exempted from the policy.
 
-For example, the Capabilities control in the restricted profile mandates that the `securityContext.capabilities[]` field be not set to anything other than the defined values; `Undefined/nil` and `NET_BIND_SERVICE`. However, there is a case where all Pods in the `delta` Namespace need to have the `securityContext.capabilities.add` field set to either `KILL` or `CHOWN`. A PolicyException can be used to define this exemption allowing the values; `KILL` and `CHOWN` using both `podSecurity.restrictedField` and `podSecurity.restrictedField.values` field.
+For example, service meshes like Istio and Linkerd employ an `initContainer` that requires some privileges which are very often problematic in security-conscious clusters. Minimally, these initContainers must add two [Linux capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html) which allow them to make modifications to the networking stack: `NET_ADMIN` and `NET_RAW`. These initContainers may go even further by running as a root user, something which is a big no-no in the world of containers.
 
-The below PolicyException exempts the containers running either the `nginx` or `redis` image and allows setting the `securityContext.capabilities.add` field to either `KILL` or `CHOWN`.
+In this case, the `podSecurity.restrictedField` can be used to enforce the entire baseline profile of the Pod Security Standards but only exclude Istio’s and Linkerd’s images from specifically the initContainers list.
+
+The following PolicyException grants an exemption to the `initContainers` that use istio or linkerd images, allowing them to bypass the `Capabilities` control. This is achieved by permitting the values of `NET_ADMIN` and `NET_RAW` in the `securityContext.capabilities.add` field.
 
 ```yaml
 apiVersion: kyverno.io/v2beta1
@@ -285,69 +287,122 @@ spec:
   exceptions:
   - policyName: psa
     ruleNames:
-    - restricted
+    - baseline
   match:
     any:
     - resources:
-        namespaces:
-        - delta
+        kinds:
+          - Pod
   podSecurity:
     - controlName: Capabilities
       images:
-          - nginx*
-          - redis*
-      restrictedField: spec.containers[*].securityContext.capabilities.add
+        - "*/istio/proxyv2*"
+        - "*/linkerd/proxy-init*"
+      restrictedField: spec.initContainers[*].securityContext.capabilities.add
       values:
-        - KILL
-        - CHOWN
+        - NET_ADMIN
+        - NET_RAW
 ```
 
-The following Pod satisfies all controls in the restricted profile except the `Capabilities` control but it matches the exception that allows setting the `spec.containers[*].securityContext.capabilities.add` to `KILL`. Hence, it will be successfully created.
+The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer`. However, it matches the exception that permits the configuration of `spec.initContainers[*].securityContext.capabilities.add` to include `NET_ADMIN` and `NET_RAW`. Hence, it will be successfully created.
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-pod
-  namespace: delta
+  name: istio-pod
 spec:
-  containers:
-  - name: nginx
-    image: nginx
+  initContainers:
+  - name: istio-init
+    image: docker.io/istio/proxyv2:1.20.2
     args:
-    - sleep
-    - 1d
+        - istio-iptables
+        - -p
+        - "15001"
+        - -z
+        - "15006"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - '*'
+        - -d
+        - 15090,15021,15020
+        - --log_output_level=default:info
     securityContext:
-      seccompProfile:
-        type: RuntimeDefault
-      runAsNonRoot: true
       allowPrivilegeEscalation: false
       capabilities:
         add:
-        - KILL
+          - NET_ADMIN
+          - NET_RAW
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    args:
+    - sleep
+    - infinity
 ```
 
-The following Pod satisfies all controls in the restricted profile except the `Capabilities` control and it matches the exception but it sets the `spec.containers[*].securityContext.capabilities.add` to `SYS_CHROOT` which isn't an allowed value. Hence, it will be rejected.
+The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer` and it matches the exception but it sets the `spec.initContainers[*].securityContext.capabilities.add` to `SYS_ADMIN` which isn't an allowed value. Hence, it will be rejected.
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-pod
-  namespace: delta
+  name: istio-pod
 spec:
-  containers:
-  - name: nginx
-    image: nginx
+  initContainers:
+  - name: istio-init
+    image: docker.io/istio/proxyv2:1.20.2
     args:
-    - sleep
-    - 1d
+        - istio-iptables
+        - -p
+        - "15001"
+        - -z
+        - "15006"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - '*'
+        - -d
+        - 15090,15021,15020
+        - --log_output_level=default:info
     securityContext:
-      seccompProfile:
-        type: RuntimeDefault
-      runAsNonRoot: true
       allowPrivilegeEscalation: false
       capabilities:
         add:
-        - SYS_CHROOT
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    args:
+    - sleep
+    - infinity
 ```
