@@ -27,7 +27,7 @@ Specifying resource filters directly under `match` and `exclude` has been marked
 
 At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `resources.kinds` and `subjects` fields.
 
-In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
+In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule, known as GVK format.
 
 Supported formats:
 
@@ -85,6 +85,8 @@ spec:
           operations:
           - CREATE
 ```
+
+The `operations[]` list is optional but recommended. When `operations[]` is absent, the default behavior is to match on `CREATE` and `UPDATE` requests.
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
 
