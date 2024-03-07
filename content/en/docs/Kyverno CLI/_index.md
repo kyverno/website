@@ -968,7 +968,7 @@ kubectl create ns staging
 kubectl label ns staging environment=staging
 ```
 
-Create two Deployments that violate policy, one of them in the `staging` namespace.
+Create two Deployments, one of them in the `staging` namespace, which violates the policy.
 
 ```bash
 kubectl create deployment nginx-1 --image=nginx --replicas=6 -n staging
