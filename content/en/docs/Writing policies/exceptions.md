@@ -195,7 +195,7 @@ spec:
         version: latest
 ```
 
-There is a case where all Pods exist in the `delta` Namespace needs to run as a root. A PolicyException can be used to exempt all Pods whose namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
+In this use case, all Pods in the `delta` Namespace need to run as a root. A PolicyException can be used to exempt all Pods whose Namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
 
 ```yaml
 apiVersion: kyverno.io/v2beta1
