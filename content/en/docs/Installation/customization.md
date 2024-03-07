@@ -411,7 +411,7 @@ metadata:
   namespace: kyverno
 ```
 
-#### Match Conditions (require Kubernetes 1.27+)
+#### Match Conditions
 
 In addition to filtering out AdmissionReview requests by namespace selectors and [Kyverno Configmap based match conditions](/docs/installation/customization/#configMap-keys), you can define match conditions in Kyverno policies if you need fine-grained request filtering. These match conditions will be used for registering main resource validating and mutating webhooks that are managed by Kyverno. Match conditions are CEL expressions. All match conditions must evaluate to true for a policy to be applied. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 
