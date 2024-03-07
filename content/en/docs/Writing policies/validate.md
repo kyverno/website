@@ -1757,6 +1757,8 @@ To generate ValidatingAdmissionPolicies, make sure to:
 
 ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](/docs/writing-policies/validate/#common-expression-language-cel) section on the validate page for more information.
 
+In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](/docs/writing-policies/exceptions/) page for more information.
+
 Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
 
 ```yaml
