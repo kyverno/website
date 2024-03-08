@@ -6,7 +6,7 @@ weight: 80
 ---
 
 {{% alert title="Warning" color="warning" %}}
-Policy exceptions are a **beta** feature. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+Policy exceptions are a **beta** feature. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/writing-policies/match-exclude/#match-statements), [preconditions](/docs/writing-policies/preconditions/) at multiple hierarchies, [anchors](/docs/writing-policies/validate/#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
