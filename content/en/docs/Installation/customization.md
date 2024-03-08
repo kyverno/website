@@ -318,18 +318,17 @@ The following flags can be used to control the advanced behavior of the various 
 | `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
 | `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
 | `imagePullSecrets` (ABR) | | Specifies secret resource names for image registry access credentials. All referenced secrets must exist in Kyverno's Namespace. Multiple values are accepted but must be comma separated. |
-| `imageSignatureRepository` (AR) | | Specifies alternate repository for image signatures. Can be overridden per rule via `verifyImages.Repository`. |
 | `imageVerifyCacheEnabled` (A) | true | Enable a TTL cache for verified images. |
 | `imageVerifyCacheMaxSize` (A) | 1000 | Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. `0` sets the value to default. |
 | `imageVerifyCacheTTLDuration` (A) | 60m | Maximum TTL value for a cache expressed as duration. `0` sets the value to default. |
 | `kubeconfig` (ABCR) | | Specifies the Kubeconfig file to be used when overriding the API server to which Kyverno should communicate. Only used when Kyverno is running outside of the cluster in which it services admission requests. |
 | `leaderElectionRetryPeriod` (ABCR) | `2s` | Controls the leader election renewal frequency. |
-| `log_backtrace_at` (ABCR) | | When logging hits line file:N, emit a stack trace. |
+| `log_backtrace_at` (ABCR) | | When logging hits line file:N, emit a stack trace. May only be specified once. |
 | `log_dir` (ABCR) | | If non-empty, write log files in this directory (no effect when -logtostderr=true). |
 | `log_file` (ABCR) | | If non-empty, use this log file (no effect when -logtostderr=true). |
 | `log_file_max_size` (ABCR) | `1800` | Defines the maximum size a log file can grow to (no effect when -logtostderr=true). Unit is megabytes. If the value is 0, the maximum file size is unlimited. |
 | `loggingFormat` (ABCR) | `text` | Determines the output format of logs. Logs can be outputted in JSON or text format by setting the flag to `json` or `text` respectively.
-| `loggingtsFormat` (ABCR) | `nanos` | Determines the timestamp format of logs. Logs can be formatted to have different timestamps by setting the flag to `iso8601` for ISO8601, `rfc3339` for RFC3339, `rfc3339nano` for RFC3339NANO, `millis` for Epoch Millis, `nanos` for Epoch Nanos time formats. If omitted, defaults to `nanos`. |
+| `loggingtsFormat` (ABCR) | `RFC3339` | Determines the timestamp format of logs. Logs can be formatted to have different timestamps by setting the flag to `iso8601` for ISO8601, `rfc3339` for RFC3339, `rfc3339nano` for RFC3339NANO, `millis` for Epoch Millis, `nanos` for Epoch Nanos time formats. If omitted, defaults to `RFC3339`. |
 | `logtostderr` (ABCR) | true | Log to standard error instead of files. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
@@ -344,7 +343,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
 | `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
-| `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. |
+| `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. Deprecated. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
 | `skipResourceFilters` (R) | true | Defines whether to obey the ConfigMap's resourceFilters when performing background report scans. When set to `true`, anything defined in the resourceFilters will not be excluded in background reports. Ex., when set to `true` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will be produced for anything in the `kube-system` Namespace. Set this value to `false` to obey resourceFilters in background scan reports. Ex., when set to `false` if the resourceFilters contain the `[*/*,kube-system,*]` entry then background scan reports will NOT be produced for anything in the `kube-system` Namespace. |
