@@ -362,6 +362,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `validatingAdmissionPolicyReports` (R) | false | Specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. |
 | `vmodule` (ABCR) | | Comma-separated list of pattern=N settings for file-filtered logging. |
 | `webhookRegistrationTimeout` (A) | `120s` | Specifies the length of time Kyverno will try to register webhooks with the API server. |
+| `webhookServerPort` (AC) | `9443` | Specifies the port to use for webhook call-backs. |
 | `webhookTimeout` (A) | `10` | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). |
 
 ### Policy Report access
