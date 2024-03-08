@@ -34,9 +34,7 @@ A standard Kyverno installation consists of a number of different components, so
   * Roles and ClusterRoles, Bindings and ClusterRoleBindings authorizing the various ServiceAccounts to act on the resources in their scope.
 * **Webhooks**
   * ValidatingWebhookConfigurations for receiving both policy and resource validation requests.
-      * Note: Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied. If for a resource no operations are set in match or exclude blocks, default operations (CONNECT, CREATE, UPDATE, DELETE) are applied in the webhooks rules.
   * MutatingWebhookConfigurations for receiving both policy and resource mutating requests.
-      * Note: Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied. If for a resource no operations are set in match or exclude blocks, default operations (CREATE, UPDATE) are applied in the webhooks rules.
 * **CustomResourceDefinitions**
   * CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
 

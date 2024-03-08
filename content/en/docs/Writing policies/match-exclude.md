@@ -435,3 +435,74 @@ spec:
             - CREATE
             - UPDATE
 ```
+
+## Configure webhooks
+
+Webhook configurations can be configured using policies. Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied. If for a resource no operations are set in match or exclude blocks, default operations are applied in the webhooks rules. Default operations for validating resources are CONNECT, CREATE, UPDATE, DELETE and for mutating resources are CREATE, UPDATE.
+
+For a policy like this:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: Audit
+  background: false
+  rules:
+    - name: require-team
+      match:
+        any:
+          - resources:
+              kinds:
+              - Namespace
+              operations:
+              - CREATE
+      validate:
+        message: 'The label `team` is required.'
+        pattern:
+          metadata:
+            labels:
+              team: '?*'
+    - name: require-match
+      match:
+        any:
+          - resources:
+              kinds:
+              - Deployment
+              operations:
+              - UPDATE
+      validate:
+        message: 'The label `match` is required.'
+        pattern:
+          metadata:
+            labels:
+              match: '?*'
+```
+
+The webhook rules would look like this:
+
+```yaml
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - namespaces
+    scope: '*'
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - UPDATE
+    resources:
+    - deployments
+    scope: '*'
+```
