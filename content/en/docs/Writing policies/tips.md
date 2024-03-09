@@ -43,11 +43,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 * Use `kubectl get kyverno -A` to show all the Kyverno Custom Resources present in your cluster. This will return resources such as policies of various types, policy reports, and intermediary resources used internally by Kyverno.
 * When using VS Code, because of the OpenAPIV3 schema Kyverno supports, you can make use of this integration to assist in writing policy by getting field hints and describing elements.
 * Make use of the [Kyverno CLI](/docs/kyverno-cli/) to test policies out in advance.
-* Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design. In most cases, rules can be grouped into a single policy definition. Here are some tips when it comes to organizing rules:
-  * Create a single `ClusterPolicy` for all `validate` rules and a `Policy` for all Namespaced `validate` rules.
-  * `mutate` and `generate` rules should go into their own policy definition.
-  * Policies that cannot be written as a single rule but have highly related processing can go into their own policy definition.
-  * Name your rules effectively as this is a component that will be displayed to users upon enforcement for `validate` rules.
+* Organize your policies in a way which is meaningful to you, your organization, and your Kubernetes cluster design keeping in mind how they are processed. Each policy is processed in an idempotent manner while rules within policies are executed serially. When needing to control processing order, put highly-related rules in the same policy and use the `applyRules` field.
 
 * Ensure the resource you're matching and the spec definition align. For example, if writing a `mutate` rule which matches on a Deployment, the spec of what is being mutated needs to also align to a Deployment which may be different from, for example, a Pod. When copying-and-pasting from other rules, remember to check the spec.
 

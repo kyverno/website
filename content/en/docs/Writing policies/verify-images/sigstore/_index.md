@@ -46,6 +46,9 @@ spec:
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
                 5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
                 -----END PUBLIC KEY-----
+              rekor:
+                ignoreTlog: true
+                url: https://rekor.sigstore.dev
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -602,7 +605,7 @@ Private registries are defined as those requiring authentication in order to pul
 
 ### Authentication
 
-In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment.
+In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment. Note that this is not a requirement in all cases, for example see [AWS with IRSA](#enabling-irsa-to-access-aws-kms).
 
 1. Configure the imagePullSecret:
 

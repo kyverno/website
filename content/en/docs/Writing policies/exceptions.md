@@ -6,7 +6,7 @@ weight: 80
 ---
 
 {{% alert title="Warning" color="warning" %}}
-Policy exceptions are a **beta** feature and requires setting certain container flags to enable. It is not ready for production usage and there may be breaking changes. Normal semantic versioning and compatibility rules will not apply.
+Policy exceptions are a **beta** feature. Normal semantic versioning and compatibility rules will not apply.
 {{% /alert %}}
 
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/writing-policies/match-exclude/#match-statements), [preconditions](/docs/writing-policies/preconditions/) at multiple hierarchies, [anchors](/docs/writing-policies/validate/#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
@@ -15,7 +15,7 @@ For example, in organizations where multiple teams must interact with the same c
 
 Imagine a validate policy exists in `Enforce` mode which mandates all Pods must not mount host namespaces. A separate team has a legitimate need to run a specific tool in this cluster for a limited time which violates this policy. Normally, the policy would block such a "bad" Pod if the policy was not previously altered in such a way to allow said Pod to run. Rather than making adjustments to the policy, an exception may be granted. Both of these examples are use cases for a **PolicyException** resource described below.
 
-A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. It can be used to exempt any resource from any Kyverno rule type although it is primarily intended for use with validate rules. A PolicyException encapsulates the familiar `match`/`exclude` statements used in `Policy` and `ClusterPolicy` resources but adds an `exceptions{}` object to select the policy and rule name(s) used to form the exception. The logical flow of how a PolicyException works in tandem with a validate policy is depicted below.
+A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. It can be used to exempt any resource from any Kyverno rule type although it is primarily intended for use with validate rules. A PolicyException encapsulates the familiar `match`/`exclude` statements used in `Policy` and `ClusterPolicy` resources but adds an `exceptions{}` object to select the policy and rule name(s) used to form the exception. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/writing-policies/preconditions/) and [deny rules](/docs/writing-policies/validate/#deny-rules) to query the contents of the selected resources in order to refine the selection process. The logical flow of how a PolicyException works in tandem with a validate policy is depicted below.
 
 ```mermaid
 graph TD
@@ -84,6 +84,11 @@ spec:
         - delta
         names:
         - important-tool*
+  conditions:
+    any:
+    - key: "{{ request.object.metadata.labels.app || '' }}"
+      operator: Equals
+      value: busybox
 ```
 
 A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule's definition.
@@ -165,4 +170,243 @@ spec:
             =(all):
             - resources:
                 names: "?*"
+```
+
+## Pod Security Exemptions
+
+Kyverno policies can be used to apply Pod Security Standards profiles and controls via the [validate.podSecurity](/docs/writing-policies/validate/#pod-security) subrule. However, there are cases where certain Pods need to be exempted from these policies. For example, a Pod may need to run as `root` or require privileged access. In such cases, a PolicyException can be used to define an exemption for the Pod through the `podSecurity{}` block. It can be used to define controls that are exempted from the policy.
+
+Given the following policy that enforces the latest version of the Pod Security Standards restricted profile in a single rule across the entire cluster.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+  - name: restricted
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      podSecurity:
+        level: restricted
+        version: latest
+```
+
+In this use case, all Pods in the `delta` Namespace need to run as a root. A PolicyException can be used to exempt all Pods whose Namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - restricted
+  match:
+    any:
+    - resources:
+        namespaces:
+        - delta
+  podSecurity:
+    - controlName: "Running as Non-root"
+```
+
+The following Pod satisfies all controls in the restricted profile except the `Running as Non-root` control but it matches the exception. Hence, it will be successfully created.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: delta
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    args:
+    - sleep
+    - 1d
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+```
+
+PolicyExceptions `podSecurity{}` block has the same functionality as the [validate.podSecurity.exclude](/docs/writing-policies/validate/#exemptions) block in the policy itself. They can be used to exempt controls that can only be defined in the container level fields.
+
+For example, the following PolicyException exempts the containers running either the `nginx` or `redis` image from following the Capabilities control.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - restricted
+  match:
+    any:
+    - resources:
+        namespaces:
+        - delta
+  podSecurity:
+    - controlName: Capabilities
+      images:
+          - nginx*
+          - redis*
+```
+
+There might be a case where it is required to have specific values for the controls in the PodSecurity profile. In such cases, the `podSecurity.restrictedField` field can be used to define these values for the controls that are exempted from the policy.
+
+For example, service meshes like Istio and Linkerd employ an `initContainer` that requires some privileges which are very often problematic in security-conscious clusters. Minimally, these initContainers must add two [Linux capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html) which allow them to make modifications to the networking stack: `NET_ADMIN` and `NET_RAW`. These initContainers may go even further by running as a root user, something which is a big no-no in the world of containers.
+
+In this case, the `podSecurity.restrictedField` can be used to enforce the entire baseline profile of the Pod Security Standards but only exclude Istio’s and Linkerd’s images from specifically the initContainers list.
+
+The following PolicyException grants an exemption to the `initContainers` that use istio or linkerd images, allowing them to bypass the `Capabilities` control. This is achieved by permitting the values of `NET_ADMIN` and `NET_RAW` in the `securityContext.capabilities.add` field.
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - baseline
+  match:
+    any:
+    - resources:
+        kinds:
+          - Pod
+  podSecurity:
+    - controlName: Capabilities
+      images:
+        - "*/istio/proxyv2*"
+        - "*/linkerd/proxy-init*"
+      restrictedField: spec.initContainers[*].securityContext.capabilities.add
+      values:
+        - NET_ADMIN
+        - NET_RAW
+```
+
+The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer`. However, it matches the exception that permits the configuration of `spec.initContainers[*].securityContext.capabilities.add` to include `NET_ADMIN` and `NET_RAW`. Hence, it will be successfully created.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: istio-pod
+spec:
+  initContainers:
+  - name: istio-init
+    image: docker.io/istio/proxyv2:1.20.2
+    args:
+        - istio-iptables
+        - -p
+        - "15001"
+        - -z
+        - "15006"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - '*'
+        - -d
+        - 15090,15021,15020
+        - --log_output_level=default:info
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+          - NET_ADMIN
+          - NET_RAW
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    args:
+    - sleep
+    - infinity
+```
+
+The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer` and it matches the exception but it sets the `spec.initContainers[*].securityContext.capabilities.add` to `SYS_ADMIN` which isn't an allowed value. Hence, it will be rejected.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: istio-pod
+spec:
+  initContainers:
+  - name: istio-init
+    image: docker.io/istio/proxyv2:1.20.2
+    args:
+        - istio-iptables
+        - -p
+        - "15001"
+        - -z
+        - "15006"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - '*'
+        - -d
+        - 15090,15021,15020
+        - --log_output_level=default:info
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+          - NET_ADMIN
+          - NET_RAW
+          - SYS_ADMIN
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    args:
+    - sleep
+    - infinity
 ```

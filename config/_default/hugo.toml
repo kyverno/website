@@ -17,7 +17,7 @@ defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
 
-disableKinds = ["taxonomy", "taxonomyTerm"]
+disableKinds = ["taxonomy"]
 
 ignoreFiles = [ "^OWNERS$", "README[-]+[a-z]*\\.md", "^node_modules$"]
 
