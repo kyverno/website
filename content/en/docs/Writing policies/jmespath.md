@@ -305,6 +305,10 @@ deny:
 
 It is common for a JMESPath expression to name a specific field so that its value may be acted upon. For example, in the [basics section](#basics) above, the label `appns` is written to a Pod via a mutate rule which does not contain it or is set to a different value. A Kyverno validate rule which exists to check the value of that label or any other field is commonplace. Because the schema for many Kubernetes resources is flexible in that many fields are optional, policy rules must contend with the scenario in which a matching resource does not contain the field being checked. When using JMESPath to check the value of such a field, a simple expression might be written `{{request.object.metadata.labels.appns}}`. If a resource is submitted which either does not contain any labels at all or does not contain a label with the specified key then the expression cannot be evaluated. An error is likely to result similar to `JMESPath query failed: Unknown key "labels" in path`. In these types of cases, the JMESPath expression should use a non-existence check in the form of the [OR expression](https://jmespath.org/specification.html#or-expressions) followed by a "default" value if the field does not exist. The resulting full expression which will correctly evaluate is `{{request.object.metadata.labels.appns || ''}}`. This expression reads, "take the value of the key request.object.metadata.labels.appns or, if it does not exist, set it to an empty string". Note that the value on the right side may need to be customized given the ultimate use of the value expected to be produced. This non-existence pattern can be used in almost any JMESPath expression to mitigate scenarios in which the initial query may be invalid.
 
+{{% alert title="Note" color="info" %}}
+When using the OR expression, if the left side equals `null`/`nil` or a value of `false` it will cause the right side to be evaluated instead. Some fields in Kubernetes define boolean values so be aware of what effect this might have if the field is present but with a value of `false`. One way to work around this is to use `to_string()` to convert the boolean to a string.
+{{% /alert %}}
+
 ### Matching Special Characters
 
 Kyverno reserves [special behavior for wildcard characters](/docs/writing-policies/validate/#wildcards) such as `*` and `?`. However, certain Kubernetes resources permit wildcards as values in various fields which are treated literally. It may be necessary to construct a policy which validates literal usage of such wildcards. Using the JMESPath [`contains()`](https://jmespath.org/specification.html#contains) filter it is possible to do so. The below policy shows how to use `contains()` to match on wildcards as literal characters.
@@ -691,6 +695,47 @@ spec:
               containers:
               - name: "{{ element.name }}"
                 image: "{{ regex_replace_all('^docker.io/(.*)$', image_normalize('{{element.image}}'), 'harbor.corp.org/$1' )}}"
+```
+
+</p>
+</details>
+
+### Is_external_url
+
+<details><summary>Expand</summary>
+<p>
+
+The `is_external_url()` filter takes a URL string and returns a boolean indicating whether the URL is external. It's especially useful for handling edge cases in Kubernetes related to internal domain names, ExternalName services pointing to external domain names, and invalid URLs. By utilizing this filter, the policy can more accurately decide whether to block or allow the creation or modification of resources based on the URL's external status. Additionally, the filter employs local server DNS resolution; if this fails, an error is returned, helping to prevent SSRF attacks.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | boolean |
+
+**Example:** This policy looks for a field named `test` within the data section of ConfigMaps and runs `is_external_url()` to determine if the value associated with `test` is an external URL.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-url-in-configmap
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: validate-external-url
+      match:
+        any:
+        - resources:
+            kinds:
+              - ConfigMap
+      validate:
+        message: "ConfigMap contains an external URL."
+        deny:
+          conditions:
+            all:
+             - key: "{{ request.object.data.test | is_external_url(@) }}"
+              operator: Equals
+              value: true
 ```
 
 </p>
@@ -2384,7 +2429,11 @@ spec:
 
 The `time_parse()` filter converts an input time, given some other format, to RFC 3339 format. The first input is any time in the source format, the second input is the actual time to convert which is expected to be in the format specified by the first input. The output is always the second input converted to RFC 3339.
 
-The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+- The expression `time_parse('Mon Jan 02 2006 15:04:05 -0700', 'Fri Jun 22 2022 17:45:00 +0100')` results in the output of `"2022-06-22T17:45:00+01:00"`. 
+
+- The expression `time_parse('2006-01-02T15:04:05Z07:00', '2021-01-02T15:04:05-07:00')` results in the output of `"2021-01-02T15:04:05-07:00"`.
+
+- The expression `time_parse('1702691171', '1702691171')` (epoch time) results in the output of `"2023-12-16T01:46:11Z"` (UTC).
 
 | Input 1                          | Input 2                         | Output                     |
 |----------------------------------|---------------------------------|----------------------------|
@@ -2998,6 +3047,40 @@ spec:
             - key: "{{ base64_decode('{{ request.object.webhooks[0].clientConfig.caBundle }}').x509_decode(@).time_since('',NotBefore,NotAfter) }}"
               operator: LessThan
               value: 168h0m0s
+```
+
+</p>
+</details>
+
+### SHA256
+
+<details><summary>Expand</summary>
+<p>
+
+The `sha256()` filter takes a string of any length and returns a fixed hash value. For example, when `sha256()` is applied to the string `alertmanager-kube-prometheus-stack-alertmanager`, which exceeds the character limit, it returns a fixed hash value of `75c07bb807f2d80a85d34880b8af0c5f29f7c27577076ed5d0e4b427dee7dbcc`. This feature is particularly useful for situations where the length of a string surpasses Kyverno's 52-character limit. It can be employed to generate resource names and to create resources for deployments whose names are not under our control.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+**Example:** This policy mutates the names of specified resources to their SHA256 hash values.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sha256-demo
+spec:
+  rules:
+    - name: convert-name-to-hash
+      match:
+        resources:
+          kinds:
+            - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ sha256(request.object.metadata.name) }}"
 ```
 
 </p>

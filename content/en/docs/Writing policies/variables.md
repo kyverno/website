@@ -281,17 +281,21 @@ Kyverno extracts image data from the AdmissionReview request and makes this avai
 - `name`
 - `tag`
 - `digest`
+- `reference`
+- `referenceWithTag`
 
 Here is an example:
 
 ```json
 {
   "containers": {
-    "tomcat": {
-      "registry": "https://ghcr.io",
-      "path": "tomcat",
-      "name": "tomcat",
-      "tag": "9"
+    "nginx": {
+      "registry": "https://docker.io",
+      "path": "library/nginx",
+      "name": "nginx",
+      "digest": "sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
+      "reference": "https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d",
+      "referenceWithTag": "https://docker.io/library/nginx:"
     }
   },
   "initContainers": {
@@ -299,7 +303,9 @@ Here is an example:
       "registry": "https://ghcr.io",
       "path": "vault",
       "name": "vault",
-      "tag": "v3"
+      "tag": "v3",
+      "reference":"https://ghcr.io/vault:v3",
+      "referenceWithTag":"https://ghcr.io/vault:v3"
     }
   }
 }
@@ -307,27 +313,37 @@ Here is an example:
 
 Whenever an AdmissionReview request has `containers`, `initContainers`, or `ephemeralContainers` defined, the `images` variable can be referenced as shown in the examples below. `tag` and `digest` are mutually exclusive as an image may only define one.
 
-Reference the image properties of container `tomcat`:
+Reference the image properties of container `nginx`:
 
 1. Reference the registry URL
 
-`{{images.containers.tomcat.registry}}`
+`{{images.containers.nginx.registry}}`
 
 2. Reference the path to the image
 
-`{{images.containers.tomcat.path}}`
+`{{images.containers.nginx.path}}`
 
 3. Reference the image name
 
-`{{images.containers.tomcat.name}}`
+`{{images.containers.nginx.name}}`
 
 4. Reference the image tag
 
-`{{images.containers.tomcat.tag}}`
+`{{images.containers.nginx.tag}}`
 
 5. Reference the digest
 
-`{{images.containers.tomcat.digest}}`
+`{{images.containers.nginx.digest}}`
+
+6. Reference the readable reference for the image (along with the image digest(preferable) or tag)
+
+`{{images.containers.nginx.reference}}`
+
+7. Reference the readable reference for the image (along with the image tag)
+
+`{{images.containers.nginx.referenceWithTag}}`
+
+For the container `nginx`, `referenceWithTag` corresponds to `https://docker.io/library/nginx:`. Since the image was specified with a digest, `reference` corresponds to `https://docker.io/library/nginx@sha256:5f44022eab9198d75939d9eaa5341bc077eca16fa51d4ef32d33f1bd4c8cbe7d`. `reference` enables referencing the image depending on how it was originally specified: if it was specified with a tag then `reference` will contain the tag; if specified with digest then `reference` will contain the digest.
 
 Reference the image properties of initContainer `vault`:
 
@@ -350,6 +366,16 @@ Reference the image properties of initContainer `vault`:
 5. Reference the digest
 
 `{{images.initContainers.vault.digest}}`
+
+6. Reference the readable reference for the image (along with the image digest(preferable) or tag)
+
+`{{images.initContainers.vault.reference}}`
+
+7. Reference the readable reference for the image (along with the image tag)
+
+`{{images.initContainers.vault.referenceWithTag}}`
+
+For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/vault:v3` since the image was specified with a tag and not a digest. The `reference` variable will also hold the same value.
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 

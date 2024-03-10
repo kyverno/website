@@ -17,6 +17,7 @@ The logical structure of an verifyImages rule is shown below:
 Each rule contains the following common configuration attributes:
   * `type`: the signature type. Sigstore Cosign and Notary are supported. 
   * `imageReferences`: a list of image reference patterns to match
+  * `skipImageReferences`: a list of image reference patterns that should be skipped.
   * `required`: enforces that all matching images are verified
   * `mutateDigest`: converts tags to digests for matching images
   * `verifyDigest`: enforces that digests are used for matching images
@@ -45,7 +46,7 @@ The `imageRegistryCredentials` attribute allows configuration of registry creden
 
 The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
-The `imageRegistryCredentials.secret` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
+The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 

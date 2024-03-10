@@ -94,7 +94,7 @@ Kyverno can also be installed using a single installation manifest, however for 
 Although Kyverno uses release branches, only YAML manifests from a tagged release are supported. Pull from a tagged release to install Kyverno using the YAML manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.11.1/install.yaml
 ```
 
 ### Testing unreleased code

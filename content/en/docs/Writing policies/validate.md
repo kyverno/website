@@ -450,7 +450,7 @@ spec:
       message: >-
         Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
         spec.containers[*].securityContext.runAsNonRoot, and
-        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.        
+        spec.initContainers[*].securityContext.runAsNonRoot must be `true`.
       anyPattern:
       # spec.securityContext.runAsNonRoot must be set to true. If containers and/or initContainers exist which declare a securityContext field, those must have runAsNonRoot also set to true.
       - spec:
@@ -529,8 +529,6 @@ Placing these two conditions under an `all` block instead would require that bot
 Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) on deny conditions to abort processing when a decision can be reached. The first expression to evaluate to a `true` in an `any` block discontinues further evaluation. The first expression to evaluate to `false` in an `all` block does the same.
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
-
-Deny rules are incapable of producing a `pass` result in a Policy Report because the desired action is to deny so, therefore, the results will either be `skip` or `fail`.
 
 See also [Preconditions](/docs/writing-policies/preconditions).
 
@@ -681,11 +679,11 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
-      message: "unknown registry"  
+      message: "unknown registry"
       foreach:
       - list: "request.object.spec.initContainers"
         pattern:
-          image: "trusted-registry.io/*"      
+          image: "trusted-registry.io/*"
       - list: "request.object.spec.containers"
         pattern:
           image: "trusted-registry.io/*"
@@ -715,7 +713,7 @@ spec:
           kinds:
           - Ingress
     validate:
-      message: "All TLS hosts must use a domain of old.com."  
+      message: "All TLS hosts must use a domain of old.com."
       foreach:
       - list: request.object.spec.tls[]
         foreach:
@@ -743,9 +741,9 @@ spec:
     http:
       paths:
       - backend:
-          service: 
+          service:
             name: kuard
-            port: 
+            port:
               number: 8080
         path: /
         pathType: ImplementationSpecific
@@ -753,9 +751,9 @@ spec:
     http:
       paths:
       - backend:
-          service: 
+          service:
             name: kuard
-            port: 
+            port:
               number: 8090
         path: /myhr
         pathType: ImplementationSpecific
@@ -787,7 +785,7 @@ Sign the YAML manifest using the private key generated in the first step.
 
 ```sh
 $ kubectl-sigstore sign -f secret.yaml -k cosign.key --tarball no -o secret-signed.yaml
-Enter password for private key: 
+Enter password for private key:
 Using payload from: /tmp/kubectl-sigstore-temp-dir1572288324/tmp-blob-file
 0D 7ѫO2�Ď��D)�I��!@t�0���X� Xmj���7���+u
                                         ���_ڑ)ۆ�d�0�qHINFO[0004] signed manifest generated at secret-signed.yaml
@@ -843,10 +841,10 @@ spec:
 To test the operation of this rule, modify the signed Secret to change some aspect of the manifest. For example, by changing even the value of the `location` label from `europe` to `asia` will cause the signed manifest to be invalid. Kyverno will reject the altered manifest because the signature was only valid for the original Secret manifest.
 
 ```sh
-$ kubectl apply -f secret-signed.yaml 
-Error from server: error when creating "secret-signed.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+$ kubectl apply -f secret-signed.yaml
+Error from server: error when creating "secret-signed.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Secret/default/mysecret for resource violation: 
+policy Secret/default/mysecret for resource violation:
 
 validate-secrets:
   validate-secrets: 'manifest verification failed; verifiedCount 0; requiredCount
@@ -859,7 +857,7 @@ The difference between the signed manifest and supplied manifest is shown as par
 Change the value of the `location` label back to `europe` and attempt to create the manifest once again.
 
 ```sh
-$ kubectl apply -f secret-signed.yaml 
+$ kubectl apply -f secret-signed.yaml
 secret/mysecret created
 ```
 
@@ -909,7 +907,7 @@ Rather than using ignoreFields to handle expected controller mutations, the `dry
 ```yaml
 validate:
   manifests:
-    dryRun: 
+    dryRun:
       enable: true
       namespace: my-dryrun-ns
 ```
@@ -974,9 +972,9 @@ spec:
 The failure message returned indicates which level, version, and specific control(s) were responsible for the failure.
 
 ```sh
-Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   baseline: |
@@ -1009,9 +1007,9 @@ spec:
 Applying the same Pod as above will now return additional information in the message about the cumulative violations.
 
 ```
-Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "bad.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   baseline: |
@@ -1025,6 +1023,14 @@ psa:
 {{% alert title="Note" color="info" %}}
 The `restricted` profile is inclusive of the `baseline` profile. Therefore, any Pod in violation of `baseline` is implicitly in violation of `restricted`.
 {{% /alert %}}
+
+In the ever-evolving landscape of Kubernetes security, achieving a balance between robust enforcement and nuanced control is paramount. Kyverno, starting from version `1.12.0`, introduces an advanced feature for even finer-grained pod security control. This innovative capability empowers users to apply precise security configurations at an unprecedented level, allowing for the exemption of specific controls within a profile.
+
+The need often arises to grant specific permissions for individual services or apply tailored security controls to certain pods. By seamlessly integrating with `PSa`, Kyverno complements and extends its capabilities, allowing users to apply security controls at a more granular level within namespaces.
+
+Key Features:
+1. The Fine-Grained Pod Security Control enables users to navigate beyond uniform security enforcement, offering the ability to exempt specific controls within a pod security profile. This newfound precision is essential for tailoring security configurations to the unique requirements of individual pods.
+2. Recognizing the operational intricacies of PSA, this integration ensures that Kyverno's fine-grained exemptions strategically manage policies for pods affected by PSA restrictions, maintaining a resilient security posture.
 
 ### Exemptions
 
@@ -1125,9 +1131,9 @@ spec:
 The same policy would result in blocking a Pod in which a container running the `busybox:1.28` image attempted the same thing.
 
 ```
-Error from server: error when creating "temp.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "temp.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-policy Pod/default/badpod01 for resource violation: 
+policy Pod/default/badpod01 for resource violation:
 
 psa:
   restricted: |
@@ -1195,6 +1201,147 @@ spec:
 
 Regardless of where the disallowed `type: Unconfined` field is specified, Kyverno allows the Pod.
 
+In situations where a more nuanced approach to pod security is required, Kyverno introduces the `exclude.restrictedFields` and `exclude.values[]` object. They allow users to exempt specific controls within a profile while applying others, providing flexibility to tailor security configurations based on the specific requirements of each pod or container.
+
+To leverage fine-grained exemptions effectively, users can utilize the `podSecurity.exclude[]` object in their pod configuration YAML. This allows for the exclusion of specific controls, providing a customized security approach without compromising overall compliance with Pod Security Standards.
+
+For example, the baseline profile includes a control called Capabilities, which requires the `securityContext.capabilities[]` field to only have certain values. However, it doesn't allow `FOO` and `BAR` as valid values. The following policy enforces the baseline profile for the entire cluster but exempts the Capabilities control for all nginx images that have values `FOO` and/or `BAR`.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+    - name: baseline
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
+          exclude:
+            - controlName: Capabilities
+              images:
+                - nginx*
+              restrictedField: spec.containers[*].securityContext.capabilities.add
+              values:
+                - FOO
+                - BAR
+```
+
+The following pod would be allowed even though it violates the Capabilities control but it sets the `spec.containers[*].securityContext.capabilities.add` field to `FOO` which matches the exemption defined in the policy.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      capabilities:
+        add:
+        - FOO
+```
+
+Although the following pod violates the Capabilities control for the nginx image, it would be rejected as it sets the `spec.containers[*].securityContext.capabilities.add` field to `BAZ` which does not match the exemption defined in the policy.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      capabilities:
+        add:
+        - BAZ
+```
+
+In case of multiple exemptions in both pod and container level, we define the `restrictedFields` multiple times, hence, exempting all required values. The below policy enforces the baseline profile across the entire cluster while exempting specific values under Seccomp control from all nginx images as well as the pod.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: psa
+spec:
+  background: true
+  validationFailureAction: Enforce
+  rules:
+    - name: baseline
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
+          exclude:
+          - controlName: Seccomp
+            restrictedField: spec.securityContext.seccompProfile.type
+            values:
+            - Unconfined
+          - controlName: Seccomp
+            images:
+            - nginx*
+            restrictedField: spec.containers[*].securityContext.seccompProfile.type
+            values:
+            - Unconfined
+```
+
+An example Pod which satisfies all controls in the baseline profile except the Seccomp control is therefore allowed if its `type` match the excluded value field defined in the policy.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    seccompProfile:
+      type: Unconfined
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+```
+
+The following pod would be rejected as the value `securityContext.seccompProfile.type` is not `Unconfined`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    seccompProfile:
+      type: Unknown
+  containers:
+  - name: nginx
+    image: nginx:latest
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+```
+
 Multiple control names may be excluded by listing them individually keeping in mind the previously-described rules. Refer to the [Pod Security Standards documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/) for a listing of all present controls, restricted fields, and allowed values.
 
 ### PSA Interoperability
@@ -1220,6 +1367,14 @@ Pods which are blocked by PSA in enforce mode do not result in an AdmissionRevie
 4. Use both PSA and Kyverno to enforce the same profile at the same scope.
 
     **Advantage**: Provides a safety net in case either technology is inadvertently/maliciously disabled or becomes unavailable.
+
+5. Fine-Grained Exclusions for precision in Security Management:
+
+    **Advantage**: The integration of Kyverno introduces the capability to apply fine-grained exclusions, allowing users to exempt specific controls within a profile. This feature provides a level of precision and customization that complements PSA's broader enforcement, offering a nuanced approach to security policies.
+
+6. Simplifying Policy Management and increasing efficiency through Selective Exclusions:
+
+    **Advantage**: The fine-grained exemption feature simplifies policy management when used alongside PSA. Instead of creating multiple policies for each control in PSA, users can leverage Kyverno to provide detailed and selective exclusions, reducing policy overhead and enhancing overall manageability.
 
 ## Common Expression Language (CEL)
 
@@ -1537,3 +1692,201 @@ spec:
 ```
 
 However, setting the deployment image as `staging.example.com/nginx` will allow it to be created.
+
+## Validating Admission Policies
+
+A ValidatingAdmissionPolicy provides a declarative, in-process option for validating admission webhooks using the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server.
+
+Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it's not fully enabled by default as of Kubernetes versions up to and including 1.28.
+
+{{% alert title="Tip" color="info" %}}
+The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
+
+Check the below sections for more information:
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/#testing-validatingadmissionpolicies)
+{{% /alert %}}
+
+The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
+
+To unify the policy management, Kyverno policies can be used to generate and manage the lifecycle of Kubernetes ValidatingAdmissionPolicies. This allows the process of resource validation to take place directly in the API server, whenever possible, and extends Kyverno's reporting and testing capabilities for ValidatingAdmissionPolicy resources.
+
+When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization/#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
+
+To generate ValidatingAdmissionPolicies, make sure to:
+
+1. Enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
+
+2. For 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+
+    Here is the minikube command to enable ValidatingAdmissionPolicy:
+
+   ```
+   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
+   ```
+
+3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
+
+4. Configure Kyverno to generate reports for ValidatingAdmissionPolicies using the `--validatingAdmissionPolicyReports=true` flag in the reports controller.
+
+5. Grant the admission controller’s ServiceAccount permissions to manage ValidatingAdmissionPolicies.
+
+    Here is an aggregated cluster role you can apply:
+
+    ```yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      labels:
+        app.kubernetes.io/component: admission-controller
+        app.kubernetes.io/instance: kyverno
+        app.kubernetes.io/part-of: kyverno
+      name: kyverno:generate-validatingadmissionpolicy
+    rules:
+    - apiGroups:
+      - admissionregistration.k8s.io
+      resources:
+      - validatingadmissionpolicies
+      - validatingadmissionpolicybindings
+      verbs:
+      - create
+      - update
+      - delete
+      - list
+    ```
+
+ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](/docs/writing-policies/validate/#common-expression-language-cel) section on the validate page for more information.
+
+In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](/docs/writing-policies/exceptions/) page for more information.
+
+Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-path
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: host-path
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+      validate:
+        cel:
+          expressions:
+            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
+              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+```
+
+Once the policy is created, it is possible to check whether there is a corresponding ValidatingAdmissionPolicy was generated under the `status` object.
+
+```yaml
+status:
+  validatingadmissionpolicy:
+    generated: true
+    message: ""
+```
+
+The generated ValidatingAdmissionPolicy:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    matchPolicy: Equivalent
+    namespaceSelector: {}
+    objectSelector: {}
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      scope: '*'
+  validations:
+  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+      !has(volume.hostPath))'
+    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+      must be unset.
+```
+
+The generated ValidatingAdmissionPolicyBinding:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path-binding
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  policyName: disallow-host-path
+  validationActions:
+  - Deny
+```
+
+Both the ValidatingAdmissionPolicy and its binding have the same naming convention as the Kyverno policy they originate from, with the binding having a "-binding" suffix.
+
+If there is a request to create the following deployment given the generated ValidatingAdmissionPolicy above, it will be denied by the API server.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-server
+        image: nginx
+        volumeMounts:
+          - name: udev
+            mountPath: /data
+      volumes:
+      - name: udev
+        hostPath:
+          path: /etc/udev
+```
+
+The response returned from the API server.
+
+```sh
+The deployments "nginx" is invalid:  ValidatingAdmissionPolicy 'disallow-host-path' with binding 'disallow-host-path-binding' denied request: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.
+```
+
+{{% alert title="Warning" color="warning" %}}
+Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, ClusterPolicies can only be used to generate them.
+{{% /alert %}}
+
+The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.

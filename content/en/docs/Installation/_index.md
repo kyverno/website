@@ -49,10 +49,11 @@ Kyverno follows the same support policy as the Kubernetes project which is an N-
 | 1.8.x                          | 1.23           | 1.25           |
 | 1.9.x                          | 1.24           | 1.26           |
 | 1.10.x                         | 1.24           | 1.26           |
+| 1.11.x                         | 1.25           | 1.28           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
-**NOTE:** The [Enterprise Kyverno](https://nirmata.com/kyverno-enterprise/) by Nirmata supports a wide range of Kubernetes versions for any Kyverno version. Refer to the Release Compatibility Matrix for the Enterprise Kyverno [here](https://docs.nirmata.io/n4k/nirmata-enterprise-kyverno/) or contact [Nirmata support](mailto:support@nirmata.com) for assistance.
+**NOTE:** The [Enterprise Kyverno](https://nirmata.com/kyverno-enterprise/) by Nirmata supports a wide range of Kubernetes versions for any Kyverno version. Refer to the Release Compatibility Matrix for the Enterprise Kyverno [here](https://docs.nirmata.io/n4k/release-compatibility-matrix/) or contact [Nirmata support](mailto:support@nirmata.com) for assistance.
 
 ## Security vs Operability
 

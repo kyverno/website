@@ -46,6 +46,9 @@ spec:
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
                 5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
                 -----END PUBLIC KEY-----
+              rekor:
+                ignoreTlog: true
+                url: https://rekor.sigstore.dev
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -85,6 +88,42 @@ resource Pod/default/signed-other was blocked due to the following policies
 check-image:
   check-image: 'image verification failed for ghcr.io/kyverno/test-verify-image:signed-by-someone-else:
     invalid signature'
+```
+
+### Skipping Image References
+
+`skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
+
+```yaml
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: exclude-refs
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail  
+  rules:
+    - name: exclude-refs
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/*"
+        skipImageReferences:
+        - "ghcr.io/trusted/*"
+        attestors:
+        - count: 1
+          entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
 ```
 
 ### Signing images
@@ -566,7 +605,7 @@ Private registries are defined as those requiring authentication in order to pul
 
 ### Authentication
 
-In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment.
+In order for Kyverno to authenticate against a registry (private or otherwise), you must first create an [imagePullSecret](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) in the Kyverno Namespace and specify the Secret name as an argument to the Kyverno Deployment. Note that this is not a requirement in all cases, for example see [AWS with IRSA](#enabling-irsa-to-access-aws-kms).
 
 1. Configure the imagePullSecret:
 

@@ -27,7 +27,7 @@ Specifying resource filters directly under `match` and `exclude` has been marked
 
 At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `resources.kinds` and `subjects` fields.
 
-In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule.
+In addition, a user may specify the `group` and `apiVersion` with a kind in the `match` / `exclude` declarations for a policy rule, known as GVK format.
 
 Supported formats:
 
@@ -85,6 +85,8 @@ spec:
           operations:
           - CREATE
 ```
+
+The `operations[]` list is optional but recommended. When `operations[]` is absent, the default behavior is to match on `CREATE` and `UPDATE` requests.
 
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
 
@@ -434,4 +436,75 @@ spec:
             operations:
             - CREATE
             - UPDATE
+```
+
+## Configure webhooks
+
+Webhook configurations can be configured using policies. Webhook operations per resource is dynamically set if there are match/exclude operations mentioned in the policies applied. If for a resource no operations are set in match or exclude blocks, default operations are applied in the webhooks rules. Default operations for validating resources are CONNECT, CREATE, UPDATE, DELETE and for mutating resources are CREATE, UPDATE.
+
+For a policy like this:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: Audit
+  background: false
+  rules:
+    - name: require-team
+      match:
+        any:
+          - resources:
+              kinds:
+              - Namespace
+              operations:
+              - CREATE
+      validate:
+        message: 'The label `team` is required.'
+        pattern:
+          metadata:
+            labels:
+              team: '?*'
+    - name: require-match
+      match:
+        any:
+          - resources:
+              kinds:
+              - Deployment
+              operations:
+              - UPDATE
+      validate:
+        message: 'The label `match` is required.'
+        pattern:
+          metadata:
+            labels:
+              match: '?*'
+```
+
+The webhook rules would look like this:
+
+```yaml
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - namespaces
+    scope: '*'
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - UPDATE
+    resources:
+    - deployments
+    scope: '*'
 ```

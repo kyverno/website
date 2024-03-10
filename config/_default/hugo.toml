@@ -17,7 +17,7 @@ defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
 
-disableKinds = ["taxonomy", "taxonomyTerm"]
+disableKinds = ["taxonomy"]
 
 ignoreFiles = [ "^OWNERS$", "README[-]+[a-z]*\\.md", "^node_modules$"]
 
@@ -51,31 +51,6 @@ id = ""
 [outputs]
   home = ["HTML","RSS","JSON"]
 
-# Add your release versions here
-[[params.versions]]
-  version = "v1.10.0"
-  url = "https://kyverno.io"
-
-[[params.versions]]
-  version = "v1.9.0"
-  url = "https://release-1-9-0.kyverno.io"
-
-[[params.versions]]
-  version = "v1.8.0"
-  url = "https://release-1-8-0.kyverno.io"
-
-[[params.versions]]
-  version = "v1.7.0"
-  url = "https://release-1-7-0.kyverno.io"
-
-[[params.versions]]
-  version = "v1.6.0"
-  url = "https://release-1-6-0.kyverno.io"
-
-[[params.versions]]
-  version = "main"
-  url = "https://main.kyverno.io"
-
 # register docsytheme as hugo module
 [module]
   # uncomment line below for temporary local development of module
@@ -90,6 +65,3 @@ id = ""
   [[module.imports]]
     path = "github.com/google/docsy/dependencies"
     disable = false
-
-[params.mermaid]
-enable = true
