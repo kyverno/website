@@ -589,6 +589,68 @@ spec:
             value: false
 ```
 
+## Global Context
+
+Global Context is a feature introduced in Kyverno that allows users to cache Kubernetes resources or external API calls for later reference within policies. It provides a mechanism to efficiently retrieve and utilize data across policies, enhancing flexibility and performance in policy enforcement.
+
+Imagine declaring resource or API call data needs once, then easily referencing it throughout your policies. That's what Kyverno's new GlobalContextEntry custom resource type offers. Global Context Entries are declared globally using a new CRD irrespective of any Policies you might have and then later referenced as part of a policies's context. There are two types of Global Context Entries:
+
+1. **Kubernetes Resource:** Reference any Kubernetes resource (optionally namespace) to pre-populate the cache with its latest state.
+
+**Example:**
+
+This `GlobalContextEntry` caches all `Deployment` resources in the `test-globalcontext` namespace:
+
+```yaml
+apiVersion: kyverno.io/v2alpha1
+kind: GlobalContextEntry
+metadata:
+  name: deployments
+spec:
+  kubernetesResource:
+    group: apps
+    version: v1
+    resource: deployments
+    namespace: test-globalcontext
+```
+
+*Note:* Leave namespacce empty for cluster scoped resources.
+
+2. **API Call:** Define an external API call, including URL, CA bundle for certificate verification, and refresh interval to keep the cached data up-to-date.
+
+**Example:**
+
+The same example but with `apiCall`:
+
+```yaml
+apiVersion: kyverno.io/v2alpha1
+kind: GlobalContextEntry
+metadata:
+  name: deployments
+spec:
+  apiCall:
+    urlPath: "/apis/apps/v1/namespaces/test-globalcontext/deployments"
+    refreshInterval: 10s
+```
+
+*Note*: `APICall` Global Context Entries are implemented by periodically making a call to the `urlPath` every `refreshInterval`, thus beware of stale data.
+
+Global Context Entries can be referenced within policies to utilize the cached data. When specifying the context within a policy, users can refer to the defined Global Context Entry. Below is an example illustrating how to reference Global Context Entries within a policy's context:
+
+```yaml
+context:
+  - name: deploymentCount
+    globalReference:
+      name: deployments
+```
+
+*Note:* The data returned by Global Context Entries may vary depending on whether it's a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well.
+
+* For Kubernetes resources, to obtain the length of the array, use length(@).
+* For API calls returning a list, you can use items | length(@) to get the length.
+
+Ensure to use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
+
 ## Variables from Image Registries
 
 A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource.
