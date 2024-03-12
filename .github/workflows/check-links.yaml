@@ -35,7 +35,7 @@ jobs:
         with:
           fail: true
           debug: false
-          args: --verbose --no-progress -E 'public'
+          args: --verbose --no-progress --github-token -E 'public'
 
       # - name: Create Issue From File
       #   if: steps.lychee.outputs.exit_code != 0
