@@ -1,1 +1,1 @@
-exclude_path = ["public/policies/*"]
+exclude_path = ["public/policies/*","policies/*"]
