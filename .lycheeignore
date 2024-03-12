@@ -1,4 +1,4 @@
 localhost
 http://localhost
 https://localhost
-public/policies/
+/public/policies/*
