@@ -23,7 +23,7 @@ jobs:
         with:
           fail: true
           debug: false
-          args: --verbose --no-progress --base . -E 'content'
+          args: --verbose --no-progress --base /content/en -E 'content'
 
       # - name: Create Issue From File
       #   if: steps.lychee.outputs.exit_code != 0
