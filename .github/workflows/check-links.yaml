@@ -27,16 +27,12 @@ jobs:
         with:
           site_name: kyverno
           max_timeout: 60
-
-      - name: Test
-        run: |
-          echo output is ${{ steps.wait-for-netflify-preview.outputs.url }}
   
       - name: npm install
         run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
 
       - name: Build
-        run: hugo --minify
+        run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
 
       - name: Link Checker
         id: lychee
