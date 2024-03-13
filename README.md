@@ -42,7 +42,6 @@ Run `hugo mod get -u ./...` from project root.
 
 To clean the module cache use `hugo mod clean`.
 
-
 ## Rendering Policies to Markdown
 
 Policies found at https://kyverno.io/policies/ are generated in Markdown from the source repository at [kyverno/policies](https://github.com/kyverno/policies). For any changes to appear on https://kyverno.io/policies/, edits must be made to the upstream policy YAML files at kyverno/policies, and the `render` tool run from this repository to generate the respective Markdown. See [render](/render/README.md) README for more details.
@@ -89,7 +88,7 @@ To create a new release branch:
 
 In the `main` branch:
 
-1. Update the versions list in [config.toml](/config/_default/config.toml) to add the next release.
+1. Update the versions list in [params.toml](/config/_default/params.toml) to add the next release.
 
 2. Update `version_menu` and `version` in [params.toml](/config/_default/params.toml) for the next release.
 
@@ -103,7 +102,9 @@ In the current release branch:
 
 #### Submitting a PR to multiple release branches
 
-Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. For such cases, a PR must be created for each release branch. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
+Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
+
+Use the cherry pick bot to request a PR be cherry picked to a target branch. Call for the bot with a comment on the desired PR with `/cherry-pick release-1-12-0` to cherry pick this PR to the `release-1-12-0` branch. A new PR will be opened with `release-1-12-0` as the target branch.
 
 There are several ways to create multiple PRs, but here is one easy flow:
 
