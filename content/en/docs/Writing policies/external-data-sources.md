@@ -207,7 +207,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp query "items | le
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/#jp) command to test API calls and parse results.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/usage/jp/) command to test API calls and parse results.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
