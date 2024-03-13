@@ -13,6 +13,13 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
+      - name: Waiting for Netlify Preview
+        uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
+        id: wait-for-netflify-preview
+        with:
+          site_name: kyverno
+          max_timeout: 60
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup Hugo
@@ -20,18 +27,11 @@ jobs:
         with:
           hugo-version: latest
           extended: true
-
-      - name: Waiting for Netlify Preview
-        uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
-        id: wait-for-netflify-preview
-        with:
-          site_name: kyverno
-          max_timeout: 60
   
-      - name: npm install
+      - name: Install site dependencies
         run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
 
-      - name: Build
+      - name: Build site with Hugo
         run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
 
       - name: Link Checker
