@@ -21,6 +21,17 @@ jobs:
           hugo-version: latest
           extended: true
 
+      - name: Waiting for Netlify Preview
+        uses: josephduffy/wait-for-netlify-action@v1
+        id: wait-for-netflify-preview
+        with:
+          site_name: kyverno
+          max_timeout: 60
+
+      - name: Test
+        run: |
+          echo output is ${{ steps.wait-for-netflify-preview.outputs.url }}
+  
       - name: npm install
         run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
 
