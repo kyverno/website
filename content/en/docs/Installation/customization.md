@@ -282,7 +282,7 @@ The following keys are used to control the behavior of Kyverno and must be set i
 
 ### Container Flags
 
-The following flags can be used to control the advanced behavior of the various Kyverno controllers and should be set on the main container in the form of arguments. All container flags can be prefaced with one or two dashes (ex., `-admissionReports` or `--admissionReports`). Where each flag is accepted is given in parenthesis.
+The following flags can be used to control the advanced behavior of the various Kyverno controllers and should be set on the main container in the form of arguments. All container flags can be prefaced with one or two dashes (ex., `-admissionReports` or `--admissionReports`). The controller(s) to which a given flag is applicable is shown in parenthesis.
 
 * A: Admission controller
 * B: Background controller
@@ -362,6 +362,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `validatingAdmissionPolicyReports` (R) | false | Specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. |
 | `vmodule` (ABCR) | | Comma-separated list of pattern=N settings for file-filtered logging. |
 | `webhookRegistrationTimeout` (A) | `120s` | Specifies the length of time Kyverno will try to register webhooks with the API server. |
+| `webhookServerPort` (AC) | `9443` | Specifies the port to use for webhook call-backs. |
 | `webhookTimeout` (A) | `10` | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). |
 
 ### Policy Report access
@@ -441,7 +442,7 @@ graph LR
   id3 --> id4["Kyverno engine"]
 ```
 
-Resource filters, unlike webhooks, may effect more than just admission requests--they have the ability to effect policy reports in background scans as well. By default, however, the configured resource filters are taken into account during background reporting scans. Filters listed will prevent policy report results from being created. Also note that resource filters do not effect mutations for existing resources.
+Resource filters, unlike webhooks, may effect more than just admission requests--they have the ability to effect policy reports in background scans as well. By default, however, the configured resource filters are not taken into account during background reporting scans. This behavior may be configured with the `--skipResourceFilters` container flag as described in the [Container Flags](#container-flags) section. Also note that resource filters do not effect mutations for existing resources.
 
 The Kubernetes kinds that should be ignored by policies can be filtered out by modifying the value of `data.resourceFilters` in Kyverno's ConfigMap stored in its Namespace. The default name of this ConfigMap is `kyverno` but can be changed by modifying the value of the environment variable `INIT_CONFIG` in the Kyverno deployment spec. `data.resourceFilters` must be a sequence of one or more `[<Kind>,<Namespace>,<Name>]` entries with `*` as a wildcard (`*/*` indicates all subresources within all kinds). Thus, an item `[Secret,*,*]` means that admissions of kind `Secret` in any Namespace and with any name will be ignored. Wildcards are also supported in each of these sequences. For example, the sequence `[Pod,foo-system,redis*]` filters out kind `Pod` in Namespace `foo-system` having names beginning with `redis`.
 
