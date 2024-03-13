@@ -10,20 +10,22 @@ The v1.9 release of Kyverno added several time related JMESPath filters. With th
 
 ## What is "JMESPath"?
 
-[JMESPath](https://jmespath.org/) (pronounced "James path") is a JSON query language that allows you to declaratively specify how to extract elements from a JSON document. It is similar to JSONPath in Kubernetes. It can be used almost anywhere in Kyverno. 
+[JMESPath](https://jmespath.org/) (pronounced "James path") is a JSON query language that allows you to declaratively specify how to extract elements from a JSON document. It is similar to JSONPath in Kubernetes. It can be used almost anywhere in Kyverno.
 
-Users may note that, many policies can be written with simple overlay patterns, others require more detailed selection and transformation. The latter is where JMESPath is useful. 
+Users may note that, many policies can be written with simple overlay patterns, others require more detailed selection and transformation. The latter is where JMESPath is useful.
 
-Kyverno supports all the JMESPath filters in the [JMESPath specifications page](https://jmespath.org/specification.html) and also adds several custom filters. Refer to [Kyverno's JMESPath docs](https://main.kyverno.io/docs/writing-policies/jmespath/) for a comprehensive deep dive.
+Kyverno supports all the JMESPath filters in the [JMESPath specifications page](https://jmespath.org/specification.html) and also adds several custom filters. Refer to [Kyverno's JMESPath docs](/docs/writing-policies/jmespath/) for a comprehensive deep dive.
 
 ## Why did we need these new filters?
-Kyverno already supports all the availible filters in the upstream JMESpath library and some custom filters as well. But there was a lack of time related filters that come in useful at several places in Kyverno, such as 
+
+Kyverno already supports all the available filters in the upstream JMESPath library and some custom filters as well. But there was a lack of time related filters that come in useful at several places in Kyverno, such as
 
 1. When we want to add custom labels like last sync time.
 2. Enforce a policy that checks whether the current time is after or before a specified time.
 3. Perform job scheduling using cron expressions.
 
 ## What has been added?
+
 In v1.9 release, Kyverno added 11 new time related filters to fulfill the above requirements and many more as well.
 
 1. **Time_add:** We have added a filter to do arithmetic addition of a duration to a given time. The `time_add()` filter takes a time and a duration and returns a time. `time_add('2023-01-12T12:37:56-05:00','6h')` results in the value `"2023-01-12T18:37:56-05:00"`. It can come in useful purposes like adding some time to the current time and passing it as an argument for other time related filters.
@@ -39,7 +41,9 @@ In v1.9 release, Kyverno added 11 new time related filters to fulfill the above 
 11. **Time_utc:** The `time_utc()` filter takes in a time in RFC 3339 format with a time offset and presents the same time in UTC/Zulu. It can be used in pair with `time_parse()` to convert it to UTC.
 
 ## How to use it?
-An in-depth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](https://main.kyverno.io/docs/writing-policies/jmespath/). 
+
+An in-depth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](/docs/writing-policies/jmespath/).
+
 ## Summary
 
-JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilitites of JMES filters in kyverno and have opened new usecases.
+JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilities of JMES filters in kyverno and have opened new usecases.

@@ -3,6 +3,9 @@ name: Check Links
 on:
   repository_dispatch:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: "0 0 * * *"
 
@@ -10,13 +13,36 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Waiting for Netlify Preview
+        uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
+        id: wait-for-netflify-preview
+        with:
+          site_name: kyverno
+          max_timeout: 60
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@16361eb4acea8698b220b76c0d4e84e1fd22c61d # v2.6.0
+        with:
+          hugo-version: latest
+          extended: true
+  
+      - name: Install site dependencies
+        run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
+
+      - name: Build site with Hugo
+        run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
 
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@v1.5.0
+        uses: lycheeverse/lychee-action@c053181aa0c3d17606addfe97a9075a32723548a # v1.9.3
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          fail: true
+          debug: false
+          args: --no-progress --github-token ${{secrets.GITHUB_TOKEN}} -c lychee.toml -E public
 
       # - name: Create Issue From File
       #   if: steps.lychee.outputs.exit_code != 0

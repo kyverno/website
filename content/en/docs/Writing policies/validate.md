@@ -1703,8 +1703,8 @@ Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/acce
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
 
 Check the below sections for more information:
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/#applying-validatingadmissionpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/#testing-validatingadmissionpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply/#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test/#testing-validatingadmissionpolicies)
 {{% /alert %}}
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.

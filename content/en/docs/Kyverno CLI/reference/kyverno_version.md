@@ -11,7 +11,7 @@ Prints the version of Kyverno CLI.
 
 Prints the version of Kyverno CLI.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#version
+  For more information visit [here](/docs/kyverno-cli/usage/)
 
 ```
 kyverno version [flags]

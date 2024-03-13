@@ -435,7 +435,7 @@ This image can now be verified using the leaf or root certificates.
 
 ## Keyless signing and verification
 
-The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://github.com/sigstore/cosign/blob/main/KEYLESS.md):
+The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/signing/overview/):
 
 ```yaml
 apiVersion: kyverno.io/v1
