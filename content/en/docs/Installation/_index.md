@@ -40,16 +40,15 @@ A standard Kyverno installation consists of a number of different components, so
 
 ## Compatibility Matrix
 
-Kyverno follows the same support policy as the Kubernetes project which is an N-2 policy in with the three latest minor releases are maintained. Although previous versions may work, they are not tested and therefore no guarantees are made as to their full compatibility. Kyverno also follows a similar strategy for support of Kubernetes itself. The below table shows the compatibility matrix.
+Kyverno follows the same support policy as the Kubernetes project (N-2 policy) in which the current release and the previous two minor versions are maintained. Although previous versions may work, they are not tested and therefore no guarantees are made as to their full compatibility. The below table shows the compatibility matrix.
 
 | Kyverno Version                | Kubernetes Min | Kubernetes Max |
 |--------------------------------|----------------|----------------|
-| 1.6.x                          | 1.16           | 1.23           |
-| 1.7.x                          | 1.21           | 1.23           |
 | 1.8.x                          | 1.23           | 1.25           |
 | 1.9.x                          | 1.24           | 1.26           |
 | 1.10.x                         | 1.24           | 1.26           |
 | 1.11.x                         | 1.25           | 1.28           |
+| 1.12.x                         | 1.26           | 1.29           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
