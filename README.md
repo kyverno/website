@@ -2,6 +2,12 @@
 
 Source for: https://kyverno.io
 
+## Accessing Earlier Documentation
+
+The Kyverno website follows the same support policy as Kyverno, an N-2 policy. Documentation will be made available for the current release and the two previous minor releases. While this extends to the version list on the website, users may still access earlier versions of the documentation by navigating to a specific version by URL.
+
+Documentation for each version is published at a URL like `https://release-X-Y-0.kyverno.io/` where `X` is the major version and `Y` is the minor version. To access the documentation for version 1.9.0, navigate to the URL [https://release-1-9-0.kyverno.io/](https://release-1-9-0.kyverno.io/).
+
 ## Contributors
 
 <a href="https://github.com/kyverno/website/graphs/contributors">
@@ -30,6 +36,7 @@ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 cd kyverno-website
 hugo server
 ```
+
 **Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
 
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
