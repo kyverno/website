@@ -711,7 +711,7 @@ context:
 The data returned by GlobalContextEntries may vary depending on whether it is a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well. Ensure you use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
 
 {{% alert title="Warning" color="warning" %}}
-GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. A GlobalContextEntry must also exist first prior to a policy referencing it being created.
+GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
 {{% /alert %}}
 
 ## Variables from Image Registries
