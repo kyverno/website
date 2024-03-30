@@ -25,11 +25,18 @@ curl -fsS https://raw.githubusercontent.com/kyverno/kyverno/main/charts/kyverno/
 
 * Open your Grafana portal and go to the option of importing a dashboard.
 
+![Dashboard step 1](dashboard-first-step.png)
+
 * Go to the "Upload JSON file" button, select the `kyverno-dashboard.json` which you got in the first step and click on Import.
+
+![Dashboard step 2](dashboard-second-step.png)
 
 * Configure the fields according to your preferences and click on Import.
 
+![Dashboard step 3](dashboard-third-step.png)
+
 * And your dashboard will be ready in front of you.
 
-<p align="center"><img src="../assets/dashboard-example-1.png" height="300px"/></p>
-<p align="center"><img src="../assets/dashboard-example-2.png" height="300px" /></p>
+![Dashboard example 1](dashboard-example-1.png)
+
+![Dashboard example 2](dashboard-example-2.png)
