@@ -13,7 +13,7 @@ Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluste
 
 ## Cleanup Policy
 
-Similar to other policies which can validate, mutate, generate, or verify images in resources, Kyverno can cleanup resources by defining a new policy type called a `CleanupPolicy`. Cleanup policies come in both cluster-scoped and Namespaced flavors; a `ClusterCleanupPolicy` being cluster scoped and a `CleanupPolicy` being Namespaced. A cleanup policy uses the familiar `match`/`exclude` block to select and exclude resources which are subjected to the cleanup process. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/writing-policies/preconditions/) and [deny rules](/docs/writing-policies/validate/#deny-rules) to query the contents of the selected resources in order to refine the selection process. [Context variables](/docs/writing-policies/external-data-sources/) (optional) can be used to fetch data from other resources to factor into the cleanup process. And, lastly, a `schedule` field defines, in cron format, when the rule should run.
+Similar to other policies which can validate, mutate, generate, or verify images in resources, Kyverno can cleanup resources by defining a new policy type called a `CleanupPolicy`. Cleanup policies come in both cluster-scoped and Namespaced flavors; a `ClusterCleanupPolicy` being cluster scoped and a `CleanupPolicy` being Namespaced. A cleanup policy uses the familiar `match`/`exclude` block to select and exclude resources which are subjected to the cleanup process. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](preconditions.md) and [deny rules](validate.md#deny-rules) to query the contents of the selected resources in order to refine the selection process. [Context variables](external-data-sources.md) (optional) can be used to fetch data from other resources to factor into the cleanup process. And, lastly, a `schedule` field defines, in cron format, when the rule should run.
 
 {{% alert title="Note" color="info" %}}
 Since cleanup policies always operate against existing resources in a cluster, policies created with `subjects`, `Roles`, or `ClusterRoles` in the `match`/`exclude` block are not allowed since this information is only known at admission time.
@@ -43,9 +43,9 @@ spec:
   schedule: "*/5 * * * *"
 ```
 
-Values from resources to be evaluated during a policy may be referenced with `target.*` similar to [mutate existing rules](/docs/writing-policies/mutate/#mutate-existing-resources).
+Values from resources to be evaluated during a policy may be referenced with `target.*` similar to [mutate existing rules](mutate.md#mutate-existing-resources).
 
-Because Kyverno follows the principal of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](/docs/installation/customization/#customizing-permissions) section for more details.
+Because Kyverno follows the principal of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](../installation/customization.md#customizing-permissions) section for more details.
 
 An example ClusterRole which allows Kyverno to cleanup Pods is shown below. This may need to be customized based on the values used to deploy Kyverno.
 

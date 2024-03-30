@@ -87,5 +87,5 @@ kyverno apply [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](kyverno)	 - Kubernetes Native Policy Management.
 
