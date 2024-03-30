@@ -3,7 +3,7 @@
 [[main]]
   name = "About"
   weight = -103
-  url = "#td-block-1"
+  url = "#kyverno-is-a-policy-engine-designed-for-kubernetes"
 
 [[main]]
   name = "Documentation"

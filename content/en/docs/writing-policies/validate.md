@@ -5,7 +5,7 @@ description: >
 weight: 30
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -201,7 +201,7 @@ spec:
                   app: "?*"
 ```
 
-In order to treat special characters like wildcards as literals, see [this section](/docs/writing-policies/jmespath/#matching-special-characters) in the JMESPath page.
+In order to treat special characters like wildcards as literals, see [this section](jmespath.md#matching-special-characters) in the JMESPath page.
 
 ### Operators
 
@@ -494,14 +494,14 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/writing-policies/preconditions/#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
+In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
 
 Deny rules are more powerful and expressive than simple patterns but are also more complex to write. Use deny rules when:
 
 * You need advanced selection logic with multiple "if" conditions.
-* You need access to the full contents of the [AdmissionReview](/docs/writing-policies/jmespath/#admissionreview).
-* You need access to more built-in [variables](/docs/writing-policies/variables/).
-* You need access to the complete [JMESPath filtering system](/docs/writing-policies/jmespath/).
+* You need access to the full contents of the [AdmissionReview](jmespath.md#admissionreview).
+* You need access to more built-in [variables](variables.md).
+* You need access to the complete [JMESPath filtering system](jmespath.md).
 
 An example of a deny rule is shown below. In deny rules, you write expressions similar to those in Kubernetes resources such as selectors. Deny rules, or "conditions", must be nested under an `any`, `all`, or potentially both in order to control the decision-making logic. In this snippet, a resource will be denied if ANY of the following expressions are true.
 
@@ -530,7 +530,7 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-See also [Preconditions](/docs/writing-policies/preconditions).
+See also [Preconditions](preconditions.md).
 
 ### Deny DELETE requests based on labels
 
@@ -646,14 +646,14 @@ A variable `element` is added to the processing context on each iteration. This 
 
 The following child declarations are permitted in a `foreach`:
 
-- [Patterns](/docs/writing-policies/validate/#patterns)
-- [AnyPatterns](/docs/writing-policies/validate/#anypattern)
-- [Deny](/docs/writing-policies/validate/#deny-rules)
+- [Patterns](validate.md#patterns)
+- [AnyPatterns](validate.md#anypattern)
+- [Deny](validate.md#deny-rules)
 
 In addition, each `foreach` declaration can contain the following declarations:
 
-- [Context](/docs/writing-policies/external-data-sources/): to add additional external data only available per loop iteration.
-- [Preconditions](/docs/writing-policies/preconditions/): to control when a loop iteration is skipped
+- [Context](external-data-sources.md): to add additional external data only available per loop iteration.
+- [Preconditions](preconditions.md): to control when a loop iteration is skipped
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -767,11 +767,11 @@ spec:
     secretName: hr.old.com
 ```
 
-Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/writing-policies/mutate/#nested-foreach) for further details.
+Nested foreach statements are also supported in mutate rules. See the documentation [here](mutate.md#nested-foreach) for further details.
 
 ## Manifest Validation
 
-Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/writing-policies/verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
+Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
 
 Generate a key pair used to sign a manifest by using the [`cosign`](https://github.com/sigstore/cosign#installation) command-line tool.
 
@@ -912,7 +912,7 @@ validate:
       namespace: my-dryrun-ns
 ```
 
-The manifest validation feature shares many of the same abilities as the [verify images](/docs/writing-policies/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
+The manifest validation feature shares many of the same abilities as the [verify images](verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
 
 ## Pod Security
 
@@ -924,9 +924,9 @@ The podSecurity feature has the following advantages over the Kubernetes built-i
 2. Namespace application of Pod Security Standards does not require assignment of a label.
 3. Specific controls may be exempted from a given profile.
 4. Container images may be exempted along with a control exemption.
-5. Enforcement of Pod controllers is [automatic](/docs/writing-policies/autogen/).
-6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/policy-reports/) Custom Resource.
-7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
+5. Enforcement of Pod controllers is [automatic](autogen.md).
+6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](../policy-reports/) Custom Resource.
+7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](../kyverno-cli/).
 
 For example, this policy enforces the latest version of the Pod Security Standards [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) in a single rule across the entire cluster.
 
@@ -1407,7 +1407,7 @@ spec:
 The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
 
 {{% alert title="Note" color="info" %}}
-You can quickly test CEL expressions in [CEL Playground](https://playcel.undistro.io/).
+You can quickly test CEL expressions in the [CEL Playground](https://playcel.undistro.io/).
 {{% /alert %}}
 
 When trying to create a Deployment with replicas set not satisfying the validation expression, the creation of the Deployment will be blocked.
@@ -1468,7 +1468,7 @@ CEL expressions have access to the contents of the Admission request/response, o
 
 Read [Supported evaluation on CEL](https://github.com/google/cel-spec/blob/v0.6.0/doc/langdef.md#evaluation) for more information about CEL rules.
 
-`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](/docs/writing-policies/autogen/) section for more information.
+`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](autogen.md) section for more information.
 
 ```yaml
 status:
@@ -1703,15 +1703,15 @@ Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/acce
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
 
 Check the below sections for more information:
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply/#applying-validatingadmissionpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test/#testing-validatingadmissionpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](../kyverno-cli/usage/apply.md#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](../kyverno-cli/usage/test.md#testing-validatingadmissionpolicies)
 {{% /alert %}}
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
 
 To unify the policy management, Kyverno policies can be used to generate and manage the lifecycle of Kubernetes ValidatingAdmissionPolicies. This allows the process of resource validation to take place directly in the API server, whenever possible, and extends Kyverno's reporting and testing capabilities for ValidatingAdmissionPolicy resources.
 
-When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization/#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
+When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](../installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
 
 To generate ValidatingAdmissionPolicies, make sure to:
 
@@ -1755,9 +1755,9 @@ To generate ValidatingAdmissionPolicies, make sure to:
       - list
     ```
 
-ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](/docs/writing-policies/validate/#common-expression-language-cel) section on the validate page for more information.
+ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](#common-expression-language-cel) section for more information.
 
-In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](/docs/writing-policies/exceptions/) page for more information.
+In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](exceptions.md) page for more information.
 
 Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
 

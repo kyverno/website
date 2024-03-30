@@ -114,7 +114,7 @@ spec:
           name: dave
 ```
 
-`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/writing-policies/validate/#wildcards) are supported to make selection more flexible.
+`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](validate.md#wildcards) are supported to make selection more flexible.
 
 {{% alert title="Note" color="info" %}}
 Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in a future release.
@@ -334,7 +334,7 @@ spec:
 This rule matches all Pods except those in the `kube-system` Namespace.
 
 {{% alert title="Note" color="info" %}}
-The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](/docs/installation/customization/#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
+The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](../installation/customization.md#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
 {{% /alert %}}
 
 ```yaml

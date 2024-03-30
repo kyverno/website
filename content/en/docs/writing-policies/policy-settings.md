@@ -5,13 +5,13 @@ description: >
 weight: 10
 ---
 
-A [policy](/docs/kyverno-policies/) contains one or more rules, and the following common settings which apply to all rules in the policy: [test](cleanup.md#cleanup-label)
+A [policy](../kyverno-policies) contains one or more rules, and the following common settings which apply to all rules in the policy:
 
 * **admission**: determines whether rules in this policy should be applied during admission control. This is an optional field with a default of `true`. If set to `false` then policies should be applied in background mode only (see further below).
 
 * **applyRules**: states how many of the rules in the parent policy should be applied to a matching resource. Values are `One` and `All` (default). If set to `One`, the first matching rule to be applied will stop further rules from being evaluated.
 
-* **background**: controls scanning of existing resources to find potential violations and generating Policy Reports. See the documentation [here](/docs/policy-reports/background/). Defaults to "true".
+* **background**: controls scanning of existing resources to find potential violations and generating Policy Reports. See the documentation [here](../policy-reports/background.md). Defaults to "true".
 
 * **failurePolicy**: defines the API server behavior if the webhook fails to respond. Allowed values are "Ignore" or "Fail". Defaults to "Fail". Additionally, if set to "Ignore" will allow failing calls to image registries to be ignored. This allows for rule types like verifyImages or others which use image data to not block if the registry is temporarily down, useful in situations where images already exist on the nodes.
 
