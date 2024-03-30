@@ -11,12 +11,12 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - name: Waiting for Netlify Preview
-        uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
-        id: wait-for-netflify-preview
-        with:
-          site_name: kyverno
-          max_timeout: 60
+      # - name: Waiting for Netlify Preview
+      #   uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
+      #   id: wait-for-netflify-preview
+      #   with:
+      #     site_name: kyverno
+      #     max_timeout: 60
 
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
 
@@ -26,11 +26,11 @@ jobs:
           hugo-version: latest
           extended: true
   
-      - name: Install site dependencies
-        run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
+      # - name: Install site dependencies
+      #   run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
 
-      - name: Build site with Hugo
-        run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
+      # - name: Build site with Hugo
+      #   run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
 
       - name: Link Checker
         id: lychee
@@ -40,7 +40,7 @@ jobs:
         with:
           fail: true
           debug: false
-          args: --no-progress --github-token ${{secrets.GITHUB_TOKEN}} -c lychee.toml -E public
+          args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} -c lychee.toml -E content/en
 
       # - name: Create Issue From File
       #   if: steps.lychee.outputs.exit_code != 0
