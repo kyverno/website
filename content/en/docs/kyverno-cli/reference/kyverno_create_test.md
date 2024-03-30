@@ -56,5 +56,5 @@ kyverno create test [flags]
 
 ### SEE ALSO
 
-* [kyverno create](../kyverno_create)	 - Helps with the creation of various Kyverno resources.
+* [kyverno create](kyverno_create.md)	 - Helps with the creation of various Kyverno resources.
 

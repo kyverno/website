@@ -57,10 +57,10 @@ kyverno create [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno create exception](../kyverno_create_exception)	 - Create a Kyverno policy exception file.
-* [kyverno create metrics-config](../kyverno_create_metrics-config)	 - Create a Kyverno metrics-config file.
-* [kyverno create test](../kyverno_create_test)	 - Create a Kyverno test file.
-* [kyverno create user-info](../kyverno_create_user-info)	 - Create a Kyverno user-info file.
-* [kyverno create values](../kyverno_create_values)	 - Create a Kyverno values file.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno create exception](kyverno_create_exception.md)	 - Create a Kyverno policy exception file.
+* [kyverno create metrics-config](kyverno_create_metrics-config.md)	 - Create a Kyverno metrics-config file.
+* [kyverno create test](kyverno_create_test.md)	 - Create a Kyverno test file.
+* [kyverno create user-info](kyverno_create_user-info.md)	 - Create a Kyverno user-info file.
+* [kyverno create values](kyverno_create_values.md)	 - Create a Kyverno values file.
 

@@ -43,6 +43,6 @@ kyverno json [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno json scan](../kyverno_json_scan)	 - Runs tests against any json compatible payloads/policies.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno json scan](kyverno_json_scan.md)	 - Runs tests against any json compatible payloads/policies.
 

@@ -11,7 +11,7 @@ Provides a command-line interface to JMESPath, enhanced with Kyverno specific cu
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 
-  For more information visit [here](/docs/kyverno-cli/usage/jp/)
+  For more information visit [here](../usage/jp.md)
 
 ```
 kyverno jp query [-i input] [-q query|query]... [flags]
@@ -66,5 +66,5 @@ kyverno jp query [-i input] [-q query|query]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](../kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno jp](kyverno_jp.md)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 

@@ -11,7 +11,7 @@ Applies policies on resources.
 
 Applies policies on resources.
 
-  For more information visit [here](/docs/kyverno-cli/usage/apply/)
+  For more information visit [here](../usage/apply.md)
 
 ```
 kyverno apply [flags]
@@ -87,5 +87,5 @@ kyverno apply [flags]
 
 ### SEE ALSO
 
-* [kyverno](kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
 

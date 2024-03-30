@@ -11,7 +11,7 @@ Provides function informations.
 
 Provides function informations.
 
-  For more information visit [here](/docs/kyverno-cli/usage/jp/)
+  For more information visit [here](../usage/jp.md)
 
 ```
 kyverno jp function [function_name]... [flags]
@@ -53,5 +53,5 @@ kyverno jp function [function_name]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](../kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno jp](kyverno_jp.md)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 
