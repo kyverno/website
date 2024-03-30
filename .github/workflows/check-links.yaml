@@ -16,7 +16,7 @@ jobs:
         id: wait-for-netflify-preview
         with:
           site_name: kyverno
-          max_timeout: 60
+          max_timeout: 120
 
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
 
