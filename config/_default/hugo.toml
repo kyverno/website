@@ -21,7 +21,7 @@ disableKinds = ["taxonomy"]
 
 ignoreFiles = [ "^OWNERS$", "README[-]+[a-z]*\\.md", "^node_modules$"]
 
-timeout = 3000
+timeout = "30s"
 
 # Norwegian ("no") is sometimes but not currently used for testing.
 # Hindi is disabled because it's currently in development.
@@ -38,7 +38,7 @@ blog = "/:section/:year/:month/:day/:slug/"
 [imaging]
 resampleFilter = "CatmullRom"
 quality = 75
-anchor = "smart"
+anchor = "Smart"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
