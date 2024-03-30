@@ -5,7 +5,7 @@ description: >
 weight: 10
 ---
 
-A [policy](/docs/kyverno-policies/) contains one or more rules, and the following common settings which apply to all rules in the policy:
+A [policy](/docs/kyverno-policies/) contains one or more rules, and the following common settings which apply to all rules in the policy: [test](cleanup.md#cleanup-label)
 
 * **admission**: determines whether rules in this policy should be applied during admission control. This is an optional field with a default of `true`. If set to `false` then policies should be applied in background mode only (see further below).
 
