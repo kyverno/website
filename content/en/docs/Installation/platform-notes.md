@@ -35,7 +35,7 @@ spec:
   source:
     chart: kyverno
     repoURL: https://kyverno.github.io/kyverno
-    targetRevision: 2.6.0
+    targetRevision: <my.target.version>
   syncPolicy:
     automated:
       prune: true
