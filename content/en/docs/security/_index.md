@@ -141,7 +141,7 @@ All Kyverno images can be verified.
 
 ## Verifying Provenance
 
-Kyverno creates and attests to the provenance of its builds using the [SLSA standard](https://slsa.dev/provenance/v0.2) and meets the SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) specification. The attested provenance may be verified using the `cosign` tool.
+Kyverno creates and attests to the provenance of its builds using the [SLSA standard](https://slsa.dev/provenance/v1.0) and meets the SLSA [Level 3](https://slsa.dev/spec/v1.0/levels) specification. The attested provenance may be verified using the `cosign` tool.
 
 For v1.x of Cosign, use the following command.
 

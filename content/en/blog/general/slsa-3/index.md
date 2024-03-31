@@ -20,7 +20,7 @@ The following diagram depicts the several known points of attacks. For extensive
 
 ## SLSA Requirements and Kyverno Compliance State
 
-SLSA divides the requirements into three main areas: source, build, and integrity. Each area has sub-requirements to meet certain levels. Since Kyverno claims to achieve SLSA level 3, this document will explain how we are achieving that. For a complete summary of SLSA requirements, refer to the official SLSA project pages at https://slsa.dev/spec/v0.1/requirements.
+SLSA divides the requirements into three main areas: source, build, and integrity. Each area has sub-requirements to meet certain levels. Since Kyverno claims to achieve SLSA level 3, this document will explain how we are achieving that. For a complete summary of SLSA requirements, refer to the official SLSA project pages at https://slsa.dev/spec/v1.0/requirements.
 
 ### Source Requirements
 
