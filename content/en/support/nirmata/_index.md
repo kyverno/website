@@ -24,7 +24,7 @@ type: docs
 
 ### Nirmata Enterprise for Kyverno
 
-[Nirmata Enterprise for Kyverno](https://nirmata.com/kyverno-enterprise/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
+[Nirmata Enterprise for Kyverno](https://nirmata.com/nirmata-enterprise-for-kyverno/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
 
 * Kyverno LTS for long term support with compatibility testing, CVE and critical fix SLAs
 * Kyverno engine health and lifecycle management
