@@ -73,7 +73,7 @@ Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mut
 
 ### Links
 
-In order to ensure that broken link detection works optimally as well as providing a way for users to find linked content when viewing the raw Markdown files on GitHub, links should be made using **relative paths to files** and not relative rendered paths.
+In order to ensure that broken link detection works optimally as well as providing a way for users to find linked content when viewing the raw Markdown files on GitHub, links should be made using **relative paths to files** and not relative rendered paths. Following this method ensures not only pages can be found but anchor links are still valid.
 
 This is a good link:
 
