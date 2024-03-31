@@ -5,7 +5,7 @@ description: >
 weight: 45
 ---
 
-A Kyverno policy is a collection of rules. Each rule consists of a [`match`](../writing-policies/match-exclude.md) declaration, an optional [`exclude`](../writing-policies/match-exclude.md) declaration, and one of a [`validate`](../writing-policies/validate.md), [`mutate`](../writing-policies/mutate.md), [`generate`](../writing-policies/generate.md), or [`verifyImages`](../writing-policies/verify-images/index.md) declaration. Each rule can contain only a single `validate`, `mutate`, `generate`, or `verifyImages` child declaration.
+A Kyverno policy is a collection of rules. Each rule consists of a [`match`](../writing-policies/match-exclude.md) declaration, an optional [`exclude`](../writing-policies/match-exclude.md) declaration, and one of a [`validate`](../writing-policies/validate.md), [`mutate`](../writing-policies/mutate.md), [`generate`](../writing-policies/generate.md), or [`verifyImages`](../writing-policies/verify-images/_index.md) declaration. Each rule can contain only a single `validate`, `mutate`, `generate`, or `verifyImages` child declaration.
 
 <img src="/images/Kyverno-Policy-Structure.png" alt="Kyverno Policy" width="65%"/>
 <br/>
