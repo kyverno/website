@@ -34,7 +34,7 @@ jobs:
         id: wait-for-netflify-preview
         with:
           site_name: kyverno
-          max_timeout: 60
+          max_timeout: 120
 
       - name: Install site dependencies
         run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
