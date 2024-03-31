@@ -15,6 +15,7 @@ The logical structure of an verifyImages rule is shown below:
 <br/><br/>
 
 Each rule contains the following common configuration attributes:
+
   * `type`: the signature type. Sigstore Cosign and Notary are supported. 
   * `imageReferences`: a list of image reference patterns to match
   * `skipImageReferences`: a list of image reference patterns that should be skipped.
@@ -33,6 +34,7 @@ The rule mutates matching images to add the image digest, when mutateDigest is s
 The imageVerify rule first executes as part of the mutation webhook as the applying policy may insert the image digest. The imageVerify rules execute after other mutation rules are applied but before the validation webhook is invoked. This order allows other policy rules to first mutate the image reference if necessary, for example, to replace the registry address, before the image signature is verified.
 
 The imageVerify rule is also executed as part of the validation webhook to apply the `required` and `verifyDigest` checks:
+
 * When `required` is set to `true` (default) each image in the resource is checked to ensure that an immutable annotation that marks the image as verified is present.
 * When `verifyDigest` rule is set to `true` (default) each image is checked for a digest.
 
@@ -52,7 +54,7 @@ For additional details please reference a section below for the solution used to
 
 ### Cache
 
-Image verification requires multiple network calls and can be time consuming. Kyverno has a TTL based cache for image verification which caches successful outcomes of image verification. When cache is enabled, an image once verified by a policy will be considerd to be verified until TTL duration expires or there is a change in policy.
+Image verification requires multiple network calls and can be time consuming. Kyverno has a TTL based cache for image verification which caches successful outcomes of image verification. When cache is enabled, an image once verified by a policy will be considered to be verified until TTL duration expires or there is a change in policy.
 
 In Kyverno's admission controller deployment, users can configure the cache using the following flags:
 
@@ -60,4 +62,4 @@ In Kyverno's admission controller deployment, users can configure the cache usin
 `imageVerifyCacheMaxSize`: Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. Default is `1000`. `0` sets the value to default.
 `imageVerifyCacheTTLDuration`: Maximum TTL value for a cache expressed as duration. Default is `60m`. `0` sets the value to default.
 
-The cache is enabled by default and significantly helps with execution time of verify image policiess by making not accessing remote repository on every verification attempt. It should be noted that any change to the image/signature in the remote repository will not be reflected till the cache entry expires.
+The cache is enabled by default and significantly helps with execution time of verify image policies by making not accessing remote repository on every verification attempt. It should be noted that any change to the image/signature in the remote repository will not be reflected till the cache entry expires.

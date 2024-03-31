@@ -5,7 +5,7 @@ linkTitle: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Polic
 author: Mariam Fahmy
 description: "Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies"
 ---
-In the [previous blog post](/blog/2023/11/13/using-cel-expressions-in-kyverno-policies/), we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
+In the [previous blog post](../using-cel-expressions-in-kyverno-policies/index.md), we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
 
 ValidatingAdmissionPolicies offer a declarative, in-process alternative to validating admission webhooks.
 
@@ -14,7 +14,9 @@ ValidatingAdmissionPolicies use the Common Expression Language (CEL) to declare 
 This post will show you how to generate Kubernetes ValidatingAdmissionPolicies and their bindings from Kyverno policies.
 
 ## Prerequisite
+
 Generating Kubernetes ValidatingAdmissionPolicies require the following:
+
 1. A cluster with Kubernetes 1.26 or higher.
 2. Enable the `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
 3. Enable the `admissionregistration.k8s.io/v1beta1` API for v1.28 and v1.29.
@@ -26,6 +28,7 @@ Generating Kubernetes ValidatingAdmissionPolicies require the following:
 In this post, we will use the beta version of Kubernetes 1.29.
 
 ## Installation & Setup
+
 1. Create a local cluster
 
 ```bash
@@ -84,6 +87,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --version v3.
 We are now ready to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies.
 
 ## Generating Kubernetes ValidatingAdmissionPolicies
+
 In this section, we will create a Kyverno policy that ensures no hostPath volumes are in use for Deployments, and then we will have a look at the generated ValidatingAdmissionPolicy and its binding. Finally, we will create a Deployment that violates the policy.
 
 Let’s start with creating the Kyverno policy.
@@ -350,5 +354,5 @@ status:
 ```
 
 ## Conclusion
-In this blog, we discussed how to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies. You can use CEL expressions in Kyverno policies to validate resources through either the Kyverno engine or the API server. In the next blog, we will discuss how to generate BackgroundScan reports for ValidatingAdmissionPolicies.
 
+In this blog, we discussed how to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies. You can use CEL expressions in Kyverno policies to validate resources through either the Kyverno engine or the API server. In the next blog, we will discuss how to generate BackgroundScan reports for ValidatingAdmissionPolicies.

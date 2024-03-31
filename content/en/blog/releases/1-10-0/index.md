@@ -27,7 +27,7 @@ The four major components of Kyverno and their primary functions are as follows:
 * **Background Controller**: Not to be confused with background scans, the Background Controller handles all the generate rules and mutate rules when they impact existing resources (which all happen in the background).
 * **Cleanup Controller**: Takes care of all the cleanup tasks according to cleanup policies.
 
-Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](/docs/high-availability/) for more details on the internals of these controllers and how scale and availability are handled per controller.
+Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](../../../docs/high-availability/_index.md) for more details on the internals of these controllers and how scale and availability are handled per controller.
 
 ### Extensibility via External Service Calls
 
@@ -134,7 +134,7 @@ match:
 
 Policy Exceptions have been enhanced in 1.10 to add support for background scanning, useful when you consume a Policy Report and want to see that fail result to go away, and wildcards in the `ruleNames[]` field. The latter will assist when you might have several rules in a policy which begin with the same prefix.
 
-A number of significant enhancements were made to Policy Reports in Kyverno 1.10 which dramatically improve performance, reduce time to aggregate reports, and lower resource consumption. Another enhancement some users may rejoice in hearing is that background scans will now, by default (but configurable, of course) consider Kyverno's resource filters when producing reports. So if you've excluded a Namespace in the [resource filter](/docs/installation/customization/#resource-filters), by default you won't see any reports for it either when coming from background scans.
+A number of significant enhancements were made to Policy Reports in Kyverno 1.10 which dramatically improve performance, reduce time to aggregate reports, and lower resource consumption. Another enhancement some users may rejoice in hearing is that background scans will now, by default (but configurable, of course) consider Kyverno's resource filters when producing reports. So if you've excluded a Namespace in the [resource filter](../../../docs/installation/customization.md#resource-filters), by default you won't see any reports for it either when coming from background scans.
 
 Context variables are now lazily evaluated (JIT) which means no more failed rules when preconditions don't pass. Variables are often used in conditions and so they will follow the same circuit-breaking mechanisms already in place for those conditions. This should also have the benefit of reducing API calls in rules where they may not always be needed.
 

@@ -14,7 +14,7 @@ The v1.9 release of Kyverno added several time related JMESPath filters. With th
 
 Users may note that, many policies can be written with simple overlay patterns, others require more detailed selection and transformation. The latter is where JMESPath is useful.
 
-Kyverno supports all the JMESPath filters in the [JMESPath specifications page](https://jmespath.org/specification.html) and also adds several custom filters. Refer to [Kyverno's JMESPath docs](/docs/writing-policies/jmespath/) for a comprehensive deep dive.
+Kyverno supports all the JMESPath filters in the [JMESPath specifications page](https://jmespath.org/specification.html) and also adds several custom filters. Refer to [Kyverno's JMESPath docs](../../../docs/writing-policies/jmespath.md) for a comprehensive deep dive.
 
 ## Why did we need these new filters?
 
@@ -42,8 +42,8 @@ In v1.9 release, Kyverno added 11 new time related filters to fulfill the above 
 
 ## How to use it?
 
-An in-depth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](/docs/writing-policies/jmespath/).
+An in-depth guide on how to use JMESPath filters in kyverno is present in the [Kyverno's JMESPath docs](../../../docs/writing-policies/jmespath.md).
 
 ## Summary
 
-JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilities of JMES filters in kyverno and have opened new usecases.
+JMESPath is a powerful and robust tool for selecting, extracting and manipulating time in JSON. With the addition of the new time based filters, we have extended the capabilities of JMES filters in kyverno and have opened new use cases.
