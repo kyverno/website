@@ -12,7 +12,7 @@ Kyverno 1.10 brought breaking changes making upgrades to it or versions after 1.
 
 ### Upgrade Kyverno with YAML
 
-Direct upgrades from previous versions are not supported when using the YAML manifest approach. Please use the corresponding release manifest from the tagged release used to install to perform the uninstallation. Once Kyverno is removed, follow the [installation instructions](/docs/installation/methods/#install-kyverno-using-yamls) to install Kyverno.
+Direct upgrades from previous versions are not supported when using the YAML manifest approach. Please use the corresponding release manifest from the tagged release used to install to perform the uninstallation. Once Kyverno is removed, follow the [installation instructions](methods.md#install-kyverno-using-yamls) to install Kyverno.
 
 ### Upgrade Kyverno with Helm
 

@@ -6,9 +6,9 @@ description: >
     Test Kyverno policies for effectiveness.
 ---
 
-The [Kyverno CLI `test` command](/docs/kyverno-cli/usage/test/) can be used to test if a policy is behaving as expected.
+The [Kyverno CLI `test` command](../kyverno-cli/usage/test.md) can be used to test if a policy is behaving as expected.
 
-Please refer to the [`test` command documentation](/docs/kyverno-cli/usage/test/) for details. You can also find examples in the [sample policies repo](https://github.com/kyverno/policies).
+Please refer to the [`test` command documentation](../kyverno-cli/usage/test.md) for details. You can also find examples in the [sample policies repo](https://github.com/kyverno/policies).
 
 ## Continuous Integration
 
@@ -82,14 +82,14 @@ jobs:
 
 Upon pull request to the repository containing this file, the GitHub Actions workflow will be triggered. If all tests succeed, the output will show a success for all steps.
 
-![ci-pass](/images/ci-pass.png)
+![ci-pass](ci-pass.png)
 
 Each step may be expanded for complete output.
 
 If a pull request fails in any of the steps in the job, for example if a new manifest is introduced into `resources/` which fails one or more policies defined in `policies/`, the pipeline will halt causing the entire run to fail.
 
-![ci-fail](/images/ci-fail.png)
+![ci-fail](ci-fail.png)
 
 Again, each step may be inspected for output. In the above screenshot, a Deployment manifest did not pass a validate policy and therefore caused the overall failure.
 
-For full usage details of the Kyverno CLI, refer to the [documentation](/docs/kyverno-cli/).
+For full usage details of the Kyverno CLI, refer to the [documentation](../kyverno-cli/_index.md).

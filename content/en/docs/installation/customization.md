@@ -18,7 +18,7 @@ By default, Kyverno will automatically generate self-signed Certificate Authorit
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
-Get all Secrets in Kyverno's Namespace. The Secret names are configurable, see the [container flags section](/docs/installation/customization/#container-flags) for more details.
+Get all Secrets in Kyverno's Namespace. The Secret names are configurable, see the [container flags section](customization.md#container-flags) for more details.
 
 ```sh
 $ kubectl -n kyverno get secret
@@ -151,7 +151,7 @@ Kyverno uses Secrets created above to setup TLS communication with the Kubernete
 
 ##### Install Kyverno
 
-You can now install Kyverno by selecting one of the available methods from the [installation section](/docs/installation/methods/).
+You can now install Kyverno by selecting one of the available methods from the [installation section](methods.md).
 
 ### Roles and Permissions
 
@@ -277,7 +277,7 @@ The following keys are used to control the behavior of Kyverno and must be set i
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
 10. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector": {"matchExpressions": [{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'`.
-11. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](/docs/installation/platform-notes/#notes-for-aks-users) section for details.
+11. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
 12. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
@@ -294,7 +294,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `add_dir_header` (ABCR) | | Adds the file directory to the header of the log messages. |
 | `admissionReports` (AR) | true | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. |
 | `aggregateReports` (R) | true | Enables the report aggregating ability of AdmissionReports (1.10.2+). |
-| `allowInsecureRegistry` (ABR)| | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
+| `allowInsecureRegistry` (ABR)| | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](../writing-policies/verify-images/) rules or [variables from image registries](../writing-policies/external-data-sources.md#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
 | `alsologtostderr` (ABCR) | | Log to standard error as well as files (no effect when -logtostderr=true) |
 | `autoUpdateWebhooks` (A) | true | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard. |
 | `backgroundServiceAccountName` (A) | | The name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.|
@@ -311,10 +311,10 @@ The following flags can be used to control the advanced behavior of the various 
 | `dumpPayload` (AC) | false | Toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
 | `enableDeferredLoading` (A) | true | Enables deferred (lazy) loading of variables (1.10.1+). Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0. |
-| `enablePolicyException` (ABR) | true | Set to `true` to enable the [PolicyException capability](/docs/writing-policies/exceptions/). |
+| `enablePolicyException` (ABR) | true | Set to `true` to enable the [PolicyException capability](../writing-policies/exceptions.md). |
 | `enableTracing` (ABCR) | false | Set to enable exposing traces. |
 | `enableTuf` (AR) | | Enable tuf for private sigstore deployments. |
-| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](/docs/writing-policies/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted. |
+| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](../writing-policies/exceptions.md) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted. |
 | `forceFailurePolicyIgnore` (A) | false | Set to force Failure Policy to `Ignore`. |
 | `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
 | `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
@@ -357,7 +357,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
 | `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
-| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/writing-policies/cleanup/#cleanup-label) for details. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](../writing-policies/cleanup.md#cleanup-label) for details. |
 | `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |
@@ -402,7 +402,7 @@ Kyverno requires a few different webhooks to function. The main resource validat
 
 The dynamic management of resource webhooks is enabled by default but can be turned off by the flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forward admission requests for all resources and with `FailurePolicy` set to `Ignore`. In the majority of cases, these dynamically-managed webhooks should not be disabled. Understand that using statically-configured webhooks instead means that you, the operator, are now responsible for their configuration and, if left at their default, will result in the Kubernetes API server sending *every* type of resource (including subresources like `/status`) creates, updates, deletes, and connect operations. This will dramatically increase the processing required by Kyverno, even if few policies exist.
 
-The failure policy of a webhook controls what happens when a request either takes too long to complete or encounters a failure. The default of `Fail` indicates the request will fail. A value of `Ignore` means the request will be allowed regardless of its status. Kyverno by default configures its webhooks in a mode of `Fail` to be more secure by default. This can be changed with a global flag `--forceFailurePolicyIgnore` which forces `Ignore` mode. Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configuration options](/docs/writing-policies/policy-settings/) allow granular control of webhook settings on a per-policy basis.
+The failure policy of a webhook controls what happens when a request either takes too long to complete or encounters a failure. The default of `Fail` indicates the request will fail. A value of `Ignore` means the request will be allowed regardless of its status. Kyverno by default configures its webhooks in a mode of `Fail` to be more secure by default. This can be changed with a global flag `--forceFailurePolicyIgnore` which forces `Ignore` mode. Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configuration options](../writing-policies/policy-settings.md) allow granular control of webhook settings on a per-policy basis.
 
 #### Namespace Selectors
 
@@ -420,7 +420,7 @@ metadata:
 
 #### Match Conditions
 
-In addition to filtering out AdmissionReview requests by namespace selectors and [Kyverno Configmap based match conditions](/docs/installation/customization/#configMap-keys), you can define match conditions in Kyverno policies if you need fine-grained request filtering. These match conditions will be used for registering main resource validating and mutating webhooks that are managed by Kyverno. Match conditions are CEL expressions. All match conditions must evaluate to true for a policy to be applied. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
+In addition to filtering out AdmissionReview requests by namespace selectors and [Kyverno Configmap based match conditions](customization.md#configmap-keys), you can define match conditions in Kyverno policies if you need fine-grained request filtering. These match conditions will be used for registering main resource validating and mutating webhooks that are managed by Kyverno. Match conditions are CEL expressions. All match conditions must evaluate to true for a policy to be applied. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 
 ```yaml
 apiVersion: kyverno.io/v1

@@ -42,13 +42,13 @@ The diagram below shows the high-level logical architecture of Kyverno.
 
 The **Webhook** is the server which handles incoming AdmissionReview requests from the Kubernetes API server and sends them to the **Engine** for processing. It is dynamically configured by the **Webhook Controller** which watches the installed policies and modifies the webhooks to request only the resources matched by those policies. The **Cert Renewer** is responsible for watching and renewing the certificates, stored as Kubernetes Secrets, needed by the webhook. The **Background Controller** handles all generate and mutate-existing policies by reconciling UpdateRequests, an intermediary resource. And the **Report Controllers** handle creation and reconciliation of Policy Reports from their intermediary resources, Admission Reports and Background Scan Reports.
 
-Kyverno also supports high availability. A highly-available installation of Kyverno is one in which the controllers selected for installation are configured to run with multiple replicas. Depending on the controller, the additional replicas may also serve the purpose of increasing the scalability of Kyverno. See the [high availability page](/docs/high-availability/) for more details on the various Kyverno controllers, their components, and how availability is handled in each one.
+Kyverno also supports high availability. A highly-available installation of Kyverno is one in which the controllers selected for installation are configured to run with multiple replicas. Depending on the controller, the additional replicas may also serve the purpose of increasing the scalability of Kyverno. See the [high availability page](../high-availability/_index.md) for more details on the various Kyverno controllers, their components, and how availability is handled in each one.
 
 ## Quick Start Guides
 
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
 
-These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/) for more complete information on how to install Kyverno in production.
+These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](../installation/_index.md) for more complete information on how to install Kyverno in production.
 
 First, install Kyverno from the latest release manifest.
 
@@ -60,7 +60,7 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 ### Validation
 
-In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/policy-reports/) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
+In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](../policy-reports/_index.md) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `validationFailureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
@@ -112,7 +112,7 @@ In addition to the error returned, Kyverno also produces an Event in the same Na
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
 {{% /alert %}}
 
-Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/writing-policies/autogen/) feature, to all standard Kubernetes Pod controllers including the Deployment above.
+Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](../writing-policies/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
 
 Now, create a Pod with the required label.
 
@@ -164,7 +164,7 @@ Now that you've experienced validate policies and seen a bit about policy report
 kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/writing-policies/validate/).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](../writing-policies/validate.md).
 
 ### Mutation
 
@@ -232,7 +232,7 @@ Now that you've experienced mutate policies and seen how logic can be written ea
 kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/writing-policies/mutate/).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](../writing-policies/mutate.md).
 
 ### Generation
 
@@ -298,4 +298,4 @@ With a basic understanding of generate policies, clean up by deleting the policy
 kubectl delete clusterpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/writing-policies/generate/).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](../writing-policies/generate.md).

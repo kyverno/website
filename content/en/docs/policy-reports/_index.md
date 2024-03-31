@@ -73,13 +73,13 @@ summary:
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
 
 {{% alert title="Note" color="info" %}}
-Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info/) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
+Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](../monitoring/policy-results-info.md) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
-Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization/#container-flags) section.
+Policy reports have a few configuration options available. For details, see the [container flags](../installation/customization.md#container-flags) section.
 
 {{% alert title="Note" color="warning" %}}
-Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization/#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization/#configmap-keys).
+Policy reports created from background scans are not subject to the configuration of a [Namespace selector](../installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](../installation/customization.md#configmap-keys).
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
