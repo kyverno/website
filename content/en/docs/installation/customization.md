@@ -302,6 +302,7 @@ The following flags can be used to control the advanced behavior of the various 
 |`backgroundScanInterval` (R) | 1h | Sets the time interval when periodic background scans for reporting take place. Supports minute durations as well (e.g., `10m`).|
 | `backgroundScanWorkers` (R) | 2 | Defines the number of internal worker threads to use when processing background scan reports. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time. |
 | `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
+| `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server. Usually changed in tandem with `webhookServerPort`.|
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
 | `eventsRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling for events. Uses the client default if zero. |
@@ -405,12 +406,12 @@ The failure policy of a webhook controls what happens when a request either take
 
 #### Namespace Selectors
 
-It is possible to instruct the API server to not send AdmissionReview requests at all for certain Namespaces based on labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object in the `webhooks` key of the ConfigMap. For example, in the below snippet, a new object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `kubernetes.io/metadata.name=kyverno`. The effect this will produce is the Kubernetes API server will only send AdmissionReview requests for resources in Namespaces _except_ those labeled with `kubernetes.io/metadata.name` equals `kyverno`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object. Note that when installing Kyverno via the Helm chart and setting Namespace exclusions, it will cause the `webhooks` object to be automatically created in the Kyverno ConfigMap. The Kyverno Namespace is excluded by default.
+It is possible to instruct the API server to not send AdmissionReview requests at all for certain Namespaces based on labels. Kyverno can filter on these Namespaces using a `namespaceSelector` object in the `webhooks` key of the ConfigMap. For example, in the below snippet, a new object has been added with a `namespaceSelector` object which will filter on Namespaces with the label `kubernetes.io/metadata.name=kyverno`. The effect this will produce is the Kubernetes API server will only send AdmissionReview requests for resources in Namespaces _except_ those labeled with `kubernetes.io/metadata.name` equals `kyverno`. The `webhooks` key only accepts as its value a JSON-formatted `namespaceSelector` object. Note that when installing Kyverno via the Helm chart and setting Namespace exclusions, it will cause the `webhooks` object to be automatically created in the Kyverno ConfigMap. The Kyverno and `kube-system` Namespaces are excluded by default.
 
 ```yaml
 apiVersion: v1
 data:
-  webhooks: '[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'
+  webhooks: '[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'
 kind: ConfigMap
 metadata:
   name: kyverno
