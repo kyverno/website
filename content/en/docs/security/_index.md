@@ -25,12 +25,12 @@ The Kyverno project participates in 3rd party security audits and reviews that h
 
 ## Kyverno Third-Party Security Audit 2023
 
-A Kyverno Third-Party Security Audit was conducted by [Ada Logics](https://adalogics.com/), in collaboration with the project maintainers and was funded by [the Cloud Native Computing Foundation](https://www.cncf.io/). The audit identified and addressed ten security issues, including six CVEs, with fixes in Kyverno v1.10.6 and v1.11.1. Notably, users of official releases were unaffected by CVEs in the Notary verifier. The audit did not reveal any policy by-pass situations, but did identify two security bugs with a third-party dependency. Kyverno was found to demonstrate strong compliance with [SLSA](https://slsa.dev/), earning the highest score, and ensuring tamper-proof build artifacts. More information is available in this [blog post](https://kyverno.io/blog/2023/11/28/kyverno-completes-third-party-security-audit/).  You can also review the complete Kyverno 2023 security audit report [here](https://github.com/kyverno/website/blob/main/content/en/blog/general/2023-security-audit/kyverno-2023-security-audit-report.pdf).
+A Kyverno Third-Party Security Audit was conducted by [Ada Logics](https://adalogics.com/), in collaboration with the project maintainers and was funded by [the Cloud Native Computing Foundation](https://www.cncf.io/). The audit identified and addressed ten security issues, including six CVEs, with fixes in Kyverno v1.10.6 and v1.11.1. Notably, users of official releases were unaffected by CVEs in the Notary verifier. The audit did not reveal any policy by-pass situations, but did identify two security bugs with a third-party dependency. Kyverno was found to demonstrate strong compliance with [SLSA](https://slsa.dev/), earning the highest score, and ensuring tamper-proof build artifacts. More information is available in this [blog post](../../blog/general/2023-security-audit/index.md) with the audit report link at the bottom.
 
 ## Kyverno Fuzzing Security Audit 2023
 
-The Kyverno Fuzzing Security Audit was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs.  Post-audit, Kyverno continues to test for bugs and vulnerabilities using  [OSS-Fuzz](https://github.com/google/oss-fuzz). 
-The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](https://kyverno.io/blog/2023/09/06/kyverno-completes-fuzzing-security-audit/).
+The Kyverno Fuzzing Security Audit was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs.  Post-audit, Kyverno continues to test for bugs and vulnerabilities using  [OSS-Fuzz](https://github.com/google/oss-fuzz).
+The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](../../blog/general/2023-security-audit/index.md).
 
 ## Contact Us
 
@@ -141,7 +141,7 @@ All Kyverno images can be verified.
 
 ## Verifying Provenance
 
-Kyverno creates and attests to the provenance of its builds using the [SLSA standard](https://slsa.dev/provenance/v0.2) and meets the SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) specification. The attested provenance may be verified using the `cosign` tool.
+Kyverno creates and attests to the provenance of its builds using the [SLSA standard](https://slsa.dev/provenance/v1.0) and meets the SLSA [Level 3](https://slsa.dev/spec/v1.0/levels) specification. The attested provenance may be verified using the `cosign` tool.
 
 For v1.x of Cosign, use the following command.
 
@@ -242,7 +242,7 @@ Kyverno Pods are configured to follow security best practices and conform to the
 
 ### RBAC
 
-The Kyverno RBAC configurations are described in the [installation](/docs/installation/customization/#roles-and-permissions) section.
+The Kyverno RBAC configurations are described in the [installation](../installation/customization.md#roles-and-permissions) section.
 
 Use the following command to view all Kyverno roles:
 
@@ -261,9 +261,9 @@ Kyverno requires the following network communications to be allowed:
 * ingress traffic to port 9443 from the API server
 * ingress traffic to port 9443 from the host for health checks
 * ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors
-* egress traffic to the API server if the [API Call](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) feature is used
-* egress (HTTPS) traffic to OCI registries if [image verification](/docs/writing-policies/verify-images/) policy rules are configured or if [image registry context variables](/docs/writing-policies/external-data-sources/#variables-from-image-registries) are used
-* egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/writing-policies/external-data-sources/#variables-from-service-calls) feature is used
+* egress traffic to the API server if the [API Call](../writing-policies/external-data-sources.md#variables-from-kubernetes-api-server-calls) feature is used
+* egress (HTTPS) traffic to OCI registries if [image verification](../writing-policies/verify-images/_index.md) policy rules are configured or if [image registry context variables](../writing-policies/external-data-sources.md#variables-from-image-registries) are used
+* egress (HTTP or HTTPS) traffic to external services if the [external service call](../writing-policies/external-data-sources.md#variables-from-service-calls) feature is used
 
 ### Webhooks
 
@@ -288,17 +288,17 @@ Kyverno creates the following validating webhook configurations:
 
 #### Webhook Failure Mode
 
-Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
+Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](../writing-policies/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 #### Webhook authentication and encryption
 
-By default, Kyverno automatically generates and manage TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](/docs/installation/customization/#certificate-management).
+By default, Kyverno automatically generates and manage TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](../installation/customization.md#certificate-management).
 
 ### Recommended policies
 
 The Kyverno community manages a set of [sample policies](/policies/).
 
-At a minimum, the [Pod Security Standards](/policies/pod-security/) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
+At a minimum, the [Pod Security Standards](../../pod-security.md) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
 
 ### Securing policies
 
@@ -318,7 +318,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](../writing-policies/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 2 - Attacker passes workloads which require complex processing causing timeouts
 
@@ -328,11 +328,11 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](../writing-policies/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 * [Mitigation ID 3 - Webhook authenticates callers](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-3---webhook-authenticates-callers)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](../installation/customization.md#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 3 - Attacker exploits misconfiguration of webhook to bypass
 
@@ -352,7 +352,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [installation section](/docs/installation/customization/#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
+  Kyverno RBAC configurations are described in the [installation section](../installation/customization.md#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
 
 ### Threat ID 5 - Attacker gets access to valid credentials for the webhook
 
@@ -362,7 +362,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/writing-policies/policy-settings/). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](../writing-policies/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 6 - Attacker gains access to a cluster admin credential
 
@@ -390,7 +390,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](../installation/customization.md#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 9 - Attacker steals traffic from the webhook via spoofing
 
@@ -400,7 +400,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 5 - Webhook mutual TLS authentication is used](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-5---webhook-mutual-tls-authentication-is-used)
 
-  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](/docs/installation/customization/#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
+  By default, Kyverno generates a CA and X.509 certificates for the webhook registration. A custom CA and certificates can be used as discussed in the [configuration guide](../installation/customization.md#custom-certificates). Currently, Kyverno does not authenticate the API server. A network policy can be used to restrict traffic to the Kyverno webhook port.
 
 ### Threat ID 10 - Abusing a mutation rule to create a privileged container
 
@@ -410,7 +410,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](../kyverno-cli/_index.md) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 11 - Attacker deploys workloads to namespaces that are exempt from admission control
 
@@ -420,9 +420,9 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [configuration section](/docs/installation/customization/#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
+  Kyverno RBAC configurations are described in the [configuration section](../installation/customization.md#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
 
-  Kyverno excludes certain critical system Namespaces by default including the Kyverno Namespace itself. These exclusions can be managed and configured via the [ConfigMap](/docs/installation/customization/#configmap-keys).
+  Kyverno excludes certain critical system Namespaces by default including the Kyverno Namespace itself. These exclusions can be managed and configured via the [ConfigMap](../installation/customization.md#configmap-keys).
 
 ### Threat ID 12 - Block rule can be bypassed due to missing match (e.g. missing initContainers)
 
@@ -432,7 +432,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](../kyverno-cli/_index.md) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 13 - Attacker exploits bad string matching on a blocklist to bypass rules
 
@@ -442,7 +442,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](../kyverno-cli/_index.md) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 14 - Attacker uses new/old features of the Kubernetes API which have no rules
 
@@ -452,7 +452,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](../kyverno-cli/_index.md) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 15 - Attacker deploys privileged container to node running Webhook controller
 
@@ -490,4 +490,4 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 9 - Strictly control external system access](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-9---strictly-control-external-system-access)
 
-  See [Networking](/docs/security/#networking) for details on securing networking communications for Kyverno.
+  See [Networking](../security/_index.md#networking) for details on securing networking communications for Kyverno.

@@ -7,14 +7,14 @@ linkTitle = "Kyverno"
 # Kubernetes Native Policy Management { class="text-center" }
 
 <div class="mt-5 mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#td-block-1">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#kyverno-is-a-policy-engine-designed-for-kubernetes">
 		Learn More <i class="fa fa-chalkboard-teacher ml-2"></i>
 	</a>
-	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="/docs/introduction/#quick-start">
+	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="docs/introduction/#quick-start-guides">
 		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
 	  </a>
 
-  <a class="btn btn-link text-info" href="#td-block-1" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
+  <a class="btn btn-link text-info" href="#kyverno-is-a-policy-engine-designed-for-kubernetes" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
 
 </div>
 {{< /blocks/cover >}}
@@ -37,7 +37,7 @@ Kyverno policies can **validate, mutate, generate, and cleanup** Kubernetes reso
 The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
 
 <div class="mt-5 mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="/docs/introduction/">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="docs/introduction/">
 		Documentation <i class="fa fa-book ml-2"></i>
 	</a>
 	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="/policies/">

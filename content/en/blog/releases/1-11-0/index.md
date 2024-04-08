@@ -14,7 +14,7 @@ The Kyverno team is delighted to share a new Kyverno release, v1.11! This releas
 
 ### ValidatingAdmissionPolicy Support
 
-In Kyverno 1.11, a new sub-rule `validate.cel` was introduced. This sub-rule type allows users to use [Common Expression Language](https://github.com/google/cel-spec) (CEL) expressions for resource validation. CEL was initially introduced in Kubernetes for the validation rules of CustomResourceDefinitions and is now also utilized by Kubernetes [ValidatingAdmissionPolicies](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/). 
+In Kyverno 1.11, a new sub-rule `validate.cel` was introduced. This sub-rule type allows users to use [Common Expression Language](https://github.com/google/cel-spec) (CEL) expressions for resource validation. CEL was initially introduced in Kubernetes for the validation rules of CustomResourceDefinitions and is now also utilized by Kubernetes [ValidatingAdmissionPolicies](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/).
 
 For example, this policy ensures that deployment replicas are less than 4.
 
@@ -198,7 +198,7 @@ The Kyverno CLI can now be installed via a [GitHub Action](https://github.com/ky
 
 Although not part of 1.11.0, the Kyverno team launched a new sub-project Kyverno JSON, which extends Kyverno beyond Kubernetes. Now, platform engineering teams can use Kyverno’s declarative policies to validate any JSON payload including Terraform files, Dockerfiles, Cloud configurations and service authorization requests. 
 
-Kyverno JSON can be consumed as a CLI, a Golang API, or a web service with a REST API. Read more at: https://www.cncf.io/blog/2023/11/06/kyverno-expands-beyond-kubernetes/. 
+Kyverno JSON can be consumed as a CLI, a Golang API, or a web service with a REST API. Read more at: https://www.cncf.io/blog/2023/11/06/kyverno-expands-beyond-kubernetes/.
 
 ## Kyverno Chainsaw
 
@@ -206,7 +206,7 @@ Another sub-project launched was Kyverno Chainsaw, an end-to-end declarative tes
 
 ## Security Hardening
 
-In addition to the mentioned features, enhancements, and fixes, the Kyverno project completed a [fuzzing security audit](https://kyverno.io/blog/2023/09/06/kyverno-completes-fuzzing-security-audit/) and is undergoing a thorough third-party security review. The security review is being conducted in collaboration with the [CNCF](https://www.cncf.io/), [Ada Logics](https://adalogics.com/) and [OSTIF](https://ostif.org/). 
+In addition to the mentioned features, enhancements, and fixes, the Kyverno project completed a [fuzzing security audit](../../general/2023-security-audit/index.md) and is undergoing a thorough third-party security review. The security review is being conducted in collaboration with the [CNCF](https://www.cncf.io/), [Ada Logics](https://adalogics.com/) and [OSTIF](https://ostif.org/).
 
 The review exposed a high severity vulnerability [CVE-2023-47630](https://nvd.nist.gov/vuln/detail/CVE-2023-47630) involving the possibility of users consuming insecure images pulled from a compromised registry. In addition four CVEs [CVE-2023-42813](https://nvd.nist.gov/vuln/detail/CVE-2023-42813), [CVE-2023-42814](https://nvd.nist.gov/vuln/detail/CVE-2023-42814), [CVE-2023-42815](https://nvd.nist.gov/vuln/detail/CVE-2023-42815), [CVE-2023-42816](https://nvd.nist.gov/vuln/detail/CVE-2023-42816) were identified in unreleased code (i.e. on the main branch), which could potentially allow an attacker to cause a denial of service of Kyverno by exploiting the Notary verifier.
 
