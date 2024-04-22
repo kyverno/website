@@ -34,14 +34,15 @@ Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502
 
 #### Admission Controller
 
-| replicas | # policies | Rule Type | Mode    | Subject | memory request / limit | cpu request | Virtual Users/Iterations | ARPS           | Latency (avg/p(90), unit: ms) | Memory (max) | CPU (max) | admission reports | bgscan reports | policy reports | reports controller memory (max) | reports controller CPU (max) | # nodes | # pods |
-|----------|------------|-----------|---------|---------|------------------------|-------------|-------------------------|----------------|------------------------------|--------------|-----------|------------------|---------------|----------------|--------------------------------|------------------------------|---------|--------|
-| 1        | 17         | Validate  | Enforce | Pods    | 128Mi/384Mi            | 100m        | 100/1,000              | 44.28 / 67.64 | 104Mi                        | 563m         |           |                  |               |                |                                |                              | 1k      |        |
-| 1        | 17         | Validate  | Enforce | Pods    |                        |             | 200/5,000              | 87.88 / 156.22 | 115Mi                        | 3878m        |           |                  |               |                |                                |                              | 5k      |        |
-| 1        | 17         | Validate  | Enforce | Pods    |                        |             | 500/10,000             | 200.45 / 506.65 | 116Mi                        | 4733m        |           |                  |               |                |                                |                              | 10k     |        |
-| 3        | 17         | Validate  | Enforce | Pods    |                        |             | 100/1,000              | 34.14 / 54.76  | 72Mi                         | 235m         |           |                  |               |                |                                |                              | 1k      |        |
-| 3        | 17         | Validate  | Enforce | Pods    |                        |             | 200/5,000              | 60 / 107.19    | 109Mi                        | 1398m        |           |                  |               |                |                                |                              | 5k      |        |
-| 3        | 17         | Validate  | Enforce | Pods    |                        |             | 500/10,000             | 142 / 285.18   | 186Mi                        |
+| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/p(90), unit: ms) | Memory (max) | CPU (max) |
+|----------|------------|-----------|---------|---------|--------------------------|------------------------------|--------------|-----------|
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 44.28 / 67.64               | 104Mi        | 563m      |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 87.88 / 156.22              | 115Mi        | 3878m     |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 200.45 / 506.65             | 116Mi        | 4733m     |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 34.14 / 54.76               | 72Mi         | 235m      |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 60 / 107.19                | 109Mi        | 1398m     |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 142 / 285.18               | 186Mi        | 2186m     |
+```                |
 
 #### AdmissionReview Reference
 
