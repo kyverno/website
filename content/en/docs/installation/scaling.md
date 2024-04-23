@@ -42,7 +42,6 @@ Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502
 | 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 34.14 / 54.76               | 72Mi         | 235m      |
 | 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 60 / 107.19                | 109Mi        | 1398m     |
 | 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 142 / 285.18               | 186Mi        | 2186m     |
-```                |
 
 #### AdmissionReview Reference
 
