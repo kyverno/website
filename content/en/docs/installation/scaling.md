@@ -26,7 +26,7 @@ Horizontal scaling refers to increasing the number of replicas of a given contro
 
 ### Scale Testing
 
-The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [K6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. K6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
+The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [k6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. k6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
 
 The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/tree/main/k6).
 
