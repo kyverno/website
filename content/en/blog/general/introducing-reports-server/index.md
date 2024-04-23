@@ -35,8 +35,12 @@ Here is a high level overview of the architecture:
 
 To start using the reports-server, you have to install it in your cluster, and after some moments, all the reports related requests will be redirected for etcd to the reports server database.. Reports-server has multiple methods for installation: YAML manifest and Helm Chart. Detailed instructions for all installation methods can be found in the [installation guide](https://github.com/kyverno/reports-server/blob/main/docs/INSTALL.md).
 
-To install reports server using YAML manifest, run the following command:
-
+To install reports server using YAML manifest, run the following commands:
+Create a namespace for reports-server:
+```bash
+kubectl create ns reports-server
+```
+Apply the reports-server manifest:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kyverno/reports-server/main/config/install.yaml
 ```
