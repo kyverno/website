@@ -53,7 +53,7 @@ The following table shows the resource consumption (memory and CPU) and objects 
 | 2174            | 247 MB                     | 2529m     | 124Mi        | 1936   | 1825                | 35.5 MB                        |
 | 3193            | 309 MB                     | 2480m     | 142Mi        | 2786   | 3126                | 66.8 MB                        |
 | 5212            | 383.2 MB                   | 2535m     | 185Mi        | 4486   | 4614                | 158.6 MB                       |
-| 7789            |                            | 10033m    | 384Mi        | 9336   | 13850               |                                |
+| 7789            | 486.5 MB                   | 10033m    | 384Mi        | 9336   | 13850              |   4.4 GB                        |
 
 #### AdmissionReview Reference
 
