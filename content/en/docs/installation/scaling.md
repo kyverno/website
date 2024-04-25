@@ -26,13 +26,14 @@ Horizontal scaling refers to increasing the number of replicas of a given contro
 
 ### Scale Testing
 
+Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
+
+#### Admission Controller
+
 The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [k6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. k6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
 
 The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/tree/main/k6).
 
-Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
-
-#### Admission Controller
 
 | replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/p(90), unit: ms) | Memory (max) | CPU (max) |
 |----------|------------|-----------|---------|---------|--------------------------|------------------------------|--------------|-----------|
@@ -42,6 +43,17 @@ Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502
 | 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 34.14 / 54.76               | 72Mi         | 235m      |
 | 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 60 / 107.19                | 109Mi        | 1398m     |
 | 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 142 / 285.18               | 186Mi        | 2186m     |
+
+#### Reports Controller
+
+The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
+
+| # policyreports | policyreports size in etcd | CPU (max) | memory (max) | # pods | # ephemeralreports | ephemeralreports size in etcd |
+|-----------------|----------------------------|-----------|--------------|--------|---------------------|--------------------------------|
+| 2174            | 247 MB                     | 2529m     | 124Mi        | 1936   | 1825                | 35.5 MB                        |
+| 3193            | 309 MB                     | 2480m     | 142Mi        | 2786   | 3126                | 66.8 MB                        |
+| 5212            | 383.2 MB                   | 2535m     | 185Mi        | 4486   | 4614                | 158.6 MB                       |
+| 7789            |                            | 10033m    | 384Mi        | 9336   | 13850               |                                |
 
 #### AdmissionReview Reference
 
