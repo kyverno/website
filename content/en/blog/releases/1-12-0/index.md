@@ -307,7 +307,7 @@ Custom Boards are a way of extending the UI with customized, application-specifi
 The Kyverno playground with the support of ValidatingAdmissionPolicyBinding is now available for the new 1.12 release. You can check it out today via https://playground.kyverno.io/next/#/.
 
 ## Closing
-We have achieved another significant milestone, thanks to the support and contributions from our incredible community. Alongside the highlighted new features, this release includes critical fixes and other important changes. For a comprehensive overview, please refer to the full release notes on GitHub.
+We have achieved another significant milestone, thanks to the support and contributions from our incredible community. Alongside the highlighted new features, this release includes critical fixes and other important changes. For a comprehensive overview, please refer to the full [release notes](https://github.com/kyverno/kyverno/releases/tag/v1.12.0) on GitHub.
 
 You can find us in the Kyverno channel on [Kubernetes Slack](https://kyverno.io/community/#slack-channel), come and join one of our [community meetings](https://kyverno.io/community/#community-meetings) to discuss your contribution issues, or just catch us on [Twitter](https://twitter.com/kyverno). And if you’re already a Kyverno adopter, sign up to be an official adopter by updating the Adopters form [here](https://github.com/kyverno/kyverno/blob/main/ADOPTERS.md).
 
