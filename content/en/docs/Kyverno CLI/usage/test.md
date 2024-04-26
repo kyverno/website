@@ -54,7 +54,13 @@ results:
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
   kind: <kind>
   result: pass
-```
+checks:
+- match:
+    resource: {} # match results associated with a resource
+    policy: {} # match results associated with a policy
+    rule: {} # match results associated with a rule
+  assert: {} # assertion to validate the content of matched elements
+  error: {} # negative assertion to validate the content of matched elements
 
 The test declaration consists of the following parts:
 
@@ -64,6 +70,7 @@ The test declaration consists of the following parts:
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
+7. The `checks` element which declares the assertions to be evaluted against the results (see [Working with Assertion Trees](../assertion-trees.md)).
 
 If needing to pass variables, such as those from [external data sources](/docs/writing-policies/external-data-sources/) like context variables built from [API calls](/docs/writing-policies/external-data-sources/#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
