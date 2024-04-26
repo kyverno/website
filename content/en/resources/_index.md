@@ -126,7 +126,7 @@ type: docs
 - <a href="https://blog.mimacom.com/kyverno/" target="_blank">Kyverno - A Kubernetes native policy manager (Policy as Code)</a>, September 2021
 - <a href="https://movi.hashnode.dev/simplify-kubernetes-cluster-management-with-kyverno-ckt6yxjqy0duy95s14groe7h4" target="_blank">Simplify Kubernetes Cluster Management with Kyverno</a>, September 2021
 - <a href="https://medium.com/@shubhampalriwala/understanding-kyverno-policies-7e2d8651d7b1" target="_blank">Understanding Kyverno Policies</a>, August 2021
-- <a href="https://lambda.grofers.com/secure-provisioning-of-loadbalancer-services-on-kubernetes-using-kyverno-2cdf5e30d296" target="_blank">Secure provisioning of LoadBalancer Services on Kubernetes using Kyverno</a>, July 2021
+- <a href="https://lambda.blinkit.com/secure-provisioning-of-loadbalancer-services-on-kubernetes-using-kyverno-2cdf5e30d296" target="_blank">Secure provisioning of LoadBalancer Services on Kubernetes using Kyverno</a>, July 2021
 - <a href="https://neonmirrors.net/post/2021-06/policy-k8s-customresources/" target="_blank">Policy for Kubernetes Custom Resources</a>, June 2021
 - <a href="https://gimlet.io/blog/mirroring-environments-with-gitops-and-kyverno/" target="_blank">Mirroring environments with gitops and Kyverno</a>, April 2021
 - <a href="https://neonmirrors.net/post/2021-02/kubernetes-policy-comparison-opa-gatekeeper-vs-kyverno/" target="_blank">Kubernetes Policy Comparison: OPA/Gatekeeper vs Kyverno</a>, February 2021
