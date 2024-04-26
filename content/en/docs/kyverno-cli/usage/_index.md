@@ -1,7 +1,7 @@
 ---
 title: CLI Commands
 description: Using the Kyverno CLI
-weight: 20
+weight: 30
 ---
 
 This section covers the main Kyverno CLI commands, for other commands please refer to the [Reference documentation](../reference/_index.md)
