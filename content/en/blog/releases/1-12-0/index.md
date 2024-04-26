@@ -99,6 +99,25 @@ In conclusion, Global Context in Kyverno empowers users to streamline policy man
 
 Kyverno JSON was introduced around the same time as Kyverno 1.11.0, expanding Kyverno's capabilities beyond Kubernetes. With the latest 1.12 release, Kyverno JSON is now supported by the Kyverno CLI for validating any JSON payload.
 
+The following illustrates how to use the new `checks` stanza in a Kyverno CLI test:
+
+```yaml
+# ...
+checks:
+- match:
+    resource:
+      kind: Namespace
+      metadata:
+        name: hello-world-namespace
+    policy:
+      kind: ClusterPolicy
+      metadata:
+        name: sync-secret
+    rule:
+      name: sync-my-secret
+  assert:
+    status: pass
+```
 
 ### Policy Exception Enhancements
 
