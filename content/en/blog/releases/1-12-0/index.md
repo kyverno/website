@@ -1,5 +1,5 @@
 ---
-date: 2023-04-26
+date: 2024-04-26
 title: "Kyverno 1.12 Released"
 linkTitle: "Kyverno 1.12"
 description: "Kyverno 1.12 released with new alternative report server, Global Context Entry, Kyverno JSON in CLI, performance optimizations, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!"
