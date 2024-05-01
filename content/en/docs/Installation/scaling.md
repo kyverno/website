@@ -48,12 +48,15 @@ The test was conducted where we installed Kyverno policies to enforce the Kubern
 
 The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
 
-| # policyreports | policyreports size in etcd | CPU (max) | memory (max) | # pods | # ephemeralreports | ephemeralreports size in etcd |
-|-----------------|----------------------------|-----------|--------------|--------|---------------------|--------------------------------|
-| 2174            | 247 MB                     | 2529m     | 124Mi        | 1936   | 1825                | 35.5 MB                        |
-| 3193            | 309 MB                     | 2480m     | 142Mi        | 2786   | 3126                | 66.8 MB                        |
-| 5212            | 383.2 MB                   | 2535m     | 185Mi        | 4486   | 4614                | 158.6 MB                       |
-| 7789            | 486.5 MB                   | 10033m    | 384Mi        | 9336   | 13850              |   4.4 GB                        |
+| # policyreports | total etcd size | CPU (max) | memory (max) |
+|-----------------|-----------------|-----------|--------------|
+| 1270            | 134 MB          | 575m      | 91Mi         |
+| 2470            | 223 MB          | 1389m     | 101Mi        |
+| 3770            | 280 MB          | 1238m     | 107Mi        |
+| 4970            | 334 MB          | 1174m     | 114Mi        |
+| 7370            | 467 MB          | 1749m     | 144Mi        |
+| 9770            | 552 MB          | 1859m     | 160Mi        |
+| 10010           | 552 MB          | 1859m     | 138Mi        |
 
 #### AdmissionReview Reference
 
