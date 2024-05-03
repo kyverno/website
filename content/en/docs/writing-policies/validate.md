@@ -1693,7 +1693,7 @@ spec:
 
 However, setting the deployment image as `staging.example.com/nginx` will allow it to be created.
 
-## Validating Admission Policies
+## ValidatingAdmissionPolicies
 
 A ValidatingAdmissionPolicy provides a declarative, in-process option for validating admission webhooks using the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server.
 
@@ -1887,6 +1887,10 @@ The deployments "nginx" is invalid:  ValidatingAdmissionPolicy 'disallow-host-pa
 
 {{% alert title="Warning" color="warning" %}}
 Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, ClusterPolicies can only be used to generate them.
+{{% /alert %}}
+
+{{% alert title="Warning" color="warning" %}}
+When Kyverno policies match 'pods', the generated ValidatingAdmissionPolicy will match both 'pods' and 'pods/ephemeralcontainers'. This occurs because Kyverno inherently includes 'pods/ephemeralcontainers' by default in the corresponding validatingwebhookconfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
 {{% /alert %}}
 
 The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
