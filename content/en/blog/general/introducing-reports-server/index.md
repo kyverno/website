@@ -31,6 +31,36 @@ The reports-server achieves this by using [Kubernetes API aggregation layer](htt
 Here is a high level overview of the architecture:
 ![Architecture](./architecture.svg)
 
+## Performance
+
+The reports-server stores policy reports and ephemeral reports outside etcd this reducing the database size of etcd. In the following tables we shows the database size of etcd of increased workloads with and without reports server. In this test, we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads (pods, deployments, replicasets) that match the installed Kyverno policies and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing). Kyverno version used for this testing was `v1.12.1`. 
+
+### Without reports-server
+
+| # policyreports | total etcd size |
+| --------------- | --------------- |
+| 1270            | 134 MB          |
+| 2470            | 223 MB          |
+| 3770            | 280 MB          |
+| 4970            | 334 MB          |
+| 7370            | 467 MB          |
+| 9770            | 552 MB          |
+| 10010           | 552 MB          |
+
+### With reports-server
+
+| # policyreports | total etcd size |
+| --------------- | --------------- |
+| 1204            | 71 MB           |
+| 2404            | 115 MB          |
+| 3604            | 152 MB          |
+| 4804            | 191 MB          |
+| 7204            | 276 MB          |
+| 9604            | 343 MB          |
+| 10250           | 370 MB          |
+
+As shown in the benchmark, the size of etcd grows with increase in the number of resources in the cluster but the growth is slower when reports-server is installed. As reports-server stores policy reports in a seperate database, they don't take up any space in etcd. At 10k reports, database size of etcd is 33% smaller when reports-server is installed.
+
 ## Getting Started
 
 To start using the reports-server, you have to install it in your cluster, and after some moments, all the reports related requests will be redirected for etcd to the reports server database.. Reports-server has multiple methods for installation: YAML manifest and Helm Chart. Detailed instructions for all installation methods can be found in the [installation guide](https://github.com/kyverno/reports-server/blob/main/docs/INSTALL.md).
