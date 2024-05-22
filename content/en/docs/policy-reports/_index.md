@@ -98,6 +98,66 @@ Entries in a policy report contain a `result` field which can be either `pass`, 
 | warn   | The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`. |
 | error  | Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).                             |
 
+### Scenarios for skipped evaluations
+
+A `skip` result signifies that Kyverno decided not to fully evaluate the resource against a specific rule. This is different from a pass where the resource was evaluated and deemed compliant. A `skip` means the rule was essentially bypassed.
+
+Here's a breakdown of common scenarios resulting in a `skip`:
+
+1. **Preconditions Not Met:**
+
+This is the most frequent reason for a skip. If a rule has preconditions defined and any of the conditions within the any or all blocks evaluate to FALSE, the entire rule is skipped. Kyverno won't even attempt to apply the pattern, effectively bypassing the rule.
+
+2. **Policy Exceptions:**
+
+Kyverno allows you to define exceptions to policies using PolicyException resources. If an exception exists that matches a specific resource and rule, Kyverno will skip the rule for that resource.
+
+3. **Conditional Anchors `()` with Unmet Conditions:**
+
+When using a conditional anchor, if the condition within the anchor evaluates to FALSE, the entire rule is skipped.
+
+4. **Global Anchors `<()` with Unmet Conditions:**
+
+Similar to conditional anchors, if the condition inside a global anchor is FALSE, the entire rule is skipped. The difference is that global anchors apply to the whole rule, not just a specific section.
+
+5. **Anchor Logic Resulting in Skip:**
+
+As explained in the original documentation, a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
+
+*Example:* If we have the following policy:
+
+```yaml
+spec:
+  =(initContainers):
+    - (name): "!istio-init"
+      =(securityContext):
+        =(runAsUser): ">0"
+  =(containers):
+    - =(securityContext):
+        =(runAsUser): ">0"
+```
+
+The following resource would result in pass:
+
+```yaml
+spec:
+  initContainers:
+  - name: istio-init
+    securityContext:
+      runAsUser: 0
+  containers:
+  - name: nginx
+    image: nginx
+```
+
+That's because for the `initContainers` block the the condition isn't met so it's a skip. But the `containers` block is a pass. So the overall result is a pass.
+
+**Key Points to Remember:**
+
+* A skip result is not a failure; it's a deliberate bypass based on predefined conditions or exceptions.
+* Understanding the distinction between pass and skip is crucial for accurately interpreting policy report data.
+* When troubleshooting a skip, carefully examine preconditions, exceptions, and the logic within your anchors to pinpoint the reason for the bypass.
+
 ## Viewing policy report summaries
 
 You can view a summary of the Namespaced policy reports using the following command:
