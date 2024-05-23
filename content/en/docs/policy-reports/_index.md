@@ -114,7 +114,7 @@ Kyverno allows you to define exceptions to policies using PolicyException resour
 
 3. **Conditional Anchors `()` with Unmet Conditions:**
 
-When using a conditional anchor, if the condition within the anchor evaluates to FALSE, the entire rule is skipped.
+When using a conditional anchor, the corresponding section is skipped if the condition within the anchor evaluates to FALSE.
 
 4. **Global Anchors `<()` with Unmet Conditions:**
 
