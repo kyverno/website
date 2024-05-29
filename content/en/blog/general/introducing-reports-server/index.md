@@ -47,7 +47,7 @@ The reports-server stores policy reports and ephemeral reports outside etcd this
 | 9770            | 552 MB          |
 | 10010           | 552 MB          |
 
-### With reports-server
+### With Reports Server
 
 | # policyreports | total etcd size |
 | --------------- | --------------- |
