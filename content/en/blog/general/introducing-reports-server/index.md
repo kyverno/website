@@ -16,7 +16,7 @@ This setup works fine in most cases, but in larger-scale environments the limits
 
 Today, we are excited to announce [reports-server](https://github.com/kyverno/reports-server), a new Kyverno project which aims to improve scalability of reporting in large clusters giving you all the benefits of visibility without compromising on performance.
 
-In this blog post we will introduce reports-server, discuss its architecture and how to get started.
+In this blog post we will introduce reports server, discuss its architecture, and provide steps on how to get started.
 
 ## Architecture
 
