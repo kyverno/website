@@ -1,44 +1,44 @@
 ---
-title: "Generate Backup Policy by Preset"
-category: Kasten K10 by Veeam
-version: 1.9.0
+title: "Generate Kasten Policy from Preset"
+category: Veeam Kasten
+version: 1.12.0
 subject: Policy
 policyType: "generate"
 description: >
-    Generate a K10 backup policy for a namespace that includes a valid "dataprotection" label, if the policy does not already exist.
+    Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
+    Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//kasten/k10-generate-policy-by-preset-label/k10-generate-policy-by-preset-label.yaml" target="-blank">/kasten/k10-generate-policy-by-preset-label/k10-generate-policy-by-preset-label.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//kasten/kasten-generate-policy-by-preset-label/kasten-generate-policy-by-preset-label.yaml" target="-blank">/kasten/kasten-generate-policy-by-preset-label/kasten-generate-policy-by-preset-label.yaml</a>
 
 ```yaml
-# NOTE: This example assumes that K10 policy presets named "gold", "silver", and "bronze" have been pre-created and K10 was deployed into the `kasten-io` namespace. And the kyverno:generate ClusterRole has been updated with the following additional permissions:
-# - apiGroups:
-#   - config.kio.kasten.io
-#   resources:
-#   - policies
-#   verbs:
-#   - create
-#   - update
-#   - list
-#   - get
+# This example assumes that Kasten policy presets named
+# "gold", "silver", and "bronze" have been pre-created
+# and Kasten was deployed into the `kasten-io` namespace.
+#
+# Additionally, the Kyverno background controller requires
+# additional permissions to create Kasten Policy resources.
+# Apply the create-kasten-policies-clusterrole.yaml manifest
+# first to grant the required permissions.
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: k10-generate-policy-by-preset-label
+  name: kasten-generate-policy-by-preset-label
   annotations:
-    policies.kyverno.io/title: Generate Backup Policy by Preset
-    policies.kyverno.io/category: Kasten K10 by Veeam
+    policies.kyverno.io/title: Generate Kasten Policy from Preset
+    policies.kyverno.io/category: Veeam Kasten
     policies.kyverno.io/subject: Policy
-    kyverno.io/kyverno-version: 1.9.0
-    policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.12.1
+    policies.kyverno.io/minversion: 1.12.0
+    kyverno.io/kubernetes-version: "1.24-1.30"
     policies.kyverno.io/description: >-
-      Generate a K10 backup policy for a namespace that includes a valid "dataprotection" label, if the policy does not already exist.
+      Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
+
+      Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 spec:
-  background: false
   rules:
-  - name: k10-generate-policy-by-preset-label
+  - name: kasten-generate-policy-by-preset-label
     match:
       any:
       - resources:
@@ -55,7 +55,7 @@ spec:
     context:
     - name: existingPolicy
       apiCall:
-        urlPath: "/apis/config.kio.kasten.io/v1alpha1/namespaces/kasten-io/policies/" # returns list of K10 policies from kasten-io namespace
+        urlPath: "/apis/config.kio.kasten.io/v1alpha1/namespaces/kasten-io/policies" # returns list of Kasten policies from kasten-io namespace
         jmesPath: "items[][[@.spec.presetRef][?name=='{{ request.object.metadata.labels.dataprotection }}'] && [@.spec.selector.matchExpressions[].values[?@=='{{ request.namespace }}']]][][][][] | length(@)" # queries if a policy based on the dataprotection label value, covering that app namespace already exists 
     preconditions:
       any:

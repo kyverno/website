@@ -1,6 +1,6 @@
 ---
-title: "Deny Secret Service Account Token Type"
-category: Security
+title: "Deny Secret Service Account Token Type in CEL expressions"
+category: Security in CEL
 version: 
 subject: Secret, ServiceAccount
 policyType: "validate"
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml" target="-blank">/other/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other-cel/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml" target="-blank">/other-cel/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -17,10 +17,10 @@ kind: ClusterPolicy
 metadata:
   name: deny-secret-service-account-token-type
   annotations:
-    policies.kyverno.io/title: Deny Secret Service Account Token Type
-    policies.kyverno.io/category: Security
-    kyverno.io/kubernetes-version: "1.27"
-    kyverno.io/kyverno-version: 1.11.1
+    policies.kyverno.io/title: Deny Secret Service Account Token Type in CEL expressions
+    policies.kyverno.io/category: Security in CEL 
+    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret, ServiceAccount
     policies.kyverno.io/description: >-
@@ -40,7 +40,10 @@ spec:
           kinds:
           - Secret
     validate:
-      message: "Secret ServiceAccount token type is not allowed."
-      pattern:
-        type: "!kubernetes.io/service-account-token"
+      cel:
+        expressions:
+          - expression: "object.type != 'kubernetes.io/service-account-token'"
+            message: "Secret ServiceAccount token type is not allowed."
+            
+
 ```
