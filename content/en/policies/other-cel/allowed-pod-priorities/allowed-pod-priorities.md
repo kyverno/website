@@ -1,7 +1,7 @@
 ---
-title: "Allowed Pod Priorities"
-category: Sample
-version: 1.6.0
+title: "Allowed Pod Priorities in CEL expressions"
+category: Sample in CEL
+version: 1.11.0
 subject: Pod
 policyType: "validate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/allowed-pod-priorities/allowed-pod-priorities.yaml" target="-blank">/other/allowed-pod-priorities/allowed-pod-priorities.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other-cel/allowed-pod-priorities/allowed-pod-priorities.yaml" target="-blank">/other-cel/allowed-pod-priorities/allowed-pod-priorities.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -17,9 +17,10 @@ kind: ClusterPolicy
 metadata:
   name: allowed-podpriorities
   annotations:
-    policies.kyverno.io/title: Allowed Pod Priorities
-    policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/title: Allowed Pod Priorities in CEL expressions
+    policies.kyverno.io/category: Sample in CEL 
+    policies.kyverno.io/minversion: 1.11.0
+    kyverno.io/kubernetes-version: "1.26-1.27"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others.
@@ -29,29 +30,35 @@ metadata:
       PriorityClasses for the given Namespace stored in a ConfigMap. If the `priorityClassName` is not
       among them, the Pod is blocked.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: validate-pod-priority
-    context:
-      - name: podprioritydict
-        configMap:
-          name: allowed-pod-priorities
-          namespace: default
     match:
       any:
       - resources:
           kinds:
           - Pod
     validate:
-      message: >-
-        The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list
-        of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data."{{request.namespace}}" }}.
-      deny:
-        conditions:
-          any:
-          - key: "{{ request.object.spec.priorityClassName || '' }}"
-            operator: AnyNotIn
-            value:  '{{ podprioritydict.data."{{request.namespace}}" || "" }}'
+      cel:
+        paramKind:
+          apiVersion: v1
+          kind: ConfigMap
+        paramRef:
+          name: allowed-pod-priorities
+          namespace: default
+          parameterNotFoundAction: Deny
+        variables:
+          - name: namespaceName
+            expression: "namespaceObject.metadata.name"
+          - name: priorities
+            expression: "variables.namespaceName in params.data ? params.data[variables.namespaceName].split(', ') : []"
+        expressions:
+          - expression: "variables.priorities == [] || object.spec.priorityClassName in variables.priorities"
+            messageExpression: >-
+              'The Pod PriorityClass ' + object.spec.priorityClassName +
+              ' is not in the list of the following PriorityClasses allowed in this Namespace: ' +
+              params.data[variables.namespaceName]
+
 
 ```
