@@ -63,7 +63,7 @@ As shown in the benchmark, the size of etcd grows as the number of resources in 
 
 ## Getting Started
 
-To start using the reports-server, you have to install it in your cluster, and after some moments, all the reports related requests will be redirected for etcd to the reports server database.. Reports-server has multiple methods for installation: YAML manifest and Helm Chart. Detailed instructions for all installation methods can be found in the [installation guide](https://github.com/kyverno/reports-server/blob/main/docs/INSTALL.md).
+To get started using reports server, install the service in your cluster. After a period of time, all the reports-related requests will be redirected from etcd to the reports server database. Reports server has multiple methods for installation including a basic YAML manifest and Helm chart. Detailed instructions for all installation methods can be found in the [installation guide](https://github.com/kyverno/reports-server/blob/main/docs/INSTALL.md).
 
 To install reports server using YAML manifest, run the following commands:
 Create a namespace for reports-server:
