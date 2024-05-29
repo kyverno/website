@@ -84,7 +84,7 @@ Reports server comes with a PostgreSQL database, but you may opt for finer contr
 
 ### Migration
 
-If you already have policy reports CRD installed in your cluster, you will have an existing API service managed by kube-aggregator that sends requests to the kubernetes API server. You will have to update the existing API service to send request to reports-server. See the [migration guide](https://github.com/kyverno/reports-server/blob/main/docs/MIGRATION.md).
+If you already have the PolicyReport CRD installed in your cluster, you will have an existing API service managed by kube-aggregator that sends requests to the Kubernetes API server. You will have to update the existing API service to send request to reports server. See the [migration guide](https://github.com/kyverno/reports-server/blob/main/docs/MIGRATION.md) for more details.
 
 ## Conclusion
 
