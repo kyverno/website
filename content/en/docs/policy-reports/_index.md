@@ -122,7 +122,7 @@ Similar to conditional anchors, if the condition inside a global anchor is FALSE
 
 5. **Anchor Logic Resulting in Skip:**
 
-As explained in the original documentation, a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
+As explained in the [validate documentation](../writing-policies/validate.md), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
 
 *Example:* If we have the following policy:
 
