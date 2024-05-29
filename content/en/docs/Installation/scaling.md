@@ -26,42 +26,37 @@ Horizontal scaling refers to increasing the number of replicas of a given contro
 
 ### Scale Testing
 
-The following tables show Kyverno performance test results for the admission and reports controllers. The admission controller table shows the resource consumption (memory and CPU) and latency as a result of increased AdmissionReviews per Second (ARPS) and how this is influenced by the queries per second (QPS) and burst settings.
-
-The reports controller table shows the policy report count and size impacts including the various intermediary resources. Also shown are the resource consumption figures at a scale of up to 100,000 Pods.
-
-In both tables, the testing was performed using K3d on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
-
-For additional specifics on these tests along with a set of instructions which can be used to reproduce the environment, see the developer documentation [here](https://github.com/kyverno/kyverno/blob/main/docs/perf-testing/README.md).
+Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
 
 #### Admission Controller
 
-| replicas | # policies | Rule Type |   Mode  | Subject | memory request / limit | cpu request |  ARPS | Latency (avg, unit: ms) | Memory (max) | CPU (max) | admission reports | bgscan reports | policy reports | reports controller memory (max) | reports controller CPU (max) | # nodes |   # pods  | QPS/Bust |
-|:--------:|:----------:|:---------:|:-------:|:-------:|:----------------------:|:-----------:|:-----:|:-----------------------:|:------------:|:---------:|:-----------------:|:--------------:|:--------------:|:-------------------------------:|:----------------------------:|:-------:|:---------:|:--------:|
-|     3    |     17     |  Validate | Enforce |   Pods  |     128 Mi / 384Mi     |     100m    | 14.92 |            44           |   150.60Mi   |    2.16   |        1000       |      1368      |       88       |             604.49Mi            |             8.51             |   300   |     1k    |   15/15  |
-|     3    |     17     |  Validate | Enforce |   Pods  |     128 Mi / 384Mi     |     100m    | 43.47 |            32           |     169Mi    |    5.55   |        5000       |      5369      |       164      |             781.25Mi            |             8.22             |   300   |     5k    |   50/50  |
-|     3    |     17     |  Validate | Enforce |   Pods  |     128 Mi / 384Mi     |     100m    | 81.97 |            78           |   215.64Mi   |   10.37   |        5000       |      5369      |       164      |             702.15Mi            |               4              |   300   |     5k    |  100/100 |
-|     3    |     17     |  Validate | Enforce |   Pods  |     128 Mi / 512Mi     |     100m    | 83.88 |           129           |   267.29Mi   |    8.75   |        4552       |      4907      |       146      |             598.70Mi            |             7.88             |   300   | 4552/5000 |  150/150 |
-|     3    |     17     |  Validate | Enforce |   Pods  |     128 Mi / 512Mi     |     100m    | 108.7 |           151           |   243.10Mi   |   15.34   |        2139       |      2630      |       124      |             375.98Mi            |             7.51             |   300   | 2262/5000 |  200/200 |
+The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [k6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. k6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
+
+The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/tree/main/k6).
+
+
+| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max) | Memory (max) | CPU (max) |
+|----------|------------|-----------|---------|---------|--------------------------|-------------------|--------------|-----------|
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 42.89ms / 155.77ms         | 115Mi        | 211m      |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 73.37ms / 432.37ms         | 136Mi        | 1148m     |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 210.56ms / 1.54s           | 315Mi        | 1470m     |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 31.06ms / 111.42ms         | 110Mi         | 96m      |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 56.56ms / 248.38ms         | 116Mi        | 315m      |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 136.77ms / 666.04ms        | 167Mi        | 524m      |
 
 #### Reports Controller
 
-| # validate policies |     # pods    | memory request / limit |    memory (max)    | cpu request | CPU (max) | periodic scan interval / workers | total etcd size | policyreports count  | admission reports count | background reports count | QPS/burst | # nodes | admission controller (memory request/limit) |
-|:-------------------:|:-------------:|:----------------------:|:------------------:|:-----------:|:---------:|:--------------------------------:|:---------------:|:--------------------:|:-----------------------:|:------------------------:|:---------:|:-------:|:-------------------------------------------:|
-|   17 PSS policies   |      1000     |       64Mi / 4Gi       | 240504832=229.36Mi |     100m    |    6.28   |            30 mins / 2           |     43.54Mi     |          88          |           1000          |           1369           |    5/10   |   300   |                 128Mi/384Mi                 |
-|   17 PSS policies   |      5000     |       64Mi / 4Gi       | 823582720=785.43Mi |     100m    |     8     |            30 mins / 2           |     145.33Mi    |          164         |           5000          |           5369           |   50/50   |   300   |                 128Mi/384Mi                 |
-|   17 PSS policies   |     10000     |       64Mi / 4Gi       |  1381728256=1.32Gi |     100m    |    8.51   |            30 mins / 2           |     251.48Mi    |          258         |          10000          |           10369          |   50/50   |   300   |                 128Mi/384Mi                 |
-|   17 PSS policies   |     10000     |       64Mi / 4Gi       |  1700921344=1.62Gi |     100m    |    8.44   |              1h / 2              |     251.48Mi    |          258         |          10000          |           10369          |   50/50   |   300   |                 128Mi/384Mi                 |
-|   17 PSS policies   | 19924 / 20000 |       64Mi / 4Gi       |  2693844992=2.51Gi |     100m    |    9.62   |              1h / 2              |     470.42Mi    |          448         |          19885          |           20289          |   50/50   |   300   |                 128Mi/384Mi                 |
-|   17 PSS policies   |     100940    |       64Mi / 20Gi      |  6866862080=6.40Gi |     100m    |    5.55   |              1h / 2              |                 |         1356         |          100587         |           11441          |   50/50   |   1000  |              128Mi/384Mi (OOM)              |
-|                     |               |                        |                    |             |           |                                  |                 |                      |                         |                          |           |         |                                             |
-|   17 PSS policies   |     53456     |       64Mi / 10Gi      |       1.89Gi       |     100m    |    8.12   |              1h / 2              |                 |         1077         |          52893          |           22742          |   50/50   |   500   |                  128Mi/1Gi                  |
-|   17 PSS policies   |     53457     |       64Mi / 10Gi      |       2.84Gi       |     100m    |    7.39   |              2h / 2              |                 |         1077         |          52893          |           33303          |   50/50   |   500   |                  128Mi/1Gi                  |
-|   17 PSS policies   |     53457     |       64Mi / 10Gi      |       2.55Gi       |     100m    |    7.66   |              3h / 2              |      1.10Gi     |         1077         |          52893          |           35520          |   50/50   |   500   |                  128Mi/1Gi                  |
-|                     |               |                        |                    |             |           |                                  |                 |                      |                         |                          |           |         |                                             |
-|   17 PSS policies   |     83716     |       64Mi / 10Gi      |                    |     100m    |           |              3h / 2              |                 |       1510/1305      |          82868          |           33768          |   50/50   |   800   |                  128Mi/1Gi                  |
-|   17 PSS policies   |     80856     |       64Mi / 10Gi      |       2.20Gi       |     100m    |   19.13   |              2h / 10             |      2.24Gi     |         1573         |           n/a           |           80891          |   50/50   |   818   |                 128Mi/384Mi                 |
-|   17 PSS policies   |     100392    |       64Mi / 10Gi      |       4.83Gi       |     100m    |   23.14   |              2h / 10             |      2.38Gi     |         1873         |          100033         |           73728          |   50/50   |   960   |                 128Mi/512Mi                 |
+The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
+
+| # policyreports | total etcd size | CPU (max) | memory (max) |
+|-----------------|-----------------|-----------|--------------|
+| 1270            | 134 MB          | 575m      | 91Mi         |
+| 2470            | 223 MB          | 1389m     | 101Mi        |
+| 3770            | 280 MB          | 1238m     | 107Mi        |
+| 4970            | 334 MB          | 1174m     | 114Mi        |
+| 7370            | 467 MB          | 1749m     | 144Mi        |
+| 9770            | 552 MB          | 1859m     | 160Mi        |
+| 10010           | 552 MB          | 1859m     | 138Mi        |
 
 #### AdmissionReview Reference
 
