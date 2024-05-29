@@ -154,7 +154,7 @@ Maintainers are individuals who go beyond the status of code owner who have show
 - Has knowledge and interest that aligns with the overall project goals, specifications, and design principles of the Kyverno project
 - Makes contributions that are considered notable
 - Demonstrates ability to help troubleshoot and resolve user issues
-- Has achieved the [Kyverno Certification](https://learn.nirmata.com/explore), or demonstrated an equivalent mastery of Kyverno
+- Has achieved the Kyverno Certification or demonstrated an equivalent mastery of Kyverno
 - Meets or exceeds all the requirements of a Code Owner
 - Maintains an active status as a Code Owner for a period of six (6) months
 
