@@ -80,7 +80,7 @@ The manifest will install the following components:
 2. A postgres instance
 3. An API service to redirect requests to the reports-server
 
-Reports-server comes with a postgreSQL database but you can have finer control of the database configation by bringing your own database. See the [database configuration guide](https://github.com/kyverno/reports-server/blob/main/docs/DBCONFIG.md).
+Reports server comes with a PostgreSQL database, but you may opt for finer control of the database configuration by bringing your own database. See the [database configuration guide](https://github.com/kyverno/reports-server/blob/main/docs/DBCONFIG.md) for more details.
 
 ### Migration
 
