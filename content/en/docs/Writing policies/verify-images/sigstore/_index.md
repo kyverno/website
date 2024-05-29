@@ -642,8 +642,6 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
-Currently, only a single value for the `--imagePullSecrets` container flag is supported due to an upstream bug.
-
 ### Trust
 
 Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
