@@ -37,7 +37,8 @@ Reports server stores policy reports and ephemeral reports outside etcd thus red
 
 ### Without Reports Server
 
-Below is the count of reports in etcd without reports server:
+Below is the count of reports in etcd without reports server. When reports server is not installed, `apiserver_storage_objects` reports that there are 10000+ policy reports in etcd:
+
 ```bash
 $ kubectl get --raw=/metrics | grep apiserver_storage_objects | awk '$2>100' |sort -g -k 2
 # HELP apiserver_storage_objects [STABLE] Number of stored objects at the time of last check split by kind.
@@ -67,7 +68,8 @@ Total size of etcd, including all resources in the cluster with respect to amoun
 
 ### With Reports Server
 
-Here is the count of objects in etcd without reports server, when 10000+ policy reports are present in the cluster:
+Here is the count of objects in etcd without reports server, when 10000+ policy reports are present in the cluster. When reports server is installed, `apiserver_storage_objects` does not report find any policy reports in etcd and is therefore not reported. When we query for policy reports using kubectl, we see that there are 10000+ policy reports in the cluster:
+
 ```bash
 $ kubectl get --raw=/metrics | grep apiserver_storage_objects | awk '$2>100' |sort -g -k 2
 # HELP apiserver_storage_objects [STABLE] Number of stored objects at the time of last check split by kind.
