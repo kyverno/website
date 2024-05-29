@@ -70,7 +70,7 @@ Create a namespace for reports server:
 ```bash
 kubectl create ns reports-server
 ```
-Apply the reports-server manifest:
+Apply the reports server manifest:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kyverno/reports-server/main/config/install.yaml
 ```
