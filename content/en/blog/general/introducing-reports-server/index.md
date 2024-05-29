@@ -75,7 +75,7 @@ Apply the reports-server manifest:
 kubectl apply -f https://raw.githubusercontent.com/kyverno/reports-server/main/config/install.yaml
 ```
 
-This install manifest will install the following things
+The manifest will install the following components:
 1. A deployment and service for the reports server
 2. A postgres instance
 3. An API service to redirect requests to the reports-server
