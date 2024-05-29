@@ -26,7 +26,7 @@ Reports server solves the problem of scalability of policy reports by storing po
 2. Common report consumer workflows can be more efficient.
 3. With reports stored in a relational database, report consumers could instead query the underlying database directly, using more robust query syntax.
 
-The reports-server achieves this by using [Kubernetes API aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/), where it creates an API service that takes all the request from the local api server and processes them in the reports-server. The reports-server has access to a relational database which it uses to store and query for policy reports and ephemeral reports.
+Reports server achieves this by using [Kubernetes API aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/), where it creates an API service that takes all the requests from the local API server and processes them. Reports server has access to a relational database which it uses to store and query for policy reports and ephemeral reports.
 
 A high-level overview of the architecture is shown below.
 ![Architecture](./architecture.svg)
