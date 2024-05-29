@@ -14,7 +14,7 @@ Kyverno also creates its own custom ephemeral reports which are later aggregated
 
 This setup works fine in most cases, but in larger-scale environments the limits of the Kubernetes API server could be reached. During periods of especially heavy reporting, the volume of data being written to and read from etcd can put the API server under severe load which can lead to degraded performance. Additionally, etcd has a maximum capacity limit and therefore has a limited number of resources it may store. This limit can be reached in large clusters with many report producers.
 
-Today, we are excited to announce [reports-server](https://github.com/kyverno/reports-server), Kyverno's new project that aims to improve scalability of reporting in large cluster, so that you can have all the benefits of governance without compromising on performance.
+Today, we are excited to announce [reports-server](https://github.com/kyverno/reports-server), a new Kyverno project which aims to improve scalability of reporting in large clusters giving you all the benefits of visibility without compromising on performance.
 
 In this blog post we will introduce reports-server, discuss its architecture and how to get started.
 
