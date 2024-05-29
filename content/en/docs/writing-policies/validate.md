@@ -1890,7 +1890,7 @@ Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, Clust
 {{% /alert %}}
 
 {{% alert title="Warning" color="warning" %}}
-When Kyverno policies match 'pods', the generated ValidatingAdmissionPolicy will match both 'pods' and 'pods/ephemeralcontainers'. This occurs because Kyverno inherently includes 'pods/ephemeralcontainers' by default in the corresponding validatingwebhookconfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
+When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionPolicy will match both `pods` and `pods/ephemeralcontainers`. This occurs because Kyverno inherently includes `pods/ephemeralcontainers` by default in the corresponding ValidatingWebhookConfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
 {{% /alert %}}
 
 The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
