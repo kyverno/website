@@ -20,7 +20,7 @@ In this blog post we will introduce reports server, discuss its architecture, an
 
 ## Architecture
 
-The reports-server solves the problem of scalability of policy reports by storing policy reports outside of etcd in a relational database. This has the following advantages:
+Reports server solves the problem of scalability of policy reports by storing policy reports outside of etcd in a relational database. This has the following advantages:
 
 1. Alleviation of the etcd + API server load and capacity limitations.
 2. Common report consumer workflows can be more efficient.
