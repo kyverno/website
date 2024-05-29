@@ -88,7 +88,7 @@ If you already have policy reports CRD installed in your cluster, you will have 
 
 ## Conclusion
 
-In this short blog post we demonstrated how reports server can be used to store policy reports.
+In this short blog post, we demonstrated how reports server can be used to store policy reports.
 
 Reports server is a new project from Kyverno that can be helpful for users with large scale reporting needs. This project is maintained by Kyverno and will have future updates and features based on feedback.
 
