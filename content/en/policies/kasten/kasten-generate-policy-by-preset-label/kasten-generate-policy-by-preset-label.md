@@ -6,7 +6,7 @@ subject: Policy
 policyType: "generate"
 description: >
     Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
-Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
+    Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 ---
 
 ## Policy Definition
