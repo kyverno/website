@@ -60,7 +60,7 @@ rbacdefinitions.rbacmanager.reactiveops.io   2023-12-12T12:20:19Z
 
 ## Install Chainsaw
 
-Chainsaw can be installed in [different ways](https://kyverno.github.io/chainsaw/latest/install/). If you are using MacOS or Linux, the simplest solution is to use [brew](https://brew.sh/).
+Chainsaw can be installed in [different ways](https://kyverno.github.io/chainsaw/latest/quick-start/install/). If you are using MacOS or Linux, the simplest solution is to use [brew](https://brew.sh/).
 
 ```sh
 # add the chainsaw tap
