@@ -150,7 +150,7 @@ spec:
     image: nginx
 ```
 
-That's because for the `initContainers` block the the condition isn't met so it's a skip. But the `containers` block is a pass. So the overall result is a pass.
+That's because for the `initContainers` block the condition isn't met so it's a skip. But the `containers` block is a pass. So the overall result is a pass.
 
 **Key Points to Remember:**
 
