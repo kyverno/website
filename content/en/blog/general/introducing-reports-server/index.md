@@ -37,6 +37,24 @@ Reports server stores policy reports and ephemeral reports outside etcd thus red
 
 ### Without Reports Server
 
+Below is the count of reports in etcd without reports server:
+```bash
+$ kubectl get --raw=/metrics | grep apiserver_storage_objects | awk '$2>100' |sort -g -k 2
+# HELP apiserver_storage_objects [STABLE] Number of stored objects at the time of last check split by kind.
+# TYPE apiserver_storage_objects gauge
+apiserver_storage_objects{resource="nodes"} 108
+apiserver_storage_objects{resource="leases.coordination.k8s.io"} 123
+apiserver_storage_objects{resource="deployments.apps"} 857
+apiserver_storage_objects{resource="replicasets.apps"} 859
+apiserver_storage_objects{resource="pods"} 8540
+apiserver_storage_objects{resource="policyreports.wgpolicyk8s.io"} 10268
+
+$ kubectl get polr -A | wc -l
+10269
+```
+`apiserver_storage_objects` metrics show that there are 10000+ policy reports stored in etcd along with other resources.
+
+Total size of etcd, including all resources in the cluster with respect to amount of policy reports:
 | Number of Policy Reports | Total etcd Size |
 | --------------- | --------------- |
 | 1270            | 134 MB          |
@@ -49,6 +67,23 @@ Reports server stores policy reports and ephemeral reports outside etcd thus red
 
 ### With Reports Server
 
+Here is the count of objects in etcd without reports server, when 10000+ policy reports are present in the cluster:
+```bash
+$ kubectl get --raw=/metrics | grep apiserver_storage_objects | awk '$2>100' |sort -g -k 2
+# HELP apiserver_storage_objects [STABLE] Number of stored objects at the time of last check split by kind.
+# TYPE apiserver_storage_objects gauge
+apiserver_storage_objects{resource="nodes"} 108
+apiserver_storage_objects{resource="leases.coordination.k8s.io"} 123
+apiserver_storage_objects{resource="deployments.apps"} 855
+apiserver_storage_objects{resource="replicasets.apps"} 857
+apiserver_storage_objects{resource="pods"} 8540
+
+$ kubectl get polr -A | wc -l
+10249
+```
+`apiserver_storage_objects` metric does not find policy reports stored in etcd.
+
+Total size of etcd, including all resources in the cluster with respect to amount of policy reports:
 | Number of Policy Reports | Total etcd Size |
 | --------------- | --------------- |
 | 1204            | 71 MB           |
