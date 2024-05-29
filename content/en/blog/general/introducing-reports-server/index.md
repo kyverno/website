@@ -10,7 +10,7 @@ description: Security or Scalability? Why not both!
 
 Policy Reports are used by Kyverno to store the result of policies and cluster policies that match a resource. Kyverno generates reports during admission request as well as periodically as background scans. They are very helpful in auditing the current state of policy compliance in a cluster.
 
-Kyverno also creates its own custom ephemeral reports which are later aggregated to create the final policy reports or cluster policy reports. Policy reports and ephemeral reports are stored in etcd as Custom Kubernetes Resources. 
+Kyverno also creates its own custom ephemeral reports which are later aggregated to create the final policy reports or cluster policy reports. Policy reports and ephemeral reports are stored in etcd as Custom Resources. 
 
 This setup works fine in most cases but we start hitting the limits Kubernetes API server in a large cluster. During heavy reporting, the volume of data being written and retrieved by etcd puts the API server under severe load that can lead to poor performance. Moreover, etcd has a maximium capacity limit therefore, it can have a limited number of resources in it. This limit can be reached in large cluster with a lot of report producers.
 
