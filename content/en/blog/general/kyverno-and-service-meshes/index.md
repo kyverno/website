@@ -91,11 +91,15 @@ spec:
         - key: "{{ request.operation || 'BACKGROUND' }}"
           operator: NotEquals
           value: DELETE
+      context:
+        - name: capabilities
+          variable:
+            value: ["AUDIT_WRITE","CHOWN","DAC_OVERRIDE","FOWNER","FSETID","KILL","MKNOD","NET_BIND_SERVICE","SETFCAP","SETGID","SETPCAP","SETUID","SYS_CHROOT"]
       validate:
         message: >-
           Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER,
           FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT)
-          are disallowed. Service mesh initContainers may only add NET_ADMIN and NET_RAW to this list.
+          are disallowed. Service mesh initContainers may additionally add NET_ADMIN and NET_RAW.
         foreach:
           - list: request.object.spec.initContainers[]
             preconditions:
@@ -107,23 +111,43 @@ spec:
                 - "*/linkerd/proxy-init*"
               - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
                 operator: AnyNotIn
-                value: ["NET_ADMIN","NET_RAW","AUDIT_WRITE","CHOWN","DAC_OVERRIDE","FOWNER","FSETID","KILL","MKNOD","NET_BIND_SERVICE","SETFCAP","SETGID","SETPCAP","SETUID","SYS_CHROOT"]
+                value:
+                  - NET_ADMIN
+                  - NET_RAW
+                  - "{{ capabilities }}"
             deny:
               conditions:
                 all:
                 - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
                   operator: AnyNotIn
-                  value: ["AUDIT_WRITE","CHOWN","DAC_OVERRIDE","FOWNER","FSETID","KILL","MKNOD","NET_BIND_SERVICE","SETFCAP","SETGID","SETPCAP","SETUID","SYS_CHROOT",""]
+                  value: "{{ capabilities }}"
+                  message: The service mesh initContainer {{ element.name }} is attempting to add forbidden capabilities.
+          - list: request.object.spec.initContainers[]
+            preconditions:
+              all:
+              - key: "{{ element.image }}"
+                operator: AnyNotIn
+                value:
+                - "*/istio/proxyv2*"
+                - "*/linkerd/proxy-init*"
+            deny:
+              conditions:
+                all:
+                - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                  operator: AnyNotIn
+                  value: "{{ capabilities }}"
+                  message: The initContainer {{ element.name }} is attempting to add forbidden capabilities.
           - list: request.object.spec.[ephemeralContainers, containers][]
             deny:
               conditions:
                 all:
                 - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
                   operator: AnyNotIn
-                  value: ["AUDIT_WRITE","CHOWN","DAC_OVERRIDE","FOWNER","FSETID","KILL","MKNOD","NET_BIND_SERVICE","SETFCAP","SETGID","SETPCAP","SETUID","SYS_CHROOT",""]
+                  value: "{{ capabilities }}"
+                  message: The container {{ element.name }} is attempting to add forbidden capabilities.
 ```
 
-Feel free to [take this for a spin in the Kyverno Playground](https://playground.kyverno.io/#/?content=N4IgDg9gNglgxgTxALhAQzDAagUwE4DOMEAdsgAQDWCAbviRAHTED0NAjADomUwkAmFAMJQArgQAu%2BAArR4CbgFscEtPzSrk3cuRJplFfjAJooUCAHcAtHAxoARjFgSYOAtwJgccLSR01TGHUXUgAxNCdRPBwAQTgQsnIAURIAMwg8OBxtcns0OEoAczwIUQEKCTxRbL9yKqg3Xx0dK119HAo1IxJCmztHZ1cCKwJ8GngcK2UCAAsc5vJFDTgZpoXmtBIENfXyVuiCUszG%2Bd3m3gECHbOF1tl%2BU50waLhSIwSrx42za9uqHG25E4IGAwDqOAAjtVJIwIF48BpiH4AD7I8gAcgAQjEhABpADiACUAPIAVQAcgARdHkAC%2BtOBXwWcPwGgyFHJEAkSShpnctRuATEHXIlKSABkkgAVJJfIVBDQdJmLNwmQoigB8VmVOhiW3ItjADicMBcbnIXRw/FyALe5AkMxwFrMlit5FgknIAAoYqTKQBJKUAfQA6oTA0kADTkIQACWJIfJ0cpOKDxKwSUJ4bF0dCCfJmcjOvIoQAytL/ZTo7j/eLxdGALK48nEqvkAvBzH%2BqlB8uErD%2BoRR8jlqWhIQxaTR0f4yvT6XSCdTkfS0lzkcATVLQbjJOJUoAlMW0NFyEYTC6LFbGCOxhMVbNyHxTUJSKo%2BPgCIs0AhyKQoL%2BXTttKQYxJSDbdhaAjAcGhIxCG9oQPaMzGO6xgSIwyrpNE%2BSrMWrQehIFDRFCbgYRA9gAFbeBhnjeMwJAvm%2BEQkJ%2BADaAC6xZPC8bymkinwCjc3xQL8wmtJQAIUMCoLkDgDTKCQGEwEs6p0gyIDcesLIIhI7LkHqCD%2BiQWkLEK1RicJexAiAABULDoawzwQAAHrQABMtmMkJVktDZ9mwDw%2BD8CwzluVYz4SF5mk%2BeJ/yAjJYLyTgim0d4USmggr5KTgLkYYaxqDG4jBdJx5CouQAAGnGVep3m%2Bdp8JsngFCGZyEjGaZzTmSKbHAh2oHgd2wJFiAA1wSGI3Ar6AbBmGEZTSAcb5otKZCGmGZZpWsogKNeaJpmi1lhWlKLTWdaLU2Lanbt/UgV2PZ9gOQ6LaO46Tq90qzjdo2jouH23SAo5rj9wKlluO6xnuUrAlxsW7PwOBbJZZyvAI/GkIJDULKYoldX5kkJSCSUKUjaVwBlEhZW%2BuX5f0JpmgQJX8PwZUVdVHG1fS9XY8yTV6S1BlbO1nXw75PUUH1IAzYGobhjKi3LYmq2pummbZjte35odgPHVKlZnbW4qXc2raLQND2Ur2mbPZrYPSu90ifVK33O/9TuA8DBuexDu7Evui2w/haGSMRkLQuRVE0YwdFwIwbE4GAjrKAiUDZe%2BrGENGaMZ5%2BHGcVpiPI11aPvAJKM3LjFdnBJUk2bJyWpTH6V4Jl6e04wBUDPxxWlRx5VohzXMafjzQ6c1rXC1you82ZpgWeQUsy3N8t20t8bK4Da0ber21HdrhJHaO3ujedxuA1dZuAxb3ZW09g5r29S7O67nsLs/b9SiDr2%2B1D/sw4DIOJBdogAOEcLIKB0CYFwIQJEFAODcAuIIcg9wlAqDUBoNAaw9AGCfJIYgVhIAPBILHNYkV04sU/GsVoOCRSOQgBFRiEhTgqTQOqQwEACj4GYBABy%2BDeFhQ8sgdgjB3IAAZRGnBPIULGNc8EhAimAVQ9gGj8huK0QhypWjAnYAAVjEWIrgMV1F7AAF5aJsnogxAA2HmuwNGiAsTogAzM4gA7HY9YGjFAWMJEkAMfihAwzFhomAFj0S2XRBYqwLknGaWMXIqw9hwmROicQkxViACcYjIxWPcuwXJ%2BjxHRKsOYQoQZSgSDAKICQQYGh0CgAAXkRqkNAogoBET4OkU4owKatypu3PKYlcaWGkK3cYDR1RJAILYKAiJSAUFaVAUYXwu4MyGCjLo1dWgDTAhBckwdxrwWLAAYmsuDbcezhpi34CUMA2yDIXVis8GAEycDqmQUslZsUcL8GJCQAChIIBclCE4NwCBJApUWXyGouwqgkBiAQfEJRRD3PIGIr48LEWchIECrk0LlmwvWFiggpJRiCwxbUHOlDCDULaLg%2Bw4gED2Fciw1SIpGUEGZa5YRjBnG6KkXgGR1xWgEAaInU4rQumRQUEJM5vTKbUxykM04ZydAkpxXioi9oqhEp0Gqg09MiqyP1esLZqq5G7KGgcuVlqQITQtfYzclzrXcCsO67gGBsCfjgeQBBPA%2BDINQSQZQqhghYJyLQiggVJJ4H4IQiAxDSE5HIcxD8tLJUWiFSarxexGGvEUHwXogiE14GYSEmyAAWdglbnGeL%2BO6yphQIBFsISUcKkAy1xOrZWjFCSnXupLaIIIcT8liPcvW5oGjGEsrKPGztEhhh6QioUBg0QLHVuyZGTdBTK26OsW47d%2B6AAcJTKmzoEKWxdVhl0wFXRkPVua90HqPdY09sVWHsINHgRgUBdH8B4SwGNwVQrtoQIw00yAaDuVEXyr4Ua0JBTjRB8tuwFX9KVVIFVYsRkWDGa8sFUyZmmHmYkL5j6FhrONdXc1Ys/hWv2VpHZ9rjl0eaGc1oFzBqMbFi8t5HyCXfJuL8/5gLgUSFBaoiFUhFAVF1cqDVpAtVyeqApsoiKyX4AoNY3RujnGVuVL0gtYAxkQFSGC6uVMvAUEJGUFwyhKQ4Fae01DBo02Zxza0aROa/hipwBKit0qmGyt2J%2BjlTKWUuV5fy%2BD7QKCcu5bE2K8qW5txpth3YBrFO4vEypij5ADVUZ7j5grZqWZiQNfRkCVybWZbtbBVjdWnVcZq9wEB0B%2BCEjcOAnAkCQEU0kBARQXXDhRCyI58zTCBJ9cjCAOAYhIV4BGz1ggM2QC5SyEo6bqAQC0iAA===) and see for yourself. Inside, you'll find sample Pods for both Istio and Linkerd, so try to uncomment and copy elements around to test it out.
+Feel free to [take this for a spin in the Kyverno Playground](https://playground.kyverno.io/#/?content=N4IgDg9gNglgxgTxALhAQzDAagUwE4DOMEAdsgAQDWCAbviRAHTED0NAjADomUwkAmFAMJQArgQAu%2BAArR4CbgFscEtPzSrk3cuRJplFfjAJooUCAHcAtHAxoARjFgSYOAtwJgccLSR01TGHUXUgAxNCdRPBwAQTgQsnIAURIAMwg8OBxtcns0OEoAczwIUQEKCTxRbL9yKqg3Xx0dK119HAo1IxJCmztHZ1cCKwJ8GngcK2UCAAsc5vJFDTgZpoXmtBIENfXyVuiCUszG%2Bd3m3gECHbOF1tl%2BU50waLhSIwSrx42za9uqHG25E4IGAwDqOAAjtVJIwIF48BpiH4AD7I8gAcgAQjEhABpADiACUAPIAVQAcgARdHkAC%2BtOBXwWcPwGgyFHJEAkSShpnctRuATEHXIlKSABkkgAVJJfV4kKQADwkv2arT0BnItjADicMBcbiZzQCeBgDgaqt2QuqFAA2sCYqTKQBJKUAfQA6oTXbKQAAaYFCAASxI95OBAZAlJxbuJWCShO9YojwNCofJCZTIFCAGVpc7KVncc7xeKswBZXHk4mF/3AjPuzHOqluvOErDOoS%2ByN5qWhIQxaRZ3v4gvD6XSAdDusgXukscznMATRzbuDJOJUuBAF0vkKghoOkbpiZCiKAHxWI06GJbLX9PUGgjkLo4fi5AFvcgSGY4F9mSw33IWBJHIAAKR0XXdL0fT9chg3TODoyEWN40TAskjgtMwwTAMBTOXN80pODi1LODK2rYjyAbN0mxbNsOy7ODe37QdmOlUcqN7Sc2PIOcC2Ylc1yDDcpQASmvF9onIIwTAAiw30YPixgmRY3Bmcg%2BH1IRSFUPh8GfJYEBffh3iRUwoGMrpqOlN0YkpctmxfAQbPdQkYg9RgjXSaJ8lWSTWhAlVwShNwJFhewACtvHCzxvGYEhtN0iISAM21d3wm5nm8N59SRT5Mpuf8oEtM5WkoAEKGBUFyBwBplAVZgljPOkGRASTdhZBEJHZchbwQZ0SA69ZrSPQqir2IEQAAKhYYwQhYZ4IEVWgACZpsZcaitaYFZtgHh8H4RaShWqwtIkDb2q23ZysqqaarqnAGti7won1BAdIVHBlUYbVdUGNxGC6dLyFRcgAAN0vB1rNomzr4TZPAKH6zkJEG4aFlG0qJtaGj7Mc8Nru21y3Xcj0MfWHaQTBP6BjytwYauuGZJwLZsfWeUzNIArmYWCz2Zu/5AWqsFHuexhRjgN6JA%2B3TvvC2nHyGIHTJBsHIe3aH6Vh3nmQRnqkb6rZUfRonBVMG17pph8AefbWmd15oTzQM8KClX9yFGPBxiyNTZk0xKJE%2BvTUrwcgHvq1nwo1P96U058NCkRQwBcHpvwgEz3x8xxTNZ%2B8dTpp8vKJwL5ooaJQphCAopiiWvDgBKkoVFK0oy5nss5vLuYF74Sop27hep2rI8amBmtjtqKZ0LrEeR42uVNx3yCxqfJt2ubJFYJaVpodadd1qm9r4Cq8CO7eEDOwPLuG/hWe2CnO4%2BHu%2BZ%2BVeB6qoexajiXXtNGXg/lr9G29MCAq34GrNEGstaTzNmcGeBs54IBNkNWBVoLYihFvnf6IDGarx0M7V25B3Z/nOsHFuYcI5PW/jHVq8cXwSCTinPghR06Z3INnIIt8/CK1tsXHGwEy4hWhOFau0V4h13iraHAYBfzKARFAMh%2BlCBwXlCHAy250o3zvs/LUuUn6r35m/IWH9KHi0ltLWWX0fo8JAWAiBEMoa4NQeseBvUUYLxQUvfw6CTHWwLkrBm9s8F%2B1PCKYhujm5KPDqLEe0d2i0OMPQxhqcWE9TYRw3O3DgFF39CAA4RwsgoHQJgXAhAkQUA4NwC4ghyD3CUCoNQGg0BrBjhQeaxArCQAeCQOKPgcikOSkonmk1WnxxCJffUpwx4uxFPwCABR8DMAgBvBa59d7IHYIwVaAAGLZpw0B4EKMMwW7SIBnRTuaQ0W1WidKNFTdgABWbZ2yuAO0FlYAAXncqajznkADZ96Uz2KIb5wJ2AAGZwUAHZAV/CmN8wkSQXSIqEFua5ewYDfPRNNdE3yrCKlBe1N5QKrD2CxTivF3SbitF%2BQATm2X6X5q12CMqeTsvFVhzCFDdKUCQYBRASDdA0OgUAAC8t9UhoFEFAFUfB0inHMX/SxSoVRfAspYaQppxgNDPEkAgtgoCIlIBQSVUBRhymyUMUqXR2a41svjZsAUSZk0kgAYkmsuVcDrCY3H4CUMAtq%2Bqli%2BM8GA2qcBnhqaa81hVfL8GJCQSyhIIBclCE4NwCBJBPRNXyGouwqgkBiAQfEJRRABvINsr4Bai2chIMmrkOazV5vWNWggpIvYUErbUVR5DhnqnaBQew4gED2GWlM8eg7h2jsVBsxg4KHn7MOccyaBAGjSNOK0OV50FD4XdYq96ADlTXHdToVttb63BUqNUU4J6sGFytTe9YNrH2Czxg5R1u6yrOo8i%2BoFnq7LvsJlYYD3AMDYAMuU5eXAeB8BqXUkgyhVDBGaTkUZ%2B0T78E6RAbpvS1gDMiaHZdrQDlHNKjcy%2BrxFDMM6SdC%2BkA8ASEJQAFnYEx8FsK1R7CsLywoEBqPnywwx5jrHK3ErhTR5aF9RBBEJcy7Zq0OMtC43wUdZRMP0YkMMHqZ1CgMGiN8lj9K/SGZZUxh5fyoXGfMwADg5by1TAhBOaasNpmAumMjNsFmZizVm/m2cKtMwhcA8CMCgA8/gSyWDocOsdSTEyVS7y2XOr4aHj6HXi18fd/85ZHqNOqiwmqw3pt1fq0wRrEjRs8xzS1JwibPtgXa903rhqNdJj%2B2B7rWj/ua1tUN4bI2NpjTcONCak0pokGmhoBBM1JwqFUKrCwz2kAvXN69W1W3tvwBQP5DyHngqY0aSWlGwCaogKkdN7MZZeAoISMoLhlCUhwJK6VjHu2DMI9cYjS6yOezXWAb5W7A47t2IFkUQ7pvTtnfOlLA7chTrHYVPdv8D05dVYj5oS263jdWwt8gt6bFPlVLenQ9XdjE842%2BgmXxydKZoi69HgtuuAe4Lk6A/BCRuAKTgIpuSpaSAgIoDnhwohZEe%2BdwO%2BUed%2BhAHAMQWa8BC65wQKXIBvpZCYdzHntIgA==) and see for yourself. Inside, you'll find sample Pods for both Istio and Linkerd, so try to uncomment and copy elements around to test it out.
 
 Because Istio's initContainer requires a few more privileges than Linkerd's, some slight modifications are also necessary to a couple more policies, these being found in the [restricted profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). For example, here's a [Kyverno Playground link](https://playground.kyverno.io/#/?content=N4IgDg9gNglgxgTxALhAQzDAagUwE4DOMEAdsgAQDWCAbviRAHTED0NAjADomUwkAmFAMJQArgQAu%2BAArR4CbgFscEtPzSrk3cuRJplFPDgCOomEYC0eUSQtoCFhiTwQIE7gTA44WkjpposOoSxCQAYmgwYkYAgnAhpBQAoiQAZhB4cDja5ABGaHCUAOYuNoLkEtbZfuTWUDgEvjo6Frr6OIY2dg5OVq4SFjCSxDnN5IoacAAWTWPNaCQIs3PkrUYEEKKZDcsrzbwCjaN7Y62y/Mf%2BgTDBHZfNygQEaEUd5AB8FvdjAEo2JHwiuR7LV%2BuQhro3MCoFAIAB3HD8RjkJIwCRTfAVDHkVIwHBQfjkTzeRgEbxbNEIISkKQADwkjGsJBiBAAcqQfv1vg9xBI8jgiSoKhByAADSqiHCigA05AyWIFuPx/AIRK8cEYcBpkRI%2BAIAG0AFQAXVJ5LwlOpJDpDKZLPZJE5bml3J0xI1fDRVtUfD1RtNZLgFIkVJpOHpjJs9o5/VlC0J7sYODAGOUeEC3p1fpNZqDFpD3vDtqjbJjbld415/MFfIkIvFVVFyJO5G5CwQ0g0UjwZG5rXduxOgeDoetRcHLbtpcd/QoEuqLeaAF4ABTJ1P4DPa32EACUE5WrVXw/zo5t%2B4rK1XU4dTok%2B4qVUv5FXnokmZ3BAvNUXrRXMAmV4H04EAAEJDSGBIWDAFxaVoAAmQ0QOfHRj3NS0w3pb9FyvFcbzLe85yfH8Wy1a0s0IA85iPFcTwwscsKok5rxLW9%2Bgfec%2BzVbwmOXNcUxwNMt3Iz9sJw/t0ILTCJF4lZ8JnNwiMlZ9XwBd9t11PdZNWch/0AnBgLAiDhggaDYIQpCQBQwU83om1tLGeS7yUhccLIn1NKOEiTgk2ypIYmTrJ0JzZ0fZSSBAaUQHWTZthQdBMFwQhQgoDhuAOcpziUFQ1A0NBZj0AxwRMixIAuEgBxyN8P082ZWkKt5IOIQY1OOACXjefgIEKfBmFMprTJgiA4JoeDkHYRh4IABkm440DwIovJ84qEkGMBVFyeoCC40quJA9gAFYpqmrgrO85pWgsAAvPaQEO46ADZkPOlpVlEW72AAZk%2BgB2Z7losRQuJ%2BJIABEAEkQaEAAVHaYC4gByQ0EZ22lbv%2BvZLtyRHkZ28rlvugBOKbpXu%2BD2FJo7pp2ixYSKAB9TYJDAUQJHp%2Bo6CgJd%2BBwVI0FEKAZL4dJjjo/z7PuQJYThaQLRoKIcFeJICDgQINBSnFAjJe5VbANBciiNE8SWvY1EECtWlZJJofpmJQYAWXB1kLfIK2bZ%2BGIAHVuX4FwwF41oYgAGSD%2B4YJgeX6leco%2BagbXzqMNQAHkSCgBA7zCBWCAQSRBIoWP47kksAHFSn98gpvuELFM1uPXMcksAFUyTwChK5qdyKJN%2Br2goXJxAQXJhra/S%2B4HofaXGxhPoOuaFpN16CHqZNjlaYW3wUEixbPccq9YgiXMikBoH4H4GlirJ4qPoNJAgRQz42LYslB3m31CAgr6iuAxFzvAH4vhon8QDhiyOtd%2BV8AC%2BQA) to what the [require-run-as-nonroot policy](/policies/pod-security/restricted/require-run-as-nonroot/require-run-as-nonroot/) may look like to exempt `istio-init`.
 
