@@ -59,7 +59,7 @@ The reports-server stores policy reports and ephemeral reports outside etcd this
 | 9604            | 343 MB          |
 | 10250           | 370 MB          |
 
-As shown in the benchmark, the size of etcd grows with increase in the number of resources in the cluster but the growth is slower when reports-server is installed. As reports-server stores policy reports in a seperate database, they don't take up any space in etcd. At 10k reports, database size of etcd is 33% smaller when reports-server is installed.
+As shown in the benchmark, the size of etcd grows as the number of resources in the cluster grows, but the growth is slower when reports server is installed. As reports server stores policy reports in a separate database, they don't take up any space in etcd. At 10,000 reports, the database size of etcd is 33% smaller compared to when reports server is installed.
 
 ## Getting Started
 
