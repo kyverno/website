@@ -61,7 +61,3 @@ type: docs
 ### Kyverno Training
 
 Nirmata offers expert training and custom workshops for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.
-
-### Free Certification
-
-Nirmata offers a [free Kyverno certification](https://learn.nirmata.com/explore) where you can test your knowledge and earn a Kyverno badge!
