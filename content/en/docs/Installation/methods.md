@@ -42,7 +42,7 @@ The Helm chart is the recommended method of installing Kyverno in a production-g
 
 Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability/) for more complete details.
 
-The Helm chart offers parameters to configure multiple replicas for each controller. For example, a minimally-viable, highly-available, complete deployment of Kyverno would consist of the following values.
+The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
 
 ```yaml
 admissionController.replicas: 3
@@ -54,7 +54,7 @@ reportsController.replicas: 2
 For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
 {{% alert title="Note" color="warning" %}}
-All Kyverno installations require the admission controller be among the controllers deployed. The admission controller does not support two replicas. For a highly-available installation, the only supported count is three.
+All Kyverno installations require the admission controller be among the controllers deployed. For a highly-available installation, at least 2 or more replicas are required. Based on scalability requirements, and cluster topology, additional replicas can be configured for each controller.
 {{% /alert %}}
 
 By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
