@@ -2,12 +2,6 @@
 [goldmark]
   [goldmark.renderer]
     unsafe = true
-  [goldmark.renderHooks]
-    [goldmark.renderHooks.link]
-      enableDefault = true
-    # [goldmark.renderHooks.image]
-    #   enableDefault = true
-
 [highlight]
   # See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
   style = "tango"
