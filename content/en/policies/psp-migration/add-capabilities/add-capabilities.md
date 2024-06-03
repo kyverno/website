@@ -46,7 +46,7 @@ spec:
           - UPDATE
     mutate:
       foreach:
-      - list: request.object.spec.containers[]
+      - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
         preconditions:
           all:
           - key: SETFCAP
@@ -56,7 +56,7 @@ spec:
           - path: /spec/containers/{{elementIndex}}/securityContext/capabilities/add/-
             op: add
             value: SETFCAP
-      - list: request.object.spec.containers[]
+      - list: request.object.spec.[ephemeralContainers, initContainers, containers][]
         preconditions:
           all:
           - key: SETUID

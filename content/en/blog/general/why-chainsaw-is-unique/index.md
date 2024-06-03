@@ -191,7 +191,7 @@ We covered all major features of assertion trees in this blog post.
 
 Chainsaw doesn't directly implement assertion trees but relies on the [kyverno-json package](https://github.com/kyverno/kyverno-json). You can browse [the documentation](https://kyverno.github.io/kyverno-json/latest/policies/asserts/#assertion-trees) to learn more about assertion trees, this documentation also applies to Chainsaw. The [kyverno-json playground](https://kyverno.github.io/kyverno-json/latest/_playground/) is also a good resource to familiarise with assertion trees.
 
-Note that JMESPath supports functions and also allows custom functions to be registered in the JMESPath interpreter. The supported list of functions is available [here](https://kyverno.github.io/chainsaw/latest/jp/functions/).
+Note that JMESPath supports functions and also allows custom functions to be registered in the JMESPath interpreter. The supported list of functions is available [here](https://kyverno.github.io/chainsaw/latest/reference/jp/functions/).
 
 ## Conclusion
 

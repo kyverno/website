@@ -5,7 +5,7 @@ version:
 subject: PodDisruptionBudget, Deployment, StatefulSet
 policyType: "validate"
 description: >
-    Existing PodDisruptionBudgets can apply to all future matching Pod controllers. If the minAvailable field is defined for such matching PDBs and is lower than the replica count of a new Deployment or StatefulSet, then availability could be negatively impacted. This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.
+    Existing PodDisruptionBudgets can apply to all future matching Pod controllers. If the minAvailable field is defined for such matching PDBs and the replica count of a new Deployment or StatefulSet is lower than that, then availability could be negatively impacted. This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.
 ---
 
 ## Policy Definition
@@ -24,8 +24,8 @@ metadata:
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment, StatefulSet
     policies.kyverno.io/description: >-
       Existing PodDisruptionBudgets can apply to all future matching Pod controllers.
-      If the minAvailable field is defined for such matching PDBs and is lower than the
-      replica count of a new Deployment or StatefulSet, then availability could be negatively impacted.
+      If the minAvailable field is defined for such matching PDBs and the replica count of a new
+      Deployment or StatefulSet is lower than that, then availability could be negatively impacted.
       This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all
       matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.
 spec:
