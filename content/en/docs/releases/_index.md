@@ -55,6 +55,7 @@ Release branches and PRs are managed as follows:
 - The branch name will contain the version, for example `release-1.5`.
 - Patch releases are created from a release branch.
 - For critical fixes that need to be included in a patch release, PRs should always be first merged to `main` and then cherry-picked to the release branch. The milestone label (for example `milestone-1.5`) must be added to PRs that are to be merged to a release branch, along with the `cherry-pick-required` label. When the PR is cherry picked (or merged), the `cherry-pick-completed` label is added.
+- PRs with no corresponding issues are added to the specific milestone for tracking.
 - For complex changes, or when branches diverge significantly, separate PRs may be required for `main` and release branches.
 - During PR review, the Assignee selection is used to indicate the reviewer.
 
