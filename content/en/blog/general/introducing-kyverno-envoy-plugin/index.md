@@ -164,7 +164,7 @@ kubectl logs "$(kubectl get pod -l app=testapp -o jsonpath={.items..metadata.nam
 First , third and last request is passed but second request is failed.
 
 ```console 
-sanskar@sanskar-HP-Laptop-15s-du1xxx:~$ kubectl logs "$(kubectl get pod -l app=testapp -n demo -o jsonpath={.items..metadata.name})" -n demo -c kyverno-envoy-plugin -f
+$ kubectl logs "$(kubectl get pod -l app=testapp -n demo -o jsonpath={.items..metadata.name})" -n demo -c kyverno-envoy-plugin -f
 Starting HTTP server on Port 8000
 Starting GRPC server on Port 9000
 Request is initialized in kyvernojson engine .
