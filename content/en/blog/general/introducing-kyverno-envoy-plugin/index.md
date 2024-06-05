@@ -26,6 +26,14 @@ In this blog post, we will introduce [kyverno-envoy-plugin](https://github.com/k
 
 In addition to the Envoy sidecar, your application pods will include a kyverno-envoy component, either as a sidecar or as a separate pod. This kyverno-envoy will be configured to communicate with the Kyverno-envoy-plugin gRPC server. When Envoy receives an API request intended for your microservice, it consults the Kyverno-envoy-plugin server to determine whether the request should be permitted.
 
+Here is the architecture when kyverno-envoy-plugin deployed as a sidecar to your application: 
+
+![architecture-sidecar](./arch-pod.png)
+
+Here is the architecture when kyverno-envoy-plugin deployed as a separate pod to your application:
+
+![architecture-pod](./arch-seprate-pod.png)
+
 Performing policy evaluations locally with Envoy is advantageous, as it eliminates the need for an additional network hop for authorization checks, thus enhancing both performance and availability.
 
 The kyverno-envoy-plugin can be deployed with Envoy-based sevice meshes such as [Istio](https://istio.io/), [Gloo](https://gloo.solo.io/), [Kuma](https://kuma.io/) etc.
