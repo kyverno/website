@@ -463,8 +463,6 @@ spec:
 
 By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
 
-Note that the mutate existing rules are force reconciled every hour by default regardless of `mutateExistingOnPolicyUpdate` settings. The reconciliation interval can be customized through use of environment variable `BACKGROUND_SCAN_INTERVAL` of the background controller.
-
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -542,6 +540,8 @@ spec:
 {{% alert title="Note" color="warning" %}}
 The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](../installation/customization.md#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
 {{% /alert %}}
+
+Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
 
 ### Variables Referencing Target Resources
 
@@ -658,6 +658,10 @@ Status:
   Message:  deployments.apps "foobar" is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account" cannot update resource "deployments" in API group "apps" in the namespace "default"
   State:    Failed
 ```
+
+### Mutate Existing Tips
+
+Combine multiple generate existing rules into a single rule when they mutate the same resource. When these rules are combined, only a single mutation happens which is quicker and more efficient. Otherwise, by using separate rules, multiple UpdateRequests may be created as Kyverno attempts to reconcile changes from both rules simultaneously. This can take longer, require more processing resources, and in some extreme instances can fail.
 
 ## Mutate Rule Ordering (Cascading)
 
