@@ -236,8 +236,6 @@ spec:
       - resources:
           kinds:
           - Pod
-        clusterRoles:
-        - cluster-admin
     validate:
       message: "An image tag is required."  
       pattern:
@@ -287,12 +285,14 @@ resources:
 results:
   - policy: disallow-latest-tag
     rule: require-image-tag
-    resource: myapp-pod
+    resources: 
+    - myapp-pod
     kind: Pod
     result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
-    resource: myapp-pod
+    resources:
+    - myapp-pod
     kind: Pod
     result: pass
 ```
@@ -300,15 +300,21 @@ results:
 ```sh
 $ kyverno test .
 
-Executing disallow_latest_tag...
-applying 1 policy to 1 resource... 
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
 
-│───│─────────────────────│────────────────────│───────────────────────│────────│
-│ # │ POLICY              │ RULE               │ RESOURCE              │ RESULT │
-│───│─────────────────────│────────────────────│───────────────────────│────────│
-│ 1 │ disallow-latest-tag │ require-image-tag  │ default/Pod/myapp-pod │ Pass   │
-│ 2 │ disallow-latest-tag │ validate-image-tag │ default/Pod/myapp-pod │ Pass   │
-│───│─────────────────────│────────────────────│───────────────────────│────────│
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+│ ID │ POLICY              │ RULE               │ RESOURCE      │ RESULT │ REASON │
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+│ 1  │ disallow-latest-tag │ require-image-tag  │ Pod/myapp-pod │ Pass   │ Ok     │
+│ 2  │ disallow-latest-tag │ validate-image-tag │ Pod/myapp-pod │ Pass   │ Ok     │
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
@@ -408,13 +414,15 @@ variables: values.yaml
 results:
   - policy: add-default-resources
     rule: add-default-requests
-    resource: nginx-demo1
+    resources:
+    - nginx-demo1
     patchedResource: patchedResource1.yaml
     kind: Pod
     result: pass
   - policy: add-default-resources
     rule: add-default-requests
-    resource: nginx-demo2
+    resources:
+    - nginx-demo2
     patchedResource: patchedResource2.yaml
     kind: Pod
     result: skip
@@ -506,7 +514,8 @@ resources:
 results:
   - policy: add-networkpolicy
     rule: default-deny
-    resource: hello-world-namespace
+    resources:
+    - hello-world-namespace
     generatedResource: generatedResource.yaml
     kind: Namespace
     result: pass
@@ -775,12 +784,14 @@ resources:
   - deployments.yaml
 results:
   - policy: disallow-host-path
-    resource: deployment-pass
+    resources:
+    - deployment-pass
     isValidatingAdmissionPolicy: true
     kind: Deployment
     result: pass
   - policy: disallow-host-path
-    resource: deployment-fail
+    resources:
+    - deployment-fail
     isValidatingAdmissionPolicy: true
     kind: Deployment
     result: fail
@@ -990,7 +1001,7 @@ Variables manifest (`values.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 namespaceSelector:
