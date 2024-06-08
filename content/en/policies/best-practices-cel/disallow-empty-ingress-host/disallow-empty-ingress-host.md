@@ -1,7 +1,7 @@
 ---
-title: "Disallow empty Ingress host"
-category: Best Practices
-version: 1.6.0
+title: "Disallow empty Ingress host in CEL expressions"
+category: Best Practices in CEL
+version: 1.11.0
 subject: Ingress
 policyType: "validate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//best-practices-cel/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml" target="-blank">/best-practices-cel/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -17,9 +17,10 @@ kind: ClusterPolicy
 metadata:
   name: disallow-empty-ingress-host
   annotations:
-    policies.kyverno.io/title: Disallow empty Ingress host
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/title: Disallow empty Ingress host in CEL expressions
+    policies.kyverno.io/category: Best Practices in CEL 
+    policies.kyverno.io/minversion: 1.11.0
+    kyverno.io/kubernetes-version: "1.26-1.27"
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
@@ -37,11 +38,12 @@ spec:
             kinds:
               - Ingress
       validate:
-        message: "The Ingress host name must be defined, not empty."
-        deny:
-          conditions:
-            all:
-            - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
-              operator: NotEquals
-              value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
+        cel:
+          expressions:
+            - expression: >-
+                !has(object.spec.rules) || 
+                object.spec.rules.all(rule, has(rule.host) && has(rule.http))
+              message: "The Ingress host name must be defined, not empty."
+        
+
 ```

@@ -1,7 +1,7 @@
 ---
-title: "Restrict Wildcard in Verbs"
-category: Security, EKS Best Practices
-version: 1.6.0
+title: "Restrict Wildcard in Verbs in CEL expressions"
+category: Security, EKS Best Practices in CEL
+version: 1.11.0
 subject: Role, ClusterRole, RBAC
 policyType: "validate"
 description: >
@@ -9,7 +9,7 @@ description: >
 ---
 
 ## Policy Definition
-<a href="https://github.com/kyverno/policies/raw/main//other/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml" target="-blank">/other/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main//other-cel/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml" target="-blank">/other-cel/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml</a>
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -17,13 +17,13 @@ kind: ClusterPolicy
 metadata:
   name: restrict-wildcard-verbs
   annotations:
-    policies.kyverno.io/title: Restrict Wildcard in Verbs
-    policies.kyverno.io/category: Security, EKS Best Practices
+    policies.kyverno.io/title: Restrict Wildcard in Verbs in CEL expressions
+    policies.kyverno.io/category: Security, EKS Best Practices in CEL 
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
-    kyverno.io/kyverno-version: 1.6.2
-    policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/minversion: 1.11.0
+    kyverno.io/kubernetes-version: "1.26-1.27"
     policies.kyverno.io/description: >-
       Wildcards ('*') in verbs grants all access to the resources referenced by it and
       does not follow the principal of least privilege. As much as possible,
@@ -31,7 +31,7 @@ metadata:
       This policy blocks any Role or ClusterRole that contains a wildcard entry in
       the verbs list found in any rule.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: wildcard-verbs
@@ -42,12 +42,10 @@ spec:
               - Role
               - ClusterRole
       validate:
-        message: "Use of a wildcard ('*') in any verbs is forbidden."
-        deny:
-          conditions:
-            any:
-            - key: "{{ contains(to_array(request.object.rules[].verbs[]), '*') }}"
-              operator: Equals
-              value: true
+        cel:
+          expressions:
+            - expression: "object.rules == null || !object.rules.exists(rule, '*' in rule.verbs)"
+              message: "Use of a wildcard ('*') in any verbs is forbidden."
+
 
 ```
