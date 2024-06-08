@@ -463,8 +463,6 @@ spec:
 
 By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
 
-Note that the mutate existing rules are force reconciled every hour by default regardless of `mutateExistingOnPolicyUpdate` settings. The reconciliation interval can be customized through use of environment variable `BACKGROUND_SCAN_INTERVAL` of the background controller.
-
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -542,6 +540,8 @@ spec:
 {{% alert title="Note" color="warning" %}}
 The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](../installation/customization.md#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
 {{% /alert %}}
+
+Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
 
 ### Variables Referencing Target Resources
 
@@ -658,6 +658,10 @@ Status:
   Message:  deployments.apps "foobar" is forbidden: User "system:serviceaccount:kyverno:kyverno-service-account" cannot update resource "deployments" in API group "apps" in the namespace "default"
   State:    Failed
 ```
+
+### Mutate Existing Tips
+
+Combine multiple generate existing rules into a single rule when they mutate the same resource. When these rules are combined, only a single mutation happens which is quicker and more efficient. Otherwise, by using separate rules, multiple UpdateRequests may be created as Kyverno attempts to reconcile changes from both rules simultaneously. This can take longer, require more processing resources, and in some extreme instances can fail.
 
 ## Mutate Rule Ordering (Cascading)
 
@@ -790,6 +794,104 @@ Namespace:    default
 Labels:       backup-needed=no
               type=database
 <snip>
+```
+
+## Combining Mutate and Generate
+
+In some use cases, it may be necessary to perform a mutation as a follow-on action from a Kyverno generate rule. In these cases, you can combine generation with mutation to achieve the desired effect. Some use cases for this include mutating a cloned resource to add fields not present in the source and performing a mutation of an existing resource in response to a generate rule.
+
+When combining "standard" mutation and generation behaviors, order the rules in a single policy such that the generate occurs first followed by the mutate.
+
+In the below policy, a Secret named `regcred` is generated into a newly-created Namespace followed by the addition of the `foo: bar` label on the generated Secret.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-secrets
+spec:
+  rules:
+  - name: sync-image-pull-secret
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      apiVersion: v1
+      kind: Secret
+      name: regcred
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      clone:
+        namespace: default
+        name: regcred
+  - name: mutate-secret
+    match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+          names:
+          - regcred
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            foo: bar
+```
+
+When combining a generation with a mutation on an existing resource, the Kyverno background controller must be instructed to not filter out the request from the previous rule. By default, these internal requests are disregarded as a form of loop protection. Set the rule-level field `skipBackgroundRequests: false` in such cases so the background controller processes the request from the generate rule before it. You will be responsible for ensuring your policy and rule combinations do not result in a loop. This step was not necessary in the previous use case because the admission controller was responsible for processing the "standard" mutate rule during admission review.
+
+In the below policy, a ConfigMap is generated into a newly-created Namespace. A follow-on Kyverno mutate existing rule is used to mark the Namespace as "ready" via a label only once the resource has been successfully created. Note that the `skipBackgroundRequests: false` field is present on the mutate existing rule and not the generate rule.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: demo-cluster-policy
+spec:
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - name: demo-generate
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          operations:
+          - CREATE
+    generate:
+      apiVersion: v1
+      kind: ConfigMap
+      name: somecustomcm
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: false
+      data:
+        metadata:
+          labels:
+            custom/related-namespace: "{{request.object.metadata.name}}"
+        data:
+          key: value
+  - name: demo-mutate-existing
+    skipBackgroundRequests: false
+    match:
+      all:
+        - resources:
+            kinds:
+              - ConfigMap
+            selector:
+              matchLabels:
+                custom/related-namespace: "?*"
+    mutate:
+      targets:
+        - apiVersion: v1
+          kind: Namespace
+          name: '{{ request.object.metadata.labels."custom/related-namespace" }}'
+      patchStrategicMerge:
+        metadata:
+          labels:
+            custom/namespace-ready: "true"
 ```
 
 ## foreach

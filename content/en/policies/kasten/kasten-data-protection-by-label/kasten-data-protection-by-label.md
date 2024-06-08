@@ -5,8 +5,7 @@ version: 1.6.2
 subject: Deployment, StatefulSet
 policyType: "validate"
 description: >
-    Check the 'dataprotection' label for production Deployments and StatefulSet workloads.
-    Use in combination with 'kasten-generate-example-backup-policy' policy to generate a Kasten policy for the workload namespace, if it doesn't already exist.
+    Check the 'dataprotection' label for production Deployments and StatefulSet workloads. Use in combination with 'kasten-generate-example-backup-policy' policy to generate a Kasten policy for the workload namespace, if it doesn't already exist.
 ---
 
 ## Policy Definition
@@ -26,7 +25,6 @@ metadata:
     policies.kyverno.io/subject: Deployment, StatefulSet
     policies.kyverno.io/description: >-
       Check the 'dataprotection' label for production Deployments and StatefulSet workloads.
-
       Use in combination with 'kasten-generate-example-backup-policy' policy to generate a Kasten policy for the workload namespace, if it doesn't already exist.
 spec:
   validationFailureAction: Audit

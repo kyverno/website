@@ -5,8 +5,7 @@ version: 1.12.0
 subject: Policy
 policyType: "generate"
 description: >
-    Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
-    Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
+    Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist. Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 ---
 
 ## Policy Definition
@@ -34,7 +33,6 @@ metadata:
     kyverno.io/kubernetes-version: "1.24-1.30"
     policies.kyverno.io/description: >-
       Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
-
       Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 spec:
   rules:
