@@ -23,10 +23,9 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 This is a monthly meeting for the broader community where the Kyverno maintainers from [Nirmata](https://nirmata.com/) cover one or more topics with preference given to open community discussion, question and answer, etc. Meeting is live streamed on YouTube with recordings available after. Either join in person or attend in view-only mode:
 
 - Monthly on the second Thursday at 7:00 AM PST
-- [Repo](https://github.com/nirmata/office-hours-for-kyverno)
+- [GitHub repository](https://github.com/nirmata/office-hours-for-kyverno)
 
 ### Maintainers Meeting
-
 
 This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Contributors and end users are welcome to attend and participate but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting.
 
@@ -69,7 +68,6 @@ This document highlights the roles and responsibilities for the Kyverno communit
 ### Project Roles
 
 The table below summarizes project roles and responsibilities. Details are provided in the sections following the table:
-
 
 | Role | Requirements | Ongoing Responsibilities | Defined by |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -191,7 +189,6 @@ An off-boarding vote may be called by any maintainer if any of the following cri
   - Contributions can be tracked using the [DevStats dashboard](https://kyverno.devstats.cncf.io/d/66/developer-activity-counts-by-companies?orgId=1&var-period_name=Last%206%20months&var-metric=contributions&var-repogroup_name=All&var-country_name=All&from=1522810884223&to=1680577284223&var-companies=All).
   - Other relevant data will be collected and evaluated to assess the maintainer's contributions. This includes their involvement in discussions, conversations on Slack, and any other relevant interactions.
 
-
 The off-boarding process includes the following steps:
 - The off-boarding process is initiated by any currently active maintainer who conducts a review of the maintainers list and proceeds to initialize the off-boarding process if the above criteria are met.
 - The plans of off-boarding process is sent in a private Slack message or email to the candidate.
@@ -201,11 +198,9 @@ The off-boarding process includes the following steps:
 - The vote passes if a majority of current maintainers vote yes during a voting period lasting seven (7) days.
 - A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
 
-
 #### Admins
 
 These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository. Admins can read, clone, and push to this repository. They can also manage issues, pull requests, and repository settings, including adding collaborators.
-
 
 #### Mapping Project Roles to GitHub Roles
 
