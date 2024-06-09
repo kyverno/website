@@ -234,6 +234,3 @@ For further exploration, you can checkout:
 
 - 🔗 Check out the project on GitHub: https://github.com/kyverno/kyverno-envoy-plugin
 - 📚 Browse the documentation: https://kyverno.github.io/kyverno-envoy-plugin
-
-
-
