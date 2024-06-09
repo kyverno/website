@@ -104,14 +104,14 @@ The policy we passed to kyverno-envoy-plugin sidecar in the ConfigMap `policy-co
 apiVersion: json.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-    name: checkrequest
+  name: checkrequest
 spec:
-    rules:
+  rules:
     - name: deny-guest-request-at-post
-        assert:
+      assert:
         any:
         - message: "POST method calls at path /book are not allowed to guests users"
-            check:
+          check:
             request:
                 http:
                     method: POST
@@ -121,7 +121,7 @@ spec:
                                 (jwt_decode(@ , 'secret').payload.role): admin
                     path: /book                             
         - message: "GET method call is allowed to both guest and admin users"
-            check:
+          check:
             request:
                 http:
                     method: GET
@@ -131,7 +131,7 @@ spec:
                                 (jwt_decode(@ , 'secret').payload.role): admin
                     path: /book 
         - message: "GET method call is allowed to both guest and admin users"
-            check:
+          check:
             request:
                 http:
                     method: GET
