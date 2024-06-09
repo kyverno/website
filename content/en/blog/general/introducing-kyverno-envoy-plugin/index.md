@@ -51,6 +51,7 @@ Start minikube cluster with the following command:
 ```sh
 minikube start
 ```
+
 ### Install kyverno-envoy sidecar with application
 
 Install application with envoy and kyverno-envoy-plugin as a sidecar container.
@@ -58,6 +59,7 @@ Install application with envoy and kyverno-envoy-plugin as a sidecar container.
 ```sh
 $ kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno-envoy-plugin/main/quick_start.yaml 
 ```
+
 The `applicaition.yaml` manifest defines the following resource:
 
 - The Deployment includes an example Go application that provides information of books in the library books collection and exposes APIs to `get`, `create` and `delete` books collection. Check this out for more information about the [Go test application](https://github.com/Sanskarzz/kyverno-envoy-demos/tree/main/test-application) . 
@@ -86,6 +88,7 @@ export SERVICE_HOST=$(minikube ip)
 export SERVICE_URL=$SERVICE_HOST:$SERVICE_PORT
 echo $SERVICE_URL
 ```
+
 ### Calling the sample test application and verify the authorization
 
 For convenience, we’ll want to store Alice’s and Bob’s tokens in environment variables. Here bob is assigned the admin role and alice is assigned the guest role.
@@ -144,9 +147,11 @@ Check for `Alice` which can get book but cannot create book.
 ```bash
 curl -i -H "Authorization: Bearer "$ALICE_TOKEN"" http://$SERVICE_URL/book
 ```
+
 ```bash
 curl -i -H "Authorization: Bearer "$ALICE_TOKEN"" -d '{"bookname":"Harry Potter", "author":"J.K. Rowling"}' -H "Content-Type: application/json" -X POST http://$SERVICE_URL/book
 ```
+
 Check the `Bob` which can get book also create the book 
 
 ```bash
@@ -158,9 +163,11 @@ curl -i -H "Authorization: Bearer "$BOB_TOKEN"" -d '{"bookname":"Harry Potter", 
 ```
 
 Check on logs 
+
 ```bash
 kubectl logs "$(kubectl get pod -l app=testapp -o jsonpath={.items..metadata.name})" -c kyverno-envoy-plugin -f
 ```
+
 First , third and last request is passed but second request is failed.
 
 ```console 
