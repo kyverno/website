@@ -3,7 +3,7 @@ date: 2024-06-04
 title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy 
 linkTitle: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
 author: Sanskar Gurdasani
-description: Make external authorization easy with kyverno-envoy-plugin.
+description: Make external authorization easy with Kyverno-Envoy-Plugin.
 ---
 
 ![Kyverno-Envoy-Plugin](logo.png)
@@ -12,7 +12,7 @@ While microservices offer benefits by breaking applications into smaller, indepe
 
 As more organizations move to using microservices, there is an increasing need for separate authentication and authorization mechanisms that work across different microservices.
 
-In this blog post, we will introduce [kyverno-envoy-plugin](https://github.com/kyverno/kyverno-envoy-plugin), how it works and you can use this version of kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice or application code.
+In this blog post, we will introduce [Kyverno-Envoy-Plugin](https://github.com/kyverno/kyverno-envoy-plugin), how it works and you can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice or application code.
 
 ## What is Envoy
 
@@ -20,27 +20,27 @@ In this blog post, we will introduce [kyverno-envoy-plugin](https://github.com/k
 
 ## What is Kyverno-Envoy-Plugin
 
-[Kyverno-envoy](https://github.com/kyverno/kyverno-envoy-plugin) plugin extends [Kyverno-json](https://kyverno.github.io/kyverno-json/latest/) with a gRPC server that implements [Envoy External Authorization API](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html). This allows you to enforce Kyverno policies on incoming and outgoing traffic in a service mesh environment, providing an additional layer of security and control over your applications. You can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice.
+[Kyverno-Envoy](https://github.com/kyverno/kyverno-envoy-plugin) plugin extends [Kyverno-JSON](https://kyverno.github.io/kyverno-json/latest/) with a gRPC server that implements [Envoy External Authorization API](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html). This allows you to enforce Kyverno policies on incoming and outgoing traffic in a service mesh environment, providing an additional layer of security and control over your applications. You can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice.
 
 ## How does this work
 
-In addition to the Envoy sidecar, your application pods will include a kyverno-envoy component, either as a sidecar or as a separate pod. This kyverno-envoy will be configured to communicate with the Kyverno-envoy-plugin gRPC server. When Envoy receives an API request intended for your microservice, it consults the Kyverno-envoy-plugin server to determine whether the request should be permitted.
+In addition to the Envoy sidecar, your application pods will include a Kyverno-Envoy-Plugin component, either as a sidecar or as a separate pod. This Kyverno-Envoy-Plugin will be configured to communicate with the Kyverno-Envoy-Plugin gRPC server. When Envoy receives an API request intended for your microservice, it consults the Kyverno-Envoy-Plugin server to determine whether the request should be permitted.
 
-Here is the architecture when kyverno-envoy-plugin deployed as a sidecar to your application: 
+Here is the architecture when Kyverno-Envoy-Plugin deployed as a sidecar to your application: 
 
 ![architecture-sidecar](./arch-pod.png)
 
-Here is the architecture when kyverno-envoy-plugin deployed as a separate pod to your application:
+Here is the architecture when Kyverno-Envoy-Plugin deployed as a separate pod to your application:
 
 ![architecture-pod](./arch-seprate-pod.png)
 
 Performing policy evaluations locally with Envoy is advantageous, as it eliminates the need for an additional network hop for authorization checks, thus enhancing both performance and availability.
 
-The kyverno-envoy-plugin can be deployed with Envoy-based sevice meshes such as [Istio](https://istio.io/), [Gloo](https://gloo.solo.io/), [Kuma](https://kuma.io/) etc.
+The Kyverno-Envoy-Plugin can be deployed with Envoy-based sevice meshes such as [Istio](https://istio.io/), [Gloo](https://gloo.solo.io/), [Kuma](https://kuma.io/) etc.
 
 ## Getting started
 
-In this blog, we will deploy the kyverno-envoy-plugin as a sidecar container next to the application container. The plugin will handle authorizing incoming requests to the application. Additionally, [documentation](https://kyverno.github.io/kyverno-envoy-plugin/dev/) is provided for deploying the plugin as a separate pod.
+In this blog, we will deploy the Kyverno-Envoy-Plugin as a sidecar container next to the application container. The plugin will handle authorizing incoming requests to the application. Additionally, [documentation](https://kyverno.github.io/kyverno-envoy-plugin/dev/) is provided for deploying the plugin as a separate pod.
 
 Before we can look at Kyverno-Envoy-Plugin we need a Kubernetes cluster. We can create a local cluster with [minikube](https://minikube.sigs.k8s.io/docs/) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
@@ -52,9 +52,9 @@ Start minikube cluster with the following command:
 minikube start
 ```
 
-### Install kyverno-envoy sidecar with application
+### Install Kyverno-Envoy-Plugin sidecar with application
 
-Install application with envoy and kyverno-envoy-plugin as a sidecar container.
+Install application with Envoy and Kyverno-Envoy-Plugin as a sidecar container.
 
 ```sh
 $ kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno-envoy-plugin/main/quick_start.yaml 
@@ -64,11 +64,11 @@ The `applicaition.yaml` manifest defines the following resource:
 
 - The Deployment includes an example Go application that provides information of books in the library books collection and exposes APIs to `get`, `create` and `delete` books collection. Check this out for more information about the [Go test application](https://github.com/Sanskarzz/kyverno-envoy-demos/tree/main/test-application) . 
 
-- The Deployment also includes a kyverno-envoy-plugin sidecar container in addition to the Envoy sidecar container. When Envoy recevies API request destined for the Go test applicaiton, it will check with kyverno-envoy-plugin to decide if the request should be allowed and the kyverno-envoy-plugin sidecar container is configured to query Kyverno-json engine for policy decisions on incoming requests.
+- The Deployment also includes a Kyverno-Envoy-Plugin sidecar container in addition to the Envoy sidecar container. When Envoy recevies API request destined for the Go test applicaiton, it will check with Kyverno-Envoy-Plugin to decide if the request should be allowed and the Kyverno-Envoy-Plugin sidecar container is configured to query Kyverno-JSON engine for policy decisions on incoming requests.
 
-- A ConfigMap `policy-config` is used to pass the policy to kyverno-envoy-plugin sidecar in the namespace `default` where the application is deployed .
+- A ConfigMap `policy-config` is used to pass the policy to Kyverno-Envoy-Plugin sidecar in the namespace `default` where the application is deployed .
 
-- A ConfigMap `envoy-config` is used to pass an Envoy configuration with an External Authorization Filter to direct authorization checks to the kyverno-envoy-plugin sidecar. 
+- A ConfigMap `envoy-config` is used to pass an Envoy configuration with an External Authorization Filter to direct authorization checks to the Kyverno-Envoy-Plugin sidecar. 
 
 - The Deployment also includes an init container that install iptables rules to redirect all container traffic to the Envoy proxy sidecar container , more about init container can be found [here](https://github.com/kyverno/kyverno-envoy-plugin/tree/main/demo/standalone-envoy/envoy_iptables)
 
@@ -98,7 +98,7 @@ export ALICE_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIyNDEwODE1Mzk
 export BOB_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIyNDEwODE1MzksIm5iZiI6MTUxNDg1MTEzOSwicm9sZSI6ImFkbWluIiwic3ViIjoiWVd4cFkyVT0ifQ.veMeVDYlulTdieeX-jxFZ_tCmqQ_K8rwx2OktUHv5Z0"
 ```
 
-The policy we passed to kyverno-envoy-plugin sidecar in the ConfigMap `policy-config` is configured to check the conditions of the incoming request and denies the request if the user is a guest and the request method is `POST` at the `/book` path.
+The policy we passed to Kyverno-Envoy-Plugin sidecar in the ConfigMap `policy-config` is configured to check the conditions of the incoming request and denies the request if the user is a guest and the request method is `POST` at the `/book` path.
 
 ```yaml
 apiVersion: json.kyverno.io/v1alpha1
@@ -192,7 +192,7 @@ Request is initialized in kyvernojson engine .
 
 ### Configuration
 
-To deploy Kyverno-Envoy include the following container in your kubernetes Deployments:
+To deploy Kyverno-Envoy-Plugin include the following container in your Kubernetes Deployments:
 
 ```yaml
 - name: kyverno-envoy-plugin
