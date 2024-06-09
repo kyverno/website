@@ -14,15 +14,15 @@ As more organizations move to using microservices, there is an increasing need f
 
 In this blog post, we will introduce [kyverno-envoy-plugin](https://github.com/kyverno/kyverno-envoy-plugin), how it works and you can use this version of kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice or application code.
 
-## What is Envoy?
+## What is Envoy
 
 [Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy) is a Layer 7 proxy and communication bus tailored for large-scale, modern service-oriented architectures. Starting from version 1.7.0, Envoy includes an [External Authorization filter](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html) that interfaces with an authorization service to check if the incoming request is authorized or not. This functionality allows authorization decisions to be offloaded to an external service, which can access the request context. The request context includes details such as the origin and destination of the network activity, as well as specifics of the network request (e.g., HTTP request). This information enables the external service to make a well-informed decision regarding the authorization of the incoming request processed by Envoy.
 
-## What is Kyverno-Envoy-Plugin?
+## What is Kyverno-Envoy-Plugin
 
 [Kyverno-envoy](https://github.com/kyverno/kyverno-envoy-plugin) plugin extends [Kyverno-json](https://kyverno.github.io/kyverno-json/latest/) with a gRPC server that implements [Envoy External Authorization API](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html). This allows you to enforce Kyverno policies on incoming and outgoing traffic in a service mesh environment, providing an additional layer of security and control over your applications. You can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice.
 
-## How does this work?
+## How does this work
 
 In addition to the Envoy sidecar, your application pods will include a kyverno-envoy component, either as a sidecar or as a separate pod. This kyverno-envoy will be configured to communicate with the Kyverno-envoy-plugin gRPC server. When Envoy receives an API request intended for your microservice, it consults the Kyverno-envoy-plugin server to determine whether the request should be permitted.
 
@@ -38,7 +38,7 @@ Performing policy evaluations locally with Envoy is advantageous, as it eliminat
 
 The kyverno-envoy-plugin can be deployed with Envoy-based sevice meshes such as [Istio](https://istio.io/), [Gloo](https://gloo.solo.io/), [Kuma](https://kuma.io/) etc.
 
-## Getting started 
+## Getting started
 
 In this blog, we will deploy the kyverno-envoy-plugin as a sidecar container next to the application container. The plugin will handle authorizing incoming requests to the application. Additionally, [documentation](https://kyverno.github.io/kyverno-envoy-plugin/dev/) is provided for deploying the plugin as a separate pod.
 
@@ -51,7 +51,7 @@ Start minikube cluster with the following command:
 ```sh
 minikube start
 ```
-### Install kyverno-envoy sidecar with application 
+### Install kyverno-envoy sidecar with application
 
 Install application with envoy and kyverno-envoy-plugin as a sidecar container.
 
@@ -70,13 +70,13 @@ The `applicaition.yaml` manifest defines the following resource:
 
 - The Deployment also includes an init container that install iptables rules to redirect all container traffic to the Envoy proxy sidecar container , more about init container can be found [here](https://github.com/kyverno/kyverno-envoy-plugin/tree/main/demo/standalone-envoy/envoy_iptables)
 
-### Make Test application accessible in the cluster .
+### Make Test application accessible in the cluster
 
 ```console 
 kubectl expose deployment testapp --type=NodePort --name=testapp-service --port=8080
 ```
  
-### Set the `SERVICE_URL` environment variable to the service's IP/port.
+### Set the `SERVICE_URL` environment variable to the service's IP/port
 
 minikube:
 
@@ -86,7 +86,7 @@ export SERVICE_HOST=$(minikube ip)
 export SERVICE_URL=$SERVICE_HOST:$SERVICE_PORT
 echo $SERVICE_URL
 ```
-### Calling the sample test application and verify the authorization 
+### Calling the sample test application and verify the authorization
 
 For convenience, we’ll want to store Alice’s and Bob’s tokens in environment variables. Here bob is assigned the admin role and alice is assigned the guest role.
 
@@ -183,7 +183,7 @@ Request is initialized in kyvernojson engine .
 2024/04/26 17:23:55 Request passed the deny-guest-request-at-post policy rule.
 ```
 
-### Configuration 
+### Configuration
 
 To deploy Kyverno-Envoy include the following container in your kubernetes Deployments:
 
