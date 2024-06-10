@@ -10,9 +10,7 @@ The [Kyverno source code](https://github.com/kyverno/kyverno/) and project artif
 
 ## Slack Channel
 
-Join the Kubernetes Slack workspace at [https://slack.k8s.io/](https://slack.k8s.io/) and then search for the [#kyverno](https://slack.k8s.io/#kyverno) channel.
-
-If you already have access to the Kubernetes Slack workspace simply select "sign in" at [https://slack.k8s.io/#kyverno](https://slack.k8s.io/#kyverno).
+Kyverno maintains a thriving community with two different opportunities to participate. The largest is the [Kubernetes Slack workspace](https://slack.k8s.io/#kyverno), where end-users engage in the [#kyverno](https://slack.k8s.io/#kyverno) channel and contributors collaborate in the [#kyverno-dev](https://slack.k8s.io/#kyverno-dev) channel. The other is the [CNCF Slack workspace](https://cloud-native.slack.com/#kyverno), where the [#kyverno](https://slack.k8s.io/#kyverno) channel is dedicated to end-user interactions.
 
 ## Community Meetings
 
