@@ -43,9 +43,7 @@ FIELDS:
      each rule can validate, mutate, or generate resources.
 
    schemaValidation     <boolean>
-     SchemaValidation skips policy validation checks. Optional. The default
-     value is set to "true", it must be set to "false" to disable the validation
-     checks.
+     Deprecated.
 
    validationFailureAction      <string>
      ValidationFailureAction controls if a validation policy rule failure should

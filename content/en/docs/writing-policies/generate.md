@@ -286,6 +286,10 @@ In some cases, a triggering (source) resource and generated (downstream) resourc
 
 When a generate rule has synchronization enabled (`synchronize: true`), deletion of the triggering resource will automatically cause deletion of the downstream (generated) resource. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause removal of the downstream resource. In cases where synchronization needs to be disabled, if the trigger and downstream are both Namespaced resources and in the same Namespace, the ownerReference technique can be used.
 
+{{% alert title="Note" color="info" %}}
+Synchronization involving changes to trigger resources are confined to the `match` block and do not take into consideration preconditions.
+{{% /alert %}}
+
 It is possible to set the `ownerReferences` field in the generated resource which, when pointed to the trigger, will cause deletion of the trigger to instruct Kubernetes to garbage collect the downstream. With the below example, when the generated ConfigMap specifies the `metadata.ownerReferences[]` object and defines the following fields including `uid`, which references the triggering Service resource, an owner-dependent relationship is formed. Later, if the Service is deleted, the ConfigMap will be as well. See the [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/#owner-references-in-object-specifications) for more details including an important caveat around the scoping of these references. Specifically, Namespaced resources cannot be the owners of cluster-scoped resources, and cross-namespace references are also disallowed.
 
 ```yaml

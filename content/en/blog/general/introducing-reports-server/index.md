@@ -33,7 +33,7 @@ A high-level overview of the architecture is shown below.
 
 ## Performance
 
-Reports server stores policy reports and ephemeral reports outside etcd thus reducing the database size of etcd. In the following tables, we show the database size of etcd of increased workloads with and without reports server. In this test, we installed Kyverno policies to audit the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) using 17 policies. Subsequently, we created workloads (Pods, Deployments, ReplicaSets) that match the installed Kyverno policies and scheduled them on false kwok nodes to measure total size of policy reports in etcd. [kwok](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. `DB_SIZE` in the output of `etcdctl endpoint status -w table` was used to calculate etcd DB size. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing). The version of Kyverno used in this testing was 1.12.1. 
+The reports server stores policy and ephemeral reports, offloading them from etcd and minimizing its storage footprint. In the following tables, we show the database size of etcd of increased workloads with and without reports server. In this test, we installed Kyverno policies to audit the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) using 17 policies. Subsequently, we created workloads (Pods, Deployments, ReplicaSets) that match the installed Kyverno policies and scheduled them on false kwok nodes to measure total size of policy reports in etcd. [kwok](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. `DB_SIZE` in the output of `etcdctl endpoint status -w table` was used to calculate etcd DB size. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing). The version of Kyverno used in this testing was 1.12.3.
 
 ### Without Reports Server
 
@@ -55,16 +55,17 @@ $ kubectl get polr -A | wc -l
 ```
 `apiserver_storage_objects` metrics show that there are 10000+ policy reports stored in etcd along with other resources.
 
-Total size of etcd, including all resources in the cluster with respect to amount of policy reports:
-| Number of Policy Reports | Total etcd Size |
-| --------------- | --------------- |
-| 1270            | 134 MB          |
-| 2470            | 223 MB          |
-| 3770            | 280 MB          |
-| 4970            | 334 MB          |
-| 7370            | 467 MB          |
-| 9770            | 552 MB          |
-| 10010           | 552 MB          |
+Total size of etcd:
+
+| Number of Policy Reports | Number of Pods | Total etcd Size |
+| --------------- | --------------- | --------------- |
+| 179             | 139             | 46 MB           |
+| 1199            | 1139            | 71 MB           |
+| 2219            | 2139            | 100 MB          |
+| 4259            | 4139            | 149 MB          |
+| 6299            | 6139            | 167 MB          |
+| 8339            | 8139            | 220 MB          |
+| 10379           | 10139           | 255 MB          |
 
 ### With Reports Server
 
@@ -85,18 +86,19 @@ $ kubectl get polr -A | wc -l
 ```
 `apiserver_storage_objects` metric does not find policy reports stored in etcd.
 
-Total size of etcd, including all resources in the cluster with respect to amount of policy reports:
-| Number of Policy Reports | Total etcd Size |
-| --------------- | --------------- |
-| 1204            | 71 MB           |
-| 2404            | 115 MB          |
-| 3604            | 152 MB          |
-| 4804            | 191 MB          |
-| 7204            | 276 MB          |
-| 9604            | 343 MB          |
-| 10250           | 370 MB          |
+Total size of etcd:
 
-As shown in the benchmark, the size of etcd grows as the number of resources in the cluster grows, but the growth is slower when reports server is installed. As reports server stores policy reports in a separate database, they don't take up any space in etcd. At 10,000 reports, the database size of etcd is 33% smaller compared to when reports server is installed.
+| Number of Policy Reports | Number of Pods | Total etcd Size |
+| --------------- | --------------- | --------------- |
+| 185             | 141             | 38 MB           |
+| 1205            | 1141            | 38 MB           |
+| 2225            | 2141            | 41 MB           |
+| 4265            | 4141            | 55 MB           |
+| 6305            | 6141            | 58 MB           |
+| 8345            | 8141            | 67 MB           |
+| 10385           | 10141           | 76 MB           |
+
+As shown in the benchmark, the size of etcd grows as the number of resources in the cluster grows, but the growth is slower when reports server is installed. As reports server stores policy reports in a separate database, they don't take up any space in etcd. At 10,000 reports, the storage size of etcd is 70.1% smaller compared to when reports server is installed.
 
 ## Getting Started
 

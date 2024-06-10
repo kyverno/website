@@ -27,7 +27,7 @@ metadata:
       in order to be valid. This policy ensures that there is a
       hostname for each rule defined.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Audit
   background: false
   rules:
     - name: disallow-empty-ingress-host

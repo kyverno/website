@@ -16,29 +16,34 @@ If you already have access to the Kubernetes Slack workspace simply select "sign
 
 ## Community Meetings
 
+### Community Meeting
+
+This is a public, weekly for Kyverno the full community. First time participants, new contributors, or anyone interested in Kyverno are welcome! This forum allows community members to propose agenda items of any sort, including but not limited to releases, roadmap, any contributor PRs or issues on which they are working.
+
+- Weekly every Wednesday at 9:00 AM PST
+- [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
+
 To attend our community meetings, join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the agenda and meeting notes. Any member may suggest topics for discussion.
-
-### Nirmata Office Hours
-
-This is a monthly meeting for the broader community where the Kyverno maintainers from [Nirmata](https://nirmata.com/) cover one or more topics with preference given to open community discussion, question and answer, etc. Meeting is live streamed on YouTube with recordings available after. Either join in person or attend in view-only mode:
-
-- Monthly on the second Thursday at 7:00 AM PST
-- [Repo](https://github.com/nirmata/office-hours-for-kyverno)
 
 ### Maintainers Meeting
 
+This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap. 
 
-This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and direction. Contributors and end users are welcome to attend and participate but may not raise agenda items. Topics to be proposed by non-maintainers should use the Kyverno Community Meeting.
+Topics are proposed by maintainers. Contributors and end users are welcome to attend and contributors, but may not propose new agenda items here but instead add to the [community meeting](#community-meeting) agenda.
 
 - Weekly every Tuesday at 7:30 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
 
-### Community Meeting
 
-This is a public, weekly for Kyverno maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
+### Nirmata Office Hours
 
-- Weekly every Wednesday at 9:00 AM PST
-- [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
+This is a monthly meeting for the broader community where the Kyverno maintainers from [Nirmata](https://nirmata.com/) cover one or more topics with preference given to open community discussion, question and answer, etc. 
+
+The meeting is live streamed on YouTube with recordings available after. Either join in person or attend in view-only mode:
+
+- Monthly on the second Thursday at 7:00 AM PST
+- [GitHub repository](https://github.com/nirmata/office-hours-for-kyverno)
+
 
 ## Get in touch
 
@@ -50,7 +55,13 @@ We love hearing from our community!
 
 Thanks for your interest in contributing! We welcome all types of contributions and encourage you to read our [contribution guidelines](https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md) for next steps.
 
-The project contributors use a combination of [GitHub discussions](https://github.com/kyverno/kyverno/discussions), [GitHub Wiki](https://github.com/kyverno/kyverno/wiki) for design documents, and the [#kyverno-dev Slack channel](https://kubernetes.slack.com/archives/C032MM2CH7X) for notes on the development environment, project guidelines, and best practices.
+The project contributors use a combination of [GitHub discussions](https://github.com/kyverno/kyverno/discussions) and the [#kyverno-dev Slack channel](https://kubernetes.slack.com/archives/C032MM2CH7X) for notes on the development environment, project guidelines, and best practices.
+
+Developer documentation is available in the [DEVELOPER.md](https://github.com/kyverno/kyverno/blob/main/DEVELOPMENT.md) file. 
+
+**NOTE:** Developer documentation was previously available in the ([GitHub Wiki](https://github.com/kyverno/kyverno/wiki)) but is no longer maintained there. 
+
+To start contributing, take a look at available issues in the [Good First Issues](https://github.com/orgs/kyverno/projects/10) project.
 
 ## Join Kyverno Adopters
 
@@ -69,7 +80,6 @@ This document highlights the roles and responsibilities for the Kyverno communit
 ### Project Roles
 
 The table below summarizes project roles and responsibilities. Details are provided in the sections following the table:
-
 
 | Role | Requirements | Ongoing Responsibilities | Defined by |
 | ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -191,7 +201,6 @@ An off-boarding vote may be called by any maintainer if any of the following cri
   - Contributions can be tracked using the [DevStats dashboard](https://kyverno.devstats.cncf.io/d/66/developer-activity-counts-by-companies?orgId=1&var-period_name=Last%206%20months&var-metric=contributions&var-repogroup_name=All&var-country_name=All&from=1522810884223&to=1680577284223&var-companies=All).
   - Other relevant data will be collected and evaluated to assess the maintainer's contributions. This includes their involvement in discussions, conversations on Slack, and any other relevant interactions.
 
-
 The off-boarding process includes the following steps:
 - The off-boarding process is initiated by any currently active maintainer who conducts a review of the maintainers list and proceeds to initialize the off-boarding process if the above criteria are met.
 - The plans of off-boarding process is sent in a private Slack message or email to the candidate.
@@ -201,11 +210,9 @@ The off-boarding process includes the following steps:
 - The vote passes if a majority of current maintainers vote yes during a voting period lasting seven (7) days.
 - A positive vote will result in movement to an _emeritus_ status within `MAINTAINERS.md` and removal from organization membership.
 
-
 #### Admins
 
 These are persons who have full access to the project, including sensitive and destructive actions like managing security or deleting a repository. Admins can read, clone, and push to this repository. They can also manage issues, pull requests, and repository settings, including adding collaborators.
-
 
 #### Mapping Project Roles to GitHub Roles
 
