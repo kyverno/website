@@ -71,7 +71,7 @@ To participate, fill out the [Kyverno adopters form](https://forms.gle/K5CApcBAD
 
 ## Project Governance
 
-This document highlights the roles and responsibilities for the Kyverno community members. It also outlines the requirements for anyone who is looking to take on leadership roles in the Kyverno project. The following responsibilities apply to all Kyverno subprojects.
+This document highlights the roles and responsibilities for the Kyverno community members. It also outlines the requirements for anyone who is looking to take on leadership roles in the Kyverno project. The following governance applies to all Kyverno subprojects.
 
 **Note:** Please make sure to read the CNCF [Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
