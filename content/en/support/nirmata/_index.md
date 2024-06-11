@@ -20,13 +20,13 @@ type: docs
   * Policy authoring
   * Policy optimizations
   * Upgrade assistance
-  * Custom trainings & workshops
+  * Custom trainings & workshops 
 
 ### Nirmata Enterprise for Kyverno
 
-[Nirmata Enterprise for Kyverno](https://nirmata.com/nirmata-enterprise-for-kyverno/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
+[Nirmata Enterprise for Kyverno](https://nirmata.com/kyverno-enterprise/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
 
-* Kyverno LTS for long term support with compatibility testing, CVE and critical fix SLAs
+* Kyverno LTS for long term support with compatibility testing, CVE and critical fix SLAs 
 * Kyverno engine health and lifecycle management
 * Policy data adapters for fast in-cluster processing
 * Curated policy sets covering all major security concerns
@@ -56,8 +56,12 @@ type: docs
   * Multi-tenancy
   * Supply Chain Security
 * Custom compliance standards with policy mappings
-* Continuous Compliance reporting
+* Continious Compliance reporting
 
 ### Kyverno Training
 
 Nirmata offers expert training and custom workshops for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.
+
+### Free Certification
+
+Nirmata offers a [free Kyverno certification](https://learn.nirmata.com/explore) where you can test your knowledge and earn a Kyverno badge!
