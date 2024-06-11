@@ -16,11 +16,6 @@
   url = "/policies"
 
 [[main]]
-  name = "Resources"
-  weight = -99
-  url = "/resources"
-
-[[main]]
   name = "Playground"
   weight = -98
   url = "https://playground.kyverno.io/"

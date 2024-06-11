@@ -67,15 +67,11 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 * The choice between using a `pattern` statement or a `deny` statement depends largely on the data you need to consider; `pattern` works on incoming (new) objects while `deny` can additionally work on variable data such as the API operation (CREATE, UPDATE, etc.), old object data, and ConfigMap data.
 
-* In some less common cases, Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. In these cases add `spec.schemaValidation: false` to your policy to tell Kyverno to skip validation. This is similar to passing the `--validate` flag to `kubectl`.
-
 ## Mutate
 
 * When writing policies which perform [cascading mutations](mutate.md#mutate-rule-ordering-cascading), rule ordering matters. All rules which perform cascading mutations should be in the same policy definition and ordered top to bottom to ensure consistent results.
 
 * Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](mutate.md#rfc-6902-jsonpatch) method.
-
-* Just like in `validate` rules, in some less common cases Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. In mutate rules, Kyverno will internally try to generate a patch to see if the policy would be valid. In these cases add `spec.schemaValidation: false` to your policy to tell Kyverno to skip validation. This is similar to passing the `--validate` flag to `kubectl`.
 
 ## Generate
 

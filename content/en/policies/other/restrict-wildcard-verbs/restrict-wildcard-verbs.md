@@ -46,7 +46,8 @@ spec:
         deny:
           conditions:
             any:
-            - key: "{{ contains(request.object.rules[].verbs[], '*') }}"
+            - key: "{{ contains(to_array(request.object.rules[].verbs[]), '*') }}"
               operator: Equals
               value: true
+
 ```
