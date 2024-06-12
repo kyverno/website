@@ -294,6 +294,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `add_dir_header` (ABCR) | | Adds the file directory to the header of the log messages. |
 | `admissionReports` (AR) | true | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. |
 | `aggregateReports` (R) | true | Enables the report aggregating ability of AdmissionReports (1.10.2+). |
+| `aggregationWorkers` (R) | | Configures the number of internal worker threads used to perform reports aggregation (1.12.3+). |
 | `allowInsecureRegistry` (ABR)| | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/writing-policies/verify-images/) rules or [variables from image registries](/docs/writing-policies/external-data-sources/#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
 | `alsologtostderr` (ABCR) | | Log to standard error as well as files (no effect when -logtostderr=true) |
 | `autoUpdateWebhooks` (A) | true | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard. |
@@ -334,7 +335,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `maxAPICallResponseLength` (ABCR) | `10000000` | Sets the maximum length of the response body for API calls. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
-| `omit-events` (ABR) | | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is undefined (all events will be emitted). |
+| `omitEvents` (ABR) | `"PolicyApplied,PolicySkipped"` | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is `PolicyApplied` and `PolicySkipped`. |
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
 | `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
