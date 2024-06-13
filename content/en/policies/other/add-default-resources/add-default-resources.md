@@ -48,7 +48,7 @@ spec:
         - UPDATE
     mutate:
       foreach:
-      - list: "request.object.spec.containers[]"
+      - list: "request.object.spec.[ephemeralContainers, initContainers, containers][]"
         patchStrategicMerge:
           spec:
             containers:

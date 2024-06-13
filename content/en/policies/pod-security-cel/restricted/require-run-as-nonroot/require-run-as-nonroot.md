@@ -31,7 +31,7 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-    - name: run-as-nonroot
+    - name: run-as-non-root
       match:
         any:
         - resources:
@@ -70,4 +70,6 @@ spec:
                 Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot or all of
                 spec.containers[*].securityContext.runAsNonRoot, spec.initContainers[*].securityContext.runAsNonRoot and
                 spec.ephemeralContainers[*].securityContext.runAsNonRoot, must be set to true.
+                
+
 ```
