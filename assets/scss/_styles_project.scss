@@ -2,6 +2,14 @@ body {
   scroll-behavior: smooth;
   overscroll-behavior: none;
 }
+a {
+  text-decoration: none;
+}
+
+.alert {
+  max-width: 100% !important;  
+}
+
 .td-navbar {
   min-height: auto;
 }
@@ -509,6 +517,7 @@ code.noClass {
   overflow: initial;
   display: initial;
   margin: 0;
+  border: none;
 }
 
 .highlight table {
