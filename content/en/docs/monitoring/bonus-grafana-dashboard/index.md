@@ -69,7 +69,7 @@ helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
 kubectl -n monitoring get po -l "release"
 ```
 
-Create the service monitor
+Create the ServiceMonitor resource.
 
 `vi sm.yaml`
 
