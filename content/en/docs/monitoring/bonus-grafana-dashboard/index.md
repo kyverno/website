@@ -123,7 +123,7 @@ kubectl rollout restart deploy,sts -n monitoring
 Check services in the `monitoring` Namespace.
 
 ```sh
-k get svc -n monitoring             
+kubectl get svc -n monitoring             
                                                                                                             
 NAME                                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 monitoring-kube-prometheus-prometheus     ClusterIP   10.96.238.189   <none>        9090/TCP,8080/TCP            4h16m
