@@ -47,7 +47,7 @@ curl -fsS https://raw.githubusercontent.com/kyverno/kyverno/main/charts/kyverno/
 kind create cluster
 ```
 
-Add helm repositories
+Add Helm repositories.
 
 ```sh
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts 
