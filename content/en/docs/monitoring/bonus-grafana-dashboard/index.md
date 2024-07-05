@@ -71,7 +71,6 @@ kubectl -n monitoring get po -l "release"
 
 Create the ServiceMonitor resource.
 
-`vi sm.yaml`
 
 Add the following service monitor yaml
 
