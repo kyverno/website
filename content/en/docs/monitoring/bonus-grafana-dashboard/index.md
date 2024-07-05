@@ -146,7 +146,7 @@ kubectl get svc -n monitoring
 NAME                                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 monitoring-grafana                        ClusterIP   10.96.188.20    <none>        80/TCP                       4h19m
 
-sudo kubectl port-forward svc/monitoring-grafana -n monitoring 82:80    
+kubectl port-forward svc/monitoring-grafana -n monitoring 82:3000
 
 Forwarding from 127.0.0.1:82 -> 3000
 Forwarding from [::1]:82 -> 3000
