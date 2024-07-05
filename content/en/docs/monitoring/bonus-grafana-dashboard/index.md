@@ -108,7 +108,7 @@ k label ns kyverno app.kubernetes.io/instance=kyverno
 k label ns kyverno app.kubernetes.io/name=kyverno
 ```
 
-Apply service-monitor.yaml
+Create the ServiceMonitor.
 
 ```sh
 kubectl apply -f service-monitor.yaml
