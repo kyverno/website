@@ -72,7 +72,7 @@ kubectl -n monitoring get po -l "release"
 Create the ServiceMonitor resource.
 
 
-Add the following service monitor yaml
+Add the following contents to a file named `service-monitor.yaml`.
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
