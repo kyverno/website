@@ -154,7 +154,7 @@ Forwarding from [::1]:82 -> 3000
 
 Go to Prometheus on port 9090 and check status -> Targets -> Filter for kyverno (to see if metrics are getting scraped)
 
-Go to Grafana on port 82 (in this case) -> Dashboards -> New ->  import -> Upload file that you get from running the below command -> Data type = Prometheus -> import
+Go to Grafana on port 3000 -> Dashboards -> New ->  import -> Upload file that you get from running the below command -> Data type = Prometheus -> import
 
 ```sh
 curl https://raw.githubusercontent.com/kyverno/grafana-dashboard/master/grafana/dashboard.json -o kyverno-dashboard.json
