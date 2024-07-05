@@ -111,7 +111,7 @@ k label ns kyverno app.kubernetes.io/name=kyverno
 Apply service-monitor.yaml
 
 ```sh
-k apply -f sm.yaml
+kubectl apply -f service-monitor.yaml
 ```
 
 Restart deployments and sts in monitoring ns
