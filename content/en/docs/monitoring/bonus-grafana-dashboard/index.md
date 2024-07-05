@@ -138,7 +138,7 @@ Forwarding from 127.0.0.1:81 -> 9090
 Forwarding from [::1]:81 -> 9090
 ```
 
-Similarly port forward the svc/monitoring-grafana to another local port
+Similarly, port forward the `monitoring-grafana` Service to another local port.
 
 ```sh
 k get svc -n monitoring               
