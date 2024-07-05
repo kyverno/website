@@ -8,7 +8,7 @@ description: Make external authorization easy with Kyverno-Envoy-Plugin.
 
 ![Kyverno-Envoy-Plugin](logo.png)
 
-While microservices offer benefits by breaking applications into smaller, independent parts, they also introduce new challenges offcourse microservies improve productivity of individual development. Managing service discovery, authentication, and authorization across multiple microservices can be complex. These tasks become even more intricate due to the diverse and short-lived nature of microservice environments.
+Microservices enhance the productivity of individual development teams by dividing applications into smaller, independent components. However, microservices alone do not address longstanding challenges in distributed systems such as authentication and authorization. These problems can become even harder to manage due to the diverse and short-lived nature of the microservice environments.
 
 As more organizations move to using microservices, there is an increasing need for separate authentication and authorization mechanisms that work across different microservices.
 
@@ -75,7 +75,7 @@ The `applicaition.yaml` manifest defines the following resource:
 ### Make Test application accessible in the cluster
 
 ```console 
-kubectl expose deployment testapp --type=NodePort --name=testapp-service --port=8080
+kubectl expose deployment testapp --type=NodePort --name=testapp --port=8080
 ```
  
 ### Set the `SERVICE_URL` environment variable to the service's IP/port
