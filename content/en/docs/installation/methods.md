@@ -45,10 +45,15 @@ Since Kyverno is comprised of different controllers where each is contained in s
 The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
 
 ```yaml
-admissionController.replicas: 3
-backgroundController.replicas: 2
-cleanupController.replicas: 2
-reportsController.replicas: 2
+admissionController:
+  replicas: 3
+backgroundController:
+  replicas: 2
+cleanupController:
+  replicas: 2
+reportsController:
+  replicas: 2
+
 ```
 
 For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
