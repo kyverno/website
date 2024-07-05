@@ -117,7 +117,7 @@ kubectl apply -f service-monitor.yaml
 Restart Deployments and StatefulSets in the `monitoring` Namespace.
 
 ```sh
-k rollout restart deploy,sts -n monitoring
+kubectl rollout restart deploy,sts -n monitoring
 ```
 
 Check services in monitoring ns
