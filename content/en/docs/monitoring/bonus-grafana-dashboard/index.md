@@ -60,7 +60,7 @@ Update Helm repositories.
 helm repo update    
 ```
 
-Install Kyverno and monitoring
+Install Kyverno and the kube-prometheus-stack Helm chart.
 
 ```sh
 helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace 
