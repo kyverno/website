@@ -66,7 +66,7 @@ Install Kyverno and the kube-prometheus-stack Helm chart.
 helm install kyverno kyverno/kyverno --namespace kyverno --create-namespace 
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
 
-k -n monitoring get po -l "release"
+kubectl -n monitoring get po -l "release"
 ```
 
 Create the service monitor
