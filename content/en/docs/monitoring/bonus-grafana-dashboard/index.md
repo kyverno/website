@@ -41,7 +41,7 @@ curl -fsS https://raw.githubusercontent.com/kyverno/kyverno/main/charts/kyverno/
 
 ![Dashboard example 2](dashboard-example-2.png)
 
-### Example: Setup Grafana with Kyverno and a Kind cluster
+### Tutorial
 
 ```sh
 kind create cluster
