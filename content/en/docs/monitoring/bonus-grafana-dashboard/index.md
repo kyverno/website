@@ -132,7 +132,7 @@ monitoring-kube-prometheus-prometheus     ClusterIP   10.96.238.189   <none>    
 Port forward the `monitoring-kube-prometheus-prometheus` Service to a local port.
 
 ```sh
-sudo kubectl port-forward svc/monitoring-kube-prometheus-prometheus 81:9090 -n monitoring                                                       
+kubectl port-forward svc/monitoring-kube-prometheus-prometheus 81:9090 -n monitoring                                                       
 
 Forwarding from 127.0.0.1:81 -> 9090
 Forwarding from [::1]:81 -> 9090
