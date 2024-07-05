@@ -101,7 +101,7 @@ spec:
       app.kubernetes.io/instance: kyverno
 ```
 
-Add right labels
+Add the appropriate labels.
 
 ```sh
 k label ns kyverno app.kubernetes.io/instance=kyverno                                                               
