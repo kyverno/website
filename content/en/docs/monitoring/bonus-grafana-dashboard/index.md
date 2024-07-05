@@ -152,7 +152,7 @@ Forwarding from 127.0.0.1:82 -> 3000
 Forwarding from [::1]:82 -> 3000
 ```
 
-Go to Prometheus on port 81 (in this case) and check status -> Targets -> Filter for kyverno (to see if metrics are getting scraped)
+Go to Prometheus on port 9090 and check status -> Targets -> Filter for kyverno (to see if metrics are getting scraped)
 
 Go to Grafana on port 82 (in this case) -> Dashboards -> New ->  import -> Upload file that you get from running the below command -> Data type = Prometheus -> import
 
