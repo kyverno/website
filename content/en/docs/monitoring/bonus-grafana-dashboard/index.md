@@ -120,7 +120,7 @@ Restart Deployments and StatefulSets in the `monitoring` Namespace.
 kubectl rollout restart deploy,sts -n monitoring
 ```
 
-Check services in monitoring ns
+Check services in the `monitoring` Namespace.
 
 ```sh
 k get svc -n monitoring             
