@@ -54,7 +54,7 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm repo add kyverno https://kyverno.github.io/kyverno/ 
 ```
 
-Update repos
+Update Helm repositories.
 
 ```sh
 helm repo update    
