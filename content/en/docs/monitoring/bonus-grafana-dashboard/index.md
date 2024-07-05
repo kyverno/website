@@ -114,7 +114,7 @@ Create the ServiceMonitor.
 kubectl apply -f service-monitor.yaml
 ```
 
-Restart deployments and sts in monitoring ns
+Restart Deployments and StatefulSets in the `monitoring` Namespace.
 
 ```sh
 k rollout restart deploy,sts -n monitoring
