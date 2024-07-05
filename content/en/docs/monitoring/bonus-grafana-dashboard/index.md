@@ -104,8 +104,8 @@ spec:
 Add the appropriate labels.
 
 ```sh
-k label ns kyverno app.kubernetes.io/instance=kyverno                                                               
-k label ns kyverno app.kubernetes.io/name=kyverno
+kubectl label ns kyverno app.kubernetes.io/instance=kyverno                                                               
+kubectl label ns kyverno app.kubernetes.io/name=kyverno
 ```
 
 Create the ServiceMonitor.
