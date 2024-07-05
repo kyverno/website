@@ -141,7 +141,7 @@ Forwarding from [::1]:81 -> 9090
 Similarly, port forward the `monitoring-grafana` Service to another local port.
 
 ```sh
-k get svc -n monitoring               
+kubectl get svc -n monitoring               
                                                                              
 NAME                                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 monitoring-grafana                        ClusterIP   10.96.188.20    <none>        80/TCP                       4h19m
