@@ -129,7 +129,7 @@ NAME                                      TYPE        CLUSTER-IP      EXTERNAL-I
 monitoring-kube-prometheus-prometheus     ClusterIP   10.96.238.189   <none>        9090/TCP,8080/TCP            4h16m
 ```
 
-Port forward the svc/monitoring-kube-prometheus-prometheus to a local port
+Port forward the `monitoring-kube-prometheus-prometheus` Service to a local port.
 
 ```sh
 sudo kubectl port-forward svc/monitoring-kube-prometheus-prometheus 81:9090 -n monitoring                                                       
