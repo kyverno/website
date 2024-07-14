@@ -37,6 +37,9 @@ spec:
         - resources:
             kinds:
             - Deployment
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:

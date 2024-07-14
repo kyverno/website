@@ -41,6 +41,9 @@ spec:
             kinds:
               - Role
               - ClusterRole
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:

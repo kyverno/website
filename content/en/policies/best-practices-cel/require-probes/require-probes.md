@@ -42,6 +42,9 @@ spec:
       - resources:
           kinds:
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:

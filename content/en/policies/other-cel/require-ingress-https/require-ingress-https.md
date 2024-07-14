@@ -38,6 +38,9 @@ spec:
       - resources:
           kinds:
           - Ingress
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
@@ -52,6 +55,9 @@ spec:
       - resources:
           kinds:
           - Ingress
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
