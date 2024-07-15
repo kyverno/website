@@ -37,6 +37,9 @@ spec:
           - resources:
               kinds:
                 - PodDisruptionBudget
+              operations:
+              - CREATE
+              - UPDATE
       validate:
         cel:
           expressions:
