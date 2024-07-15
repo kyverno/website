@@ -39,6 +39,9 @@ spec:
       - resources:
           kinds:
           - PersistentVolumeClaim
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
@@ -50,6 +53,9 @@ spec:
       - resources:
           kinds:
           - StatefulSet
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:

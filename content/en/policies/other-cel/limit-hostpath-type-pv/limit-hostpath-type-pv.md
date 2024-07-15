@@ -38,6 +38,9 @@ spec:
       - resources:
           kinds:
           - PersistentVolume
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel: 
         expressions:

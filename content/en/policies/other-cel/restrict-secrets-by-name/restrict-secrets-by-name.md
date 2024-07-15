@@ -40,6 +40,9 @@ spec:
       - resources:
           kinds:
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         variables:
@@ -57,6 +60,9 @@ spec:
       - resources:
           kinds:
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         variables:
@@ -74,6 +80,9 @@ spec:
       - resources:
           kinds:
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
