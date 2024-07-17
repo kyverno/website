@@ -158,6 +158,6 @@ For these breaking changes, and others, please carefully read the extensive and 
 
 ## Closing
 
-Kyverno 1.10 is quite the loaded release as you can probably see. After about four months and close to 500 PRs, there were a tremendous number of changes from the Kyverno community. And if you were one of the many, many contributors who pitched in to make this release a reality, a hearty THANK YOU for all your work! Hopefully what you've seen makes you excited to try out 1.10 for yourself. Come engage with us in the Kyverno channel on [Kubernetes Slack](/community/#slack-channel), attend one of our [community meetings](/community/#community-meetings), or just catch us on [Twitter](https://twitter.com/kyverno).
+Kyverno 1.10 is quite the loaded release as you can probably see. After about four months and close to 500 PRs, there were a tremendous number of changes from the Kyverno community. And if you were one of the many, many contributors who pitched in to make this release a reality, a hearty THANK YOU for all your work! Hopefully what you've seen makes you excited to try out 1.10 for yourself. Come engage with us in the Kyverno channel on [Kubernetes Slack](../../../community/_index.md#slack-channel), attend one of our [community meetings](../../../community/_index.md#meetings), or just catch us on [Twitter](https://twitter.com/kyverno).
 
 And if you're already a Kyverno adopter, sign up to be an official adopter by updating the Adopters form [here](https://github.com/kyverno/kyverno/blob/main/ADOPTERS.md).
