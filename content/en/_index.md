@@ -28,7 +28,7 @@ linkTitle = "Kyverno"
 <br/>
 
 <h2>
-Kyverno is a policy engine built for Kubernetes and cloud native environments
+Kyverno is a policy engine built for Kubernetes and cloud native environments.
 </h2>
 <br/>
 
