@@ -41,6 +41,9 @@ spec:
             - Deployment
             - DaemonSet
             - StatefulSet
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:

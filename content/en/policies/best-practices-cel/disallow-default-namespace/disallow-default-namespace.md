@@ -42,6 +42,9 @@ spec:
       - resources:
           kinds:
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
@@ -56,6 +59,9 @@ spec:
           - Deployment
           - Job
           - StatefulSet
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:

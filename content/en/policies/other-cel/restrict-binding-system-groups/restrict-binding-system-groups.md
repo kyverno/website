@@ -40,6 +40,9 @@ spec:
             kinds:
               - RoleBinding
               - ClusterRoleBinding
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:

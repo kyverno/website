@@ -40,6 +40,9 @@ spec:
         - resources:
             kinds:
               - Ingress
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:
