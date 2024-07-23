@@ -12,13 +12,13 @@ Microservices enhance the productivity of individual development teams by dividi
 
 As more organizations move to using microservices, there is an increasing need for separate authentication and authorization mechanisms that work across different microservices.
 
-In this blog post, we will introduce [Kyverno-Envoy-Plugin](https://github.com/kyverno/kyverno-envoy-plugin), how it works and you can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice or application code.
+In this blog post, we will introduce [Kyverno-Envoy-Plugin](https://github.com/kyverno/kyverno-envoy-plugin), how it works and how you can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice or application code.
 
 ## What is Envoy
 
 [Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy) is a Layer 7 proxy and communication bus tailored for large-scale, modern service-oriented architectures. Starting from version 1.7.0, Envoy includes an [External Authorization filter](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html) that interfaces with an authorization service to check if the incoming request is authorized or not. This functionality allows authorization decisions to be offloaded to an external service, which can access the request context. The request context includes details such as the origin and destination of the network activity, as well as specifics of the network request (e.g., HTTP request). This information enables the external service to make a well-informed decision regarding the authorization of the incoming request processed by Envoy.
 
-## What is Kyverno-Envoy-Plugin
+## What is Kyverno-Envoy Plugin
 
 [Kyverno-Envoy](https://github.com/kyverno/kyverno-envoy-plugin) plugin extends [Kyverno-JSON](https://kyverno.github.io/kyverno-json/latest/) with a gRPC server that implements [Envoy External Authorization API](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html). This allows you to enforce Kyverno policies on incoming and outgoing traffic in a service mesh environment, providing an additional layer of security and control over your applications. You can use this version of Kyverno to enforce fine-grained, context-aware access control policies with Envoy without modifying your microservice.
 
@@ -226,7 +226,7 @@ To deploy Kyverno-Envoy-Plugin include the following container in your Kubernete
 
 ## Conclusion
 
-This blog post demonstrated how the Kyverno-Envoy-Plugin can be effectively used to make external authorization decisions for incoming requests in a microservice architecture. By leveraging the power of Kyverno policies and Envoy's External Authorization filter, you can achieve fine-grained, context-aware access control without modifying your application code. This approach not only simplifies the management of security policies but also enhances the security posture of your services by ensuring that authorization checks are consistently applied across your microservices.
+This blog post demonstrates how the Kyverno-Envoy plugin can be effectively used to make external authorization decisions for incoming requests in a microservice architecture. By leveraging the power of Kyverno policies and Envoy's External Authorization filter, you can achieve fine-grained, context-aware access control without modifying your application code. This approach not only simplifies the management of security policies but also enhances the security posture of your services by ensuring that authorization checks are consistently applied across your microservices.
 
 The Kyverno-Envoy-Plugin provides a robust solution for organizations looking to enforce policy-driven access controls in their service meshes. By following the steps outlined in this guide, you can easily deploy and configure the plugin, allowing you to take full advantage of Kyverno's policy capabilities in conjunction with Envoy's powerful proxy features.
 
