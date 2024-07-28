@@ -164,6 +164,7 @@ spec:
                     cpu: "?*"
                   limits:
                     memory: "?*"
+                    cpu: "?*"
 ```
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
