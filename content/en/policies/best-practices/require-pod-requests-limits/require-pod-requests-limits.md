@@ -57,4 +57,11 @@ spec:
                 cpu: "?*"
               limits:
                 memory: "?*"
+          ephemeralContainers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
 ```
