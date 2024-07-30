@@ -50,4 +50,11 @@ spec:
                 cpu: "?*"
               limits:
                 memory: "?*"
+          initContainers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
 ```
