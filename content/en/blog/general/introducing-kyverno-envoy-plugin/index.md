@@ -91,7 +91,7 @@ echo $SERVICE_URL
 
 ### Calling the sample test application and verify the authorization
 
-For convenience, we’ll want to store Alice’s and Bob’s tokens in environment variables. Here bob is assigned the admin role and alice is assigned the guest role.
+For convenience, we’ll store Alice’s and Bob’s tokens in environment variables (not recommended for production). Here Bob is assigned the `admin` role and Alice is assigned the `guest` role.
 
 ```bash 
 export ALICE_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIyNDEwODE1MzksIm5iZiI6MTUxNDg1MTEzOSwicm9sZSI6Imd1ZXN0Iiwic3ViIjoiWVd4cFkyVT0ifQ.ja1bgvIt47393ba_WbSBm35NrUhdxM4mOVQN8iXz8lk"
