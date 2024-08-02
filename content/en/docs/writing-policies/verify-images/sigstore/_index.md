@@ -743,14 +743,14 @@ verifyImages:
         rekor:
           ignoreTlog: true
           url: https://rekor.sigstore.dev
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         ctlog:
           ignoreSCT: true
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
@@ -759,7 +759,7 @@ verifyImages:
 
 ## Using custom Rekor public key and CTLogs public key
 
-You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
+You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubkey` and `ctlog.pubkey` respectively for this.
 
 ```yaml
 verifyImages:
@@ -774,13 +774,13 @@ verifyImages:
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         rekor:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
           BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
           -----END PUBLIC KEY-----
         ctlog:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
           FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
