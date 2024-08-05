@@ -4,7 +4,7 @@ linkTitle = "Kyverno"
 +++
 
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
-# Universal Policy Management. Simplified. { class="text-center" }
+# Policy Management. Simplified. { class="text-center" }
 
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#about-kyverno">
