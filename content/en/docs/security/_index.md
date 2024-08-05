@@ -242,7 +242,7 @@ Kyverno Pods are configured to follow security best practices and conform to the
 
 ### RBAC
 
-The Kyverno RBAC configurations are described in the [installation](../installation/customization.md#roles-and-permissions) section.
+The Kyverno RBAC configurations are described in the [installation](../installation/customization.md#role-based-access-controls) section.
 
 Use the following command to view all Kyverno roles:
 
