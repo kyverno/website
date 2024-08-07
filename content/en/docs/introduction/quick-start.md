@@ -209,30 +209,10 @@ kubectl -n default create secret docker-registry regcred \
   --docker-password=Passw0rd123! \
   --docker-email=john.doe@corp.com
 ```
-By default, Kyverno is [configured with minimal permissions](../installation/customization.md#role-based-access-controls) and does not have access to sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. 
-
-To clone and manage secrets the following roles provide the Kyverno admission-controller, background-controller, and reports-controller with permissions to read the resources, and the background-controller permissions to create, delete, and update the resources.
+By default, Kyverno is [configured with minimal permissions](../installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
 ```yaml
 kubectl create -f- << EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: kyverno:secrets:view
-  labels:
-    rbac.kyverno.io/aggregate-to-background-controller: "true"
-    rbac.kyverno.io/aggregate-to-reports-controller: "true"
-    rbac.kyverno.io/aggregate-to-admission-controller: "true"
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -246,8 +226,6 @@ rules:
   - secrets
   verbs:
   - create
-  - update
-  - delete
 EOF
 ```
 
@@ -272,7 +250,7 @@ spec:
       kind: Secret
       name: regcred
       namespace: "{{request.object.metadata.name}}"
-      synchronize: true
+      synchronize: false
       clone:
         namespace: default
         name: regcred
