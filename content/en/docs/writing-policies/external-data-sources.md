@@ -710,6 +710,33 @@ context:
 
 The data returned by GlobalContextEntries may vary depending on whether it is a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well. Ensure you use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
 
+### CLI-based Injection of Global Context Entries
+
+If you are using the CLI, you can also inject global context entries using variables. This feature allows for more flexible and dynamic policy testing and execution.
+
+To inject global context entries using the CLI, you can use a Values file. The Values file should contain a `policies` section where you can define the global context entries you want to inject.
+
+Here's an example of a Values file that injects a global context entry:
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  request.operation: CREATE
+policies:
+  - name: gctx
+    rules:
+      - name: main-deployment-exists
+        values:
+          deploymentCount: 1
+```
+
+In this example, `request.operation` is set as a global value, and `deploymentCount` is set for a specific rule in the `gctx` policy.
+
+When using the Kyverno CLI, you can reference this Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster.
+
 {{% alert title="Warning" color="warning" %}}
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
 {{% /alert %}}
