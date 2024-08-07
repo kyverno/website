@@ -242,7 +242,7 @@ Kyverno Pods are configured to follow security best practices and conform to the
 
 ### RBAC
 
-The Kyverno RBAC configurations are described in the [installation](../installation/customization.md#roles-and-permissions) section.
+The Kyverno RBAC configurations are described in the [installation](../installation/customization.md#role-based-access-controls) section.
 
 Use the following command to view all Kyverno roles:
 
@@ -352,7 +352,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [installation section](../installation/customization.md#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
+  Kyverno RBAC configurations are described in the [installation section](../installation/customization.md#role-based-access-controls). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
 
 ### Threat ID 5 - Attacker gets access to valid credentials for the webhook
 
@@ -420,7 +420,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 1 - RBAC rights are strictly controlled](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-1---rbac-rights-are-strictly-controlled)
 
-  Kyverno RBAC configurations are described in the [configuration section](../installation/customization.md#roles-and-permissions). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
+  Kyverno RBAC configurations are described in the [configuration section](../installation/customization.md#role-based-access-controls). The `kyverno:admission-controller` role is used by Kyverno to configure webhooks. It is important to limit Kyverno to the required permissions and audit changes in the RBAC roles and role bindings.
 
   Kyverno excludes certain critical system Namespaces by default including the Kyverno Namespace itself. These exclusions can be managed and configured via the [ConfigMap](../installation/customization.md#configmap-keys).
 

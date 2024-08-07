@@ -153,10 +153,14 @@ Kyverno uses Secrets created above to setup TLS communication with the Kubernete
 
 You can now install Kyverno by selecting one of the available methods from the [installation section](methods.md).
 
-### Roles and Permissions
+### Role Based Access Controls
 
-Kyverno creates several Roles, ClusterRoles, RoleBindings, and ClusterRoleBindings some of which may need to be customized depending on additional functionality required. To view all ClusterRoles and Roles associated with Kyverno, use the command `kubectl get clusterroles,roles -A | grep kyverno`.
+Kyverno uses Kubernetes Role Based Access Controls (RBAC) to configure permissions for Kyverno controllers to allow access to other resources.
 
+Kyverno creates several Roles, ClusterRoles, RoleBindings, and ClusterRoleBindings some of which may need to be customized depending on additional functionality required. 
+
+To view all ClusterRoles and Roles associated with Kyverno, use the command `kubectl get clusterroles,roles -A | grep kyverno`.
+ 
 #### Roles
 
 Kyverno creates the following Roles in its Namespace, one per controller type:
@@ -183,33 +187,53 @@ Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/acce
 
 The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces.
 
-* `kyverno:admission-controller:core`: aggregate ClusterRole for the admission controller
-* `kyverno:admission-controller`: aggregated (top-level) ClusterRole for the admission controller
-* `kyverno:reports-controller:core`: aggregate ClusterRole for the reports controller
-* `kyverno:reports-controller`: aggregated (top-level) ClusterRole for the reports controller
-* `kyverno:background-controller:core`: aggregate ClusterRole for the background controller
-* `kyverno:background-controller`: aggregated (top-level) ClusterRole for the background controller
-* `kyverno:cleanup-controller:core`: aggregate ClusterRole for the cleanup controller
-* `kyverno:cleanup-controller`: aggregated (top-level) ClusterRole for the cleanup controller
-* `kyverno-cleanup-jobs`: used by the helper CronJob to periodically remove excessive/stale admission reports if found
-* `kyverno:rbac:admin:policies`: aggregates to admin the ability to fully manage Kyverno policies
-* `kyverno:rbac:admin:policyreports`: aggregates to admin the ability to fully manage Policy Reports
-* `kyverno:rbac:admin:reports`: aggregates to admin the ability to fully manage intermediary admission and background reports
-* `kyverno:rbac:admin:updaterequests`: aggregates to admin the ability to fully manage UpdateRequests, intermediary resource for generate rules
-* `kyverno:rbac:view:policies`: aggregates to view the ability to view Kyverno policies
-* `kyverno:rbac:view:policyreports`: aggregates to view the ability to view Policy Reports
-* `kyverno:rbac:view:reports`: aggregates to view the ability to view intermediary admission and background reports
-* `kyverno:rbac:view:updaterequests`: aggregates to view the ability to view UpdateRequests, intermediary resource for generate rules
+Role Binding                       |        Service Account               | Role
+---------------------------------- | ------------------------------------ | -------------
+kyverno:admission-controller       | kyverno-admission-controller         | kyverno:admission-controller
+kyverno:admission-controller:view  | kyverno-admission-controller         | view
+kyverno:admission-controller:core  | --         | --
+kyverno:background-controller      | kyverno-background-controller        | kyverno:background-controller
+kyverno:background-controller:view | kyverno-background-controller        | view
+kyverno:background-controller:core | --        | --
+kyverno:cleanup-controller         |  kyverno-cleanup-controller          | kyverno:cleanup-controller
+kyverno:cleanup-controller:core    |  --         | --
+kyverno:reports-controller         |  kyverno-reports-controller          | kyverno:reports-controller
+kyverno:reports-controller:view    |  kyverno-reports-controller          | view
+kyverno:reports-controller:core    |  --          | --
+
 
 {{% alert title="Note" color="info" %}}
-Most Kyverno controllers' ClusterRoles include a rule which allows for `get`, `list`, and `read` permissions to all resources in the cluster. This is to ensure Kyverno functions smoothly despite the type and subject of future-installed policies. If this rule is removed, users must manually create and manage a number of different ClusterRoles applicable across potentially multiple controllers depending on the type and configuration of installed policies.
+The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using variables like `admissionController.rbac.viewRoleName`. 
 {{% /alert %}}
 
 #### Customizing Permissions
 
-Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules or generating ValidatingAdmissionPolicies is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is not necessary to modify any existing ClusterRoles created as part of the Kyverno installation. Doing so is not recommended as changes may be lost during an upgrade. Since there are multiple controllers each with their own ServiceAccount, granting Kyverno additional permissions involves identifying the correct controller and using the labels needed to aggregate to that ClusterRole.
+Kyverno's default permissions are designed to cover commonly used and security non-critical resources. Hence, Kyverno will need to be configured with additional permissions for CRDs, or to allow access to security critical resources.
 
-For example, if a new Kyverno generate policy requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno has by default. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels specific to the background controller in order for those permissions to take effect.
+The ClusterRoles installed by Kyverno use the [cluster role aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), making it easy to extend the permissions for Kyverno's controllers. To extend a controller's permissions, add a new role with one or more of the following labels:
+
+Controller             | Role Aggregation Label              
+---------------------- | -----------------------------
+admission-controller   | rbac.kyverno.io/aggregate-to-admission-controller: "true"
+background-controller  | rbac.kyverno.io/aggregate-to-background-controller: "true"
+reports-controller     | rbac.kyverno.io/aggregate-to-reports-controller: "true"
+cleanup-controller     | rbac.kyverno.io/aggregate-to-cleanup-controller: "true"
+
+To avoid upgrade issues, it is highly recommended that default roles are not modified but new roles are used to extend them.
+
+Since there are multiple controllers each with their own ServiceAccount, granting Kyverno additional permissions involves identifying the correct controller and using the labels needed to aggregate to that ClusterRole. The table below identifies required permissions for Kyverno features:
+
+Controller             | Permission Verbs | Required For              
+---------------------- | ----- | ------------------------------- 
+admission-controller   | view, list, ... | API Calls 
+admission-controller   | view, list, watch | Global Context
+background-controller  | update, view, list, watch | Mutate Policies
+background-controller  | create, update, delete, view, list, watch | Generate Policies
+reports-controller     | view, list, watch | Policy Reports
+cleanup-controller     | delete, view, list, watch | Cleanup Policies
+
+
+For example, if a new Kyverno generate policy requires that Kyverno be able to create and update Deployments, new permissions need to be provided. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels specific to the background controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno background controller additional permissions to create Deployments:
 
@@ -217,11 +241,9 @@ This sample ClusterRole provides the Kyverno background controller additional pe
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    app.kubernetes.io/component: background-controller
-    app.kubernetes.io/instance: kyverno
-    app.kubernetes.io/part-of: kyverno
   name: kyverno:create-deployments
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"  
 rules:
 - apiGroups:
   - apps
@@ -229,15 +251,51 @@ rules:
   - deployments
   verbs:
   - create
+  - update
 ```
 
-Once a supplemental ClusterRole has been created, get the top-level ClusterRole for that controller to ensure aggregation has occurred.
+Once a supplemental ClusterRole has been created, check the top-level ClusterRole for that controller to ensure aggregation has occurred.
 
 ```sh
 kubectl get clusterrole kyverno:background-controller -o yaml
 ```
 
-Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it will be necessary to grant the controller the required permissions to generate these types. In this scenario, a ClusterRole should be created and assigned the aggregation labels for the admission controller in order for those permissions to take effect.
+Similary, if a Kyverno validate and mutate policies operates on a custom resource the background and reports controllers needs to be provided permissions to manage the resource:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:crontab:edit
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - stable.example.com
+  resources:
+  - crontabs
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:crontab:view
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+rules:
+- apiGroups:
+  - stable.example.com
+  resources:
+  - crontabs
+  verbs:
+  - get
+  - list
+  - watch
+```
+
+Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it is necessary to grant the controller the required permissions to generate these types. For this, a ClusterRole should be created and assigned the aggregation labels for the admission controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno admission controller additional permissions to create ValidatingAdmissionPolicies and ValidatingAdmissionPolicyBindings:
 
@@ -245,11 +303,9 @@ This sample ClusterRole provides the Kyverno admission controller additional per
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    app.kubernetes.io/component: admission-controller
-    app.kubernetes.io/instance: kyverno
-    app.kubernetes.io/part-of: kyverno
   name: kyverno:generate-validatingadmissionpolicy
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
 rules:
 - apiGroups:
   - admissionregistration.k8s.io
@@ -257,10 +313,12 @@ rules:
   - validatingadmissionpolicies
   - validatingadmissionpolicybindings
   verbs:
+  - get
+  - list
+  - watch
   - create
   - update
   - delete
-  - list
 ```
 
 ### ConfigMap Keys
