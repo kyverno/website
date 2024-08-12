@@ -207,43 +207,40 @@ func render(git *gitInfo, outdir string) error {
 
 // deleteMarkdownFiles deletes all .md files except "_index.md"
 func deleteMarkdownFiles(outdir string) error {
-	d, err := os.Open(outdir)
-	if err != nil {
-		return err
-	}
+	// Walk through the directory and its subdirectories
+	err := filepath.WalkDir(outdir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 
-	defer func() {
-		if err := d.Close(); err != nil {
-			if Verbose {
-				log.Printf("failed to close output dir %s: %v", outdir, err)
+		// Process only files
+		if d.IsDir() {
+			return nil
+		}
+
+		name := d.Name()
+		if filepath.Ext(name) == ".md" {
+			// Skip _index.md files
+			if filepath.Base(name) == "_index.md" {
+				return nil
+			}
+
+			if err := os.Remove(path); err != nil {
+				if Verbose {
+					log.Printf("failed to delete file %s: %v", path, err)
+				}
 			}
 		}
-	}()
 
-	files, err := d.Readdir(-1)
+		return nil
+	})
+
 	if err != nil {
 		return err
 	}
 
 	if Verbose {
-		log.Printf("cleaning directory %s", outdir)
-	}
-
-	for _, file := range files {
-		if file.Mode().IsRegular() {
-			name := file.Name()
-			if filepath.Ext(name) == ".md" {
-				if filepath.Base(name) == "_index.md" {
-					continue
-				}
-
-				if err := os.Remove(name); err != nil {
-					if Verbose {
-						log.Printf("failed to delete file %s: %v", name, err)
-					}
-				}
-			}
-		}
+		log.Printf("cleaned directory %s", outdir)
 	}
 
 	return nil
