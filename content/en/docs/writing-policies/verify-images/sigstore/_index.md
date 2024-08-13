@@ -464,6 +464,35 @@ spec:
                 url: https://rekor.sigstore.dev
 ```
 
+The following policy verifies an image signed using [keyless signing](https://docs.sigstore.dev/signing/overview/) and verified using subject and issuer regular expressions:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-keyless
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: check-image-keyless
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image:signed-keyless"
+        attestors:
+        - entries:
+          - keyless:
+              subjectRegExp: https://github\.com/.+
+              issuerRegExp: https://token\.actions\.githubusercontent.+
+              rekor:
+                url: https://rekor.sigstore.dev
+```
+
 ### Keyless signing
 
 To sign images using the keyless flow, use the following cosign command:
@@ -496,6 +525,7 @@ attestors:
       rekor:
         url: https://rekor.sigstore.dev
 ```
+
 
 ## Using a Key Management Service (KMS)
 
