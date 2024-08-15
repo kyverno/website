@@ -136,6 +136,11 @@ func render(git *gitInfo, outdir string) error {
 		if err != nil {
 			return fmt.Errorf("failed to clean directory %s: %v", outdir, err)
 		}
+
+		err = removeEmptyDirs(outdir)
+		if err != nil {
+			return fmt.Errorf("failed to clean directory %s: %v", outdir, err)
+		}
 	}
 
 	for _, yamlFilePath := range yamls {
@@ -205,45 +210,94 @@ func render(git *gitInfo, outdir string) error {
 	return nil
 }
 
-// deleteMarkdownFiles deletes all .md files except "_index.md"
-func deleteMarkdownFiles(outdir string) error {
-	d, err := os.Open(outdir)
+// removeEmptyDirs collects directories and deletes empty ones from deepest to shallowest
+func removeEmptyDirs(dir string) error {
+	var dirs []string
+
+	// First, traverse the directory tree to collect directories
+	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			dirs = append(dirs, path)
+		}
+		return nil
+	})
 	if err != nil {
 		return err
 	}
 
-	defer func() {
-		if err := d.Close(); err != nil {
+	// Sort directories by depth (deepest directories first)
+	sort.Slice(dirs, func(i, j int) bool {
+		return len(dirs[i]) > len(dirs[j])
+	})
+
+	// Attempt to delete directories, starting from the deepest
+	for _, path := range dirs {
+		empty, err := isEmptyDir(path)
+		if err != nil {
+			return err
+		}
+		if empty {
 			if Verbose {
-				log.Printf("failed to close output dir %s: %v", outdir, err)
+				log.Printf("Removing empty directory: %s\n", path)
+			}
+			err := os.Remove(path)
+			if err != nil {
+				fmt.Printf("Failed to remove directory %s: %v", path, err)
 			}
 		}
-	}()
+	}
 
-	files, err := d.Readdir(-1)
+	return nil
+}
+
+// isEmptyDir checks if a directory is empty
+func isEmptyDir(dirPath string) (bool, error) {
+	entries, err := os.ReadDir(dirPath)
+	if err != nil {
+		return false, err
+	}
+	return len(entries) == 0, nil
+}
+
+// deleteMarkdownFiles deletes all .md files except "_index.md"
+func deleteMarkdownFiles(outdir string) error {
+	// Walk through the directory and its subdirectories
+	err := filepath.WalkDir(outdir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Process only files
+		if d.IsDir() {
+			return nil
+		}
+
+		name := d.Name()
+		if filepath.Ext(name) == ".md" {
+			// Skip _index.md files
+			if filepath.Base(name) == "_index.md" {
+				return nil
+			}
+
+			if err := os.Remove(path); err != nil {
+				if Verbose {
+					log.Printf("failed to delete file %s: %v", path, err)
+				}
+			}
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return err
 	}
 
 	if Verbose {
-		log.Printf("cleaning directory %s", outdir)
-	}
-
-	for _, file := range files {
-		if file.Mode().IsRegular() {
-			name := file.Name()
-			if filepath.Ext(name) == ".md" {
-				if filepath.Base(name) == "_index.md" {
-					continue
-				}
-
-				if err := os.Remove(name); err != nil {
-					if Verbose {
-						log.Printf("failed to delete file %s: %v", name, err)
-					}
-				}
-			}
-		}
+		log.Printf("cleaned directory %s", outdir)
 	}
 
 	return nil
