@@ -2033,3 +2033,121 @@ spec:
   policyName: disallow-host-path
   validationActions: [Audit, Warn]
 ```
+
+## Kyverno JSON Assertion
+
+Starting in Kyverno 1.13, a new subrule type called `assert` is available. This subrule type allows users to use Kyverno JSON assertion trees for resource validation. Standard `match` and `exclude` processing is available just like with other rules. This subrule type is enabled when a validate rule is written with a `assert` object, detailed below.
+
+For example, this policy ensures that a pod does not use the default service account.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-default-sa
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: disallow-default-sa
+    validate:
+      message: default ServiceAccount should not be used
+      assert:
+        object:
+          spec:
+            (serviceAccountName == 'default'): false
+```
+
+The `assert.object` contains an assertion tree to validate the applied resource. If an assertion evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
+
+When trying to create a Deployment with the "default" ServiceAccount, the creation of the Deployment will be blocked.
+
+```
+Error from server: admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+resource Pod/default/nginx was blocked due to the following policies 
+
+disallow-default-sa:
+  disallow-default-sa: 'object.spec.(serviceAccountName == ''default''): Invalid value:
+    true: Expected value: false'
+```
+
+assertions have access to the contents of the Admission request/response, organized as seperared trees as well as some other useful variables:
+
+- `object` - The object from the incoming request. The value is null for DELETE requests.
+- `oldObject` - The existing object. The value is null for CREATE requests.
+- `admissionInfo` - Additional admission information. Contains user information like `roles`, `clusterRoles` and `username`.
+- `operation` - Admission Operation.
+- `namespaceLabels` - Map of labels of the target namespace, not available for cluster scoped objects.
+- `admissionOperation` - Bool value which indicates if the policy was triggered from an admission request.
+
+`validate.assert` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](autogen.md) section for more information.
+
+```yaml
+status:
+  autogen:
+    rules:
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        all:
+        - resources:
+            kinds:
+            - DaemonSet
+            - Deployment
+            - Job
+            - ReplicaSet
+            - ReplicationController
+            - StatefulSet
+            operations:
+            - CREATE
+            - UPDATE
+        resources: {}
+      mutate: {}
+      name: autogen-disallow-default-sa
+      skipBackgroundRequests: true
+      validate:
+        assert:
+          object:
+            spec:
+              template:
+                spec:
+                  (serviceAccountName == 'default'): false
+        message: default ServiceAccount should not be used
+        validationFailureAction: Audit
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        all:
+        - resources:
+            kinds:
+            - CronJob
+            operations:
+            - CREATE
+            - UPDATE
+        resources: {}
+      mutate: {}
+      name: autogen-cronjob-disallow-default-sa
+      skipBackgroundRequests: true
+      validate:
+        assert:
+          object:
+            spec:
+              jobTemplate:
+                spec:
+                  template:
+                    spec:
+                      (serviceAccountName == 'default'): false
+        message: default ServiceAccount should not be used
+        validationFailureAction: Audit
+```
