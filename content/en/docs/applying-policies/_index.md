@@ -13,7 +13,7 @@ The [Kyverno Policies](/policies/) repository contains several policies you can 
 
 On installation, Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the Kubernetes API server and applies matching policies to return results that enforce admission policies or reject requests.
 
-Policies with validation rules can be used to block insecure or non-compliant configurations by setting the [`validationFailureAction`](../writing-policies/validate.md#validation-failure-action) to `Enforce`. Or, validation rules can be applied using periodic scans with results available as [policy reports](../policy-reports/).
+Policies with validation rules can be used to block insecure or non-compliant configurations by setting the [`validationFailureAction`](../writing-policies/validate.md#failure-action) to `Enforce`. Or, validation rules can be applied using periodic scans with results available as [policy reports](../policy-reports/).
 
 Rules in a policy are applied in the order of definition. During [admission control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/), mutation rules are applied before validation rules. This allows validation of changes made during mutation. Note that **all** mutation rules are applied first across all policies before any validation rules are applied.
 
