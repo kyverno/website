@@ -707,7 +707,7 @@ verifyImages:
 
 ## Using a different signature algorithm
 
-By Default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor:
+By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor:
 
 ```yaml
 ...
