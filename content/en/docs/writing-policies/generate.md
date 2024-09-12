@@ -116,7 +116,7 @@ spec:
       apiVersion: networking.k8s.io/v1
       name: deny-all-traffic
       namespace: "{{request.object.metadata.name}}"
-      data:  
+      data:
         spec:
           # select all pods in the namespace
           podSelector: {}
@@ -128,7 +128,7 @@ spec:
 For other examples of generate rules, see the [policy library](/policies/?policytypes=generate).
 
 {{% alert title="Note" color="info" %}}
-The field `spec.generateExistingOnPolicyUpdate` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
+The field `spec.generateExisting` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
 {{% /alert %}}
 
 ## Clone Source
@@ -267,7 +267,7 @@ spec:
       apiVersion: rbac.authorization.k8s.io/v1
       name: steven-rolebinding
       namespace: "{{request.object.metadata.name}}"
-      data:  
+      data:
         subjects:
         - kind: User
           name: steven
