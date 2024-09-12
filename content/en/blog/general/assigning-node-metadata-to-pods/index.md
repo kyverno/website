@@ -390,6 +390,9 @@ spec:
               # https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
               topology.kubernetes.io/zone: "{{ ZoneLabel }}"
 ```
+### Credits
+
+Thanks [Abir Sigron](https://github.com/abirsigron) for initiating the innovative idea and contributing to its successful implementation.
 
 ## Closing
 
