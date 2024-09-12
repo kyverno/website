@@ -462,7 +462,7 @@ spec:
 ```
 
 By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
-When `mutateExistingOnPolicyUpdate` is specified `mutate.targets` has to be specified.
+When `mutateExistingOnPolicyUpdate` is specified as `true`, `mutate.targets` must be specified.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -489,7 +489,7 @@ spec:
             kind: ConfigMap
             name: dictionary-1
             namespace: staging
-# ...
+        # ...
 ```
 
 {{% alert title="Note" color="warning" %}}
