@@ -22,20 +22,20 @@ Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object 
 
 Background scanning occurs on a periodic basis (one hour by default) and offers some configuration options via [container flags](../installation/customization.md#container-flags).
 
-When background scanning is enabled, regardless of whether the policy's `validationFailureAction` is set to `Enforce` or `Audit`, the results will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
+When background scanning is enabled, regardless of whether the policy's `failureAction` is set to `Enforce` or `Audit`, the results will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
 
 **Reporting behavior when `background: true`**
 
 |                                  | New Resource | Existing Resource |
 |----------------------------------|--------------|-------------------|
-| `validationFailureAction: Enforce` | Pass only         | Report            |
-| `validationFailureAction: Audit`   | Report       | Report            |
+| `failureAction: Enforce` | Pass only         | Report            |
+| `failureAction: Audit`   | Report       | Report            |
 
 **Reporting behavior when `background: false`**
 
 |                                  | New Resource | Existing Resource |
 |----------------------------------|--------------|-------------------|
-| `validationFailureAction: Enforce` | Pass only         | None              |
-| `validationFailureAction: Audit`   | Report       | None              |
+| `failureAction: Enforce` | Pass only         | None              |
+| `failureAction: Audit`   | Report       | None              |
 
 Also, policy rules that are written using either certain variables from [AdmissionReview](../writing-policies/variables.md#variables-from-admission-review-requests) request information (e.g. `request.userInfo`), or fields like Roles, ClusterRoles, and Subjects in `match` and `exclude` statements, cannot be applied to existing resources in the background scanning mode since that information must come from an AdmissionReview request and is not available if the resource exists. Hence, these rules must set `background` to `false` to disable background scanning. The exceptions to this are `request.object` and `request.namespace` variables as these will be translated from the current state of the resource.
