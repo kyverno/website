@@ -551,6 +551,65 @@ The targets matched by a mutate existing rule are not subject to Kyverno's [reso
 
 Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
 
+Starting from kyverno `v1.11.2`, mutate existing rules that trigger on deletion of a resource will be skipped unless explicitly specified that the `DELETE` operation should match
+
+For example,the following policy should add a label to a configmap when a deployment is created or updated
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: mutate-configmap-on-undefined-deployment-operation
+spec:
+  background: false
+  rules:
+    - name: mutate-configmap-on-undefined-deployment-operation
+      match:
+        all:
+          - resources:
+              kinds:
+                - Deployment
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: example
+            namespace: example
+        patchesJson6902: |-
+          - path: "/metadata/labels/modified-by-kyverno"
+            op: add
+            value: "true"
+```
+
+To have it also run the mutation when the deployment is deleted, the policy should be modified as such
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: mutate-configmap-on-undefined-deployment-operation
+spec:
+  background: false
+  rules:
+    - name: mutate-configmap-on-undefined-deployment-operation
+      match:
+        all:
+          - resources:
+              kinds:
+                - Deployment
+              operations:
+              # add other operations if needed
+              - DELETE
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: example
+            namespace: example
+        patchesJson6902: |-
+          - path: "/metadata/labels/modified-by-kyverno"
+            op: add
+            value: "true"
+```
+
 ### Variables Referencing Target Resources
 
 To reference data in target resources, you can define the variable `target` followed by the path to the desired attribute. For example, using `target.metadata.labels.env` references the label `env` in the target resource.
