@@ -116,7 +116,7 @@ spec:
       apiVersion: networking.k8s.io/v1
       name: deny-all-traffic
       namespace: "{{request.object.metadata.name}}"
-      data:  
+      data:
         spec:
           # select all pods in the namespace
           podSelector: {}
@@ -128,7 +128,7 @@ spec:
 For other examples of generate rules, see the [policy library](/policies/?policytypes=generate).
 
 {{% alert title="Note" color="info" %}}
-The field `spec.generateExistingOnPolicyUpdate` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
+The field `spec.generateExisting` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
 {{% /alert %}}
 
 ## Clone Source
@@ -267,7 +267,7 @@ spec:
       apiVersion: rbac.authorization.k8s.io/v1
       name: steven-rolebinding
       namespace: "{{request.object.metadata.name}}"
-      data:  
+      data:
         subjects:
         - kind: User
           name: steven
@@ -285,6 +285,10 @@ When a new Namespace is created, Kyverno will generate a new RoleBinding called 
 In some cases, a triggering (source) resource and generated (downstream) resource need to share the same life cycle. That is, when the triggering resource is deleted so too should the generated resource. This is valuable because some resources are only needed in the presence of another, for example a Service of type `LoadBalancer` necessitating the need for a specific network policy in some CNI plug-ins.
 
 When a generate rule has synchronization enabled (`synchronize: true`), deletion of the triggering resource will automatically cause deletion of the downstream (generated) resource. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause removal of the downstream resource. In cases where synchronization needs to be disabled, if the trigger and downstream are both Namespaced resources and in the same Namespace, the ownerReference technique can be used.
+
+{{% alert title="Note" color="info" %}}
+Synchronization involving changes to trigger resources are confined to the `match` block and do not take into consideration preconditions.
+{{% /alert %}}
 
 It is possible to set the `ownerReferences` field in the generated resource which, when pointed to the trigger, will cause deletion of the trigger to instruct Kubernetes to garbage collect the downstream. With the below example, when the generated ConfigMap specifies the `metadata.ownerReferences[]` object and defines the following fields including `uid`, which references the triggering Service resource, an owner-dependent relationship is formed. Later, if the Service is deleted, the ConfigMap will be as well. See the [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/#owner-references-in-object-specifications) for more details including an important caveat around the scoping of these references. Specifically, Namespaced resources cannot be the owners of cluster-scoped resources, and cross-namespace references are also disallowed.
 

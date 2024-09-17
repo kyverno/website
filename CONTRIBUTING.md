@@ -72,7 +72,7 @@ Kyverno maintains a thriving community with two different opportunities to parti
 
 #### Community Meetings
 
-For the available Kyverno meetings, see [here](https://kyverno.io/community/#community-meetings).
+For the available Kyverno meetings, see [here](https://kyverno.io/community/#meetings).
 
 ## Developer Certificate of Origin (DCO) Sign off
 

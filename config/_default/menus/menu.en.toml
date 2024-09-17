@@ -3,7 +3,7 @@
 [[main]]
   name = "About"
   weight = -103
-  url = "#kyverno-is-a-policy-engine-designed-for-kubernetes"
+  url = "#about-kyverno"
 
 [[main]]
   name = "Documentation"
@@ -14,11 +14,6 @@
   name = "Policies"
   weight = -101
   url = "/policies"
-
-[[main]]
-  name = "Resources"
-  weight = -99
-  url = "/resources"
 
 [[main]]
   name = "Playground"

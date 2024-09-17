@@ -37,6 +37,9 @@ spec:
         - resources:
             kinds:
               - Pod
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
@@ -67,6 +70,9 @@ spec:
         - resources:
             kinds:
               - Pod
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         cel:
           expressions:

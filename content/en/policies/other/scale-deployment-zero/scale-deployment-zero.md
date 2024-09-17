@@ -5,7 +5,7 @@ version: 1.7.0
 subject: Deployment
 policyType: "mutate"
 description: >
-    If a Deployment's Pods are seen crashing multiple times it usually indicates there is an issue that must be manually resolved. Removing the failing Pods and marking the Deployment is often a useful troubleshooting step. This policy watches existing Pods and if any are observed to have restarted more than once, indicating a potential crashloop, Kyverno scales its parent deployment to zero and writes an annotation signaling to an SRE team that troubleshooting is needed. It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.
+    If a Deployment's Pods are seen crashing multiple times it usually indicates there is an issue that must be manually resolved. Removing the failing Pods and marking the Deployment is often a useful troubleshooting step. This policy watches existing Pods and if any are observed to have restarted more than once, indicating a potential crashloop, Kyverno scales its parent deployment to zero and writes an annotation signaling to an SRE team that troubleshooting is needed. It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments. This policy scales down deployments with frequently restarting pods by monitoring `Pod.status`  for `restartCount`updates, which are performed by the kubelet. No `resourceFilter` modifications are needed if matching on `Pod`and `Pod.status`. Note: For this policy to work, you must modify Kyverno's ConfigMap to remove or change the line  `excludeGroups: system:nodes` since version 1.10.
 ---
 
 ## Policy Definition
@@ -33,6 +33,11 @@ metadata:
       and writes an annotation signaling to an SRE team that troubleshooting is needed.
       It may be necessary to grant additional privileges to the Kyverno ServiceAccount,
       via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.
+      This policy scales down deployments with frequently restarting pods by monitoring `Pod.status` 
+      for `restartCount`updates, which are performed by the kubelet. No `resourceFilter` modifications
+      are needed if matching on `Pod`and `Pod.status`.
+      Note: For this policy to work, you must modify Kyverno's ConfigMap to remove or change the line 
+      `excludeGroups: system:nodes` since version 1.10.
 spec:
   rules:
   - name: annotate-deployment-rule

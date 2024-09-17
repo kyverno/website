@@ -2693,7 +2693,7 @@ This filter can be helpful when needing to produce output for a field which only
 |--------------------|---------|
 | String             | Boolean |
 
-**Example:** This policy sets the `hostIPC` field of a Pod spec appropriately based on the value of a label (a string). Note that use of this filter may require setting the policy option `spec.schemaValidation` to `false` since there may be a type checking mismatch.
+**Example:** This policy sets the `hostIPC` field of a Pod spec appropriately based on the value of a label (a string).
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -2701,7 +2701,6 @@ kind: ClusterPolicy
 metadata:
   name: to-boolean-demo
 spec:
-  schemaValidation: false
   rules:
   - name: canuseIPC
     match:
