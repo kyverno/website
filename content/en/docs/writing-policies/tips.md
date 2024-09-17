@@ -75,11 +75,9 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 * Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](mutate.md#rfc-6902-jsonpatch) method.
 
-<<<<<<< Updated upstream
 * Just like in `validate` rules, in some less common cases Kyverno will attempt to validate the schema of a policy and fail because it cannot determine if it satisfies the OpenAPI schema definition for that resource. In mutate rules, Kyverno will internally try to generate a patch to see if the policy would be valid. In these cases add `spec.schemaValidation: false` to your policy to tell Kyverno to skip validation. This is similar to passing the `--validate` flag to `kubectl`.
-=======
+
 * Need to check the path of mutation or the actual action performed by mutation? Set `-v=6` and grep on `generated patches`
->>>>>>> Stashed changes
 
 ## Generate
 
