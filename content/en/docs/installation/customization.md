@@ -61,13 +61,13 @@ At a minimum, managed certificates are checked for validity every 12 hours. Addi
 
 The renewal process runs as follows:
 1. Remove expired certificates contained in the secret
-1. Check if remaining certificates will become invalid in less than 60 hours
+1. Check if remaining certificates will become invalid in less than 15 days
 1. If needed, generate a new certificate with the validity documented above
 1. The new certificates is added to the underlying secret along with current certificatess that are still valid
 1. Reconfigure webhooks with the new certificates bundle
 1. Update the Kyverno server to use the new certificate
 
-Basically, certificates will be renewed approximately 60 hours before expiry.
+Basically, certificates will be renewed approximately 15 days before expiry.
 
 #### Custom certificates
 
