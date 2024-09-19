@@ -701,7 +701,7 @@ Below is an example of testing a ValidatingAdmissionPolicy against two resources
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-path
@@ -823,7 +823,7 @@ In the below example, a `ValidatingAdmissionPolicy` and its corresponding `Valid
 Policy manifest (`check-deployment-replicas.yaml`):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -842,7 +842,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 2
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"
