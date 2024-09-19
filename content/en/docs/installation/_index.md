@@ -49,6 +49,7 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 | 1.10.x                         | 1.24           | 1.26           |
 | 1.11.x                         | 1.25           | 1.28           |
 | 1.12.x                         | 1.26           | 1.29           |
+| 1.13.x                         | 1.28           | 1.31           |
 
 \* Due to a known issue with Kubernetes 1.23.0-1.23.2, support for 1.23 begins at 1.23.3.
 
