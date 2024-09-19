@@ -154,7 +154,7 @@ The GitHub Action reusable workflow hosted by the SLSA GitHub Generator project 
 The build service's users can not falsify the provenance.
 
 **Kyverno Processes:**
-GitHub takes care of avoiding interference with the build system. GitHub uses ephemeral and isolated virtual machines, no one can persistently compromise this environment. GitHub automatically provisions a new VM for that job. When the job execution is finished, the VM is automatically decommissioned. Use of the [SLSA GitHub generator](https://github.com/slsa-framework/slsa-github-generator) separates the signing from building so the Kyverno build itself never has access to the signing secrets. Use of OIDC-based secrets through Sigstore's [keyless signing](https://docs.sigstore.dev/signing/overview/) means the ephemeral signing secret is associated only with one specific build making it easy to detect secret theft and an attempt at signing something else.
+GitHub takes care of avoiding interference with the build system. GitHub uses ephemeral and isolated virtual machines, no one can persistently compromise this environment. GitHub automatically provisions a new VM for that job. When the job execution is finished, the VM is automatically decommissioned. Use of the [SLSA GitHub generator](https://github.com/slsa-framework/slsa-github-generator) separates the signing from building so the Kyverno build itself never has access to the signing secrets. Use of OIDC-based secrets through Sigstore's [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/) means the ephemeral signing secret is associated only with one specific build making it easy to detect secret theft and an attempt at signing something else.
 
 ### Provenance Content Requirements
 
