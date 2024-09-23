@@ -121,10 +121,6 @@ The manifest will install the following components:
 
 Reports server comes with a PostgreSQL database, but you may opt for finer control of the database configuration by bringing your own database. See the [database configuration guide](https://github.com/kyverno/reports-server/blob/main/docs/DBCONFIG.md) for more details.
 
-### Migration
-
-If you already have the PolicyReport CRD installed in your cluster, you will have an existing API service managed by kube-aggregator that sends requests to the Kubernetes API server. You will have to update the existing API service to send request to reports server. See the [migration guide](https://github.com/kyverno/reports-server/blob/main/docs/MIGRATION.md) for more details.
-
 ## Conclusion
 
 In this short blog post, we demonstrated how reports server can be used to store policy reports.
