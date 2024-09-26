@@ -715,9 +715,8 @@ GlobalContextEntries must be in a healthy state (i.e., there is a response recei
 {{% /alert %}}
 
 #### Default values for API calls
-In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries
+In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries:
 
-For example, the policy below uses `default` values to validate: 
 ```yaml
 ...
     context:
