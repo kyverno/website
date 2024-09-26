@@ -477,7 +477,7 @@ This image can now be verified using the leaf or root certificates.
 
 ## Keyless signing and verification
 
-The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/signing/overview/):
+The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/):
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -550,7 +550,7 @@ The supported formats include:
 * gcpkms://projects/[PROJECT]/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
 * hashivault://[KEY]
 
-Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
+Refer to https://docs.sigstore.dev/cosign/key_management/overview/ for additional details.
 
 ### Enabling IRSA to access AWS KMS
 
