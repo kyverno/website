@@ -81,7 +81,7 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 ## Validation Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
 
 ## Validation Failure Action Overrides
 
@@ -653,7 +653,7 @@ The following child declarations are permitted in a `foreach`:
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](preconditions.md): to control when a loop iteration is skipped
+- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:

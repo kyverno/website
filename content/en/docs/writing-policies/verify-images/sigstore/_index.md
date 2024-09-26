@@ -90,6 +90,48 @@ check-image:
     invalid signature'
 ```
 
+### Verifying Sigstore bundles
+
+Container images signatures that use [sigstore bundle format](https://github.com/sigstore/protobuf-specs/blob/main/protos/sigstore_bundle.proto) such as [GitHub Artifact Attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) can be verified using verification type `SigstoreBundle`. The following example verifies images containing SLSA Provenance created and signed using GitHub Artifact Attestation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+  name: sigstore-attestation-verification
+spec:
+  background: false
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: sigstore-attestation-verification
+    verifyImages:
+    - imageReferences:
+      - "*"
+      type: SigstoreBundle
+      attestations:
+      - attestors:
+        - entries:
+          - keyless:
+              issuer: https://token.actions.githubusercontent.com
+              subject: https://github.com/vishal-chdhry/artifact-attestation-example/.github/workflows/build-attested-image.yaml@refs/heads/main
+              rekor:
+                  url: https://rekor.sigstore.dev
+        conditions:
+        - all:
+          - key: '{{ buildDefinition.buildType }}'
+            operator: Equals
+            value: https://actions.github.io/buildtypes/workflow/v1
+        type: https://slsa.dev/provenance/v1
+```
+
 ### Skipping Image References
 
 `skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
@@ -435,7 +477,7 @@ This image can now be verified using the leaf or root certificates.
 
 ## Keyless signing and verification
 
-The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/signing/overview/):
+The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/):
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -508,7 +550,7 @@ The supported formats include:
 * gcpkms://projects/[PROJECT]/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
 * hashivault://[KEY]
 
-Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
+Refer to https://docs.sigstore.dev/cosign/key_management/overview/ for additional details.
 
 ### Enabling IRSA to access AWS KMS
 
@@ -743,14 +785,14 @@ verifyImages:
         rekor:
           ignoreTlog: true
           url: https://rekor.sigstore.dev
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         ctlog:
           ignoreSCT: true
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
@@ -759,7 +801,7 @@ verifyImages:
 
 ## Using custom Rekor public key and CTLogs public key
 
-You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
+You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubkey` and `ctlog.pubkey` respectively for this.
 
 ```yaml
 verifyImages:
@@ -774,13 +816,13 @@ verifyImages:
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         rekor:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
           BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
           -----END PUBLIC KEY-----
         ctlog:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
           FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==

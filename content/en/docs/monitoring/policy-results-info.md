@@ -6,7 +6,7 @@ weight: 20
 
 #### Metric Name(s)
 
-* `kyverno_policy_results_total`
+* `kyverno_policy_results`
 
 #### Metric Value
 
@@ -39,10 +39,10 @@ Counter - An only-increasing integer representing the number of results/executio
 #### Useful Queries
 
 * Tracking the total number of rules which failed in the 24 hours in "default" namespace grouped by their rule types (validate, mutate, generate):<br>
-`sum(increase(kyverno_policy_results_total{policy_namespace="default", rule_result="fail"}[24h])) by (rule_type)`
+`sum(increase(kyverno_policy_results{policy_namespace="default", rule_result="fail"}[24h])) by (rule_type)`
 
 * Tracking the per-minute rate of the number of rule executions triggered by incoming Pod requests over the cluster:<br>
-`rate(kyverno_policy_results_total{resource_kind="Pod", rule_execution_cause="admission_request"}[1m])*60`
+`rate(kyverno_policy_results{resource_kind="Pod", rule_execution_cause="admission_request"}[1m])*60`
 
 * Tracking the total number of policies over the cluster running as a part of background scans over the last 2 hours:<br>
-`count(increase(kyverno_policy_results_total{rule_execution_cause="background_scan"}[2h]) by (policy_name))`
+`count(increase(kyverno_policy_results{rule_execution_cause="background_scan"}[2h]) by (policy_name))`
