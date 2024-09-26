@@ -714,6 +714,20 @@ The data returned by GlobalContextEntries may vary depending on whether it is a 
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
 {{% /alert %}}
 
+#### Default values for API calls
+In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries:
+
+```yaml
+...
+    context:
+    - name: currentnamespace
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{ request.namespace }}"
+        jmesPath: metadata.name
+        default: default
+...
+```
+
 ## Variables from Image Registries
 
 A context can also be used to store metadata on an OCI image by using the `imageRegistry` context type. By using this external data source, a Kyverno policy can make decisions based on details of the container image that occurs as part of an incoming resource.
