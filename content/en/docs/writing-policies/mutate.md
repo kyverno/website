@@ -422,7 +422,7 @@ In addition to standard mutations, Kyverno also supports mutation on existing re
 1. Mutation for existing resources is an asynchronous process. This means there will be a variable amount of delay between the period where the trigger was observed and the existing resource was mutated.
 2. Custom permissions are almost always required. Because these mutations occur on existing resources and not an AdmissionReview (which does not yet exist), Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](../installation/customization.md#customizing-permissions) on how to grant additional permission to the Kyverno background controller's ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required. Kyverno will perform these permissions checks at the time a mutate existing policy is installed. Missing or incorrect permissions will result in failure to create the policy.
 
-To define such a policy, trigger resources need to be specified in the `match` block. The target resources--resources targeted for mutation--are specified in each mutate rule under `mutate.targets`. Mutate existing rules differ from standard mutate rules when these targets are defined. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
+To define a "mutate existing" policy, trigger resources need to be specified in the `match` block. The target resources--resources targeted for mutation--are specified in each mutate rule under `mutate.targets`. Mutate existing rules differ from standard mutate rules when these targets are defined. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
 
 Because the `match` and `mutate.targets[]` stanzas have two separate scopes, when wishing to match on and mutate the same kind of resources any exclusionary conditions must be placed in the correct scope. Match filter criteria do not implicitly function as the input filter for target selection. For example, wishing to match on and mutate existing Ingress resources which have the annotation `corp.org/facing=internal` should at least have the annotation as a selection criteria in the targets section and may use either anchors or preconditions as described further below. Placing this annotation in the `match` clause will only result in Kyverno triggering upon those resources and not necessarily mutating them.
 
@@ -462,6 +462,7 @@ spec:
 ```
 
 By default, the above policy will not be applied when it is installed. This behavior can be configured via `mutateExistingOnPolicyUpdate` attribute. If you set `mutateExistingOnPolicyUpdate` to `true`, Kyverno will mutate the existing secret on policy CREATE and UPDATE AdmissionReview events.
+When `mutateExistingOnPolicyUpdate` is specified as `true`, `mutate.targets` must be specified.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -474,14 +475,21 @@ spec:
     - name: mutate-secret-on-configmap-event
       match:
         any:
-        - resources:
-            kinds:
-            - ConfigMap
-            names:
-            - dictionary-1
-            namespaces:
-            - staging
-...
+          - resources:
+              kinds:
+                - ConfigMap
+              names:
+                - dictionary-1
+              namespaces:
+                - staging
+      mutate:
+        # ...
+        targets:
+          - apiVersion: v1
+            kind: Secret
+            name: secret-1
+            namespace: "{{ request.object.metadata.namespace }}"
+        # ...
 ```
 
 {{% alert title="Note" color="warning" %}}
@@ -542,6 +550,65 @@ The targets matched by a mutate existing rule are not subject to Kyverno's [reso
 {{% /alert %}}
 
 Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
+
+Starting from kyverno `v1.11.2`, mutate existing rules that trigger on deletion of a resource will be skipped unless explicitly specified that the `DELETE` operation should match
+
+For example,the following policy should add a label to a configmap when a deployment is created or updated
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: mutate-configmap-on-undefined-deployment-operation
+spec:
+  background: false
+  rules:
+    - name: mutate-configmap-on-undefined-deployment-operation
+      match:
+        all:
+          - resources:
+              kinds:
+                - Deployment
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: example
+            namespace: example
+        patchesJson6902: |-
+          - path: "/metadata/labels/modified-by-kyverno"
+            op: add
+            value: "true"
+```
+
+To have it also run the mutation when the deployment is deleted, the policy should be modified as such
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: mutate-configmap-on-undefined-deployment-operation
+spec:
+  background: false
+  rules:
+    - name: mutate-configmap-on-undefined-deployment-operation
+      match:
+        all:
+          - resources:
+              kinds:
+                - Deployment
+              operations:
+              # add other operations if needed
+              - DELETE
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: example
+            namespace: example
+        patchesJson6902: |-
+          - path: "/metadata/labels/modified-by-kyverno"
+            op: add
+            value: "true"
+```
 
 ### Variables Referencing Target Resources
 
