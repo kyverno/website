@@ -749,7 +749,7 @@ verifyImages:
 
 ## Using a different signature algorithm
 
-By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor:
+By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
 
 ```yaml
 ...
@@ -767,6 +767,8 @@ verifyImages:
           -----END PUBLIC KEY-----
 ...
 ```
+Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
+
 ## Ignoring Tlogs and SCT Verification
 
 Cosign uses Rekor, a transparency log service to store signatures. In Cosign 2.0 verifies Rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in Kyverno policies:
