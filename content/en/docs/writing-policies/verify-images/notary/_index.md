@@ -260,7 +260,7 @@ kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=serv
 pod/test created (server dry run)
 ```
 
-## Verifying Multiple Image Attestations
+### Validation across multiple image attestations
 
 Consider the image: `ghcr.io/kyverno/test-verify-image:signed` which image has:
 
@@ -362,7 +362,6 @@ spec:
               - key: '{{ trivy.Vulnerabilities[*].VulnerabilityID }}'
                 operator: AnyNotIn
                 value: '{{ vex.vulnerabilities[*].id }}'
-                message: test1
           message: All vulnerabilities in trivy and vex should be same
 ```
 
