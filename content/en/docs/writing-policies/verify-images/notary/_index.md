@@ -262,45 +262,16 @@ pod/test created (server dry run)
 
 ## Verifying Multiple Image Attestations
 
-Consider the following image: `ghcr.io/kyverno/test-verify-image:signed`
-
-```
-ghcr.io/kyverno/test-verify-image:signed
-├── application/vnd.cncf.notary.signature
-│   ├── sha256:7f870420d92765b42cec0f71ee8e25bf39b692f64d95d6f6607e9e6e54300265
-│   └── sha256:f7d941ed9e93a1ff1d5dee3b091144a87dae1d73481d5be93aa65258a110c689
-├── vulnerability-scan
-│   └── sha256:f89cb7a0748c63a674d157ca84d725ff3ac09cc2d4aee9d0ec4315e0fe92a5fd
-│       └── application/vnd.cncf.notary.signature
-│           └── sha256:ec45844601244aa08ac750f44def3fd48ddacb736d26b83dde9f5d8ac646c2f3
-├── sbom/cyclone-dx
-│   └── sha256:8cad9bd6de426683424a204697dd48b55abcd6bb6b4930ad9d8ade99ae165414
-│       └── application/vnd.cncf.notary.signature
-│           └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
-├── application/vnd.cyclonedx+json
-│   └── sha256:aa886b475b431a37baa0e803765a9212f0accece0b82a131ebafd43ea78fa1f8
-│       └── application/vnd.cncf.notary.signature
-│           ├── sha256:00c5f96577878d79b545d424884886c37e270fac5996f17330d77a01a96801eb
-│           └── sha256:f3dc4687f5654ea8c2bc8da4e831d22a067298e8651fb59d55565dee58e94e2d
-├── cyclonedx/vex
-│   └── sha256:c058f08c9103bb676fcd0b98e41face2436e0a16f3d1c8255797b916ab5daa8a
-│       └── application/vnd.cncf.notary.signature
-│           └── sha256:79edc8936a4fb8758b9cb2b8603a1c7903f53261c425efb0cd85b09715eb6dfa
-└── trivy/scan
-    └── sha256:a75ac963617462fdfe6a3847d17e5519465dfb069f92870050cce5269e7cbd7b
-        └── application/vnd.cncf.notary.signature
-            └── sha256:d1e2b2ba837c164c282cf389594791a190df872cf7712b4d91aa10a3520a8460
-```
-
-This image has:
+Consider the image: `ghcr.io/kyverno/test-verify-image:signed` which image has:
 
 1. A notary signature.
 2. A vulnerability scan report, signed using notary.
-3. A CycloneDX SBOM, signed using notary.
-4. A CycloneDX VEX report, signed using notary.
-5. A Trivy scan report, signed using notary.
+3. A CycloneDX VEX report, signed using notary.
 
-This policy checks the signature in the repo `ghcr.io/kyverno/test-verify-image` and ensures that it has been signed by verifying its signature against the provided certificates:
+This policy checks:
+1. The signature in the repo `ghcr.io/kyverno/test-verify-image`  
+2. Ensures that it has a vulnerability scan report of type `trivy/vulnerability`, and a CycloneDX VEX report of type `vex/cyclone-dx`, both are signed using the given certificate.
+3. All the vulnerabilities found in the trivy scan report should be allowed in the vex report.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -395,7 +366,7 @@ spec:
           message: All vulnerabilities in trivy and vex should be same
 ```
 
-After this policy is applied, Kyverno will validate deny condition which checks all the vulneribilities in trivy report are there in vex report using trivy/scan and cyclonedx/scan, then verifies the signature on both the attestation.
+After this policy is applied, Kyverno will verify the signatures in the image and the attestations and then evaluate the validate deny condition which checks all the vulneribilities in trivy report are there in vex report.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server
