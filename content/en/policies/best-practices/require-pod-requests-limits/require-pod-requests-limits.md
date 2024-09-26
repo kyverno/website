@@ -50,4 +50,18 @@ spec:
                 cpu: "?*"
               limits:
                 memory: "?*"
+          initContainers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
+          ephemeralContainers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
 ```

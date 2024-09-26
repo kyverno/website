@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/minversion: 1.7.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
-      This policy generates and synchronizes Argo CD cluster secrets from Rancher 
+      This policy generates and synchronizes Argo CD cluster secrets from Rancher
       managed cluster.provisioning.cattle.io/v1 resources and their corresponding CAPI secrets.
       In this solution, Argo CD integrates with Rancher managed clusters via the central
       Rancher authentication proxy which shares the network endpoint of the Rancher API/GUI.
@@ -33,7 +33,7 @@ metadata:
       "Cluster-API cluster auto-registration" and Rancher issue https://github.com/rancher/rancher/issues/38053
       "Fix type and labels Rancher v2 provisioner specifies when creating CAPI Cluster Secret".
 spec:
-  generateExistingOnPolicyUpdate: true
+  generateExisting: true
   rules:
   - name: source-rancher-non-local-cluster-and-capi-secret
     match:
