@@ -5,10 +5,6 @@ description: >
 weight: 60
 ---
 
-{{% alert title="Warning" color="warning" %}}
-Image verification is a **beta** feature and there may be changes to the API.
-{{% /alert %}}
-
 The logical structure of an verifyImages rule is shown below:
 
 <img src="/images/verify-image-rule.png" alt="Image Verification Rule" width="60%"/>
