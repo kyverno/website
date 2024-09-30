@@ -120,7 +120,6 @@ kind: ClusterPolicy
 metadata:
   name: cm-array-example
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-role-annotation
@@ -135,6 +134,7 @@ spec:
           kinds:
           - Deployment
     validate:
+      failureAction: Enforce
       message: "The role {{ request.object.metadata.annotations.role }} is not in the allowed list of roles: {{ \"roles-dictionary\".data.\"allowed-roles\" }}."
       deny:
         conditions:
@@ -517,7 +517,6 @@ kind: ClusterPolicy
 metadata:
   name: limits
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: limit-lb-svc
     match:
@@ -533,6 +532,7 @@ spec:
         urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
     validate:
+      failureAction: Enforce
       message: "Only one LoadBalancer service is allowed per namespace"
       deny:
         conditions:
@@ -558,7 +558,6 @@ kind: ClusterPolicy
 metadata:
   name: check-namespaces      
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: call-extension
     match:
@@ -580,6 +579,7 @@ spec:
             <snip>
             -----END CERTIFICATE-----
     validate:
+      failureAction: Enforce
       message: "namespace {{request.namespace}} is not allowed"
       deny:
         conditions:
@@ -831,7 +831,6 @@ kind: ClusterPolicy
 metadata:
   name: imageref-demo
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: no-root-images
     match:
@@ -843,6 +842,7 @@ spec:
           - CREATE
           - UPDATE
     validate:
+      failureAction: Enforce
       message: "Images run as root are not allowed."  
       foreach:
       - list: "request.object.spec.containers"

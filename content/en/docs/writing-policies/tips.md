@@ -59,9 +59,9 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 ## Validate
 
-* When developing your `validate` policies, it's easiest to set `validationFailureAction: Enforce` so when testing you can see the results immediately without having to look at a report.
+* When developing your `validate` policies, it's easiest to set `failureAction: Enforce` so when testing you can see the results immediately without having to look at a report.
 
-* Before deploying into production, ensure you have `validationFailureAction: Audit` so the policy doesn't have unintended consequences.
+* Before deploying into production, ensure you have `failureAction: Audit` so the policy doesn't have unintended consequences.
 
 * `validate` rules cannot counteract the other. For example, a rule written to ensure all images come from registry `reg.corp.com` and another rule written to ensure they do **not** come from `reg.corp.com` will effectively render all image pulls impossible and nothing will run. Where the rule is defined is irrelevant.
 

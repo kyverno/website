@@ -5,7 +5,7 @@ description: >
 weight: 30
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -21,8 +21,6 @@ metadata:
   name: require-ns-purpose-label
 # The `spec` defines properties of the policy.
 spec:
-  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
-  validationFailureAction: Enforce
   # The `rules` is one or more rules which must be true.
   rules:
   - name: require-ns-purpose-label
@@ -34,6 +32,8 @@ spec:
           - Namespace
     # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
     validate:
+      # The `failureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
+      failureAction: Enforce
       # The `message` is what gets displayed to a user if this rule fails validation.
       message: "You must have label `purpose` with value `production` set on all new namespaces."
       # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
@@ -79,13 +79,17 @@ require-ns-purpose-label:
 
 Change the `development` value to `production` and try again. Kyverno permits creation of your new Namespace resource.
 
-## Validation Failure Action
+## Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
+The `FailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
 
-## Validation Failure Action Overrides
+{{% alert title="Warning" color="warning" %}}
+The field `spec.validationFailureAction` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureAction`.
+{{% /alert %}}
 
-Using `validationFailureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
+## Failure Action Overrides
+
+Using `failureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -93,14 +97,6 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: Audit
-  validationFailureActionOverrides:
-    - action: Enforce     # Action to apply
-      namespaces:       # List of affected namespaces
-        - default
-    - action: Audit
-      namespaces:
-        - test
   rules:
     - name: check-label-app
       match:
@@ -109,6 +105,14 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Audit
+        failureActionOverrides:
+          - action: Enforce     # Action to apply
+            namespaces:       # List of affected namespaces
+              - default
+          - action: Audit
+            namespaces:
+              - test
         message: "The label `app` is required."
         pattern:
           metadata:
@@ -116,7 +120,11 @@ spec:
               app: "?*"
 ```
 
-In the above policy, for Namespace `default`, `validationFailureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
+In the above policy, for Namespace `default`, `failureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `failureAction` field.
+
+{{% alert title="Warning" color="warning" %}}
+The field `spec.validationFailureActionOverrides` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureActionOverrides`.
+{{% /alert %}}
 
 ## Patterns
 
@@ -146,7 +154,6 @@ kind: ClusterPolicy
 metadata:
   name: all-containers-need-requests-and-limits
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-container-resources
     match:
@@ -155,6 +162,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "All containers must have CPU and memory resource requests and limits defined."
       pattern:
         spec:
@@ -181,7 +189,6 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: check-label-app
       match:
@@ -192,6 +199,7 @@ spec:
             - StatefulSet
             - DaemonSet
       validate:
+        failureAction: Enforce
         message: "The label `app` is required."
         pattern:
           spec:
@@ -235,7 +243,6 @@ kind: ClusterPolicy
 metadata:
   name: validate
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: validate-replica-count
       match:
@@ -244,6 +251,7 @@ spec:
             kinds:
             - Deployment
       validate:
+        failureAction: Enforce
         message: "Replica count for a Deployment must be greater than or equal to 2."
         pattern:
           spec:
@@ -274,7 +282,6 @@ kind: ClusterPolicy
 metadata:
   name: conditional-anchor-dockersock
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: conditional-anchor-dockersock
@@ -284,6 +291,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`."
       pattern:
         metadata:
@@ -305,7 +313,6 @@ kind: ClusterPolicy
 metadata:
   name: equality-anchor-no-dockersock
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: equality-anchor-no-dockersock
@@ -315,6 +322,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "If a hostPath volume exists, it must not be set to `/var/run/docker.sock`."
       pattern:
         =(spec):
@@ -341,7 +349,6 @@ kind: ClusterPolicy
 metadata:
   name: existence-anchor-at-least-one-nginx
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: existence-anchor-at-least-one-nginx
     match:
@@ -350,6 +357,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "At least one container must use the image `nginx:latest`."
       pattern:
         spec:
@@ -381,7 +389,6 @@ kind: ClusterPolicy
 metadata:
   name: sample
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-container-image
     match:
@@ -390,6 +397,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: Images coming from corp.reg.com must use the correct imagePullSecret.
       pattern:
         spec:
@@ -438,7 +446,6 @@ metadata:
   name: require-run-as-non-root
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: check-containers
     match:
@@ -447,6 +454,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: >-
         Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
         spec.containers[*].securityContext.runAsNonRoot, and
@@ -542,7 +550,6 @@ kind: ClusterPolicy
 metadata:
   name: deny-deletes
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-deletes-for-kyverno-resources
@@ -557,6 +564,7 @@ spec:
       - clusterRoles:
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
       deny:
         conditions:
@@ -576,7 +584,6 @@ kind: ClusterPolicy
 metadata:
   name: block-updates-to-custom-resource
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-updates-to-custom-resource
@@ -594,6 +601,7 @@ spec:
         - custom-controller:*
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Modifying or deleting this custom resource is forbidden."
       deny: {}
 ```
@@ -608,7 +616,6 @@ kind: ClusterPolicy
 metadata:
   name: deny-netpol-changes
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: deny-netpol-changes
@@ -624,6 +631,7 @@ spec:
       - clusterRoles:
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Changing default network policies is not allowed."
       deny: {}
 ```
@@ -664,7 +672,6 @@ kind: ClusterPolicy
 metadata:
   name: check-images
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-registry
@@ -679,6 +686,7 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
+      failureAction: Enforce
       message: "unknown registry"
       foreach:
       - list: "request.object.spec.initContainers"
@@ -703,7 +711,6 @@ kind: ClusterPolicy
 metadata:
   name: check-ingress
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-tls-secret-host
@@ -713,6 +720,7 @@ spec:
           kinds:
           - Ingress
     validate:
+      failureAction: Enforce
       message: "All TLS hosts must use a domain of old.com."
       foreach:
       - list: request.object.spec.tls[]
@@ -816,7 +824,6 @@ kind: ClusterPolicy
 metadata:
   name: validate-secrets
 spec:
-  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-secrets
@@ -826,6 +833,7 @@ spec:
             kinds:
               - Secret
       validate:
+        failureAction: Enforce
         manifests:
           attestors:
           - count: 1
@@ -873,7 +881,6 @@ kind: ClusterPolicy
 metadata:
   name: validate-deployment
 spec:
-  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-deployment
@@ -883,6 +890,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         manifests:
           attestors:
           - count: 1
@@ -937,7 +945,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -946,6 +953,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: baseline
         version: latest
@@ -990,7 +998,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -999,6 +1006,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1045,7 +1053,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -1054,6 +1061,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: baseline
         version: latest
@@ -1086,7 +1094,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -1095,6 +1102,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1156,7 +1164,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -1165,6 +1172,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1214,7 +1222,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
     - name: baseline
       match:
@@ -1223,6 +1230,7 @@ spec:
               kinds:
                 - Pod
       validate:
+        failureAction: Enforce
         podSecurity:
           level: baseline
           version: latest
@@ -1279,7 +1287,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
     - name: baseline
       match:
@@ -1288,6 +1295,7 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Enforce
         podSecurity:
           level: baseline
           version: latest
@@ -1388,7 +1396,6 @@ kind: ClusterPolicy
 metadata:
   name: check-deployment-replicas
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-deployment-replicas
@@ -1398,13 +1405,14 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "object.spec.replicas < 4"
               message:  "Deployment spec.replicas must be less than 4."
 ```
 
-The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
+The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `validate[*].failureAction` field.
 
 {{% alert title="Note" color="info" %}}
 You can quickly test CEL expressions in the [CEL Playground](https://playcel.undistro.io/).
@@ -1429,7 +1437,6 @@ kind: ClusterPolicy
 metadata:
   name: check-statefulset-namespace
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: statefulset-namespace
@@ -1439,6 +1446,7 @@ spec:
             kinds:
               - StatefulSet
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "namespaceObject.metadata.name == 'production'"
@@ -1530,7 +1538,6 @@ kind: ClusterPolicy
 metadata:
   name: check-deployment-replicas
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-deployment-replicas
@@ -1540,6 +1547,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           paramKind: 
             apiVersion: rules.example.com/v1
@@ -1643,7 +1651,6 @@ kind: ClusterPolicy
 metadata:
   name: image-matches-namespace-environment.policy.example.com
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: image-matches-namespace-environment
@@ -1653,6 +1660,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           variables:
             - name: environment
@@ -1765,7 +1773,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-path
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-path
@@ -1775,6 +1782,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"

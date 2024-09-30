@@ -34,7 +34,6 @@ Kyverno policy definitions can refer to other fields in the policy definition as
 In order for Kyverno to refer to these existing values in a manifest, it uses the notation `$(./../key_1/key_2)`. This may look familiar as it is essentially the same way Linux/Unix systems refer to relative paths. For example, consider the policy manifest snippet below.
 
 ```yaml
-validationFailureAction: Enforce
 rules:
 - name: check-tcpSocket
   match:
@@ -43,6 +42,7 @@ rules:
         kinds:
         - Pod
   validate:
+    failureAction: Enforce
     message: "Port number for the livenessProbe must be less than that of the readinessProbe."
     pattern:
       spec:
