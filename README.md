@@ -41,7 +41,7 @@ hugo server
 
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
 
-**Note for Github Codespaces User:** You might be required to install the hugo extended version. To do so download the extended version from [hugo release](https://github.com/gohugoio/hugo/releases) based on your operation system (mostly it is Ubuntu for Codespaces). Use the below commands to install and then move the hugo directory to `usr/local/hugo/bin/hugo`
+**Note for Github Codespaces User:** You will be required to install the hugo extended version. To do so download the extended version from [hugo release](https://github.com/gohugoio/hugo/releases) based on your operation system (mostly it is Ubuntu for Codespaces). Use the below commands to install and then move the hugo directory to `usr/local/hugo/bin/hugo`
 ```
 wget https://github.com/gohugoio/hugo/releases/download/v0.135.0/hugo_extended_0.135.0_linux-amd64.deb
 sudo dpkg -i hugo_extended_0.135.0_linux-amd64.deb
