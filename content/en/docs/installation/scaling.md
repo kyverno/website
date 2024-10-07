@@ -37,12 +37,12 @@ The test was conducted where we installed Kyverno policies to enforce the Kubern
 
 | replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max) | Memory (max) | CPU (max) |
 |----------|------------|-----------|---------|---------|--------------------------|-------------------|--------------|-----------|
-| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 42.89ms / 155.77ms         | 115Mi        | 211m      |
-| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 73.37ms / 432.37ms         | 136Mi        | 1148m     |
-| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 210.56ms / 1.54s           | 315Mi        | 1470m     |
-| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 31.06ms / 111.42ms         | 110Mi         | 96m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 56.56ms / 248.38ms         | 116Mi        | 315m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 136.77ms / 666.04ms        | 167Mi        | 524m      |
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 65.13ms / 198.18ms         | 83Mi        | 760m      |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 115.9ms / 574.42ms         | 200Mi        | 3698m     |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 298.11ms / 1.75s           | 3914Mi        | 6512m     |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 58.56ms / 138.23ms         | 111Mi         | 244m      |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 118ms / 100.94ms         | 175Mi        | 1336m      |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 298.11ms / 1.75s        | 200Mi        | 1980m      |
 
 #### Reports Controller
 
