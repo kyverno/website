@@ -393,6 +393,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `logtostderr` (ABCR) | true | Log to standard error instead of files. |
 | `maxAPICallResponseLength` (ABCR) | `10000000` | Sets the maximum length of the response body for API calls. |
 | `maxAuditWorkers` (A) | `8` | Maximum number of workers for audit policy processing. |
+| `maxBackgroundReports` (BR) | `10000` | Maximum number of background reports before we stop creating new ones. |
 | `maxAuditCapacity` (A) | `1000` | Maximum number of workers for audit policy processing. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
