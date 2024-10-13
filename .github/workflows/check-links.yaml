@@ -21,7 +21,7 @@ jobs:
         with:
           fail: true
           debug: false
-          args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} -c config/lychee.toml -E content/
+          args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml -E content/
 
       # Deactivated. The --include-fragments flag is causing failures because rendered links
       # have a trailing '#' which is probably a result of the link style change plus the new
