@@ -392,7 +392,7 @@ spec:
 ```
 ### Credits
 
-Thanks [Abir Sigron](https://github.com/abirsigron) for initiating the innovative idea and contributing to its successful implementation.
+Thanks to [Abir Sigron](https://github.com/abirsigron) for initiating the idea on Slack and conducting a POC.
 
 ## Closing
 
