@@ -4,17 +4,17 @@ linkTitle = "Kyverno"
 +++
 
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
-# Kubernetes Native Policy Management { class="text-center" }
+# Policy as Code, Simplified! { class="text-center" }
 
 <div class="mt-5 mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#kyverno-is-a-policy-engine-designed-for-kubernetes">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#about-kyverno">
 		Learn More <i class="fa fa-chalkboard-teacher ml-2"></i>
 	</a>
 	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="docs/introduction/#quick-start-guides">
 		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
 	  </a>
 
-  <a class="btn btn-link text-info" href="#kyverno-is-a-policy-engine-designed-for-kubernetes" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
+  <a class="btn btn-link text-info" href="#about-kyverno" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
 
 </div>
 {{< /blocks/cover >}}
@@ -23,18 +23,29 @@ linkTitle = "Kyverno"
 {{% blocks/lead color="light" %}}
 <br/>
 
-# Kyverno is a policy engine **designed for Kubernetes** { class="text-center" }
-
+# About Kyverno { class="text-center" }
 <br/>
 <br/>
 
-Policies are managed as Kubernetes resources and **no new language is required** to write policies.
+<h2>
+The Kyverno project provides a comprehensive set of tools to manage the complete Policy-as-Code (PaC) lifecycle for Kubernetes and other cloud native environments
+</h2>
+<br/>
 
-This allows using familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies.
+<p style="line-height:1.5">
 
-Kyverno policies can **validate, mutate, generate, and cleanup** Kubernetes resources, and **verify image** signatures and artifacts to help secure the software supply chain.
+Kyverno policies are declarative YAML resources and <b>no new language</b> is required. Kyverno enables use of familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies. Kyverno supports JMESPath and the Common Expressions Language (CEL) for efficient handling of complex logic.
 
-The Kyverno CLI can be used to test policies and validate resources as part of a **CI/CD pipeline**.
+In Kubernetes environments, Kyverno policies can <b>validate, mutate, generate, and cleanup</b> any Kubernetes resource, including custom resources. To help secure the software supply chain Kyverno policies can <b>verify OCI container image signatures and artifacts</b>. Kyverno policy reports and policy exceptions are also Kubernetes API resources.
+
+The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as part of an IaC and CI/CD pipelines. 
+
+**Kyverno Policy Reporter** provides report management with a graphical web-based user interface. 
+
+**Kyverno JSON** allows applying Kyverno policies in non-Kubernetes environments and on any JSON payload.
+
+**Kyverno Chainsaw** provides declarative end-to-end testing for policies. 
+</p>
 
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="docs/introduction/">

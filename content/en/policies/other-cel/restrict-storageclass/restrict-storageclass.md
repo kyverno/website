@@ -40,6 +40,9 @@ spec:
       - resources:
           kinds:
           - StorageClass
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:

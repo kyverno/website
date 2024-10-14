@@ -38,6 +38,9 @@ spec:
       - resources:
           kinds:
           - NetworkPolicy
+          operations:
+          - CREATE
+          - UPDATE
     exclude:
       any:
       - resources:

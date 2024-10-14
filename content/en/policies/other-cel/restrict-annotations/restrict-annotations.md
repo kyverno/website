@@ -43,6 +43,9 @@ spec:
           - StatefulSet
           - DaemonSet
           - Pod
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:
