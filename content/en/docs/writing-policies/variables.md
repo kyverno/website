@@ -7,6 +7,8 @@ weight: 90
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, OCI image registries, and even external service calls.
 
+In Kyverno, you can use the double braces syntax e.g., `{{ ... }}`, to reference a variable. For variables in policy declarations the `$( ... )` syntax is used instead.
+
 Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](jmespath.md). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
 ## Pre-defined Variables
@@ -172,7 +174,7 @@ The result of the mutation of this Pod with respect to the `OTEL_RESOURCE_ATTRIB
         rule_applied=imbue-pod-spec
 ```
 
-### Variables in Helm
+## Variables in Helm
 
 Both Kyverno and Helm use Golang-style variable substitution syntax and, as a result, Kyverno policies containing variables deployed through Helm may need to be "wrapped" to avoid Helm interpreting them as Helm variables.
 
@@ -195,6 +197,7 @@ value: {{ `"{{ element.securityContext.capabilities.drop[].to_upper(@) || `}}`[]
 ```
 
 in order to render properly.
+
 
 ## Variables from admission review requests
 
@@ -481,6 +484,78 @@ spec:
 ```
 
 In this example, AdmissionReview data is first collected in the inner expression in the form of `{{request.object.metadata.labels.app}}` while the outer expression is built from a ConfigMap context named `LabelsCM`.
+
+
+## Shallow substitution
+
+By default, Kyverno performs nested substitution of variables. However, in some cases, nested substitution may not be desireable.
+
+The syntax `{{- ... }}` can be used for shallow (one time only) substitution of variables.
+
+Here is a more detailed example.
+
+Consider a policy that loads a ConfigMap that contains [HCL](https://developer.hashicorp.com/terraform/language/syntax/configuration) synytax data, and patches resource configurations:
+
+Policy:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: vault-auth-backend
+spec:
+  validationFailureAction: Audit
+  background: true
+  mutateExistingOnPolicyUpdate: true
+  rules:
+  - name: vault-injector-config-blue-to-green-auth-backend
+    context:
+    - name: hcl
+      variable:
+        jmesPath: replace_all( '{{ request.object.data.config }}', 'from_string','to_string')
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+          names:
+          - test-*
+          namespaces:
+          - corp-tech-ap-team-ping-ep
+    mutate:
+      patchStrategicMerge:
+        data:
+          config: '{{- hcl }}'
+      targets:
+      - apiVersion: v1
+        kind: ConfigMap
+        name: '{{ request.object.metadata.name }}'
+        namespace: '{{ request.object.metadata.namespace }}'
+    name: vault-injector-config-blue-to-green-auth-backend
+```
+
+ConfigfMap:
+
+```yaml
+apiVersion: v1
+data:
+  config: |-
+    from_string
+    {{ some hcl tempalte }}
+kind: ConfigMap
+metadata:
+  annotations:
+  labels:
+    argocd.development.cpl.<removed>.co.at/app: corp-tech-ap-team-ping-ep
+  name: vault-injector-config-http-echo
+  namespace: corp-tech-ap-team-ping-ep
+
+```
+
+In this case, since HCL also uses the `{{ ... }}` variable syntax, Kyverno needs to be instructed to not attempt to resolve variables in the HCL. 
+
+To only substitute the rule data with the HCL, and not perform nested subsitutions, the declaration `'{{- hcl }}'` uses the shallow substitution syntax.
+
 
 ## Evaluation Order
 
