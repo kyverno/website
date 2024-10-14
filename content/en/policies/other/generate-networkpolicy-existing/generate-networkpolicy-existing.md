@@ -31,7 +31,6 @@ metadata:
       is additional overhead. This policy creates a new NetworkPolicy for existing
       Namespaces which results in a default deny behavior and labels it with created-by=kyverno.
 spec:
-  generateExisting: true
   rules:
   - name: generate-existing-networkpolicy
     match:
@@ -40,6 +39,7 @@ spec:
           kinds:
           - Namespace
     generate:
+      generateExisting: true
       kind: NetworkPolicy
       apiVersion: networking.k8s.io/v1
       name: default-deny
