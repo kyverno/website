@@ -46,3 +46,8 @@ status = 200
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/blog/index.xml"
+  [headers.values]
+    access-control-allow-origin = "*"

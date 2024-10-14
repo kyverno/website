@@ -5,22 +5,35 @@ version: 1.12.0
 subject: Policy
 policyType: "generate"
 description: >
-    Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
-    Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
+    Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist. Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 ---
 
 ## Policy Definition
 <a href="https://github.com/kyverno/policies/raw/main//kasten/kasten-generate-policy-by-preset-label/kasten-generate-policy-by-preset-label.yaml" target="-blank">/kasten/kasten-generate-policy-by-preset-label/kasten-generate-policy-by-preset-label.yaml</a>
 
 ```yaml
-# This example assumes that Kasten policy presets named
-# "gold", "silver", and "bronze" have been pre-created
-# and Kasten was deployed into the `kasten-io` namespace.
+# This example assumes that Kasten policy presets named "gold", "silver", and "bronze" have been pre-created and Kasten was deployed into the `kasten-io` namespace.
 #
-# Additionally, the Kyverno background controller requires
-# additional permissions to create Kasten Policy resources.
-# Apply the create-kasten-policies-clusterrole.yaml manifest
-# first to grant the required permissions.
+# NOTE: Use of this policy will require granting the Kyverno background-controller additional privileges required to generate Kasten resources. An example ClusterRole to provide required privileges is provided within the comments of the policy manifest.
+#
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   labels:
+#     app.kubernetes.io/component: background-controller
+#     app.kubernetes.io/instance: kyverno
+#     app.kubernetes.io/part-of: kyverno
+#   name: kyverno:create-kasten-policies
+# rules:
+# - apiGroups:
+#   - config.kio.kasten.io
+#   resources:
+#   - policies
+#   verbs:
+#   - create
+#   - update
+#   - delete
+#
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -34,7 +47,6 @@ metadata:
     kyverno.io/kubernetes-version: "1.24-1.30"
     policies.kyverno.io/description: >-
       Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist.
-
       Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.
 spec:
   rules:

@@ -1,13 +1,11 @@
 ---
 title: Selecting Resources
 description: >
-  Identifying and filtering resources for policy evaluation.
+  Identifying and filtering resources for rule evaluation.
 weight: 20
 ---
 
-The `match` and `exclude` filters control which resources policies are applied to.
-
-The `match` and `exclude` clauses have the same structure and can each contain **only one** of the two elements:
+The `match` and `exclude` filters control the scope to which rules are applied. They have the same structure and can each contain **only one** of the two elements:
 
 * `any`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **OR** operation while choosing resources
 * `all`: specify [resource filters](#resource-filters) on which Kyverno will perform the logical **AND** operation while choosing resources
@@ -35,7 +33,7 @@ Supported formats:
 * `Version/Kind`
 * `Kind`
 
-To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Kind with the name NetworkPolicy. These can be distinguished as:
+To resolve kind naming conflicts, specify the API group and version. For example, the Kubernetes API, Calico, and Antrea all register a Custom Resource with the name NetworkPolicy. These can be distinguished as:
 
 * `networking.k8s.io/v1/NetworkPolicy`
 * `crd.antrea.io/v1alpha1/NetworkPolicy`
@@ -65,25 +63,22 @@ In every rule, there must be a single `match` statement to function as the filte
 In this snippet, the `match` statement matches on all resources that **EITHER** have the kind Service with name "staging" **OR** have the kind Service and are being created in the "prod" Namespace.
 
 ```yaml
-spec:
-  rules:
-  - name: no-LoadBalancer
-    match:
-      any:
-      - resources:
-          kinds: 
-          - Service
-          names: 
-          - staging
-          operations:
-          - CREATE
-      - resources:
-          kinds: 
-          - Service
-          namespaces:
-          - prod
-          operations:
-          - CREATE
+match:
+  any:
+  - resources:
+      kinds: 
+      - Service
+      names: 
+      - staging
+      operations:
+      - CREATE
+  - resources:
+      kinds: 
+      - Service
+      namespaces:
+      - prod
+      operations:
+      - CREATE
 ```
 
 The `operations[]` list is optional but recommended. When `operations[]` is absent, the default behavior is to match on `CREATE` and `UPDATE` requests.
@@ -91,59 +86,46 @@ The `operations[]` list is optional but recommended. When `operations[]` is abse
 By combining multiple elements in the `match` statement, you can be more selective as to which resources you wish to process. Additionally, wildcards are supported for even greater control. For example, by adding the `resources.names` field, the previous `match` statement can further filter out Services that begin with the text "prod-" **OR** have the name "staging". `resources.names` takes in a list of names and would match all resources which have either of those names.
 
 ```yaml
-spec:
-  rules:
-  - name: no-LoadBalancer
-    match:
-      any:
-      - resources:
-          names: 
-          - "prod-*"
-          - "staging"
-          kinds:
-          - Service
-          operations:
-          - CREATE
-      - resources:
-          kinds:
-          - Service
-          operations:
-          - CREATE
-        subjects:
-        - kind: User
-          name: dave
+match:
+  any:
+  - resources:
+      names: 
+      - "prod-*"
+      - "staging"
+      kinds:
+      - Service
+      operations:
+      - CREATE
+  - resources:
+      kinds:
+      - Service
+      operations:
+      - CREATE
+    subjects:
+    - kind: User
+      name: dave
 ```
 
 `match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](validate.md#wildcards) are supported to make selection more flexible.
 
-{{% alert title="Note" color="info" %}}
-Kyverno also supports `resources.name` which allows you to pass in only a single name rather than a list, but `resources.name` is being deprecated in favor of `resources.names` and will be removed in a future release.
-{{% /alert %}}
-
 In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
 
 ```yaml
-spec:
-  rules:
-  - name: no-LoadBalancer
-    match:
-      any:
-      - resources:
-          kinds:
-          - networking.k8s.io/v1/NetworkPolicy
+match:
+  any:
+  - resources:
+      kinds:
+      - networking.k8s.io/v1/NetworkPolicy
 ```
 
 By specifying the `kind` in `version/kind` format, only specific versions of the resource kind will be matched.
 
 ```yaml
-spec:
-  rules:
-  - name: no-LoadBalancer
-    match:
-      any:
-      - resources:
-          kinds:
-          - v1/NetworkPolicy
+match:
+  any:
+  - resources:
+      kinds:
+      - v1/NetworkPolicy
 ```
 
 Wildcards are supported in the `kinds` field allowing you to match on every resource type in the cluster. Selector labels support wildcards `(* or ?)` for keys as well as values in the following paths.
@@ -192,6 +174,38 @@ spec:
 Keep in mind that when matching on all kinds (`*`) the policy you write must be applicable across all of them. Typical uses for this type of wildcard matching are elements within the `metadata` object. This type of matching should be used sparingly and carefully as it will instruct the API server to send every eligible resource type to Kyverno, greatly increasing the amount of processing performed by Kyverno.
 {{% /alert %}}
 
+Matches for Namespaced resources can also be selected using Namespace labels by using the `namespaceSelector` field. This field allows selection in two granular ways: by using `matchLabels` or `matchExpressions`. When using `matchLabels`, a map of Namespace labels can be used to specify the match. For more advanced selection logic, use the `matchExpressions` element.
+
+In the below example, Kyverno will only consider matching Pods as those in a Namespace which contains the label `organization: engineering`.
+
+```yaml
+match:
+  any:
+  - resources:
+      kinds:
+      - Pod
+      namespaceSelector:
+        matchLabels:
+          organization: engineering
+```
+
+And in this example, Kyverno will select Pods in a Namespace where the label key `namespacekind` does not equal the value `platform` or `ci`.
+
+```yaml
+match:
+  any:
+  - resources:
+      kinds:
+      - Pod
+      namespaceSelector:
+        matchExpressions:
+        - key: namespacekind
+          operator: NotIn
+          values:
+          - platform
+          - ci
+```
+
 Here are some other examples of `match` statements.
 
 ### Match a Deployment or StatefulSet with a specific label
@@ -203,23 +217,20 @@ Condition checks inside the `resources` block follow the logic "**AND across typ
 In the below snippet, `kinds` and `selector` are peer/sibling elements, and so they are **AND**ed together.
 
 ```yaml
-spec:
-  rules:
-    - name: match-critical-app
-      match:
-        any:
-        # AND across kinds and namespaceSelector
-        - resources:
-            # OR inside list of kinds
-            kinds:
-            - Deployment
-            - StatefulSet
-            operations:
-            - CREATE
-            - UPDATE
-            selector:
-              matchLabels:
-                app: critical
+match:
+  any:
+  # AND across kinds and namespaceSelector
+  - resources:
+      # OR inside list of kinds
+      kinds:
+      - Deployment
+      - StatefulSet
+      operations:
+      - CREATE
+      - UPDATE
+      selector:
+        matchLabels:
+          app: critical
 ```
 
 This pattern can be leveraged to produce very fine-grained control over the selection of resources, for example the snippet as shown below which combines `match` elements that include `resources`, `subjects`, `roles`, and `clusterRoles`.
@@ -257,10 +268,10 @@ spec:
             - test
             # Optional label selectors. Values support wildcards (* and ?)
             selector:
-                matchLabels:
-                    app: mongodb
-                matchExpressions:
-                    - {key: tier, operator: In, values: [database]}
+              matchLabels:
+                app: mongodb
+              matchExpressions:
+                - {key: tier, operator: In, values: [database]}
           # Optional users or service accounts to be matched
           subjects:
           - kind: User
@@ -305,6 +316,8 @@ spec:
 
 ## Combining match and exclude
 
+In cases where a subset of the resources selected in a `match` block need to be omitted from processing, you may optionally use an `exclude` block. For example, you wish to only process Pods which do not have the label `env=prod`. An `exclude` block can be used to select those with the label `env=prod`. An `exclude` block must therefore be a subset of the `match` block.
+
 All `match` and `exclude` conditions must be satisfied for a resource to be selected for the policy rule. In other words, the `match` and `exclude` conditions are evaluated using a logical **AND** operation. Elements in the `exclude` block follow the same specifications as those in the `match` block.
 
 ### Exclude `cluster-admin` ClusterRole
@@ -329,13 +342,9 @@ spec:
           - cluster-admin
 ```
 
-### Exclude `kube-system` namespace
+### Exclude `prod-alpha` Namespace
 
-This rule matches all Pods except those in the `kube-system` Namespace.
-
-{{% alert title="Note" color="info" %}}
-The `kube-system` Namespace is excluded from processing in a default installation of Kyverno via the [resourceFilter](../installation/customization.md#resource-filters). The example shown below is for illustration purposes and may not be strictly necessary.
-{{% /alert %}}
+This rule matches all Pods except those in the `prod-alpha` Namespace.
 
 ```yaml
 spec:
@@ -353,7 +362,7 @@ spec:
         any:
         - resources:
             namespaces:
-            - kube-system
+            - prod-alpha
 ```
 
 ### Match a label and exclude users and roles

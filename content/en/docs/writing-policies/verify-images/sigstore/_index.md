@@ -90,6 +90,48 @@ check-image:
     invalid signature'
 ```
 
+### Verifying Sigstore bundles
+
+Container images signatures that use [sigstore bundle format](https://github.com/sigstore/protobuf-specs/blob/main/protos/sigstore_bundle.proto) such as [GitHub Artifact Attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) can be verified using verification type `SigstoreBundle`. The following example verifies images containing SLSA Provenance created and signed using GitHub Artifact Attestation.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+  name: sigstore-attestation-verification
+spec:
+  background: false
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: sigstore-attestation-verification
+    verifyImages:
+    - imageReferences:
+      - "*"
+      type: SigstoreBundle
+      attestations:
+      - attestors:
+        - entries:
+          - keyless:
+              issuer: https://token.actions.githubusercontent.com
+              subject: https://github.com/vishal-chdhry/artifact-attestation-example/.github/workflows/build-attested-image.yaml@refs/heads/main
+              rekor:
+                  url: https://rekor.sigstore.dev
+        conditions:
+        - all:
+          - key: '{{ buildDefinition.buildType }}'
+            operator: Equals
+            value: https://actions.github.io/buildtypes/workflow/v1
+        type: https://slsa.dev/provenance/v1
+```
+
 ### Skipping Image References
 
 `skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`. 
@@ -435,7 +477,7 @@ This image can now be verified using the leaf or root certificates.
 
 ## Keyless signing and verification
 
-The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/signing/overview/):
+The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/):
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -508,7 +550,7 @@ The supported formats include:
 * gcpkms://projects/[PROJECT]/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
 * hashivault://[KEY]
 
-Refer to https://docs.sigstore.dev/cosign/kms_support for additional details.
+Refer to https://docs.sigstore.dev/cosign/key_management/overview/ for additional details.
 
 ### Enabling IRSA to access AWS KMS
 
@@ -646,67 +688,42 @@ spec:
 
 Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
 
-1. There are two potential ways to have Kyverno trust your private registry. The first allows replacing all the certificates Kyverno trusts by default with only those needed by your internal registry. This has the benefit of being a simpler process at the cost of Kyverno losing trust for any public registries such as Docker Hub, Amazon ECR, GitHub Container Registry, etc. The second involves providing Kyverno with the same trust as your Nodes. Often times this trust includes the aforementioned public certificate authorities but in other cases may not. This first step involves the latter process.
+There are two possible methods to present Kyverno with custom certificates. The first is to replace the internal default certificate store with your custom one in which all necessary certificates are stored in a ConfigMap. The second is to allow Kyverno to mount a hostPath volume on the underlying Node so it can read the same certificate store as the host.
 
-Update your internal `ca-certificates` bundle by adding your private certificate authorities root certificate to the bundle and regenerating it. Many Linux distributions have slightly different processes, but it is documented [here](https://ubuntu.com/server/docs/security-trust-store) for Ubuntu as an example. If this process has already been done and your Nodes are using this, simply copy the contents out and proceed to the next step.
+#### Replace
 
-2. Create a ConfigMap in your cluster, preferably in the Kyverno Namespace, which has these contents stored as a multi-line value. It should look something like the below.
+Using this first method, you replace Kyverno's internal certificate store with your own. The certificate(s) you supply using this method will overwrite the entire certificate store Kyverno ships with by default which may prevent you from accessing public registries signed by third-party certificate authorities. This method may be favorable when you are only using private, internal registries with no need to contact external services.
+
+To use this method, set the Helm value `global.caCertificates.data` along with the certificate(s) you wish Kyverno to trust. An example snippet is shown below.
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kyverno-certs
-  namespace: kyverno
-data:
-  ca-certificates: |
-    -----BEGIN CERTIFICATE-----
-    MIIH0zCCBbugAwIBAgIIXsO3pkN/pOAwDQYJKoZIhvcNAQEFBQAwQjESMBAGA1UE
-    AwwJQUNDVlJBSVoxMRAwDgYDVQQLDAdQS0lBQ0NWMQ0wCwYDVQQKDARBQ0NWMQsw
-    CQYDVQQGEwJFUzAeFw0xMTA1MDUwOTM3MzdaFw0zMDEyMzEwOTM3MzdaMEIxEjAQ
-    BgNVBAMMCUFDQ1ZSQUlaMTEQMA4GA1UECwwHUEtJQUNDVjENMAsGA1UECgwEQUND    
-<snip>
-    -----BEGIN CERTIFICATE-----
-    MIIBbzCCARWgAwIBAgIQK0Z1j0Q96/LIo4tNHxsPUDAKBggqhkjOPQQDAjAWMRQw
-    EgYDVQQDEwtab2xsZXJMYWJDQTAeFw0yMjA1MTgwODI2NTBaFw0zMjA1MTUwODI2
-    NTBaMBYxFDASBgNVBAMTC1pvbGxlckxhYkNBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-    AQcDQgAEJxGhyW26O77E7fqFcbzljYzlLq/G7yANNwerWnWUKlW9gcrcPqZwwrTX
-    yaJZpdCWTObvbOyaOxq5NsytC/ubLKNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1Ud
-    EwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYEFDoT1GEM8NYfxSKBkSzg4rpY+xdUMAoG
-    CCqGSM49BAMCA0gAMEUCIQDDLWFn/XJPqpNGXcyjlSJFxlQUJ5Cu/+nDvtbTeUGA
-    NAIgMsVwBafMtmLQFlfvZsE95UYoYUV4ayH+OLTTQaDQOPY=
-    -----END CERTIFICATE-----
+global:
+  caCertificates:
+    data: |
+      -----BEGIN CERTIFICATE-----
+      MIIBdjCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+      dmVyLWNhQDE2ODEzODUyNDgwHhcNMjMwNDEzMTEyNzI4WhcNMzMwNDEwMTEyNzI4
+      <snip>
+      mPCB0cIwCgYIKoZIzj0EAwIDRwAwRAIgYF0Dy5QuQpYFyHcQEVq5GJgrE9W4gAy2
+      W/LgVuvZmucCIBcETS4DIw2pWAfeKRDaEOi2YsJoDpWd7lFLQBUbe4G7
+      -----END CERTIFICATE-----
 ```
 
-3. Modify the Kyverno Deployment so it mounts this ConfigMap and overwrites the internal bundle provided by default. Refer to step one for the full ramifications of this act, especially if you have opted only to provide Kyverno with the certificate(s) of your internal root CA. An example snippet of the modified Deployment is shown below.
+When this method is used, a ConfigMap containing your certificates is written for each controller and mounted to each controller's Deployment such that it replaces the internal certificate store. These contents now serve as Kyverno's trust store.
+
+#### Host Mount
+
+The second method involves providing Kyverno with the same trust as your Nodes by mounting the certificate store on the Nodes on which the Kyverno Pods run. Often times this trust includes public certificate authorities but in other cases may not. This method may be favorable when you are using a combination of internal, private registries and third-party, public registries. This assumes your Nodes already include trust for both.
+
+To use this method, set the Helm value `global.caCertificates.volume` along with a hostPath volume pointing to the certificate bundle on the Nodes where Kyverno Pods will run. An example snippet is shown below.
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kyverno
-  namespace: kyverno
-spec:
-  template:
-    spec:
-      containers:
-      - image: ghcr.io/kyverno/kyverno:v1.9.0
-        name: kyverno
-        volumeMounts:
-        - mountPath: /.sigstore
-          name: sigstore
-        - name: ca-certificates
-          mountPath: /etc/ssl/certs/ca-certificates.crt
-          subPath: ca-certificates.crt
-<snip>
-      volumes:
-      - name: sigstore
-      - name: ca-certificates
-        configMap:
-          name: kyverno-certs
-          items:
-          - key: ca-certificates
-            path: ca-certificates.crt
+global:
+  caCertificates:
+    volume:
+      hostPath:
+        path: /etc/ssl/certs/ca-certificates.crt
+        type: File
 ```
 
 ## Using a signature repository
@@ -729,6 +746,28 @@ verifyImages:
           -----END PUBLIC KEY-----
 ...
 ```
+
+## Using a different signature algorithm
+
+By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
+
+```yaml
+...
+verifyImages:
+- imageReferences:
+  - ghcr.io/kyverno/test-verify-image*
+  attestors:
+  - entries:
+    - signatureAlgorithm: sha256
+      keys:
+        publicKeys: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+...
+```
+Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
 
 ## Ignoring Tlogs and SCT Verification
 
@@ -768,14 +807,14 @@ verifyImages:
         rekor:
           ignoreTlog: true
           url: https://rekor.sigstore.dev
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         ctlog:
           ignoreSCT: true
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
@@ -784,7 +823,7 @@ verifyImages:
 
 ## Using custom Rekor public key and CTLogs public key
 
-You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubKey` and `ctlog.pubKey` respectively for this.
+You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubkey` and `ctlog.pubkey` respectively for this.
 
 ```yaml
 verifyImages:
@@ -799,13 +838,13 @@ verifyImages:
           5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
           -----END PUBLIC KEY-----
         rekor:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
           BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
           -----END PUBLIC KEY-----
         ctlog:
-          pubKey: |-
+          pubkey: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
           FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==

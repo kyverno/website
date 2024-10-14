@@ -811,7 +811,7 @@ With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: check-deployments-replicas
@@ -868,7 +868,7 @@ The below example applies a `ValidatingAdmissionPolicyBinding` along with the po
 
 Policy manifest (check-deployment-replicas.yaml):
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -887,7 +887,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 5
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"

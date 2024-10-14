@@ -61,13 +61,13 @@ At a minimum, managed certificates are checked for validity every 12 hours. Addi
 
 The renewal process runs as follows:
 1. Remove expired certificates contained in the secret
-1. Check if remaining certificates will become invalid in less than 60 hours
+1. Check if remaining certificates will become invalid in less than 15 days
 1. If needed, generate a new certificate with the validity documented above
 1. The new certificates is added to the underlying secret along with current certificatess that are still valid
 1. Reconfigure webhooks with the new certificates bundle
 1. Update the Kyverno server to use the new certificate
 
-Basically, certificates will be renewed approximately 60 hours before expiry.
+Basically, certificates will be renewed approximately 15 days before expiry.
 
 #### Custom certificates
 
@@ -153,10 +153,14 @@ Kyverno uses Secrets created above to setup TLS communication with the Kubernete
 
 You can now install Kyverno by selecting one of the available methods from the [installation section](methods.md).
 
-### Roles and Permissions
+### Role Based Access Controls
 
-Kyverno creates several Roles, ClusterRoles, RoleBindings, and ClusterRoleBindings some of which may need to be customized depending on additional functionality required. To view all ClusterRoles and Roles associated with Kyverno, use the command `kubectl get clusterroles,roles -A | grep kyverno`.
+Kyverno uses Kubernetes Role Based Access Controls (RBAC) to configure permissions for Kyverno controllers to allow access to other resources.
 
+Kyverno creates several Roles, ClusterRoles, RoleBindings, and ClusterRoleBindings some of which may need to be customized depending on additional functionality required. 
+
+To view all ClusterRoles and Roles associated with Kyverno, use the command `kubectl get clusterroles,roles -A | grep kyverno`.
+ 
 #### Roles
 
 Kyverno creates the following Roles in its Namespace, one per controller type:
@@ -183,33 +187,53 @@ Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/acce
 
 The following `ClusterRoles` provide Kyverno with permissions to policies and other Kubernetes resources across all Namespaces.
 
-* `kyverno:admission-controller:core`: aggregate ClusterRole for the admission controller
-* `kyverno:admission-controller`: aggregated (top-level) ClusterRole for the admission controller
-* `kyverno:reports-controller:core`: aggregate ClusterRole for the reports controller
-* `kyverno:reports-controller`: aggregated (top-level) ClusterRole for the reports controller
-* `kyverno:background-controller:core`: aggregate ClusterRole for the background controller
-* `kyverno:background-controller`: aggregated (top-level) ClusterRole for the background controller
-* `kyverno:cleanup-controller:core`: aggregate ClusterRole for the cleanup controller
-* `kyverno:cleanup-controller`: aggregated (top-level) ClusterRole for the cleanup controller
-* `kyverno-cleanup-jobs`: used by the helper CronJob to periodically remove excessive/stale admission reports if found
-* `kyverno:rbac:admin:policies`: aggregates to admin the ability to fully manage Kyverno policies
-* `kyverno:rbac:admin:policyreports`: aggregates to admin the ability to fully manage Policy Reports
-* `kyverno:rbac:admin:reports`: aggregates to admin the ability to fully manage intermediary admission and background reports
-* `kyverno:rbac:admin:updaterequests`: aggregates to admin the ability to fully manage UpdateRequests, intermediary resource for generate rules
-* `kyverno:rbac:view:policies`: aggregates to view the ability to view Kyverno policies
-* `kyverno:rbac:view:policyreports`: aggregates to view the ability to view Policy Reports
-* `kyverno:rbac:view:reports`: aggregates to view the ability to view intermediary admission and background reports
-* `kyverno:rbac:view:updaterequests`: aggregates to view the ability to view UpdateRequests, intermediary resource for generate rules
+Role Binding                       |        Service Account               | Role
+---------------------------------- | ------------------------------------ | -------------
+kyverno:admission-controller       | kyverno-admission-controller         | kyverno:admission-controller
+kyverno:admission-controller:view  | kyverno-admission-controller         | view
+kyverno:admission-controller:core  | --         | --
+kyverno:background-controller      | kyverno-background-controller        | kyverno:background-controller
+kyverno:background-controller:view | kyverno-background-controller        | view
+kyverno:background-controller:core | --        | --
+kyverno:cleanup-controller         |  kyverno-cleanup-controller          | kyverno:cleanup-controller
+kyverno:cleanup-controller:core    |  --         | --
+kyverno:reports-controller         |  kyverno-reports-controller          | kyverno:reports-controller
+kyverno:reports-controller:view    |  kyverno-reports-controller          | view
+kyverno:reports-controller:core    |  --          | --
+
 
 {{% alert title="Note" color="info" %}}
-Most Kyverno controllers' ClusterRoles include a rule which allows for `get`, `list`, and `read` permissions to all resources in the cluster. This is to ensure Kyverno functions smoothly despite the type and subject of future-installed policies. If this rule is removed, users must manually create and manage a number of different ClusterRoles applicable across potentially multiple controllers depending on the type and configuration of installed policies.
+The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using variables like `admissionController.rbac.viewRoleName`. 
 {{% /alert %}}
 
 #### Customizing Permissions
 
-Because the ClusterRoles used by Kyverno use the [aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), extending the permission for Kyverno's use in cases like mutate existing or generate rules or generating ValidatingAdmissionPolicies is a simple matter of creating one or more new ClusterRoles which use the appropriate labels. It is not necessary to modify any existing ClusterRoles created as part of the Kyverno installation. Doing so is not recommended as changes may be lost during an upgrade. Since there are multiple controllers each with their own ServiceAccount, granting Kyverno additional permissions involves identifying the correct controller and using the labels needed to aggregate to that ClusterRole.
+Kyverno's default permissions are designed to cover commonly used and security non-critical resources. Hence, Kyverno will need to be configured with additional permissions for CRDs, or to allow access to security critical resources.
 
-For example, if a new Kyverno generate policy requires that Kyverno be able to create or modify Deployments, this is not a permission Kyverno has by default. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels specific to the background controller in order for those permissions to take effect.
+The ClusterRoles installed by Kyverno use the [cluster role aggregation feature](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles), making it easy to extend the permissions for Kyverno's controllers. To extend a controller's permissions, add a new role with one or more of the following labels:
+
+Controller             | Role Aggregation Label              
+---------------------- | -----------------------------
+admission-controller   | rbac.kyverno.io/aggregate-to-admission-controller: "true"
+background-controller  | rbac.kyverno.io/aggregate-to-background-controller: "true"
+reports-controller     | rbac.kyverno.io/aggregate-to-reports-controller: "true"
+cleanup-controller     | rbac.kyverno.io/aggregate-to-cleanup-controller: "true"
+
+To avoid upgrade issues, it is highly recommended that default roles are not modified but new roles are used to extend them.
+
+Since there are multiple controllers each with their own ServiceAccount, granting Kyverno additional permissions involves identifying the correct controller and using the labels needed to aggregate to that ClusterRole. The table below identifies required permissions for Kyverno features:
+
+Controller             | Permission Verbs | Required For              
+---------------------- | ----- | ------------------------------- 
+admission-controller   | view, list, ... | API Calls 
+admission-controller   | view, list, watch | Global Context
+background-controller  | update, view, list, watch | Mutate Policies
+background-controller  | create, update, delete, view, list, watch | Generate Policies
+reports-controller     | view, list, watch | Policy Reports
+cleanup-controller     | delete, view, list, watch | Cleanup Policies
+
+
+For example, if a new Kyverno generate policy requires that Kyverno be able to create and update Deployments, new permissions need to be provided. Generate rules are handled by the background controller and so it will be necessary to create a new ClusterRole and assign it the aggregation labels specific to the background controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno background controller additional permissions to create Deployments:
 
@@ -217,11 +241,9 @@ This sample ClusterRole provides the Kyverno background controller additional pe
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    app.kubernetes.io/component: background-controller
-    app.kubernetes.io/instance: kyverno
-    app.kubernetes.io/part-of: kyverno
   name: kyverno:create-deployments
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"  
 rules:
 - apiGroups:
   - apps
@@ -229,15 +251,51 @@ rules:
   - deployments
   verbs:
   - create
+  - update
 ```
 
-Once a supplemental ClusterRole has been created, get the top-level ClusterRole for that controller to ensure aggregation has occurred.
+Once a supplemental ClusterRole has been created, check the top-level ClusterRole for that controller to ensure aggregation has occurred.
 
 ```sh
 kubectl get clusterrole kyverno:background-controller -o yaml
 ```
 
-Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it will be necessary to grant the controller the required permissions to generate these types. In this scenario, a ClusterRole should be created and assigned the aggregation labels for the admission controller in order for those permissions to take effect.
+Similary, if a Kyverno validate and mutate policies operates on a custom resource the background and reports controllers needs to be provided permissions to manage the resource:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:crontab:edit
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - stable.example.com
+  resources:
+  - crontabs
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:crontab:view
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+rules:
+- apiGroups:
+  - stable.example.com
+  resources:
+  - crontabs
+  verbs:
+  - get
+  - list
+  - watch
+```
+
+Generating Kubernetes ValidatingAdmissionPolicies and their bindings are handled by the admission controller and it is necessary to grant the controller the required permissions to generate these types. For this, a ClusterRole should be created and assigned the aggregation labels for the admission controller in order for those permissions to take effect.
 
 This sample ClusterRole provides the Kyverno admission controller additional permissions to create ValidatingAdmissionPolicies and ValidatingAdmissionPolicyBindings:
 
@@ -245,11 +303,9 @@ This sample ClusterRole provides the Kyverno admission controller additional per
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    app.kubernetes.io/component: admission-controller
-    app.kubernetes.io/instance: kyverno
-    app.kubernetes.io/part-of: kyverno
   name: kyverno:generate-validatingadmissionpolicy
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
 rules:
 - apiGroups:
   - admissionregistration.k8s.io
@@ -257,10 +313,12 @@ rules:
   - validatingadmissionpolicies
   - validatingadmissionpolicybindings
   verbs:
+  - get
+  - list
+  - watch
   - create
   - update
   - delete
-  - list
 ```
 
 ### ConfigMap Keys
@@ -276,9 +334,10 @@ The following keys are used to control the behavior of Kyverno and must be set i
 7. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
-10. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector": {"matchExpressions": [{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}]}}]'`.
-11. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
-12. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+10. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
+11. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
+12. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
+13. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
 
@@ -294,7 +353,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `add_dir_header` (ABCR) | | Adds the file directory to the header of the log messages. |
 | `admissionReports` (AR) | true | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. |
 | `aggregateReports` (R) | true | Enables the report aggregating ability of AdmissionReports (1.10.2+). |
-| `allowInsecureRegistry` (ABR)| | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](../writing-policies/verify-images/) rules or [variables from image registries](../writing-policies/external-data-sources.md#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
+| `aggregationWorkers` (R) | 10 | Configures the number of internal worker threads used to perform reports aggregation (1.12.3+). |
+| `allowInsecureRegistry` (ABR)| `"false"` | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](../writing-policies/verify-images/) rules or [variables from image registries](../writing-policies/external-data-sources.md#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
 | `alsologtostderr` (ABCR) | | Log to standard error as well as files (no effect when -logtostderr=true) |
 | `autoUpdateWebhooks` (A) | true | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard. |
 | `backgroundServiceAccountName` (A) | | The name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.|
@@ -305,8 +365,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server. Usually changed in tandem with `webhookServerPort`.|
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
-| `eventsRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling for events. Uses the client default if zero. |
-| `eventsRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
+| `eventsRateLimitBurst` (ABCR) | 2000 | Configures the maximum burst for throttling for events. Uses the client default if zero. |
+| `eventsRateLimitQPS` (ABCR) | 1000 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
 | `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
 | `dumpPayload` (AC) | false | Toggles debug mode. When debug mode is enabled, the full AdmissionReview payload is logged. Additionally, resources of kind Secret are redacted. Should only be used in policy development or troubleshooting scenarios, not left perpetually enabled. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
@@ -336,7 +396,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `maxAuditCapacity` (A) | `1000` | Maximum number of workers for audit policy processing. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
-| `omit-events` (ABR) | | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is undefined (all events will be emitted). |
+| `omitEvents` (ABR) | `"PolicyApplied,PolicySkipped"` | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is `PolicyApplied` and `PolicySkipped`. |
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
 | `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
@@ -345,7 +405,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profileAddress` (ABCR) | `""` | Configures the address of the profiling server. |
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
-| `registryCredentialHelpers` (ABR) | | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
+| `registryCredentialHelpers` (ABR) | `"default,google,amazon,azure,github"` | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
 | `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. Deprecated. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |

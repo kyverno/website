@@ -140,4 +140,4 @@ One change we do want to make you aware of, which actually came in 1.8.3, which 
 
 ## Closing
 
-With so many new features, enhancements, and well over 200 fixes, there's so much to get excited about in this release. Hopefully what you've seen makes you excited to try out the 1.9 release and provide your feedback. Come engage with us in the Kyverno channel on [Kubernetes Slack](../../../community/_index.md#slack-channel), attend one of our [community meetings](../../../community/_index.md#community-meetings), or just catch us on [Twitter](https://twitter.com/kyverno).
+With so many new features, enhancements, and well over 200 fixes, there's so much to get excited about in this release. Hopefully what you've seen makes you excited to try out the 1.9 release and provide your feedback. Come engage with us in the Kyverno channel on [Kubernetes Slack](../../../community/_index.md#slack-channel), attend one of our [community meetings](../../../community/_index.md#meetings), or just catch us on [Twitter](https://twitter.com/kyverno).

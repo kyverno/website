@@ -49,7 +49,7 @@ results:
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
   - <namespace_2/name_2>
-  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required.
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
   kind: <kind>
@@ -61,6 +61,7 @@ checks:
     rule: {} # match results associated with a rule
   assert: {} # assertion to validate the content of matched elements
   error: {} # negative assertion to validate the content of matched elements
+```
 
 The test declaration consists of the following parts:
 
@@ -70,7 +71,7 @@ The test declaration consists of the following parts:
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
-7. The `checks` element which declares the assertions to be evaluted against the results (see [Working with Assertion Trees](../assertion-trees.md)).
+7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](../assertion-trees.md)).
 
 If needing to pass variables, such as those from [external data sources](../../writing-policies/external-data-sources.md) like context variables built from [API calls](../../writing-policies/external-data-sources.md#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
@@ -235,8 +236,6 @@ spec:
       - resources:
           kinds:
           - Pod
-        clusterRoles:
-        - cluster-admin
     validate:
       message: "An image tag is required."  
       pattern:
@@ -286,12 +285,14 @@ resources:
 results:
   - policy: disallow-latest-tag
     rule: require-image-tag
-    resource: myapp-pod
+    resources: 
+    - myapp-pod
     kind: Pod
     result: pass
   - policy: disallow-latest-tag
     rule: validate-image-tag
-    resource: myapp-pod
+    resources:
+    - myapp-pod
     kind: Pod
     result: pass
 ```
@@ -299,15 +300,21 @@ results:
 ```sh
 $ kyverno test .
 
-Executing disallow_latest_tag...
-applying 1 policy to 1 resource... 
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
 
-│───│─────────────────────│────────────────────│───────────────────────│────────│
-│ # │ POLICY              │ RULE               │ RESOURCE              │ RESULT │
-│───│─────────────────────│────────────────────│───────────────────────│────────│
-│ 1 │ disallow-latest-tag │ require-image-tag  │ default/Pod/myapp-pod │ Pass   │
-│ 2 │ disallow-latest-tag │ validate-image-tag │ default/Pod/myapp-pod │ Pass   │
-│───│─────────────────────│────────────────────│───────────────────────│────────│
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+│ ID │ POLICY              │ RULE               │ RESOURCE      │ RESULT │ REASON │
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+│ 1  │ disallow-latest-tag │ require-image-tag  │ Pod/myapp-pod │ Pass   │ Ok     │
+│ 2  │ disallow-latest-tag │ validate-image-tag │ Pod/myapp-pod │ Pass   │ Ok     │
+│────│─────────────────────│────────────────────│───────────────│────────│────────│
+
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
@@ -407,14 +414,16 @@ variables: values.yaml
 results:
   - policy: add-default-resources
     rule: add-default-requests
-    resource: nginx-demo1
-    patchedResource: patchedResource1.yaml
+    resources:
+    - nginx-demo1
+    patchedResources: patchedResource1.yaml
     kind: Pod
     result: pass
   - policy: add-default-resources
     rule: add-default-requests
-    resource: nginx-demo2
-    patchedResource: patchedResource2.yaml
+    resources:
+    - nginx-demo2
+    patchedResources: patchedResource2.yaml
     kind: Pod
     result: skip
 ```
@@ -505,7 +514,8 @@ resources:
 results:
   - policy: add-networkpolicy
     rule: default-deny
-    resource: hello-world-namespace
+    resources:
+    - hello-world-namespace
     generatedResource: generatedResource.yaml
     kind: Namespace
     result: pass
@@ -691,7 +701,7 @@ Below is an example of testing a ValidatingAdmissionPolicy against two resources
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-path
@@ -774,12 +784,14 @@ resources:
   - deployments.yaml
 results:
   - policy: disallow-host-path
-    resource: deployment-pass
+    resources:
+    - deployment-pass
     isValidatingAdmissionPolicy: true
     kind: Deployment
     result: pass
   - policy: disallow-host-path
-    resource: deployment-fail
+    resources:
+    - deployment-fail
     isValidatingAdmissionPolicy: true
     kind: Deployment
     result: fail
@@ -811,7 +823,7 @@ In the below example, a `ValidatingAdmissionPolicy` and its corresponding `Valid
 Policy manifest (`check-deployment-replicas.yaml`):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -830,7 +842,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 2
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"
@@ -989,7 +1001,7 @@ Variables manifest (`values.yaml`):
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
-kind: Value
+kind: Values
 metadata:
   name: values
 namespaceSelector:

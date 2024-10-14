@@ -26,9 +26,13 @@ Optionally, show all available chart versions for Kyverno.
 helm search repo kyverno -l
 ```
 
-Choose one of the installation configuration options based upon your environment type and availability needs. For a production installation, see the [High Availability](#high-availability) section. For a non-production installation, see the [Standalone](#standalone) section below for additional details.
+Choose one of the installation configuration options based upon your environment type and availability needs.
+- For a production installation, see below [High Availability](#high-availability) section.
+- For a non-production installation, see below [Standalone](#standalone) section for additional details.
 
+{{% alert title="Note" color="warning" %}}
 When deploying Kyverno to certain Kubernetes platforms such as EKS, AKS, or OpenShift; or when using certain GitOps tools such as ArgoCD, additional configuration options may be needed or recommended. See the [Platform-Specific Notes](platform-notes.md) section for additional details.
+{{% /alert %}}
 
 After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](../../pod-security.md), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
 
@@ -45,10 +49,15 @@ Since Kyverno is comprised of different controllers where each is contained in s
 The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
 
 ```yaml
-admissionController.replicas: 3
-backgroundController.replicas: 2
-cleanupController.replicas: 2
-reportsController.replicas: 2
+admissionController:
+  replicas: 3
+backgroundController:
+  replicas: 2
+cleanupController:
+  replicas: 2
+reportsController:
+  replicas: 2
+
 ```
 
 For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.10/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.

@@ -81,7 +81,7 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 ## Validation Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked.
+The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
 
 ## Validation Failure Action Overrides
 
@@ -653,7 +653,7 @@ The following child declarations are permitted in a `foreach`:
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](preconditions.md): to control when a loop iteration is skipped
+- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -1697,7 +1697,7 @@ However, setting the deployment image as `staging.example.com/nginx` will allow 
 
 A ValidatingAdmissionPolicy provides a declarative, in-process option for validating admission webhooks using the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server.
 
-Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it's not fully enabled by default as of Kubernetes versions up to and including 1.28.
+Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it is enabled by default in 1.30.
 
 {{% alert title="Tip" color="info" %}}
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
@@ -1717,12 +1717,12 @@ To generate ValidatingAdmissionPolicies, make sure to:
 
 1. Enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
 
-2. For 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+2. Enable `admissionregistration.k8s.io/v1beta1` API.
 
     Here is the minikube command to enable ValidatingAdmissionPolicy:
 
    ```
-   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
+   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1 --feature-gates='ValidatingAdmissionPolicy=true'
    ```
 
 3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
@@ -1756,8 +1756,6 @@ To generate ValidatingAdmissionPolicies, make sure to:
     ```
 
 ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](#common-expression-language-cel) section for more information.
-
-In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](exceptions.md) page for more information.
 
 Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
 
@@ -1795,7 +1793,7 @@ status:
 The generated ValidatingAdmissionPolicy:
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   labels:
@@ -1832,7 +1830,7 @@ spec:
 The generated ValidatingAdmissionPolicyBinding:
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   labels:
@@ -1893,4 +1891,137 @@ Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, Clust
 When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionPolicy will match both `pods` and `pods/ephemeralcontainers`. This occurs because Kyverno inherently includes `pods/ephemeralcontainers` by default in the corresponding ValidatingWebhookConfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
 {{% /alert %}}
 
-The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
+The generated ValidatingAdmissionPolicy with its binding are totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
+
+In case there is a [PolicyException](exceptions.md) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
+
+Below is an example of a Kyverno policy and a PolicyException that matches it. Both the policy and the exception will be used to generate a ValidatingAdmissionPolicy and its corresponding binding.
+
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-path
+spec:
+  background: false
+  rules:
+    - name: host-path
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+            - StatefulSet
+            - ReplicaSet
+            - DaemonSet
+            operations:
+            - CREATE
+            - UPDATE
+            namespaceSelector:
+              matchExpressions:
+                - key: type 
+                  operator: In
+                  values: 
+                  - connector
+      validate:
+        failureAction: Audit
+        cel:
+          expressions:
+            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
+              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+```
+
+```yaml
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: policy-exception
+spec:
+  exceptions:
+  - policyName: disallow-host-path
+    ruleNames:
+    - host-path
+  match:
+    any:
+    - resources:
+        kinds:
+        - Deployment
+        names:
+        - important-tool
+        operations:
+        - CREATE
+        - UPDATE
+```
+
+The generated ValidatingAdmissionPolicy:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - statefulsets
+      - replicasets
+      - daemonsets
+    namespaceSelector:
+      matchExpressions:
+      - key: type
+        operator: In
+        values:
+        - connector
+    excludeResourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resourceNames:
+      - important-tool
+      resources:
+      - deployments
+  validations:
+  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+      !has(volume.hostPath))'
+    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+      must be unset.
+```
+
+The generated ValidatingAdmissionPolicyBinding:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path-binding
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  policyName: disallow-host-path
+  validationActions: [Audit, Warn]
+```
