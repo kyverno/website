@@ -504,9 +504,7 @@ kind: ClusterPolicy
 metadata:
   name: vault-auth-backend
 spec:
-  validationFailureAction: Audit
   background: true
-  mutateExistingOnPolicyUpdate: true
   rules:
   - name: vault-injector-config-blue-to-green-auth-backend
     context:
@@ -523,6 +521,7 @@ spec:
           namespaces:
           - corp-tech-ap-team-ping-ep
     mutate:
+      mutateExistingOnPolicyUpdate: true
       patchStrategicMerge:
         data:
           config: '{{- hcl }}'
