@@ -138,11 +138,19 @@ metricsConfig:
 
   # Per Metric configuration, allows disabling metrics, dropping labels and change the bucket boundaries.
   metricsExposure:
+    # Counter disabled
+    kyverno_policy_rule_info_total:
+      enabled: false
+    # Histogram disabled
+    kyverno_admission_review_duration_seconds:
+      enabled: false
+    # Counter with customized dimensions
+    kyverno_admission_requests:
+      disabledLabelDimensions: ["resource_namespace", "resource_kind", "resource_request_operation"]
+    # Histogram with custom boundaries and dimensions
     kyverno_policy_execution_duration_seconds:
       disabledLabelDimensions: ["resource_kind", "resource_namespace", "resource_request_operation"]
       bucketBoundaries: [0.005, 0.01, 0.025]
-    kyverno_admission_review_duration_seconds:
-      enabled: false
 ...
 ```
 

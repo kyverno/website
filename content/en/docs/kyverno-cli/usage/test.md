@@ -49,7 +49,7 @@ results:
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
   - <namespace_2/name_2>
-  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required.
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
   kind: <kind>
@@ -416,14 +416,14 @@ results:
     rule: add-default-requests
     resources:
     - nginx-demo1
-    patchedResource: patchedResource1.yaml
+    patchedResources: patchedResource1.yaml
     kind: Pod
     result: pass
   - policy: add-default-resources
     rule: add-default-requests
     resources:
     - nginx-demo2
-    patchedResource: patchedResource2.yaml
+    patchedResources: patchedResource2.yaml
     kind: Pod
     result: skip
 ```
@@ -701,7 +701,7 @@ Below is an example of testing a ValidatingAdmissionPolicy against two resources
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-path
@@ -823,7 +823,7 @@ In the below example, a `ValidatingAdmissionPolicy` and its corresponding `Valid
 Policy manifest (`check-deployment-replicas.yaml`):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -842,7 +842,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 2
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"

@@ -62,7 +62,7 @@ With each release, the following artifacts are uploaded (where CLI binaries incl
 
 ## Verifying Kyverno Container Images
 
-Kyverno container images are signed using Cosign and the [keyless signing feature](https://docs.sigstore.dev/cosign/verify/). The signatures are stored in a separate repository from the container image they reference located at `ghcr.io/kyverno/signatures`. To verify the container image using Cosign v1.x, follow the steps below.
+Kyverno container images are signed using Cosign and the [keyless signing feature](https://docs.sigstore.dev/cosign/verifying/verify/). The signatures are stored in a separate repository from the container image they reference located at `ghcr.io/kyverno/signatures`. To verify the container image using Cosign v1.x, follow the steps below.
 
 1. Install [Cosign](https://github.com/sigstore/cosign#installation)
 2. Configure the Kyverno signature repository:
