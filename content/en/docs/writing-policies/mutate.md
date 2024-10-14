@@ -470,7 +470,6 @@ kind: ClusterPolicy
 metadata:
   name: mutate-existing-secret
 spec:
-  mutateExistingOnPolicyUpdate: true
   rules:
     - name: mutate-secret-on-configmap-event
       match:
@@ -483,6 +482,7 @@ spec:
               namespaces:
                 - staging
       mutate:
+        mutateExistingOnPolicyUpdate: true
         # ...
         targets:
           - apiVersion: v1
@@ -508,7 +508,6 @@ kind: ClusterPolicy
 metadata:
   name: refresh-env-var-in-pods
 spec:
-  mutateExistingOnPolicyUpdate: false
   rules:
   - name: refresh-from-secret-env
     match:
@@ -522,6 +521,7 @@ spec:
           operations:
           - UPDATE
     mutate:
+      mutateExistingOnPolicyUpdate: false
       targets:
         - apiVersion: apps/v1
           kind: Deployment
@@ -622,7 +622,6 @@ kind: ClusterPolicy
 metadata:
   name: sync-cms
 spec:
-  mutateExistingOnPolicyUpdate: false
   rules:
   - name: concat-cm
     match:
@@ -635,6 +634,7 @@ spec:
           namespaces:
           - foo
     mutate:
+      mutateExistingOnPolicyUpdate: false
       targets:
         - apiVersion: v1
           kind: ConfigMap
@@ -660,7 +660,6 @@ kind: ClusterPolicy
 metadata:
   name: sync-cms
 spec:
-  mutateExistingOnPolicyUpdate: false
   rules:
   - name: concat-cm
     match:
@@ -673,6 +672,7 @@ spec:
           namespaces:
           - foo
     mutate:
+      mutateExistingOnPolicyUpdate: false
       targets:
         - apiVersion: v1
           kind: ConfigMap
@@ -918,7 +918,6 @@ kind: ClusterPolicy
 metadata:
   name: demo-cluster-policy
 spec:
-  mutateExistingOnPolicyUpdate: false
   rules:
   - name: demo-generate
     match:
@@ -951,6 +950,7 @@ spec:
               matchLabels:
                 custom/related-namespace: "?*"
     mutate:
+      mutateExistingOnPolicyUpdate: false
       targets:
         - apiVersion: v1
           kind: Namespace
