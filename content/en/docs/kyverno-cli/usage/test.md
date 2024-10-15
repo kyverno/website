@@ -228,7 +228,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
 spec:
-  validationFailureAction: Audit
   rules:
   - name: require-image-tag
     match:
@@ -237,6 +236,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "An image tag is required."  
       pattern:
         spec:
@@ -249,6 +249,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "Using a mutable image tag e.g. 'latest' is not allowed."
       pattern:
         spec:
@@ -544,7 +545,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-namespaces
@@ -554,6 +554,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.          
