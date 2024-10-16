@@ -35,14 +35,14 @@ The following table shows the resource consumption (memory and CPU) and latency 
 The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/tree/main/k6).
 
 
-| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max) | Memory (max) | CPU (max) |
-|----------|------------|-----------|---------|---------|--------------------------|-------------------|--------------|-----------|
-| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 65.13ms / 198.18ms         | 83Mi        | 760m      |
-| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 115.9ms / 574.42ms         | 200Mi        | 3698m     |
-| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 298.11ms / 1.75s           | 3914Mi        | 6512m     |
-| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 58.56ms / 138.23ms         | 111Mi         | 244m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 118ms / 100.94ms         | 175Mi        | 1336m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 298.11ms / 1.75s        | 200Mi        | 1980m      |
+| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max)  | Memory (max)  | CPU (max) | Memory Limit    |
+|----------|------------|-----------|---------|---------|--------------------------|--------------------|--------------|------------|-----------------|
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 42.67ms / 141.24ms |    114Mi     |    148m    | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 80.74ms / 409.35ms |    215Mi     |    3237m   | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 203.86ms / 1.5s    |    471Mi     |    4851m   |      512Mi      |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 35.61ms / 92.61ms  |    104Mi     |    289m    | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 67.37ms / 327.12ms |    122Mi     |    1336m   | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 163.08ms / 3.02s   |    239Mi     |    2769m   |      512Mi      |
 
 #### Reports Controller
 
