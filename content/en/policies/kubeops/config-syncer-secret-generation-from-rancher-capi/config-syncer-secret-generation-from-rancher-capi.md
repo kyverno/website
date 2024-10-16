@@ -30,7 +30,6 @@ metadata:
       required by the Kubeops Config Syncer for it to sync ConfigMaps/Secrets from
       the Rancher management cluster to downstream clusters.
 spec:
-  generateExisting: true
   rules:
   - name: source-rancher-non-local-cluster-and-capi-secret
     match:
@@ -101,6 +100,7 @@ spec:
         operator: NotEquals
         value: '{{ currentKubeconfigData }}'
     generate:
+      generateExisting: true
       synchronize: true
       apiVersion: v1
       kind: Secret

@@ -127,10 +127,6 @@ spec:
 
 For other examples of generate rules, see the [policy library](/policies/?policytypes=generate).
 
-{{% alert title="Note" color="info" %}}
-The field `spec.generateExisting` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
-{{% /alert %}}
-
 ## Clone Source
 
 When a generate policy should take the source from a resource which already exists in the cluster, a `clone` object is used instead of a `data` object. When triggered, the generate policy will clone from the resource name and location defined in the rule to create the new resource. Use of the `clone` object implies no modification during the path from source to destination and Kyverno is not able to modify its contents (aside from metadata used for processing and tracking).
@@ -506,7 +502,7 @@ spec:
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future Namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources based on **existing** resources. This can be extremely useful especially for Namespaces when deploying Kyverno to an existing cluster where you wish policy to apply retroactively.
 
-Kyverno supports generation for existing resources. Generate existing policies are applied when the policy is created and in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself. By defining the `spec.generateExisting` set to `true`, a generate rule will take effect for existing resources which have the same match characteristics.
+Kyverno supports generation for existing resources. Generate existing policies are applied when the policy is created and in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself. By defining the `generate[*].generateExisting` set to `true`, a generate rule will take effect for existing resources which have the same match characteristics.
 
 Note that the benefits of using a "generate existing" rule is only the moment the policy is installed. Once the initial generation effects have been produced, the rule functions like a "standard" generate rule from that point forward. Generate existing rules are therefore primarily useful for one-time use cases when retroactive policy should be applied.
 
@@ -522,7 +518,6 @@ kind: ClusterPolicy
 metadata:
   name: generate-resources
 spec:
-  generateExisting: true
   rules:
   - name: generate-existing-networkpolicy
     match:
@@ -531,6 +526,7 @@ spec:
           kinds:
           - Namespace
     generate:
+      generateExisting: true
       kind: NetworkPolicy
       apiVersion: networking.k8s.io/v1
       name: default-deny
@@ -555,7 +551,6 @@ kind: ClusterPolicy
 metadata:
   name: create-default-pdb
 spec:
-  generateExisting: true
   rules:
   - name: create-default-pdb
     match:
@@ -568,6 +563,7 @@ spec:
         namespaces:
         - local-path-storage
     generate:
+      generateExisting: true
       apiVersion: policy/v1
       kind: PodDisruptionBudget
       name: "{{request.object.metadata.name}}-default-pdb"
@@ -582,7 +578,7 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}
-The field `spec.generateExistingOnPolicyUpdate` has been replaced by `spec.generateExisting`. The former is no longer required, is deprecated, and will be removed in an upcoming version.
+The field `spec.generateExisting` has been replaced by `spec.rules[*].generate[*].generateExisting`. The former is no longer required, is deprecated, and will be removed in an upcoming version.
 {{% /alert %}}
 
 ## How It Works

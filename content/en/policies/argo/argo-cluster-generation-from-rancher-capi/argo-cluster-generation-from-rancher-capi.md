@@ -33,7 +33,6 @@ metadata:
       "Cluster-API cluster auto-registration" and Rancher issue https://github.com/rancher/rancher/issues/38053
       "Fix type and labels Rancher v2 provisioner specifies when creating CAPI Cluster Secret".
 spec:
-  generateExisting: true
   rules:
   - name: source-rancher-non-local-cluster-and-capi-secret
     match:
@@ -99,6 +98,7 @@ spec:
           }
         jmesPath: 'to_string(@)'
     generate:
+      generateExisting: true
       synchronize: true
       apiVersion: v1
       kind: Secret
