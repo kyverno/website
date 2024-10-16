@@ -15,9 +15,9 @@ A [policy](../kyverno-policies) contains one or more rules, and the following co
 
 * **failurePolicy**: defines the API server behavior if the webhook fails to respond. Allowed values are "Ignore" or "Fail". Defaults to "Fail". Additionally, if set to "Ignore" will allow failing calls to image registries to be ignored. This allows for rule types like verifyImages or others which use image data to not block if the registry is temporarily down, useful in situations where images already exist on the nodes.
 
-* **generateExisting**: applicable to generate rules only. Controls whether Kyverno should evaluate the policy the moment it is created.
+* **generateExisting**: applicable to generate rules only. Controls whether Kyverno should evaluate the policy the moment it is created. This field is deprecated as of 1.13. Scheduled to be removed in a future version. Use `generateExisting` under the generate rule instead.
 
-* **mutateExistingOnPolicyUpdate**: applicable to mutate rules which define targets. Controls whether Kyverno should evaluate the policy when it is updated.
+* **mutateExistingOnPolicyUpdate**: applicable to mutate rules which define targets. Controls whether Kyverno should evaluate the policy when it is updated. This field is deprecated as of 1.13. Scheduled to be removed in a future version. Use `mutateExistingOnPolicyUpdate` under the mutate rule instead.
 
 * **schemaValidation**: controls whether policy validation checks are applied. Defaults to "true". Kyverno will attempt to validate the schema of a policy and fail if it cannot determine it satisfies the OpenAPI schema definition for that resource. Can occur on either validate or mutate policies. Set to "false" to skip schema validation. This field is deprecated as of 1.11 and currently has no effect. Scheduled to be removed in a future version.
 
