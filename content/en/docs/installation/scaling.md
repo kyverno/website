@@ -32,17 +32,17 @@ Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502
 
 The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [k6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. k6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
 
-The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/tree/main/k6).
+The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/blob/main/README.md).
 
 
-| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max) | Memory (max) | CPU (max) |
-|----------|------------|-----------|---------|---------|--------------------------|-------------------|--------------|-----------|
-| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 42.89ms / 155.77ms         | 115Mi        | 211m      |
-| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 73.37ms / 432.37ms         | 136Mi        | 1148m     |
-| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 210.56ms / 1.54s           | 315Mi        | 1470m     |
-| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000               | 31.06ms / 111.42ms         | 110Mi         | 96m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000               | 56.56ms / 248.38ms         | 116Mi        | 315m      |
-| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000              | 136.77ms / 666.04ms        | 167Mi        | 524m      |
+| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max)  | Memory (max)  | CPU (max) | Memory Limit    |
+|----------|------------|-----------|---------|---------|--------------------------|--------------------|--------------|------------|-----------------|
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 42.67ms / 141.24ms |    114Mi     |    148m    | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 80.74ms / 409.35ms |    215Mi     |    3237m   | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 203.86ms / 1.5s    |    471Mi     |    4851m   |      512Mi      |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 35.61ms / 92.61ms  |    104Mi     |    289m    | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 67.37ms / 327.12ms |    122Mi     |    1336m   | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 163.08ms / 3.02s   |    239Mi     |    2769m   |      512Mi      |
 
 #### Reports Controller
 
