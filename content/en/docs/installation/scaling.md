@@ -81,3 +81,10 @@ API requests, operations, and activities which match corresponding Kyverno rules
 | DELETE    | ConfigMap  |                                     |                    1 |
 
 These figures were captured using K3d v5.4.9 on Kubernetes v1.26.2 and Kyverno 1.10.0-alpha.2 with a 3-replica admission controller. When testing against KinD, there may be one less DELETE AdmissionReview for Pod-related operations.
+
+### Kubernetes api-server and etcd resource footprint
+
+In clusters with many Kyverno policy resources, the resource footprint of some core Kubernetes components may be affected, in particular the kube-apiserver and etcd.
+
+For example, if you create several thousand Kyverno policy resources, double check that the kube-apiserver pods have head room to increase its memory allocations, otherwise
+the cluster may crash entirely.
