@@ -372,6 +372,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
 | `enableDeferredLoading` (A) | true | Enables deferred (lazy) loading of variables (1.10.1+). Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0. |
 | `enablePolicyException` (ABR) | true | Set to `true` to enable the [PolicyException capability](../writing-policies/exceptions.md). |
+| `enableReporting` (ABCR) | validate,mutate,mutateExisting,generate,imageVerify | Comma separated list to enables reporting for different rule types. (validate,mutate,mutateExisting,generate,imageVerify) |
 | `enableTracing` (ABCR) | false | Set to enable exposing traces. |
 | `enableTuf` (AR) | | Enable tuf for private sigstore deployments. |
 | `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](../writing-policies/exceptions.md) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If not set, PolicyExceptions from all Namespaces will be considered. Implies the `enablePolicyException` flag is set to `true`. Neither wildcards nor multiple Namespaces are currently accepted. |
