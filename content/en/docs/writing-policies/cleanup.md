@@ -18,7 +18,7 @@ Since cleanup policies always operate against existing resources in a cluster, p
 An example ClusterCleanupPolicy is shown below. This cleanup policy removes Deployments which have the label `canremove: "true"` if they have less than two replicas on a schedule of every 5 minutes.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: ClusterCleanupPolicy
 metadata:
   name: cleandeploy

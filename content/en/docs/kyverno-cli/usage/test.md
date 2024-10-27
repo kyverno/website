@@ -568,7 +568,7 @@ spec:
 Policy Exception manifest (`delta-exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: delta-exception

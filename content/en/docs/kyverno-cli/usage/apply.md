@@ -724,7 +724,7 @@ spec:
 Policy Exception manifest (`exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: container-exception
