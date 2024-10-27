@@ -32,7 +32,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-namespaces
@@ -42,6 +41,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.
@@ -145,7 +145,6 @@ kind: ClusterPolicy
 metadata:
   name: policy-for-exceptions
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: require-match-name
@@ -155,6 +154,7 @@ spec:
           kinds:
           - PolicyException
     validate:
+      failureAction: Enforce
       message: >-
         An exception must explicitly specify a name for a resource match.
       pattern:
@@ -181,7 +181,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -190,6 +189,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
