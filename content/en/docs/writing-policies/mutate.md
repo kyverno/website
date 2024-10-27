@@ -498,6 +498,34 @@ Installation of a mutate existing policy affects the `ValidatingWebhookConfigura
 
 When defining a list of `targets[]`, the fields `name` and `namespace` are not strictly required but encouraged. If omitted, it implies a wildcard (`"*"`) for the omitted field which can have unintended impact on other resources.
 
+Target resources can also be selected using label selectors. The below policy example shows a policy that matches `ConfigMaps` with a label `should-match=yes` on `Secret` events.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-existing-configmap
+spec:
+  rules:
+    - name: mutate-configmap-on-secret-event
+      match:
+        any:
+        - resources:
+            kinds:
+            - Secret
+      mutate:
+        targets:
+        - apiVersion: v1
+          kind: ConfigMap
+          selector:
+            matchLabels:
+              should-match: 'yes'
+        patchStrategicMerge:
+          metadata:
+            labels:
+              foo: bar
+```
+
 In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
 
 This sample below illustrates how to combine preconditions and conditional anchors within `targets[]` to precisely select the desired existing resources for mutation. This policy restarts existing Deployments if they are consuming a Secret that has been updated assigned label `kyverno.io/watch: "true"` AND have a name beginning with `testing-`.

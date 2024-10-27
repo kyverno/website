@@ -23,10 +23,10 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: Enforce
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   background: false
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail
   rules:
     - name: check-image
       match:
@@ -37,6 +37,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         attestors:
         - count: 1
           entries:
@@ -142,9 +143,9 @@ kind: ClusterPolicy
 metadata:
   name: exclude-refs
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: exclude-refs
       match:
@@ -157,6 +158,7 @@ spec:
         - "ghcr.io/*"
         skipImageReferences:
         - "ghcr.io/trusted/*"
+        failureAction: Enforce 
         attestors:
         - count: 1
           entries:
@@ -242,10 +244,10 @@ kind: ClusterPolicy
 metadata:
   name: attest-code-review
 spec:
-  validationFailureAction: Enforce
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   background: false
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail
   rules:
     - name: attest
       match:
@@ -256,6 +258,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "registry.io/org/app*"
+        failureAction: Enforce
         attestations:
           - predicateType: https://example.com/CodeReview/v1
             attestors:
@@ -345,7 +348,6 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -356,6 +358,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:signed-cert"
+        failureAction: Enforce
         attestors:
         - entries:
           - certificates:
@@ -416,7 +419,6 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: verify-signature
       match:
@@ -427,6 +429,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "ghcr.io/kyverno/test-verify-image:signed-cert"
+        failureAction: Enforce
         attestors:
         - entries:
           - certificates:
@@ -485,6 +488,36 @@ kind: ClusterPolicy
 metadata:
   name: check-image-keyless
 spec:
+  webhookConfiguration:
+    timeoutSeconds: 30
+  rules:
+    - name: check-image-keyless
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image:signed-keyless"
+        failureAction: Enforce
+        attestors:
+        - entries:
+          - keyless:
+              subject: "*@nirmata.com"
+              issuer: "https://accounts.google.com"
+              rekor:
+                url: https://rekor.sigstore.dev
+```
+
+The following policy verifies an image signed using [keyless signing](https://docs.sigstore.dev/signing/overview/) with regular expressions for subject and issuer:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-keyless
+spec:
   validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
   rules:
@@ -500,8 +533,8 @@ spec:
         attestors:
         - entries:
           - keyless:
-              subject: "*@nirmata.com"
-              issuer: "https://accounts.google.com"
+              subjectRegExp: https://github\.com/.+
+              issuerRegExp: https://token\.actions\.githubusercontent.+
               rekor:
                 url: https://rekor.sigstore.dev
 ```
@@ -538,6 +571,7 @@ attestors:
       rekor:
         url: https://rekor.sigstore.dev
 ```
+
 
 ## Using a Key Management Service (KMS)
 
@@ -615,10 +649,10 @@ kind: ClusterPolicy
 metadata:
   name: check-image
 spec:
-  validationFailureAction: Enforce
   background: false
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: check-image
       match:
@@ -629,6 +663,7 @@ spec:
       verifyImages:
       - imageReferences: 
         - ghcr.io/myorg/myimage*
+        failureAction: Enforce
         attestors:
         - entries:
           - keys: 
@@ -868,7 +903,6 @@ kind: ClusterPolicy
 metadata:
   name: signed-task-image
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:
@@ -885,6 +919,7 @@ spec:
     verifyImages:
     - imageReferences:
       - "*"
+      failureAction: Enforce
       required: false
       attestors:
       - entries:
@@ -904,7 +939,6 @@ kind: ClusterPolicy
 metadata:
   name: signed-pipeline-bundle
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-signature
     match:
@@ -921,6 +955,7 @@ spec:
     verifyImages:
     - imageReferences:
       - "*"
+      failureAction: Enforce
       attestors:
       - entries:
         - keys: 

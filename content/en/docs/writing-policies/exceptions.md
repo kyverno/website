@@ -32,7 +32,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-namespaces
@@ -42,6 +41,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.
@@ -59,7 +59,7 @@ Auto-generated rules for Pod controllers must be specified along with the Pod co
 {{% /alert %}}
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: delta-exception
@@ -145,7 +145,6 @@ kind: ClusterPolicy
 metadata:
   name: policy-for-exceptions
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: require-match-name
@@ -155,6 +154,7 @@ spec:
           kinds:
           - PolicyException
     validate:
+      failureAction: Enforce
       message: >-
         An exception must explicitly specify a name for a resource match.
       pattern:
@@ -181,7 +181,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -190,6 +189,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -198,7 +198,7 @@ spec:
 In this use case, all Pods in the `delta` Namespace need to run as a root. A PolicyException can be used to exempt all Pods whose Namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: pod-security-exception
@@ -247,7 +247,7 @@ PolicyExceptions `podSecurity{}` block has the same functionality as the [valida
 For example, the following PolicyException exempts the containers running either the `nginx` or `redis` image from following the Capabilities control.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: pod-security-exception
@@ -278,7 +278,7 @@ In this case, the `podSecurity.restrictedField` can be used to enforce the entir
 The following PolicyException grants an exemption to the `initContainers` that use Istio or Linkerd images, allowing them to bypass the `Capabilities` control. This is achieved by permitting the values of `NET_ADMIN` and `NET_RAW` in the `securityContext.capabilities.add` field.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: pod-security-exception

@@ -78,9 +78,9 @@ kind: ClusterPolicy
 metadata:
   name: check-image-notary
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: verify-signature-notary
       match:
@@ -92,6 +92,7 @@ spec:
       - type: Notary
         imageReferences:
         - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         attestors:
         - count: 1
           entries:
@@ -200,9 +201,9 @@ kind: ClusterPolicy
 metadata:
   name: check-image-attestation
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: verify-attestation-notary
       match:
@@ -219,6 +220,7 @@ spec:
       - type: Notary
         imageReferences:
           - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         attestations:
           - type: sbom/cyclone-dx
             attestors:
