@@ -88,7 +88,7 @@ The field `spec.validationFailureAction` is deprecated and will be removed in a 
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
-When `spec.rules[*].validate[*].failureAction` is set to `Audit`, set `spec.emitWarning` to `true` to show audit policy violation in Admission Response warning and kubectl output.
+When `spec.rules[*].validate[*].failureAction` is set to `Audit`, set `spec.emitWarning` to `true` to show audit policy violation in admission response warnings.
 {{% /alert %}}
 
 ## Failure Action Overrides
