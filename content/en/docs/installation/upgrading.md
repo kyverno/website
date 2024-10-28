@@ -16,7 +16,7 @@ Direct upgrades from previous versions are not supported when using the YAML man
 
 ### Upgrade Kyverno with Helm
 
-An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the 1.10 migration guide [here](https://githubviewRoleName.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
+An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the Helm chart v2 to v3 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
 
 ## Upgrading to Kyverno v1.13
