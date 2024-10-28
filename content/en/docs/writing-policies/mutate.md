@@ -415,6 +415,10 @@ spec:
           - <(emptyDir): {}
 ```
 
+{{% alert title="Note" color="info" %}}
+Set `spec.emitWarning` to `true` to show rules that mutated the resource in Admission Response warning and kubectl output.
+{{% /alert %}}
+
 ## Mutate Existing resources
 
 In addition to standard mutations, Kyverno also supports mutation on existing resources with `patchStrategicMerge` and `patchesJson6902`. Unlike regular mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background (via the background controller) which update existing resources in the cluster. These "mutate existing" policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing resources. This decoupling also allows triggering on one resource and mutating a totally different one. They may also optionally be configured to apply upon updates to the policy itself. This has two important implications:
