@@ -5,6 +5,11 @@ description: >
 weight: 80
 ---
 
+{{% alert title="Warning" color="warning" %}}
+PolicyExceptions are disabled by default. To enable them, set the `enablePolicyException` flag to `true`. When enabling PolicyExceptions, you must also specify which namespaces they can be used in by setting the `exceptionNamespace` flag. 
+For more information, see [Container Flags](../installation/customization.md#container-flags).
+{{% /alert %}}
+
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](match-exclude.md#match-statements), [preconditions](preconditions.md) at multiple hierarchies, [anchors](validate.md#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
 
 For example, in organizations where multiple teams must interact with the same cluster, a team responsible for policy authoring and administration may not be the same team responsible for submission of resources. In these cases, it can be advantageous to decouple the policy definition from certain exclusions. Additionally, there are often times where an organization or team must allow certain exceptions which would violate otherwise valid rules but on a one-time basis if the risks are known and acceptable.
