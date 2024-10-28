@@ -203,7 +203,7 @@ kyverno:reports-controller:core    |  --          | --
 
 
 {{% alert title="Note" color="info" %}}
-The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using variables like `admissionController.rbac.viewRoleName`. 
+The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using the variables `admissionController.rbac.viewRoleName`, `backgroundController.rbac.viewRoleName`, and `reportsController.rbac.viewRoleName`.
 {{% /alert %}}
 
 #### Customizing Permissions
