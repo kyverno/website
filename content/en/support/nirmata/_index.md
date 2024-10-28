@@ -5,33 +5,19 @@ description: "Kubernetes Policy and Governance from the creators of Kyverno"
 type: docs
 ---
 
-
 [Nirmata](https://nirmata.com/) is the creator of Kyverno and offers several commercial solutions for Kubernetes policy and governance for platform and operations teams.
 
-### Nirmata for Kyverno Open Source
-
-[Nirmata for Kyverno Open Source](https://info.nirmata.com/hubfs/product/nirmata-kyverno-oss-consulting.pdf) is ideal for open source savvy users looking to protect and grow their investment in Kyverno. It includes:
-
-* Use Kyverno OSS or your own fork
-* Get 24x7 emergency support
-* Collaborate via email or a private messaging channel
-* 24 consulting hours per quarter for
-  * Best practices assessment
-  * Policy authoring
-  * Policy optimizations
-  * Upgrade assistance
-  * Custom trainings & workshops
-
-### Nirmata Enterprise for Kyverno
+### Nirmata Enterprise for Kyverno (N4K)
 
 [Nirmata Enterprise for Kyverno](https://nirmata.com/nirmata-enterprise-for-kyverno/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
 
-* Kyverno LTS for long term support with compatibility testing, CVE and critical fix SLAs
-* Kyverno engine health and lifecycle management
-* Policy data adapters for fast in-cluster processing
-* Curated policy sets covering all major security concerns
+* Drop-in compatibility with Kyverno OSS
+* Long Term compatibility Support (LTS) across Kyverno and Kubernetes ([support matrix](shttps://docs.nirmata.io/docs/n4k/release-compatibility-matrix/)).
+* SLAs for CVE and critical fixes
+* etcd offload for improved performance
+* Curated policy sets covering security and operations needs
 * Quarterly trainings, assessments, and upgrade assist
-* Custom policy workshops
+* Custom policy authoring support & workshops
 
 {{% videos %}}
 {{< youtube id="LvZ66a9UUNM" start="0" class="video" >}}
@@ -41,23 +27,17 @@ type: docs
 
 [Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/) provides centralized visibility and governance across fleets of clusters. It includes:
 
-* All Nirmata Enterprise for Kyverno features
-* Intuitive dashboards for policy reports
-* Role-based access controls for teams
-* Assign ownership of violations
-* OIDC and SAML integration
+* All N4K features
+* Centralized reporting across clusters and clouds
+* Role-based access controls for teams with OIDC and SAML
+* Auto-assign ownership of violations to teams
 * Customizable alerting and notifications
+* DevSecOps Collaboration Workflows e.g., exception management
+* Auto-remediation with GitOps integrations
+* Pipeline scanning and integrations
+* Continuous Compliance
 * CIS Kubernetes Benchmarks
-* Built-in compliance standards for:
-  * Pod Security Standards
-  * Workload Security
-  * Best practices
-  * RBAC configuration
-  * Multi-tenancy
-  * Supply Chain Security
-* Custom compliance standards with policy mappings
-* Continuous Compliance reporting
 
-### Kyverno Training
+### Kyverno Training & Support
 
-Nirmata offers expert training and custom workshops for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.
+Nirmata offers expert training and custom workshops for custom support for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.

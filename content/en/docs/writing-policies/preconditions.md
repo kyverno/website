@@ -101,7 +101,6 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -119,6 +118,7 @@ spec:
         operator: Equals
         value: busybox
     validate:
+      failureAction: Enforce
       message: "Busybox must be used based on this label combination."
       pattern:
         spec:
@@ -140,7 +140,6 @@ kind: ClusterPolicy
 metadata:
   name: any-all-preconditions
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: any-all-rule
@@ -165,6 +164,7 @@ spec:
         operator: Equals
         value: qa
     validate:
+      failureAction: Enforce
       message: "Foxes must be used based on this label combination."
       pattern:
         spec:
@@ -214,7 +214,6 @@ kind: ClusterPolicy
 metadata:
   name: resource-quantities
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: memory-limit

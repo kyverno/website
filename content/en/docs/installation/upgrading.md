@@ -16,4 +16,61 @@ Direct upgrades from previous versions are not supported when using the YAML man
 
 ### Upgrade Kyverno with Helm
 
-An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the 1.10 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.10/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
+An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the 1.10 migration guide [here](https://githubviewRoleName.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
+
+
+## Upgrading to Kyverno v1.13
+
+Kyverno version 1.13 contains the following breaking configuration changes:
+
+1. **Removal of wildcard permissions**: prior versions contained wildcard view permissions, which allowed Kyverno controllers to view all resources including secrets and other sensitive information. In 1.13 the wildcard view permission was removed and a role binding to the default `view` role was added. See the documentation section on [Role Based Access Controls](./customization.md#role-based-access-controls) for more details. This change will not impact policies during admission controls but may impact reports, and may impact users with mutate and generate policies on custom resources as the these controller may no longer be able to view these custom resources.
+
+To upgrade to 1.13 and continue to allow wildcard view permissions for all Kyverno controllers, use a Helm values file that grants these permissions as specified below:
+
+```yaml
+admissionController:
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
+backgroundController:
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
+reportsController:
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
+```
+
+**NOTE**: using wildcard permissions is not recommended. Use explicit permissions instead.
+
+2. **Default exception settings**: the Helm chart values of the prior versions enabled exceptions by default for all namespaces. This creates a potential security issue. See **CVE-2024-48921** for more details. This change will impact users who were relying on policy exceptions to be enabled in all namespaces.
+
+To maintain backwards compatibility, you can configure the Helm chart values to allow the same settings as the prior version. To upgrade to 1.13 and continue to allow configuring exceptions in all namespaces, set the Helm value `features.policyExceptions.namespace` to `*`:
+
+```sh
+helm upgrade kyverno kyverno/kyverno -n kyverno --set features.policyExceptions.enabled=true --set features.policyExceptions.namespace="*"
+```
+
+**NOTE**: limiting exceptions to a specific namespace is recommended.
