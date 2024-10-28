@@ -87,6 +87,10 @@ The `FailureAction` attribute controls admission control behaviors for resources
 The field `spec.validationFailureAction` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureAction`.
 {{% /alert %}}
 
+{{% alert title="Note" color="info" %}}
+When `spec.rules[*].validate[*].failureAction` is set to `Audit`, set `spec.emitWarning` to `true` to show audit policy violation in admission response warnings.
+{{% /alert %}}
+
 ## Failure Action Overrides
 
 Using `failureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
