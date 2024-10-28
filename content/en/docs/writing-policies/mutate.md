@@ -416,7 +416,7 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}
-Set `spec.emitWarning` to `true` to show rules that mutated the resource in Admission Response warning and kubectl output.
+Set `spec.emitWarning` to `true` to enable API response warnings for mutate policies upon resource's admission events.
 {{% /alert %}}
 
 ## Mutate Existing resources
