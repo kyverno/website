@@ -18,7 +18,6 @@ metadata:
   name: secrets-not-from-env-vars
 spec:
   background: true
-  validationFailureAction: Audit
   rules:
   - name: secrets-not-from-env-vars
     match:
@@ -27,6 +26,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "Secrets must be mounted as volumes, not as environment variables."
       pattern:
         spec:
@@ -76,7 +76,7 @@ summary:
   warn: 0
 ```
 
-Create another Pod which violates the rule in the sample policy. Because the rule is written with `validationFailureAction: Audit`, resources are allowed to be created which violate the rule. If this occurs, another entry will be created in the PolicyReport which denotes this condition as a FAIL. By contrast, if `validationFailureAction: Enforce` and an offending resource was attempted creation, it would be immediately blocked and therefore would not generate another entry in the report. However, if the resource passed then a PASS result would be created in the report.
+Create another Pod which violates the rule in the sample policy. Because the rule is written with `failureAction: Audit`, resources are allowed to be created which violate the rule. If this occurs, another entry will be created in the PolicyReport which denotes this condition as a FAIL. By contrast, if `failureAction: Enforce` and an offending resource was attempted creation, it would be immediately blocked and therefore would not generate another entry in the report. However, if the resource passed then a PASS result would be created in the report.
 
 ```yaml
 apiVersion: v1

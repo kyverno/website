@@ -415,6 +415,10 @@ spec:
           - <(emptyDir): {}
 ```
 
+{{% alert title="Note" color="info" %}}
+Set `spec.emitWarning` to `true` to enable API response warnings for mutate policies upon resource's admission events.
+{{% /alert %}}
+
 ## Mutate Existing resources
 
 In addition to standard mutations, Kyverno also supports mutation on existing resources with `patchStrategicMerge` and `patchesJson6902`. Unlike regular mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background (via the background controller) which update existing resources in the cluster. These "mutate existing" policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing resources. This decoupling also allows triggering on one resource and mutating a totally different one. They may also optionally be configured to apply upon updates to the policy itself. This has two important implications:
@@ -497,6 +501,34 @@ Installation of a mutate existing policy affects the `ValidatingWebhookConfigura
 {{% /alert %}}
 
 When defining a list of `targets[]`, the fields `name` and `namespace` are not strictly required but encouraged. If omitted, it implies a wildcard (`"*"`) for the omitted field which can have unintended impact on other resources.
+
+Target resources can also be selected using label selectors. The below policy example shows a policy that matches `ConfigMaps` with a label `should-match=yes` on `Secret` events.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-existing-configmap
+spec:
+  rules:
+    - name: mutate-configmap-on-secret-event
+      match:
+        any:
+        - resources:
+            kinds:
+            - Secret
+      mutate:
+        targets:
+        - apiVersion: v1
+          kind: ConfigMap
+          selector:
+            matchLabels:
+              should-match: 'yes'
+        patchStrategicMerge:
+          metadata:
+            labels:
+              foo: bar
+```
 
 In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
 

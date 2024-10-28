@@ -151,7 +151,6 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: Audit
   background: false
   rules:
   - name: check-for-labels
@@ -163,6 +162,7 @@ spec:
           operations:
           - CREATE
     validate:
+      failureAction: Audit
       message: "The label `app.kubernetes.io/name` is required."
       pattern:
         metadata:
@@ -239,11 +239,6 @@ This pattern can be leveraged to produce very fine-grained control over the sele
 
 ```yaml
 spec:
-  # validationFailureAction controls admission control behaviors,
-  # when a policy rule fails:
-  # - use 'Enforce' to block resource creation or modification
-  # - use 'Audit' to allow resource updates and report policy violations
-  validationFailureAction: Enforce
   # Each policy has a list of rules applied in declaration order
   rules:
     # Rules must have a unique name
@@ -403,7 +398,6 @@ A variation on the above sample, this snippet uses `any` and `all` statements to
 
 ```yaml
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: match-criticals-except-given-users
@@ -461,7 +455,6 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
 spec:
-  validationFailureAction: Audit
   background: false
   rules:
     - name: require-team
@@ -473,6 +466,7 @@ spec:
               operations:
               - CREATE
       validate:
+        failureAction: Audit
         message: 'The label `team` is required.'
         pattern:
           metadata:
@@ -487,6 +481,7 @@ spec:
               operations:
               - UPDATE
       validate:
+        failureAction: Audit
         message: 'The label `match` is required.'
         pattern:
           metadata:
