@@ -510,7 +510,7 @@ spec:
                 url: https://rekor.sigstore.dev
 ```
 
-The following policy verifies an image signed using [keyless signing](https://docs.sigstore.dev/signing/overview/) with regular expressions for subject and issuer:
+The following policy verifies an image signed using [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/) with regular expressions for subject and issuer:
 
 ```yaml
 apiVersion: kyverno.io/v1
