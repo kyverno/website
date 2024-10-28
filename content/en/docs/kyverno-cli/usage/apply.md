@@ -269,7 +269,6 @@ kind: ClusterPolicy
 metadata:
   name: cm-globalval-example
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-mode
@@ -279,6 +278,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
         deny:
           conditions:
@@ -367,7 +367,6 @@ kind: ClusterPolicy
 metadata:
   name: enforce-pod-name
 spec:
-  validationFailureAction: Audit
   background: true
   rules:
     - name: validate-name
@@ -383,6 +382,7 @@ spec:
                 values:
                 - managed
       validate:
+        failureAction: Audit
         message: "The Pod must end with -nginx"
         pattern:
           metadata:
@@ -451,7 +451,6 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: example-configmap-lookup
@@ -500,7 +499,7 @@ policies:
           dictionary.data.env: dev1
 ```
 
-Policies that have their validationFailureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+Policies that have their failureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
@@ -556,7 +555,6 @@ kind: ClusterPolicy
 metadata:
   name: require-pod-requests-limits
 spec:
-  validationFailureAction: Audit
   rules:
   - name: validate-resources
     match:
@@ -565,6 +563,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "CPU and memory resource requests and limits are required"
       pattern:
         spec:
@@ -708,7 +707,6 @@ kind: ClusterPolicy
 metadata:
   name: max-containers
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: max-two-containers
@@ -718,6 +716,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "A maximum of 2 containers are allowed inside a Pod."
       deny:
         conditions:
@@ -730,7 +729,7 @@ spec:
 Policy Exception manifest (`exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: container-exception
