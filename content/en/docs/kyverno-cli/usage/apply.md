@@ -80,7 +80,7 @@ Apply a policy containing variables using the `--set` or `-s` flag to pass in th
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, and API call context data.
+Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, API call context data, and Global Context Entries.
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
@@ -498,6 +498,25 @@ policies:
         values:
           dictionary.data.env: dev1
 ```
+
+You can also inject global context entries using variables. Here's an example of a Values file that injects a global context entry:
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  request.operation: CREATE
+policies:
+  - name: gctx
+    rules:
+      - name: main-deployment-exists
+        values:
+          deploymentCount: 1
+```
+
+In this example, `request.operation` is set as a global value, and `deploymentCount` is set for a specific rule in the `gctx` policy.
 
 Policies that have their failureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
 
