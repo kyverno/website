@@ -45,6 +45,11 @@ Apply multiple policies to multiple resources with exceptions:
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exception /path/to/exception1.yaml --exception /path/to/exception2.yaml 
 ```
+Apply multiple policies to multiple resources where exceptions are evaluated from the provided resources:
+
+```sh
+kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exceptions-with-resources
+```
 
 Apply a mutation policy to a specific resource:
 
