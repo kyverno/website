@@ -91,7 +91,7 @@ Reporting can be enabled or disabled for rule types by modifying the value of th
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
-Reporting for `generate` and `mutateExisting` rules require permission to fetch resource in kyverno reports controller.
+Creating reports for a resource require permission to `get`, `list` and `watch` the resource in kyverno reports controller.
 {{% /alert %}}
 
 ## Report result logic
