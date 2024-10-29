@@ -90,6 +90,10 @@ To configure Kyverno to generate reports for Kubernetes ValidatingAdmissionPolic
 Reporting can be enabled or disabled for rule types by modifying the value of the flag `--enableReporting=validate,mutate,mutateExisting,generate,imageVerify`.
 {{% /alert %}}
 
+{{% alert title="Note" color="info" %}}
+Reporting for `generate` and `mutateExisting` rules require permission to fetch resource in kyverno reports controller.
+{{% /alert %}}
+
 ## Report result logic
 
 Entries in a policy report contain a `result` field which can be either `pass`, `skip`, `warn`, `error`, or `fail`.
