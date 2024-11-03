@@ -13,7 +13,7 @@ These guides are intended for proof-of-concept or lab demonstrations only and no
 First, install Kyverno from the latest release manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.12.0/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.13.0/install.yaml
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.
@@ -212,7 +212,25 @@ kubectl -n default create secret docker-registry regcred \
 By default, Kyverno is [configured with minimal permissions](../installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
 ```yaml
-kubectl create -f- << EOF
+kubectl apply -f- << EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:view
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
