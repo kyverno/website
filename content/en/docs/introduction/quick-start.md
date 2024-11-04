@@ -244,6 +244,8 @@ rules:
   - secrets
   verbs:
   - create
+  - update
+  - delete
 EOF
 ```
 
@@ -268,7 +270,7 @@ spec:
       kind: Secret
       name: regcred
       namespace: "{{request.object.metadata.name}}"
-      synchronize: false
+      synchronize: true
       clone:
         namespace: default
         name: regcred
