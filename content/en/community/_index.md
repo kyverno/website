@@ -29,7 +29,7 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 
 This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap. 
 
-Topics are proposed by maintainers. All in the community are welcome to attend, but non-maintainers may not propose new agenda items in this forum, they can instead to the [community meeting](#community-meeting) agenda.
+Topics are proposed by maintainers. All in the community are welcome to attend, but non-maintainers may not propose new agenda items in this forum, they can instead add to the [community meeting](#community-meeting) agenda.
 
 - Weekly every Tuesday at 7:30 AM PST
 - [Agenda and meeting notes](https://docs.google.com/document/d/1I_GWsz32gLw8sQyuu_Wv0-WQrtRLjn9FuX2KGNkvUY4/edit?usp=sharing)
