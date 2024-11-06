@@ -21,6 +21,8 @@ An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher usi
 
 ## Upgrading to Kyverno v1.13
 
+### Breaking Changes
+
 Kyverno version 1.13 contains the following breaking configuration changes:
 
 1. **Removal of wildcard permissions**: prior versions contained wildcard view permissions, which allowed Kyverno controllers to view all resources including secrets and other sensitive information. In 1.13 the wildcard view permission was removed and a role binding to the default `view` role was added. See the documentation section on [Role Based Access Controls](./customization.md#role-based-access-controls) for more details. This change will not impact policies during admission controls but may impact reports, and may impact users with mutate and generate policies on custom resources as the controller may no longer be able to view these custom resources.
@@ -74,3 +76,18 @@ helm upgrade kyverno kyverno/kyverno -n kyverno --set features.policyExceptions.
 ```
 
 **NOTE**: limiting exceptions to a specific namespace is recommended.
+
+### Dropped API versions
+
+Kyverno 1.13 drops deprecated API versions for its managed CustomResourceDefinitions. The migration is handled automatically through Helm hook. To upgrade Kyverno without Helm, or Helm hook, you can migrate existing resources via [kube-storage-version-migrator](https://github.com/kubernetes-sigs/kube-storage-version-migrator). 
+
+See affected CRDs:
+```
+- cleanuppolicies.kyverno.io
+- clustercleanuppolicies.kyverno.io
+- clusterpolicies.kyverno.io
+- globalcontextentries.kyverno.io
+- policies.kyverno.io
+- policyexceptions.kyverno.io
+- updaterequests.kyverno.io
+```
