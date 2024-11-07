@@ -120,7 +120,6 @@ kind: ClusterPolicy
 metadata:
   name: cm-array-example
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-role-annotation
@@ -135,6 +134,7 @@ spec:
           kinds:
           - Deployment
     validate:
+      failureAction: Enforce
       message: "The role {{ request.object.metadata.annotations.role }} is not in the allowed list of roles: {{ \"roles-dictionary\".data.\"allowed-roles\" }}."
       deny:
         conditions:
@@ -517,7 +517,6 @@ kind: ClusterPolicy
 metadata:
   name: limits
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: limit-lb-svc
     match:
@@ -533,6 +532,7 @@ spec:
         urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
         jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"    
     validate:
+      failureAction: Enforce
       message: "Only one LoadBalancer service is allowed per namespace"
       deny:
         conditions:
@@ -558,7 +558,6 @@ kind: ClusterPolicy
 metadata:
   name: check-namespaces      
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: call-extension
     match:
@@ -580,6 +579,7 @@ spec:
             <snip>
             -----END CERTIFICATE-----
     validate:
+      failureAction: Enforce
       message: "namespace {{request.namespace}} is not allowed"
       deny:
         conditions:
@@ -710,9 +710,25 @@ context:
 
 The data returned by GlobalContextEntries may vary depending on whether it is a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well. Ensure you use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
 
+To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](../kyverno-cli/usage/apply.md).
+
 {{% alert title="Warning" color="warning" %}}
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
 {{% /alert %}}
+
+#### Default values for API calls
+In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries:
+
+```yaml
+...
+    context:
+    - name: currentnamespace
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{ request.namespace }}"
+        jmesPath: metadata.name
+        default: default
+...
+```
 
 ## Variables from Image Registries
 
@@ -817,7 +833,6 @@ kind: ClusterPolicy
 metadata:
   name: imageref-demo
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: no-root-images
     match:
@@ -829,6 +844,7 @@ spec:
           - CREATE
           - UPDATE
     validate:
+      failureAction: Enforce
       message: "Images run as root are not allowed."  
       foreach:
       - list: "request.object.spec.containers"

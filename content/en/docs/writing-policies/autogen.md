@@ -15,7 +15,6 @@ kind: ClusterPolicy
 metadata:
   name: restrict-image-registries
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: validate-registries
     match:
@@ -24,6 +23,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "Images may only come from our internal enterprise registry."
       pattern:
         spec:
@@ -56,6 +56,7 @@ status:
       mutate: {}
       name: autogen-validate-registries
       validate:
+        failureAction: Enforce
         message: Images may only come from our internal enterprise registry.
         pattern:
           spec:
@@ -77,6 +78,7 @@ status:
       mutate: {}
       name: autogen-cronjob-validate-registries
       validate:
+        failureAction: Enforce
         message: Images may only come from our internal enterprise registry.
         pattern:
           spec:
@@ -139,7 +141,6 @@ kind: ClusterPolicy
 metadata:
   name: require-requests-limits
 spec:
-  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-resources
@@ -154,6 +155,7 @@ spec:
           operator: NotEquals
           value: skip
       validate:
+        failureAction: Enforce
         message: "CPU and memory resource requests and limits are required."
         pattern:
           spec:

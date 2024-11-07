@@ -13,7 +13,7 @@ These guides are intended for proof-of-concept or lab demonstrations only and no
 First, install Kyverno from the latest release manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.12.0/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.13.0/install.yaml
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.
@@ -22,7 +22,7 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](../policy-reports/_index.md) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `validationFailureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
+Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
 ```yaml
 kubectl create -f- << EOF
@@ -31,7 +31,6 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-team
     match:
@@ -40,6 +39,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "label 'team' is required"
       pattern:
         metadata:
@@ -212,7 +212,25 @@ kubectl -n default create secret docker-registry regcred \
 By default, Kyverno is [configured with minimal permissions](../installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
 ```yaml
-kubectl create -f- << EOF
+kubectl apply -f- << EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:view
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -226,6 +244,8 @@ rules:
   - secrets
   verbs:
   - create
+  - update
+  - delete
 EOF
 ```
 
@@ -250,7 +270,7 @@ spec:
       kind: Secret
       name: regcred
       namespace: "{{request.object.metadata.name}}"
-      synchronize: false
+      synchronize: true
       clone:
         namespace: default
         name: regcred

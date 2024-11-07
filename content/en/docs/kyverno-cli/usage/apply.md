@@ -45,6 +45,11 @@ Apply multiple policies to multiple resources with exceptions:
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exception /path/to/exception1.yaml --exception /path/to/exception2.yaml 
 ```
+Apply multiple policies to multiple resources where exceptions are evaluated from the provided resources:
+
+```sh
+kyverno apply /path/to/policy1.yaml /path/to/folderFullOfPolicies --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml --exceptions-with-resources
+```
 
 Apply a mutation policy to a specific resource:
 
@@ -75,7 +80,7 @@ Apply a policy containing variables using the `--set` or `-s` flag to pass in th
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --set <variable1>=<value1>,<variable2>=<value2>
 ```
 
-Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, and API call context data.
+Use `-f` or `--values-file` for applying multiple policies to multiple resources while passing a file containing variables and their values. Variables specified can be of various types include AdmissionReview fields, ConfigMap context data, API call context data, and Global Context Entries.
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
@@ -264,7 +269,6 @@ kind: ClusterPolicy
 metadata:
   name: cm-globalval-example
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-mode
@@ -274,6 +278,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: "The value {{ request.mode }} for val1 is not equal to 'dev'."
         deny:
           conditions:
@@ -362,7 +367,6 @@ kind: ClusterPolicy
 metadata:
   name: enforce-pod-name
 spec:
-  validationFailureAction: Audit
   background: true
   rules:
     - name: validate-name
@@ -378,6 +382,7 @@ spec:
                 values:
                 - managed
       validate:
+        failureAction: Audit
         message: "The Pod must end with -nginx"
         pattern:
           metadata:
@@ -446,7 +451,6 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: example-configmap-lookup
@@ -495,7 +499,26 @@ policies:
           dictionary.data.env: dev1
 ```
 
-Policies that have their validationFailureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
+You can also inject global context entries using variables. Here's an example of a Values file that injects a global context entry:
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  request.operation: CREATE
+policies:
+  - name: gctx
+    rules:
+      - name: main-deployment-exists
+        values:
+          deploymentCount: 1
+```
+
+In this example, `request.operation` is set as a global value, and `deploymentCount` is set for a specific rule in the `gctx` policy.
+
+Policies that have their failureAction set to `Audit` can be set to produce a warning instead of a failure using the `--audit-warn` flag. This will also cause a non-zero exit code if no enforcing policies failed.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --audit-warn
@@ -551,7 +574,6 @@ kind: ClusterPolicy
 metadata:
   name: require-pod-requests-limits
 spec:
-  validationFailureAction: Audit
   rules:
   - name: validate-resources
     match:
@@ -560,6 +582,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "CPU and memory resource requests and limits are required"
       pattern:
         spec:
@@ -703,7 +726,6 @@ kind: ClusterPolicy
 metadata:
   name: max-containers
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: max-two-containers
@@ -713,6 +735,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "A maximum of 2 containers are allowed inside a Pod."
       deny:
         conditions:
@@ -725,7 +748,7 @@ spec:
 Policy Exception manifest (`exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: container-exception
@@ -806,7 +829,7 @@ With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: check-deployments-replicas
@@ -863,7 +886,7 @@ The below example applies a `ValidatingAdmissionPolicyBinding` along with the po
 
 Policy manifest (check-deployment-replicas.yaml):
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -882,7 +905,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 5
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"

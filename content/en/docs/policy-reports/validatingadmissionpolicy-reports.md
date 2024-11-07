@@ -14,7 +14,7 @@ To configure Kyverno to generate reports for ValidatingAdmissionPolicies, set th
 Create a ValidatingAdmissionPolicy that checks the Deployment replicas and a ValidatingAdmissionPolicyBinding that binds the policy to a namespace whose labels set to `environment: staging`.
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -33,7 +33,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 5
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"

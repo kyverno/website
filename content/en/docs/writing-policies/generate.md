@@ -127,10 +127,6 @@ spec:
 
 For other examples of generate rules, see the [policy library](/policies/?policytypes=generate).
 
-{{% alert title="Note" color="info" %}}
-The field `spec.generateExisting` is no longer required for "classic" generate rules, is deprecated, and will be removed in an upcoming version.
-{{% /alert %}}
-
 ## Clone Source
 
 When a generate policy should take the source from a resource which already exists in the cluster, a `clone` object is used instead of a `data` object. When triggered, the generate policy will clone from the resource name and location defined in the rule to create the new resource. Use of the `clone` object implies no modification during the path from source to destination and Kyverno is not able to modify its contents (aside from metadata used for processing and tracking).
@@ -223,6 +219,183 @@ spec:
           matchLabels:
             allowedToBeCloned: "true"
 ```
+## foreach
+
+The `foreach` declaration allows generation of multiple target resources of sub-elements in resource declarations. Each `foreach` entry must contain a `list` attribute, written as a JMESPath expression without braces, that defines the sub-elements it processes. For example, creating networkpolicies for a list of Namespaces which is stored in a label:
+
+```
+list: request.object.metadata.labels.namespaces | split(@, ',')
+```
+
+When a `foreach` is processed, the Kyverno engine will evaluate `list` as a JMESPath expression to retrieve zero or more sub-elements for further processing. The value of the `list` field may also resolve to a simple array of strings, for example as defined in a context variable. The value of the `list` field should not be enclosed in braces even though it is a JMESPath expression.
+
+A variable `element` is added to the processing context on each iteration. This allows referencing data in the element using `element.<name>` where name is the attribute name. For example, using the list `request.object.spec.containers` when the `request.object` is a Pod allows referencing the container image as `element.image` within a `foreach`. An additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
+
+The following child declarations are permitted in a `foreach`:
+
+- [Data Source](#data-source)
+- [Clone Source](#clone-source)
+
+
+In addition, each `foreach` declaration can contain the following declarations:
+
+- [Context](external-data-sources.md): to add additional external data only available per loop iteration.
+- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
+
+Here is a complete example of data source type of `foreach` declaration that creates a NetworkPolicy into a list of existing namespaces which is stored as a comma-separated string in a ConfigMap.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: foreach-generate-data
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    name: k-kafka-address
+    generate:
+      generateExisting: false
+      synchronize: true
+      orphanDownstreamOnPolicyDelete: false
+      foreach:
+        - list: request.object.data.namespaces | split(@, ',')
+          context:
+          - name: ns
+            variable:
+              jmesPath: element
+          preconditions:
+            any:
+            - key: '{{ ns }}'
+              operator: AnyIn
+              value:
+              - foreach-ns-1
+          apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          name: my-networkpolicy-{{element}}-{{ elementIndex }}
+          namespace: '{{ element }}'
+          data:
+            metadata:
+              labels:
+                request.namespace: '{{ request.object.metadata.name }}'
+                element: '{{ element }}'
+                elementIndex: '{{ elementIndex }}'
+            spec:
+              podSelector: {}
+              policyTypes:
+              - Ingress
+              - Egress
+```
+
+For a complete example of clone source type of foreach declaration that clones the source Secret into a list of matching existing namespaces which is stored as a comma-separated string in a ConfigMap, see below.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: foreach-clone
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    name: k-kafka-address
+    context:
+    - name: configmapns
+      variable:
+        jmesPath: request.object.metadata.namespace
+    preconditions:
+      any:
+      - key: '{{configmapns}}'
+        operator: Equals
+        value: 'default'
+    generate:
+      generateExisting: false
+      synchronize: true
+      foreach:
+        - list: request.object.data.namespaces | split(@, ',')
+          context:
+          - name: ns
+            variable:
+              jmesPath: element
+          preconditions:
+            any:
+            - key: '{{ ns }}'
+              operator: AnyIn
+              value:
+              - foreach-ns-1
+          apiVersion: v1
+          kind: Secret
+          name: cloned-secret-{{ elementIndex }}-{{ ns }}
+          namespace: '{{ ns }}'
+          clone:
+            namespace: default
+            name: source-secret
+```
+
+See the triggering ConfigMap below, the `data` contains a `namespaces` field defines multiple namespaces.
+```yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: default-deny
+  namespace: default
+data:
+  namespaces: foreach-ns-1,foreach-ns-2
+```
+
+Similarly as above, here is an example of clone list type of `foreach` declaration that clones a list of secrets based on the label selector.
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: foreach-cpol-clone-list-sync-delete-source
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    name: k-kafka-address
+    context:
+    - name: configmapns
+      variable:
+        jmesPath: request.object.metadata.namespace
+    preconditions:
+      any:
+      - key: '{{configmapns}}'
+        operator: Equals
+        value: '{{request.object.metadata.namespace}}'
+    generate:
+      generateExisting: false
+      synchronize: true
+      foreach:
+        - list: request.object.data.namespaces | split(@, ',')
+          context:
+          - name: ns
+            variable:
+              jmesPath: element
+          preconditions:
+            any:
+            - key: '{{ ns }}'
+              operator: AnyIn
+              value:
+              - foreach-cpol-clone-list-sync-delete-source-target-ns-1
+          namespace: '{{ ns }}'
+          cloneList:
+            kinds:
+            - v1/Secret
+            namespace: foreach-cpol-clone-list-sync-delete-source-existing-ns
+            selector:
+              matchLabels:
+                allowedToBeCloned: "true"
+```
 
 ## Generating Bindings
 
@@ -284,7 +457,9 @@ When a new Namespace is created, Kyverno will generate a new RoleBinding called 
 
 In some cases, a triggering (source) resource and generated (downstream) resource need to share the same life cycle. That is, when the triggering resource is deleted so too should the generated resource. This is valuable because some resources are only needed in the presence of another, for example a Service of type `LoadBalancer` necessitating the need for a specific network policy in some CNI plug-ins.
 
-When a generate rule has synchronization enabled (`synchronize: true`), deletion of the triggering resource will automatically cause deletion of the downstream (generated) resource. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause removal of the downstream resource. In cases where synchronization needs to be disabled, if the trigger and downstream are both Namespaced resources and in the same Namespace, the ownerReference technique can be used.
+When a generate rule has synchronization enabled (`synchronize: true`), deletion of the triggering resource will automatically cause deletion of the downstream (generated) resource. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause removal of the downstream resource. In cases where synchronization needs to be disabled, if the trigger and downstream are both Namespaced resources and in the same Namespace, the ownerReference technique can be used. 
+
+For a `generate.foreach` type of declaration, Kyverno does not prevent modifications to the rule definition. When the `synchronize` option is enabled for such a rule, Kyverno will not synchronize changes to existing target resources when updates are made to the target resource specification. For instance, if a `generate.foreach` declaration initially creates a NetworkPolicy named `staging/networkpolicy-default`, and is subsequently modified to create a new NetworkPolicy named `staging/networkpolicy-new`, any further changes will not be applied to the existing `staging/networkpolicy-default` NetworkPolicy resource.
 
 {{% alert title="Note" color="info" %}}
 Synchronization involving changes to trigger resources are confined to the `match` block and do not take into consideration preconditions.
@@ -327,7 +502,7 @@ spec:
 
 Use of a `generate` rule is common when creating net new resources from the point after which the policy was created. For example, a Kyverno `generate` policy is created so that all future Namespaces can receive a standard set of Kubernetes resources. However, it is also possible to generate resources based on **existing** resources. This can be extremely useful especially for Namespaces when deploying Kyverno to an existing cluster where you wish policy to apply retroactively.
 
-Kyverno supports generation for existing resources. Generate existing policies are applied when the policy is created and in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself. By defining the `spec.generateExisting` set to `true`, a generate rule will take effect for existing resources which have the same match characteristics.
+Kyverno supports generation for existing resources. Generate existing policies are applied when the policy is created and in the background which creates target resources based on the match statement within the policy. They may also optionally be configured to apply upon updates to the policy itself. By defining the `generate[*].generateExisting` set to `true`, a generate rule will take effect for existing resources which have the same match characteristics.
 
 Note that the benefits of using a "generate existing" rule is only the moment the policy is installed. Once the initial generation effects have been produced, the rule functions like a "standard" generate rule from that point forward. Generate existing rules are therefore primarily useful for one-time use cases when retroactive policy should be applied.
 
@@ -343,7 +518,6 @@ kind: ClusterPolicy
 metadata:
   name: generate-resources
 spec:
-  generateExisting: true
   rules:
   - name: generate-existing-networkpolicy
     match:
@@ -352,6 +526,7 @@ spec:
           kinds:
           - Namespace
     generate:
+      generateExisting: true
       kind: NetworkPolicy
       apiVersion: networking.k8s.io/v1
       name: default-deny
@@ -376,7 +551,6 @@ kind: ClusterPolicy
 metadata:
   name: create-default-pdb
 spec:
-  generateExisting: true
   rules:
   - name: create-default-pdb
     match:
@@ -389,6 +563,7 @@ spec:
         namespaces:
         - local-path-storage
     generate:
+      generateExisting: true
       apiVersion: policy/v1
       kind: PodDisruptionBudget
       name: "{{request.object.metadata.name}}-default-pdb"
@@ -403,7 +578,7 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}
-The field `spec.generateExistingOnPolicyUpdate` has been replaced by `spec.generateExisting`. The former is no longer required, is deprecated, and will be removed in an upcoming version.
+The field `spec.generateExisting` has been replaced by `spec.rules[*].generate[*].generateExisting`. The former is no longer required, is deprecated, and will be removed in an upcoming version.
 {{% /alert %}}
 
 ## How It Works

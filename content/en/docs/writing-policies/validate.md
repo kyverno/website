@@ -5,7 +5,7 @@ description: >
 weight: 30
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `validationFailureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -21,8 +21,6 @@ metadata:
   name: require-ns-purpose-label
 # The `spec` defines properties of the policy.
 spec:
-  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
-  validationFailureAction: Enforce
   # The `rules` is one or more rules which must be true.
   rules:
   - name: require-ns-purpose-label
@@ -34,6 +32,8 @@ spec:
           - Namespace
     # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
     validate:
+      # The `failureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
+      failureAction: Enforce
       # The `message` is what gets displayed to a user if this rule fails validation.
       message: "You must have label `purpose` with value `production` set on all new namespaces."
       # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
@@ -79,13 +79,21 @@ require-ns-purpose-label:
 
 Change the `development` value to `production` and try again. Kyverno permits creation of your new Namespace resource.
 
-## Validation Failure Action
+## Failure Action
 
-The `validationFailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
+The `FailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
 
-## Validation Failure Action Overrides
+{{% alert title="Warning" color="warning" %}}
+The field `spec.validationFailureAction` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureAction`.
+{{% /alert %}}
 
-Using `validationFailureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
+{{% alert title="Note" color="info" %}}
+When `spec.rules[*].validate[*].failureAction` is set to `Audit`, set `spec.emitWarning` to `true` to show audit policy violation in admission response warnings.
+{{% /alert %}}
+
+## Failure Action Overrides
+
+Using `failureActionOverrides`, you can specify which actions to apply per Namespace. This attribute is only available for ClusterPolicies.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -93,14 +101,6 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: Audit
-  validationFailureActionOverrides:
-    - action: Enforce     # Action to apply
-      namespaces:       # List of affected namespaces
-        - default
-    - action: Audit
-      namespaces:
-        - test
   rules:
     - name: check-label-app
       match:
@@ -109,6 +109,14 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Audit
+        failureActionOverrides:
+          - action: Enforce     # Action to apply
+            namespaces:       # List of affected namespaces
+              - default
+          - action: Audit
+            namespaces:
+              - test
         message: "The label `app` is required."
         pattern:
           metadata:
@@ -116,7 +124,11 @@ spec:
               app: "?*"
 ```
 
-In the above policy, for Namespace `default`, `validationFailureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `validationFailureAction` field.
+In the above policy, for Namespace `default`, `failureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `failureAction` field.
+
+{{% alert title="Warning" color="warning" %}}
+The field `spec.validationFailureActionOverrides` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureActionOverrides`.
+{{% /alert %}}
 
 ## Patterns
 
@@ -146,7 +158,6 @@ kind: ClusterPolicy
 metadata:
   name: all-containers-need-requests-and-limits
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-container-resources
     match:
@@ -155,6 +166,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "All containers must have CPU and memory resource requests and limits defined."
       pattern:
         spec:
@@ -181,7 +193,6 @@ kind: ClusterPolicy
 metadata:
   name: check-label-app
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: check-label-app
       match:
@@ -192,6 +203,7 @@ spec:
             - StatefulSet
             - DaemonSet
       validate:
+        failureAction: Enforce
         message: "The label `app` is required."
         pattern:
           spec:
@@ -235,7 +247,6 @@ kind: ClusterPolicy
 metadata:
   name: validate
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: validate-replica-count
       match:
@@ -244,6 +255,7 @@ spec:
             kinds:
             - Deployment
       validate:
+        failureAction: Enforce
         message: "Replica count for a Deployment must be greater than or equal to 2."
         pattern:
           spec:
@@ -274,7 +286,6 @@ kind: ClusterPolicy
 metadata:
   name: conditional-anchor-dockersock
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: conditional-anchor-dockersock
@@ -284,6 +295,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`."
       pattern:
         metadata:
@@ -305,7 +317,6 @@ kind: ClusterPolicy
 metadata:
   name: equality-anchor-no-dockersock
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: equality-anchor-no-dockersock
@@ -315,6 +326,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "If a hostPath volume exists, it must not be set to `/var/run/docker.sock`."
       pattern:
         =(spec):
@@ -341,7 +353,6 @@ kind: ClusterPolicy
 metadata:
   name: existence-anchor-at-least-one-nginx
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: existence-anchor-at-least-one-nginx
     match:
@@ -350,6 +361,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "At least one container must use the image `nginx:latest`."
       pattern:
         spec:
@@ -381,7 +393,6 @@ kind: ClusterPolicy
 metadata:
   name: sample
 spec:
-  validationFailureAction: Enforce
   rules:
   - name: check-container-image
     match:
@@ -390,6 +401,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: Images coming from corp.reg.com must use the correct imagePullSecret.
       pattern:
         spec:
@@ -438,7 +450,6 @@ metadata:
   name: require-run-as-non-root
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: check-containers
     match:
@@ -447,6 +458,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: >-
         Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
         spec.containers[*].securityContext.runAsNonRoot, and
@@ -542,7 +554,6 @@ kind: ClusterPolicy
 metadata:
   name: deny-deletes
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-deletes-for-kyverno-resources
@@ -557,6 +568,7 @@ spec:
       - clusterRoles:
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
       deny:
         conditions:
@@ -576,7 +588,6 @@ kind: ClusterPolicy
 metadata:
   name: block-updates-to-custom-resource
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: block-updates-to-custom-resource
@@ -594,6 +605,7 @@ spec:
         - custom-controller:*
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Modifying or deleting this custom resource is forbidden."
       deny: {}
 ```
@@ -608,7 +620,6 @@ kind: ClusterPolicy
 metadata:
   name: deny-netpol-changes
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: deny-netpol-changes
@@ -624,6 +635,7 @@ spec:
       - clusterRoles:
         - cluster-admin
     validate:
+      failureAction: Enforce
       message: "Changing default network policies is not allowed."
       deny: {}
 ```
@@ -653,7 +665,7 @@ The following child declarations are permitted in a `foreach`:
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](preconditions.md): to control when a loop iteration is skipped
+- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -664,7 +676,6 @@ kind: ClusterPolicy
 metadata:
   name: check-images
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-registry
@@ -679,6 +690,7 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
+      failureAction: Enforce
       message: "unknown registry"
       foreach:
       - list: "request.object.spec.initContainers"
@@ -703,7 +715,6 @@ kind: ClusterPolicy
 metadata:
   name: check-ingress
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-tls-secret-host
@@ -713,6 +724,7 @@ spec:
           kinds:
           - Ingress
     validate:
+      failureAction: Enforce
       message: "All TLS hosts must use a domain of old.com."
       foreach:
       - list: request.object.spec.tls[]
@@ -816,7 +828,6 @@ kind: ClusterPolicy
 metadata:
   name: validate-secrets
 spec:
-  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-secrets
@@ -826,6 +837,7 @@ spec:
             kinds:
               - Secret
       validate:
+        failureAction: Enforce
         manifests:
           attestors:
           - count: 1
@@ -873,7 +885,6 @@ kind: ClusterPolicy
 metadata:
   name: validate-deployment
 spec:
-  validationFailureAction: Enforce
   background: true
   rules:
     - name: validate-deployment
@@ -883,6 +894,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         manifests:
           attestors:
           - count: 1
@@ -937,7 +949,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -946,6 +957,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: baseline
         version: latest
@@ -990,7 +1002,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -999,6 +1010,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1045,7 +1057,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: baseline
     match:
@@ -1054,6 +1065,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: baseline
         version: latest
@@ -1086,7 +1098,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -1095,6 +1106,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1156,7 +1168,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: restricted
     match:
@@ -1165,6 +1176,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       podSecurity:
         level: restricted
         version: latest
@@ -1214,7 +1226,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
     - name: baseline
       match:
@@ -1223,6 +1234,7 @@ spec:
               kinds:
                 - Pod
       validate:
+        failureAction: Enforce
         podSecurity:
           level: baseline
           version: latest
@@ -1279,7 +1291,6 @@ metadata:
   name: psa
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
     - name: baseline
       match:
@@ -1288,6 +1299,7 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Enforce
         podSecurity:
           level: baseline
           version: latest
@@ -1388,7 +1400,6 @@ kind: ClusterPolicy
 metadata:
   name: check-deployment-replicas
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-deployment-replicas
@@ -1398,13 +1409,14 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "object.spec.replicas < 4"
               message:  "Deployment spec.replicas must be less than 4."
 ```
 
-The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
+The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `validate[*].failureAction` field.
 
 {{% alert title="Note" color="info" %}}
 You can quickly test CEL expressions in the [CEL Playground](https://playcel.undistro.io/).
@@ -1429,7 +1441,6 @@ kind: ClusterPolicy
 metadata:
   name: check-statefulset-namespace
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: statefulset-namespace
@@ -1439,6 +1450,7 @@ spec:
             kinds:
               - StatefulSet
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "namespaceObject.metadata.name == 'production'"
@@ -1530,7 +1542,6 @@ kind: ClusterPolicy
 metadata:
   name: check-deployment-replicas
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-deployment-replicas
@@ -1540,6 +1551,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           paramKind: 
             apiVersion: rules.example.com/v1
@@ -1643,7 +1655,6 @@ kind: ClusterPolicy
 metadata:
   name: image-matches-namespace-environment.policy.example.com
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: image-matches-namespace-environment
@@ -1653,6 +1664,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           variables:
             - name: environment
@@ -1697,7 +1709,7 @@ However, setting the deployment image as `staging.example.com/nginx` will allow 
 
 A ValidatingAdmissionPolicy provides a declarative, in-process option for validating admission webhooks using the [Common Expression Language](https://github.com/google/cel-spec) (CEL) to perform resource validation checks directly in the API server.
 
-Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it's not fully enabled by default as of Kubernetes versions up to and including 1.28.
+Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it is enabled by default in 1.30.
 
 {{% alert title="Tip" color="info" %}}
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
@@ -1717,12 +1729,12 @@ To generate ValidatingAdmissionPolicies, make sure to:
 
 1. Enable `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
 
-2. For 1.27, enable `admissionregistration.k8s.io/v1alpha1` API, and for 1.28 enable both `admissionregistration.k8s.io/v1alpha1` and `admissionregistration.k8s.io/v1beta1` API.
+2. Enable `admissionregistration.k8s.io/v1beta1` API.
 
     Here is the minikube command to enable ValidatingAdmissionPolicy:
 
    ```
-   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1,apiserver.runtime-config=admissionregistration.k8s.io/v1alpha1  --feature-gates='ValidatingAdmissionPolicy=true'
+   minikube start --extra-config=apiserver.runtime-config=admissionregistration.k8s.io/v1beta1 --feature-gates='ValidatingAdmissionPolicy=true'
    ```
 
 3. Configure Kyverno to manage ValidatingAdmissionPolicies using the `--generateValidatingAdmissionPolicy=true` flag in the admission controller.
@@ -1757,8 +1769,6 @@ To generate ValidatingAdmissionPolicies, make sure to:
 
 ValidatingAdmissionPolicies can only be generated from the `validate.cel` sub-rules in Kyverno policies. Refer to the [CEL subrule](#common-expression-language-cel) section for more information.
 
-In case there is a PolicyException defined for the Kyverno policy, the ValidatingAdmissionPolicy will not be generated. The PolicyException is used to exclude certain resources from being validated by Kyverno policies. Refer to the [PolicyException](exceptions.md) page for more information.
-
 Below is an example of a Kyverno policy that can be used to generate a ValidatingAdmissionPolicy and its binding:
 
 ```yaml
@@ -1767,7 +1777,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-path
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-path
@@ -1777,6 +1786,7 @@ spec:
             kinds:
               - Deployment
       validate:
+        failureAction: Enforce
         cel:
           expressions:
             - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
@@ -1795,7 +1805,7 @@ status:
 The generated ValidatingAdmissionPolicy:
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   labels:
@@ -1832,7 +1842,7 @@ spec:
 The generated ValidatingAdmissionPolicyBinding:
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   labels:
@@ -1893,4 +1903,255 @@ Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, Clust
 When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionPolicy will match both `pods` and `pods/ephemeralcontainers`. This occurs because Kyverno inherently includes `pods/ephemeralcontainers` by default in the corresponding ValidatingWebhookConfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
 {{% /alert %}}
 
-The generated ValidatingAdmissionPolicy with its binding is totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
+The generated ValidatingAdmissionPolicy with its binding are totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
+
+In case there is a [PolicyException](exceptions.md) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
+
+Below is an example of a Kyverno policy and a PolicyException that matches it. Both the policy and the exception will be used to generate a ValidatingAdmissionPolicy and its corresponding binding.
+
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-path
+spec:
+  background: false
+  rules:
+    - name: host-path
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+            - StatefulSet
+            - ReplicaSet
+            - DaemonSet
+            operations:
+            - CREATE
+            - UPDATE
+            namespaceSelector:
+              matchExpressions:
+                - key: type 
+                  operator: In
+                  values: 
+                  - connector
+      validate:
+        failureAction: Audit
+        cel:
+          expressions:
+            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
+              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+```
+
+```yaml
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: policy-exception
+spec:
+  exceptions:
+  - policyName: disallow-host-path
+    ruleNames:
+    - host-path
+  match:
+    any:
+    - resources:
+        kinds:
+        - Deployment
+        names:
+        - important-tool
+        operations:
+        - CREATE
+        - UPDATE
+```
+
+The generated ValidatingAdmissionPolicy:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - statefulsets
+      - replicasets
+      - daemonsets
+    namespaceSelector:
+      matchExpressions:
+      - key: type
+        operator: In
+        values:
+        - connector
+    excludeResourceRules:
+    - apiGroups:
+      - apps
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resourceNames:
+      - important-tool
+      resources:
+      - deployments
+  validations:
+  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+      !has(volume.hostPath))'
+    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+      must be unset.
+```
+
+The generated ValidatingAdmissionPolicyBinding:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: disallow-host-path-binding
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: disallow-host-path
+spec:
+  policyName: disallow-host-path
+  validationActions: [Audit, Warn]
+```
+
+## Kyverno JSON Assertion
+
+Starting in Kyverno 1.13, a new subrule type called `assert` is available. This subrule type allows users to use Kyverno JSON assertion trees for resource validation. Standard `match` and `exclude` processing is available just like with other rules. This subrule type is enabled when a validate rule is written with a `assert` object, detailed below.
+
+For example, this policy ensures that a pod does not use the default service account.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-default-sa
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: disallow-default-sa
+    validate:
+      message: default ServiceAccount should not be used
+      assert:
+        object:
+          spec:
+            (serviceAccountName == 'default'): false
+```
+
+The `assert.object` contains an assertion tree to validate the applied resource. If an assertion evaluates to false, the validation check is enforced according to the `spec.validationFailureAction` field.
+
+When trying to create a Deployment with the "default" ServiceAccount, the creation of the Deployment will be blocked.
+
+```
+Error from server: admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+resource Pod/default/nginx was blocked due to the following policies 
+
+disallow-default-sa:
+  disallow-default-sa: 'object.spec.(serviceAccountName == ''default''): Invalid value:
+    true: Expected value: false'
+```
+
+assertions have access to the contents of the Admission request/response, organized as seperared trees as well as some other useful variables:
+
+- `object` - The object from the incoming request. The value is null for DELETE requests.
+- `oldObject` - The existing object. The value is null for CREATE requests.
+- `admissionInfo` - Additional admission information. Contains user information like `roles`, `clusterRoles` and `username`.
+- `operation` - Admission Operation.
+- `namespaceLabels` - Map of labels of the target namespace, not available for cluster scoped objects.
+- `admissionOperation` - Bool value which indicates if the policy was triggered from an admission request.
+
+`validate.assert` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](autogen.md) section for more information.
+
+```yaml
+status:
+  autogen:
+    rules:
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        all:
+        - resources:
+            kinds:
+            - DaemonSet
+            - Deployment
+            - Job
+            - ReplicaSet
+            - ReplicationController
+            - StatefulSet
+            operations:
+            - CREATE
+            - UPDATE
+        resources: {}
+      mutate: {}
+      name: autogen-disallow-default-sa
+      skipBackgroundRequests: true
+      validate:
+        assert:
+          object:
+            spec:
+              template:
+                spec:
+                  (serviceAccountName == 'default'): false
+        message: default ServiceAccount should not be used
+        validationFailureAction: Audit
+    - exclude:
+        resources: {}
+      generate:
+        clone: {}
+        cloneList: {}
+      match:
+        all:
+        - resources:
+            kinds:
+            - CronJob
+            operations:
+            - CREATE
+            - UPDATE
+        resources: {}
+      mutate: {}
+      name: autogen-cronjob-disallow-default-sa
+      skipBackgroundRequests: true
+      validate:
+        assert:
+          object:
+            spec:
+              jobTemplate:
+                spec:
+                  template:
+                    spec:
+                      (serviceAccountName == 'default'): false
+        message: default ServiceAccount should not be used
+        validationFailureAction: Audit
+```

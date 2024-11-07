@@ -319,7 +319,6 @@ kind: ClusterPolicy
 metadata:
   name: restrict-ingress-wildcard
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: block-ingress-wildcard
       match:
@@ -328,6 +327,7 @@ spec:
             kinds:
               - Ingress
       validate:
+        failureAction: Enforce
         message: "Wildcards are not permitted as hosts."
         foreach:
         - list: "request.object.spec.rules"
@@ -383,7 +383,6 @@ kind: ClusterPolicy
 metadata:
   name: add-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: add-demo
@@ -396,6 +395,7 @@ spec:
           - CREATE
           - UPDATE
     validate:
+      failureAction: Enforce
       message: "The total memory defined in requests and limits must not exceed 200Mi."
       foreach:
       - list: "request.object.spec.containers"
@@ -438,7 +438,6 @@ metadata:
   name: base64-decode-demo
 spec:
   background: false
-  validationFailureAction: Enforce
   rules:
   - name: base64-decode-demo
     match:
@@ -455,6 +454,7 @@ spec:
         operator: NotEquals
         value: DELETE
     validate:
+      failureAction: Enforce
       message: This license key may not be consumed by a Secret.
       foreach:
       - list: "request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef"
@@ -587,7 +587,6 @@ kind: ClusterPolicy
 metadata:
   name: enforce-resources-as-ratio
 spec:
-  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -599,6 +598,7 @@ spec:
           - CREATE
           - UPDATE
     validate:
+      failureAction: Enforce
       message: Limits may not exceed 2.5x the requests.
       foreach:
       - list: "request.object.spec.containers"
@@ -637,7 +637,6 @@ kind: ClusterPolicy
 metadata:
   name: equal-fold-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: validate-dept-label-data
@@ -647,6 +646,7 @@ spec:
           kinds:
           - ConfigMap
     validate:
+      failureAction: Enforce
       message: The dept label must equal the data.dept value aside from case.
       deny:
         conditions:
@@ -719,7 +719,6 @@ kind: ClusterPolicy
 metadata:
   name: check-external-url-in-configmap
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: validate-external-url
@@ -729,6 +728,7 @@ spec:
             kinds:
               - ConfigMap
       validate:
+        failureAction: Enforce
         message: "ConfigMap contains an external URL."
         deny:
           conditions:
@@ -971,7 +971,6 @@ kind: ClusterPolicy
 metadata:
   name: require-pdb
 spec:
-  validationFailureAction: Audit
   background: false
   rules:
   - name: require-pdb
@@ -988,6 +987,7 @@ spec:
         urlPath: "/apis/policy/v1beta1/namespaces/{{request.namespace}}/poddisruptionbudgets"
         jmesPath: "items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)] | length(@)"
     validate:
+      failureAction: Audit
       message: "There is no corresponding PodDisruptionBudget found for this Deployment."
       deny:
         conditions:
@@ -1115,7 +1115,6 @@ kind: ClusterPolicy
 metadata:
   name: modulo-demo
 spec:
-  validationFailureAction: Audit
   rules:
   - name: check-memory-requests-limits
     match:
@@ -1127,6 +1126,7 @@ spec:
           - CREATE
           - UPDATE
     validate:
+      failureAction: Audit
       message: Limits must be evenly divisible by the requests.
       foreach:
       - list: "request.object.spec.containers"
@@ -1388,7 +1388,6 @@ kind: ClusterPolicy
 metadata:
   name: parse-yaml-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: check-goodbois
@@ -1398,6 +1397,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       message: "Only good bois allowed."
       deny:
         conditions:
@@ -1455,7 +1455,6 @@ kind: ClusterPolicy
 metadata:
   name: path-canonicalize-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: disallow-mount-containerd-sock
@@ -1465,6 +1464,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Enforce
       foreach:
       - list: "request.object.spec.volumes[]"
         deny:
@@ -1498,7 +1498,6 @@ kind: ClusterPolicy
 metadata:
   name: pattern-match-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - match:
@@ -1513,6 +1512,7 @@ spec:
         name: deptbillingcodes
         namespace: default
     validate:
+      failureAction: Enforce
       message: The department {{request.object.metadata.labels.dept}} must supply a matching billing code.
       deny:
         conditions:
@@ -1621,7 +1621,6 @@ metadata:
   name: regex-match-demo
 spec:
   background: true
-  validationFailureAction: Enforce
   rules:
   - name: validate-backup-schedule-annotation-cron
     match:
@@ -1630,6 +1629,7 @@ spec:
           kinds:
           - PersistentVolumeClaim
     validate:
+      failureAction: Enforce
       message: The annotation `backup-schedule` must be present and in cron format.
       deny:
         conditions:
@@ -1831,7 +1831,6 @@ kind: ClusterPolicy
 metadata:
   name: round-demo
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: round-input
       match:
@@ -1844,6 +1843,7 @@ spec:
         variable:
           value: 10.123456
       validate:
+        failureAction: Enforce
         message: The rounded value is {{ round(input, `2`) }}.
         deny: {}
 ```
@@ -1870,7 +1870,6 @@ kind: ClusterPolicy
 metadata:
   name: semver-compare-demo
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-sbom
@@ -1881,6 +1880,7 @@ spec:
               - Pod
       verifyImages:
       - image: "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         key: |-
           -----BEGIN PUBLIC KEY-----
           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHMmDjK65krAyDaGaeyWNzgvIu155
@@ -1955,7 +1955,6 @@ kind: ClusterPolicy
 metadata:
   name: split-demo
 spec:
-  validationFailureAction: Audit
   background: false
   rules:
     - name: check-path
@@ -1978,6 +1977,7 @@ spec:
             urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses"
             jmesPath: "items[].spec.rules[].http.paths[].path"
       validate:
+        failureAction: Audit
         message: >-
           The root path /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/ exists
           in another Ingress rule elsewhere in the cluster.
@@ -2077,7 +2077,6 @@ kind: ClusterPolicy
 metadata:
   name: sum-demo
 spec:
-  validationFailureAction: Enforce
   rules:
     - name: memory-requests-check
       match:
@@ -2086,6 +2085,7 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Enforce
         message: The sum of all memory requests in a Pod cannot exceed 1 gibibyte.
         deny:
           conditions:
@@ -2119,7 +2119,6 @@ kind: ClusterPolicy
 metadata:
   name: automate-cleanup
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: cleanup
@@ -2177,7 +2176,6 @@ metadata:
   name: decommission-policy
 spec:
   background: false
-  validationFailureAction: Enforce
   rules:
     - name: decomm-jan-12
       match:
@@ -2186,6 +2184,7 @@ spec:
             kinds:
             - ConfigMap
       validate:
+        failureAction: Enforce
         message: "This cluster is being decommissioned and no further resources may be created after January 12th."
         deny:
           conditions:
@@ -2220,7 +2219,6 @@ metadata:
   name: expiration
 spec:
   background: false
-  validationFailureAction: Enforce
   rules:
     - name: expire-jan-31
       match:
@@ -2234,6 +2232,7 @@ spec:
           operator: Equals
           value: true
       validate:
+        failureAction: Enforce
         message: "The foo label must be set."
         pattern:
           metadata:
@@ -2266,7 +2265,6 @@ metadata:
   name: expiration
 spec:
   background: false
-  validationFailureAction: Enforce
   rules:
     - name: expire-jan-31
       match:
@@ -2280,6 +2278,7 @@ spec:
           operator: Equals
           value: true
       validate:
+        failureAction: Enforce
         message: "The foo label must be set."
         pattern:
           metadata:
@@ -2311,9 +2310,9 @@ kind: ClusterPolicy
 metadata:
   name: require-vulnerability-scan
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 20
-  failurePolicy: Fail
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 20
   rules:
     - name: scan-not-older-than-one-day
       match:
@@ -2324,6 +2323,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "ghcr.io/myorg/myrepo:*"
+        failureAction: Enforce
         attestations:
         - predicateType: cosign.sigstore.dev/attestation/vuln/v1
           attestors:
@@ -2364,7 +2364,6 @@ kind: ClusterPolicy
 metadata:
   name: automate-cleanup
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: cleanup
@@ -2421,7 +2420,6 @@ kind: ClusterPolicy
 metadata:
   name: automate-cleanup
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: cleanup
@@ -2520,7 +2518,6 @@ kind: ClusterPolicy
 metadata:
   name: time-since-demo
 spec:
-  validationFailureAction: Audit
   rules:
     - name: block-stale-images
       match:
@@ -2529,6 +2526,7 @@ spec:
             kinds:
             - Pod
       validate:
+        failureAction: Audit
         message: "Images built more than 6 months ago are prohibited."
         foreach:
         - list: "request.object.spec.containers"
@@ -2568,7 +2566,6 @@ kind: ClusterPolicy
 metadata:
   name: automate-cleanup
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
   - name: cleanup
@@ -2852,7 +2849,6 @@ metadata:
   name: verify-data-volume-image
 spec:
   background: false
-  validationFailureAction: Enforce
   rules:
     - name: verify-data-volume-image
       match:
@@ -2867,6 +2863,7 @@ spec:
       verifyImages:
       - imageReferences:
         - "*"
+        failureAction: Enforce
         mutateDigest: true
         verifyDigest: true
         attestors:
@@ -3063,7 +3060,6 @@ kind: ClusterPolicy
 metadata:
   name: test-x509-decode
 spec:
-  validationFailureAction: Audit
   background: true
   rules:
   - name: test-x509-decode
@@ -3074,6 +3070,7 @@ spec:
           - ValidatingWebhookConfiguration
           - MutatingWebhookConfiguration
     validate:
+      failureAction: Audit
       message: "Certificate will expire in less than a week."
       deny:
         conditions:

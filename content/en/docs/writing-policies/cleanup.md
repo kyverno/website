@@ -5,10 +5,6 @@ description: >
 weight: 70
 ---
 
-{{% alert title="Warning" color="warning" %}}
-Cleanup policies are a **beta** feature.
-{{% /alert %}}
-
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster in two different ways. The first way is via a declarative policy definition in either a `CleanupPolicy` or `ClusterCleanupPolicy`. See the section on [cleanup policies](#cleanup-policy) below for more details. The second way is via a reserved time-to-live (TTL) label added to a resource. See the [cleanup label](#cleanup-label) section for further details.
 
 ## Cleanup Policy
@@ -22,7 +18,7 @@ Since cleanup policies always operate against existing resources in a cluster, p
 An example ClusterCleanupPolicy is shown below. This cleanup policy removes Deployments which have the label `canremove: "true"` if they have less than two replicas on a schedule of every 5 minutes.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: ClusterCleanupPolicy
 metadata:
   name: cleandeploy

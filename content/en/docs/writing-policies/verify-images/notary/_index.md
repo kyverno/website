@@ -40,18 +40,32 @@ ghcr.io/kyverno/test-verify-image@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82b
 You can also use an OCI registry client to discover signatures and attestations for an image.
 
 ```sh
-oras discover ghcr.io/kyverno/test-verify-image:signed -o tree
-ghcr.io/kyverno/test-verify-image:signed
+oras discover -o tree ghcr.io/kyverno/test-verify-image:signed
+ghcr.io/kyverno/test-verify-image@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105
 ├── application/vnd.cncf.notary.signature
-│   └── sha256:7f870420d92765b42cec0f71ee8e25bf39b692f64d95d6f6607e9e6e54300265
+│   ├── sha256:7f870420d92765b42cec0f71ee8e25bf39b692f64d95d6f6607e9e6e54300265
+│   └── sha256:f7d941ed9e93a1ff1d5dee3b091144a87dae1d73481d5be93aa65258a110c689
 ├── vulnerability-scan
-│   └── sha256:f89cb7a0748c63a674d157ca84d725ff3ac09cc2d4aee9d0ec4315e0fe92a5fd
-│       └── application/vnd.cncf.notary.signature
-│           └── sha256:ec45844601244aa08ac750f44def3fd48ddacb736d26b83dde9f5d8ac646c2f3
-└── sbom/cyclone-dx
-    └── sha256:8cad9bd6de426683424a204697dd48b55abcd6bb6b4930ad9d8ade99ae165414
+│   └── sha256:f89cb7a0748c63a674d157ca84d725ff3ac09cc2d4aee9d0ec4315e0fe92a5fd
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:ec45844601244aa08ac750f44def3fd48ddacb736d26b83dde9f5d8ac646c2f3
+├── sbom/cyclone-dx
+│   └── sha256:8cad9bd6de426683424a204697dd48b55abcd6bb6b4930ad9d8ade99ae165414
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
+├── application/vnd.cyclonedx+json
+│   └── sha256:aa886b475b431a37baa0e803765a9212f0accece0b82a131ebafd43ea78fa1f8
+│       └── application/vnd.cncf.notary.signature
+│           ├── sha256:00c5f96577878d79b545d424884886c37e270fac5996f17330d77a01a96801eb
+│           └── sha256:f3dc4687f5654ea8c2bc8da4e831d22a067298e8651fb59d55565dee58e94e2d
+├── cyclonedx/vex
+│   └── sha256:c058f08c9103bb676fcd0b98e41face2436e0a16f3d1c8255797b916ab5daa8a
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:79edc8936a4fb8758b9cb2b8603a1c7903f53261c425efb0cd85b09715eb6dfa
+└── trivy/scan
+    └── sha256:a75ac963617462fdfe6a3847d17e5519465dfb069f92870050cce5269e7cbd7b
         └── application/vnd.cncf.notary.signature
-            └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
+            └── sha256:d1e2b2ba837c164c282cf389594791a190df872cf7712b4d91aa10a3520a8460
 ```
 
 ## Verifying Image Signatures
@@ -64,9 +78,9 @@ kind: ClusterPolicy
 metadata:
   name: check-image-notary
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: verify-signature-notary
       match:
@@ -78,6 +92,7 @@ spec:
       - type: Notary
         imageReferences:
         - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         attestors:
         - count: 1
           entries:
@@ -145,15 +160,29 @@ Consider the following image: `ghcr.io/kyverno/test-verify-image:signed`
 ```
 ghcr.io/kyverno/test-verify-image:signed
 ├── application/vnd.cncf.notary.signature
-│  └── sha256:7f870420d92765b42cec0f71ee8e25bf39b692f64d95d6f6607e9e6e54300265
+│   ├── sha256:7f870420d92765b42cec0f71ee8e25bf39b692f64d95d6f6607e9e6e54300265
+│   └── sha256:f7d941ed9e93a1ff1d5dee3b091144a87dae1d73481d5be93aa65258a110c689
 ├── vulnerability-scan
-│  └── sha256:f89cb7a0748c63a674d157ca84d725ff3ac09cc2d4aee9d0ec4315e0fe92a5fd
-│  └── application/vnd.cncf.notary.signature
-│  └── sha256:ec45844601244aa08ac750f44def3fd48ddacb736d26b83dde9f5d8ac646c2f3
-└── sbom/cyclone-dx
-  └── sha256:8cad9bd6de426683424a204697dd48b55abcd6bb6b4930ad9d8ade99ae165414
-  └── application/vnd.cncf.notary.signature
-  └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
+│   └── sha256:f89cb7a0748c63a674d157ca84d725ff3ac09cc2d4aee9d0ec4315e0fe92a5fd
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:ec45844601244aa08ac750f44def3fd48ddacb736d26b83dde9f5d8ac646c2f3
+├── sbom/cyclone-dx
+│   └── sha256:8cad9bd6de426683424a204697dd48b55abcd6bb6b4930ad9d8ade99ae165414
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:61f3e42f017b72f4277c78a7a42ff2ad8f872811324cd984830dfaeb4030c322
+├── application/vnd.cyclonedx+json
+│   └── sha256:aa886b475b431a37baa0e803765a9212f0accece0b82a131ebafd43ea78fa1f8
+│       └── application/vnd.cncf.notary.signature
+│           ├── sha256:00c5f96577878d79b545d424884886c37e270fac5996f17330d77a01a96801eb
+│           └── sha256:f3dc4687f5654ea8c2bc8da4e831d22a067298e8651fb59d55565dee58e94e2d
+├── cyclonedx/vex
+│   └── sha256:c058f08c9103bb676fcd0b98e41face2436e0a16f3d1c8255797b916ab5daa8a
+│       └── application/vnd.cncf.notary.signature
+│           └── sha256:79edc8936a4fb8758b9cb2b8603a1c7903f53261c425efb0cd85b09715eb6dfa
+└── trivy/scan
+    └── sha256:a75ac963617462fdfe6a3847d17e5519465dfb069f92870050cce5269e7cbd7b
+        └── application/vnd.cncf.notary.signature
+            └── sha256:d1e2b2ba837c164c282cf389594791a190df872cf7712b4d91aa10a3520a8460
 ```
 
 This image has:
@@ -161,6 +190,9 @@ This image has:
 1. A notary signature.
 2. A vulnerability scan report, signed using notary.
 3. A CycloneDX SBOM, signed using notary.
+4. A CycloneDX VEX report, signed using notary.
+5. A Trivy scan report, signed using notary.
+
 This policy checks the signature in the repo `ghcr.io/kyverno/test-verify-image` and ensures that it has been signed by verifying its signature against the provided certificates:
 
 ```yaml
@@ -169,9 +201,9 @@ kind: ClusterPolicy
 metadata:
   name: check-image-attestation
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
   rules:
     - name: verify-attestation-notary
       match:
@@ -188,6 +220,7 @@ spec:
       - type: Notary
         imageReferences:
           - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
         attestations:
           - type: sbom/cyclone-dx
             attestors:
@@ -223,6 +256,118 @@ spec:
 ```
 
 After this policy is applied, Kyverno will verify the signature on the sbom/cyclone-dx attestation and check if the license version of all the components in the SBOM is `GPL-3.0`.
+
+```sh
+kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server
+pod/test created (server dry run)
+```
+
+### Validation across multiple image attestations
+
+Consider the image: `ghcr.io/kyverno/test-verify-image:signed` which image has:
+
+1. A notary signature.
+2. A vulnerability scan report, signed using notary.
+3. A CycloneDX VEX report, signed using notary.
+
+This policy checks:
+1. The signature in the repo `ghcr.io/kyverno/test-verify-image`  
+2. Ensures that it has a vulnerability scan report of type `trivy/vulnerability`, and a CycloneDX VEX report of type `vex/cyclone-dx`, both are signed using the given certificate.
+3. All the vulnerabilities found in the trivy scan report should be allowed in the vex report.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-attestation
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail  
+  rules:
+    - name: verify-attestation-notary
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      context:
+      - name: keys
+        configMap:
+          name: keys
+          namespace: notary-verify-attestation
+      verifyImages:
+      - type: Notary
+        imageReferences:
+          - "ghcr.io/kyverno/test-verify-image*"
+        attestations:
+          - type: trivy/vulnerability
+            name: trivy
+            attestors:
+            - entries:
+              - certificates: 
+                  cert: |-
+                    -----BEGIN CERTIFICATE-----
+                    MIIDmDCCAoCgAwIBAgIUCntgF4FftePAhEa6nZTsu/NMT3cwDQYJKoZIhvcNAQEL
+                    BQAwTDELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAldBMRAwDgYDVQQHDAdTZWF0dGxl
+                    MQ8wDQYDVQQKDAZOb3RhcnkxDTALBgNVBAMMBHRlc3QwHhcNMjQwNjEwMTYzMTQ2
+                    WhcNMzQwNjA4MTYzMTQ2WjBMMQswCQYDVQQGEwJVUzELMAkGA1UECAwCV0ExEDAO
+                    BgNVBAcMB1NlYXR0bGUxDzANBgNVBAoMBk5vdGFyeTENMAsGA1UEAwwEdGVzdDCC
+                    ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJkEGqbILiWye6C1Jz+jwwDY
+                    k/rovpXzxS+EQDvfj/YKvx37Kr4cjboJORu3wtzICWhPUtVWZ21ShfjerKgNq0iB
+                    mrlF4cqz2KcOfuUT3XBglH/NwhEAqOrGPQrMsoQEFWgnilr0RTc+j4vDnkdkcTj2
+                    K/qPhQHRAeb97TdvFCqcZfAGqiOVUqzDGxd2INz/fJd4/nYRX3LJBn9pUGxqRwZV
+                    ElP5B/aCBjJDdh6tAElT5aDnLGAB+3+W2YwG342ELyAl2ILpbSRUpKLNAfKEd7Nj
+                    1moIl4or5AIlTkgewZ/AK68HPFJEV3SwNbzkgAC+/mLVCD8tqu0o0ziyIUJtoQMC
+                    AwEAAaNyMHAwHQYDVR0OBBYEFFTIzCppwv0vZnAVmETPm1CfMdcYMB8GA1UdIwQY
+                    MBaAFFTIzCppwv0vZnAVmETPm1CfMdcYMAkGA1UdEwQCMAAwDgYDVR0PAQH/BAQD
+                    AgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMDMA0GCSqGSIb3DQEBCwUAA4IBAQB8/vfP
+                    /TQ3X80JEZDsttdvd9NLm08bTJ/T+nh0DIiV10aHymQT9/u+iahfm1+7mj+uv8LS
+                    Y63LepQCX5p9SoFzt513pbNYXMBbRrOKpth3DD49IPL2Gce86AFGydfrakd86CL1
+                    9MhFeWhtRf0KndyUX8J2s7jbpoN8HrN4/wZygiEqbQWZG8YtIZ9EewmoVMYirQqH
+                    EvW93NcgmjiELuhjndcT/kHjhf8fUAgSuxiPIy6ern02fJjw40KzgiKNvxMoI9su
+                    G2zu6gXmxkw+x0SMe9kX+Rg4hCIjTUM7dc66XL5LcTp4S5YEZNVC40/FgTIZoK0e
+                    r1dC2/Y1SmmrIoA1
+                    -----END CERTIFICATE-----
+          - type: vex/cyclone-dx
+            name: vex
+            attestors:
+            - entries:
+              - certificates: 
+                  cert: |-
+                    -----BEGIN CERTIFICATE-----
+                    MIIDmDCCAoCgAwIBAgIUCntgF4FftePAhEa6nZTsu/NMT3cwDQYJKoZIhvcNAQEL
+                    BQAwTDELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAldBMRAwDgYDVQQHDAdTZWF0dGxl
+                    MQ8wDQYDVQQKDAZOb3RhcnkxDTALBgNVBAMMBHRlc3QwHhcNMjQwNjEwMTYzMTQ2
+                    WhcNMzQwNjA4MTYzMTQ2WjBMMQswCQYDVQQGEwJVUzELMAkGA1UECAwCV0ExEDAO
+                    BgNVBAcMB1NlYXR0bGUxDzANBgNVBAoMBk5vdGFyeTENMAsGA1UEAwwEdGVzdDCC
+                    ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJkEGqbILiWye6C1Jz+jwwDY
+                    k/rovpXzxS+EQDvfj/YKvx37Kr4cjboJORu3wtzICWhPUtVWZ21ShfjerKgNq0iB
+                    mrlF4cqz2KcOfuUT3XBglH/NwhEAqOrGPQrMsoQEFWgnilr0RTc+j4vDnkdkcTj2
+                    K/qPhQHRAeb97TdvFCqcZfAGqiOVUqzDGxd2INz/fJd4/nYRX3LJBn9pUGxqRwZV
+                    ElP5B/aCBjJDdh6tAElT5aDnLGAB+3+W2YwG342ELyAl2ILpbSRUpKLNAfKEd7Nj
+                    1moIl4or5AIlTkgewZ/AK68HPFJEV3SwNbzkgAC+/mLVCD8tqu0o0ziyIUJtoQMC
+                    AwEAAaNyMHAwHQYDVR0OBBYEFFTIzCppwv0vZnAVmETPm1CfMdcYMB8GA1UdIwQY
+                    MBaAFFTIzCppwv0vZnAVmETPm1CfMdcYMAkGA1UdEwQCMAAwDgYDVR0PAQH/BAQD
+                    AgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMDMA0GCSqGSIb3DQEBCwUAA4IBAQB8/vfP
+                    /TQ3X80JEZDsttdvd9NLm08bTJ/T+nh0DIiV10aHymQT9/u+iahfm1+7mj+uv8LS
+                    Y63LepQCX5p9SoFzt513pbNYXMBbRrOKpth3DD49IPL2Gce86AFGydfrakd86CL1
+                    9MhFeWhtRf0KndyUX8J2s7jbpoN8HrN4/wZygiEqbQWZG8YtIZ9EewmoVMYirQqH
+                    EvW93NcgmjiELuhjndcT/kHjhf8fUAgSuxiPIy6ern02fJjw40KzgiKNvxMoI9su
+                    G2zu6gXmxkw+x0SMe9kX+Rg4hCIjTUM7dc66XL5LcTp4S5YEZNVC40/FgTIZoK0e
+                    r1dC2/Y1SmmrIoA1
+                    -----END CERTIFICATE-----
+        validate:
+          deny:
+            conditions:
+              any:
+              - key: '{{ trivy.Vulnerabilities[*].VulnerabilityID }}'
+                operator: AnyNotIn
+                value: '{{ vex.vulnerabilities[*].id }}'
+          message: All vulnerabilities in trivy and vex should be same
+```
+
+After this policy is applied, Kyverno will verify the signatures in the image and the attestations and then evaluate the validate deny condition which checks all the vulneribilities in trivy report are there in vex report.
 
 ```sh
 kubectl run test --image=ghcr.io/kyverno/test-verify-image:signed --dry-run=server

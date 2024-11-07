@@ -49,7 +49,7 @@ results:
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
   - <namespace_2/name_2>
-  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required.
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
   kind: <kind>
@@ -228,7 +228,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
 spec:
-  validationFailureAction: Audit
   rules:
   - name: require-image-tag
     match:
@@ -237,6 +236,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "An image tag is required."  
       pattern:
         spec:
@@ -249,6 +249,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "Using a mutable image tag e.g. 'latest' is not allowed."
       pattern:
         spec:
@@ -416,14 +417,14 @@ results:
     rule: add-default-requests
     resources:
     - nginx-demo1
-    patchedResource: patchedResource1.yaml
+    patchedResources: patchedResource1.yaml
     kind: Pod
     result: pass
   - policy: add-default-resources
     rule: add-default-requests
     resources:
     - nginx-demo2
-    patchedResource: patchedResource2.yaml
+    patchedResources: patchedResource2.yaml
     kind: Pod
     result: skip
 ```
@@ -544,7 +545,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-namespaces
@@ -554,6 +554,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.          
@@ -567,7 +568,7 @@ spec:
 Policy Exception manifest (`delta-exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: delta-exception
@@ -701,7 +702,7 @@ Below is an example of testing a ValidatingAdmissionPolicy against two resources
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-path
@@ -823,7 +824,7 @@ In the below example, a `ValidatingAdmissionPolicy` and its corresponding `Valid
 Policy manifest (`check-deployment-replicas.yaml`):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -842,7 +843,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 2
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"
