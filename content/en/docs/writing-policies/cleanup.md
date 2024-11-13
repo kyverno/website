@@ -74,11 +74,12 @@ The `deletionPropagationPolicy` field is an optional setting in `CleanupPolicy` 
 - **Background**: Deletes the resource immediately, and its dependents are deleted asynchronously.
 - **Orphan**: Deletes the resource without deleting its dependents, leaving them orphaned.
 
-> **Note**: If `deletionPropagationPolicy` is not set, Kyverno defaults to the API server’s behavior, which typically aligns with the **Background** deletion policy. This default allows Kyverno to delete the primary resource asynchronously, giving the API server the flexibility to manage the deletion of dependents as per cluster settings.
+> **Note**: If `deletionPropagationPolicy` is not set, Kyverno defaults to the API server’s behavior. This default allows Kyverno to delete the primary resource asynchronously, giving the API server the flexibility to manage the deletion of dependents as per cluster settings.
 
 An example `ClusterCleanupPolicy` with `deletionPropagationPolicy` is shown below. This cleanup policy removes Deployments with the label `canremove: "true"` if they have fewer than two replicas, on a schedule of every 5 minutes, and deletes dependents in the **Foreground** mode.
 
 ```yaml
+# ClusterCleanupPolicy with deletionPropagationPolicy
 apiVersion: kyverno.io/v2
 kind: ClusterCleanupPolicy
 metadata:
@@ -100,6 +101,7 @@ spec:
   schedule: "*/5 * * * *"
   deletionPropagationPolicy: "Foreground"
 ```
+
 {{% alert title="Note" color="info" %}} Since cleanup policies always operate against existing resources in a cluster, policies created with subjects, Roles, or ClusterRoles in the match/exclude block are not allowed since this information is only known at admission time. Additionally, operations[], while permitted, are ignored as the only trigger is schedule based. {{% /alert %}}
 
 Values from resources to be evaluated during a policy may be referenced with target.* similar to mutate existing rules.
@@ -147,9 +149,10 @@ The deletionPropagationPolicy can also be specified for resources with a TTL-bas
 - **Background**: Deletes the resource first, while dependents are removed asynchronously.
 - **Orphan**: Deletes the resource but leaves its dependents in place.
 
-An example of a Pod with a TTL label and deletionPropagationPolicy:
+For example, consider a Pod with the TTL label cleanup.kyverno.io/ttl: 2m. After two minutes, the Pod will be deleted, but the dependents will be handled according to the specified deletionPropagationPolicy. If the policy is set to Orphan, the Pod will be deleted, but its dependent resources will remain in the cluster.
 
 ```yaml
+# TTL-based cleanup with deletionPropagationPolicy
 apiVersion: v1
 kind: Pod
 metadata:
