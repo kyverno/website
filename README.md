@@ -120,17 +120,38 @@ To create a new release branch:
 
 In the `main` branch:
 
-1. Update the versions list in [params.toml](/config/_default/params.toml) to add the next release.
+1. Add a new menu version corresponding to the new release branch in [params.toml](/config/_default/params.toml) that points to https://kyverno.io below these lines:
 
-2. Update `version_menu` and `version` in [params.toml](/config/_default/params.toml) for the next release.
+```toml
+# version_menu = "Versions"
+# Add your release versions here
+[[menu.versions]]
+  version = "1.8.0"
+  url = "https://release-1-8-0.kyverno.io"
+  weight = 1
+```
 
-3. Create a PR.
+and change the older release version entry to point to its own versioned url, so for example if adding 1.13:
 
-4. Clear the Netlify cache!
+```toml
+[[versions]] # New Line
+  version = "v1.13.0" # New Line
+  url = "https://kyverno.io" # New Line
+
+[[versions]]
+  version = "v1.12.0"
+  url = "https://release-1-12-0.kyverno.io" # Change this line
+```
+
+2. Clear the Netlify cache!
 
 In the current release branch:
 
-1. Update `params.toml` so that `version_menu` and `version` reflect the version of that release branch, NOT `main`. This is so when users navigate to the version of the docs represented in that version it shows the correct number.
+1. Do the same as above.
+
+2. Update `version` to the new release version. Following our example from above that would be `v1.13.0`.
+
+3. Update `version_menu` to the same release version.
 
 #### Submitting a PR to multiple release branches
 
