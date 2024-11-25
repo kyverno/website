@@ -68,11 +68,7 @@ rules:
 
 ### Deletion Propagation Policy
 
-The `deletionPropagationPolicy` field is an optional setting in `CleanupPolicy` and `ClusterCleanupPolicy` that specifies how Kubernetes should handle the deletion of dependent resources. The available options are:
-
-- **Foreground**: Deletes the resource and waits until all of its dependent resources are also deleted.
-- **Background**: Deletes the resource immediately, and its dependents are deleted asynchronously.
-- **Orphan**: Deletes the resource without deleting its dependents, leaving them orphaned.
+The `deletionPropagationPolicy` field is an optional setting in `CleanupPolicy` and `ClusterCleanupPolicy` that specifies how Kubernetes should handle the deletion of dependent resources.
 
 > **Note**: If `deletionPropagationPolicy` is not set, Kyverno defaults to the API server’s behavior. This default allows Kyverno to delete the primary resource asynchronously, giving the API server the flexibility to manage the deletion of dependents as per cluster settings.
 
@@ -149,7 +145,7 @@ The deletionPropagationPolicy can also be specified for resources with a TTL-bas
 - **Background**: Deletes the resource first, while dependents are removed asynchronously.
 - **Orphan**: Deletes the resource but leaves its dependents in place.
 
-For example, consider a Pod with the TTL label cleanup.kyverno.io/ttl: 2m. After two minutes, the Pod will be deleted, but the dependents will be handled according to the specified deletionPropagationPolicy. If the policy is set to Orphan, the Pod will be deleted, but its dependent resources will remain in the cluster.
+For example, consider a Pod with the TTL label `cleanup.kyverno.io/ttl: 2m`. After two minutes, the Pod will be deleted, but the dependents will be handled according to the specified deletionPropagationPolicy. If the policy is set to Orphan, the Pod will be deleted, but its dependent resources will remain in the cluster.
 
 ```yaml
 # TTL-based cleanup with deletionPropagationPolicy
