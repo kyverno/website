@@ -102,7 +102,7 @@ spec:
 
 Values from resources to be evaluated during a policy may be referenced with target.* similar to mutate existing rules.
 
-Because Kyverno follows the principle of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the Customizing Permissions section for more details.
+Because Kyverno follows the principle of least privilege, depending on the resources you wish to remove it may be necessary to grant additional permissions to the cleanup controller. Kyverno will assist in informing you if additional permissions are required by validating them at the time a new cleanup policy is installed. See the [Customizing Permissions](../installation/customization.md#customizing-permissions) section for more details.
 
 An example ClusterRole which allows Kyverno to cleanup Pods is shown below. This may need to be customized based on the values used to deploy Kyverno.
 
