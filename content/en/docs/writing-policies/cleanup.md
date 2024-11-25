@@ -145,7 +145,7 @@ Resources with a cleanup.kyverno.io/ttl label can also use the deletionPropagati
 
 ```yaml
 apiVersion: v1
-kind: Pod
+kind: CleanupPolicy
 metadata:
   labels:
     cleanup.kyverno.io/ttl: 2m
