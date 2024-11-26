@@ -135,7 +135,7 @@ spec:
       operator: LessThan
       value: 2
   schedule: "*/5 * * * *"
-  deletionPropagationPolicy: "Foreground"
+  deleteOptions: "Foreground"
 ```
 
 This policy schedules the deletion of Deployments labeled `canremove: "true"` with fewer than two replicas every 5 minutes, ensuring dependent resources are deleted before the Deployment itself.
@@ -151,7 +151,7 @@ metadata:
   labels:
     cleanup.kyverno.io/ttl: 2m
   annotations:
-    deletionPropagationPolicy: "Orphan"
+    deleteOptions: "Orphan"
   name: foo
 spec:
   containers:
