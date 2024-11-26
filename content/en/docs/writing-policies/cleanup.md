@@ -25,17 +25,17 @@ metadata:
 spec:
   match:
     any:
-    - resources:
-        kinds:
-          - Deployment
-        selector:
-          matchLabels:
-            canremove: "true"
+      - resources:
+          kinds:
+            - Deployment
+          selector:
+            matchLabels:
+              canremove: "true"
   conditions:
     any:
-    - key: "{{ target.spec.replicas }}"
-      operator: LessThan
-      value: 2
+      - key: "{{ target.spec.replicas }}"
+        operator: LessThan
+        value: 2
   schedule: "*/5 * * * *"
 ```
 
@@ -55,23 +55,23 @@ metadata:
     app.kubernetes.io/part-of: kyverno
   name: kyverno:cleanup-pods
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - get
-  - watch
-  - list
-  - delete
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - watch
+      - list
+      - delete
 ```
 
 ## Cleanup Label
 
 In addition to policies which can declaratively define what resources to remove and when to remove them, the second option for cleanup involves assignment of a reserved label called `cleanup.kyverno.io/ttl` to the exact resource(s) which should be removed. The value of this label can be one of two supported formats. Any unrecognized formats will trigger a warning.
 
-* An absolute time specified in ISO 8601 format (ex., `2023-10-04T003000Z` or `2023-10-04`)
-* A remaining time calculated from when the label was observed (ex., `5m`, `4h`, or `1d`)
+- An absolute time specified in ISO 8601 format (ex., `2023-10-04T003000Z` or `2023-10-04`)
+- A remaining time calculated from when the label was observed (ex., `5m`, `4h`, or `1d`)
 
 This label can be assigned to any resource and so long as Kyverno has the needed permissions to delete the resource (see above section for an example), it will be removed at the designated time.
 
@@ -86,11 +86,11 @@ metadata:
   name: foo
 spec:
   containers:
-  - args:
-    - sleep
-    - 1d
-    image: busybox:1.35
-    name: foo
+    - args:
+        - sleep
+        - 1d
+      image: busybox:1.35
+      name: foo
 ```
 
 Although labeled resources are watched by Kyverno, the cleanup interval (the time resolution at which any cleanup can be performed) is controlled by a flag passed to the cleanup controller called `ttlReconciliationInterval`. This value is set to `1m` by default and can be changed if a longer resolution is required.
@@ -123,17 +123,17 @@ metadata:
 spec:
   match:
     any:
-    - resources:
-        kinds:
-          - Deployment
-        selector:
-          matchLabels:
-            canremove: "true"
+      - resources:
+          kinds:
+            - Deployment
+          selector:
+            matchLabels:
+              canremove: "true"
   conditions:
     any:
-    - key: "{{ target.spec.replicas }}"
-      operator: LessThan
-      value: 2
+      - key: "{{ target.spec.replicas }}"
+        operator: LessThan
+        value: 2
   schedule: "*/5 * * * *"
   deleteOptions: "Foreground"
 ```
@@ -151,15 +151,15 @@ metadata:
   labels:
     cleanup.kyverno.io/ttl: 2m
   annotations:
-    determinePropagationPolicy: "Orphan"
+    PropagationPolicy: "Orphan"
   name: foo
 spec:
   containers:
-  - args:
-    - sleep
-    - 1d
-    image: busybox:1.35
-    name: foo
+    - args:
+        - sleep
+        - 1d
+      image: busybox:1.35
+      name: foo
 ```
 
 In this example:
