@@ -151,7 +151,7 @@ metadata:
   labels:
     cleanup.kyverno.io/ttl: 2m
   annotations:
-    deleteOptions: "Orphan"
+    determinePropagationPolicy: "Orphan"
   name: foo
 spec:
   containers:
