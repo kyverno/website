@@ -450,7 +450,7 @@ Test Summary: 2 tests passed and 0 tests failed
 ```
 
 In this scenario, a `mutate` policy which adds a label to `Secrets` based on requests made on a particular `ConfigMap`,
-note the use of the `targetResources` field
+note the use of the `targetResources` field.
 
 Test manifest (`kyverno-test.yaml`):
 ```yaml
