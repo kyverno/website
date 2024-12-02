@@ -10,16 +10,38 @@ Depending on the application used to either install and manage Kyverno or the Ku
 
 ### Notes for ArgoCD users
 
-When deploying the Kyverno Helm chart with ArgoCD, you will need to enable `Replace` in the `syncOptions`. You may want to also ignore differences in aggregated ClusterRoles which Kyverno uses by default. Aggregated ClusterRoles are built by aggregating other ClusterRoles in the cluster and are dynamic by nature, therefore desired and observed states cannot match.
+ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes’ Server Side Apply feature to resolve OutOfSync issues. This strategy ensures comparisons are handled on the server side, respecting fields like `skipBackgroundRequests` that Kubernetes sets by default, thereby preventing unnecessary `OutOfSync` errors caused by local manifest discrepancies.
 
-You can do so by following instructions in these pages of the ArgoCD documentation:
+You can enable `ServerSideDiff` in two ways:  
+* Per Application: Add the `argocd.argoproj.io/compare-options` annotation.
+* Globally: Configure it in the `argocd-cmd-params-cm` ConfigMap.
 
-* [Enable Replace in the syncOptions](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#replace-resource-instead-of-applying-changes)
+Here is a YAML fragment that shows the annotation in an ArgoCD Application resource:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
+
+    ...
+
+```
+
+When deploying the Kyverno Helm chart with ArgoCD, it is recommended to use `ServerSideApply` in the `syncOptions`. This approach helps handle metadata issues that may arise when applying the chart.
+
+Additionally, you may want to ignore differences in aggregated ClusterRoles, which Kyverno uses by default. Aggregated ClusterRoles are dynamic and built by combining other ClusterRoles in the cluster, leading to discrepancies between desired and observed states.
+
+You can do so by following these instructions in the ArgoCD documentation:
+
+* [Enable ServerSideApply](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply)
 * [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
 
-ArgoCD uses Helm only for templating but applies the results with `kubectl`. Unfortunately `kubectl` adds metadata that exceeds the limit allowed by Kubernetes. Using `Replace` overcomes this limitation. Another option is to use server-side apply, supported in ArgoCD v2.5+.
+**Note:** You may want to avoid using `Replace=true` in the `syncOptions` as it can cause issues with existing resources. It is generally recommended to rely on `ServerSideApply` for handling resource updates smoothly.
 
-Below is an example of an ArgoCD Application manifest that should work with the Kyverno Helm chart:
+
+Here’s an example of an ArgoCD Application manifest that should work with the Kyverno Helm chart:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -42,7 +64,8 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - Replace=true
+      - ServerSideApply=true
+
 ```
 
 For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](../writing-policies/mutate.md#argocd).
