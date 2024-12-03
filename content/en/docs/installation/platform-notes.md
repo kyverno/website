@@ -10,7 +10,7 @@ Depending on the application used to either install and manage Kyverno or the Ku
 
 ### Notes for ArgoCD users
 
-ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes’ Server Side Apply feature to resolve OutOfSync issues. This strategy ensures comparisons are handled on the server side, respecting fields like `skipBackgroundRequests` that Kubernetes sets by default, thereby preventing unnecessary `OutOfSync` errors caused by local manifest discrepancies.
+ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes’ Server Side Apply feature to resolve OutOfSync issues. This strategy ensures comparisons are handled on the server side, respecting fields like `skipBackgroundRequests` that Kubernetes sets by default, and fields set by mutating admission controllers like Kyverno, thereby preventing unnecessary `OutOfSync` errors caused by local manifest discrepancies.
 
 You can enable `ServerSideDiff` in two ways:  
 * Per Application: Add the `argocd.argoproj.io/compare-options` annotation.
