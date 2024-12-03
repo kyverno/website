@@ -97,7 +97,7 @@ Although labeled resources are watched by Kyverno, the cleanup interval (the tim
 
 Because this is a label, there is opportunity to chain other Kyverno functionality around it. For example, it is possible to use a Kyverno mutate rule to assign this label to matching resources. A validate rule could be written prohibiting, for example, users from the `infra-ops` group from assigning the label to resources in certain Namespaces. Or, Kyverno could generate a new resource with this label as part of the resource definition.
 
-## DeletionPropagationPolicy (Common to both ClusterCleanupPolicy and TTL based Cleanup)
+## DeletionPropagationPolicy
 
 The `deletionPropagationPolicy` field is an optional setting available in both CleanupPolicy and TTL-based cleanup configurations. It determines how Kubernetes handles the deletion of dependent resources when the primary resource is deleted.
 
@@ -108,12 +108,12 @@ Supported values:
 - **Orphan**: Deletes the primary resource but leaves its dependents untouched.
 
 {{% alert title="Note" color="info" %}}
-If deletionPropagationPolicy is not set, Kyverno defers to the Kubernetes API server's default behavior, which typically handles dependents based on cluster settings.
+If `deletionPropagationPolicy` is not set, Kyverno defers to the Kubernetes API server's default behavior, which typically handles dependents based on cluster settings.
 {{% /alert %}}
 
 ### Cleanup Policy Example with deletionPropagationPolicy
 
-A ClusterCleanupPolicy can include deletionPropagationPolicy to control the cleanup of dependents. Here's an example:
+A ClusterCleanupPolicy can include `deletionPropagationPolicy` to control the cleanup of dependents. Here's an example:
 
 ```yaml
 apiVersion: kyverno.io/v2
@@ -135,33 +135,42 @@ spec:
         operator: LessThan
         value: 2
   schedule: "*/5 * * * *"
-  deleteOptions: "Foreground"
+  # use Foreground deletion propagation policy
+  deletionPropagationPolicy: Foreground
 ```
 
 This policy schedules the deletion of Deployments labeled `canremove: "true"` with fewer than two replicas every 5 minutes, ensuring dependent resources are deleted before the Deployment itself.
 
 ### TTL-Based Cleanup Example with deletionPropagationPolicy
 
-Resources with a `cleanup.kyverno.io/ttl` label can also use the deletionPropagationPolicy to manage dependent resources:
+Resources with a `cleanup.kyverno.io/ttl` label can also specify a deletion propagation policy to manage dependent resources:
 
 ```yaml
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
+  name: nginx-server
   labels:
     cleanup.kyverno.io/ttl: 2m
   annotations:
-    PropagationPolicy: "Orphan"
-  name: foo
+    # use Foreground deletion propagation policy
+    cleanup.kyverno.io/propagation-policy: Foreground
 spec:
-  containers:
-    - args:
-        - sleep
-        - 1d
-      image: busybox:1.35
-      name: foo
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-server
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+    spec:
+      containers:
+      - name: nginx-server
+        image: nginx
 ```
 
 In this example:
-The TTL label specifies that the Pod will be deleted 2 minutes after creation.
-The deletionPropagationPolicy: "Orphan" ensures that any dependents remain in the cluster after the Pod is deleted.
+
+- The TTL label specifies that the resource will be deleted 2 minutes after creation.
+- The deletion propagation policy `Foreground` ensures that any dependent resources in the cluster are deleted before the resource itself.
