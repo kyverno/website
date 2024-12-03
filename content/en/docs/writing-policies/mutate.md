@@ -1222,22 +1222,9 @@ See the [platform notes](../installation/platform-notes.md#notes-for-argocd-user
 
 #### ArgoCD v2.10+
 
-ArgoCD version 2.10 added support for [sever side diff](https://argo-cd.readthedocs.io/en/latest/user-guide/diff-strategies/#server-side-diff) which leverage the Kubernetes Server Side Apply feature.
 
-Enabling SSA based diffs, requires an annotation to be specified on the application or globally via the “argocd-cmd-params-cm” config map.
+For considerations when using Argo CD (v2.10+) along with Kyverno, ServerSideDiff is recommended as it resolves OutOfSync warnings by delegating the comparison process to Kubernetes. See the documentation [here](../installation/platform-notes.md#argocd).
 
-Here is a YAML fragment that shows the annotation in an ArgoCD Application resource:
-
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  annotations:
-    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
-
-    ...
-
-```
 
 This [CNCF blog post](https://www.cncf.io/blog/2024/01/18/gitops-and-mutating-policies-the-tale-of-two-loops/) provides a complete example.
 
