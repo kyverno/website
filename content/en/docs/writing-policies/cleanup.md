@@ -139,7 +139,7 @@ spec:
   deletionPropagationPolicy: Foreground
 ```
 
-This policy schedules the deletion of Deployments labeled `canremove: "true"` with fewer than two replicas every 5 minutes, ensuring dependent resources are deleted before the Deployment itself.
+This policy schedules the deletion of Deployments labeled `canremove: "true"` with fewer than two replicas every 5 minutes, using the `Foreground` deletion propagation policy, ensuring dependent resources are deleted before the Deployment itself.
 
 ### TTL-Based Cleanup Example with deletionPropagationPolicy
 
