@@ -719,7 +719,7 @@ spec:
           keynew: "{{request.object.data.keyone}}-{{@}}"
 ```
 
-Once a mutate existing policy is applied successfully, there will be an event and an annotation added to the target resource:
+Once a mutate existing policy is applied successfully, an event can be emitted if `omitEvents` allows it (by default, Kyverno omits success and skipped events):
 
 ```sh
 $ kubectl describe deploy foobar
@@ -728,15 +728,6 @@ Events:
   Type     Reason             Age                From                   Message
   ----     ------             ----               ----                   -------
   Normal   PolicyApplied      29s (x2 over 31s)  kyverno-mutate         policy add-sec/add-sec-rule applied
-
-$ kubectl get deploy foobar -o yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations:
-    ...
-    policies.kyverno.io/last-applied-patches: |
-      add-sec-rule.add-sec.kyverno.io: added /spec/template/spec/containers/0/securityContext
 ```
 
 To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
