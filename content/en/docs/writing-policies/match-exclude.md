@@ -50,6 +50,7 @@ Wildcards are supported with the following formats when used in the `resources.k
 * A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
 * For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
+* Explicitly specifying the `subresource` field in policies is recommended to avoid ambiguity, particularly for shared subresources like `Scale`. With tools such as `kubectl` now supporting the `--subresource` flag, managing subresources has become simpler and more explicit.
 {{% /alert %}}
 
 Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision. Specifying a subresource in the format `PodExecOptions` is not supported.
