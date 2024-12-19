@@ -37,6 +37,9 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
+targetResources: # optional key for specifying target resources when testing for mutate existing rules
+  - <path/to/target-resource.yaml>
+  - <path/to/target-resource.yaml>
 exceptions: # optional files for specifying exceptions. See below for an example.
   - <path/to/exception.yaml>
   - <path/to/exception.yaml>
@@ -49,10 +52,10 @@ results:
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
   - <namespace_2/name_2>
-  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required.
+  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required. File may contain one or more resources separated by ---
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
-  kind: <kind>
+  kind: <kind> # optional
   result: pass
 checks:
 - match:
@@ -445,6 +448,157 @@ skipped mutate policy add-default-resources -> resource default/Pod/nginx-demo2
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
+
+In this scenario, a `mutate` policy which adds a label to `Secrets` based on requests made on a particular `ConfigMap`,
+note the use of the `targetResources` field.
+
+Test manifest (`kyverno-test.yaml`):
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test.yaml
+policies:
+- policy.yaml
+resources:
+- trigger-cm.yaml
+targetResources:
+- raw-secret.yaml
+results:
+- patchedResource: mutated-secret.yaml
+  policy: mutate-existing-secret
+  resources:
+    - secret-1
+  result: pass
+  rule: mutate-secret-on-configmap-create
+```
+
+Policy (`policy.yaml`):
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-existing-secret
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+          names:
+          - dictionary-1
+          namespaces:
+          - staging
+    mutate:
+      mutateExistingOnPolicyUpdate: false
+      patchStrategicMerge:
+        metadata:
+          labels:
+            foo: bar
+      targets:
+      - apiVersion: v1
+        kind: Secret
+        name: '*'
+        namespace: staging
+    name: mutate-secret-on-configmap-create
+```
+
+Trigger (`trigger-cm.yaml`):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dictionary-1
+  namespace: staging
+```
+
+Target (`raw-secret.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-1
+  namespace: staging
+```
+
+Mutated target (`mutated-secret.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    foo: bar
+  name: secret-1
+  namespace: staging
+```
+
+```sh
+$ kyverno test .
+Loading test  ( 3-test/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
+
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE                              │ RESOURCE                   │ RESULT │ REASON │
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+│ 1  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/Secret/staging/secret-1 │ Pass   │ Ok     │
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+
+If you don't specify an entry in the `resources` field in the results the CLI will check results for all trigger and target resources involved in the test and will match them against the resources specified in the `patchedResources` file:
+
+Patched resources (`mutated-resources.yaml`):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dictionary-1
+  namespace: staging
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    foo: bar
+  name: secret-1
+  namespace: staging
+---
+
+```
+
+```
+Loading test  ( 5-test-with-selection/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
+
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE                              │ RESOURCE                          │ RESULT │ REASON │
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+│ 1  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/Secret/staging/secret-1        │ Pass   │ Ok     │
+│ 2  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/ConfigMap/staging/dictionary-1 │ Pass   │ Ok     │
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
+```
+
 
 In the following policy test, a `generate` policy rule is applied which generates a new resource from an existing resource present in `resource.yaml`. To test the `generate` policy, the addition of a `generatedResource` field in the `results[]` array is required which is used to test against the resource generated by the policy.
 

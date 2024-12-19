@@ -74,6 +74,47 @@ Save the mutated resource to a directory:
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o foo/
 ```
 
+Run a policy with a mutate existing rule on a group of target resources:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml  --target-resource /path/to/target1.yaml --target-resource /path/to/target2.yaml
+
+Applying 1 policy rule(s) to 1 resource(s)...
+
+mutate policy <policy-name> applied to <trigger-name>:
+<trigger-resource>
+---
+patched targets:
+
+<patched-target1>
+
+---
+
+<patched-target2>
+
+---
+
+pass: 2, fail: 0, warn: 0, error: 0, skip: 0
+```
+
+Run a policy with a mutate existing rule on target resources from a directory:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml  --target-resources /path/to/targets/
+
+Applying 1 policy rule(s) to 1 resource(s)...
+
+mutate policy <policy-name> applied to <trigger-name>:
+<trigger-resource>
+---
+patched targets:
+
+<patched-targets>
+
+pass: 5, fail: 0, warn: 0, error: 0, skip: 0
+```
+
+
 Apply a policy containing variables using the `--set` or `-s` flag to pass in the values. Variables that begin with `{{request.object}}` normally do not need to be specified as these will be read from the resource.
 
 ```sh
