@@ -1214,7 +1214,7 @@ See the [platform notes](../installation/platform-notes.md#notes-for-argocd-user
 #### ArgoCD v2.10+
 
 
-For considerations when using Argo CD (v2.10+) along with Kyverno, ServerSideDiff is recommended as it resolves OutOfSync warnings by delegating the comparison process to Kubernetes. See the documentation [here](../installation/platform-notes.md#argocd).
+For considerations when using Argo CD (v2.10+) along with Kyverno, ServerSideDiff is recommended as it resolves OutOfSync warnings by delegating the comparison process to Kubernetes. See the documentation [here](../installation/platform-notes.md#notes-for-argocd-users).
 
 
 This [CNCF blog post](https://www.cncf.io/blog/2024/01/18/gitops-and-mutating-policies-the-tale-of-two-loops/) provides a complete example.
