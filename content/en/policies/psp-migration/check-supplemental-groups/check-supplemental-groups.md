@@ -31,7 +31,7 @@ metadata:
       may only specify supplementalGroup IDs between 100-200 or 500-600.
 spec:
   background: false
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: supplementalgroup-ranges
     match:

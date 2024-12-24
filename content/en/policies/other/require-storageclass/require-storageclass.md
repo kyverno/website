@@ -28,7 +28,7 @@ metadata:
       StorageClasses. This policy requires that PVCs and StatefulSets containing
       volumeClaimTemplates define the storageClassName field with some value.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: pvc-storageclass

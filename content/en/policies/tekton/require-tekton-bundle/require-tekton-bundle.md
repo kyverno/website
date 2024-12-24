@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/description: >-
       PipelineRun and TaskRun resources must be executed from a bundle
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-bundle-pipelinerun
