@@ -30,7 +30,7 @@ metadata:
       ability. Note that this policy also illustrates how to cover drop entries in any
       case although this may not strictly conform to the Pod Security Standards.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: require-drop-cap-net-raw
@@ -55,4 +55,8 @@ spec:
                 - key: CAP_NET_RAW
                   operator: AnyNotIn
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+                - key: NET_RAW
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+
 ```

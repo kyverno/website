@@ -27,7 +27,7 @@ metadata:
       This policy ensures that each certificate request contains
       only one DNS name entry.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   - name: limit-dnsnames
