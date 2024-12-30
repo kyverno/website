@@ -32,7 +32,7 @@ metadata:
       version of the Pod Security Standards cluster wide.
 spec:
   background: true
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: baseline
     match:

@@ -29,7 +29,7 @@ metadata:
       to deviate from the `Default` procMount requires setting a feature gate at the API
       server.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-proc-mount

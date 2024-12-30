@@ -31,7 +31,7 @@ metadata:
       or to a value of zero. This policy is mutually exclusive of the disallow-host-ports policy.
       Note that Kubernetes Pod Security Admission does not support the host port range rule.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: host-port-range

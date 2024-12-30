@@ -34,7 +34,7 @@ metadata:
       exempting `nginx` and `redis` container images from the Capabilities control check.
 spec:
   background: true
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
   - name: restricted-exempt-capabilities
     match:
@@ -49,6 +49,6 @@ spec:
         exclude:
         - controlName: Capabilities
           images:
-          - nginx*
+          - ghcr.io/kyverno/test-nginx*
           - redis*
 ```

@@ -31,7 +31,7 @@ metadata:
       AuthorizationPolicy resources to ensure that either a matching Server or HTTPRoute exists
       first.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-server-exists
