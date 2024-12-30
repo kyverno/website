@@ -45,7 +45,7 @@ spec:
     validate:
       cel:
         expressions:
-          - expression: "has(object.spec.storageClassName) && object.spec.storageClassName != ''"
+          - expression: "object.spec.?storageClassName.orValue('') != ''"
             message: "PersistentVolumeClaims must define a storageClassName."
   - name: ss-storageclass
     match:
@@ -62,7 +62,7 @@ spec:
           - expression: >-
               !has(object.spec.volumeClaimTemplates) || 
               object.spec.volumeClaimTemplates.all(volumeClaimTemplate, 
-              has(volumeClaimTemplate.spec.storageClassName) && volumeClaimTemplate.spec.storageClassName  != '')
+              volumeClaimTemplate.spec.?storageClassName.orValue('')  != '')
             message: "StatefulSets must define a storageClassName."
 
 
