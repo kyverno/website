@@ -31,7 +31,7 @@ metadata:
       Deployments (exposing ports) and Services to ensure a corresponding Server resource
       exists first.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-deployment-has-server

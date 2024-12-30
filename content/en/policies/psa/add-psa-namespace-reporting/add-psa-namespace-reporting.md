@@ -36,7 +36,7 @@ metadata:
       organization's security practices and take appropriate action to rectify the 
       situation.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-namespace-labels

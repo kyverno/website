@@ -31,7 +31,7 @@ metadata:
       This policy enforces that only the port range 32000 to 33000 may
       be used for Service resources.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: restrict-port-range
     match:
