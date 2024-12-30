@@ -29,7 +29,7 @@ metadata:
       tasks and disrupt operations. This policy checks incoming Deployments and StatefulSets which have
       a matching PodDisruptionBudget to ensure these two values do not match.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
     - name: pdb-minavailable
