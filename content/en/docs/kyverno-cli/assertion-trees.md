@@ -41,7 +41,7 @@ In the example above the `check` is matching Namespace elements named `hello-wor
 
 ## Examples
 
-Implementation is based on [Kyverno JSON - assertion trees](https://kyverno.github.io/kyverno-json/latest/policies/policies/). Please refer to the documentation for more details on the syntax.
+Implementation is based on [Kyverno JSON - assertion trees](https://kyverno.github.io/kyverno-json/latest/policies/asserts/). Please refer to the documentation for more details on the syntax.
 
 ### Select all results
 

@@ -27,7 +27,7 @@ metadata:
       security and visibility. This policy prevents setting the annotation `linkerd.io/inject`
       to `disabled` for Pods.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: pod-injection-override

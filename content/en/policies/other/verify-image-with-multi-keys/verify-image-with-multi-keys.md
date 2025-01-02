@@ -5,7 +5,7 @@ version: 1.7.0
 subject: Pod
 policyType: "verifyImages"
 description: >
-    There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy requires the named image be signed by two separate keys. It will search for a global "production" key in a ConfigMap called `key` in the `default` Namespace and also a Namespace key in the same ConfigMap.
+    There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy requires the named image be signed by two separate keys. It will search for a global "production" key in a ConfigMap called `keys` in the `default` Namespace and also a Namespace key in the same ConfigMap.
 ---
 
 ## Policy Definition
@@ -29,10 +29,10 @@ metadata:
       the parties involved in the creation process. This image
       verification policy requires the named image be signed by
       two separate keys. It will search for a global "production"
-      key in a ConfigMap called `key` in the `default` Namespace
+      key in a ConfigMap called `keys` in the `default` Namespace
       and also a Namespace key in the same ConfigMap.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
     - name: check-image-with-two-keys
@@ -57,4 +57,5 @@ spec:
               publicKeys: "{{ keys.data.production }}"
           - keys: 
               publicKeys: "{{ keys.data.{{request.namespace}} }}"
+
 ```

@@ -30,7 +30,7 @@ metadata:
       requires, at minimum, one of the following versions of Kubernetes:
       v1.18.18, v1.19.10, v1.20.6, or v1.21.0.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: false
   rules:
   - name: prevent-label-value-changes
@@ -40,6 +40,7 @@ spec:
           kinds:
           - Node
     validate:
+      allowExistingViolations: false
       message: "Modifying the `foo` label on a Node is not allowed."
       deny:
         conditions:
@@ -65,9 +66,11 @@ spec:
         operator: Equals
         value: "?*"
     validate:
+      allowExistingViolations: false
       message: "Removing the `foo` label on a Node is not allowed."
       pattern:
         metadata:
           labels:
             foo: "*"
+
 ```
