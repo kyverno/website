@@ -77,7 +77,7 @@ spec:
       kind: ConfigMap
       name: zk-kafka-address
       # generate the resource in the new namespace
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       data:
         kind: ConfigMap
         metadata:
@@ -115,7 +115,7 @@ spec:
       kind: NetworkPolicy
       apiVersion: networking.k8s.io/v1
       name: deny-all-traffic
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       data:
         spec:
           # select all pods in the namespace
@@ -173,7 +173,7 @@ spec:
       apiVersion: v1
       kind: Secret
       name: regcred
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       synchronize: true
       clone:
         namespace: default
@@ -208,7 +208,7 @@ spec:
           - kube-public
           - kyverno
     generate:
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       synchronize: true
       cloneList:
         namespace: staging
@@ -280,7 +280,7 @@ spec:
           data:
             metadata:
               labels:
-                request.namespace: '{{ request.object.metadata.name }}'
+                request.namespace: '{{ request.object.metadata.namespace }}'
                 element: '{{ element }}'
                 elementIndex: '{{ elementIndex }}'
             spec:
@@ -439,7 +439,7 @@ spec:
       kind: RoleBinding
       apiVersion: rbac.authorization.k8s.io/v1
       name: steven-rolebinding
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       data:
         subjects:
         - kind: User
@@ -530,7 +530,7 @@ spec:
       kind: NetworkPolicy
       apiVersion: networking.k8s.io/v1
       name: default-deny
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{request.object.metadata.namespace}}"
       synchronize: true
       data:
         metadata:
