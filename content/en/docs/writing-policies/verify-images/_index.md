@@ -48,6 +48,17 @@ The `imageRegistryCredentials.secrets` specifies a list of secrets that are prov
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
+## Limitations
+
+### Variables in `imageReferences`
+The `imageReferences` field does **not** support variable interpolation (e.g., `{{ }}` syntax). Only **static strings** or predefined lists should be used.
+
+#### **Incorrect Usage**
+```yaml
+verifyImages:
+  - imageReferences: ["{{ parse_yaml(allowedregistryprefixes.data.allowedregistryprefixes) }}"]
+
+
 ### Cache
 
 Image verification requires multiple network calls and can be time consuming. Kyverno has a TTL based cache for image verification which caches successful outcomes of image verification. When cache is enabled, an image once verified by a policy will be considered to be verified until TTL duration expires or there is a change in policy.
