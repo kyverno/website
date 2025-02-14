@@ -53,14 +53,14 @@ For additional details please reference a section below for the solution used to
 ### Variables in `imageReferences`
 The `imageReferences` field does **not** support variable interpolation (e.g., `{{ }}` syntax). Only **static strings** or predefined lists should be used.
 
- #### ** Incorrect Usage (Using Variables – Not Allowed)**
+ ####  Incorrect Usage (Using Variables – Not Allowed)
  ```yaml
  verifyImages:
    - imageReferences: ["{{ parse_yaml(allowedregistryprefixes.data.allowedregistryprefixes) }}"]
  ```
   This will result in a validation error because variables are **not allowed** in `imageReferences`.
 
- #### ** Correct Usage (Using Static Values – Allowed)**
+ ####  Correct Usage (Using Static Values – Allowed)
  ```yaml
  verifyImages:
    - imageReferences:
@@ -78,7 +78,7 @@ The `imageReferences` field does **not** support variable interpolation (e.g., `
  - `preconditions.all`
  - `preconditions.any`
 
- #### ** Incorrect Usage (Using Variables – Not Allowed)**
+ ####  Incorrect Usage (Using Variables – Not Allowed)
  ```yaml
  rules:
    - name: restrict-deployment-kinds
@@ -91,7 +91,7 @@ The `imageReferences` field does **not** support variable interpolation (e.g., `
  - `match.resources.kinds` must contain **static** resource kinds (e.g., `Pod`, `Deployment`).  
  - Dynamic interpolation using `{{ request.object.kind }}` is **not supported**.  
 
- #### ** Correct Usage (Using Static Values – Allowed)**
+ ####  Correct Usage (Using Static Values – Allowed)
  ```yaml
  rules:
    - name: restrict-deployment-kinds
@@ -104,17 +104,10 @@ The `imageReferences` field does **not** support variable interpolation (e.g., `
  **Why is this correct?**  
  - Only predefined, static resource kinds (`Deployment`, `StatefulSet`) are used.  
 
----
+
 
 ### **Why Are Variables Not Allowed in These Fields?**
  Kyverno requires these fields to be **static** to ensure policy validation and enforcement remain deterministic and efficient. Allowing variables in these fields could introduce unexpected behavior, making policy evaluation unreliable.
-
----
-
-#### **Incorrect Usage**
-```yaml
-verifyImages:
-  - imageReferences: ["{{ parse_yaml(allowedregistryprefixes.data.allowedregistryprefixes) }}"]
 
 
 
