@@ -460,6 +460,68 @@ spec:
 
 This enables use cases where, in an enterprise with a private CA, each team has their own leaf certificate used for signing their images, and a global policy is used to verify all images signatures.
 
+
+### Using API Calls to Reference Certificates for Image Verification
+
+Since k8s:// references for certificates are not supported, Kyverno’s context feature can be used to fetch and decode certificates stored in Kubernetes secrets for image verification.
+
+{{% alert title="Note" color="info" %}}
+Note: Ensure the Kyverno admission controller has get permissions for secrets to allow API calls.
+{{% /alert %}}
+
+
+The following ClusterPolicy demonstrates how to verify an image signature using a certificate stored in a Kubernetes secret:
+
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image
+spec:
+  background: false
+  rules:
+    - name: verify-image
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      context:
+        - name: encodedCert
+          apiCall:
+              urlPath: "/api/v1/namespaces/default/secrets/my-ca-secret"
+              method: GET
+              jmesPath: "data.\"root-ca.pem\""
+        - name: certChain
+          variable:
+            jmesPath: "base64_decode(encodedCert)"
+      verifyImages:
+        - imageReferences:
+            - "docker.io/mohdcode/signingtest@sha256:ae0563a2513992491b4e3e2e3e610249696097a2be7ca76c1ecd52a5702a192d"
+          failureAction: Enforce
+          attestors:
+            - entries:
+                - certificates:
+                     certChain: "{{certChain}}"
+                     rekor:
+                          ignoreTlog: true  
+                     ctlog:
+                          ignoreSCT: true
+```
+
+- **Context Variables**:
+  - `encodedCert`: Fetches the base64-encoded CA certificate from a Kubernetes secret.
+  - `certChain`: Decodes the base64 certificate so it can be used in the verification process.
+- **Image Verification**:
+  - Uses the certificate retrieved from the secret to verify the image signature.
+  - `ignoreTlog` and `ignoreSCT` are set to `true` for testing purposes, but for higher security, they should be kept as default.
+
+
+Since Cosign does not support direct secret references for certificates yet, this approach ensures compatibility with Kyverno while maintaining security. Dynamically fetching certificates from Kubernetes secrets allows verification to remain up to date without requiring policy modifications.
+
+
+
 ### Signing images using certificates
 
 To use certificates for image signing, you must first extract the public key using the `cosign import` command.
