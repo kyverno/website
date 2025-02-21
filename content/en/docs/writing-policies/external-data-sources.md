@@ -920,3 +920,40 @@ To access images stored on private registries, see [using private registries](ve
 For more examples of using an imageRegistry context, see the [samples page](../../policies).
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+
+## Service API Calls with Custom HTTP Headers
+
+Kyverno now supports including custom HTTP headers when making API calls to external services. This enhancement allows users to add extra metadata—such as authentication tokens, user agents, or any other header information—that may be required by the external service.
+
+## Feature Overview
+
+Prior to this update, API calls made by Kyverno policies did not allow the inclusion of extra HTTP headers. With this feature, you can now specify a `headers` field under the `service` configuration in an API call, making your external requests more flexible and secure.
+
+## Example Policy Configuration
+
+``` yaml
+context:
+  - name: result
+    apiCall:
+      method: POST
+      data:
+        - key: foo
+          value: bar
+        - key: namespace
+          value: "{{ `{{ request.namespace }}` }}"
+      service:
+        url: http://my-service.svc.cluster.local/validation
+        headers:
+          - key: "UserAgent"
+            value: "Kyverno Policy XYZ"
+          - key: "Authorization"
+            value: "Bearer {{ MY_SECRET }}"
+```
+
+## Explanation
+
+- **service.url**: Specifies the endpoint of the external service.
+- **service.headers**: A new field that accepts an array of key-value pairs. Each pair represents a custom HTTP header to include in the API request.
+  - **UserAgent**: Can be used to identify the client or policy making the call.
+  - **Authorization**: Typically used to pass authentication tokens or credentials.
+- **Variable Substitution**: You can dynamically include values (e.g., `{{ MY_SECRET }}`) in your headers using Kyverno's variable substitution mechanism.
