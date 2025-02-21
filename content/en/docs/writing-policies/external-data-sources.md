@@ -923,7 +923,7 @@ The policy-level setting `failurePolicy` when set to `Ignore` additionally means
 
 ## Service API Calls with Custom HTTP Headers
 
-Kyverno now supports including custom HTTP headers when making API calls to external services. This enhancement allows users to add extra metadata—such as authentication tokens, user agents, or any other header information—that may be required by the external service.
+Kyverno now supports including custom HTTP headers when making API calls to external services. This enhancement allows users to add extra metadata such as authentication tokens, user agents, or any other header information that may be required by the external service.
 
 ## Feature Overview
 
