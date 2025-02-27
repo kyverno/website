@@ -494,7 +494,7 @@ The syntax `{{- ... }}` can be used for shallow (one time only) substitution of 
 
 Here is a more detailed example.
 
-Consider a policy that loads a ConfigMap that contains [HCL](https://developer.hashicorp.com/terraform/language/syntax/configuration) synytax data, and patches resource configurations:
+Consider a policy that loads a ConfigMap that contains [HCL](https://developer.hashicorp.com/terraform/language/syntax/configuration) syntax data, and patches resource configurations:
 
 Policy:
 
