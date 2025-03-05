@@ -37,7 +37,11 @@ cd kyverno-website
 hugo server
 ```
 
-**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
+**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. You can do this by either:
+- Right-clicking on your terminal application (PowerShell/Command Prompt) and selecting "Run as administrator"
+- Or by pressing Windows key + X and selecting "Windows PowerShell (Admin)" or "Command Prompt (Admin)"
+
+Then navigate to your project directory and run the `hugo server` command.
 
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
 
