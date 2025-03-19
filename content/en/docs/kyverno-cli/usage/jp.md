@@ -7,7 +7,7 @@ The Kyverno CLI has a `jp` subcommand which makes it possible to test not only t
 
 Examples:
 
-List available Kyverno custom JMESPath filters. Please refer to the JMESPath documentation page [here](../../writing-policies/jmespath.md) for extensive details on each custom filter. Note this does not show the built-in JMESPath filters available upstream, only the custom Kyverno filters.
+List available Kyverno custom JMESPath filters. Please refer to the JMESPath documentation page [here](/docs/policy_types/cluster_policy/jmespath.md) for extensive details on each custom filter. Note this does not show the built-in JMESPath filters available upstream, only the custom Kyverno filters.
 
 ```sh
 $ kyverno jp function
@@ -143,4 +143,4 @@ ASTPipe {
 }
 ```
 
-For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](../../writing-policies/jmespath.md).
+For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/policy_types/cluster_policy/jmespath.md).

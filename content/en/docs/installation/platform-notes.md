@@ -68,7 +68,7 @@ spec:
 
 ```
 
-For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](../writing-policies/mutate.md#argocd).
+For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](/docs/policy_types/cluster_policy/mutate.md#argocd).
 
 Argo CD users may also have Kyverno add labels to webhooks via the `webhookLabels` key in the [Kyverno ConfigMap](customization.md#configmap-keys), helpful when viewing the Kyverno application in Argo CD.
 

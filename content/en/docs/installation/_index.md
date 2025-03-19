@@ -16,10 +16,10 @@ The diagram below shows a typical Kyverno installation featuring all available c
 A standard Kyverno installation consists of a number of different components, some of which are optional.
 
 * **Deployments**
-  * Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, [Policy Exceptions](../writing-policies/exceptions.md), and the processing engine.
+  * Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, [Policy Exceptions](/docs/exceptions/), and the processing engine.
   * Background controller (optional): The component responsible for processing of generate and mutate-existing rules.
-  * Reports controller (optional): The component responsible for handling of [Policy Reports](../policy-reports/).
-  * Cleanup controller (optional): The component responsible for processing of [Cleanup Policies](../writing-policies/cleanup.md).
+  * Reports controller (optional): The component responsible for handling of [Policy Reports](/docs/policy-reports/).
+  * Cleanup controller (optional): The component responsible for processing of [Cleanup Policies](/docs/policy_types/cleanup/).
 * **Services**
   * Services needed to receive webhook requests.
   * Services needed for monitoring of metrics.
@@ -52,7 +52,7 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 
 ## Security vs Operability
 
-For a production installation, Kyverno should be installed in [high availability mode](../installation/methods.md#high-availability-installation). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](../writing-policies/policy-settings.md)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
+For a production installation, Kyverno should be installed in [high availability mode](/docs/installation/methods.md#high-availability-installation). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/policy_types/cluster_policy/policy-settings.md)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
 
 The following combination may result in cluster inoperability if the Kyverno Namespace is not excluded:
 
@@ -84,5 +84,5 @@ The choices and their implications are therefore:
 You should choose the best option based upon your risk aversion, needs, and operational practices.
 
 {{% alert title="Note" color="info" %}}
-If you choose to *not* exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](../installation/customization.md#resource-filters) entry in the [ConfigMap](../installation/customization.md#configmap-keys) to remove those items.
+If you choose to *not* exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/customization.md#resource-filters) entry in the [ConfigMap](/docs/installation/customization.md#configmap-keys) to remove those items.
 {{% /alert %}}

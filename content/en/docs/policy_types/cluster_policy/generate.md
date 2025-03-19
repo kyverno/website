@@ -20,13 +20,13 @@ Some common use cases for generate rules include:
 
 Generate rules come in two flavors. They can either apply to admission events that occur across the cluster (ex., creation of a new Namespace), or they can apply to preexisting resources in the cluster (ex., an existing Namespace). Those which apply to admission events are considered standard generate rules while those which apply to preexisting resources are known as "generate existing" rules and are covered [below](#generate-for-existing-resources).
 
-Generate rules support `match` and `exclude` blocks and many of the other common Kyverno policy constructs such as [preconditions](preconditions.md), [context variables](external-data-sources.md), and more.
+Generate rules support `match` and `exclude` blocks and many of the other common Kyverno policy constructs such as [preconditions](/docs/policy_types/cluster_policy/preconditions.md), [context variables](external-data-sources.md), and more.
 
 Kyverno can keep generated resources in sync to prevent tampering by use of a `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource. Synchronization is beneficial in that modifications to the generated resource may be reverted, and changes to the source resource will be propagated. In addition to these effects, synchronization will ensure that the matching resource responsible for the triggering of the generation behavior is watched for changes. Should those changes result in a false match (including deletion), then it will result in the generated resource being removed to ensure the desired state is always maintained. In cases where the generated resource being synchronized must be modified by other controllers in the cluster, Kyverno can optionally use [server-side apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/) when generating the resource through the field `spec.useServerSideApply`.
 
 When using a generate rule, the source resource can either be an existing resource in the cluster, or a new resource defined in the rule itself. When the source is an existing resource in the cluster such as a ConfigMap or Secret, for example, the `clone` object is used. See the [Clone Source](#clone-source) section for more details. When the source is defined directly in the rule, the `data` object is used. See the [Data Source](#data-source) section for more details. These are mutually exclusive and only one may be specified per rule.
 
-Because Kyverno can generate any type of Kubernetes resource, including custom resources, in some cases it may be necessary to grant the Kyverno background controller's ServiceAccount additional permissions. To enable Kyverno to generate these other types, see the section on [customizing permissions](../installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the background controller does not have the level of permissions required at the time the rule or policy is installed.
+Because Kyverno can generate any type of Kubernetes resource, including custom resources, in some cases it may be necessary to grant the Kyverno background controller's ServiceAccount additional permissions. To enable Kyverno to generate these other types, see the section on [customizing permissions](/docs/installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the background controller does not have the level of permissions required at the time the rule or policy is installed.
 
 ## Data Source
 
@@ -234,13 +234,23 @@ A variable `element` is added to the processing context on each iteration. This 
 The following child declarations are permitted in a `foreach`:
 
 - [Data Source](#data-source)
+  - [Data Examples](#data-examples)
 - [Clone Source](#clone-source)
+  - [Clone Examples](#clone-examples)
+  - [Cloning Multiple Resources](#cloning-multiple-resources)
+- [foreach](#foreach)
+- [Generating Bindings](#generating-bindings)
+- [Linking trigger with downstream](#linking-trigger-with-downstream)
+- [Generate for Existing resources](#generate-for-existing-resources)
+  - [Generate Existing Examples](#generate-existing-examples)
+- [How It Works](#how-it-works)
+- [Troubleshooting](#troubleshooting)
 
 
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
+- [Preconditions](/docs/policy_types/cluster_policy/preconditions.md): to control when a loop iteration is skipped.
 
 Here is a complete example of data source type of `foreach` declaration that creates a NetworkPolicy into a list of existing namespaces which is stored as a comma-separated string in a ConfigMap.
 
@@ -543,7 +553,7 @@ spec:
           - Egress
 ```
 
-Similarly, this ClusterPolicy will create a `PodDisruptionBudget` resource for existing or new Deployments. Note that use of this policy may require granting of additional permissions as explained above. See the documentation [here](../installation/customization.md#customizing-permissions).
+Similarly, this ClusterPolicy will create a `PodDisruptionBudget` resource for existing or new Deployments. Note that use of this policy may require granting of additional permissions as explained above. See the documentation [here](/docs/installation/customization.md#customizing-permissions).
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -598,7 +608,7 @@ A `UpdateRequest` status can have one of four values:
 
 Note that Kyverno will retry up to three times to reconcile an `UpdateRequest` in a `Failed` status. The `UpdateRequest` will be garbage collected if it exceeds the retry threshold.
 
-Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](../high-availability/) page.
+Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/high-availability/) page.
 
 ## Troubleshooting
 
@@ -606,4 +616,4 @@ Troubleshooting of problems with generate rules often comes down to only a few t
 
 1. Policies no longer work after an upgrade when using the scale to zero method. If possible, delete and attempt to reinstall all generate policies after an upgrade to 1.10 so they may be revalidated. Many fields allowed in previous versions of Kyverno are disallowed going forward.
 2. An intermediary UpdateRequest failed to be applied. Although Kyverno checks that the necessary permissions are present at the time a policy is created, either this isn't happening or there is some other reason why the UpdateRequest cannot be reconciled. See the [How It Works](#how-it-works) section above.
-3. The intended trigger did not cause a resource to be generated. Check that Kyverno is not excluding the username or group in its ConfigMap, and check that the resource filter is not discarding those requests. See the [Configuring Kyverno](../installation/customization.md) guide for details on both.
+3. The intended trigger did not cause a resource to be generated. Check that Kyverno is not excluding the username or group in its ConfigMap, and check that the resource filter is not discarding those requests. See the [Configuring Kyverno](/docs/installation/customization.md) guide for details on both.
