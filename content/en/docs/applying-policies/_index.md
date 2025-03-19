@@ -13,15 +13,15 @@ The [Kyverno Policies](/policies/) repository contains several policies you can 
 
 On installation, Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the Kubernetes API server and applies matching policies to return results that enforce admission policies or reject requests.
 
-Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](../writing-policies/exceptions.md).
+Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](/docs/exceptions).
 
-[Cleanup policies](../writing-policies/cleanup.md), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
+[Cleanup policies](/docs/policy_types/cluster_policy/cleanup.md), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
 
 ## In Pipelines
 
-You can use the [Kyverno CLI](../kyverno-cli/) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
+You can use the [Kyverno CLI](/docs/kyverno-cli/) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
 
-Refer to the [Kyverno apply command section](../kyverno-cli/usage/apply.md) for details on the CLI. And refer to the [Continuous Integration section](../testing-policies/index.md#continuous-integration) for an example of how to incorporate the CLI to apply and test policies in your pipeline.
+Refer to the [Kyverno apply command section](/docs/kyverno-cli/usage/apply.md) for details on the CLI. And refer to the [Continuous Integration section](../testing-policies/index.md#continuous-integration) for an example of how to incorporate the CLI to apply and test policies in your pipeline.
 
 ## Via APIs
 

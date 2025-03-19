@@ -5,7 +5,7 @@ description: >
 weight: 30
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](../policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -506,7 +506,7 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
+In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/policy_types/cluster_policy/preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
 
 Deny rules are more powerful and expressive than simple patterns but are also more complex to write. Use deny rules when:
 
@@ -542,7 +542,7 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-See also [Preconditions](preconditions.md).
+See also [Preconditions](/docs/policy_types/cluster_policy/preconditions.md).
 
 ### Deny DELETE requests based on labels
 
@@ -658,14 +658,14 @@ A variable `element` is added to the processing context on each iteration. This 
 
 The following child declarations are permitted in a `foreach`:
 
-- [Patterns](validate.md#patterns)
-- [AnyPatterns](validate.md#anypattern)
-- [Deny](validate.md#deny-rules)
+- [Patterns](/docs/policy_types/cluster_policy/validate.md#patterns)
+- [AnyPatterns](/docs/policy_types/cluster_policy/validate.md#anypattern)
+- [Deny](/docs/policy_types/cluster_policy/validate.md#deny-rules)
 
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](preconditions.md): to control when a loop iteration is skipped.
+- [Preconditions](/docs/policy_types/cluster_policy/preconditions.md): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -779,7 +779,7 @@ spec:
     secretName: hr.old.com
 ```
 
-Nested foreach statements are also supported in mutate rules. See the documentation [here](mutate.md#nested-foreach) for further details.
+Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/policy_types/cluster_policy/mutate.md#nested-foreach) for further details.
 
 ## Manifest Validation
 
@@ -937,8 +937,8 @@ The podSecurity feature has the following advantages over the Kubernetes built-i
 3. Specific controls may be exempted from a given profile.
 4. Container images may be exempted along with a control exemption.
 5. Enforcement of Pod controllers is [automatic](autogen.md).
-6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](../policy-reports/) Custom Resource.
-7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](../kyverno-cli/).
+6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/policy-reports/) Custom Resource.
+7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
 
 For example, this policy enforces the latest version of the Pod Security Standards [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) in a single rule across the entire cluster.
 
@@ -1715,15 +1715,15 @@ Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/acce
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
 
 Check the below sections for more information:
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](../kyverno-cli/usage/apply.md#applying-validatingadmissionpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](../kyverno-cli/usage/test.md#testing-validatingadmissionpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply.md#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test.md#testing-validatingadmissionpolicies)
 {{% /alert %}}
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
 
 To unify the policy management, Kyverno policies can be used to generate and manage the lifecycle of Kubernetes ValidatingAdmissionPolicies. This allows the process of resource validation to take place directly in the API server, whenever possible, and extends Kyverno's reporting and testing capabilities for ValidatingAdmissionPolicy resources.
 
-When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](../installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
+When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
 
 To generate ValidatingAdmissionPolicies, make sure to:
 
@@ -1905,7 +1905,7 @@ When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionP
 
 The generated ValidatingAdmissionPolicy with its binding are totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
 
-In case there is a [PolicyException](exceptions.md) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
+In case there is a [PolicyException](/docs/exceptions/) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
 
 Below is an example of a Kyverno policy and a PolicyException that matches it. Both the policy and the exception will be used to generate a ValidatingAdmissionPolicy and its corresponding binding.
 

@@ -76,10 +76,10 @@ The report's contents can be found under the `results[]` object in which it disp
 Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](../monitoring/policy-results-info.md) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
-Policy reports have a few configuration options available. For details, see the [container flags](../installation/customization.md#container-flags) section.
+Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization.md#container-flags) section.
 
 {{% alert title="Note" color="warning" %}}
-Policy reports created from background scans are not subject to the configuration of a [Namespace selector](../installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](../installation/customization.md#configmap-keys).
+Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization.md#configmap-keys).
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
@@ -130,7 +130,7 @@ Similar to conditional anchors, if the condition inside a global anchor is FALSE
 
 5. **Anchor Logic Resulting in Skip:**
 
-As explained in the [validate documentation](../writing-policies/validate.md), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
+As explained in the [validate documentation](/docs/policy_types/cluster_policy/validate.md), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
 
 *Example:* If we have the following policy:
 
