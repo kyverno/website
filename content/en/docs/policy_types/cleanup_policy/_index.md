@@ -1,8 +1,8 @@
 ---
-title: Cleanup Rules
+title: Cleanup Policy
 description: >
-  Remove Kubernetes resources.
-weight: 70
+  Cleanup Policy deletes Kubernetes resources based on policy conditions.
+weight: 20
 ---
 
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster in two different ways. The first way is via a declarative policy definition in either a `CleanupPolicy` or `ClusterCleanupPolicy`. See the section on [cleanup policies](#cleanup-policy) below for more details. The second way is via a reserved time-to-live (TTL) label added to a resource. See the [cleanup label](#cleanup-label) section for further details.
