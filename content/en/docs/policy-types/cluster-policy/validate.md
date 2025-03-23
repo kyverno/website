@@ -506,7 +506,7 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/policy_types/cluster_policy/preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
+In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/policy-types/cluster-policy/preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
 
 Deny rules are more powerful and expressive than simple patterns but are also more complex to write. Use deny rules when:
 
@@ -542,7 +542,7 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-See also [Preconditions](/docs/policy_types/cluster_policy/preconditions.md).
+See also [Preconditions](/docs/policy-types/cluster-policy/preconditions.md).
 
 ### Deny DELETE requests based on labels
 
@@ -658,14 +658,14 @@ A variable `element` is added to the processing context on each iteration. This 
 
 The following child declarations are permitted in a `foreach`:
 
-- [Patterns](/docs/policy_types/cluster_policy/validate.md#patterns)
-- [AnyPatterns](/docs/policy_types/cluster_policy/validate.md#anypattern)
-- [Deny](/docs/policy_types/cluster_policy/validate.md#deny-rules)
+- [Patterns](/docs/policy-types/cluster-policy/validate.md#patterns)
+- [AnyPatterns](/docs/policy-types/cluster-policy/validate.md#anypattern)
+- [Deny](/docs/policy-types/cluster-policy/validate.md#deny-rules)
 
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](/docs/policy_types/cluster_policy/preconditions.md): to control when a loop iteration is skipped.
+- [Preconditions](/docs/policy-types/cluster-policy/preconditions.md): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -779,7 +779,7 @@ spec:
     secretName: hr.old.com
 ```
 
-Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/policy_types/cluster_policy/mutate.md#nested-foreach) for further details.
+Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/policy-types/cluster-policy/mutate.md#nested-foreach) for further details.
 
 ## Manifest Validation
 

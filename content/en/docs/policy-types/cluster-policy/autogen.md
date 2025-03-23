@@ -104,9 +104,9 @@ Kyverno skips generating Pod controller rules whenever the following `resources`
 * `selector`
 * `annotations`
 
-Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`. Mutate rules which match on `Pod` and use a JSON patch are also excluded from rule auto-generation as noted [here](/docs/policy_types/cluster_policy/mutate.md#rfc-6902-jsonpatch).
+Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`. Mutate rules which match on `Pod` and use a JSON patch are also excluded from rule auto-generation as noted [here](/docs/policy-types/cluster-policy/mutate.md#rfc-6902-jsonpatch).
 
-When disabling auto-generation rules for select Pod controllers, or when auto-generation does not apply, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/policy_types/cluster_policy/preconditions.md) with an expression similar to the below which may allow Pods created by a Job controller to pass.
+When disabling auto-generation rules for select Pod controllers, or when auto-generation does not apply, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/policy-types/cluster-policy/preconditions.md) with an expression similar to the below which may allow Pods created by a Job controller to pass.
 
 ```yaml
 - key: Job

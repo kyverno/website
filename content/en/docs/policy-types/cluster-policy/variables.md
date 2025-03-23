@@ -72,7 +72,7 @@ Operators also work on manifest lookup variables as well so the previous snippet
 
 In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
 
-For more information on operators see the [Operators](/docs/policy_types/cluster_policy/validate.md#operators) section.
+For more information on operators see the [Operators](/docs/policy-types/cluster-policy/validate.md#operators) section.
 
 ## Escaping Variables
 

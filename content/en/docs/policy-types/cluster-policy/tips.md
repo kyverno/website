@@ -69,9 +69,9 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 ## Mutate
 
-* When writing policies which perform [cascading mutations](/docs/policy_types/cluster_policy/mutate.md#mutate-rule-ordering-cascading), rule ordering matters. All rules which perform cascading mutations should be in the same policy definition and ordered top to bottom to ensure consistent results.
+* When writing policies which perform [cascading mutations](/docs/policy-types/cluster-policy/mutate.md#mutate-rule-ordering-cascading), rule ordering matters. All rules which perform cascading mutations should be in the same policy definition and ordered top to bottom to ensure consistent results.
 
-* Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](/docs/policy_types/cluster_policy/mutate.md#rfc-6902-jsonpatch) method.
+* Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](/docs/policy-types/cluster-policy/mutate.md#rfc-6902-jsonpatch) method.
 
 ## Generate
 

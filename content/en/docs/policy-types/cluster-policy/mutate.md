@@ -50,7 +50,7 @@ A [JSON Patch](http://jsonpatch.com/), implemented as a mutation method called `
 
 The `patchesJson6902` method can be useful when a specific mutation is needed which cannot be performed by `patchesStrategicMerge`. For example, when needing to mutate a specific object within an array, the index can be specified as part of a `patchesJson6902` mutation rule.
 
-One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/policy_types/cluster_policy/preconditions.md) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](autogen.md). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
+One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/policy-types/cluster-policy/preconditions.md) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](autogen.md). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
 
 This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any Namespace.
 
@@ -226,7 +226,7 @@ Mutate rules written with this style, if they match exclusively on a Pod, are su
 
 ## Conditional logic using anchors
 
-Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/policy_types/cluster_policy/validate.md#anchors) for more general information on conditionals.
+Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/policy-types/cluster-policy/validate.md#anchors) for more general information on conditionals.
 
 An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
@@ -530,7 +530,7 @@ spec:
               foo: bar
 ```
 
-In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](/docs/policy_types/cluster_policy/preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
+In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](/docs/policy-types/cluster-policy/preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
 
 This sample below illustrates how to combine preconditions and conditional anchors within `targets[]` to precisely select the desired existing resources for mutation. This policy restarts existing Deployments if they are consuming a Secret that has been updated assigned label `kyverno.io/watch: "true"` AND have a name beginning with `testing-`.
 
@@ -1007,7 +1007,7 @@ A variable `element` is added to the processing context on each iteration. This 
 Each `foreach` declaration can optionally contain the following declarations:
 
 * [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-* [Preconditions](/docs/policy_types/cluster_policy/preconditions.md): to control when a loop iteration is skipped.
+* [Preconditions](/docs/policy-types/cluster-policy/preconditions.md): to control when a loop iteration is skipped.
 * `foreach`: a nested `foreach` declaration described below.
 
 For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.

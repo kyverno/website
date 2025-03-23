@@ -126,7 +126,7 @@ Use `-f` or `--values-file` for applying multiple policies to multiple resources
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
 {{% alert title="Note" color="info" %}}
-When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy_types/cluster_policy/external-data-sources.md#handling-configmap-array-values).
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources.md#handling-configmap-array-values).
 {{% /alert %}}
 
 ```sh
@@ -376,7 +376,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy_types/cluster_policy/match-exclude.md#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude.md#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -749,7 +749,7 @@ summary:
 
 ### Applying Policy Exceptions
 
-[Policy Exceptions](/docs/policy_types/cluster_policy/exceptions.md) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
+[Policy Exceptions](/docs/policy-types/cluster-policy/exceptions.md) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
