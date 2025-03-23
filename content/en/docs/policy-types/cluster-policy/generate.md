@@ -20,7 +20,7 @@ Some common use cases for generate rules include:
 
 Generate rules come in two flavors. They can either apply to admission events that occur across the cluster (ex., creation of a new Namespace), or they can apply to preexisting resources in the cluster (ex., an existing Namespace). Those which apply to admission events are considered standard generate rules while those which apply to preexisting resources are known as "generate existing" rules and are covered [below](#generate-for-existing-resources).
 
-Generate rules support `match` and `exclude` blocks and many of the other common Kyverno policy constructs such as [preconditions](/docs/policy_types/cluster_policy/preconditions.md), [context variables](external-data-sources.md), and more.
+Generate rules support `match` and `exclude` blocks and many of the other common Kyverno policy constructs such as [preconditions](/docs/policy-types/cluster-policy/preconditions.md), [context variables](external-data-sources.md), and more.
 
 Kyverno can keep generated resources in sync to prevent tampering by use of a `synchronize` property. When `synchronize` is set to `true`, the generated resource is kept in-sync with the source resource. Synchronization is beneficial in that modifications to the generated resource may be reverted, and changes to the source resource will be propagated. In addition to these effects, synchronization will ensure that the matching resource responsible for the triggering of the generation behavior is watched for changes. Should those changes result in a false match (including deletion), then it will result in the generated resource being removed to ensure the desired state is always maintained. In cases where the generated resource being synchronized must be modified by other controllers in the cluster, Kyverno can optionally use [server-side apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/) when generating the resource through the field `spec.useServerSideApply`.
 
@@ -250,7 +250,7 @@ The following child declarations are permitted in a `foreach`:
 In addition, each `foreach` declaration can contain the following declarations:
 
 - [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](/docs/policy_types/cluster_policy/preconditions.md): to control when a loop iteration is skipped.
+- [Preconditions](/docs/policy-types/cluster-policy/preconditions.md): to control when a loop iteration is skipped.
 
 Here is a complete example of data source type of `foreach` declaration that creates a NetworkPolicy into a list of existing namespaces which is stored as a comma-separated string in a ConfigMap.
 

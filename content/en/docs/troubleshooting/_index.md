@@ -10,7 +10,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
 
-**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy_types/cluster_policy/policy-settings.md) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
+**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy-types/cluster-policy/policy-settings.md) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
 
 **Solution**: Delete the Kyverno validating and mutating webhook configurations. When Kyverno recovers, check your Namespace exclusions. Follow the steps below. Also consider running the admission controller component with 3 replicas.
 
@@ -173,7 +173,7 @@ Note that starting with Kyverno 1.10, two cron jobs are responsible for deleting
 
 ## Kyverno says it does not have permissions when creating a policy
 
-**Symptom**: Attempting to create a [mutate existing](/docs/policy_types/cluster_policy/mutate.md#mutate-existing-resources) or [generate](/docs/policy_types/cluster_policy/generate.md) policy and Kyverno throws an error similar to the one below:
+**Symptom**: Attempting to create a [mutate existing](/docs/policy-types/cluster-policy/mutate.md#mutate-existing-resources) or [generate](/docs/policy-types/cluster-policy/generate.md) policy and Kyverno throws an error similar to the one below:
 
 ```
 Error from server: error when creating "my_cluster_policy.yaml": admission webhook "validate-policy.kyverno.svc" denied the request: path: spec.rules[0].generate..: system:serviceaccount:kyverno:kyverno-background-controller does not have permissions to 'create' resource source.toolkit.fluxcd.io/v1beta2/helmrepository//{{request.object.metadata.name}}. Grant proper permissions to the background controller

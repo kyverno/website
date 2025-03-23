@@ -15,7 +15,7 @@ On installation, Kyverno runs as a [dynamic admission controller](https://kubern
 
 Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](/docs/exceptions).
 
-[Cleanup policies](/docs/policy_types/cluster_policy/cleanup.md), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
+[Cleanup policies](/docs/policy-types/cluster-policy/cleanup.md), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
 
 ## In Pipelines
 
@@ -25,4 +25,4 @@ Refer to the [Kyverno apply command section](/docs/kyverno-cli/usage/apply.md) f
 
 ## Via APIs
 
-[Kyverno JSON policies](/docs/kyverno-json) and the new [ValidatingPolicy](/docs/policy_types/validating_policy/) and [ImageValidatingPolicy](/docs/policy_types/image_validating_policy/) types can be applied to any JSON payload. These policies can be applied via a Golang SDK or web service.
+[Kyverno JSON policies](/docs/kyverno-json) and the new [ValidatingPolicy](/docs/policy-types/validating-policy/) and [ImageValidatingPolicy](/docs/policy-types/image-validating-policy/) types can be applied to any JSON payload. These policies can be applied via a Golang SDK or web service.

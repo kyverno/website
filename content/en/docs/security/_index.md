@@ -261,9 +261,9 @@ Kyverno requires the following network communications to be allowed:
 * ingress traffic to port 9443 from the API server
 * ingress traffic to port 9443 from the host for health checks
 * ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors
-* egress traffic to the API server if the [API Call](/docs/policy_types/cluster_policy/external-data-sources.md#variables-from-kubernetes-api-server-calls) feature is used
-* egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy_types/cluster_policy/verify-images/_index.md) policy rules are configured or if [image registry context variables](/docs/policy_types/cluster_policy/external-data-sources.md#variables-from-image-registries) are used
-* egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy_types/cluster_policy/external-data-sources.md#variables-from-service-calls) feature is used
+* egress traffic to the API server if the [API Call](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-kubernetes-api-server-calls) feature is used
+* egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/_index.md) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-image-registries) are used
+* egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-service-calls) feature is used
 
 ### Webhooks
 
@@ -288,7 +288,7 @@ Kyverno creates the following validating webhook configurations:
 
 #### Webhook Failure Mode
 
-Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy_types/cluster_policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
+Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 #### Webhook authentication and encryption
 
@@ -318,7 +318,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy_types/cluster_policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 2 - Attacker passes workloads which require complex processing causing timeouts
 
@@ -328,7 +328,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy_types/cluster_policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 * [Mitigation ID 3 - Webhook authenticates callers](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-3---webhook-authenticates-callers)
 
@@ -362,7 +362,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 * [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy_types/cluster_policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings.md). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 6 - Attacker gains access to a cluster admin credential
 

@@ -101,7 +101,7 @@ The controller is the other half of the dynamic admission controller story. Some
 
 For example, as you may have learned in the [validation quick start section](../introduction/quick-start.md#validate-resources), a policy such as `require-labels` can be used to instruct the controller how to respond in the case where it receives a matching request. If the Pod has a label named `team` then its creation will be allowed. If it does not, it will be prevented.
 
-Controllers receiving requests from the Kubernetes API server do so over HTTP/REST. The contents of that request are a "packaging" or "wrapping" of the resource, which has been defined via the webhook, in addition to other pertinent information about who or what made the request. This package is called an `AdmissionReview`. More details on this packaging format along with an example can be seen [here](/docs/policy_types/cluster_policy/jmespath.md#admissionreview).
+Controllers receiving requests from the Kubernetes API server do so over HTTP/REST. The contents of that request are a "packaging" or "wrapping" of the resource, which has been defined via the webhook, in addition to other pertinent information about who or what made the request. This package is called an `AdmissionReview`. More details on this packaging format along with an example can be seen [here](/docs/policy-types/cluster-policy/jmespath.md#admissionreview).
 
 Webhooks and controllers work together to bring about these types of custom decisions, some of which were defined in the previous use cases section. A webhook is an instruction for the Kubernetes API server while a policy is an instruction for the controller.
 
@@ -268,7 +268,7 @@ Second, it is important to understand the abilities and limitations of dynamic a
 Unlike Kubernetes (Cluster)Roles which can define a whole host of verbs like `create`, `get`, `delete`, and `patch`, the Kubernetes API server only permits a subset of these to be sent to dynamic admission controllers. Rather than being called "verbs" these are called "operations" in webhook parlance. There are four operations which the API server recognizes:
 
 * **CREATE**: The CREATE operation occurs when a resource is created.
-* **UPDATE**: The UPDATE operation occurs when an existing resource is modified, regardless of whether it results from a verb "patch" or "update". Because an update means a resource has already been created, the `oldObject` structure in the `AdmissionReview` resource will be populated. Refer back to the [admission review page](/docs/policy_types/cluster_policy/jmespath.md#admissionreview) for more details.
+* **UPDATE**: The UPDATE operation occurs when an existing resource is modified, regardless of whether it results from a verb "patch" or "update". Because an update means a resource has already been created, the `oldObject` structure in the `AdmissionReview` resource will be populated. Refer back to the [admission review page](/docs/policy-types/cluster-policy/jmespath.md#admissionreview) for more details.
 * **DELETE**: The DELETE operation occurs when a resource is deleted. Note that this may not always align to a `kubectl delete` command. Depending on the resource being deleted, there may first be an UPDATE followed by the ultimate DELETE operation.
 * **CONNECT**: The CONNECT operation occurs when a user/process performs a `kubectl exec` command against a Pod.
 

@@ -72,7 +72,7 @@ In addition to the error returned, Kyverno also produces an Event in the same Na
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
 {{% /alert %}}
 
-Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy_types/cluster_policy/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
+Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
 
 Now, create a Pod with the required label.
 
@@ -124,7 +124,7 @@ Now that you've experienced validate policies and seen a bit about policy report
 kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy_types/cluster_policy/validate.md).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate.md).
 
 ## Mutate Resources
 
@@ -192,7 +192,7 @@ Now that you've experienced mutate policies and seen how logic can be written ea
 kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy_types/cluster_policy/mutate.md).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate.md).
 
 ## Generate Resources
 
@@ -297,6 +297,6 @@ With a basic understanding of generate policies, clean up by deleting the policy
 kubectl delete clusterpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy_types/cluster_policy/generate.md).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate.md).
 
 
