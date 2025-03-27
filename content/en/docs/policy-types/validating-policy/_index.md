@@ -1,37 +1,27 @@
 ---
 title: ValidatingPolicy
 description: >-
-    A ValidatingPolicy validates Kubernetes resource or JSON payloads.
+    Validate Kubernetes resource or JSON payloads.
 weight: 30
 ---
 
-## Introduction to ValidatingPolicy
+Kyverno’s `ValidatingPolicy` extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other critical features for managing the full Policy as Code lifecycle.
 
-Kyverno’s `ValidatingPolicy` and Kubernetes’ `ValidatingAdmissionPolicy` both aim to enforce validation rules within Kubernetes clusters, yet they diverge significantly in scope and functionality. VAP leverages CEL for efficient, in-process validation directly within the Kubernetes API server, eliminating the need for external webhooks. However, its focus on simplicity limits its ability to handle complex, context-aware scenarios. Kyverno’s `ValidatingPolicy`, introduced as part of new policy types builds on this foundation, extending CEL’s capabilities and integrating with Kyverno’s broader feature set to address users need.
+A ValidatingPolicy has a similar structure to the `ValidatingAdmissionPolicy`, with a few additional fields.
 
----
-
-## Key Advantages of ValidatingPolicy Over ValidatingAdmissionPolicy
-
-Below, we detail the core enhancements that position `ValidatingPolicy` as a superior solution.
-
-### Seamless Compatibility with ValidatingAdmissionPolicy
-
-`ValidatingPolicy` aligns fully with VAP’s CEL syntax and structure, enabling users familiar with Kubernetes’ native policy to transition effortlessly to Kyverno’s enhanced version. This compatibility reduces the learning curve and allows organizations to adopt `ValidatingPolicy` incrementally, leveraging existing VAP knowledge while exploring Kyverno’s additional features.
-
-- **Use Case**: Migrate existing VAP rules to `ValidatingPolicy` and enhance them with Kyverno’s advanced functions without rewriting from scratch.
-- **Impact**: Administrators utilize `ValidatingPolicy`’s capabilities while retaining familiarity with VAP, easing adoption.
-
-look at sample policy with writing this you are good to go, no need for bindings and you would be familiar with this.
  ```yaml
- apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: block-ephemeral-containers
 spec:
   validationActions: 
     - Audit
-  evaluation:
+    - Warn
+  generation: true
+  environment:
+    admission:
+      enabled: true
     background:
       enabled: true
   matchConstraints:
@@ -44,9 +34,53 @@ spec:
    - expression: >-
       object.spec.?ephemeralContainers.orValue([]).size() == 0
      message: "Ephemeral (debug) containers are not permitted."
-
-
  ```
+
+## Comparison with Validating Admission Policy
+
+The table below compares major features with the  `ValidatingAdmissionPolicy`.
+
+| Feature            | ValidatingAdmissionPolicy    | ValidatingPolicy                     |
+|--------------------|------------------------------|--------------------------------------|
+| Enforcement        | Admission                    | Admission, Background, Pipelines            |
+| CEL Functions      | Basic                        | Extended                                    |
+| Bindings           | Manual                       | Automatic                                   |
+| External Data      | _                            | Kubernetes resources or API calls           |
+| Caching            | _                            | Global Context                              |
+| Reporting          | _                            | Policy reports                              |
+| Auto-generation    | -                            | Pod Controllers, ValidatingAdmissionPolicy  |
+| Background scans   | -                            | Periodic, On policy change                  |
+| Pipeline scans     | -                            | CLI                                         |
+| Exceptions         | -                            | Fine-grained exceptions                     |
+| JSON payloads      | -                            | Any payload                                 |
+
+
+## Additional Fields
+
+## Extended CEL Library
+
+## Automatic Bindings
+
+## External Data
+
+## Caching
+
+## Reporting
+
+## Auto-Generate Policies for Pod Controllers
+
+## Background Scanning
+
+## Pipeline Scanning
+
+## Fine-Grained Exceptions
+
+## Applying to JSON Payloads
+
+## Auto-Generate ValidatingAdmissionPolicies
+
+
+
 ### Streamlined Policy Creation with Automatic Bindings
 
 VAP requires manual creation and management of `ValidatingAdmissionPolicyBinding` objects to link policies to resources, adding complexity and potential for error. Kyverno’s `ValidatingPolicy` automates this process—bindings are managed by Kyverno upon policy creation, simplifying the workflow and reducing administrative overhead .
@@ -242,22 +276,6 @@ Kyverno enhances CEL’s capabilities with specialized functions for parsing and
 
 
 
-
-## Detailed Comparison Summary
-
-| Feature            | VAP                          | ValidatingPolicy                     |
-|--------------------|------------------------------|--------------------------------------|
-| Validation Scope   | Admission request only       | Cluster state, external data, JSON   |
-| CEL Functions      | Basic expressions            | Advanced library (e.g. `resource.Get()`)  |
-| Bindings           | Manual configuration         | Automatic                            |
-| Autogen            | None                         | Rule generation via annotations      |
-| Background Checks  | None                         | Continuous scanning                  |
-| CLI Support        | None                         | Pre-deployment testing               |
-| Exceptions         | None                         | Flexible exemptions                  |
-| Reporting          | Basic logs                   | Detailed policy reports              |
-| Image Validation   | None                         | OCI metadata support                 |
-
-This table highlights ValidatingPolicy’s comprehensive advantages over VAP.
 
 ## Conclusion
 
