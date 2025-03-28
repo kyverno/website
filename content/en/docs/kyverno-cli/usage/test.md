@@ -5,7 +5,7 @@ weight: 25
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
 
-`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests.  All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](../../writing-policies/autogen.md) making it possible to test, for example, Deployment resources against a Pod policy.
+`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests.  All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/policy-types/cluster-policy/autogen.md) making it possible to test, for example, Deployment resources against a Pod policy.
 
 `test` will search for a file named `kyverno-test.yaml` and, if found, will execute the tests within.
 
@@ -37,6 +37,9 @@ policies:
 resources:
   - <path/to/resource.yaml>
   - <path/to/resource.yaml>
+targetResources: # optional key for specifying target resources when testing for mutate existing rules
+  - <path/to/target-resource.yaml>
+  - <path/to/target-resource.yaml>
 exceptions: # optional files for specifying exceptions. See below for an example.
   - <path/to/exception.yaml>
   - <path/to/exception.yaml>
@@ -49,10 +52,10 @@ results:
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
   - <namespace_2/name_2>
-  patchedResource: <file_name.yaml> # when testing a mutate rule this field is required.
+  patchedResources: <file_name.yaml> # when testing a mutate rule this field is required. File may contain one or more resources separated by ---
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
-  kind: <kind>
+  kind: <kind> # optional
   result: pass
 checks:
 - match:
@@ -73,7 +76,7 @@ The test declaration consists of the following parts:
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
 7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](../assertion-trees.md)).
 
-If needing to pass variables, such as those from [external data sources](../../writing-policies/external-data-sources.md) like context variables built from [API calls](../../writing-policies/external-data-sources.md#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
+If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources.md) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
@@ -228,7 +231,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
 spec:
-  validationFailureAction: Audit
   rules:
   - name: require-image-tag
     match:
@@ -237,6 +239,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "An image tag is required."  
       pattern:
         spec:
@@ -249,6 +252,7 @@ spec:
           kinds:
           - Pod
     validate:
+      failureAction: Audit
       message: "Using a mutable image tag e.g. 'latest' is not allowed."
       pattern:
         spec:
@@ -416,14 +420,14 @@ results:
     rule: add-default-requests
     resources:
     - nginx-demo1
-    patchedResource: patchedResource1.yaml
+    patchedResources: patchedResource1.yaml
     kind: Pod
     result: pass
   - policy: add-default-resources
     rule: add-default-requests
     resources:
     - nginx-demo2
-    patchedResource: patchedResource2.yaml
+    patchedResources: patchedResource2.yaml
     kind: Pod
     result: skip
 ```
@@ -444,6 +448,157 @@ skipped mutate policy add-default-resources -> resource default/Pod/nginx-demo2
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
+
+In this scenario, a `mutate` policy which adds a label to `Secrets` based on requests made on a particular `ConfigMap`,
+note the use of the `targetResources` field.
+
+Test manifest (`kyverno-test.yaml`):
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test.yaml
+policies:
+- policy.yaml
+resources:
+- trigger-cm.yaml
+targetResources:
+- raw-secret.yaml
+results:
+- patchedResource: mutated-secret.yaml
+  policy: mutate-existing-secret
+  resources:
+    - secret-1
+  result: pass
+  rule: mutate-secret-on-configmap-create
+```
+
+Policy (`policy.yaml`):
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-existing-secret
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+          names:
+          - dictionary-1
+          namespaces:
+          - staging
+    mutate:
+      mutateExistingOnPolicyUpdate: false
+      patchStrategicMerge:
+        metadata:
+          labels:
+            foo: bar
+      targets:
+      - apiVersion: v1
+        kind: Secret
+        name: '*'
+        namespace: staging
+    name: mutate-secret-on-configmap-create
+```
+
+Trigger (`trigger-cm.yaml`):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dictionary-1
+  namespace: staging
+```
+
+Target (`raw-secret.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-1
+  namespace: staging
+```
+
+Mutated target (`mutated-secret.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    foo: bar
+  name: secret-1
+  namespace: staging
+```
+
+```sh
+$ kyverno test .
+Loading test  ( 3-test/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
+
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE                              │ RESOURCE                   │ RESULT │ REASON │
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+│ 1  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/Secret/staging/secret-1 │ Pass   │ Ok     │
+│────│────────────────────────│───────────────────────────────────│────────────────────────────│────────│────────│
+
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+
+If you don't specify an entry in the `resources` field in the results the CLI will check results for all trigger and target resources involved in the test and will match them against the resources specified in the `patchedResources` file:
+
+Patched resources (`mutated-resources.yaml`):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dictionary-1
+  namespace: staging
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    foo: bar
+  name: secret-1
+  namespace: staging
+---
+
+```
+
+```
+Loading test  ( 5-test-with-selection/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource ...
+  Checking results ...
+
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE                              │ RESOURCE                          │ RESULT │ REASON │
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+│ 1  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/Secret/staging/secret-1        │ Pass   │ Ok     │
+│ 2  │ mutate-existing-secret │ mutate-secret-on-configmap-create │ v1/ConfigMap/staging/dictionary-1 │ Pass   │ Ok     │
+│────│────────────────────────│───────────────────────────────────│───────────────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
+```
+
 
 In the following policy test, a `generate` policy rule is applied which generates a new resource from an existing resource present in `resource.yaml`. To test the `generate` policy, the addition of a `generatedResource` field in the `results[]` array is required which is used to test against the resource generated by the policy.
 
@@ -544,7 +699,6 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
 spec:
-  validationFailureAction: Enforce
   background: false
   rules:
     - name: host-namespaces
@@ -554,6 +708,7 @@ spec:
             kinds:
               - Pod
       validate:
+        failureAction: Enforce
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.          
@@ -567,7 +722,7 @@ spec:
 Policy Exception manifest (`delta-exception.yaml`):
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: PolicyException
 metadata:
   name: delta-exception
@@ -701,7 +856,7 @@ Below is an example of testing a ValidatingAdmissionPolicy against two resources
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-path
@@ -823,7 +978,7 @@ In the below example, a `ValidatingAdmissionPolicy` and its corresponding `Valid
 Policy manifest (`check-deployment-replicas.yaml`):
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: "check-deployment-replicas"
@@ -842,7 +997,7 @@ spec:
   validations:
   - expression: object.spec.replicas <= 2
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: "check-deployment-replicas-binding"

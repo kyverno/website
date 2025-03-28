@@ -5,9 +5,9 @@ description: >
 weight: 60
 ---
 
-Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate` and `verifyImages` rules when a resource is matched by one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. Reports, therefore, always represent the current state of the cluster and do not record historical information.
+Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate`, `mutate`, `generate` and `verifyImages` rules when a resource is matched by one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. Reports, therefore, always represent the current state of the cluster and do not record historical information.
 
-For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule. Policies configured with `spec.validationFailureAction: Enforce` immediately block violating resources and results will only be reported for `pass` evaluations. Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption. The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode. Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
+For example, if a validate policy in `Audit` mode exists containing a single rule which requires that all resources set the label `team` and a user creates a Pod which does not set the `team` label, Kyverno will allow the Pod's creation but record it as a `fail` result in a policy report due to the Pod being in violation of the policy and rule. Policies configured with `spec.rules[*].validate[*].failureAction: Enforce` immediately block violating resources and results will only be reported for `pass` evaluations. Policy reports are an ideal way to observe the impact a Kyverno policy may have in a cluster without causing disruption. The insights gained from these policy reports may be used to provide valuable feedback to both users/developers so they may take appropriate action to bring offending resources into alignment, and to policy authors or cluster operators to help them refine policies prior to changing them to `Enforce` mode. Because reports are decoupled from policies, standard Kubernetes RBAC can then be applied to separate those who can see and manipulate policies from those who can view reports.
 
 Policy reports are created based on two different triggers: an admission event (a `CREATE`, `UPDATE`, or `DELETE` action performed against a resource) or the result of a background scan discovering existing resources. Policy reports, like Kyverno policies, have both Namespaced and cluster-scoped variants; a `PolicyReport` is a Namespaced resource while a `ClusterPolicyReport` is a cluster-scoped resource. Reports are stored in the cluster on a per resource basis. Every namespaced resource will (eventually) have an associated `PolicyReport` and every clustered resource will (eventually) have an associated `ClusterPolicyReport`.
 
@@ -76,14 +76,22 @@ The report's contents can be found under the `results[]` object in which it disp
 Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](../monitoring/policy-results-info.md) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 {{% /alert %}}
 
-Policy reports have a few configuration options available. For details, see the [container flags](../installation/customization.md#container-flags) section.
+Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization.md#container-flags) section.
 
 {{% alert title="Note" color="warning" %}}
-Policy reports created from background scans are not subject to the configuration of a [Namespace selector](../installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](../installation/customization.md#configmap-keys).
+Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization.md#configmap-keys).
 {{% /alert %}}
 
 {{% alert title="Note" color="info" %}}
 To configure Kyverno to generate reports for Kubernetes ValidatingAdmissionPolicies enable the `--validatingAdmissionPolicyReports` flag in the reports controller. 
+{{% /alert %}}
+
+{{% alert title="Note" color="info" %}}
+Reporting can be enabled or disabled for rule types by modifying the value of the flag `--enableReporting=validate,mutate,mutateExisting,generate,imageVerify`.
+{{% /alert %}}
+
+{{% alert title="Note" color="info" %}}
+Creating reports for a resource require permissions to `get`, `list` and `watch` the resource in Kyverno reports controller.
 {{% /alert %}}
 
 ## Report result logic
@@ -122,7 +130,7 @@ Similar to conditional anchors, if the condition inside a global anchor is FALSE
 
 5. **Anchor Logic Resulting in Skip:**
 
-As explained in the [validate documentation](../writing-policies/validate.md), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
+As explained in the [validate documentation](/docs/policy-types/cluster-policy/validate.md), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
 
 *Example:* If we have the following policy:
 

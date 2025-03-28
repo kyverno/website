@@ -26,7 +26,7 @@ helm uninstall kyverno kyverno/kyverno -n kyverno
 
 ### Clean up Webhooks
 
-Kyverno by default will try to clean up all its webhooks when terminated. But in cases where its RBAC resources are removed first, it will lose the permission to do so properly.
+Kyverno by default will try to clean up all its webhooks when terminated for helm based installations. But in other cases where Kyverno's RBAC resources are removed first, it will lose the permission to do so properly. Kyverno supports deletion using finalizers to ensure resource deletion in right order. Use `--autoDeleteWebhooks` in admission-controller and cleanup-controller deployment to enable this feature, this feature will be enabled by default in future releases.
 
 If manual webhook removal is necessary, use the below commands.
 

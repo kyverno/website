@@ -45,8 +45,7 @@ spec:
       cel:
         expressions:
           - expression: >-
-              has(object.metadata.labels) && 
-              'app.kubernetes.io/name' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/name'] != ""
+              object.metadata.?labels[?'app.kubernetes.io/name'].orValue('') != ""
             message: "The label `app.kubernetes.io/name` is required." 
 
 
