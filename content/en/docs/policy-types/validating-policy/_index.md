@@ -58,10 +58,9 @@ The table below compares major features with the  `ValidatingAdmissionPolicy`.
 
 The `ValidatingPolicy` includes several additional fields that enhance configuration flexibility and improve policy readability.  
 
-- **Variables**: Allow reusable expressions, making policies cleaner and easier to understand.  
 - **evaluation**: Controls whether the policy is enforced during admission, background processing, or both by enabling or disabling the respective controllers.  
 - **webhookConfiguration**: Defines `timeoutSeconds`, ensuring policies are evaluated within a specified timeframe to prevent enforcement failures due to webhook delays.  
-- **generation**: Automatically generates policies for pod controllers, enabling users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, and DaemonSets.
+- **generation**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno also simplifies policy enforcement by automatically generating `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
 
 look at the example below:
 
