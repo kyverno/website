@@ -1,7 +1,7 @@
 ---
 title: ImageValidatingPolicy
 description: >-
-    Validate image signatures and attestations.
+    Validate Image Signatures and Attestations
 weight: 40
 ---
 
@@ -161,7 +161,7 @@ The CEL functions to verify image signatures, attestations, and payload formats 
 - **Purpose:** Verifies the attestation signature of an image using a given attestation type and attestors.
 - **Expression:**  
   ```cel
-   verifyAttestationSignatures(image, [attestations.sbom] ,[attestors.notary])
+   verifyAttestationSignatures(image, attestations.sbom ,[attestors.notary])
   ```
 - **Purpose:** Extracts the Software Bill of Materials (SBOM) format from an image’s attestation payload.
 - **Expression:** 
@@ -228,7 +228,7 @@ spec:
         images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e, e > 0)
       message: failed to verify image with notary cert
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image, [attestations.sbom] ,[attestors.notary])).all(e, e > 0)
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom ,[attestors.notary])).all(e, e > 0)
       message: failed to verify attestation with notary cer
     - expression: >-
         images.containers.map(image, payload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
@@ -352,3 +352,21 @@ spec:
     background: 
      enabled: true
 ```
+## Pipeline Scanning
+
+Pipeline scanning is a crucial step in CI/CD workflows, ensuring that policies are properly validated before deployment. When automating policy enforcement in Kubernetes, it is essential to verify that policies function correctly and enforce the intended behavior before they are applied to the cluster. This prevents misconfigurations, unintended policy behavior, and security risks.
+
+### Why Pipeline Scanning Matters  
+
+Integrating policy validation into CI/CD pipelines allows teams to:  
+- **Prevent Misconfigurations**: Ensure policies behave as expected before deployment.  
+- **Enhance Security**: Avoid unintended policy bypasses or gaps that could weaken security.  
+- **Automate Policy Enforcement**: Verify policies automatically within the pipeline, reducing manual effort.  
+
+### How to Perform Policy Scanning  
+
+Kyverno provides CLI tools to test policies against resources before deployment:  
+- **`kyverno test`**: Runs predefined policy test cases to validate policy logic.  
+- **`kyverno apply`**: Tests policies against live or locally defined resources to confirm expected behavior.  
+
+These commands help developers catch issues early, ensuring that policies function correctly before reaching the cluster.
