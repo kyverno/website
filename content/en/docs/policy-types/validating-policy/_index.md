@@ -65,7 +65,7 @@ The `ValidatingPolicy` includes several additional fields that enhance configura
 look at the example below:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+ apiVersion: policies.kyverno.io/v1alpha1
  kind: ValidatingPolicy
  metadata:
    name: disallow-capabilities
@@ -112,7 +112,7 @@ Kyverno’s `ValidatingPolicy` enhances CEL with a powerful context library, ena
 - **`resource.Get()`**: Retrieves specific Kubernetes resources (e.g., ConfigMaps, Secrets, Pods) for validation.  
 
 ``` yaml
-apiVersion: policies.kyverno.io/v1alpha1
+ apiVersion: policies.kyverno.io/v1alpha1
  kind: ValidatingPolicy
  metadata:
    name: advanced-restrict-image-registries
@@ -251,6 +251,18 @@ spec:
       message: >-
         Deployment must be have images from ghcr and images should be tagged
 ```
+
+The image parsing function enables iteration over container images, allowing validation and extraction of image-related metadata dynamically.  
+
+### Expression  
+```cel
+images.containers.map(image, expression).all(e, e > 0)
+```
+- **`images.containers`** → Retrieves all container images in the resource.  
+- **`.map(image, expression)`** → Iterates over each image and applies the given expression.  
+- **`.all(e, e > 0)`** → Ensures that all evaluated results meet the condition (`e > 0`), meaning the validation passes only if every image satisfies the requirement.  
+
+
 - **`imagedata()`**: Parses and validates OCI image metadata, including tags, digests, architecture, and more.  
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -278,7 +290,25 @@ spec:
          variables.image.config.architecture == "amd64"  
       message: >-
         image architecture is not supported
+     
 ```
+
+The `imagedata()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
+
+| **Field**       | **Description**                                    | **Example** |
+|---------------|------------------------------------------------|-------------|
+| `digest`      | The immutable SHA256 hash of the image.        | `sha256:abc123...` |
+| `tag`         | The tag associated with the image version.     | `latest`, `v1.2.3` |
+| `registry`    | The container registry hosting the image.      | `docker.io`, `gcr.io`, `myregistry.com` |
+| `repository`  | The specific repository where the image is stored. | `library/nginx`, `myorg/myapp` |
+| `architecture` | The CPU architecture the image is built for.  | `amd64`, `arm64` |
+| `os`         | The operating system the image is compatible with. | `linux`, `windows` |
+| `mediaType`   | The media type of the image manifest.          | `application/vnd.docker.distribution.manifest.v2+json` |
+| `layers`      | A list of layer digests that make up the image. | `["sha256:layer1...", "sha256:layer2..."]` |
+
+In addition to these fields, `imagedata()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
+
+
 - **`globalcontext.Get`** : it fetches deployment data and makes it accessible across all policies.
 
 defining `GlobalContextEntry` 
@@ -324,12 +354,12 @@ By leveraging **Global Context**, Kyverno eliminates redundant queries and enabl
 
 ## Automatic Bindings
 
-
+When using `ValidatingPolicy`, you don't need to explicitly handle policy bindings. The policy automatically applies to matching resources without requiring separate policy binding configurations. This simplifies enforcement and ensures that validation is consistently applied across resources.
 
 
 ## External Data
 
-These functions are used in CEL to enable dynamic validation. The `http.Get()` and `http.Post()` functions allow real-time API calls to external services, ensuring policies can validate data dynamically. Additionally, the `globalContext.Get()` function fetches data both from within and outside the cluster through API calls. This enhances Kyverno’s ability to interact with internal and external services, though it requires additional permissions for the Kyverno controller. These API calls are secured using certificates to ensure safe communication.
+These functions are used in CEL to enable dynamic validation. The `http.Get()` and `http.Post()` functions allow real-time API calls to external services, ensuring policies can validate data dynamically. Additionally, the `globalContext.Get()` function fetches data both from within and outside the cluster through API calls and make it accessible to all the policies in cluster to reduce api call. This enhances Kyverno’s ability to interact with internal and external services, though it requires additional permissions for the Kyverno controller. These API calls are secured using certificates to ensure safe communication.
 
 **Note:** Fetching these resources requires additional permissions for the Kyverno controller. These API calls are secured using certificates to ensure safe and authenticated communication.  
 
@@ -608,7 +638,7 @@ metadata:
 spec:
   policyRefs:
     - name: ivpol-sample
-      kind: ImageValidatingPolicy
+      kind: ValidatingPolicy
   matchConditions:
     - name: "check-name"
       expression: "object.metadata.name == 'skipped-pod'"
