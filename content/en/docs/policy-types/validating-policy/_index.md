@@ -1,57 +1,33 @@
 ---
 title: ValidatingPolicy
 description: >-
-    Validate Kubernetes resource or JSON payloads.
+    Validate Kubernetes Resources or JSON payloads
 weight: 30
 ---
 
-Kyverno’s `ValidatingPolicy` extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other critical features for managing the full Policy as Code lifecycle.
+Kyverno’s `ValidatingPolicy` extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other critical features required for managing the full Policy as Code lifecycle.
 
-A ValidatingPolicy has a similar structure to the `ValidatingAdmissionPolicy`, with a few additional fields.
+A ValidatingPolicy has a similar structure to the `ValidatingAdmissionPolicy`, with additional fields for Kyverno features. Hence, a `ValidatingPolicy` is a strict superset of a `ValidatingAdmissionPolicy`.
 
- ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
-metadata:
-  name: block-ephemeral-containers
-spec:
-  validationActions: 
-    - Audit
-    - Warn
-  evaluation:
-    admission:
-      enabled: true
-    background:
-      enabled: true
-  matchConstraints:
-    resourceRules:
-    - apiGroups:   [""]
-      apiVersions: ["v1"]
-      operations:  ["CREATE", "UPDATE"]
-      resources: ["pods", "pods/ephemeralcontainers"] 
-  validations:
-   - expression: >-
-      object.spec.?ephemeralContainers.orValue([]).size() == 0
-     message: "Ephemeral (debug) containers are not permitted."
- ```
+## Comparison with ValidatingAdmissionPolicy
 
-## Comparison with Validating Admission Policy
+The table below compares major features across the Kubernetes `ValidatingAdmissionPolicy` and Kyverno `ValidatingPolicy` types.
 
-The table below compares major features with the  `ValidatingAdmissionPolicy`.
-
-| Feature            | ValidatingAdmissionPolicy    | ValidatingPolicy                     |
-|--------------------|------------------------------|--------------------------------------|
-| Enforcement        | Admission                    | Admission, Background, Pipelines            |
-| CEL Functions      | Basic                        | Extended                                    |
+| Feature            | ValidatingAdmissionPolicy    |  ValidatingPolicy         |
+|--------------------|------------------------------|---------------------------------------------|
+| Enforcement        | Admission                    | Admission, Background, Pipelines, ...       |
+| Payloads           | Kubernetes                   | Kubernetes, Any JSON or YAML                |
+| Distribution       | Kubernetes                   | Helm, CLI, Web Service, API, SDK            |
+| CEL Library        | Basic                        | Extended                                    |
 | Bindings           | Manual                       | Automatic                                   |
-| External Data      | _                            | Kubernetes resources or API calls           |
-| Caching            | _                            | Global Context                              |
-| Reporting          | _                            | Policy reports                              |
 | Auto-generation    | -                            | Pod Controllers, ValidatingAdmissionPolicy  |
-| Background scans   | -                            | Periodic, On policy change                  |
-| Pipeline scans     | -                            | CLI                                         |
+| External Data      | _                            | Kubernetes resources or API calls           |
+| Caching            | _                            | Global Context, image verification results  |
+| Background scans   | -                            | Periodic, On policy creation or change      |
 | Exceptions         | -                            | Fine-grained exceptions                     |
-| JSON payloads      | -                            | Any payload                                 |
+| Reporting          | _                            | Policy WG Reports API                       |
+| Testing            | _                            | Kyverno CLI (unit), Chainsaw (e2e)          |
+
 
 
 ## Additional Fields
@@ -60,9 +36,9 @@ The `ValidatingPolicy` includes several additional fields that enhance configura
 
 - **evaluation**: Controls whether the policy is enforced during admission, background processing, or both by enabling or disabling the respective controllers.  
 - **webhookConfiguration**: Defines `timeoutSeconds`, ensuring policies are evaluated within a specified timeframe to prevent enforcement failures due to webhook delays.  
-- **generation**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno also simplifies policy enforcement by automatically generating `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
+- **generation**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno can also generate `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
 
-look at the example below:
+Here is an example of generating policies for deployments and cronjobs:
 
 ```yaml
  apiVersion: policies.kyverno.io/v1alpha1
@@ -76,8 +52,6 @@ look at the example below:
       controllers:
        - deployments
        - cronjobs
-   validationActions:
-      - Audit
    evaluation:
      background:
        enabled: true
