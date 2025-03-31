@@ -9,6 +9,8 @@ Kyverno’s `ImageValidatingPolicy` follows a structure similar to `ValidatingAd
 
 For image verification, `ImageValidatingPolicy` integrates with **Cosign** and **Notary**, enabling signature and attestation checks to ensure the integrity and authenticity of container images before deployment. This ensures that only trusted and verified images are used in the cluster, reducing the risk of supply chain attacks.
 
+checkout official documentation to sign images in [notary](https://notaryproject.dev/docs/quickstart-guides/) and [cosign](https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-sign-a-container-with-cosign/)
+
 
 While `ImageValidatingPolicy` shares a similar structure with `ValidatingAdmissionPolicy`, it includes additional fields tailored for image verification, attestation checks, and registry authentication, enabling more comprehensive enforcement of container security policies.
 
@@ -52,43 +54,84 @@ spec:
  ```
 
 ## Additional Fields
-The `ImageValidatingPolicy` includes several additional fields that enhance configuration flexibility and improve policy readability.  
 
-- **attestations**: Provides a list of image metadata to verify, ensuring compliance with security requirements.  
-  - Defines the identification details of the metadata that must be verified.  
+The `ImageValidatingPolicy` includes several additional fields that enhance configuration flexibility and improve policy readability.
 
-  **FIELDS:**  
-  - **intoto**: Specifies the attestation details using the in-toto format.  
-  - **name**: A unique identifier for the attestation, used in verification.  
-  - **referrer**: Defines the attestation details using the OCI 1.1 format.  
+### Attestations
 
-- **attestors**: Defines trusted authorities responsible for verifying image integrity.  
-  - This field supports two types: **cosign** and **notary**.  
- 
-- **credentials**: Specifies authentication details for interacting with container registries.  
+**Attestations** provide a list of image metadata to verify, ensuring compliance with security requirements.
 
-  - **Credentials** provides authentication details that will be used for registry access.  
+#### Fields:
+- **intoto**: Specifies the attestation details using the in-toto format.
+- **name**: A unique identifier for the attestation, used in verification.
+- **referrer**: Defines the attestation details using the OCI 1.1 format.
 
-    **FIELDS:**  
-    - `allowInsecureRegistry` `<boolean>`: Allows insecure access to a registry.  
-    - `providers`: Specifies a list of OCI Registry names whose authentication providers are used.  
-      - Possible values: `default`, `google`, `azure`, `amazon`, `github`.  
-    - `secrets`: Specifies a list of secrets for authentication.  
-      - Secrets must exist in the **Kyverno namespace**. 
+---
 
-- **imageRules**: Defines glob patterns and CEL expressions to match images for validation. Only matched images undergo verification.  
-  - **ImagesRules** is a list of **Glob** and **CELExpressions** to match images.  
-    - Any image that matches one of the rules is considered for validation.  
-    - Any image that does not match a rule is skipped, even when passed as arguments to image verification functions.  
-    - **ImageRule** defines a **Glob** or a **CEL expression** for matching images.  
+### Attestors
 
-- **images**: Uses CEL expressions to extract images from a resource for validation.  
-- **mutateDigest**: Enables automatic replacement of image tags with digests, ensuring immutable and verifiable image references. Defaults to `true`.  
-- **required**: Ensures that images must pass signature or attestation checks to be considered valid.  
-- **verifyDigest**: Ensures that images include a digest for verification, preventing the use of mutable tags.  
-- **webhookConfiguration**: Configures webhook parameters, including `timeoutSeconds`, ensuring policy evaluations complete within a specified timeframe.  
+**Attestors** define trusted authorities responsible for verifying image integrity.  
+This field supports two attestation methods: **Cosign** and **Notary**.
 
-### keyless
+#### Notary Attestor
+
+**Notary** defines the attestor configuration for Notary-based signatures.
+
+##### Fields:
+- **certs** `<string>` (required): Specifies the certificate chain for Notary signature verification.
+- **tsaCerts** `<string>`: Defines the certificate chain for verifying timestamps of Notary signatures.
+
+#### Cosign Attestor
+
+**Cosign** defines the attestor configuration for Cosign-based signatures.
+
+##### Fields:
+- **annotations** `<map[string]string>`: Key-value pairs required in the verified payload for image verification.
+- **certificate** `<Object>`: Configuration for local signature verification.
+- **ctlog** `<Object>`: Configuration to verify the authority against a Rekor instance.
+- **key** `<Object>`: Defines the key type for image validation.
+- **keyless** `<Object>`: Configuration to verify the authority against a Fulcio instance.
+- **source** `<Object>`: Specifies the sources for consuming signatures and attestations.
+- **tuf** `<Object>`: Configuration to fetch the sigstore root.
+
+---
+
+### Credentials
+
+**Credentials** specify authentication details for interacting with container registries.
+
+#### Fields:
+- **allowInsecureRegistry** `<boolean>`: Allows insecure access to a registry.
+- **providers**: Specifies a list of OCI registry names whose authentication providers are used.
+  - Possible values: `default`, `google`, `azure`, `amazon`, `github`.
+  - **secrets**: Specifies a list of secrets for authentication.
+    - Secrets must exist in the **Kyverno namespace**.
+
+---
+
+### Image Rules
+
+**imageRules** define glob patterns and CEL expressions to match images for validation. Only matched images undergo verification.
+
+#### Fields:
+- **imageRules**: A list of **Glob** and **CEL expressions** to match images.
+  - Any image that matches one of the rules is considered for validation.
+  - Any image that does not match a rule is skipped, even if passed as an argument to image verification functions.
+  - **imageRules** define either a **Glob** or a **CEL expression** for matching images.
+
+- **images**: Uses CEL expressions to extract images from a resource for validation.
+
+---
+
+### Additional Configuration
+
+- **mutateDigest**: Enables automatic replacement of image tags with digests, ensuring immutable and verifiable image references. Defaults to `true`.
+- **required**: Ensures that images must pass signature or attestation checks to be considered valid.
+- **verifyDigest**: Ensures that images include a digest for verification, preventing the use of mutable tags.
+- **webhookConfiguration**: Configures webhook parameters, including `timeoutSeconds`, ensuring policy evaluations complete within a specified timeframe.
+
+
+### Keyless and key in cosign
 
 Keyless signing in Cosign allows signature verification without requiring a predefined key, relying instead on OIDC identity-based authentication.
 
@@ -126,10 +169,42 @@ spec:
   validations:
     - expression: >-
         images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
-      message: "Images must be from ghcr.io/myorg/myrepo"
+      message: "Failed image signature verification"
     - expression: >-
         images.containers.map(image, verifyAttestationSignatures(image, [attestations.cosign-attes], [attestors.cosign])).all(e, e > 0)
       message: "Failed to verify vulnerability scan attestation with Cosign keyless"
+```
+The `key` field is used when more control over security is needed compared to `keyless`, allowing you to manage your own key. Below is an example of a key type.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-image-gcpkms
+spec:
+  validationActions: [Audit]
+  evaluation:
+    background: 
+      enabled: false
+  matchConstraints:
+   resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations: ["CREATE", "UPDATE"]
+  imageRules:
+       - glob: "ghcr.io/kyverno/test-verify-image:*"
+  attestors:
+        name: cosign
+        cosign:
+          - keys:
+              kms: gcpkms://projects/omni-163105/locations/asia-south1/keyRings/first-ring/cryptoKeys/jerry/versions/1
+
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
+      message: "Failed image signature verification"
+
 ```
 
 ## Extended CEL Library  
@@ -170,7 +245,7 @@ The CEL functions to verify image signatures, attestations, and payload formats 
  ```
 - **Return Value:** > 0 if the signature is valid, otherwise fails validation.
 
-look at the example using these function
+Look at the example using these function and certificate attestors for verification.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -236,6 +311,10 @@ spec:
 
 ```
 
+For best practices, use external data [here](./_index.md#external-data) or the CEL extended library [here](../validating-policy/_index.md#extended-cel-library) to fetch certificates and keys from Secrets for enhanced security. In Cosign attestors, use the `secretRef` field for secret references.
+
+**Note:** These methods require additional permissions for Kyverno to access Secrets.
+
 The image parsing function enables iteration over container images, allowing validation and extraction of image-related metadata dynamically.  
 
 ### Expression  
@@ -254,7 +333,6 @@ These functions are used in CEL to enable dynamic validation. The `http.Get()` a
 
 **Note:** Fetching these resources requires additional permissions for the Kyverno controller. These API calls are secured using certificates to ensure safe and authenticated communication.  
 
-  
 
 ## Caching
 
