@@ -408,7 +408,7 @@ Kyverno’s `ImageValidatingPolicy` supports **automatic policy generation** for
 
 ### How Auto-Generation Works  
 
-When `generation.podControllers.enabled` is set to `true`, Kyverno automatically creates corresponding policies for the specified pod controllers, ensuring consistency in enforcement across different workload types.  
+Kyverno automatically creates corresponding policies for the specified pod controllers, ensuring consistency in enforcement across different workload types.  
 
 ## Background Scanning
 
