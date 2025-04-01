@@ -48,7 +48,6 @@ Here is an example of generating policies for deployments and cronjobs:
  spec:
    generation:
     podControllers:
-      enabled: true
       controllers:
        - deployments
        - cronjobs
@@ -416,7 +415,7 @@ Kyverno’s `ValidatingPolicy` supports **automatic policy generation** for pod 
 
 ### How Auto-Generation Works  
 
-When `generation.podControllers.enabled` is set to `true`, Kyverno automatically creates corresponding policies for the specified pod controllers, ensuring consistency in enforcement across different workload types.  
+Kyverno automatically creates corresponding policies for the specified pod controllers, ensuring consistency in enforcement across different workload types.  
 
 Example configuration:  
 
@@ -428,7 +427,6 @@ metadata:
 spec:
   generation:
     podControllers:
-      enabled: true
       controllers:
       - deployments
       - cronjobs
