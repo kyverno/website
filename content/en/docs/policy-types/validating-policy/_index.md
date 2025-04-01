@@ -36,7 +36,7 @@ The `ValidatingPolicy` includes several additional fields that enhance configura
 
 - **evaluation**: Controls whether the policy is enforced during admission, background processing, or both by enabling or disabling the respective controllers.  
 - **webhookConfiguration**: Defines `timeoutSeconds`, ensuring policies are evaluated within a specified timeframe to prevent enforcement failures due to webhook delays.  
-- **generation**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno can also generate `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
+- **autogen**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno can also generate `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
 
 Here is an example of generating policies for deployments and cronjobs:
 
@@ -46,7 +46,7 @@ Here is an example of generating policies for deployments and cronjobs:
  metadata:
    name: disallow-capabilities
  spec:
-   generation:
+   autogen:
     podControllers:
       controllers:
        - deployments
@@ -411,7 +411,7 @@ items:
 
 ## Auto-Generate Policies for Pod Controllers
 
-Kyverno’s `ValidatingPolicy` supports **automatic policy generation** for pod controllers using the `generation` field. This feature simplifies policy management by allowing policies written for **Pods** to be automatically applied to higher-level controllers like **Deployments** and **CronJobs**.  
+Kyverno’s `ValidatingPolicy` supports **automatic policy autogen** for pod controllers using the `autogen` field. This feature simplifies policy management by allowing policies written for **Pods** to be automatically applied to higher-level controllers like **Deployments** and **CronJobs**.  
 
 ### How Auto-Generation Works  
 
@@ -669,11 +669,11 @@ When enabled, **Kyverno automatically converts a `ValidatingPolicy` into a `Vali
 
 ### Enabling Auto-Generation  
 
-To enable automatic generation of `ValidatingAdmissionPolicy`, simply set the `generation.validatingAdmissionPolicy.enabled` field to `true` within the `ValidatingPolicy` spec:  
+To enable automatic generation of `ValidatingAdmissionPolicy`, simply set the `autogen.validatingAdmissionPolicy.enabled` field to `true` within the `ValidatingPolicy` spec:  
 
 ```yaml
 spec:
-  generation:
+  autogen:
     validatingAdmissionPolicy:
       enabled: true
 ```
