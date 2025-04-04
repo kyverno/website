@@ -72,7 +72,7 @@ Operators also work on manifest lookup variables as well so the previous snippet
 
 In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
 
-For more information on operators see the [Operators](validate.md#operators) section.
+For more information on operators see the [Operators](/docs/policy-types/cluster-policy/validate.md#operators) section.
 
 ## Escaping Variables
 
@@ -382,7 +382,7 @@ For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/va
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
-Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](../installation/customization.md#configmap-keys).
+Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization.md#configmap-keys).
 
 {{% alert title="Note" color="info" %}}
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](jmespath.md#formatting).

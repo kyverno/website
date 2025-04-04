@@ -3,9 +3,10 @@ languageCode = "en-us"
 title = "Kyverno"
 # theme = ["docsy"]
 description = "Kyverno is a policy engine designed for Kubernetes"
-Paginate = 20
-
 enableRobotsTXT = true
+
+[pagination]
+pagerSize = 20
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true

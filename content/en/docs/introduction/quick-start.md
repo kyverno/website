@@ -8,7 +8,7 @@ description: >
 
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
 
-These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](../installation/_index.md) for more complete information on how to install Kyverno in production.
+These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/_index.md) for more complete information on how to install Kyverno in production.
 
 First, install Kyverno from the latest release manifest.
 
@@ -72,7 +72,7 @@ In addition to the error returned, Kyverno also produces an Event in the same Na
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
 {{% /alert %}}
 
-Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](../writing-policies/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
+Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
 
 Now, create a Pod with the required label.
 
@@ -124,7 +124,7 @@ Now that you've experienced validate policies and seen a bit about policy report
 kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](../writing-policies/validate.md).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate.md).
 
 ## Mutate Resources
 
@@ -192,7 +192,7 @@ Now that you've experienced mutate policies and seen how logic can be written ea
 kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](../writing-policies/mutate.md).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate.md).
 
 ## Generate Resources
 
@@ -209,7 +209,7 @@ kubectl -n default create secret docker-registry regcred \
   --docker-password=Passw0rd123! \
   --docker-email=john.doe@corp.com
 ```
-By default, Kyverno is [configured with minimal permissions](../installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
+By default, Kyverno is [configured with minimal permissions](/docs/installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
 ```yaml
 kubectl apply -f- << EOF
@@ -297,6 +297,6 @@ With a basic understanding of generate policies, clean up by deleting the policy
 kubectl delete clusterpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](../writing-policies/generate.md).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate.md).
 
 

@@ -29,7 +29,7 @@ rules:
         externalTrafficPolicy: Local
 ```
 
-While, in the above snippet, a precondition is used, it would have been possible to also express this desire using multiple types of [anchors](validate.md#anchors) instead. It is more common for preconditions to exist when needing to perform more advanced comparisons between [context data](external-data-sources.md) (e.g., results from a stored ConfigMap, Kubernetes API call, service call, etc.) and admission data. In the below snippet, a precondition is used to measure the length of an array of volumes coming from a Pod which are of type hostPath. Preconditions can use context variables, the JMESPath system, and perform comparisons between the two and more.
+While, in the above snippet, a precondition is used, it would have been possible to also express this desire using multiple types of [anchors](/docs/policy-types/cluster-policy/validate.md#anchors) instead. It is more common for preconditions to exist when needing to perform more advanced comparisons between [context data](external-data-sources.md) (e.g., results from a stored ConfigMap, Kubernetes API call, service call, etc.) and admission data. In the below snippet, a precondition is used to measure the length of an array of volumes coming from a Pod which are of type hostPath. Preconditions can use context variables, the JMESPath system, and perform comparisons between the two and more.
 
 ```yaml
 rules:
@@ -51,13 +51,13 @@ rules:
       value: 0
 ```
 
-Preconditions are similar in nature to [deny rules](validate.md#deny-rules) in that they are built of the same type of expressions and have the same fields. Also like deny rules, preconditions use [short circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) to stop or continue processing depending on whether they occur in an `any` or `all` block.
+Preconditions are similar in nature to [deny rules](/docs/policy-types/cluster-policy/validate.md#deny-rules) in that they are built of the same type of expressions and have the same fields. Also like deny rules, preconditions use [short circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) to stop or continue processing depending on whether they occur in an `any` or `all` block.
 
 Because preconditions very commonly use variables in JMESPath format (e.g., `{{ request.object.spec.type }}`), there are some special considerations when it comes to their formatting. See the [JMESPath formatting page](jmespath.md#formatting) for further details.
 
 When preconditions are used in the rule types which support reporting, a result will be scored as a `skip` if a resource is matched by a rule but discarded by the combined preconditions. Note that this result differs from if it applies to an `exclude` block where the resource is immediately ignored.
 
-Preconditions are also used in mutate rules inside a `foreach` loop for more granular selection of array entries to be mutated. See the documentation [here](mutate.md#foreach) for more details.
+Preconditions are also used in mutate rules inside a `foreach` loop for more granular selection of array entries to be mutated. See the documentation [here](/docs/policy-types/cluster-policy/mutate.md#foreach) for more details.
 
 ## Any and All Statements
 

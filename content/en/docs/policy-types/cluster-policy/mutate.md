@@ -50,7 +50,7 @@ A [JSON Patch](http://jsonpatch.com/), implemented as a mutation method called `
 
 The `patchesJson6902` method can be useful when a specific mutation is needed which cannot be performed by `patchesStrategicMerge`. For example, when needing to mutate a specific object within an array, the index can be specified as part of a `patchesJson6902` mutation rule.
 
-One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](preconditions.md) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](autogen.md). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
+One distinction between this and other mutation methods is that `patchesJson6902` does not support the use of conditional anchors. Use [preconditions](/docs/policy-types/cluster-policy/preconditions.md) instead. Also, mutations using `patchesJson6902` to Pods directly are not converted to higher-level controllers such as Deployments and StatefulSets through the use of the [auto-gen feature](autogen.md). Therefore, when writing such mutation rules for Pods, it may be necessary to create multiple rules to cover all relevant Pod controllers.
 
 This patch policy adds, or replaces, entries in a ConfigMap with the name `config-game` in any Namespace.
 
@@ -226,7 +226,7 @@ Mutate rules written with this style, if they match exclusively on a Pod, are su
 
 ## Conditional logic using anchors
 
-Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](validate.md#anchors) for more general information on conditionals.
+Like with `validate` rules, conditional anchors are supported on `mutate` rules. Refer to the [anchors section](/docs/policy-types/cluster-policy/validate.md#anchors) for more general information on conditionals.
 
 An **anchor** field, marked by parentheses and an optional preceding character, allows conditional processing for mutations.
 
@@ -424,7 +424,7 @@ Set `spec.emitWarning` to `true` to enable API response warnings for mutate poli
 In addition to standard mutations, Kyverno also supports mutation on existing resources with `patchStrategicMerge` and `patchesJson6902`. Unlike regular mutate policies that are applied through the AdmissionReview process, mutate existing policies are applied in the background (via the background controller) which update existing resources in the cluster. These "mutate existing" policies, like traditional mutate policies, are still triggered via the AdmissionReview process but apply to existing resources. This decoupling also allows triggering on one resource and mutating a totally different one. They may also optionally be configured to apply upon updates to the policy itself. This has two important implications:
 
 1. Mutation for existing resources is an asynchronous process. This means there will be a variable amount of delay between the period where the trigger was observed and the existing resource was mutated.
-2. Custom permissions are almost always required. Because these mutations occur on existing resources and not an AdmissionReview (which does not yet exist), Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](../installation/customization.md#customizing-permissions) on how to grant additional permission to the Kyverno background controller's ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required. Kyverno will perform these permissions checks at the time a mutate existing policy is installed. Missing or incorrect permissions will result in failure to create the policy.
+2. Custom permissions are almost always required. Because these mutations occur on existing resources and not an AdmissionReview (which does not yet exist), Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization.md#customizing-permissions) on how to grant additional permission to the Kyverno background controller's ServiceAccount to determine, prior to installing mutate existing rules, if additional permissions are required. Kyverno will perform these permissions checks at the time a mutate existing policy is installed. Missing or incorrect permissions will result in failure to create the policy.
 
 To define a "mutate existing" policy, trigger resources need to be specified in the `match` block. The target resources--resources targeted for mutation--are specified in each mutate rule under `mutate.targets`. Mutate existing rules differ from standard mutate rules when these targets are defined. Note that all target resources within a single rule must share the same definition schema. For example, a mutate existing rule fails if this rule mutates both `Pod` and `Deployment` as they do not share the same OpenAPI V3 schema (except `metadata`).
 
@@ -530,7 +530,7 @@ spec:
               foo: bar
 ```
 
-In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
+In order to more precisely control the target resources, mutate existing rules support both [context variables](external-data-sources.md) and [preconditions](/docs/policy-types/cluster-policy/preconditions.md). Preconditions which occur inside the `targets[]` array must use the target prefix as described [below](#variables-referencing-target-resources).
 
 This sample below illustrates how to combine preconditions and conditional anchors within `targets[]` to precisely select the desired existing resources for mutation. This policy restarts existing Deployments if they are consuming a Secret that has been updated assigned label `kyverno.io/watch: "true"` AND have a name beginning with `testing-`.
 
@@ -578,7 +578,7 @@ spec:
 ```
 
 {{% alert title="Note" color="warning" %}}
-The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](../installation/customization.md#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
+The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](/docs/installation/customization.md#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
 {{% /alert %}}
 
 Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
@@ -1007,7 +1007,7 @@ A variable `element` is added to the processing context on each iteration. This 
 Each `foreach` declaration can optionally contain the following declarations:
 
 * [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-* [Preconditions](preconditions.md): to control when a loop iteration is skipped.
+* [Preconditions](/docs/policy-types/cluster-policy/preconditions.md): to control when a loop iteration is skipped.
 * `foreach`: a nested `foreach` declaration described below.
 
 For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
@@ -1209,12 +1209,12 @@ However, as dry-run mode causes mutation webhooks to be invoked just as if not i
 
 ### ArgoCD
 
-See the [platform notes](../installation/platform-notes.md#notes-for-argocd-users) page for general recommendations with Argo CD first.
+See the [platform notes](/docs/installation/platform-notes.md#notes-for-argocd-users) page for general recommendations with Argo CD first.
 
 #### ArgoCD v2.10+
 
 
-For considerations when using Argo CD (v2.10+) along with Kyverno, ServerSideDiff is recommended as it resolves OutOfSync warnings by delegating the comparison process to Kubernetes. See the documentation [here](../installation/platform-notes.md#notes-for-argocd-users).
+For considerations when using Argo CD (v2.10+) along with Kyverno, ServerSideDiff is recommended as it resolves OutOfSync warnings by delegating the comparison process to Kubernetes. See the documentation [here](/docs/installation/platform-notes.md#notes-for-argocd-users).
 
 
 This [CNCF blog post](https://www.cncf.io/blog/2024/01/18/gitops-and-mutating-policies-the-tale-of-two-loops/) provides a complete example.
