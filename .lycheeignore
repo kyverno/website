@@ -1,6 +1,4 @@
-http://localhost*
 https://github.com/kyverno/website/issues/*
-https://github.com/jetstack/cert-manager/issues/*
 http://sodipodi.sourceforge.net*
 http://purl.org*
 https://github.com/kyverno/policies/openshift/

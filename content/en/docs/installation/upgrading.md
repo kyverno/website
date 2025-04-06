@@ -27,45 +27,42 @@ Kyverno version 1.13 contains the following breaking configuration changes:
 
 1. **Removal of wildcard permissions**: prior versions contained wildcard view permissions, which allowed Kyverno controllers to view all resources including secrets and other sensitive information. In 1.13 the wildcard view permission was removed and a role binding to the default `view` role was added. See the documentation section on [Role Based Access Controls](./customization.md#role-based-access-controls) for more details. This change will not impact policies during admission controls but may impact reports, and may impact users with mutate and generate policies on custom resources as the controller may no longer be able to view these custom resources.
 
-To upgrade to 1.13 and continue to allow wildcard view permissions for all Kyverno controllers, use a [Helm values file](https://github.com/kyverno/kyverno/blob/v1.13.0/charts/kyverno/values.yaml) that grants these permissions as specified below:
+To upgrade to 1.13 and continue to allow wildcard view permissions for all Kyverno controllers, use a Helm values file that grants these permissions as specified below:
 
 ```yaml
 admissionController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
 backgroundController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
 reportsController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
+  clusterRole:
+    extraResources:
+      - apiGroups:
+          - '*'
+        resources:
+          - '*'
+        verbs:
+          - get
+          - list
+          - watch
 ```
 
 **NOTE**: using wildcard permissions is not recommended. Use explicit permissions instead.
