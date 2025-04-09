@@ -1,7 +1,7 @@
 ---
 title: Policy Reporter
 description: Apply Kyverno policies anywhere
-weight: 420
+weight: 180
 hide_feedback: true
 ---
 

@@ -2,7 +2,7 @@
 title: Policy Exceptions
 description: >
   Create an exception to an existing policy using a PolicyException. 
-weight: 80
+weight: 110
 ---
 
 {{% alert title="Warning" color="warning" %}}

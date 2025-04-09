@@ -2,7 +2,7 @@
 title: Monitoring
 description: >
   Monitor and observe the operation of Kyverno using metrics.
-weight: 65
+weight: 70
 ---
 
 ## Introduction

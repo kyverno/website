@@ -1,7 +1,7 @@
 ---
 title: Kyverno Chainsaw
 description: Declarative e2e testing
-weight: 410
+weight: 170
 hide_feedback: true
 ---
 
