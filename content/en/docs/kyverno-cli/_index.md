@@ -1,7 +1,7 @@
 ---
 title: Kyverno CLI
 description: Apply and test policies outside a cluster
-weight: 70
+weight: 100
 ---
 
 The Kyverno Command Line Interface (CLI) is designed to validate and test policy behavior to resources prior to adding them to a cluster.
