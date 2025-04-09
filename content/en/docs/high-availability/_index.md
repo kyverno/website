@@ -1,7 +1,7 @@
 ---
 title: High Availability
 linkTitle: High Availability
-weight: 120
+weight: 140
 description: >
   Understand the various components of Kyverno and how it impacts high availability.
 ---

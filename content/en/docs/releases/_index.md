@@ -3,7 +3,7 @@ title: Releases
 linkTitle: "Releases"
 description: >
     Understand how and when Kyverno releases software.
-weight: 120
+weight: 150
 ---
 
 ## Release Notes and Assets
