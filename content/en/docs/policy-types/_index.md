@@ -2,7 +2,7 @@
 title: Policy Types
 description: >-
     Kyverno Policy Types
-weight: 48
+weight: 30
 ---
 
 Kyverno offers multiple policy types decribed below.

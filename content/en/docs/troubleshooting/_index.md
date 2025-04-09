@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting 
 description: Processes for troubleshooting and recovery of Kyverno.
-weight: 110
+weight: 130
 ---
 
 Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following sections can be used to help troubleshoot and recover when things go wrong.
@@ -55,11 +55,13 @@ Use [Namespace selectors](/docs/installation/customization.md#namespace-selector
 
    ```sh
    $ kubectl get validatingwebhookconfigurations,mutatingwebhookconfigurations
-    NAME                                                                                                   WEBHOOKS   AGE
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-cleanup-validating-webhook-cfg     1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-validating-webhook-cfg      1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-exception-validating-webhook-cfg   1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-validating-webhook-cfg    1          5d21h
+    NAME                                                                                                        WEBHOOKS       AGE
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-cleanup-validating-webhook-cfg             1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-validating-webhook-cfg              1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-exception-validating-webhook-cfg           1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-validating-webhook-cfg            1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-global-context-validating-webhook-cfg      1          5d21h
+    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-ttl-validating-webhook-cfg                 1          5d21h
 
     NAME                                                                                              WEBHOOKS   AGE
     mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-mutating-webhook-cfg     1          5d21h

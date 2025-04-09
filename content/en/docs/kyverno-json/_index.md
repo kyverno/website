@@ -1,7 +1,7 @@
 ---
 title: Kyverno JSON
 description: Apply Kyverno policies anywhere
-weight: 400
+weight: 160
 hide_feedback: true
 ---
 

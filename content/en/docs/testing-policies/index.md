@@ -1,7 +1,7 @@
 ---
 title: "Testing Policies"
 linkTitle: "Testing Policies"
-weight: 55
+weight: 50
 description: >
     Test Kyverno policies for effectiveness.
 ---
