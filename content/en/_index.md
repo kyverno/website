@@ -1,7 +1,7 @@
-+++
+---
 title = "Kyverno"
 linkTitle = "Kyverno"
-+++
+---
 
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
 
@@ -21,6 +21,7 @@ linkTitle = "Kyverno"
 		</a>
 	</p>
 </div>
+
 {{< /blocks/cover >}}
 
 {{% blocks/lead color="light" %}}
