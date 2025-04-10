@@ -1,6 +1,6 @@
 ---
 date: 2024-03-10T19:55:26Z
-title: "kyverno completion fish"
+title: kyverno completion fish
 weight: 35
 ---
 ## kyverno completion fish

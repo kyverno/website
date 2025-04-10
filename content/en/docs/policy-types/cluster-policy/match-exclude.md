@@ -1,7 +1,6 @@
 ---
 title: Selecting Resources
-description: >
-  Identifying and filtering resources for rule evaluation.
+description: Identifying and filtering resources for rule evaluation.
 weight: 20
 ---
 

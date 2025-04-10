@@ -1,7 +1,6 @@
 ---
 title: Applying Policies
-description: >-
-    Apply policies across clusters and delivery pipelines
+description: Apply policies across clusters and delivery pipelines
 weight: 40
 ---
 
