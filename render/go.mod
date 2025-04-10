@@ -1,7 +1,6 @@
 module github.com/kyverno/website/render
 
-go 1.21.4
-toolchain go1.23.7
+go 1.24.2
 
 require (
 	github.com/go-git/go-billy/v5 v5.6.0
