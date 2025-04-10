@@ -15,8 +15,9 @@ linkTitle = "Kyverno"
 	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="docs/introduction/#quick-start-guides">
 		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
 	</a>
-  <a class="btn btn-link text-info" href="#about-kyverno" aria-label="Read more"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
-
+	<a class="btn btn-link text-info" href="#about-kyverno" aria-label="Read more">
+		<i class="fa fa-chevron-circle-down" style="font-size: 400%"></i>
+	</a>
 </div>
 {{< /blocks/cover >}}
 
