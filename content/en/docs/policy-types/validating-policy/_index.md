@@ -5,9 +5,7 @@ description: >-
 weight: 30
 ---
 
-Kyverno’s `ValidatingPolicy` extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other critical features required for managing the full Policy as Code lifecycle.
-
-A ValidatingPolicy has a similar structure to the `ValidatingAdmissionPolicy`, with additional fields for Kyverno features. Hence, a `ValidatingPolicy` is a strict superset of a `ValidatingAdmissionPolicy`.
+The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
 ## Comparison with ValidatingAdmissionPolicy
 
@@ -29,14 +27,15 @@ The table below compares major features across the Kubernetes `ValidatingAdmissi
 | Testing            | _                            | Kyverno CLI (unit), Chainsaw (e2e)          |
 
 
-
 ## Additional Fields
 
-The `ValidatingPolicy` includes several additional fields that enhance configuration flexibility and improve policy readability.  
+### evaluation
 
-- **evaluation**: Controls whether the policy is enforced during admission, background processing, or both by enabling or disabling the respective controllers.  
-- **webhookConfiguration**: Defines `timeoutSeconds`, ensuring policies are evaluated within a specified timeframe to prevent enforcement failures due to webhook delays.  
-- **autogen**: Automatically generates policies for pod controllers, allowing users to define policies at the pod level while seamlessly applying them to controllers like Deployments, StatefulSets, DaemonSets, and CronJobs. Kyverno can also generate `ValidatingAdmissionPolicy` and `ValidatingAdmissionPolicyBinding` from a `ValidatingPolicy`, reducing manual effort in managing admission controls.
+The `ValidatingPolicy` extends the Kubernetes `ValidatingAdmissionPolicy` with the following additional fields for advanced features:
+
+- **evaluation**: defines how the policy is applied and how the payload is processed.
+- **webhookConfiguration**: defines webhook configuration properties such as `timeoutSeconds`.  
+- **autogen**: defines auto-generation of policies for pod controllers and API server execution.
 
 Here is an example of generating policies for deployments and cronjobs:
 
@@ -80,7 +79,7 @@ Here is an example of generating policies for deployments and cronjobs:
 
 ## Extended CEL Library  
 
-Kyverno’s `ValidatingPolicy` enhances CEL with a powerful context library, enabling advanced policy enforcement. The following functions provide greater validation flexibility:  
+Kyverno’s `ValidatingPolicy` enhances Kubernetes' CEL environment with a powerful context library, enabling advanced policy enforcement. The following functions provide greater validation flexibility:  
 
 - **`resource.Get()`**: Retrieves specific Kubernetes resources (e.g., ConfigMaps, Secrets, Pods) for validation.  
 
@@ -171,7 +170,7 @@ spec:
         The root path already exists in the cluster but not in the namespace.
 ```
 
-- **`ParseServiceAccount()`**: Extracts details from a service account to enforce access control policies.  
+- **`user.ParseServiceAccount()`**: Extracts details from a service account to enforce access control policies.  
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
@@ -236,7 +235,7 @@ images.containers.map(image, expression).all(e, e > 0)
 - **`.all(e, e > 0)`** → Ensures that all evaluated results meet the condition (`e > 0`), meaning the validation passes only if every image satisfies the requirement.  
 
 
-- **`imagedata()`**: Parses and validates OCI image metadata, including tags, digests, architecture, and more.  
+- **`imagedata.Get()`**: Parses and validates OCI image metadata, including tags, digests, architecture, and more.  
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
@@ -266,7 +265,7 @@ spec:
      
 ```
 
-The `imagedata()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
+The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
 | **Field**       | **Description**                                    | **Example** |
 |---------------|------------------------------------------------|-------------|
@@ -279,7 +278,7 @@ The `imagedata()` function extracts key metadata from OCI images, allowing valid
 | `mediaType`   | The media type of the image manifest.          | `application/vnd.docker.distribution.manifest.v2+json` |
 | `layers`      | A list of layer digests that make up the image. | `["sha256:layer1...", "sha256:layer2..."]` |
 
-In addition to these fields, `imagedata()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
+In addition to these fields, `imagedata.Get()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
 
 
 - **`globalcontext.Get`** : it fetches deployment data and makes it accessible across all policies.
