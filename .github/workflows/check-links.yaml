@@ -1,27 +1,32 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
 name: Check Links
 
+permissions: {}
+
 on:
-  repository_dispatch:
-  workflow_dispatch:
   pull_request:
     branches:
-      - main
+    - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+      
 jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Check unrendered links
-        id: lychee_unrendered
-        uses: lycheeverse/lychee-action@1d97d84f0bc547f7b25f4c2170d87d810dc2fb2c # v2.4.0
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          fail: true
-          debug: false
-          args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml -E content/
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - name: Check unrendered links
+      id: lychee_unrendered
+      uses: lycheeverse/lychee-action@1d97d84f0bc547f7b25f4c2170d87d810dc2fb2c # v2.4.0
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        fail: true
+        debug: false
+        args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml -E content/
 
       # Deactivated. The --include-fragments flag is causing failures because rendered links
       # have a trailing '#' which is probably a result of the link style change plus the new
