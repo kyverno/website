@@ -1,6 +1,6 @@
 ---
-title: "Kyverno Blog"
-linkTitle: "Blog"
+title: Kyverno Blog
+linkTitle: Blog
 menu:
   main:
     weight: 30

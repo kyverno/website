@@ -1,7 +1,7 @@
 ---
-title: "Nirmata"
-linkTitle: "Nirmata"
-description: "Kubernetes Policy and Governance from the creators of Kyverno"
+title: Nirmata
+linkTitle: Nirmata
+description: Kubernetes Policy and Governance from the creators of Kyverno
 type: docs
 ---
 
