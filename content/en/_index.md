@@ -1,6 +1,6 @@
 ---
-title = "Kyverno"
-linkTitle = "Kyverno"
+title: Kyverno
+linkTitlem: Kyverno
 ---
 
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
