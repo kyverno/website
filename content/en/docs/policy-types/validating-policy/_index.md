@@ -331,10 +331,13 @@ The **Image library** offers functions to parse and analyze image references dir
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all images are from `ghcr.io` registry |
-| `image("nginx:latest").containsDigest()` | Check if the image has a digest |
 | `image("nginx:latest").registry() == "docker.io"` | Validate image registry |
+| `image("nginx:latest").repository() == "library/nginx"` | Validate repository path |
+| `image("nginx:latest").identifier() == "latest"` | Check if the image identifier is a tag |
+| `image("nginx:sha256:abcd...").containsDigest()` | Check if the image has a digest |
+| `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all images are from `ghcr.io` registry |
 | `object.spec.containers.map(c, image(c.image)).all(i, !i.containsDigest())` | Ensure images are tagged, not digested |
+
 
 
 - **`image`**: Used within policies to imageReference, enabling iteration over all images in a resource for validation and manipulation through function parsing function.  
@@ -410,13 +413,26 @@ The **ImageData library** extends image inspection with rich metadata like archi
 
 #### Examples: 
 
+
 | CEL Expression | Purpose |
 |----------------|---------|
 | `imagedata.Get("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
+| `imagedata.Get("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
+| `imagedata.Get("nginx:1.21").config.author == "docker"` | Check the image author |
+| `imagedata.Get("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
+| `imagedata.Get("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
+| `imagedata.Get("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
+| `imagedata.Get("nginx:1.21").config.container == "nginx"` | Validate container name |
+| `imagedata.Get("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
 | `imagedata.Get("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
-| `imagedata.Get("nginx:1.21").os == "linux"` | Verify the image is built for Linux |
 | `imagedata.Get("nginx:1.21").layers.size() > 0` | Confirm the image has layers |
-
+| `imagedata.Get("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
+| `imagedata.Get("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
+| `imagedata.Get("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
+| `imagedata.Get("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
+| `imagedata.Get("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
+| `imagedata.Get("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
+| `imagedata.Get("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
 
 
 The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
