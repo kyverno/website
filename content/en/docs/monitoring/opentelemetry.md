@@ -97,7 +97,7 @@ spec:
         name: collector-config
 ```
 
-This references the collector defined in the `configmap.yaml` above. Here we are using a Deployement with just a single replica. Ideally, a DaemonSet is preferred. Check the [OpenTelemetry documentation](https://opentelemetry.io/docs/instrumentation/go/getting-started) for more deployment strategies.
+This references the collector defined in the `configmap.yaml` above. Here we are using a Deployment with just a single replica. Ideally, a DaemonSet is preferred. Check the [OpenTelemetry documentation](https://opentelemetry.io/docs/instrumentation/go/getting-started) for more deployment strategies.
 
 ### The Collector Service
 
