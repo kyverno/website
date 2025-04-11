@@ -1,5 +1,4 @@
 ---
-date: 2024-03-10T19:55:26Z
 title: "kyverno migrate"
 weight: 35
 ---
@@ -51,5 +50,5 @@ kyverno migrate [flags]
 
 ### SEE ALSO
 
-* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
 

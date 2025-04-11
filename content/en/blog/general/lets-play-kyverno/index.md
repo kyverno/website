@@ -1,8 +1,8 @@
 ---
 date: 2023-06-04
-title: "Let's Play Kyverno"
-linkTitle: "Let's Play Kyverno"
-description: "Away with the hurdles. How to get started with a Kubernetes Native Tool without an actual Kubernetes cluster?"
+title: Let's Play Kyverno
+linkTitle: Let's Play Kyverno
+description: Away with the hurdles. How to get started with a Kubernetes Native Tool without an actual Kubernetes cluster?
 ---
 
 ## Foreword

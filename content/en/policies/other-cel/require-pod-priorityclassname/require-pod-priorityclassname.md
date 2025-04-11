@@ -46,7 +46,7 @@ spec:
     validate:
       cel:
         expressions:
-          - expression: "has(object.spec.priorityClassName) && object.spec.priorityClassName != ''"
+          - expression: "object.spec.?priorityClassName.orValue('') != ''"
             message: "Pods must define the priorityClassName field."
 
 

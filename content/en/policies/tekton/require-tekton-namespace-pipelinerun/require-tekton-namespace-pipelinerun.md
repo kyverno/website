@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/description: >- 
       A Namespace is required for a PipelineRun and may not be set to `default`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-pipelinerun-namespace

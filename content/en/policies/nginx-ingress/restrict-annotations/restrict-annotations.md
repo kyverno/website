@@ -31,7 +31,7 @@ metadata:
       "annotation-value-word-blocklist" configuration setting is also recommended. 
       Please refer to the CVE for details. 
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   rules:
     - name: check-ingress
       match:

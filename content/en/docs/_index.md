@@ -1,4 +1,4 @@
 ---
-title: "Documentation"
-linkTitle: "Documentation"
+title: Documentation
+linkTitle: Documentation
 ---

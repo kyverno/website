@@ -32,7 +32,7 @@ metadata:
       either a label `org.opencontainers.image.source` or a newer annotation in the
       manifest of the same name.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: check-source
     match:
