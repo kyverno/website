@@ -1,9 +1,9 @@
-+++
-description = "Pod Security Standards implemented as Kyverno policies."
-title = "Pod Security"
-type = "policies"
-url = "/policies/pod-security/"
-+++
+---
+description: Pod Security Standards implemented as Kyverno policies.
+title: Pod Security
+type: policies
+url: /policies/pod-security/
+---
 
 <br/>
 

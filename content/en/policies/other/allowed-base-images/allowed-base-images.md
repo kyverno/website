@@ -32,7 +32,7 @@ metadata:
       that a container's base, found in an OCI annotation, is in a cluster-wide
       allow list.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: allowed-base-images
     match:

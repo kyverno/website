@@ -31,7 +31,7 @@ metadata:
       This policy blocks any Role or ClusterRole that contains a wildcard entry in
       the verbs list found in any rule.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: wildcard-verbs

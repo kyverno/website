@@ -1,9 +1,9 @@
-+++
-description = "Migration guidelines with policy mappings"
-title = "Gatekeeper Migration Guide"
-type = "policies"
-url = "/policies/gatekeeper/"
-+++
+---
+description: Migration guidelines with policy mappings
+title: Gatekeeper Migration Guide
+type: policies
+url: /policies/gatekeeper/
+---
 
 <br/>
 
