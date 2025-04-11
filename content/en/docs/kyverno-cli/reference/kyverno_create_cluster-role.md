@@ -1,38 +1,30 @@
 ---
-title: "kyverno jp"
+title: "kyverno create cluster-role"
 weight: 35
 ---
-## kyverno jp
+## kyverno create cluster-role
 
-Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+Create an aggregated role for given resource types
 
 ### Synopsis
 
-Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
-
-  For more information visit https://kyverno.io/docs/kyverno-cli/#jp
-
-```
-kyverno jp [flags]
-```
-
-### Examples
+This command generates a Kubernetes ClusterRole for specified resource types.
+The output is printed to stdout by default or saved to a specified file.
+Required flags include 'api-groups', 'verbs', and 'resources'.
 
 ```
-  # List functions
-  kyverno jp function
-
-  # Evaluate query
-  kyverno jp query -i object.yaml 'request.object.metadata.name | truncate(@, `9`)'
-
-  # Parse expression
-  kyverno jp parse 'request.object.metadata.name | truncate(@, `9`)'
+kyverno create cluster-role [name]  [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for jp
+  -g, --api-groups string         API group for the resource (required)
+      --controllers stringArray   List of controllers for the ClusterRole (default = background-controller) (default [background-controller])
+  -h, --help                      help for cluster-role
+  -o, --output string             Output file path (prints to console if not set)
+      --resources stringArray     A comma separated list of resources (required)
+      --verbs stringArray         A comma separated list of verbs or 'all' for all verbs
 ```
 
 ### Options inherited from parent commands
@@ -56,8 +48,5 @@ kyverno jp [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno jp function](../kyverno_jp_function)	 - Provides function informations.
-* [kyverno jp parse](../kyverno_jp_parse)	 - Parses jmespath expression and shows corresponding AST.
-* [kyverno jp query](../kyverno_jp_query)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno create](../kyverno_create)	 - Helps with the creation of various Kyverno resources.
 
