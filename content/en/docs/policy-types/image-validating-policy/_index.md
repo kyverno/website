@@ -1,7 +1,6 @@
 ---
 title: ImageValidatingPolicy
-description: An ImageValidatingPolicy validates image signatures and attestations.
+description: >-
+    Validate Image Signatures and Attestations
 weight: 40
 ---
-
-Coming soon...
