@@ -1,9 +1,9 @@
 ---
 date: 2023-11-13
-title: "Using CEL Expressions in Kyverno Policies"
-linkTitle: "Using CEL Expressions in Kyverno Policies"
+title: Using CEL Expressions in Kyverno Policies
+linkTitle: Using CEL Expressions in Kyverno Policies
 author: Mariam Fahmy
-description: "Using CEL Expressions in Kyverno Policies"
+description: Using CEL Expressions in Kyverno Policies
 ---
 Kyverno, in simple terms, is a policy engine for Kubernetes that can be used to describe policies and validate resource requests against those policies. It allows us to create policies for our Kubernetes cluster on different levels. It enables us to validate, change, and create resources based on our defined policies.
 
@@ -20,7 +20,7 @@ A policy consists of different clauses, such as:
 - Generate: It creates additional resources.
 - Verify Images: It verifies container image signatures using Cosign and Notary.
 
-Refer to [Selecting Resources](../../../docs/writing-policies/match-exclude.md) for more information.
+Refer to [Selecting Resources](/docs/policy-types/cluster-policy/match-exclude.md) for more information.
 
 > Each rule can contain only a single validate, mutate, generate, or verifyImages child declaration.
 
@@ -550,7 +550,7 @@ deployment.apps/deployment-pass created
 
 Since Kubernetes has many higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources, it’d be inefficient to write a policy that targets Pods and every higher-level controller. Kyverno solves this issue by supporting the automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod.
 
-Check the [autogen rules](../../../docs/writing-policies/autogen.md) for more information.
+Check the [autogen rules](/docs/policy-types/cluster-policy/autogen.md) for more information.
 
 For example, when creating a validation policy like below, which disallows latest image tags, the policy applies to all resources capable of generating Pods.
 

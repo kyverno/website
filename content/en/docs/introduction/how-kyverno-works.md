@@ -1,10 +1,8 @@
-
 ---
 title: How Kyverno Works
 linkTitle: How Kyverno Works
 weight: 10
-description: >
-  An overview of how Kyverno works
+description: An overview of how Kyverno works
 ---
 
 

@@ -32,7 +32,7 @@ metadata:
       in the list of TLS hosts.
 spec:
   background: false
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: host-match-tls
     match:

@@ -70,7 +70,7 @@ The `applicaition.yaml` manifest defines the following resource:
 
 - A ConfigMap `envoy-config` is used to pass an Envoy configuration with an External Authorization Filter to direct authorization checks to the Kyverno-Envoy-Plugin sidecar. 
 
-- The Deployment also includes an init container that install iptables rules to redirect all container traffic to the Envoy proxy sidecar container , more about init container can be found [here](https://github.com/kyverno/kyverno-envoy-plugin/tree/main/demo/standalone-envoy/envoy_iptables)
+- The Deployment also includes an init container that install iptables rules to redirect all container traffic to the Envoy proxy sidecar container , more about init container can be found [here](https://github.com/kyverno/kyverno-envoy-plugin/tree/main/docs/demo/standalone-envoy/envoy_iptables)
 
 ### Make Test application accessible in the cluster
 

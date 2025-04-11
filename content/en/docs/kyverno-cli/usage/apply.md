@@ -74,6 +74,47 @@ Save the mutated resource to a directory:
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml -o foo/
 ```
 
+Run a policy with a mutate existing rule on a group of target resources:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml  --target-resource /path/to/target1.yaml --target-resource /path/to/target2.yaml
+
+Applying 1 policy rule(s) to 1 resource(s)...
+
+mutate policy <policy-name> applied to <trigger-name>:
+<trigger-resource>
+---
+patched targets:
+
+<patched-target1>
+
+---
+
+<patched-target2>
+
+---
+
+pass: 2, fail: 0, warn: 0, error: 0, skip: 0
+```
+
+Run a policy with a mutate existing rule on target resources from a directory:
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml  --target-resources /path/to/targets/
+
+Applying 1 policy rule(s) to 1 resource(s)...
+
+mutate policy <policy-name> applied to <trigger-name>:
+<trigger-resource>
+---
+patched targets:
+
+<patched-targets>
+
+pass: 5, fail: 0, warn: 0, error: 0, skip: 0
+```
+
+
 Apply a policy containing variables using the `--set` or `-s` flag to pass in the values. Variables that begin with `{{request.object}}` normally do not need to be specified as these will be read from the resource.
 
 ```sh
@@ -85,7 +126,7 @@ Use `-f` or `--values-file` for applying multiple policies to multiple resources
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
 {{% alert title="Note" color="info" %}}
-When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](../../writing-policies/external-data-sources.md#handling-configmap-array-values).
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources.md#handling-configmap-array-values).
 {{% /alert %}}
 
 ```sh
@@ -335,7 +376,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](../../writing-policies/match-exclude.md#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude.md#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -708,7 +749,7 @@ summary:
 
 ### Applying Policy Exceptions
 
-[Policy Exceptions](../../writing-policies/exceptions.md) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
+[Policy Exceptions](/docs/policy-types/cluster-policy/exceptions.md) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
