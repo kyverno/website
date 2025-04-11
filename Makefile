@@ -1,23 +1,21 @@
 
-############
-# POLICIES #
-############
-
-.PHONY: render-policies
-render-policies: ## Render policies
-	@rm -rf ./content/en/policies/*
-	@cd render && go run . -- https://github.com/kyverno/policies/main ../content/en/policies/
-
 ###########
 # CODEGEN #
 ###########
 
 .PHONY: codegen-cli-docs
 codegen-cli-docs: ## Build CLI docs
-	@docker run -it -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs --autogenTag=false --website --output "/work/content/en/docs/Kyverno CLI/reference"
+	@rm -rf ./content/en/docs/kyverno-cli/reference/kyverno*.md
+	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs --autogenTag=false --website --noDate --output "/work/content/en/docs/kyverno-cli/reference"
+
+.PHONY: codegen-policies
+codegen-policies: ## Render policies
+	@rm -rf ./content/en/policies/*/
+	@cd render && go run . -- https://github.com/kyverno/policies/main ../content/en/policies/
 
 .PHONY: codegen
 codegen: ## Rebuild all generated code and docs
+codegen: codegen-policies
 codegen: codegen-cli-docs
 
 .PHONY: verify-codegen

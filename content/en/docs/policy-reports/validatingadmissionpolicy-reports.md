@@ -1,7 +1,6 @@
 ---
 title: ValidatingAdmissionPolicy Reports
-description: >
-  Generate Policy Reports for ValidatingAdmissionPolicies and their bindings.
+description: Generate Policy Reports for ValidatingAdmissionPolicies and their bindings.
 weight: 15
 ---
 

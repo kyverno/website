@@ -1,9 +1,8 @@
 ---
-title: "Introduction"
-linkTitle: "Introduction"
+title: Introduction
+linkTitle: Introduction
 weight: 10
-description: >
-  Learn about Kyverno and its powerful capabilities
+description: Learn about Kyverno and its powerful capabilities
 ---
 
 ## About Kyverno

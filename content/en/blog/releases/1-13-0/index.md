@@ -1,8 +1,8 @@
 ---
 date: 2024-10-30
-title: "Announcing Kyverno Release 1.13!"
-linkTitle: "Kyverno 1.13"
-description: "Kyverno 1.13 released with Sigstore bundle verification, exceptions for validatingAdmissionPolicies, new assertion trees, generate enhancments, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!"
+title: Announcing Kyverno Release 1.13!
+linkTitle: Kyverno 1.13
+description: Kyverno 1.13 released with Sigstore bundle verification, exceptions for validatingAdmissionPolicies, new assertion trees, generate enhancments, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!
 draft: false
 ---
 

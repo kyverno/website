@@ -33,7 +33,7 @@ metadata:
       explicitly mounted in readOnly mode.
 spec:
   background: false
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: ensure-hostpaths-readonly
     match:
