@@ -1,7 +1,6 @@
 ---
 title: External Data Sources
-description: >
-  Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
+description: Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
 weight: 100
 ---
 
@@ -92,7 +91,7 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 See the [JMESPath page](jmespath.md#formatting) for more information on formatting.
 {{% /alert %}}
 
-Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](../installation/customization.md#container-flags) if desired.
+Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](/docs/installation/customization.md#container-flags) if desired.
 
 ### Handling ConfigMap Array Values
 
@@ -207,7 +206,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp query "items | le
 ```
 
 {{% alert title="Tip" color="info" %}}
-Use `kubectl get --raw` and the [`kyverno jp`](../kyverno-cli/usage/jp.md) command to test API calls and parse results.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/usage/jp.md) command to test API calls and parse results.
 {{% /alert %}}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -710,7 +709,7 @@ context:
 
 The data returned by GlobalContextEntries may vary depending on whether it is a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well. Ensure you use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
 
-To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](../kyverno-cli/usage/apply.md).
+To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](/docs/kyverno-cli/usage/apply.md).
 
 {{% alert title="Warning" color="warning" %}}
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
@@ -917,6 +916,43 @@ context:
 
 To access images stored on private registries, see [using private registries](verify-images/sigstore/_index.md#using-private-registries)
 
-For more examples of using an imageRegistry context, see the [samples page](../../policies).
+For more examples of using an imageRegistry context, see the [samples page](/docs/policies).
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
+
+## Service API Calls with Custom HTTP Headers
+
+Kyverno now supports including custom HTTP headers when making API calls to external services. This enhancement allows users to add extra metadata—such as authentication tokens, user agents, or any other header information—that may be required by the external service.
+
+## Feature Overview
+
+Prior to this update, API calls made by Kyverno policies did not allow the inclusion of extra HTTP headers. With this feature, you can now specify a `headers` field under the `service` configuration in an API call, making your external requests more flexible and secure.
+
+## Example Policy Configuration
+
+``` yaml
+context:
+  - name: result
+    apiCall:
+      method: POST
+      data:
+        - key: foo
+          value: bar
+        - key: namespace
+          value: "{{ `{{ request.namespace }}` }}"
+      service:
+        url: http://my-service.svc.cluster.local/validation
+        headers:
+          - key: "UserAgent"
+            value: "Kyverno Policy XYZ"
+          - key: "Authorization"
+            value: "Bearer {{ MY_SECRET }}"
+```
+
+## Explanation
+
+- **service.url**: Specifies the endpoint of the external service.
+- **service.headers**: A new field that accepts an array of key-value pairs. Each pair represents a custom HTTP header to include in the API request.
+  - **UserAgent**: Can be used to identify the client or policy making the call.
+  - **Authorization**: Typically used to pass authentication tokens or credentials.
+- **Variable Substitution**: You can dynamically include values (e.g., `{{ MY_SECRET }}`) in your headers using Kyverno's variable substitution mechanism.

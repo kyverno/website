@@ -1,5 +1,5 @@
 ---
-title: "Grafana Dashboard" 
+title: Grafana Dashboard 
 description: A ready-to-use dashboard for Kyverno metrics.
 weight: 60
 ---
