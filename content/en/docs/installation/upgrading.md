@@ -29,6 +29,10 @@ Kyverno version 1.13 contains the following breaking configuration changes:
 
 To upgrade to 1.13 and continue to allow wildcard view permissions for all Kyverno controllers, use a [Helm values file](https://github.com/kyverno/kyverno/blob/v1.13.0/charts/kyverno/values.yaml) that grants these permissions as specified below:
 
+{{% alert title="Important" color="warning" %}}
+Note that the `rbac` key under `admissionController`, `backgroundController`, and `reportsController` is **required** and must not be omitted.
+{{% /alert %}}
+
 ```yaml
 admissionController:
   rbac:
