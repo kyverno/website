@@ -1084,6 +1084,41 @@ EOF
 </p>
 </details>
 
+### Md5
+
+<details><summary>Expand</summary>
+<p>
+
+The `md5()` function takes a string of any length and returns a fixed hash value. For example, when `md5()` is applied to the string `Alice & Bob`, it produces the hash `def42e1abd2462df1f9f0a4b3d488221`. This function is particularly useful for creating unique yet shorter identifiers, making it a good option when SHA-256’s 64-character output is too long for Kubernetes resource constraints.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+**Example:** This policy mutates the names of specified resources to their MD5 hash values.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: md5-demo
+spec:
+  rules:
+    - name: convert-name-to-hash
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ md5(request.object.metadata.name) }}"
+```
+
+</p>
+</details>
+
 ### Modulo
 
 <details><summary>Expand</summary>
@@ -1896,6 +1931,41 @@ spec:
               - key: "{{ semver_compare( {{ components[?name == 'httpclient'].version | [0] }}, '>4.5.0') }}"
                 operator: Equals
                 value: true
+```
+
+</p>
+</details>
+
+### Sha1
+
+<details><summary>Expand</summary>
+<p>
+
+The `sha1()` function takes a string of any length and returns a fixed hash value. For example, when `sha1()` is applied to the string `Alice & Bob`, it gives the output as its SHA1 hash, `e3ec484930685a61b0f824cd684a68699d2b98c1`. This function is particularly useful for creating unique yet shorter identifiers, making it a good option when SHA-256’s 64-character output is too long for Kubernetes resource constraints.
+
+| Input 1            | Output  |
+|--------------------|---------|
+| String             | String  |
+
+**Example:** This policy mutates the names of specified resources to their SHA1 hash values.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sha1-demo
+spec:
+  rules:
+    - name: convert-name-to-hash
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            name: "{{ sha1(request.object.metadata.name) }}"
 ```
 
 </p>
