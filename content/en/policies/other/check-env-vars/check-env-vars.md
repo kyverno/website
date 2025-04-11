@@ -31,7 +31,7 @@ metadata:
       `DISABLE_OPA` environment variable is defined, it must not be set to a value of `"true"`.
 spec:
   background: true
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
     - name: check-disable-opa
       match:

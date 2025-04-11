@@ -97,7 +97,7 @@ spec:
         name: collector-config
 ```
 
-This references the collector defined in the `configmap.yaml` above. Here we are using a Deployemtn with just a single replica. Ideally, a DaemonSet is preferred. Check the [OpenTelemetry documentation](https://opentelemetry.io/docs/instrumentation/go/getting-started) for more deployment strategies.
+This references the collector defined in the `configmap.yaml` above. Here we are using a Deployement with just a single replica. Ideally, a DaemonSet is preferred. Check the [OpenTelemetry documentation](https://opentelemetry.io/docs/instrumentation/go/getting-started) for more deployment strategies.
 
 ### The Collector Service
 
@@ -128,7 +128,7 @@ This defines a Service for the discovery of the collector Deployment.
 
 ### Setting up Kyverno and passing required flags
 
-See the [installation instructions](../installation/_index.md) for Kyverno. Depending on the method used, the following flags must be passed.
+See the [installation instructions](/docs/installation/_index.md) for Kyverno. Depending on the method used, the following flags must be passed.
 
 - Pass the flag `metricsPort` to defined the OpenTelemetry Collector endpoint for collecting metrics.
 - Pass the flag `otelConfig=grpc` to export the metrics and traces to an OpenTelemetry collector on the metrics port endpoint

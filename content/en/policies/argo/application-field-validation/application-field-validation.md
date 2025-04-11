@@ -29,7 +29,7 @@ metadata:
       Path or chart must be specified but never both. And destination.name or
       destination.server must be specified but never both.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: source-path-chart

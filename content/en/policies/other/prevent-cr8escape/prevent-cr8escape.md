@@ -30,7 +30,7 @@ metadata:
       and gain root access to the host. The recommended remediation is to disallow
       sysctl settings with + or = in their value.
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: restrict-sysctls-cr8escape
@@ -40,10 +40,11 @@ spec:
             kinds:
               - Pod
       validate:
-        message: "characters '+' or '=' are not allowed in sysctls values"      
+        message: "characters '+' or '=' are not allowed in sysctls values"
         pattern:
           spec:
             =(securityContext):
               =(sysctls):
                 - =(value): "!*+* & !*=*"
+
 ```

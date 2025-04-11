@@ -45,7 +45,7 @@ spec:
     validate:
       cel:
         expressions:
-          - expression: "has(object.automountServiceAccountToken) && object.automountServiceAccountToken == false"
+          - expression: "object.?automountServiceAccountToken.orValue(true) == false"
             message: "ServiceAccounts must set automountServiceAccountToken to false."
 
 
