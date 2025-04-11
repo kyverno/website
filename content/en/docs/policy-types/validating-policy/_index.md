@@ -87,7 +87,7 @@ Here is an example of generating policies for deployments and cronjobs:
            Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER,
 ```
 
-## Extended CEL Library  
+## Kyverno CEL Libraries
 
 Kyverno’s `ValidatingPolicy` enhances Kubernetes' CEL environment with a powerful context library, enabling advanced policy enforcement. The following functions provide greater validation flexibility: 
 
