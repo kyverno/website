@@ -1,6 +1,6 @@
 ---
 date: 2024-03-10T19:55:26Z
-title: "kyverno completion bash"
+title: kyverno completion bash
 weight: 35
 ---
 ## kyverno completion bash

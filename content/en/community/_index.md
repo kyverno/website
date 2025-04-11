@@ -1,6 +1,6 @@
 ---
 title: Community
-linkTitle: "Community"
+linkTitle: Community
 type: docs
 ---
 

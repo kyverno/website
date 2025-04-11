@@ -1,7 +1,6 @@
 ---
 title: Policy Exceptions
-description: >
-  Create an exception to an existing policy using a PolicyException. 
+description: Create an exception to an existing policy using a PolicyException. 
 weight: 110
 ---
 

@@ -1,10 +1,11 @@
 ---
 date: 2023-10-04
-title: "Applying Validating Admission Policies using Kyverno CLI"
-linkTitle: "Applying Validating Admission Policies using Kyverno CLI"
+title: Applying Validating Admission Policies using Kyverno CLI
+linkTitle: Applying Validating Admission Policies using Kyverno CLI
 author: Mariam Fahmy
-description: "Using Kyverno CLI to apply Validating Admission Policies"
+description: Using Kyverno CLI to apply Validating Admission Policies
 ---
+
 The [Kyverno Command Line Interface (CLI)](../../../docs/kyverno-cli/) allows applying policies outside of Kubernetes clusters and can validate and test policy behavior prior to adding them to a cluster.
 
 The two commands used for testing are `apply` and `test`:

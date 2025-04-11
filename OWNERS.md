@@ -2,9 +2,9 @@ approvers:
 - JimBugwadia
 - realshuting
 - eddycharly
-- fjogeleit
 - MariamFahmy98
 - vishal-chdhry
+- fjogeleit
 
 reviewers:
 - JimBugwadia
