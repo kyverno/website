@@ -1,7 +1,6 @@
 ---
 title: Validate Rules
-description: >
-  Check resources configurations for policy compliance.
+description: Check resources configurations for policy compliance.
 weight: 30
 ---
 

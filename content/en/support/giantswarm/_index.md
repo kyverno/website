@@ -1,7 +1,7 @@
 ---
-title: "Giant Swarm"
-linkTitle: "Giant Swarm"
-description: "Managed Kubernetes as a Service"
+title: Giant Swarm
+linkTitle: Giant Swarm
+description: Managed Kubernetes as a Service
 type: docs
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "Nirmata"
-linkTitle: "Nirmata"
-description: "Kubernetes Policy and Governance from the creators of Kyverno"
+title: Nirmata
+linkTitle: Nirmata
+description: Kubernetes Policy and Governance from the creators of Kyverno
 type: docs
 ---
 
@@ -12,7 +12,7 @@ type: docs
 [Nirmata Enterprise for Kyverno](https://nirmata.com/nirmata-enterprise-for-kyverno/) is designed for savvy platform engineering teams who are looking to save time and costs, and for peace of mind for operating Kyverno. It includes:
 
 * Drop-in compatibility with Kyverno OSS
-* Long Term compatibility Support (LTS) across Kyverno and Kubernetes ([support matrix](shttps://docs.nirmata.io/docs/n4k/release-compatibility-matrix/)).
+* Long Term compatibility Support (LTS) across Kyverno and Kubernetes ([support matrix](https://docs.nirmata.io/docs/n4k/release-compatibility-matrix/)).
 * SLAs for CVE and critical fixes
 * etcd offload for improved performance
 * Curated policy sets covering security and operations needs

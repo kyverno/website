@@ -1,7 +1,6 @@
 ---
 title: Generate Rules
-description: >
-  Create new Kubernetes resources based on a policy and optionally keep them in sync.
+description: Create new Kubernetes resources based on a policy and optionally keep them in sync.
 weight: 50
 ---
 

@@ -1,9 +1,8 @@
 ---
-title: "Testing Policies"
-linkTitle: "Testing Policies"
-weight: 55
-description: >
-    Test Kyverno policies for effectiveness.
+title: Testing Policies
+linkTitle: Testing Policies
+weight: 50
+description: Test Kyverno policies for effectiveness.
 ---
 
 The [Kyverno CLI `test` command](/docs/kyverno-cli/usage/test.md) can be used to test if a policy is behaving as expected.

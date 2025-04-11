@@ -1,7 +1,6 @@
 ---
 title: Auto-Gen Rules
-description: >
-  Automatically generate rules for Pod controllers.
+description: Automatically generate rules for Pod controllers.
 weight: 110
 ---
 

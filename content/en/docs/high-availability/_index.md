@@ -1,9 +1,8 @@
 ---
 title: High Availability
 linkTitle: High Availability
-weight: 120
-description: >
-  Understand the various components of Kyverno and how it impacts high availability.
+weight: 140
+description: Understand the various components of Kyverno and how it impacts high availability.
 ---
 
 Kyverno contains several different capabilities, decoupled into separate controllers, and each controller runs in its own Kubernetes Deployment. Installing Kyverno in a highly-available manner therefore requires additional replicas for each of the chosen controllers.

@@ -1,7 +1,6 @@
 ---
 title: Background Scans 
-description: >
-  Periodically reapply policies to existing resources for reporting.
+description: Periodically reapply policies to existing resources for reporting.
 weight: 15
 ---
 

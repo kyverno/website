@@ -1,7 +1,7 @@
 ---
-title: "BlakYaks"
-linkTitle: "BlakYaks"
-description: "Cloud-native, containers, serverless, automation"
+title: BlakYaks
+linkTitle: BlakYaks
+description: Cloud-native, containers, serverless, automation
 type: docs
 ---
 
