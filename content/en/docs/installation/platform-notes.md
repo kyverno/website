@@ -25,13 +25,12 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
    metadata:
      annotations:
        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
-
        ...
-   
+   ```
 
 2. **RBAC and CRD Management**
-   - Use `ServerSideApply` in the `syncOptions` to handle metadata properly
-   - Configure ArgoCD to ignore differences in aggregated ClusterRoles
+   - [Enable ServerSideApply](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply) in the `syncOptions` to handle metadata properly
+   - Configure ArgoCD to [ignore differences in aggregated ClusterRoles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
    - Ensure proper RBAC permissions for ArgoCD to manage Kyverno CRDs
 
 3. **Sync Options Configuration**
