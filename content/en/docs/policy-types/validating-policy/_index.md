@@ -35,13 +35,11 @@ The `ValidatingPolicy` extends the [Kubernetes ValidatingAdmissionPolicy](https:
 
 The `spec.evaluation` field defines how the policy is applied and how the payload is processed. It can be used to enable, or disable, admission request processing and background processing for a policy. It is also used to manage whether the payload is processed as JSON or a Kubernetes resource.
 
-<SAMPLE>
-
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: vpol-report-background-sample
+  name: sample
 spec:
   evaluation:
     admission:
@@ -49,40 +47,16 @@ spec:
     background:
       enabled: true
     mode : Kubernetes
-  validationActions:
-  - Audit
-  matchConstraints:
-    resourceRules:
-    - apiGroups:   [apps]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [deployments] 
-  variables:
-    - name: environment
-      expression: >-
-        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
-  validations:
-    - expression: >-
-        variables.environment == true
-      messageExpression: >-
-        'Deployment labels must be env=prod' + (has(object.metadata.labels) && 'env' in object.metadata.labels ? ' but found env=' + string(object.metadata.labels['env']) : ' but no env label is present')
+  ...
 ```
 
-- **`mode`**  
-  Specifies how the policy evaluates resources.  
-  - `"Kubernetes"` (default): Evaluates standard Kubernetes resources.  
-  - `"JSON"`: Evaluates arbitrary JSON input.
+The `mode` can be set to `JSON` for non-Kubernetes payloads.
 
-- **`admission.enabled`** (default: `true`)  
-  Controls if rules are applied during the admission process (e.g., on create/update/delete).
-
-- **`background.enabled`** (default: `true`)  
-  Controls if rules are applied to existing resources during background scans.  
-  Set to `false` if the rule uses variables only available during admission (e.g., user info).
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.EvaluationConfiguration) for details.
 
 ### webhookConfiguration
 
-The `spec.webhookConfiguration` field defines properties used to configure the Kyverno admission controller webhook.
+The `spec.webhookConfiguration` field defines properties used to manage the Kyverno admission controller webhook settings.
 
 
 ```yaml
@@ -93,32 +67,19 @@ metadata:
 spec:
   webhookConfiguration:
    timeoutSeconds: 15
-  matchConstraints:
-    resourceRules:
-    - apiGroups:   [apps]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [deployments]
-  variables:
-    - name: environment
-      expression: >-
-        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
-  validations:
-    - expression: >-
-        variables.environment == true
-      message: >-
-        Deployment labels must be env=prod
-
+  ...
 ```
 
 In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10s`, and the allowed range is `1–30s`. After this timeout, the request may fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `ValidatingWebhookConfiguration`.
 
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.WebhookConfiguration) for details.
+
 
 ### autogen
 
-The `spec.autogen` field defines policy auto-generation behaviors for pod controllers and API server execution.
+The `spec.autogen` field defines policy auto-generation behaviors, to automatically generate policies for pod controllers and geerate `ValidatingAdmissionPolicy` types for Kubernetes API server execution.
 
-Here is an example of generating policies for deployments and cronjobs:
+Here is an example of generating policies for deployments, jobs, cronjobs, and statefulsets and also generating a `ValidatingAdmissionPolicy` from the `ValidatingPolicy` declaration:
 
 ```yaml
  apiVersion: policies.kyverno.io/v1alpha1
@@ -128,51 +89,27 @@ Here is an example of generating policies for deployments and cronjobs:
  spec:
    autogen:
     validatingAdmissionPolicy:
-     enabled: false
+     enabled: true
     podControllers:
       controllers:
        - deployments
+       - jobs
        - cronjobs
-   evaluation:
-     background:
-       enabled: true
-   matchConstraints:
-    resourceRules:
-     - apiGroups:   [""]
-       apiVersions: ["v1"]
-       operations:  ["CREATE", "UPDATE"]
-       resources:   ["pods"]
-   variables:
-     - name: allowedCapabilities
-       expression: >-
-         ['AUDIT_WRITE','CHOWN','DAC_OVERRIDE','FOWNER','FSETID','KILL','MKNOD','NET_BIND_SERVICE','SETFCAP','SETGID','SETPCAP','SETUID','SYS_CHROOT']
-     - name: allContainers
-       expression: >-
-         (object.spec.containers + 
-         object.spec.?initContainers.orValue([]) + 
-         object.spec.?ephemeralContainers.orValue([]))
-   validations:
-     - expression: >-
-         variables.allContainers.all(container, 
-         container.?securityContext.?capabilities.?add.orValue([]).all(capability, capability == '' ||
-         capability in variables.allowedCapabilities))
-       message: >-
-           Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER,
+       - statefulsets
 ```
 
- - `validatingAdmissionPolicy.enabled`: Disables ValidatingAdmissionPolicy generation when set to `false`. Default is `false`.
-  - `podControllers.controllers`: Specifies pod-based controllers like `Deployments`, `CronJobs`, etc. Default is an empty list.
+Generating a `ValidatingAdmissionPolicy` from a `ValidatingPolicy` provides the benefits of faster and more resilient execution during admission controls while leveraging all features of Kyverno.
+
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
+
 
 ## Kyverno CEL Libraries
 
-Kyverno’s `ValidatingPolicy` enhances Kubernetes' CEL environment with a powerful context library, enabling advanced policy enforcement. The following functions provide greater validation flexibility: 
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features.
 
 ### Resource library
 
 The **Resource library** provides functions like `resource.Get()` and `resource.List()` to retrieve Kubernetes resources from the cluster, either individually or as a list. These are useful for writing policies that depend on the state of other resources, such as checking existing ConfigMaps, Services, or Deployments before validating a new object.
-
-
-#### Examples: 
 
 | CEL Expression | Purpose |
 |----------------|---------|
@@ -183,115 +120,125 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 | `resource.List("v1", "services", object.metadata.namespace).items.map(s, s.metadata.name).isSorted()` |  Use `object.metadata.namespace` to dynamically target the current resource's namespace |
 
 
-
-
-- **`resource.Get()`**: Retrieves specific Kubernetes resources (e.g., ConfigMaps, Secrets, Pods) for validation.  
+In the sample policy below, `resource.Get()` retrieves a ConfigMap which is then used in the policy evaluation logic:  
 
 ``` yaml
- apiVersion: policies.kyverno.io/v1alpha1
- kind: ValidatingPolicy
- metadata:
-   name: advanced-restrict-image-registries
- spec:
-   validationActions: 
-     - Audit
-   evaluation:
-     background:
-       enabled: false
-   matchConstraints:
-     resourceRules:
-     - apiGroups:   [""]
-       apiVersions: ["v1"]
-       operations:  ["CREATE", "UPDATE"]
-       resources:   ["pods"]
-   variables:
-             - name: cm
-               expression: >-
-                resource.Get("v1", "configmaps", "default", "clusterregistries")
-             - name: allContainers
-               expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
-             - name: nsregistries
-               expression: >-
-                 namespaceObject.metadata.?annotations[?'corp.com/allowed-registries'].orValue(' ')
-             - name: registriesData
-               expression: "variables.cm.data[?'registries'].orValue(' ')"
-   validations:
-             - expression: "variables.allContainers.all(container, container.image.startsWith(variables.nsregistries) || container.image.startsWith(variables.registriesData))"
-               message: This Pod names an image that is not from an approved registry.
-
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-image-registries
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  variables:
+    - name: allContainers
+      expression: >-
+        object.spec.containers 
+        + object.spec.?initContainers.orValue([]) 
+        + object.spec.?ephemeralContainers.orValue([])
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", "kube-system", "allowed-registry")
+    - name: allowedRegistry
+      expression: "variables.cm.data[?'registry'].orValue('')"
+  validations:
+    - expression: "variables.allContainers.all(c, c.image.startsWith(variables.allowedRegistry))"
+      messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
 ```
-- **`resource.List()`**: Fetches a list of resources of a given type (e.g., all Deployments in a namespace or across the cluster).  
+
+### HTTP library
+
+The **HTTP library** allows interaction with external HTTP/S endpoints using `http.Get()` and `http.Post()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
+
+| **CEL Expression**        | **Purpose**                          |
+|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `http.Get("https://internal.api/health").status == "ok"  `                                                                      | Validate external service health before proceeding                     |
+| `http.Get("https://service/data").metadata.team == object.metadata.labels.team `                                                | Enforce label matching from remote service metadata                    |
+| `http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true`               | Confirm logging of the resource to an external system                  |
+| `http.Get("https://certs.api/rootCA").cert == object.spec.cert`                                                                 | Validate a certificate field in the object against external data       |
+
+
+The following policy fetches data from an external or internal HTTP(S) endpoint and makes it accessible within the policy:
+
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: unique-ingress-path
+  name: vpol-http-get
 spec:
-  validationActions: [Deny]
-  evaluation:
-   background: 
-    enabled: false
+  validationActions:
+    - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: ["networking.k8s.io"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["ingresses"]
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
   variables:
-        - name: allpaths
-          expression: >-
-            resource.List("networking.k8s.io/v1", "ingresses", "" ).items
-        - name: nspath
-          expression: >-
-            resource.List("networking.k8s.io/v1", "ingresses", object.metadata.namespace ).items    
+    - name: externalData
+      expression: >-
+        http.Get("http://test-api-service.default.svc.cluster.local:80")
   validations:
     - expression: >-
-            !object.spec.rules.orValue([]).exists(rule, 
-                rule.http.paths.orValue([]).exists(path, 
-                  (
-                    variables.allpaths.orValue([]).exists(existing_ingress, 
-                      existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
-                        existing_rule.http.paths.orValue([]).exists(existing_path, 
-                          existing_path.path == path.path 
-                        )
-                      )
-                    )
-                    &&
-                   ! variables.nspath.orValue([]).exists(existing_ingress, 
-                            existing_ingress.metadata.namespace != object.metadata.namespace &&
+        variables.externalData.metadata.labels.app == object.metadata.labels.app
+      messageExpression: "'only create pod with labels, variables.get.metadata.labels.app: ' + string(variables.get.metadata.labels.app)"
 
-                      existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
-                        existing_rule.http.paths.orValue([]).exists(existing_path, 
-                       existing_path.path == path.path
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-
-      message: >-
-        The root path already exists in the cluster but not in the namespace.
 ```
+
+The following sample sends a `POST` request with a payload to an external service:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: vpol-http-post
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE"]
+  variables:
+    - name: response
+      expression: >-
+       http.Post(
+        "http://test-api-service.default.svc.cluster.local/",
+        {"labels": object.metadata.labels.app},{"Content-Type": "application/json"})
+  validations:
+    - expression: variables.response.received == "test"
+      messageExpression: >-
+       'External POST call did not return the expected response ' + string(variables.response.received)
+
+```
+
+When communicating over HTTPS, Kyverno uses the provided CA bundle to validate the server's certificate.
+
 
 ### User library
 
 The **User library** includes functions like `user.ParseServiceAccount()` to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
 
 
-#### Examples: 
-
 | CEL Expression | Purpose |
 |----------------|---------|
 | `user.ParseServiceAccount(request.userInfo.username).Name == "my-sa"` | Validate that the request is made by a specific ServiceAccount |
-| `user.ParseServiceAccount(request.userInfo.username).Namespace == "default"` | Ensure the ServiceAccount belongs to the `default` namespace |
+| `user.ParseServiceAccount(request.userInfo.username).Namespace == "system"` | Ensure the ServiceAccount belongs to the `system` namespace |
 | `user.ParseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
 | `user.ParseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
 
-
-
-- **`user.ParseServiceAccount()`**: Extracts details from a service account to enforce access control policies.  
-
+The following policy requires that all service accounts be in the `system` namespace:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -313,21 +260,14 @@ spec:
           user.ParseServiceAccount(request.userInfo.username)
     validations:
      - expression: >-
-          variables.sa.Name== "my-sa"
+          variables.sa.Namespace == "system"
        message: >-
-          ServiceAccount must be my-sa 
-     - expression: >-
-          variables.sa.Namespace == "default"
-       message: >-
-          ServiceAccount must in default namespace
-      
+          ServiceAccount must in system namespace
 ```
 
 ### Image library
 
-The **Image library** offers functions to parse and analyze image references directly from container specs. It allows policy authors to inspect registries, tags, and digests, ensuring image standards, such as requiring images from a specific registry or prohibiting digested images, are enforced.
-
-#### Examples: 
+The **Image library** offers functions to parse and analyze image references. It allows policy authors to inspect registries, tags, and digests, ensuring image standards, such as requiring images from a specific registry or prohibiting tags, are enforced.
 
 | CEL Expression | Purpose |
 |----------------|---------|
@@ -336,11 +276,10 @@ The **Image library** offers functions to parse and analyze image references dir
 | `image("nginx:latest").identifier() == "latest"` | Check if the image identifier is a tag |
 | `image("nginx:sha256:abcd...").containsDigest()` | Check if the image has a digest |
 | `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all images are from `ghcr.io` registry |
-| `object.spec.containers.map(c, image(c.image)).all(i, !i.containsDigest())` | Ensure images are tagged, not digested |
+| `object.spec.containers.map(c, image(c.image)).all(i, i.containsDigest())` | Ensure images use a digest |
 
 
-
-- **`image`**: Used within policies to imageReference, enabling iteration over all images in a resource for validation and manipulation through function parsing function.  
+The following sample ensures that all images use a digest:
 
 
 ```yaml
@@ -351,68 +290,26 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [apps]
+      - apiGroups: [""]
         apiVersions: [v1]
         operations: [CREATE, UPDATE]
-        resources: [deployments]
+        resources: [pods]
   variables:
     - name: images
       expression: >-
-        object.spec.template.spec.containers.map(e, image(e.image))
+        object.spec.containers.map(e, image(e.image))
+        + object.spec.?initContainers.orValue([]).map(e, image(e.image))
+        + object.spec.?ephemeralContainers.orValue([]).map(e, image(e.image))
   validations:
     - expression: >-
-        variables.images.map(i, i.registry() == "ghcr.io" && !i.containsDigest()).all(e, e)
+        variables.images.map(i, i.containsDigest()).all(e, e)
       message: >-
-        Deployment must be have images from ghcr and images should be tagged
-```
-
-The image parsing function enables iteration over container images, allowing validation and extraction of image-related metadata dynamically.  
-
-```cel
-images.containers.map(image, expression).all(e, e > 0)
-```
-- **`images.containers`** → Retrieves all container images in the resource.  
-- **`.map(image, expression)`** → Iterates over each image and applies the given expression.  
-- **`.all(e, e > 0)`** → Ensures that all evaluated results meet the condition (`e > 0`), meaning the validation passes only if every image satisfies the requirement.  
-
-
-- **`imagedata.Get()`**: Parses and validates OCI image metadata, including tags, digests, architecture, and more.  
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
-metadata:
-  name: check-image-arch
-spec:
-  validationActions: [Deny]
-  matchConstraints:
-    resourceRules:
-    - apiGroups:   [""]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [pods]
-  variables:
-    - name: imageRef
-      expression: object.spec.containers[0].image
-    - name: imageKey
-      expression: variables.imageRef
-    - name: image
-      expression: imagedata.Get(variables.imageKey)
-       
-  validations:
-    - expression: >-
-         variables.image.config.architecture == "amd64"  
-      message: >-
-        image architecture is not supported
-     
+        images must be specified using a digest
 ```
 
 ### ImageData library
 
-The **ImageData library** extends image inspection with rich metadata like architecture, OS, digests, tags, and layers. Using `imagedata.Get()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
-
-
-#### Examples: 
-
+The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `imagedata.Get()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
 
 | CEL Expression | Purpose |
 |----------------|---------|
@@ -434,7 +331,6 @@ The **ImageData library** extends image inspection with rich metadata like archi
 | `imagedata.Get("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
 | `imagedata.Get("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
 
-
 The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
 | **Field**       | **Description**                                    | **Example** |
@@ -455,10 +351,6 @@ In addition to these fields, `imagedata.Get()` provides access to many other ima
 
 The **GlobalContext library** introduces shared variables across policies through `globalcontext.Get()`. These variables are populated from external API calls via `GlobalContextEntry` resources, making it possible to validate requests against cluster-wide configurations or aggregated data with improved efficiency.
 
-
-#### Examples: 
-
-
 | **CEL Expression**                                                       | **Purpose**                                                         |
 |--------------------------------------------------------------------------|----------------------------------------------------------------------|
 | `globalcontext.Get("gctxentry-apicall-correct", "") != 0`                  | Ensure a specific deployment exists before allowing resource creation |
@@ -466,10 +358,7 @@ The **GlobalContext library** introduces shared variables across policies throug
 | `globalcontext.Get("global-pod-labels", "").contains(object.metadata.labels)` | Check that pod labels match predefined global labels                |
 
 
-
-- **`globalcontext.Get`** : it fetches deployment data and makes it accessible across all policies.
-
-defining `GlobalContextEntry` 
+To use this feature, first a `GlobalContextEntry` must be defined:
 
 ```yaml
 apiVersion: kyverno.io/v2alpha1
@@ -508,78 +397,4 @@ spec:
 ```
 
 By leveraging **Global Context**, Kyverno eliminates redundant queries and enables efficient, cross-policy data sharing, enhancing validation accuracy and performance.
-
-### HTTP library
-
-The **HTTP library** allows interaction with external services using `http.Get()` and `http.Post()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
-
-#### Examples: 
-
-
-| **CEL Expression**                                                                                                            | **Purpose**                                                           |
-|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
-| `http.Get("https://internal.api/health").status == "ok"  `                                                                      | Validate external service health before proceeding                     |
-| `http.Get("https://service/data").metadata.team == object.metadata.labels.team `                                                | Enforce label matching from remote service metadata                    |
-| `http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true`               | Confirm logging of the resource to an external system                  |
-| `http.Get("https://certs.api/rootCA").cert == object.spec.cert`                                                                 | Validate a certificate field in the object against external data       |
-
-
-- **`http.Get`** :   Fetches data from an external or internal HTTP(S) endpoint and makes it accessible within the policy. Example:
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
-metadata:
-  name: vpol-http-get
-spec:
-  validationActions:
-    - Deny
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: [v1]
-        operations: [CREATE, UPDATE]
-        resources: [pods]
-  variables:
-    - name: get
-      expression: >-
-        http.Get("http://test-api-service.default.svc.cluster.local:80")
-  validations:
-    - expression: >-
-        variables.get.metadata.labels.app == object.metadata.labels.app
-      messageExpression: "'only create pod with labels, variables.get.metadata.labels.app: ' + string(variables.get.metadata.labels.app)"
-
-```
-
-- **`http.Post`** : Sends a POST request with a payload, often used to validate or log data externally.
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
-metadata:
-  name: vpol-http-post
-spec:
-  validationActions:
-    - Deny
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
-  variables:
-    - name: response
-      expression: >-
-       http.Post(
-        "http://test-api-service.default.svc.cluster.local/",
-        {"labels": object.metadata.labels.app},{"Content-Type": "application/json"})
-  validations:
-    - expression: variables.response.received == "test"
-      messageExpression: >-
-       'External POST call did not return the expected response ' + string(variables.response.received)
-
-```
-
-When communicating over HTTPS, Kyverno uses the provided CA bundle to validate the server's certificate, ensuring the connection is secure and trusted. Therefore, it's recommended to use https whenever possible for secure communication.
-
 
