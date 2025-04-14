@@ -1,5 +1,4 @@
 ---
-date: 2024-03-10T19:55:26Z
 title: "kyverno completion"
 weight: 35
 ---
@@ -24,6 +23,7 @@ See each sub-command's help for details on how to use the generated script.
 ```
       --add_dir_header                   If true, adds the file directory to the header of the log messages
       --alsologtostderr                  log to standard error as well as files (no effect when -logtostderr=true)
+      --kubeconfig string                Paths to a kubeconfig. Only required if out-of-cluster.
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory (no effect when -logtostderr=true)
       --log_file string                  If non-empty, use this log file (no effect when -logtostderr=true)
@@ -39,9 +39,9 @@ See each sub-command's help for details on how to use the generated script.
 
 ### SEE ALSO
 
-* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
-* [kyverno completion bash](kyverno_completion_bash.md)	 - Generate the autocompletion script for bash
-* [kyverno completion fish](kyverno_completion_fish.md)	 - Generate the autocompletion script for fish
-* [kyverno completion powershell](kyverno_completion_powershell.md)	 - Generate the autocompletion script for powershell
-* [kyverno completion zsh](kyverno_completion_zsh.md)	 - Generate the autocompletion script for zsh
+* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno completion bash](../kyverno_completion_bash)	 - Generate the autocompletion script for bash
+* [kyverno completion fish](../kyverno_completion_fish)	 - Generate the autocompletion script for fish
+* [kyverno completion powershell](../kyverno_completion_powershell)	 - Generate the autocompletion script for powershell
+* [kyverno completion zsh](../kyverno_completion_zsh)	 - Generate the autocompletion script for zsh
 

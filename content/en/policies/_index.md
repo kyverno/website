@@ -1,6 +1,6 @@
-+++
-title = "Policies"
-+++
+---
+title: Policies
+---
 
 # Sample Policies
 

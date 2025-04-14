@@ -1,7 +1,6 @@
 ---
 title: External Data Sources
-description: >
-  Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
+description: Fetch data from ConfigMaps, the Kubernetes API server, other cluster services, and image registries for use in Kyverno policies.
 weight: 100
 ---
 

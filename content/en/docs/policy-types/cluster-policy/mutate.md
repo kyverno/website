@@ -1,7 +1,6 @@
 ---
 title: Mutate Rules
-description: >
-  Modify resource configurations during admission or retroactively against existing resources.
+description: Modify resource configurations during admission or retroactively against existing resources.
 weight: 40
 ---
 
@@ -409,7 +408,7 @@ spec:
       patchStrategicMerge:
         metadata:
           annotations:
-            +(cluster-autoscaler.kubernetes.io/safe-to-evict): true
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): 'true'
         spec:
           volumes:
           - <(emptyDir): {}

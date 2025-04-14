@@ -1,7 +1,6 @@
 ---
 title: Preconditions
-description: >
-  Fine-grained control of policy rule execution based on variables and expressions.
+description: Fine-grained control of policy rule execution based on variables and expressions.
 weight: 120
 ---
 
