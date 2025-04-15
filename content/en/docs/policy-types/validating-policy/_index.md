@@ -114,6 +114,7 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 | CEL Expression | Purpose |
 |----------------|---------|
 | `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]` | Fetch a ConfigMap value from a specific namespace |
+| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})` | Perform a live SubjectAccessReview (authz check) against the Kubernetes API |
 | `resource.List("apps/v1", "deployments", "").items.size() > 0` | Check if there are any Deployments across all namespaces |
 | `resource.List("apps/v1", "deployments", object.metadata.namespace).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace has more than 3 replicas |
 | `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()` | Verify that Service names in the `default` namespace are sorted alphabetically |
@@ -154,7 +155,104 @@ spec:
     - expression: "variables.allContainers.all(c, c.image.startsWith(variables.allowedRegistry))"
       messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
 ```
+In this sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes’ `SubjectAccessReview` API:
 
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-subjectaccessreview
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [apps]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [ConfigMap]
+  variables:
+    - name: res
+      expression: >-
+        {
+          "kind": dyn("SubjectAccessReview"),
+          "apiVersion": dyn("authorization.k8s.io/v1"),
+          "spec": dyn({
+            "resourceAttributes": dyn({
+              "resource": "namespaces",
+              "namespace": string(object.metadata.namespace),
+              "verb": "delete",
+              "group": ""
+            }),
+            "user": dyn(request.userInfo.username)
+          })
+        }
+    - name: subjectaccessreview
+      expression: >-
+        resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", variables.res)
+  validations:
+    - expression: >-
+        has(variables.subjectaccessreview.status) && bool(variables.subjectaccessreview.status.allowed)
+      message: >-
+        User is not authorized.
+  
+```
+
+In this sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: unique-ingress-path
+spec:
+  validationActions: [Deny]
+  evaluation:
+   background: 
+    enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["networking.k8s.io"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["ingresses"]
+  variables:
+        - name: allpaths
+          expression: >-
+            resource.List("networking.k8s.io/v1", "ingresses", "" ).items
+        - name: nspath
+          expression: >-
+            resource.List("networking.k8s.io/v1", "ingresses", object.metadata.namespace ).items    
+  validations:
+    - expression: >-
+            !object.spec.rules.orValue([]).exists(rule, 
+                rule.http.paths.orValue([]).exists(path, 
+                  (
+                    variables.allpaths.orValue([]).exists(existing_ingress, 
+                      existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
+                        existing_rule.http.paths.orValue([]).exists(existing_path, 
+                          existing_path.path == path.path 
+                        )
+                      )
+                    )
+                    &&
+                   ! variables.nspath.orValue([]).exists(existing_ingress, 
+                            existing_ingress.metadata.namespace != object.metadata.namespace &&
+
+                      existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
+                        existing_rule.http.paths.orValue([]).exists(existing_path, 
+                       existing_path.path == path.path
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+
+      message: >-
+        The root path already exists in the cluster but not in the namespace.
+
+```
 ### HTTP library
 
 The **HTTP library** allows interaction with external HTTP/S endpoints using `http.Get()` and `http.Post()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
@@ -238,31 +336,31 @@ The **User library** includes functions like `user.ParseServiceAccount()` to ext
 | `user.ParseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
 | `user.ParseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
 
-The following policy requires that all service accounts be in the `system` namespace:
+I this sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: parse-sa-test
-spec: 
-    validationActions:
-      - Deny
-    matchConstraints:
-      resourceRules:
+  name: restrict-pod-creation
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
       - apiGroups: [""]
         apiVersions: ["v1"]
         resources: ["pods"]
-        operations: ["CREATE" ,"UPDATE"] 
-    variables:
-      - name: sa
-        expression: >-
-          user.ParseServiceAccount(request.userInfo.username)
-    validations:
-     - expression: >-
-          variables.sa.Namespace == "system"
-       message: >-
-          ServiceAccount must in system namespace
+        operations: ["CREATE"]
+  variables:
+    - name: sa
+      expression: user.ParseServiceAccount(request.userInfo.username)
+  validations:
+    - expression: variables.sa.Namespace == "kube-system"
+      message: Only kube-system service accounts can create pods
+    - expression: variables.sa.Name in ["replicaset-controller", "deployment-controller",              "daemonset-controller"]
+      message: Only trusted system controllers can create pods
+
 ```
 
 ### Image library
@@ -332,6 +430,46 @@ The **ImageData library** extends image inspection with OCI registry metadata li
 | `imagedata.Get("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
 
 The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
+
+In this sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-image-details
+spec:
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups:   [""]
+        apiVersions: [v1]
+        operations:  [CREATE, UPDATE]
+        resources:   [pods]
+  variables:
+    - name: imageRef
+      expression: object.spec.containers[0].image
+    - name: imageKey
+      expression: variables.imageRef
+    - name: image
+      expression: imagedata.Get(variables.imageKey)
+
+  validations:
+    - expression: variables.image != null
+      message: >-
+       Failed to retrieve image metadata
+
+    - expression: variables.image.config.architecture == "amd64"
+      messageExpression: >-
+        string(variables.image.config.architecture) + ' image architecture is not supported'
+
+    - expression: variables.image.manifest.schemaVersion == 2
+      message: >-
+       Only schemaVersion 2 image manifests are supported
+
+
+```
+
 
 | **Field**       | **Description**                                    | **Example** |
 |---------------|------------------------------------------------|-------------|
