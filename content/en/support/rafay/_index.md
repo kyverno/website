@@ -1,7 +1,7 @@
 ---
-title: "Rafay"
-linkTitle: "Rafay"
-description: "Enterprise Kubernetes Management for Platform Teams"
+title: Rafay
+linkTitle: Rafay
+description: Enterprise Kubernetes Management for Platform Teams
 type: docs
 ---
 

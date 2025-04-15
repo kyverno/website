@@ -1,7 +1,6 @@
 ---
 title: Selecting Resources
-description: >
-  Identifying and filtering resources for rule evaluation.
+description: Identifying and filtering resources for rule evaluation.
 weight: 20
 ---
 
@@ -50,6 +49,7 @@ Wildcards are supported with the following formats when used in the `resources.k
 * A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
 * For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either  `pattern` or `anyPattern` blocks.
 * For the `mutate` rule type, a policy can only deal with the `metadata` object.
+* Explicitly specifying the `subresource` field in policies is recommended to avoid ambiguity, particularly for shared subresources like `Scale`. With tools such as `kubectl` now supporting the `--subresource` flag, managing subresources has become simpler and more explicit.
 {{% /alert %}}
 
 Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision. Specifying a subresource in the format `PodExecOptions` is not supported.
@@ -106,7 +106,7 @@ match:
       name: dave
 ```
 
-`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](validate.md#wildcards) are supported to make selection more flexible.
+`match.any[0]` will now match on only Services that begin with the name "prod-" **OR** have the name "staging" and not those which begin with "dev-" or any other prefix. `match.any[1]` will match all Services being created by the `dave` user regardless of the name of the Service. And since these two are specified under the `any` key, the entire rule will act on all Services with names `prod-*` or `staging` **OR** on all services being created by the `dave` user. In both `match` and `exclude` statements, [wildcards](/docs/policy-types/cluster-policy/validate.md#wildcards) are supported to make selection more flexible.
 
 In this snippet, the `match` statement matches only resources that have the group `networking.k8s.io`, version `v1` and kind `NetworkPolicy`. By adding Group,Version,Kind in the match statement, you can be more selective as to which resources you wish to process.
 
