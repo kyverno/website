@@ -70,5 +70,5 @@ kyverno test [local folder or git repository]... [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
 

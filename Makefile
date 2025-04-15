@@ -6,7 +6,12 @@
 .PHONY: codegen-cli-docs
 codegen-cli-docs: ## Build CLI docs
 	@rm -rf ./content/en/docs/kyverno-cli/reference/kyverno*.md
-	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs --autogenTag=false --website --noDate --output "/work/content/en/docs/kyverno-cli/reference"
+	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
+		--autogenTag=false															\
+		--website																	\
+		--noDate																	\
+		--markdownLinks																\
+		--output "/work/content/en/docs/kyverno-cli/reference"
 
 .PHONY: codegen-policies
 codegen-policies: ## Render policies
