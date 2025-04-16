@@ -88,8 +88,7 @@ spec:
             issuer: "https://token.actions.githubusercontent.com"
             subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
             issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        root:                         # Root certificate for verifying signatures
-          data: |                     # PEM-encoded certificate
+        root: |                     # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
@@ -121,22 +120,21 @@ spec:
           ...
           -----END CERTIFICATE-----
 
-      source:                         # Optional metadata to constrain image source
+      source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
-        pullSecrets:                  # Kubernetes secrets used to pull private images
+        pullSecrets:                  # Kubernetes secrets used to access the registry
           - name: my-registry-secret
         tagPrefix: "v1."              # Restrict verification to images starting with this tag
 
-      tuf:                            # TUF-based trust metadata (for cosign + TUF)
+      tuf: 
         root:
-          path: "/var/run/tuf/root.json"    # Path to root metadata file on disk
-          data: |                           # Inline TUF root metadata
-            {
-              "signed": {...},
-              "signatures": [...]
-            }
-        mirror: "https://tuf.example.org"   # URL of TUF mirror to fetch metadata
- ...
+          path: "/var/run/tuf/root.json"  # Local path to TUF root metadata (optional)
+          data: |                         # Optional base64-encoded TUF root metadata (optional)
+            eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
+        mirror: "https://tuf.example.org" # Sigstore TUF mirror URL (optional)
+
+  ...
+
 ```
 **Notary attestors:** These use certificates and optional Time Stamp Authority (TSA) certificates for image signature verification.
 
@@ -193,13 +191,15 @@ spec:
               -----BEGIN CERTIFICATE-----
               MIIBjTCCATOgAwIBAgIUdMiN3gC...
               -----END CERTIFICATE-----
-   attestations:
-        - name: sbom                                # Logical name for this attestation
-          referrer:                                 # Refers to OCI artifact by media type
-            type: sbom/cyclone-dx                   # Supported types: sbom/spdx, sbom/cyclone-dx, vuln, custom
-        - name: toto                                 # Another attestation named `toto`
-          intoto:
-            type: https://example.com/attestations/slsa-provenance/v0.2  # URI of the in-toto predicate type
+  attestations:
+    - name: sbom                                # Logical name for this attestation
+      referrer:                                 # Uses OCI artifact type for verification
+        type: sbom/cyclone-dx                   
+
+    - name: toto                                # Another attestation named `toto`
+      intoto:
+        type: https://example.com/attestations/slsa-provenance/v0.2  # Predicate type URI for in-toto format
+
 
 ```
 
