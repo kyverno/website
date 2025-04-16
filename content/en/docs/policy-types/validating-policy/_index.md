@@ -114,7 +114,6 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 | CEL Expression | Purpose |
 |----------------|---------|
 | `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]` | Fetch a ConfigMap value from a specific namespace |
-| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})` | Perform a live SubjectAccessReview (authz check) against the Kubernetes API |
 | `resource.List("apps/v1", "deployments", "").items.size() > 0` | Check if there are any Deployments across all namespaces |
 | `resource.List("apps/v1", "deployments", object.metadata.namespace).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace has more than 3 replicas |
 | `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()` | Verify that Service names in the `default` namespace are sorted alphabetically |
@@ -154,48 +153,6 @@ spec:
   validations:
     - expression: "variables.allContainers.all(c, c.image.startsWith(variables.allowedRegistry))"
       messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
-```
-In this sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes’ `SubjectAccessReview` API:
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
-metadata:
-  name: check-subjectaccessreview
-spec:
-  validationActions:
-    - Deny
-  matchConstraints:
-    resourceRules:
-    - apiGroups:   [apps]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [ConfigMap]
-  variables:
-    - name: res
-      expression: >-
-        {
-          "kind": dyn("SubjectAccessReview"),
-          "apiVersion": dyn("authorization.k8s.io/v1"),
-          "spec": dyn({
-            "resourceAttributes": dyn({
-              "resource": "namespaces",
-              "namespace": string(object.metadata.namespace),
-              "verb": "delete",
-              "group": ""
-            }),
-            "user": dyn(request.userInfo.username)
-          })
-        }
-    - name: subjectaccessreview
-      expression: >-
-        resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", variables.res)
-  validations:
-    - expression: >-
-        has(variables.subjectaccessreview.status) && bool(variables.subjectaccessreview.status.allowed)
-      message: >-
-        User is not authorized.
-  
 ```
 
 In this sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
