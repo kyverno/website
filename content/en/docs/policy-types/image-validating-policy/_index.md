@@ -71,9 +71,9 @@ The `required` field enables, or disables, a check that all images must be valid
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation.
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/validating-policy/#kyverno-cel-libraries) the following additional libraries are supported for ImageValidatingPolicy types. 
 
-### Image Verification Functions
+### Image Verification Library
 
 Kyverno provides specialized functions for verifying image signatures and attestations:
 
