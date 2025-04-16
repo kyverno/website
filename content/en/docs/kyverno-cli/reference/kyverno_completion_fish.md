@@ -53,5 +53,5 @@ kyverno completion fish [flags]
 
 ### SEE ALSO
 
-* [kyverno completion](../kyverno_completion)	 - Generate the autocompletion script for the specified shell
+* [kyverno completion](kyverno_completion.md)	 - Generate the autocompletion script for the specified shell
 
