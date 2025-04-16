@@ -209,7 +209,7 @@ The `mutateDigest` field enables, or disables, mutating the image reference to r
 
 ### verifyDigest
 
-The `verifyDigest` field enables, or disables, verififcation that all matching images are using a digest.
+The `verifyDigest` field enables, or disables, verification that all matching images are using a digest.
 
 ### required
 
