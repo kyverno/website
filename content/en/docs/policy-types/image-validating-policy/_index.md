@@ -2,24 +2,21 @@
 title: ImageValidatingPolicy
 description: >-
     Validate container images and their metadata
-weight: 30
+weight: 0
 ---
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations. 
-           | _                            | Kyverno CLI (unit), Chainsaw (e2e)          |
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. 
-
-A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy)
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy)
 
 
 ### images
 
 When `Kubernetes` resources are evaluated images for pods and pod templates are automatically extracted for processing. For custom resources, or for `JSON` payloads, the `images` field can be used to declare CEL expressions that extract images from the payload.
 
-For example, this 
+For example, this policy declaration will process the image specified in the `imageReference` field:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -29,8 +26,6 @@ metadata:
 spec:
   evaluation:
     mode: JSON
-  imageRules:
-    - glob: ghcr.io/*
   images:
     - name: imagerefs
       expression: "[object.imageReference]"
@@ -40,7 +35,7 @@ spec:
 
 ### imageRules
 
-The `spec.imageRules` field defines rules for matching and validating container images. It allows specifying glob patterns for image references and configuring attestors for image verification.
+The `spec.imageRules` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -51,38 +46,28 @@ spec:
   images: 
   imageRules:
     - glob: ghcr.io/*
-  attestors:
-    - name: notary
-      notary:
-        certs: |-
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
-  attestations:
-    - name: sbom
-      referrer:
-        type: sbom/cyclone-dx
+  ...
 ```
-
-The `glob` pattern matches image references using globbing. Optionally, a `cel` expression can be used to match images.
-
-
 
 ### attestors
 
-The `attestors` field declares trusted . 
+The `attestors` field declares trusted signing authorities, such as keys or certificates.
 
 ### attestations
 
-The `attestations` field specifies additional metadata to verify, such as SBOMs.
+The `attestations` field specifies additional metadata to validate.
 
 ### mutateDigest
 
+The `mutateDigest` field enables, or disables, mutating the image reference to replace the tag with a digest. Image tags are mutable and as a best practice digests should be used prior to deployment.
+
 ### verifyDigest
+
+The `verifyDigest` field enables, or disables, verififcation that all matching images are using a digest.
 
 ### required
 
-
+The `required` field enables, or disables, a check that all images must be validated by one or more policies.
 
 ## Kyverno CEL Libraries
 
@@ -96,7 +81,7 @@ Kyverno provides specialized functions for verifying image signatures and attest
 |----------------|---------|
 | `verifyImageSignatures(image, [attestors.notary])` | Verify image signatures using specified attestors |
 | `verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])` | Verify attestation signatures for specific metadata |
-| `payload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Validate SBOM format and content |
+| `payload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Extract the in-toto payload |
 
 The following policy demonstrates the use of these functions:
 
@@ -130,7 +115,8 @@ spec:
         images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e, e > 0)
       message: failed to verify image with notary cert
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])).all(e, e > 0)
+        images.containers.map(image, verifyAttestationSignatures(image, 
+           attestations.sbom, [attestors.notary])).all(e, e > 0)
       message: failed to verify attestation with notary cert
     - expression: >-
         images.containers.map(image, payload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
