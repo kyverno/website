@@ -315,3 +315,95 @@ This policy ensures that:
 1. All images are signed by the specified notary attestor
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
+
+
+#### Cosign Keyless Signature and Attestation Verification
+
+This sample policy demonstrates how to verify container image signatures using Cosign keyless signing and validate the presence of a vulnerability scan attestation.
+
+Kyverno supports the use of regular expressions in identities.subjectRegExp and identities.issuerRegExp fields when configuring keyless attestors
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ImageValidatingPolicy
+metadata:
+  name: require-vulnerability-scan
+spec:
+  validationActions: [Audit]
+  webhookConfiguration:
+    timeoutSeconds: 15
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  imageRules:
+    - glob: "ghcr.io/myorg/myrepo:*"
+  attestors:
+    - name: cosign
+      cosign:
+          keyless:
+            identities:
+              - subject: "https://github.com/myorg/myrepo/.github/workflows/*"
+                issuer: "https://token.actions.githubusercontent.com"
+          ctlog:
+               url: "https://rekor.sigstore.dev"
+  attestations:
+   - name: cosign-attes
+     intoto:
+       type: cosign.sigstore.dev/attestation/vuln/v1
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
+      message: "Failed image signature verification"
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, [attestations.cosign-attes], [attestors.cosign])).all(e, e > 0)
+      message: "Failed to verify vulnerability scan attestation with Cosign keyless"
+
+```
+
+#### Cosign Public Key Signature Verification
+
+This policy ensures that container images are signed with a specified Cosign public key before being admitted
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-image-ivpol
+spec:
+  webhookConfiguration:
+    timeoutSeconds: 15
+  evaluation:
+   background:
+    enabled: false
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  imageRules:
+        - glob : "docker.io/kyverno/kyverno*"
+  mutateDigest: true
+  attestors:
+  - name: cosign
+    cosign:
+     key:
+      data: |
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6QsNef3SKYhJVYSVj+ZfbPwJd0pv
+                DLYNHXITZkhIzfE+apcxDjCCkDPcJ3A3zvhPATYOIsCxYPch7Q2JdJLsDQ==
+                -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+       images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: >-
+       failed the image Signature verification
+
+```
+ 
+ Note: To learn how to sign container images using Cosign with keyless signing, refer to the [official Cosign documentation](https://docs.sigstore.dev/cosign/signing/signing_with_containers/).
