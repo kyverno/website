@@ -115,6 +115,7 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 |----------------|---------|
 | `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]` | Fetch a ConfigMap value from a specific namespace |
 | `resource.List("apps/v1", "deployments", "").items.size() > 0` | Check if there are any Deployments across all namespaces |
+| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})` | Perform a live SubjectAccessReview (authz check) against the Kubernetes API |
 | `resource.List("apps/v1", "deployments", object.metadata.namespace).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace has more than 3 replicas |
 | `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()` | Verify that Service names in the `default` namespace are sorted alphabetically |
 | `resource.List("v1", "services", object.metadata.namespace).items.map(s, s.metadata.name).isSorted()` |  Use `object.metadata.namespace` to dynamically target the current resource's namespace |
@@ -155,7 +156,50 @@ spec:
       messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
 ```
 
-In this sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
+This sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes’ `SubjectAccessReview` API:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-subjectaccessreview
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   ['']
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [configmaps]
+  variables:
+    - name: res
+      expression: >-
+        {
+          "kind": dyn("SubjectAccessReview"),
+          "apiVersion": dyn("authorization.k8s.io/v1"),
+          "spec": dyn({
+            "resourceAttributes": dyn({
+              "resource": "namespaces",
+              "namespace": string(object.metadata.namespace),
+              "verb": "delete",
+              "group": ""
+            }),
+            "user": dyn(request.userInfo.username)
+          })
+        }
+    - name: subjectaccessreview
+      expression: >-
+        resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", variables.res)
+  validations:
+    - expression: >-
+        has(variables.subjectaccessreview.status) && variables.subjectaccessreview.status.allowed == true
+      message: >-
+        User is not authorized.
+  
+```
+
+This sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -293,7 +337,7 @@ The **User library** includes functions like `user.ParseServiceAccount()` to ext
 | `user.ParseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
 | `user.ParseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
 
-I this sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
+This sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -388,7 +432,7 @@ The **ImageData library** extends image inspection with OCI registry metadata li
 
 The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
-In this sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
+This sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
