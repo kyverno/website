@@ -594,22 +594,36 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: restrict-external-service-access
-  namespace: sample-namespace
+  name: kyverno-allow-in-cluster
+  namespace: kyverno
 spec:
   podSelector:
     matchLabels:
-      app: kyverno-extension
+      app: kyverno
   policyTypes:
-  - Ingress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: kyverno
+    - from:
+        - podSelector: {}
+    - from:
+        - namespaceSelector: {}
+  egress:
+    - to:
+        - podSelector: {}
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+    - to:
+        - namespaceSelector: {}
 ```
 
-This network policy restricts incoming traffic to only pods labeled `app: kyverno` for the service handling the external API calls, enhancing the overall security for your external data sources.
+When applying network policies to Kyverno, ensure that egress is allowed to the Kubernetes API server, DNS, and any external services (such as image registries or webhooks) required by your policies. The sample policy below is a starting point and may need to be customized for your environment. Restrictive egress rules may block image registry calls; be sure to allow egress to any required registries.
 
 ## Global Context
 
