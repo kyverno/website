@@ -545,11 +545,11 @@ This sample policy retrieves the list of Services in the Namespace and stores th
 
 ## Variables from Service Calls
 
-Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster. This feature is nested under the apiCall context type and builds upon it. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
+Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster—and even publish data to it. This functionality is nested under the `apiCall` context type and builds upon the logic used for Kubernetes API calls. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
 
-By using the `apiCall.service` object, a call may be made to another URL to retrieve and store data. The fields `caBundle` and `url` are used to specify the CA bundle and URL, respectively, for the call. The fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be to either the Kubernetes API or some other service. At this time, authentication as part of these service calls is not supported. The response from a Service call must only be JSON.
+By using the `apiCall.service` object, a call may be made to any external URL to both retrieve data and publish data (for example, via a `POST` operation). The fields `caBundle` and `url` are used to specify the CA bundle and target URL, respectively. Note that the fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be directed to either the Kubernetes API server or to an external service. At this time, authentication as part of these service calls is not supported. Additionally, the response from an external service call must be JSON.
 
-For example, the following policy makes a `POST` request to another Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace` and sends it the data `{"name":"foonamespace"}` when a ConfigMap is created in the `foonamespace` Namespace. The JSON result Kyverno receives is stored in the context called `result`. The value of `result` is JSON where the key `allowed` is either `true` or `false`. The request is blocked if the value is `false`.
+For example, consider the following policy which makes a `POST` request to an external Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace`. In this example, when a ConfigMap is created in the `foonamespace` Namespace, Kyverno sends the data `{"name":"foonamespace"}` to the external service. The JSON result Kyverno receives is stored in the context variable named `result`. The key `allowed` within `result` dictates whether the request is permitted—if `allowed` is `false`, the request will be blocked.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -587,6 +587,29 @@ spec:
             operator: Equals
             value: false
 ```
+
+**Note:** In addition to fetching data for policy evaluation, API calls can be leveraged to publish data externally (such as sending notifications or aggregating information in external systems). When exposing services to handle these calls, it is strongly recommended to enforce a default [Kubernetes Network Policy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to restrict access only to trusted sources. A sample network policy might look like:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-external-service-access
+  namespace: sample-namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: kyverno-extension
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: kyverno
+```
+
+This network policy restricts incoming traffic to only pods labeled `app: kyverno` for the service handling the external API calls, enhancing the overall security for your external data sources.
 
 ## Global Context
 
