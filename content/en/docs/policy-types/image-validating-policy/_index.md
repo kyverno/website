@@ -33,9 +33,9 @@ spec:
 ```
 
 
-### imageRules
+### matchImageReferences
 
-The `spec.imageRules` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
+The `spec.matchImageReferences` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -44,7 +44,7 @@ metadata:
   name: check-images
 spec:
   images: 
-  imageRules:
+  matchImageReferences:
     - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
     - cel: "image.registry == 'ghcr.io'"  # Match using CEL expression
   ...
@@ -150,7 +150,7 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*                         
   attestors:
         - name: notary                        # Unique identifier for this attestor
@@ -182,7 +182,7 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
   attestors:
         - name: notary
@@ -203,17 +203,9 @@ spec:
 
 ```
 
-### mutateDigest
+### validationConfigurations
 
-The `mutateDigest` field enables, or disables, mutating the image reference to replace the tag with a digest. Image tags are mutable and as a best practice digests should be used prior to deployment.
-
-### verifyDigest
-
-The `verifyDigest` field enables, or disables, verification that all matching images are using a digest.
-
-### required
-
-The `required` field enables, or disables, a check that all images must be validated by one or more policies.
+The `validationConfigurations` field defines settings for mutating image tags to digests, verifying that images are using digests, and enforcing image validation requirements across policies.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -221,11 +213,12 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
-  mutateDigest: true
-  required: true
-  verifyDigest: true
+  validationConfigurations:
+    mutateDigest: true  # Mutates image tags to digests (recommended to avoid mutable tags).
+    required: true       # Enforces that images must be validated according to policies.
+    verifyDigest: true  # Ensures that images are verified with a digest instead of tags.
 
 ```
 
@@ -239,7 +232,7 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
   credentials:
     allowInsecureRegistry: false  # Deny insecure access to registries
@@ -285,7 +278,7 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
       attestors:
         - name: notary
@@ -339,7 +332,7 @@ spec:
         apiVersions: ["v1"]
         resources: ["pods"]
         operations: ["CREATE", "UPDATE"]
-  imageRules:
+  matchImageReferences:
     - glob: "ghcr.io/myorg/myrepo:*"
   attestors:
     - name: cosign
@@ -386,9 +379,8 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE", "UPDATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
         - glob : "docker.io/kyverno/kyverno*"
-  mutateDigest: true
   attestors:
   - name: cosign
     cosign:
