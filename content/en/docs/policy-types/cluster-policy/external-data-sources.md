@@ -588,7 +588,7 @@ spec:
             value: false
 ```
 
-**Note:** In addition to fetching data for policy evaluation, API calls can be leveraged to publish data externally (such as sending notifications or aggregating information in external systems). When exposing services to handle these calls, it is strongly recommended to enforce a default [Kubernetes Network Policy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to restrict access only to trusted sources. A sample network policy might look like:
+**Note:** API calls can also be used to publish data externally, such as sending notifications or aggregating information in external systems. When exposing services for these calls, enforce a default [Kubernetes Network Policy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to restrict access to trusted sources. Ensure Kyverno's egress is allowed to the Kubernetes API server, DNS, and any external services (e.g., image registries or webhooks) required by your policies. Restrictive egress rules may block image registry calls, so allow egress to necessary registries. Below is a sample network policy that can be customized for your environment:
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -622,8 +622,6 @@ spec:
     - to:
         - namespaceSelector: {}
 ```
-
-When applying network policies to Kyverno, ensure that egress is allowed to the Kubernetes API server, DNS, and any external services (such as image registries or webhooks) required by your policies. The sample policy below is a starting point and may need to be customized for your environment. Restrictive egress rules may block image registry calls; be sure to allow egress to any required registries.
 
 ## Global Context
 
