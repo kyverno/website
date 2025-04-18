@@ -20,7 +20,7 @@ For example, this policy declaration will process the image specified in the `im
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
-kind: ImageVerificationPolicy
+kind: ImageValidatingPolicy
 metadata:
   name: sample
 spec:
@@ -43,7 +43,6 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  images: 
   matchImageReferences:
     - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
     - cel: "image.registry == 'ghcr.io'"  # Match using CEL expression
@@ -54,7 +53,7 @@ spec:
 
 The `attestors` field declares trusted signing authorities, such as keys or certificates.
 
-**Cosign attestors:** These use public keys, keyless signing, transparency logs, certificates, or TUF-based metadata for image validation
+**Cosign attestors:** These use public keys, keyless signing, transparency logs, certificates, or TUF-based metadata for image validation.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -88,7 +87,7 @@ spec:
             issuer: "https://token.actions.githubusercontent.com"
             subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
             issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        root: |                     # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+        root: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
@@ -359,7 +358,7 @@ spec:
 
 #### Cosign Public Key Signature Verification
 
-This policy ensures that container images are signed with a specified Cosign public key before being admitted
+This policy ensures that container images are signed with a specified Cosign public key before being admitted.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1

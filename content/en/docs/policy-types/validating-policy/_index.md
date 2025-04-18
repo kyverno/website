@@ -77,7 +77,7 @@ Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/k
 
 ### autogen
 
-The `spec.autogen` field defines policy auto-generation behaviors, to automatically generate policies for pod controllers and geerate `ValidatingAdmissionPolicy` types for Kubernetes API server execution.
+The `spec.autogen` field defines policy auto-generation behaviors, to automatically generate policies for pod controllers and generate `ValidatingAdmissionPolicy` types for Kubernetes API server execution.
 
 Here is an example of generating policies for deployments, jobs, cronjobs, and statefulsets and also generating a `ValidatingAdmissionPolicy` from the `ValidatingPolicy` declaration:
 
@@ -359,7 +359,7 @@ spec:
   validations:
     - expression: variables.sa.Namespace == "kube-system"
       message: Only kube-system service accounts can create pods
-    - expression: variables.sa.Name in ["replicaset-controller", "deployment-controller",              "daemonset-controller"]
+    - expression: variables.sa.Name in ["replicaset-controller", "deployment-controller", "daemonset-controller"]
       message: Only trusted system controllers can create pods
 
 ```
