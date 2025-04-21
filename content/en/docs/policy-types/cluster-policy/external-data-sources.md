@@ -742,7 +742,7 @@ context:
     reference: "ghcr.io/kyverno/kyverno"
 ```
 
-the output `imageData` variable will have a structure which looks like the following:
+the output `imageData` variable (or the name specified in the context entry) will have a structure which looks like the following:
 
 ```json
 {
@@ -751,11 +751,13 @@ the output `imageData` variable will have a structure which looks like the follo
     "registry":      "ghcr.io",
     "repository":    "kyverno/kyverno",
     "identifier":    "latest",
-    "imageIndex":    imageIndex,
-    "manifest":      manifest,
-    "configData":    config,
+    "manifestList":  "manifestList",
+    "manifest":      "manifest",
+    "configData":    "configData"
 }
 ```
+
+The `manifestList` field contains the raw JSON of the image manifest list (also known as an image index). This is particularly useful for multi-architecture images, allowing checks on supported platforms (e.g., architectures like `amd64`, `arm64`) using JMESPath expressions like `manifestList.manifests[?platform.architecture == 'arm64']`.
 
 {{% alert title="Note" color="info" %}}
 The `imageData` variable represents a "normalized" view of an image after any redirects by the registry are performed and internal modifications by Kyverno (Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`). Most notably, this impacts [official images](https://docs.docker.com/docker-hub/official_images/) hosted on [Docker Hub](https://hub.docker.com/). Official images on Docker Hub are differentiated from other images in that their repository is prefixed by `library/` even if the image being pulled does not contain it. For example, pulling the [python](https://hub.docker.com/_/python) official image with `python:slim` results in the following fields of `imageData` being set:
@@ -771,7 +773,7 @@ The `imageData` variable represents a "normalized" view of an image after any re
 ```
 {{% /alert %}}
 
-The `imageIndex`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+The `configData` key corresponds to the output of `crane config <image>`, while `manifestList` and `manifest` correspond to the output of `crane manifest <image>`.
 
 For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
