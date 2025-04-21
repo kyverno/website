@@ -60,7 +60,11 @@ rbacdefinitions.rbacmanager.reactiveops.io   2023-12-12T12:20:19Z
 
 ## Install Chainsaw
 
-Chainsaw can be installed in [different ways](https://kyverno.github.io/chainsaw/latest/quick-start/install/). If you are using MacOS or Linux, the simplest solution is to use [brew](https://brew.sh/).
+Chainsaw can be installed in [different ways](https://kyverno.github.io/chainsaw/latest/quick-start/install/).
+
+### macOS
+
+If you are using macOS, the simplest solution is to use [brew](https://brew.sh/):
 
 ```sh
 # add the chainsaw tap
@@ -69,6 +73,44 @@ brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
 # install chainsaw
 brew install kyverno/chainsaw/chainsaw
 ```
+
+### Linux
+
+For Linux users, Chainsaw can be installed using one of the following methods:
+
+1. **Download the precompiled binaries**:
+   Visit the [Chainsaw releases page](https://github.com/kyverno/chainsaw/releases) and download the appropriate binary for your system. Extract the binary and move it to a directory in your `PATH`.
+
+   ```sh
+   wget https://github.com/kyverno/chainsaw/releases/download/vX.Y.Z/chainsaw-linux-amd64.tar.gz
+   tar -xvf chainsaw-linux-amd64.tar.gz
+   sudo mv chainsaw /usr/local/bin/
+   ```
+
+2. **Using Linuxbrew** (if installed):
+   ```sh
+   brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
+   brew install kyverno/chainsaw/chainsaw
+   ```
+
+3. **Using package managers** (if available):
+   Chainsaw may be available in your distribution's package manager. Use the following commands based on your package manager:
+
+   - **For Debian/Ubuntu (apt)**:
+     ```sh
+     sudo apt update
+     sudo apt install chainsaw
+     ```
+
+   - **For Fedora (dnf)**:
+     ```sh
+     sudo dnf install chainsaw
+     ```
+
+   - **For Arch Linux (pacman)**:
+     ```sh
+     sudo pacman -S chainsaw
+     ```
 
 ## What is a test
 
