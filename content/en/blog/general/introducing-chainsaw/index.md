@@ -82,7 +82,7 @@ For Linux users, Chainsaw can be installed using one of the following methods:
    Visit the [Chainsaw releases page](https://github.com/kyverno/chainsaw/releases) and download the appropriate binary for your system. Extract the binary and move it to a directory in your `PATH`.
 
    ```sh
-   wget https://github.com/kyverno/chainsaw/releases/download/vX.Y.Z/chainsaw-linux-amd64.tar.gz
+    wget https://github.com/kyverno/chainsaw/releases/download/v0.2.12/chainsaw-linux-amd64.tar.gz
    tar -xvf chainsaw-linux-amd64.tar.gz
    sudo mv chainsaw /usr/local/bin/
    ```
@@ -93,24 +93,7 @@ For Linux users, Chainsaw can be installed using one of the following methods:
    brew install kyverno/chainsaw/chainsaw
    ```
 
-3. **Using package managers** (if available):
-   Chainsaw may be available in your distribution's package manager. Use the following commands based on your package manager:
-
-   - **For Debian/Ubuntu (apt)**:
-     ```sh
-     sudo apt update
-     sudo apt install chainsaw
-     ```
-
-   - **For Fedora (dnf)**:
-     ```sh
-     sudo dnf install chainsaw
-     ```
-
-   - **For Arch Linux (pacman)**:
-     ```sh
-     sudo pacman -S chainsaw
-     ```
+> **Note:** Currently, Chainsaw is not available via `apt`, `dnf`, or `pacman`. The primary installation methods for Linux are downloading the tar file or using Linuxbrew (if installed).
 
 ## What is a test
 
