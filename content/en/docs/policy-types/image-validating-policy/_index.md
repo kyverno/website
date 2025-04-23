@@ -67,13 +67,15 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
+  variables:
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
   attestors:
   - name: cosign                      # A unique name to identify this attestor
     cosign:
       key:                            # Public key-based verification
-        secretRef:                    # Reference to a Kubernetes secret that holds the cosign public key
-          name: cosign-pubkey-secret
-          namespace: kyverno
+        cel: variables.cm.data.pubKey    # CEL expression that resolves to the public key
         kms: "gcpkms://..."           # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
         hashAlgorithm: "sha256"       # Optional hash algorithm used with the key
         data: |                       # Direct inline public key data (optional if secretRef or kms is used)
@@ -114,10 +116,12 @@ spec:
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
+        certCel: variables.cm.data.cert   # CEL expression resolving to certificate
         certChain: |                 # Certificate chain associated with the signer
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
+        certChainCel: variables.cm.data.certChain   # CEL expression resolving to certificate chain
 
       source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
@@ -149,6 +153,13 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
+  variables:
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
+     expression:
+   - name: 
+     expression:
   matchImageReferences:
     - glob: ghcr.io/*                         
   attestors:
@@ -158,10 +169,12 @@ spec:
               -----BEGIN CERTIFICATE-----
               MIIBjTCCATOgAwIBAgIUdMiN3gC...
               -----END CERTIFICATE-----
+            certsCel: variables.cm.data.certs # Optional: CEL expression resolving to  certificate(s)
             tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates
               -----BEGIN CERTIFICATE-----
               MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
               -----END CERTIFICATE-----
+            tsaCertsCel: variables.cm.data.tsaCerts  # Optional: CEL expression resolving to TSA certificate(s)
 
 ```
 
@@ -260,8 +273,7 @@ Kyverno provides specialized functions for verifying image signatures and attest
 | `images.containers` | Retrieves all container images in the resource |
 | `verifyImageSignatures(image, [attestors.notary])` | Verify image signatures using specified attestors |
 | `verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])` | Verify attestation signatures for specific metadata |
-| `payload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Extract the in-toto payload |
- 
+| `extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Extract the in-toto payload |
 
 The following policy demonstrates the use of these functions:
 
@@ -299,7 +311,7 @@ spec:
            attestations.sbom, [attestors.notary])).all(e, e > 0)
       message: failed to verify attestation with notary cert
     - expression: >-
-        images.containers.map(image, payload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
+        images.containers.map(image, extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
       message: sbom is not a cyclone dx sbom
 ```
 
@@ -308,6 +320,7 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
+Note: `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
 
 #### Cosign Keyless Signature and Attestation Verification
 
