@@ -63,7 +63,7 @@ The renewal process runs as follows:
 1. Remove expired certificates contained in the secret
 1. Check if remaining certificates will become invalid in less than 15 days
 1. If needed, generate a new certificate with the validity documented above
-1. The new certificates is added to the underlying secret along with current certificatess that are still valid
+1. The new certificate is added to the underlying secret along with current certificates that are still valid
 1. Reconfigure webhooks with the new certificates bundle
 1. Update the Kyverno server to use the new certificate
 
