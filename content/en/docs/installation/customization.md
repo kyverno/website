@@ -81,7 +81,7 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Below is a process which shows how to create a self-signed root CA, and generate a signed certificates and keys using [step CLI](https://smallstep.com/cli/):
+Below is a process which shows how to create a self-signed root CA, and generate signed certificates and keys using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 
