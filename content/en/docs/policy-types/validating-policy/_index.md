@@ -426,7 +426,6 @@ The **ImageData library** extends image inspection with OCI registry metadata li
 | `image.GetMetadata("nginx:1.21").config.container == "nginx"` | Validate container name |
 | `image.GetMetadata("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
 | `image.GetMetadata("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
-| `image.GetMetadata("nginx:1.21").layers.size() > 0` | Confirm the image has layers |
 | `image.GetMetadata("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
 | `image.GetMetadata("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
 | `image.GetMetadata("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
