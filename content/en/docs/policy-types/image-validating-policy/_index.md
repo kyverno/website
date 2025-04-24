@@ -112,14 +112,17 @@ spec:
         insecureIgnoreSCT: false      # Skip Signed Certificate Timestamp (for testing only)
 
       certificate:                    # Certificate-based verification
-        cert: |                       # Inline signing certificate or CEL expression resolving to certificate
+        cert: |                       # Inline signing certificate
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
-        certChain: |                 # Certificate chain associated with the signer or CEL expression resolving to certificate chain
+        cert: variables.cm.data.cert   # CEL expression resolving to certificate
+        certChain: |                 # Certificate chain associated with the signer o
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
+        certChain: variables.cm.data.certChain   # CEL expression resolving to certificate
+
       source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
         pullSecrets:                  # Kubernetes secrets used to access the registry
@@ -166,10 +169,16 @@ spec:
               -----BEGIN CERTIFICATE-----
               MIIBjTCCATOgAwIBAgIUdMiN3gC...
               -----END CERTIFICATE-----
-            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates or CEL expression resolving to TSA certificate(s)
+
+            certs: variables.cm.data.cert  # CEL expression resolving to  certificate(s)
+
+            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates 
               -----BEGIN CERTIFICATE-----
               MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
               -----END CERTIFICATE-----
+
+            tsaCerts: variables.cm.data.cert #  CEL expression resolving to TSA certificate(s)
+
             
 
 ```
