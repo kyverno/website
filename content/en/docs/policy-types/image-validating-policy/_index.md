@@ -45,7 +45,7 @@ metadata:
 spec:
   matchImageReferences:
     - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
-    - cel: "image.registry == 'ghcr.io'"  # Match using CEL expression
+    - expression: "image.registry == 'ghcr.io'"  # Match using CEL expression
   ...
 ```
 
@@ -75,7 +75,7 @@ spec:
   - name: cosign                      # A unique name to identify this attestor
     cosign:
       key:                            # Public key-based verification
-        cel: variables.cm.data.pubKey    # CEL expression that resolves to the public key
+        expression: variables.cm.data.pubKey    # CEL expression that resolves to the public key
         kms: "gcpkms://..."           # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
         hashAlgorithm: "sha256"       # Optional hash algorithm used with the key
         data: |                       # Direct inline public key data (optional if secretRef or kms is used)
@@ -112,17 +112,14 @@ spec:
         insecureIgnoreSCT: false      # Skip Signed Certificate Timestamp (for testing only)
 
       certificate:                    # Certificate-based verification
-        cert: |                       # Inline signing certificate
+        cert: |                       # Inline signing certificate or CEL expression resolving to certificate
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
-        certCel: variables.cm.data.cert   # CEL expression resolving to certificate
-        certChain: |                 # Certificate chain associated with the signer
+        certChain: |                 # Certificate chain associated with the signer or CEL expression resolving to certificate chain
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
-        certChainCel: variables.cm.data.certChain   # CEL expression resolving to certificate chain
-
       source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
         pullSecrets:                  # Kubernetes secrets used to access the registry
@@ -165,16 +162,15 @@ spec:
   attestors:
         - name: notary                        # Unique identifier for this attestor
           notary:
-            certs: |                          # Certificate(s) used to verify the signature
+            certs: |                          # Certificate(s) used to verify the signature or CEL expression resolving to  certificate(s)
               -----BEGIN CERTIFICATE-----
               MIIBjTCCATOgAwIBAgIUdMiN3gC...
               -----END CERTIFICATE-----
-            certsCel: variables.cm.data.certs # Optional: CEL expression resolving to  certificate(s)
-            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates
+            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates or CEL expression resolving to TSA certificate(s)
               -----BEGIN CERTIFICATE-----
               MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
               -----END CERTIFICATE-----
-            tsaCertsCel: variables.cm.data.tsaCerts  # Optional: CEL expression resolving to TSA certificate(s)
+            
 
 ```
 
