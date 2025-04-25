@@ -12,16 +12,18 @@ We are excited to announce the release of Kyverno 1.14.0, marking a significant 
 
 ## TL;DR
 
-🆕 Two new specialized policy types: `ValidatingPolicy` and `ImageValidatingPolicy`
-🔍 Streamlined validation with improved Common Expression Language (CEL) support and performance
-🔐 Enhanced supply chain security with dedicated image verification
-🤝 Policy exceptions now support CEL expressions for fine-grained control
-🚀 CLI improvements for shift-left validation of any JSON payload
-👥 Community milestone: 744 changes with 60+ contributors (40 first-time!)
+* Two new specialized policy types: `ValidatingPolicy` and `ImageValidatingPolicy`
+* Streamlined validation with improved Common Expression Language (CEL) support and performance
+* Enhanced supply chain security with dedicated image verification
+* Policy exceptions now support CEL expressions for fine-grained control
+* CLI improvements for shift-left validation of any JSON payload
+* Community milestone: 744 changes with 60+ contributors (40 first-time!)
 
 ## Why New Policy Types?
 
-Kyverno's evolution has led to a proliferation of overlapping rule types (`validate.pattern`, `validate.cel`, `validate.deny`, etc.) within the `ClusterPolicy` Custom Resource Definition (CRD), creating unnecessary complexity for users. Meanwhile, Kubernetes has introduced its own `ValidatingAdmissionPolicies` and `MutatingAdmissionPolicies` using CEL expressions, presenting an opportunity for closer alignment. The new policy types address these challenges by migrating each rule type into its own dedicated CRD. This modular approach streamlines the user experience, standardizes on CEL for better Kubernetes compatibility, simplifies maintenance for the project, and provides a clearer, more focused way to define policies according to their specific functions.
+Kyverno's evolution has led to a proliferation of overlapping rule types (`validate.pattern`, `validate.cel`, `validate.deny`, etc.) within the `ClusterPolicy` Custom Resource Definition (CRD), creating unnecessary complexity for users. Meanwhile, Kubernetes has introduced its own `ValidatingAdmissionPolicies` and `MutatingAdmissionPolicies` using CEL expressions, presenting an opportunity for closer alignment. 
+
+The new policy types address these challenges by migrating each rule type into its own dedicated CRD. This modular approach streamlines the user experience, standardizes on CEL for better Kubernetes compatibility, simplifies maintenance for the project, and provides a clearer, more focused way to define policies according to their specific functions.
 
 ## New Policy Types: A Modular Approach
 
@@ -219,7 +221,7 @@ In this example, the `PolicyException` exempts any resource named "skipped-deplo
 
 Kyverno 1.14.0 includes powerful CEL libraries that extend beyond standard Kubernetes capabilities. These libraries work seamlessly with new policy types while maintaining backward compatibility with established Kyverno features.
 
-Here are example signatures for each library, for full list please see [here](https://main.kyverno.io/docs/policy-types/validating-policy/#kyverno-cel-libraries):
+Here are example signatures for each library. For a full list, please see [here](https://main.kyverno.io/docs/policy-types/validating-policy/#kyverno-cel-libraries):
 
 #### Resource Library
 
