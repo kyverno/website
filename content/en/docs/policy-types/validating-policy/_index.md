@@ -327,15 +327,15 @@ When communicating over HTTPS, Kyverno uses the provided CA bundle to validate t
 
 ### User library
 
-The **User library** includes functions like `user.ParseServiceAccount()` to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
+The **User library** includes functions like `parseServiceAccount()` to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
 
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `user.ParseServiceAccount(request.userInfo.username).Name == "my-sa"` | Validate that the request is made by a specific ServiceAccount |
-| `user.ParseServiceAccount(request.userInfo.username).Namespace == "system"` | Ensure the ServiceAccount belongs to the `system` namespace |
-| `user.ParseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
-| `user.ParseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
+| `parseServiceAccount(request.userInfo.username).Name == "my-sa"` | Validate that the request is made by a specific ServiceAccount |
+| `parseServiceAccount(request.userInfo.username).Namespace == "system"` | Ensure the ServiceAccount belongs to the `system` namespace |
+| `parseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
+| `parseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
 
 This sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
 
@@ -355,7 +355,7 @@ spec:
         operations: ["CREATE"]
   variables:
     - name: sa
-      expression: user.ParseServiceAccount(request.userInfo.username)
+      expression: parseServiceAccount(request.userInfo.username)
   validations:
     - expression: variables.sa.Namespace == "kube-system"
       message: Only kube-system service accounts can create pods
@@ -370,12 +370,17 @@ The **Image library** offers functions to parse and analyze image references. It
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `image("nginx:latest").registry() == "docker.io"` | Validate image registry |
-| `image("nginx:latest").repository() == "library/nginx"` | Validate repository path |
-| `image("nginx:latest").identifier() == "latest"` | Check if the image identifier is a tag |
-| `image("nginx:sha256:abcd...").containsDigest()` | Check if the image has a digest |
-| `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all images are from `ghcr.io` registry |
-| `object.spec.containers.map(c, image(c.image)).all(i, i.containsDigest())` | Ensure images use a digest |
+| `image("nginx:latest")` | Convert an image string into an image object (must be used before calling any image methods) |
+| `isImage("nginx:latest")` | Check if the string is a valid image |
+| `image("nginx:latest").registry()` | Get the image registry (e.g., `docker.io`) |
+| `image("nginx:latest").repository()` | Get the image repository path (e.g., `library/nginx`) |
+| `image("nginx:latest").identifier()` | Get the image identifier (e.g., tag or digest part) |
+| `image("nginx:latest").tag()` | Get the tag portion of the image (e.g., `latest`) |
+| `image("nginx@sha256:abcd...").digest()` | Get the digest portion of the image |
+| `image("nginx:sha256:abcd...").containsDigest()` | Check if the image string includes a digest |
+| `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all container images come from the `ghcr.io` registry |
+| `object.spec.containers.map(c, image(c.image)).all(i, i.containsDigest())` | Ensure all images include a digest |
+
 
 
 The following sample ensures that all images use a digest:
@@ -408,29 +413,28 @@ spec:
 
 ### ImageData library
 
-The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `imagedata.Get()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
+The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `image.GetMetadata()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `imagedata.Get("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
-| `imagedata.Get("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
-| `imagedata.Get("nginx:1.21").config.author == "docker"` | Check the image author |
-| `imagedata.Get("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
-| `imagedata.Get("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
-| `imagedata.Get("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
-| `imagedata.Get("nginx:1.21").config.container == "nginx"` | Validate container name |
-| `imagedata.Get("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
-| `imagedata.Get("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
-| `imagedata.Get("nginx:1.21").layers.size() > 0` | Confirm the image has layers |
-| `imagedata.Get("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
-| `imagedata.Get("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
-| `imagedata.Get("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
-| `imagedata.Get("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
-| `imagedata.Get("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
-| `imagedata.Get("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
-| `imagedata.Get("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
+| `image.GetMetadata("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
+| `image.GetMetadata("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
+| `image.GetMetadata("nginx:1.21").config.author == "docker"` | Check the image author |
+| `image.GetMetadata("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
+| `image.GetMetadata("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
+| `image.GetMetadata("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
+| `image.GetMetadata("nginx:1.21").config.container == "nginx"` | Validate container name |
+| `image.GetMetadata("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
+| `image.GetMetadata("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
+| `image.GetMetadata("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
+| `image.GetMetadata("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
+| `image.GetMetadata("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
+| `image.GetMetadata("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
+| `image.GetMetadata("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
+| `image.GetMetadata("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
+| `image.GetMetadata("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
 
-The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
+The `image.GetMetadata()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
 This sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
 
@@ -453,7 +457,7 @@ spec:
     - name: imageKey
       expression: variables.imageRef
     - name: image
-      expression: imagedata.Get(variables.imageKey)
+      expression: image.GetMetadata(variables.imageKey)
 
   validations:
     - expression: variables.image != null
@@ -483,18 +487,18 @@ spec:
 | `mediaType`   | The media type of the image manifest.          | `application/vnd.docker.distribution.manifest.v2+json` |
 | `layers`      | A list of layer digests that make up the image. | `["sha256:layer1...", "sha256:layer2..."]` |
 
-In addition to these fields, `imagedata.Get()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
+In addition to these fields, `image.GetMetadata()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
 
 
 ### GlobalContext library
 
-The **GlobalContext library** introduces shared variables across policies through `globalcontext.Get()`. These variables are populated from external API calls via `GlobalContextEntry` resources, making it possible to validate requests against cluster-wide configurations or aggregated data with improved efficiency.
+The **GlobalContext library** introduces shared variables across policies through `globalContext.Get()`. These variables are populated from external API calls via `GlobalContextEntry` resources, making it possible to validate requests against cluster-wide configurations or aggregated data with improved efficiency.
 
 | **CEL Expression**                                                       | **Purpose**                                                         |
 |--------------------------------------------------------------------------|----------------------------------------------------------------------|
-| `globalcontext.Get("gctxentry-apicall-correct", "") != 0`                  | Ensure a specific deployment exists before allowing resource creation |
-| `globalcontext.Get("team-cluster-values", "").someValue == "enabled"`     | Validate shared cluster-wide configuration using global context data |
-| `globalcontext.Get("global-pod-labels", "").contains(object.metadata.labels)` | Check that pod labels match predefined global labels                |
+| `globalContext.Get("gctxentry-apicall-correct", "") != 0`                  | Ensure a specific deployment exists before allowing resource creation |
+| `globalContext.Get("team-cluster-values", "").someValue == "enabled"`     | Validate shared cluster-wide configuration using global context data |
+| `globalContext.Get("global-pod-labels", "").contains(object.metadata.labels)` | Check that pod labels match predefined global labels                |
 
 
 To use this feature, first a `GlobalContextEntry` must be defined:
@@ -527,7 +531,7 @@ spec:
   variables:
     - name: dcount
       expression: >-
-        globalcontext.Get("gctxentry-apicall-correct", "")
+        globalContext.Get("gctxentry-apicall-correct", "")
   validations:
     - expression: >-
         variables.dcount != 0

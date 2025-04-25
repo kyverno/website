@@ -33,9 +33,9 @@ spec:
 ```
 
 
-### imageRules
+### matchImageReferences
 
-The `spec.imageRules` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
+The `spec.matchImageReferences` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -43,9 +43,9 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  imageRules:
+  matchImageReferences:  # At least one sub-field is required
     - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
-    - cel: "image.registry == 'ghcr.io'"  # Match using CEL expression
+    - expression: "image.registry == 'ghcr.io'"  # Match using CEL expression
   ...
 ```
 
@@ -67,13 +67,15 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
+  variables:
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
   attestors:
   - name: cosign                      # A unique name to identify this attestor
     cosign:
-      key:                            # Public key-based verification
-        secretRef:                    # Reference to a Kubernetes secret that holds the cosign public key
-          name: cosign-pubkey-secret
-          namespace: kyverno
+      key:                            # Public key-based verification and At least one sub-field is required
+        expression: variables.cm.data.pubKey    # CEL expression that resolves to the public key
         kms: "gcpkms://..."           # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
         hashAlgorithm: "sha256"       # Optional hash algorithm used with the key
         data: |                       # Direct inline public key data (optional if secretRef or kms is used)
@@ -109,15 +111,19 @@ spec:
         insecureIgnoreTlog: false     # Skip TLog verification (for testing only)
         insecureIgnoreSCT: false      # Skip Signed Certificate Timestamp (for testing only)
 
-      certificate:                    # Certificate-based verification
-        cert: |                       # Inline signing certificate
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
-        certChain: |                 # Certificate chain associated with the signer
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
+      certificate:                    # Certificate-based verification and At least one sub-field is required
+        cert:
+          value: |                       # Inline signing certificate
+            -----BEGIN CERTIFICATE-----
+            ...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.cert   # CEL expression resolving to certificate
+        certChain:        # At least one sub-field is required
+          value: |                 # Certificate chain associated with the signer o
+            -----BEGIN CERTIFICATE-----
+            ...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.certChain   # CEL expression resolving to certificate
 
       source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
@@ -149,19 +155,35 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  variables:
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
+     expression:
+   - name: 
+     expression:
+  matchImageReferences:
     - glob: ghcr.io/*                         
   attestors:
         - name: notary                        # Unique identifier for this attestor
           notary:
-            certs: |                          # Certificate(s) used to verify the signature
-              -----BEGIN CERTIFICATE-----
-              MIIBjTCCATOgAwIBAgIUdMiN3gC...
-              -----END CERTIFICATE-----
-            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates
-              -----BEGIN CERTIFICATE-----
-              MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
-              -----END CERTIFICATE-----
+            certs:      # At least one sub-field is required
+              value: |                          # Certificate(s) used to verify the signature or CEL expression resolving to  certificate(s)
+                -----BEGIN CERTIFICATE-----
+                MIIBjTCCATOgAwIBAgIUdMiN3gC...
+                -----END CERTIFICATE-----
+
+              expression: variables.cm.data.cert  # CEL expression resolving to  certificate(s)
+
+            tsaCerts:   # At least one sub-field is required
+               value: |                       # Optional: Time Stamp Authority (TSA) certificates 
+                -----BEGIN CERTIFICATE-----
+                MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
+                -----END CERTIFICATE-----
+
+               expression: variables.cm.data.tsaCert #  Optional: CEL expression resolving to TSA certificate(s)
+
+            
 
 ```
 
@@ -181,15 +203,16 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
   attestors:
         - name: notary
           notary:
-            certs: |-
-              -----BEGIN CERTIFICATE-----
-              MIIBjTCCATOgAwIBAgIUdMiN3gC...
-              -----END CERTIFICATE-----
+            certs:
+              value: |-
+                  -----BEGIN CERTIFICATE-----
+                  MIIBjTCCATOgAwIBAgIUdMiN3gC...
+                  -----END CERTIFICATE-----
   attestations:
     - name: sbom                                # Logical name for this attestation
       referrer:                                 # Uses OCI artifact type for verification
@@ -202,17 +225,9 @@ spec:
 
 ```
 
-### mutateDigest
+### validationConfigurations
 
-The `mutateDigest` field enables, or disables, mutating the image reference to replace the tag with a digest. Image tags are mutable and as a best practice digests should be used prior to deployment.
-
-### verifyDigest
-
-The `verifyDigest` field enables, or disables, verification that all matching images are using a digest.
-
-### required
-
-The `required` field enables, or disables, a check that all images must be validated by one or more policies.
+The `validationConfigurations` field defines settings for mutating image tags to digests, verifying that images are using digests, and enforcing image validation requirements across policies.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -220,11 +235,12 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
-  mutateDigest: true
-  required: true
-  verifyDigest: true
+  validationConfigurations:
+    mutateDigest: true  # Mutates image tags to digests (recommended to avoid mutable tags).
+    required: true       # Enforces that images must be validated according to policies.
+    verifyDigest: true  # Ensures that images are verified with a digest instead of tags.
 
 ```
 
@@ -238,7 +254,7 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
   credentials:
     allowInsecureRegistry: false  # Deny insecure access to registries
@@ -267,8 +283,7 @@ Kyverno provides specialized functions for verifying image signatures and attest
 | `images.containers` | Retrieves all container images in the resource |
 | `verifyImageSignatures(image, [attestors.notary])` | Verify image signatures using specified attestors |
 | `verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])` | Verify attestation signatures for specific metadata |
-| `payload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Extract the in-toto payload |
- 
+| `extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX'` | Extract the in-toto payload |
 
 The following policy demonstrates the use of these functions:
 
@@ -284,15 +299,16 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
     - glob: ghcr.io/*
       attestors:
         - name: notary
           notary:
-            certs: |-
-              -----BEGIN CERTIFICATE-----
-              ...
-              -----END CERTIFICATE-----
+            certs:
+              value: |-
+                  -----BEGIN CERTIFICATE-----
+                  ...
+                  -----END CERTIFICATE-----
       attestations:
         - name: sbom
           referrer:
@@ -306,7 +322,7 @@ spec:
            attestations.sbom, [attestors.notary])).all(e, e > 0)
       message: failed to verify attestation with notary cert
     - expression: >-
-        images.containers.map(image, payload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
+        images.containers.map(image, extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
       message: sbom is not a cyclone dx sbom
 ```
 
@@ -315,6 +331,7 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
+Note: `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
 
 #### Cosign Keyless Signature and Attestation Verification
 
@@ -338,7 +355,7 @@ spec:
         apiVersions: ["v1"]
         resources: ["pods"]
         operations: ["CREATE", "UPDATE"]
-  imageRules:
+  matchImageReferences:
     - glob: "ghcr.io/myorg/myrepo:*"
   attestors:
     - name: cosign
@@ -385,9 +402,8 @@ spec:
         apiVersions: ["v1"]
         operations: ["CREATE", "UPDATE"]
         resources: ["pods"]
-  imageRules:
+  matchImageReferences:
         - glob : "docker.io/kyverno/kyverno*"
-  mutateDigest: true
   attestors:
   - name: cosign
     cosign:
