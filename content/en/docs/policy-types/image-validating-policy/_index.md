@@ -43,7 +43,7 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  matchImageReferences:
+  matchImageReferences:  # At least one sub-field is required
     - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
     - expression: "image.registry == 'ghcr.io'"  # Match using CEL expression
   ...
@@ -74,7 +74,7 @@ spec:
   attestors:
   - name: cosign                      # A unique name to identify this attestor
     cosign:
-      key:                            # Public key-based verification
+      key:                            # Public key-based verification and At least one sub-field is required
         expression: variables.cm.data.pubKey    # CEL expression that resolves to the public key
         kms: "gcpkms://..."           # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
         hashAlgorithm: "sha256"       # Optional hash algorithm used with the key
@@ -111,17 +111,19 @@ spec:
         insecureIgnoreTlog: false     # Skip TLog verification (for testing only)
         insecureIgnoreSCT: false      # Skip Signed Certificate Timestamp (for testing only)
 
-      certificate:                    # Certificate-based verification
-        cert: |                       # Inline signing certificate
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
-        cert: variables.cm.data.cert   # CEL expression resolving to certificate
-        certChain: |                 # Certificate chain associated with the signer o
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
-        certChain: variables.cm.data.certChain   # CEL expression resolving to certificate
+      certificate:                    # Certificate-based verification and At least one sub-field is required
+        cert:
+          value: |                       # Inline signing certificate
+            -----BEGIN CERTIFICATE-----
+            ...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.cert   # CEL expression resolving to certificate
+        certChain:        # At least one sub-field is required
+          value: |                 # Certificate chain associated with the signer o
+            -----BEGIN CERTIFICATE-----
+            ...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.certChain   # CEL expression resolving to certificate
 
       source:                         # Optional metadata to constrain image source (optional)
         repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
@@ -165,19 +167,21 @@ spec:
   attestors:
         - name: notary                        # Unique identifier for this attestor
           notary:
-            certs: |                          # Certificate(s) used to verify the signature or CEL expression resolving to  certificate(s)
-              -----BEGIN CERTIFICATE-----
-              MIIBjTCCATOgAwIBAgIUdMiN3gC...
-              -----END CERTIFICATE-----
+            certs:      # At least one sub-field is required
+              value: |                          # Certificate(s) used to verify the signature or CEL expression resolving to  certificate(s)
+                -----BEGIN CERTIFICATE-----
+                MIIBjTCCATOgAwIBAgIUdMiN3gC...
+                -----END CERTIFICATE-----
 
-            certs: variables.cm.data.cert  # CEL expression resolving to  certificate(s)
+              expression: variables.cm.data.cert  # CEL expression resolving to  certificate(s)
 
-            tsaCerts: |                       # Optional: Time Stamp Authority (TSA) certificates 
-              -----BEGIN CERTIFICATE-----
-              MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
-              -----END CERTIFICATE-----
+            tsaCerts:   # At least one sub-field is required
+               value: |                       # Optional: Time Stamp Authority (TSA) certificates 
+                -----BEGIN CERTIFICATE-----
+                MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
+                -----END CERTIFICATE-----
 
-            tsaCerts: variables.cm.data.cert #  CEL expression resolving to TSA certificate(s)
+               expression: variables.cm.data.tsaCert #  Optional: CEL expression resolving to TSA certificate(s)
 
             
 
@@ -204,10 +208,11 @@ spec:
   attestors:
         - name: notary
           notary:
-            certs: |-
-              -----BEGIN CERTIFICATE-----
-              MIIBjTCCATOgAwIBAgIUdMiN3gC...
-              -----END CERTIFICATE-----
+            certs:
+              value: |-
+                  -----BEGIN CERTIFICATE-----
+                  MIIBjTCCATOgAwIBAgIUdMiN3gC...
+                  -----END CERTIFICATE-----
   attestations:
     - name: sbom                                # Logical name for this attestation
       referrer:                                 # Uses OCI artifact type for verification
@@ -299,10 +304,11 @@ spec:
       attestors:
         - name: notary
           notary:
-            certs: |-
-              -----BEGIN CERTIFICATE-----
-              ...
-              -----END CERTIFICATE-----
+            certs:
+              value: |-
+                  -----BEGIN CERTIFICATE-----
+                  ...
+                  -----END CERTIFICATE-----
       attestations:
         - name: sbom
           referrer:
