@@ -64,4 +64,4 @@ FIELDS:
      seconds.
 ```
 
-Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes#_install-the-kubernetes-extension) installed.
+Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.

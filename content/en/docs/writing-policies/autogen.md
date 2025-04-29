@@ -91,7 +91,7 @@ status:
 ```
 
 {{% alert title="Note" color="info" %}}
-Auto-gen rules also cover ReplicaSet and ReplicationControllers. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs. Although these intermediary controllers have rules auto-generated, the Kyverno ConfigMap may need to be updated to remove default [resource filters](/docs/installation/customization.md#resource-filters) for them.
+Auto-gen rules also cover ReplicaSet and ReplicationControllers. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs. Although these intermediary controllers have rules auto-generated, the Kyverno ConfigMap may need to be updated to remove default [resource filters](../installation/customization.md#resource-filters) for them.
 {{% /alert %}}
 
 Rule auto-generation behavior is controlled by the policy annotation `pod-policies.kyverno.io/autogen-controllers`. You can change the value of the annotation to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates rules for a `Deployment` and `Job` if the annotation is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment,Job`. To disable auto-generating rules for Pod controllers entirely, set it to the value `none`.
@@ -104,9 +104,9 @@ Kyverno skips generating Pod controller rules whenever the following `resources`
 * `selector`
 * `annotations`
 
-Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`. Mutate rules which match on `Pod` and use a JSON patch are also excluded from rule auto-generation as noted [here](/docs/policy-types/cluster-policy/mutate.md#rfc-6902-jsonpatch).
+Additionally, Kyverno only auto-generates rules when the resource kind specified in a combination of `match` and `exclude` is no more than `Pod`. Mutate rules which match on `Pod` and use a JSON patch are also excluded from rule auto-generation as noted [here](mutate.md#rfc-6902-jsonpatch).
 
-When disabling auto-generation rules for select Pod controllers, or when auto-generation does not apply, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](/docs/policy-types/cluster-policy/preconditions.md) with an expression similar to the below which may allow Pods created by a Job controller to pass.
+When disabling auto-generation rules for select Pod controllers, or when auto-generation does not apply, Kyverno still applies policy matching on Pods to those spawned by those controllers. To exempt these Pods, use [preconditions](preconditions.md) with an expression similar to the below which may allow Pods created by a Job controller to pass.
 
 ```yaml
 - key: Job
@@ -170,7 +170,7 @@ spec:
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
 
-Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](/docs/policies/best-practices/disallow-default-namespace/disallow-default-namespace.md) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
+Similar to the automatic translation of expressions beginning with `request.object.metadata.*`, Kyverno also auto-generates rules for Pod controllers when a pattern specifies the same structure. For example, the [disallow default namespace policy](../../policies/best-practices/disallow-default-namespace/disallow-default-namespace.md) is a validate rule which uses an overlay pattern to ensure that neither a Pod nor any of its controllers can use the `default` Namespace.
 
 ```yaml
 pattern:

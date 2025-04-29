@@ -18,7 +18,7 @@ Kubernetes Native Policy Management.
   
   NOTE: To enable experimental commands, environment variable "KYVERNO_EXPERIMENTAL" should be set true or 1.
 
-  For more information visit [here](/docs/kyverno-cli)
+  For more information visit [here](../../kyverno-cli)
 
 ```
 kyverno [flags]
