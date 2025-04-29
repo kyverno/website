@@ -524,7 +524,7 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: []
+      - apiGroups: [""]
         apiVersions: [v1]
         operations: ["CREATE", "UPDATE"]
         resources: ["pods"]
