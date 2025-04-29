@@ -413,7 +413,7 @@ spec:
 
 ## PolicyExceptions with CEL Expressions
 
-Since Kyverno 1.14.0, **PolicyExceptions** support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
+Since Kyverno 1.14.0, **PolicyExceptions**, introduced in the new group `policies.kyverno.io`, support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
 
 - A **CEL expression** under `matchConditions` dynamically matches target resources (e.g., by name, namespace, or labels).
 - The `policyRefs` field specifies the **policy name** and **policy kind** being excluded from enforcement.
