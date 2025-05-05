@@ -408,6 +408,9 @@ spec:
                 hRkMf01X7+GAI75hpgoX/CuCjd8J5kozsXLzUtKRop5gXyZxuFL8yUW9gfQs
                 -----END CERTIFICATE-----
 ```
+              signatureAlgorithm: sha256
+
+You can specify the `signatureAlgorithm` to be used for certificate-based verification. By default, cosign uses `sha256` when computing digests, but you can specify a different algorithm using the `signatureAlgorithm` field. Allowed values are `sha224`, `sha256`, `sha384`, and `sha512`.
 
 To verify using the root certificate only, the leaf certificate declaration `cert` can be omitted.
 
@@ -642,6 +645,34 @@ The supported formats include:
 
 Refer to https://docs.sigstore.dev/cosign/key_management/overview/ for additional details.
 
+Here's an example of using AWS KMS for verification with a signature algorithm:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-aws-kms
+spec:
+  rules:
+    - name: check-image-aws-kms
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image:signed-aws-kms"
+        failureAction: Enforce 
+        attestors:
+        - entries:
+          - keys:
+              kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+              signatureAlgorithm: sha256
+```
+
+When using KMS for verification, you can specify the signature algorithm using the `signatureAlgorithm` field. The allowed values are `sha224`, `sha256`, `sha384`, and `sha512`.
+
 ### Enabling IRSA to access AWS KMS
 
 When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant the Kyverno ServiceAccount permission to retrieve the public key(s) it needs from AWS KMS.
@@ -859,6 +890,29 @@ verifyImages:
 ...
 ```
 Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
+
+The `signatureAlgorithm` field can be used with different types of verification methods:
+
+1. With public keys as shown above
+2. With certificates:
+   ```yaml
+   attestors:
+   - entries:
+     - signatureAlgorithm: sha256
+       certificates:
+         cert: |-
+           -----BEGIN CERTIFICATE-----
+           ...
+           -----END CERTIFICATE-----
+   ```
+3. With KMS:
+   ```yaml
+   attestors:
+   - entries:
+     - signatureAlgorithm: sha384
+       keys:
+         kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+   ```
 
 ## Ignoring Tlogs and SCT Verification
 
