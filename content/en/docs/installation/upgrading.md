@@ -19,6 +19,41 @@ Direct upgrades from previous versions are not supported when using the YAML man
 An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the Helm chart v2 to v3 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
 
+## Upgrading to Kyverno v1.14
+
+### New Policy Types
+
+Kyverno 1.14 introduces two new policy types:
+
+1. **ValidatingPolicy**: A specialized policy type that focuses on validation with Common Expression Language (CEL) as the primary validation method, aligning with Kubernetes' native `ValidatingAdmissionPolicy`.
+
+2. **ImageValidatingPolicy**: A dedicated policy type that focuses exclusively on container image verification, enhancing software supply chain security capabilities.
+
+These new policy types can be used alongside existing `ClusterPolicy` and `Policy` resources. Transitioning to these new policy types is optional but recommended for better alignment with Kubernetes and simplified policy management.
+
+### Migration Considerations
+
+When upgrading to Kyverno 1.14, consider the following:
+
+1. **Existing Policies**: All existing policies will continue to function as before. There is no requirement to migrate immediately.
+
+2. **New Policies**: For new policy development, consider using the new policy types for better organization and simplified structure.
+
+3. **CRDs**: Ensure you install the updated CRDs which include the new policy types.
+
+### Breaking Changes
+
+While Kyverno 1.14 strives to maintain backward compatibility, be aware of:
+
+1. **Upgraded CEL Support**: The CEL library has been enhanced and may have slight behavior differences in edge cases.
+
+2. **API Changes**: The new policy types introduce new APIs that may require updates to any automation, CI/CD pipelines, or tools interacting with Kyverno policies.
+
+For detailed information about the new policy types, refer to:
+- [ValidatingPolicy Documentation](https://main.kyverno.io/docs/policy-types/validating-policy/)
+- [ImageValidatingPolicy Documentation](https://main.kyverno.io/docs/policy-types/image-validating-policy/)
+
+
 ## Upgrading to Kyverno v1.13
 
 ### Breaking Changes

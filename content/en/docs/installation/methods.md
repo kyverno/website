@@ -51,7 +51,7 @@ reportsController:
   replicas: 3
 ```
 
-For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.13/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.14/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
 {{% alert title="Note" color="warning" %}}
 All Kyverno installations require the admission controller be among the controllers deployed. For a highly-available installation, at least 2 or more replicas are required. Based on scalability requirements, and cluster topology, additional replicas can be configured for each controller.
@@ -88,7 +88,7 @@ Kyverno can also be installed using a single installation manifest, however for 
 Although Kyverno uses release branches, only YAML manifests from a tagged release are supported. Pull from a tagged release to install Kyverno using the YAML manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.11.1/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.14.0/install.yaml
 ```
 
 ### Testing unreleased code
