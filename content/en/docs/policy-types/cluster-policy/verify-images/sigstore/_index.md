@@ -806,6 +806,10 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
+{{% alert title="Note" color="info" %}}
+When using Helm to deploy Kyverno, the `imagePullSecrets` in the chart templates are sorted alphabetically by name to ensure consistent ordering. This prevents GitOps tools like ArgoCD from detecting differences solely based on the order of secrets and marking resources as out of sync when there are no functional changes.
+{{% /alert %}}
+
 ### Trust
 
 Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
@@ -889,6 +893,7 @@ verifyImages:
           -----END PUBLIC KEY-----
 ...
 ```
+
 Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
 
 The `signatureAlgorithm` field can be used with different types of verification methods:
@@ -954,15 +959,15 @@ verifyImages:
           url: https://rekor.sigstore.dev
           pubkey: |-
           -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
           -----END PUBLIC KEY-----
         ctlog:
           ignoreSCT: true
           pubkey: |-
           -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
           -----END PUBLIC KEY-----
 ```
 
