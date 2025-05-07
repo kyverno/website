@@ -1,7 +1,7 @@
 ---
 title: Cleanup Policy
 description: >
-  Cleanup Policy deletes Kubernetes resources based on policy conditions.
+  Delete Resources Based on Policy Conditions
 weight: 20
 ---
 

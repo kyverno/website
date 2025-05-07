@@ -1,8 +1,8 @@
 ---
 date: 2022-10-24
-title: "Kyverno 1.8 Released"
-linkTitle: "Kyverno 1.8"
-description: "Kyverno 1.8 is here."
+title: Kyverno 1.8 Released
+linkTitle: Kyverno 1.8
+description: Kyverno 1.8 is here.
 draft: false
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "InfraCloud"
-linkTitle: "InfraCloud"
-description: "Kyverno Consulting and Implementation Partner"
+title: InfraCloud
+linkTitle: InfraCloud
+description: Kyverno Consulting and Implementation Partner
 type: docs
 ---
 

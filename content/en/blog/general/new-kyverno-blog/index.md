@@ -1,8 +1,8 @@
 ---
 date: 2022-07-08
-title: "New Kyverno Blog"
-linkTitle: "New Kyverno Blog"
-description: "Announcing the new Kyverno blog."
+title: New Kyverno Blog
+linkTitle: New Kyverno Blog
+description: Announcing the new Kyverno blog.
 ---
 
 ![kyverno](kyverno.png)

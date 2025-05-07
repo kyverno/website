@@ -1,8 +1,7 @@
 ---
 title: Policy Exceptions
-description: >
-  Create an exception to an existing policy using a PolicyException. 
-weight: 80
+description: Create an exception to an existing policy using a PolicyException. 
+weight: 110
 ---
 
 {{% alert title="Warning" color="warning" %}}
@@ -411,3 +410,238 @@ spec:
     - sleep
     - infinity
 ```
+
+## PolicyExceptions with CEL Expressions
+
+Since Kyverno 1.14.0, **PolicyExceptions**, introduced in the new group `policies.kyverno.io`, support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
+
+- A **CEL expression** under `matchConditions` dynamically matches target resources (e.g., by name, namespace, or labels).
+- The `policyRefs` field specifies the **policy name** and **policy kind** being excluded from enforcement.
+- If the match condition evaluates to `true`, the referenced rule is **skipped** and logged accordingly in **PolicyReports**.
+
+### Using PolicyException with ValidatingPolicy in Admission Mode
+
+The following `ValidatingPolicy` enforce that all `Deployment` resources must include the label `env=prod`. If this condition is not met, the policy denies the request.
+
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: require-prod-label
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["deployments"]
+        operations: ["CREATE", "UPDATE"]
+  validations:
+    - expression: >-
+        has(object.metadata.labels) && object.metadata.labels.env == 'prod'
+      messageExpression: "'Deployment must have label env=prod.'"
+
+```
+
+To exclude a specific `Deployment` from the above policy enforcement, a `PolicyException` can be defined. This example uses a CEL expression to match the `Deployment` named `skipped-deployment`, allowing it to bypass the validation.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: exclude-skipped-deployment
+  namespace: default
+spec:
+  policyRefs:
+    - name: require-prod-label
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: skip-by-name
+      expression: "object.metadata.name == 'skipped-deployment'"
+
+```
+
+When the exception is triggered during a live admission request, Kyverno logs the decision in a `PolicyReport`. Below is an example showing the policy rule was skipped due to the matching `PolicyException`.
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: PolicyReport
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: skipped-deployment
+results:
+  - policy: vpol-report-background-sample
+    rule: exception
+    result: skip
+    message: "rule is skipped due to policy exception: default/exclude-skipped-deployment"
+    properties:
+      exceptions: exclude-skipped-deployment
+      process: admission review
+    source: KyvernoValidatingPolicy
+    scored: true
+scope:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: skipped-deployment
+  namespace: default
+summary:
+  pass: 0
+  fail: 0
+  warn: 0
+  error: 0
+  skip: 1
+
+```
+
+#### Interpreting PolicyReport Results from PolicyException
+
+- **result: skip** — indicates the rule was not applied.  
+- **process: admission review** — confirms the evaluation occurred during a live admission request.  
+- **exceptions: exclude-skipped-deployment** — references the applied `PolicyException`.  
+
+Just like in admission mode, `PolicyException` also functions in background mode and supports other policy type `ImageValidatingPolicy`.
+ 
+ 
+### Using PolicyException with ImageValidatingPolicy in Background Mode
+
+In this example, a Pod named `skipped-pod` meets the match criteria of the policy. It is located in the default namespace, includes the label `prod: true`, and references an unsigned image from ghcr.io. as result,this image should fail the background policy evaluation due to missing or invalid attestations and signatures.
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: skipped-pod
+  namespace: default
+  labels:
+    prod: "true"
+spec:
+  containers:
+    - name: nginx
+      image: 'ghcr.io/kyverno/test-verify-image:unsigned'
+
+```
+
+The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ImageValidatingPolicy
+metadata:
+  name: ivpol-sample
+spec:
+  webhookConfiguration:
+    timeoutSeconds: 20
+  failurePolicy: Ignore
+  evaluation:
+    admission:
+      enabled: false
+    background:
+      enabled: true
+  validationActions:
+    - Audit
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: "check-prod-label"
+      expression: >-
+        has(object.metadata.labels) && has(object.metadata.labels.prod) && object.metadata.labels.prod == 'true'
+  matchImageReferences:
+    - glob: ghcr.io/*
+  attestors:
+    - name: notary
+      notary:
+        certs:
+          value: |-
+            -----BEGIN CERTIFICATE-----
+            MIIDTTCCAjWgAwIBAgIJAPI+zAzn4s0xMA0GCSqGSIb3DQEBCwUAMEwxCzAJB
+            ...
+            -----END CERTIFICATE-----
+  attestations:
+    - name: sbom
+      referrer:
+        type: sbom/cyclone-dx
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e, e > 0)
+      message: failed to verify image with notary cert
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])).all(e, e > 0)
+      message: failed to verify attestation with notary cert
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
+      message: sbom is not a cyclone dx sbom
+```
+
+This `PolicyException` is defined to exempt this pod from enforcement. The exception uses a CEL `expression—object.metadata.name == 'skipped-pod'`to identify the specific resource. It links to the `ImageValidatingPolicy` named `ivpol-sample`, and when the background controller processes the pod, it detects that the exception applies. As a result, none of the image validation rules are executed for this resource.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: check-name
+spec:
+  policyRefs:
+    - name: ivpol-sample
+      kind: ImageValidatingPolicy
+  matchConditions:
+    - name: "check-name"
+      expression: "object.metadata.name == 'skipped-pod'"
+
+```
+
+Kyverno background controller evaluates the pod. It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: PolicyReport
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+    - apiVersion: v1
+      kind: Pod
+      name: skipped-pod
+results:
+  - policy: ivpol-sample
+    rule: exception
+    result: skip
+    message: "rule is skipped due to policy exception: "
+    properties:
+      exceptions: check-name
+      process: background scan
+    source: KyvernoImageValidatingPolicy
+    scored: true
+scope:
+  apiVersion: v1
+  kind: Pod
+  name: skipped-pod
+  namespace: default
+summary:
+  pass: 0
+  fail: 0
+  warn: 0
+  error: 0
+  skip: 1
+
+```
+
+#### Interpreting PolicyReport Results from PolicyException
+
+- **result: skip** — indicates the rule was not applied.  
+- **process: background scan** — confirms the evaluation occurred during a background policy check.  
+- **exceptions: check-name** — references the applied `PolicyException`.  
+
+This enables fine-grained, declarative exemptions without modifying the core policy logic, keeping your security posture strong while allowing flexibility for exceptional cases.

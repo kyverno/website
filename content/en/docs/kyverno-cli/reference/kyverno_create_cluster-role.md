@@ -1,46 +1,30 @@
 ---
-title: "kyverno completion zsh"
+title: "kyverno create cluster-role"
 weight: 35
 ---
-## kyverno completion zsh
+## kyverno create cluster-role
 
-Generate the autocompletion script for zsh
+Create an aggregated role for given resource types
 
 ### Synopsis
 
-Generate the autocompletion script for the zsh shell.
-
-If shell completion is not already enabled in your environment you will need
-to enable it.  You can execute the following once:
-
-	echo "autoload -U compinit; compinit" >> ~/.zshrc
-
-To load completions in your current shell session:
-
-	source <(kyverno completion zsh)
-
-To load completions for every new session, execute once:
-
-#### Linux:
-
-	kyverno completion zsh > "${fpath[1]}/_kyverno"
-
-#### macOS:
-
-	kyverno completion zsh > $(brew --prefix)/share/zsh/site-functions/_kyverno
-
-You will need to start a new shell for this setup to take effect.
-
+This command generates a Kubernetes ClusterRole for specified resource types.
+The output is printed to stdout by default or saved to a specified file.
+Required flags include 'api-groups', 'verbs', and 'resources'.
 
 ```
-kyverno completion zsh [flags]
+kyverno create cluster-role [name]  [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help              help for zsh
-      --no-descriptions   disable completion descriptions
+  -g, --api-groups string         API group for the resource (required)
+      --controllers stringArray   List of controllers for the ClusterRole (default = background-controller) (default [background-controller])
+  -h, --help                      help for cluster-role
+  -o, --output string             Output file path (prints to console if not set)
+      --resources stringArray     A comma separated list of resources (required)
+      --verbs stringArray         A comma separated list of verbs or 'all' for all verbs
 ```
 
 ### Options inherited from parent commands
@@ -64,5 +48,5 @@ kyverno completion zsh [flags]
 
 ### SEE ALSO
 
-* [kyverno completion](kyverno_completion.md)	 - Generate the autocompletion script for the specified shell
+* [kyverno create](kyverno_create.md)	 - Helps with the creation of various Kyverno resources.
 
