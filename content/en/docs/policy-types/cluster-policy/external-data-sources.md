@@ -751,7 +751,7 @@ the output `imageData` variable will have a structure which looks like the follo
     "registry":      "ghcr.io",
     "repository":    "kyverno/kyverno",
     "identifier":    "latest",
-    "imageIndex":    imageIndex,
+    "manifestList":  manifestList,
     "manifest":      manifest,
     "configData":    config,
 }
@@ -771,7 +771,7 @@ The `imageData` variable represents a "normalized" view of an image after any re
 ```
 {{% /alert %}}
 
-The `imageIndex`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+The `manifestList`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
 
 For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
