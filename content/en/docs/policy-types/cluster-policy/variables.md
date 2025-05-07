@@ -6,7 +6,16 @@ weight: 90
 
 Variables make policies smarter and reusable by enabling references to data in the policy definition, the [admission review request](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#webhook-request-and-response), and external data sources like ConfigMaps, the Kubernetes API Server, OCI image registries, and even external service calls.
 
-In Kyverno, you can use the double braces syntax e.g., `{{ ... }}`, to reference a variable. For variables in policy declarations the `$( ... )` syntax is used instead.
+In Kyverno, for a plain JMESPath variable, no double curly brackets are needed but for nested variables you need to use the double braces syntax.
+
+For example:
+```
+- name: mountpath
+  variable:
+    jmesPath: request.object.metadata.annotations.optional || '/custom/string/{{request.object.metadata.annotations.mandatory"}}'
+```
+
+Here, no double curly brackets are needed in `request.object.metadata.annotations.optional` but for nested variables like `/custom/string/{{request.object.metadata.annotations.mandatory"}}`, you need wrap variable with `{{}}`. For variables in policy declarations the `$( ... )` syntax is used instead.
 
 Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](jmespath.md). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
