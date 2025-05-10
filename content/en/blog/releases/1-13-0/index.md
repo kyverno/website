@@ -240,7 +240,7 @@ matchConstraints:
 
 Kyverno-JSON allows Kyverno policies to be used anywhere, even for non-Kubernetes workloads. It introduces the powerful concept of [assertion trees](https://kyverno.io/blog/2023/12/13/kyverno-chainsaw-exploring-the-power-of-assertion-trees/).
 
-Previously the [Kyverno CLI added support for assertion trees](https://kyverno.io/docs/kyverno-cli/assertion-trees/), and now in Release 1.13 assertion trees can also be used in validation rules as a sub-type.
+Previously the [Kyverno CLI added support for assertion trees](https://kyverno.io/docs/kyverno-cli/assertion-trees), and now in Release 1.13 assertion trees can also be used in validation rules as a sub-type.
 
 Here is an example of a policy that uses an assertion tree to deny pods from using the default service account:
 
@@ -263,7 +263,7 @@ spec:
      assert:
        object:
          spec:
-           (serviceAccountName == ‘default’): false
+           (serviceAccountName == 'default'): false
 ```
 
 ## Other Features and Enhancements 
@@ -292,17 +292,17 @@ spec:
      synchronize: true
      orphanDownstreamOnPolicyDelete: false
      foreach:
-       - list: request.object.data.namespaces | split(@, ‘,’)
+       - list: request.object.data.namespaces | split(@, ',')
          apiVersion: networking.k8s.io/v1
          kind: NetworkPolicy
          name: my-networkpolicy-{{element}}-{{ elementIndex }}
-         namespace: ‘{{ element }}’
+         namespace: '{{ element }}'
          data:
            metadata:
              labels:
-               request.namespace: ‘{{ request.object.metadata.name }}’
-               element: ‘{{ element }}’
-               elementIndex: ‘{{ elementIndex }}’
+               request.namespace: '{{ request.object.metadata.name }}'
+               element: '{{ element }}'
+               elementIndex: '{{ elementIndex }}'
            spec:
              podSelector: {}
              policyTypes:
@@ -369,7 +369,7 @@ The following example shows how to add default value to context entries:
     context:
     - name: currentnamespace
       apiCall:
-        urlPath: “/api/v1/namespaces/{{ request.namespace }}”
+        urlPath: "/api/v1/namespaces/{{ request.namespace }}"
         jmesPath: metadata.name
         default: default
 ```
@@ -451,8 +451,8 @@ spec:
       variable:
         jmesPath: request.object.metadata.name
     reportProperties:
-      operation: ‘{{ request.operation }}’
-      objName: ‘{{ objName }}’
+      operation: '{{ request.operation }}'
+      objName: '{{ objName }}'
     validate:
       validationFailureAction: Audit
       message: The `owner` label is required for all Namespaces.
@@ -473,7 +473,7 @@ metadata:
     kind: Namespace
     name: bar
 results:
-- message: validation rule ‘check-owner’ passed.
+- message: validation rule 'check-owner' passed.
   policy: require-owner
   result: pass
   rule: check-owner
@@ -492,7 +492,7 @@ scope:
 
 #### API Call Retry
 
-Kyverno’s GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval. 
+Kyverno's GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval. 
 
 To address this, Kyverno now offers built-in retry logic for API calls within GlobalContextEntry. You can now optionally specify a retryLimit for your API calls:
 
@@ -590,7 +590,7 @@ spec:
     context:
     - name: hcl
       variable:
-        jmesPath: replace_all( ‘{{ request.object.data.config }}’, ‘from_string’,‘to_string’)
+        jmesPath: replace_all('{{ request.object.data.config }}', 'from_string', 'to_string')
     match:
       any:
       - resources:
@@ -603,12 +603,12 @@ spec:
     mutate:
       patchStrategicMerge:
         data:
-          config: ‘{{- hcl }}’
+          config: '{{- hcl }}'
       targets:
       - apiVersion: v1
         kind: ConfigMap
-        name: ‘{{ request.object.metadata.name }}’
-        namespace: ‘{{ request.object.metadata.namespace }}’
+        name: '{{ request.object.metadata.name }}'
+        namespace: '{{ request.object.metadata.namespace }}'
     name: vault-injector-config-blue-to-green-auth-backend
 ```
 
@@ -640,6 +640,6 @@ Note that the deprecated fields will be removed in a future release, so migratio
 
 ## Conclusion
 
-Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](https://kyverno.io/docs/installation/methods/) section of the docs.
+Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](https://kyverno.io/docs/installation/methods) section of the docs.
 
 To get the most value out of Kyverno, and check out the [available enterprise solutions](/support)!

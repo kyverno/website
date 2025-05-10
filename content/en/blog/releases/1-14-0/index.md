@@ -101,7 +101,7 @@ This release enhances policy flexibility with the ability to automatically gener
 | Reporting | ⛔ | Policy WG Reports, Policy Reporter, etcd offload |
 | Testing | ⛔ | Kyverno CLI (unit), Chainsaw (e2e) |
 
-For more details of ValidatingPolicy, check the official document [here](https://main.kyverno.io/docs/policy-types/validating-policy/).
+For more details of ValidatingPolicy, check the official document [here](https://kyverno.io/docs/policy-types/validating-policy/).
 
 ### ImageValidatingPolicy: Advanced Supply Chain Security
 
@@ -184,7 +184,7 @@ spec:
       message: failed to verify image with notary cert
 ```
 
-For more details of `ImageValidatingPolicy`, check the official document [here](https://main.kyverno.io/docs/policy-types/image-validating-policy/).
+For more details of `ImageValidatingPolicy`, check the official document [here](https://kyverno.io/docs/policy-types/image-validating-policy/).
 
 ## Other Features and Enhancements
 
