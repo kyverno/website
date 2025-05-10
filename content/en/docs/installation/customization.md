@@ -63,7 +63,7 @@ The renewal process runs as follows:
 1. Remove expired certificates contained in the secret
 1. Check if remaining certificates will become invalid in less than 15 days
 1. If needed, generate a new certificate with the validity documented above
-1. The new certificates is added to the underlying secret along with current certificatess that are still valid
+1. The new certificate is added to the underlying secret along with current certificates that are still valid
 1. Reconfigure webhooks with the new certificates bundle
 1. Update the Kyverno server to use the new certificate
 
@@ -81,7 +81,7 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Below is a process which shows how to create a self-signed root CA, and generate a signed certificates and keys using [step CLI](https://smallstep.com/cli/):
+Below is a process which shows how to create a self-signed root CA, and generate signed certificates and keys using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 

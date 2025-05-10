@@ -263,7 +263,7 @@ spec:
      assert:
        object:
          spec:
-           (serviceAccountName == ‘default’): false
+           (serviceAccountName == 'default'): false
 ```
 
 ## Other Features and Enhancements 
@@ -292,17 +292,17 @@ spec:
      synchronize: true
      orphanDownstreamOnPolicyDelete: false
      foreach:
-       - list: request.object.data.namespaces | split(@, ‘,’)
+       - list: request.object.data.namespaces | split(@, ',')
          apiVersion: networking.k8s.io/v1
          kind: NetworkPolicy
          name: my-networkpolicy-{{element}}-{{ elementIndex }}
-         namespace: ‘{{ element }}’
+         namespace: '{{ element }}'
          data:
            metadata:
              labels:
-               request.namespace: ‘{{ request.object.metadata.name }}’
-               element: ‘{{ element }}’
-               elementIndex: ‘{{ elementIndex }}’
+               request.namespace: '{{ request.object.metadata.name }}'
+               element: '{{ element }}'
+               elementIndex: '{{ elementIndex }}'
            spec:
              podSelector: {}
              policyTypes:
@@ -353,7 +353,7 @@ spec:
             name: source-secret
 ```
 
-In addition, each `foreach` declaration supports the following declarations: Contex and Preconditions. For more information please see [Kyverno documentation](https://kyverno.io/docs/writing-policies/generate/#foreach).
+In addition, each `foreach` declaration supports the following declarations: Contex and Preconditions. For more information please see [Kyverno documentation](https://kyverno.io/docs/policy-types/cluster-policy/generate/#foreach).
 
 This release also allows updates to the generate rule pattern. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause the removal of the downstream resource.
 
@@ -369,7 +369,7 @@ The following example shows how to add default value to context entries:
     context:
     - name: currentnamespace
       apiCall:
-        urlPath: “/api/v1/namespaces/{{ request.namespace }}”
+        urlPath: "/api/v1/namespaces/{{ request.namespace }}"
         jmesPath: metadata.name
         default: default
 ```
@@ -451,8 +451,8 @@ spec:
       variable:
         jmesPath: request.object.metadata.name
     reportProperties:
-      operation: ‘{{ request.operation }}’
-      objName: ‘{{ objName }}’
+      operation: '{{ request.operation }}'
+      objName: '{{ objName }}'
     validate:
       validationFailureAction: Audit
       message: The `owner` label is required for all Namespaces.
@@ -473,7 +473,7 @@ metadata:
     kind: Namespace
     name: bar
 results:
-- message: validation rule ‘check-owner’ passed.
+- message: validation rule 'check-owner' passed.
   policy: require-owner
   result: pass
   rule: check-owner
@@ -492,7 +492,7 @@ scope:
 
 #### API Call Retry
 
-Kyverno’s GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval. 
+Kyverno's GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval. 
 
 To address this, Kyverno now offers built-in retry logic for API calls within GlobalContextEntry. You can now optionally specify a retryLimit for your API calls:
 
@@ -590,7 +590,7 @@ spec:
     context:
     - name: hcl
       variable:
-        jmesPath: replace_all( ‘{{ request.object.data.config }}’, ‘from_string’,‘to_string’)
+        jmesPath: replace_all('{{ request.object.data.config }}', 'from_string', 'to_string')
     match:
       any:
       - resources:
@@ -603,12 +603,12 @@ spec:
     mutate:
       patchStrategicMerge:
         data:
-          config: ‘{{- hcl }}’
+          config: '{{- hcl }}'
       targets:
       - apiVersion: v1
         kind: ConfigMap
-        name: ‘{{ request.object.metadata.name }}’
-        namespace: ‘{{ request.object.metadata.namespace }}’
+        name: '{{ request.object.metadata.name }}'
+        namespace: '{{ request.object.metadata.namespace }}'
     name: vault-injector-config-blue-to-green-auth-backend
 ```
 
