@@ -875,49 +875,51 @@ verifyImages:
 
 ## Using a different signature algorithm
 
-By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
+When verifying image signatures, you can specify the signature algorithm to be used. This applies to all verification methods (keys, certificates, and KMS). The allowed values are `sha224`, `sha256`, `sha384`, and `sha512`. By default, cosign uses `sha256`.
+
+Here's an example showing how to specify the signature algorithm with different verification methods:
 
 ```yaml
-...
-verifyImages:
-- imageReferences:
-  - ghcr.io/kyverno/test-verify-image*
-  attestors:
-  - entries:
-    - signatureAlgorithm: sha256
-      keys:
-        publicKeys: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-...
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-signature-algorithm
+spec:
+  rules:
+    - name: check-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
+        attestors:
+        - entries:
+          # Using public key
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+              signatureAlgorithm: sha256
+          # Using certificate
+          - certificates:
+              cert: |-
+                -----BEGIN CERTIFICATE-----
+                ...
+                -----END CERTIFICATE-----
+              signatureAlgorithm: sha256
+          # Using KMS
+          - keys:
+              kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+              signatureAlgorithm: sha256
 ```
 
-Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
-
-The `signatureAlgorithm` field can be used with different types of verification methods:
-
-1. With public keys as shown above
-2. With certificates:
-   ```yaml
-   attestors:
-   - entries:
-     - signatureAlgorithm: sha256
-       certificates:
-         cert: |-
-           -----BEGIN CERTIFICATE-----
-           ...
-           -----END CERTIFICATE-----
-   ```
-3. With KMS:
-   ```yaml
-   attestors:
-   - entries:
-     - signatureAlgorithm: sha384
-       keys:
-         kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
-   ```
+The `signatureAlgorithm` field can be used with any verification method to ensure consistent signature verification across your infrastructure.
 
 ## Ignoring Tlogs and SCT Verification
 
