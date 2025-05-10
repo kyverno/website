@@ -240,7 +240,7 @@ matchConstraints:
 
 Kyverno-JSON allows Kyverno policies to be used anywhere, even for non-Kubernetes workloads. It introduces the powerful concept of [assertion trees](https://kyverno.io/blog/2023/12/13/kyverno-chainsaw-exploring-the-power-of-assertion-trees/).
 
-Previously the [Kyverno CLI added support for assertion trees](https://kyverno.io/docs/kyverno-cli/assertion-trees/), and now in Release 1.13 assertion trees can also be used in validation rules as a sub-type.
+Previously the [Kyverno CLI added support for assertion trees](https://kyverno.io/docs/kyverno-cli/assertion-trees), and now in Release 1.13 assertion trees can also be used in validation rules as a sub-type.
 
 Here is an example of a policy that uses an assertion tree to deny pods from using the default service account:
 
@@ -640,6 +640,6 @@ Note that the deprecated fields will be removed in a future release, so migratio
 
 ## Conclusion
 
-Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](https://kyverno.io/docs/installation/methods/) section of the docs.
+Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](https://kyverno.io/docs/installation/methods) section of the docs.
 
 To get the most value out of Kyverno, and check out the [available enterprise solutions](/support)!
