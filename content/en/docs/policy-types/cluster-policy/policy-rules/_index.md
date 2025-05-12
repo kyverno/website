@@ -22,4 +22,4 @@ Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy
 
 Additional policy types include [Policy Exceptions](/docs/policy-types/cluster-policy/exceptions.md) and [Cleanup Policies](/docs/policy-types/cluster-policy/cleanup.md) which are separate resources and described further in the documentation.
 
-Learn more about [Applying Policies](/doc/applying-policies/_index.md) and [Writing Policies](/docs/policy-types/cluster-policy/_index.md) in the upcoming chapters.
+Learn more about [Applying Policies](/docs/applying-policies/) and [Writing Policies](/docs/policy-types/cluster-policy/_index.md) in the upcoming chapters.
