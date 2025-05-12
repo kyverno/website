@@ -25,8 +25,17 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         fail: true
-        debug: false
-        args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml -E content/
+        debug: true
+        args: --verbose --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --accept "429" -E content/ --output report.md
+
+      - name: Print link check report
+        if: always()
+        run: |
+          if [ -f report.md ]; then
+            cat report.md
+          else
+            echo "Report file not found"
+          fi
 
       # Deactivated. The --include-fragments flag is causing failures because rendered links
       # have a trailing '#' which is probably a result of the link style change plus the new
