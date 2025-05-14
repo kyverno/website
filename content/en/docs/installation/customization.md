@@ -14,7 +14,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Default certificates
 
-By default, Kyverno will automatically generate self-signed Certificate Authority (CA) and a leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
+By default, Kyverno will automatically generate a self-signed Certificate Authority (CA) and leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manages its own certificates, it will gracefully handle regeneration upon expiry.
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
