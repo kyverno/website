@@ -367,7 +367,7 @@ spec:
           ctlog:
                url: "https://rekor.sigstore.dev"
   attestations:
-   - name: cosign-attes
+   - name: cosign_attes
      intoto:
        type: cosign.sigstore.dev/attestation/vuln/v1
   validations:
@@ -375,7 +375,7 @@ spec:
         images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
       message: "Failed image signature verification"
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image, [attestations.cosign-attes], [attestors.cosign])).all(e, e > 0)
+        images.containers.map(image, verifyAttestationSignatures(image, (attestations.cosign_attes), [attestors.cosign])).all(e, e > 0)
       message: "Failed to verify vulnerability scan attestation with Cosign keyless"
 
 ```
