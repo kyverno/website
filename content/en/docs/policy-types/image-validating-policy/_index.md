@@ -331,7 +331,9 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
-Note: `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% alert title="Note" color="info" %}}
+`extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% /alert %}}
 
 #### Cosign Keyless Signature and Attestation Verification
 
@@ -379,6 +381,14 @@ spec:
       message: "Failed to verify vulnerability scan attestation with Cosign keyless"
 
 ```
+{{% alert title="Note" color="info" %}}
+If your attestation names include special characters like `-`, access them using bracket syntax:
+
+```cel
+attestations["cosign-attes"]
+```
+Alternatively, prefer using camelCase or snake_case to avoid parsing issues in CEL expressions.
+{{% /alert %}}
 
 #### Cosign Public Key Signature Verification
 
