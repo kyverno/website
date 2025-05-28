@@ -89,7 +89,7 @@ spec:
             issuer: "https://token.actions.githubusercontent.com"
             subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
             issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        root: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+        roots: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
