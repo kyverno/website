@@ -353,7 +353,7 @@ spec:
             name: source-secret
 ```
 
-In addition, each `foreach` declaration supports the following declarations: Contex and Preconditions. For more information please see [Kyverno documentation](https://kyverno.io/docs/writing-policies/generate/#foreach).
+In addition, each `foreach` declaration supports the following declarations: Contex and Preconditions. For more information please see [Kyverno documentation](/docs/policy-types/cluster-policy/generate/#foreach).
 
 This release also allows updates to the generate rule pattern. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause the removal of the downstream resource.
 
