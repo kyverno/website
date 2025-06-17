@@ -49,10 +49,13 @@ Modern cloud native compliance requires acknowledging that no single tool can va
 
 ![Architecture Diagram](./cis-exec.png)
 
-- **Kyverno** (CNCF Incubating): Kubernetes-native policy engine for IaC pipeline and runtime validation
+- **Kyverno**: Kubernetes-native policy engine for IaC pipeline and runtime validation
+- **OpenTofu**: Open-source infrastructure-as-code tool for generating plan files
+- **Kyverno-JSON**: Plan-time policy validation against OpenTofu/Terraform JSON plans
 - **kube-bench**: Community-standard CIS compliance scanner for node-level validation
-- **OpenTofu**: Open-source infrastructure-as-code for plan-time validation
 - **Kind**: CNCF-aligned local Kubernetes testing
+
+> *Note: OpenTofu generates infrastructure plan files, while Kyverno-JSON validates those plans against CIS compliance policies.*
 
 ## Solution: Hybrid Cloud Native Policy Automation Architecture
 
@@ -365,6 +368,82 @@ The project takes an honest, engineering-focused approach to tool capabilities:
 - File permissions on kubeconfig and kubelet config files
 - Kubelet command-line arguments and configuration
 - System-level security settings that require privileged access
+
+## Alternative Approach: CEL-based ValidatingPolicy
+
+While this implementation uses Kyverno-JSON for plan-time validation, **Kyverno's CEL-based ValidatingPolicy offers significant advantages** for policy management and maintenance.
+
+### Benefits of CEL ValidatingPolicy
+
+**Unified Policy Management**: The same policy can validate both JSON payloads (OpenTofu plans) and live Kubernetes resources, eliminating policy duplication and reducing maintenance overhead.
+
+### Example: Converting to CEL ValidatingPolicy
+
+Instead of separate Kyverno-JSON and Kubernetes policies, you can use a single CEL-based policy:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: cis-2-1-1-enable-audit-logs-unified
+spec:
+  rules:
+    - name: eks-audit-logging-opentofu
+      match:
+        any:
+        - resources:
+            kinds:
+            - "*"
+      cel:
+        expressions:
+        - expression: |
+            // For OpenTofu plans
+            has(object.data) && 
+            has(object.data.planned_values) &&
+            object.data.planned_values.root_module.resources.
+            filter(r, r.type == 'aws_eks_cluster' && 
+                   has(r.values.enabled_cluster_log_types) &&
+                   'audit' in r.values.enabled_cluster_log_types).size() > 0
+          message: "EKS cluster must have audit logging enabled in OpenTofu plan"
+        - expression: |
+            // For live Kubernetes Event resources
+            object.kind == 'Event' && 
+            object.metadata.namespace == 'kube-system' &&
+            (has(object.reason) && object.reason in ['AuditEnabled', 'PolicyLoaded'])
+          message: "Cluster should generate audit events indicating logging is enabled"
+
+    - name: eks-audit-logging-kubernetes
+      match:
+        any:
+        - resources:
+            kinds:
+            - Event
+            - Node
+            - Pod
+            namespaces:
+            - kube-system
+      cel:
+        expressions:
+        - expression: |
+            // Kubernetes resource validation (same as before)
+            object.kind == 'Event' && 
+            (has(object.metadata.annotations) && 
+             has(object.metadata.annotations['audit.k8s.io/level'])) ||
+            object.kind == 'Node' &&
+            (has(object.metadata.annotations) && 
+             has(object.metadata.annotations['audit-config']))
+          message: "Kubernetes resources should indicate audit logging is properly configured"
+```
+
+### Upcoming Enhancements
+
+In future iterations of this framework, we'll explore how to leverage CEL-based ValidatingPolicy for:
+
+- **Unified policy management** across OpenTofu plans and Kubernetes resources
+- **Simplified maintenance** with single policy files for both plan-time and runtime validation
+- **Enhanced testing strategies** using the same policies for multiple validation contexts
+- **Migration patterns** from Kyverno-JSON to CEL-based approaches
+- **Multi-cloud support** extending to AKS and GKE CIS compliance validation
 
 ## Getting Started with the Framework
 
