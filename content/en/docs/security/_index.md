@@ -56,7 +56,10 @@ With each release, the following artifacts are uploaded (where CLI binaries incl
 - kyverno-cli_v<version_number>_linux_x86_64.tar.gz
 - kyverno-cli_v<version_number>_windows_arm64.zip
 - kyverno-cli_v<version_number>_windows_x86_64.zip
-- <CRDs>
+- kyverno.io_<crd_names>.yaml
+- policies.kyverno.io_<crd_names>.yaml
+- reports.kyverno.io_<crd_names>.yaml
+- wgpolicyk8s.io_<crd_names>.yaml
 - Source code (zip)
 - Source code (tar.gz)
 
@@ -277,14 +280,14 @@ Kyverno creates the following mutating webhook configurations:
 
 - `kyverno-policy-mutating-webhook-cfg`: handles policy changes to index and cache policy sets.
 - `kyverno-resource-mutating-webhook-cfg`: handles resource admission requests to apply matching Kyverno mutate policy rules.
-- `kyverno-verify-mutating-webhook-cfg`: periodically tests Kyverno webhook configurations
+- `kyverno-verify-mutating-webhook-cfg`: periodically tests Kyverno webhook configurations.
 
 Kyverno creates the following validating webhook configurations:
 
-- `kyverno-policy-validating-webhook-cfg`: validates Kyverno policies with checks that cannot be performed via schema validation
-- `kyverno-resource-validating-webhook-cfg`: handles resource resource admission requests to apply matching Kyverno validate policy rules.
-- `kyverno-cleanup-validating-webhook-cfg`: handles cleanup policies
-- `kyverno-exception-validating-webhook-cfg`: handles policy exceptions
+- `kyverno-policy-validating-webhook-cfg`: validates Kyverno policies with checks that cannot be performed via schema validation.
+- `kyverno-resource-validating-webhook-cfg`: handles resource admission requests to apply matching Kyverno validate policy rules.
+- `kyverno-cleanup-validating-webhook-cfg`: handles cleanup policies.
+- `kyverno-exception-validating-webhook-cfg`: handles policy exceptions.
 
 #### Webhook Failure Mode
 
@@ -292,7 +295,7 @@ Kyverno policies are configured to **fail-closed** by default. This setting can 
 
 #### Webhook authentication and encryption
 
-By default, Kyverno automatically generates and manage TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](/docs/installation/customization.md#certificate-management).
+By default, Kyverno automatically generates and manages TLS certificates used for authentication with the API server and encryption of network traffic. To use a custom CA, please refer to the details in the [installation section](/docs/installation/customization.md#certificate-management).
 
 ### Recommended policies
 
