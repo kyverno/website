@@ -1,6 +1,6 @@
 ---
 date: 2025-06-11
-title: Building CIS EKS Compliance Automation with Kyverno
+title: Automating EKS CIS Compliance with Kyverno and KubeBench
 linkTitle: Building CIS EKS Compliance Automation with Kyverno
 author: Yugandhar Suthari
 description: A practical approach to implementing CIS security controls using CNCF cloud native tools.
