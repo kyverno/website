@@ -12,7 +12,7 @@ These guides are intended for proof-of-concept or lab demonstrations only and no
 First, install Kyverno from the latest release manifest.
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.13.0/install.yaml
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.14.2/install.yaml
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.

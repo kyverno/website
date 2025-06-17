@@ -89,7 +89,7 @@ spec:
             issuer: "https://token.actions.githubusercontent.com"
             subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
             issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        root: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+        roots: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
@@ -331,7 +331,9 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
-Note: `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% alert title="Note" color="info" %}}
+`extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% /alert %}}
 
 #### Cosign Keyless Signature and Attestation Verification
 
@@ -367,7 +369,7 @@ spec:
           ctlog:
                url: "https://rekor.sigstore.dev"
   attestations:
-   - name: cosign-attes
+   - name: cosignAttestation
      intoto:
        type: cosign.sigstore.dev/attestation/vuln/v1
   validations:
@@ -375,10 +377,18 @@ spec:
         images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
       message: "Failed image signature verification"
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image, [attestations.cosign-attes], [attestors.cosign])).all(e, e > 0)
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.cosignAttestation, [attestors.cosign])).all(e, e > 0)
       message: "Failed to verify vulnerability scan attestation with Cosign keyless"
 
 ```
+{{% alert title="Note" color="info" %}}
+If your attestation names include special characters like `-`, access them using bracket syntax:
+
+```cel
+attestations["cosign-attes"]
+```
+Alternatively, prefer using camelCase or snake_case to avoid parsing issues in CEL expressions.
+{{% /alert %}}
 
 #### Cosign Public Key Signature Verification
 
