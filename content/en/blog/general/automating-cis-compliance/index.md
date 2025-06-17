@@ -8,7 +8,7 @@ description: A practical approach to implementing CIS security controls using CN
 
 ## Introduction: The Challenge of EKS Compliance at Scale
 
-Maintaining CIS Amazon EKS Benchmark compliance across multiple clusters is a common challenge in cloud native environments. Traditional manual approaches don't scale, and existing solutions often lack comprehensive coverage or real-time enforcement capabilities.
+Maintaining CIS Benchmarks compliance for Amazon EKS across multiple clusters is a common challenge in cloud native environments. Traditional manual approaches don't scale, and existing solutions often lack comprehensive coverage or real-time enforcement capabilities.
 
 This article explores a practical approach to automating CIS EKS compliance using Kyverno (a CNCF Incubating project for Kubernetes-native policy management), combined with OpenTofu for infrastructure provisioning and validation and kube-bench for node-level CIS scanning. This solution demonstrates how CNCF ecosystem tools can work together to provide comprehensive security validation across the entire infrastructure and application stack.
 
