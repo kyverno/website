@@ -49,7 +49,7 @@ Modern cloud native compliance requires acknowledging that no single tool can va
 
 ![Architecture Diagram](./cis-exec.png)
 
-- **Kyverno** (CNCF Incubating): Kubernetes-native policy engine for runtime validation
+- **Kyverno** (CNCF Incubating): Kubernetes-native policy engine for IaC pipeline and runtime validation
 - **kube-bench**: Community-standard CIS compliance scanner for node-level validation
 - **OpenTofu**: Open-source infrastructure-as-code for plan-time validation
 - **Kind**: CNCF-aligned local Kubernetes testing
