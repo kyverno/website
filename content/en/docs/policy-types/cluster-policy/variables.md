@@ -541,7 +541,7 @@ spec:
     name: vault-injector-config-blue-to-green-auth-backend
 ```
 
-ConfigfMap:
+ConfigMap:
 
 ```yaml
 apiVersion: v1
