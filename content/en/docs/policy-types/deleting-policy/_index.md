@@ -172,6 +172,70 @@ spec:
       expression: "object.metadata.labels.ephemeral == 'true'"
 ```
 
+
+## Observability: Tracking Deletion Events
+Kyverno's DeletingPolicy not only removes resources on a schedule but also **emits a Kubernetes** `event` each time a deletion is executed. This event allows administrators and users to **trace exactly which policy deleted which resource**, improving transparency, auditing and troubleshooting.
+
+### What Gets Logged
+
+When a `DeletingPolicy` triggers a deletion, Kyverno creates an event with:
+
+- `action:` Resource cleaned-up
+- `reason:` PolicyApplied
+- `message:` human-readable success message
+- `involvedObject:` the DeletingPolicy that triggered the action
+- `related:` the resource that was deleted
+- `reportingComponent:` kyverno-cleanup
+
+### Example Event
+```yaml
+apiVersion: v1
+kind: Event
+metadata:
+  name: deleting-pod.184c935c5c7c52c0
+  namespace: default
+  creationTimestamp: "2025-06-26T11:13:00Z"
+  resourceVersion: "3894"
+  uid: 064e08ef-4547-43a3-b199-d2bbadd93b65
+action: Resource Cleaned Up
+reason: PolicyApplied
+message: successfully deleted the target resource Pod/default/example
+involvedObject:
+  apiVersion: policies.kyverno.io/v1alpha1
+  kind: DeletingPolicy
+  name: deleting-pod
+  uid: cc44fb71-9413-4bbf-bc37-036a10f02c7c
+related:
+  apiVersion: v1
+  kind: Pod
+  name: example
+  namespace: default
+reportingComponent: kyverno-cleanup
+reportingInstance: kyverno-cleanup-kyverno-cleanup-controller-76c8b69df6-89mjj
+type: Normal
+```
+
+### How to View Events
+To view deletion events:
+
+1. List policy-applied events (summary view):
+```bash
+kubectl get events --field-selector reason=PolicyApplied -A
+```
+
+2. Get the event name:
+```bash
+kubectl get events -n <namespace> \
+  -o custom-columns=NAME:.metadata.name,REASON:.reason,MESSAGE:.message
+```
+
+3. Get full event details:
+```bash
+kubectl get event <event-name> -n <namespace> -o yaml
+```
+
+
+
 ## Tips & Best Practices
 - Use dry runs or audit mode before enabling destructive deletes
 
