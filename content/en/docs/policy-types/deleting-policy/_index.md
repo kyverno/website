@@ -176,16 +176,24 @@ spec:
 ## Observability: Tracking Deletion Events
 Kyverno's DeletingPolicy not only removes resources on a schedule but also **emits a Kubernetes** `event` each time a deletion is executed. This event allows administrators and users to **trace exactly which policy deleted which resource**, improving transparency, auditing and troubleshooting.
 
-### What Gets Logged
+### How to View Events
+To view deletion events:
 
-When a `DeletingPolicy` triggers a deletion, Kyverno creates an event with:
+1. List policy-applied events (summary view):
+```bash
+kubectl get events --field-selector reason=PolicyApplied -A
+```
 
-- `action:` Resource cleaned-up
-- `reason:` PolicyApplied
-- `message:` human-readable success message
-- `involvedObject:` the DeletingPolicy that triggered the action
-- `related:` the resource that was deleted
-- `reportingComponent:` kyverno-cleanup
+2. Get the event name:
+```bash
+kubectl get events -n <namespace> \
+  -o custom-columns=NAME:.metadata.name,REASON:.reason,MESSAGE:.message
+```
+
+3. Get full event details:
+```bash
+kubectl get event <event-name> -n <namespace> -o yaml
+```
 
 ### Example Event
 ```yaml
@@ -215,26 +223,16 @@ reportingInstance: kyverno-cleanup-kyverno-cleanup-controller-76c8b69df6-89mjj
 type: Normal
 ```
 
-### How to View Events
-To view deletion events:
+### What Gets Logged
 
-1. List policy-applied events (summary view):
-```bash
-kubectl get events --field-selector reason=PolicyApplied -A
-```
+When a `DeletingPolicy` triggers a deletion, Kyverno creates an event with:
 
-2. Get the event name:
-```bash
-kubectl get events -n <namespace> \
-  -o custom-columns=NAME:.metadata.name,REASON:.reason,MESSAGE:.message
-```
-
-3. Get full event details:
-```bash
-kubectl get event <event-name> -n <namespace> -o yaml
-```
-
-
+- `action:` Resource cleaned-up
+- `reason:` PolicyApplied
+- `message:` human-readable success message
+- `involvedObject:` the DeletingPolicy that triggered the action
+- `related:` the resource that was deleted
+- `reportingComponent:` kyverno-cleanup
 
 ## Tips & Best Practices
 - Use dry runs or audit mode before enabling destructive deletes
