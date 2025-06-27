@@ -247,6 +247,30 @@ When a `DeletingPolicy` triggers a deletion, Kyverno creates an event with:
 - `related:` the resource that was deleted
 - `reportingComponent:` kyverno-cleanup
 
+> **Caution**
+> 
+> `DeletingPolicy` performs destructive actions. Always test your policies in a staging or dry run environment before applying them to production clusters. Ensure your selectors and conditions are strict enough to avoid accidental deletions.
+
+## RBAC Requirements
+The kyverno cleanup controller requires RBAC permissions to delete the targeted resources. Ensure that the following verbs are allowed in the cluster role:
+
+-  `get`, `list`, `watch`, and `delete` on the targeted resources.
+
+For example, to delete Configmaps:
+```yaml
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "delete"]
+```
+
+> Kyverno cleanup-controller always requires RBAC permissions for deleting resources (even pods). But In some testing clusters like `Minikube` and `Kind` often already includes permissions to manage core resources like: 
+- `pods`, `configmaps`, `secrets`, etc.
+>So you may notice RBAC issues when deleting pods, because:
+  - Kyverno already has access to them
+  - There are no extra CRDs or cluster-scoped permissions needed
+> But for other resources like `deployments`, `networkpolicies` etc, they are not always included in kyverno's default permissions. You must explicitly grants `delete` RBAC for those resources.
+
 ## Tips & Best Practices
 - Use dry runs or audit mode before enabling destructive deletes
 
