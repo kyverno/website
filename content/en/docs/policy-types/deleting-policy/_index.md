@@ -146,7 +146,7 @@ This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically
 
 The policy uses a cron schedule to run periodically and applies conditions using CEL expressions to ensure only stale pods are cleaned up. Additionally, it defines a variable (isEphemeral) that could be used to further refine deletion logic, such as deleting only temporary or ephemeral pods.
 
-
+`policy:`
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: DeletingPolicy
@@ -170,6 +170,19 @@ spec:
   variables:
     - name: isEphemeral
       expression: "object.metadata.labels.ephemeral == 'true'"
+```
+`resource:`
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: example
+
 ```
 
 
@@ -200,7 +213,7 @@ kubectl get event <event-name> -n <namespace> -o yaml
 apiVersion: v1
 kind: Event
 metadata:
-  name: deleting-pod.184c935c5c7c52c0
+  name: cleanup-old-test-pods.184c935c5c7c52c0
   namespace: default
   creationTimestamp: "2025-06-26T11:13:00Z"
   resourceVersion: "3894"
