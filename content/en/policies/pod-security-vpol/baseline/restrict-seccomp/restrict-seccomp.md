@@ -3,7 +3,7 @@ title: "Restrict Seccomp in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.
 ---

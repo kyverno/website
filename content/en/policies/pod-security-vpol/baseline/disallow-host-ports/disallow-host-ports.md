@@ -3,7 +3,7 @@ title: "Disallow hostPorts in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. 
 ---

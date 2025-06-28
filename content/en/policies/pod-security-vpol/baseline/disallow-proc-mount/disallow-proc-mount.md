@@ -3,7 +3,7 @@ title: "Disallow procMount in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.
 ---

@@ -3,7 +3,7 @@ title: "Disallow SELinux in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.
 ---

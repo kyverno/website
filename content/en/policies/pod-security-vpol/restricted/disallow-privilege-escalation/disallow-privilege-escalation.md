@@ -3,7 +3,7 @@ title: "Disallow Privilege Escalation in ValidatingPolicy"
 category: Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
 ---

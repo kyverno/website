@@ -3,7 +3,7 @@ title: "Disallow Capabilities (Strict) in ValidatingPolicy"
 category: Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.
 ---

@@ -3,7 +3,7 @@ title: "Disallow Capabilities in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Adding capabilities beyond those listed in the policy must be disallowed.
 ---

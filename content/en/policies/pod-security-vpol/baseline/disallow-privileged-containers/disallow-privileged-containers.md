@@ -3,7 +3,7 @@ title: "Disallow Privileged Containers in ValidatingPolicy"
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.
 ---

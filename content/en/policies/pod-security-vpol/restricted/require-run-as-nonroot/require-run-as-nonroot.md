@@ -3,7 +3,7 @@ title: "Require runAsNonRoot in ValidatingPolicy"
 category: Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validating"
+policyType: "validate"
 description: >
     Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.
 ---
