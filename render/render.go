@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -17,7 +17,7 @@ import (
 	kyvernov1 "github.com/kyverno/kyverno/pkg/api/kyverno/v1"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"k8s.io/apimachinery/pkg/util/yaml"
+	"sigs.k8s.io/yaml" 
 )
 
 type gitInfo struct {
@@ -45,31 +45,56 @@ func yamlContainsKyvernoCR(rawString string, kind string) bool {
 	hasKind := strings.Index(rawString, ("kind: " + kind))
 	return hasKind >= 0
 }
+func extractKind(yamlStr string) string {
+	var meta struct {
+		Kind string `yaml:"kind"`
+	}
+	_ = yaml.Unmarshal([]byte(yamlStr), &meta)
+	return meta.Kind
+}
 
-func getPolicyType(yaml string) string {
-	generate := "generate"
-	mutate := "mutate"
-	validate := "validate"
-	verifyImages := "verifyImages"
-	cleanUp := "cleanUp"
-	clusterCleanUpKind := "ClusterCleanupPolicy"
-	namespaceCleanUpKind := "CleanupPolicy"
-
-	newYAML := strings.Split(yaml, "spec:")[1]
-
-	if yamlContainsPolicy(newYAML, generate) {
-		return generate
-	} else if yamlContainsPolicy(newYAML, mutate) {
-		return mutate
-	} else if yamlContainsPolicy(newYAML, validate) {
-		return validate
-	} else if yamlContainsPolicy(newYAML, verifyImages) {
-		return verifyImages
-	} else if yamlContainsKyvernoCR(yaml, clusterCleanUpKind) || yamlContainsKyvernoCR(yaml, namespaceCleanUpKind) {
-		return cleanUp
-	} else {
+func extractSpec(yamlStr string) string {
+	var obj map[string]interface{}
+	if err := yaml.Unmarshal([]byte(yamlStr), &obj); err != nil {
 		return ""
 	}
+	if spec, ok := obj["spec"]; ok {
+		specBytes, _ := yaml.Marshal(spec)
+		return string(specBytes)
+	}
+	return ""
+}
+
+
+func getPolicyType(yamlStr string) string {
+	kind := extractKind(yamlStr)
+	spec := extractSpec(yamlStr)
+
+	switch kind {
+	case "ClusterPolicy":
+		switch {
+		case yamlContainsPolicy(spec, "generate"):
+			return "generate"
+		case yamlContainsPolicy(spec, "mutate"):
+			return "mutate"
+		case yamlContainsPolicy(spec, "validate"):
+			return "validate"
+		case yamlContainsPolicy(spec, "verifyImages"):
+			return "verifyImages"
+		}
+	case "GeneratePolicy":
+		return "generate"
+	case "CleanupPolicy", "ClusterCleanupPolicy", "DeletePolicy":
+		return "cleanUp"
+	case "ValidatingPolicy":
+		return "validate"
+	case "ImageValidatingPolicy":
+		return "verifyImages"
+    case "MutatePolicy" :
+		return "mutate"
+	
+	}
+	return ""
 }
 
 func newPolicyData(p *kyvernov1.ClusterPolicy, rawYAML, rawURL, path string) *policyData {
@@ -150,12 +175,12 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
-		bytes, err := ioutil.ReadAll(file)
+		bytes, err := io.ReadAll(file)
 		if err != nil {
 			log.Printf("Error: failed to read file %s: %v", file.Name(), err.Error())
 		}
 
-		policyBytes, err := yaml.ToJSON(bytes)
+		policyBytes, err := yaml.YAMLToJSON(bytes)
 		if err != nil {
 			log.Printf("failed to convert to JSON: %v", err)
 			continue
@@ -170,11 +195,7 @@ func render(git *gitInfo, outdir string) error {
 			continue
 		}
 
-		if !(policy.TypeMeta.Kind == "ClusterPolicy" || policy.TypeMeta.Kind == "Policy" || policy.TypeMeta.Kind == "ClusterCleanupPolicy") {
-			continue
-		}
-
-		if !strings.HasPrefix(policy.APIVersion, "kyverno.io/") {
+		if !strings.HasPrefix(policy.APIVersion, "kyverno.io/") && !strings.HasPrefix(policy.APIVersion, "policies.kyverno.io/") {
 			if Verbose {
 				log.Printf("skipping non-Kyverno policy resource: %s/%s", policy.APIVersion, policy.Kind)
 			}
