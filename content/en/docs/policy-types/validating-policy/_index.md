@@ -364,22 +364,22 @@ spec:
 
 ```
 
-### Image library
+### parseImageReference library
 
-The **Image library** offers functions to parse and analyze image references. It allows policy authors to inspect registries, tags, and digests, ensuring image standards, such as requiring images from a specific registry or prohibiting tags, are enforced.
+The **parseImageReference library** offers functions to parse and analyze image references. It allows policy authors to inspect registries, tags, and digests, ensuring image standards, such as requiring images from a specific registry or prohibiting tags, are enforced.
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `image("nginx:latest")` | Convert an image string into an image object (must be used before calling any image methods) |
+| `parseImageReference("nginx:latest")` | Convert an image string into an image object (must be used before calling any image methods) |
 | `isImage("nginx:latest")` | Check if the string is a valid image |
-| `image("nginx:latest").registry()` | Get the image registry (e.g., `docker.io`) |
-| `image("nginx:latest").repository()` | Get the image repository path (e.g., `library/nginx`) |
-| `image("nginx:latest").identifier()` | Get the image identifier (e.g., tag or digest part) |
-| `image("nginx:latest").tag()` | Get the tag portion of the image (e.g., `latest`) |
-| `image("nginx@sha256:abcd...").digest()` | Get the digest portion of the image |
-| `image("nginx:sha256:abcd...").containsDigest()` | Check if the image string includes a digest |
-| `object.spec.containers.map(c, image(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all container images come from the `ghcr.io` registry |
-| `object.spec.containers.map(c, image(c.image)).all(i, i.containsDigest())` | Ensure all images include a digest |
+| `parseImageReference("nginx:latest").registry()` | Get the image registry (e.g., `docker.io`) |
+| `parseImageReference("nginx:latest").repository()` | Get the image repository path (e.g., `library/nginx`) |
+| `parseImageReference("nginx:latest").identifier()` | Get the image identifier (e.g., tag or digest part) |
+| `parseImageReference("nginx:latest").tag()` | Get the tag portion of the image (e.g., `latest`) |
+| `parseImageReference("nginx@sha256:abcd...").digest()` | Get the digest portion of the image |
+| `parseImageReference("nginx:sha256:abcd...").containsDigest()` | Check if the image string includes a digest |
+| `object.spec.containers.map(c, parseImageReference(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all container images come from the `ghcr.io` registry |
+| `object.spec.containers.map(c, parseImageReference(c.image)).all(i, i.containsDigest())` | Ensure all images include a digest |
 
 
 
@@ -401,9 +401,9 @@ spec:
   variables:
     - name: images
       expression: >-
-        object.spec.containers.map(e, image(e.image))
-        + object.spec.?initContainers.orValue([]).map(e, image(e.image))
-        + object.spec.?ephemeralContainers.orValue([]).map(e, image(e.image))
+        object.spec.containers.map(e, parseImageReference(e.image))
+        + object.spec.?initContainers.orValue([]).map(e, parseImageReference(e.image))
+        + object.spec.?ephemeralContainers.orValue([]).map(e, parseImageReference(e.image))
   validations:
     - expression: >-
         variables.images.map(i, i.containsDigest()).all(e, e)
