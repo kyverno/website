@@ -36,14 +36,6 @@ schedule: "0 0 * * *" #everyday at midnight
 
 - Minimum granularity is 1 minute
 
-`matchConditions` 
-A list of CEL expressions that must evaluate to `true` for a resource to match.
-```yaml
-matchConditions:
-  - name: isTestNamespace
-    expression: "object.metadata.namespace.startsWith('test-')"
-```
-
 `namespaceSelector / objectSelector`
 Use Kubernetes label selectors to narrow down namespaces or objects:
 ```yaml
@@ -169,7 +161,7 @@ spec:
       expression: "now() - object.metadata.creationTimestamp > duration('72h')"
   variables:
     - name: isEphemeral
-      expression: "object.metadata.labels.ephemeral == 'true'"
+      expression: "has(object.metadata.labels.ephermal) && object.metadata.labels.ephemeral == 'true'"
 ```
 `resource:`
 ```yaml
