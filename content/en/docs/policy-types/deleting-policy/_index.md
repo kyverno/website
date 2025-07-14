@@ -112,23 +112,6 @@ variables:
 
 - Not available in matchConditions (evaluated before variables)
 
-`status`
-This field contains the latest execution metadata and readiness of the policy
-
-```yaml
-status:
-  conditionStatus:
-    ready: true
-    message: "Successfully evaluated"
-    conditions:
-      - type: Ready
-        status: "True"
-        reason: "AllMatched"
-        message: "Policy applied"
-        lastTransitionTime: "2025-06-18T15:04:05Z"
-  lastExecutionTime: "2025-06-18T01:00:00Z"
-```
-
 ## Example
 This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically delete pods in Kubernetes once per day at 1 AM. It targets pods that are:
 
