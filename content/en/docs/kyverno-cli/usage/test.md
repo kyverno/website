@@ -45,9 +45,11 @@ exceptions: # optional files for specifying exceptions. See below for an example
   - <path/to/exception.yaml>
 variables: variables.yaml # optional file for declaring variables. see below for example.
 userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
+context: context.yaml # optional file for declaring context variables. It is used in the new policy types; validatingpolicies, imagevalidationpolicies, mutatingpolicies and generatingpolicies.
 results:
 - policy: <name> # Namespaced Policy is specified as <namespace>/<name>
   isValidatingAdmissionPolicy: false # when the policy is ValidatingAdmissionPolicy, this field is required.
+  isValidatingPolicy: false # when the policy is ValidatingPolicy, this field is required.
   rule: <name> # when the policy is a Kyverno policy, this field is required.
   resources: # optional, primarily for `validate` rules.
   - <namespace_1/name_1>
@@ -1231,4 +1233,463 @@ Loading test  ( kyverno-test.yaml ) ...
 
 
 Test Summary: 6 tests passed and 0 tests failed
+```
+
+### Testing ValidatingPolicies
+
+To test a `ValidatingPolicy`, the test manifest must include the `isValidatingPolicy` field set to `true` in the `results[]` array.
+
+Below is an example of testing a ValidatingPolicy against two resources, one of which violates the policy.
+
+Policy manifest (check-deployment-replicas.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-replicas
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   ["apps"]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["deployments"]
+  validations:
+    - expression: "object.spec.replicas <= 2"
+      message: "Deployment replicas must be less than or equal to 2"
+```
+
+Resource manifest (deployments.yaml):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test
+policies:
+- policy.yaml
+resources:
+- deployments.yaml
+results:
+- isValidatingPolicy: true
+  kind: Deployment
+  policy: check-deployment-replicas
+  resources:
+  - bad-deployment
+  result: fail
+- isValidatingPolicy: true
+  kind: Deployment
+  policy: check-deployment-replicas
+  resources:
+  - good-deployment
+  result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 2 resources with 0 exceptions ...
+  Checking results ...
+
+│────│───────────────────────────│──────│────────────────────────────────────────────│────────│────────│
+│ ID │ POLICY                    │ RULE │ RESOURCE                                   │ RESULT │ REASON │
+│────│───────────────────────────│──────│────────────────────────────────────────────│────────│────────│
+│ 1  │ check-deployment-replicas │      │ apps/v1/Deployment/default/bad-deployment  │ Pass   │ Ok     │
+│ 2  │ check-deployment-replicas │      │ apps/v1/Deployment/default/good-deployment │ Pass   │ Ok     │
+│────│───────────────────────────│──────│────────────────────────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
+```
+
+Some policies need to make decisions based on the properties of the namespace where a resource is being created, such as its labels or name. The `namespaceObject` variable in CEL provides access to the full namespace object for this purpose.
+
+When running `kyverno test`, the command operates in an offline mode and does not have access to a live cluster's namespaces. To test policies that use `namespaceObject`, you must provide mock namespace definitions. This is done by creating a "values file" and referencing it in your `kyverno-test.yaml`.
+
+Let's start with a policy that disallows creating certain Deployments in the `default` namespace. It uses `namespaceObject.metadata.name` to check the name of the Namespace.
+
+Policy manifest (`disallow-default-deployment.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-namespace
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   ["apps"]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["deployments"]
+    # This policy only applies to Deployments with the label `app: nginx`
+    objectSelector:
+      matchLabels:
+        app: nginx
+  validations:
+    # The validation logic checks the name of the Namespace object.
+    - expression: "namespaceObject.metadata.name != 'default'"
+      message: "Using 'default' namespace is not allowed for this application."
+```
+
+We define several Deployments to cover all test cases:
+
+1. A Deployment in the `default` namespace (should fail).
+2. A Deployment in a different namespace, `staging` (should pass).
+3. Two Deployments that do not have the `app: nginx` label (should be skipped).
+
+Resource manifest (`deployments.yaml`):
+
+```yaml
+# This deployment should FAIL because it's in the 'default' namespace.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+# This deployment should PASS because it's in the 'staging' namespace.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-deployment
+  namespace: staging
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+# This deployment should be SKIPPED because it lacks the 'app: nginx' label.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skipped-deployment-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:latest
+---
+# This deployment should also be SKIPPED for the same reason.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skipped-deployment-2
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:latest
+```
+
+This is the crucial step. We create a values file (e.g., `values.yaml`) to provide the mock Namespace objects. The `kyverno test` command will use these objects to populate the `namespaceObject` variable during the test run.
+
+Values manifest (`values.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+namespaces:
+- apiVersion: v1
+  kind: namespace
+  metadata:
+    labels:
+      environment: staging
+    name: staging
+- apiVersion: v1
+  kind: namespace
+  metadata:
+    labels:
+      environment: default
+    name: default
+```
+
+Finally, we create the test manifest that ties everything together.
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test.yaml
+policies:
+- policy.yaml
+resources:
+- resources.yaml
+results:
+- isValidatingPolicy: true
+  kind: Deployment
+  policy: check-deployment-namespace
+  resources:
+  - bad-deployment
+  result: fail
+- isValidatingPolicy: true
+  kind: Deployment
+  policy: check-deployment-namespace
+  resources:
+  - good-deployment
+  result: pass
+- isValidatingPolicy: true
+  kind: Deployment
+  policy: check-deployment-namespace
+  resources:
+  - skipped-deployment-1
+  - skipped-deployment-2
+  result: skip
+variables: values.yaml
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 4 resources with 0 exceptions ...
+  Checking results ...
+
+│────│────────────────────────────│──────│────────────────────────────────────────────│────────│──────────│
+│ ID │ POLICY                     │ RULE │ RESOURCE                                   │ RESULT │ REASON   │
+│────│────────────────────────────│──────│────────────────────────────────────────────│────────│──────────│
+│ 1  │ check-deployment-namespace │      │ apps/v1/Deployment/default/bad-deployment  │ Pass   │ Ok       │
+│ 2  │ check-deployment-namespace │      │ apps/v1/Deployment/staging/good-deployment │ Pass   │ Ok       │
+│ 3  │ check-deployment-namespace │      │ apps/Deployment/v1                         │ Pass   │ Excluded │
+│ 4  │ check-deployment-namespace │      │ apps/Deployment/v1                         │ Pass   │ Excluded │
+│────│────────────────────────────│──────│────────────────────────────────────────────│────────│──────────│
+
+
+Test Summary: 4 tests passed and 0 tests failed
+```
+
+Policies often need to validate resources based on external data, such as a value stored in a ConfigMap. Kyverno's custom CEL function `resource.Get()` allows policies to fetch these external resources from the cluster.
+
+When using `kyverno test` for offline testing, you must provide this external resource as "context" so that the `resource.Get()` function can resolve successfully. This can be done by referencing a context file directly from your `kyverno-test.yaml`.
+
+In this example, we will test a policy that validates a Pod's name against a value stored in a ConfigMap.
+
+First, let's define a policy named `check-pod-name-from-configmap`. This policy uses `resource.Get()` to fetch a ConfigMap named `policy-cm` and then checks if the incoming Pod's name matches the `name` key in the ConfigMap's data.
+
+Policy manifest (`check-pod-name-from-configmap.yaml`):
+
+```yaml
+# policy.yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-pod-name-from-configmap
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["pods"]
+  variables:
+    # Get the ConfigMap 'policy-cm' from the Pod's namespace.
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "policy-cm")
+  validations:
+    # The Pod is valid only if its name matches the value from the ConfigMap.
+    - expression: >-
+        object.metadata.name == variables.cm.data.name
+```
+
+Next, we create a context file that contains the mock ConfigMap `policy-cm`. The `kyverno test` command will load this file and make its contents available to the `resource.Get()` function during the test.
+
+Context manifest (`context.yaml`):
+
+```yaml
+# context.yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Context
+metadata:
+  name: test-context
+spec:
+  resources:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: default
+      name: policy-cm
+    data:
+      # The 'name' key specifies that the only valid pod name is 'good-pod'.
+      name: good-pod
+```
+
+We define two Pod manifests: `good-pod`, whose name matches the value in our context, and `bad-pod`, whose name does not.
+
+Resource manifest (`pods.yaml`):
+
+```yaml
+# This Pod should PASS validation.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: good-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+---
+# This Pod should FAIL validation.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+```
+
+Finally, we create the `kyverno-test.yaml` file. The key here is the `context: context.yaml` field, which links our mock ConfigMap to the test.
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kyverno-test.yaml
+policies:
+- policy.yaml
+resources:
+- pod1.yaml
+- pod2.yaml
+results:
+- isValidatingPolicy: true
+  kind: Pod
+  policy: disallow-host-path
+  resources:
+  - bad-pod
+  result: fail
+- isValidatingPolicy: true
+  kind: Pod
+  policy: disallow-host-path
+  resources:
+  - good-pod
+  result: pass
+context: context.yaml
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 2 resources with 0 exceptions ...
+  Checking results ...
+
+│────│────────────────────│──────│─────────────────────────│────────│────────│
+│ ID │ POLICY             │ RULE │ RESOURCE                │ RESULT │ REASON │
+│────│────────────────────│──────│─────────────────────────│────────│────────│
+│ 1  │ disallow-host-path │      │ v1/Pod/default/bad-pod  │ Pass   │ Ok     │
+│ 2  │ disallow-host-path │      │ v1/Pod/default/good-pod │ Pass   │ Ok     │
+│────│────────────────────│──────│─────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
 ```
