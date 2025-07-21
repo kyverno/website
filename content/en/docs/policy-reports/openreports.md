@@ -17,7 +17,7 @@ If you are deploying Kyverno using Helm, setting the chart value `openreports.en
 
 ### Example: Enforcing an 'app' Label
 
-Below is an example Kyverno policy that enforces the presence of an `app` label on all Pods. When this policy is applied and OpenReports integration is enabled, Kyverno will generate reports in the openreports.io/v1alpha1 API group.
+Below is an example Kyverno policy that enforces the presence of an `app` label on all Pods. When this policy is applied and OpenReports integration is enabled, Kyverno will generate reports in the `openreports.io/v1alpha1` API group.
 
 #### Policy Example
 
