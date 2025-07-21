@@ -6,7 +6,7 @@ weight: 15
 
 > **Note:** OpenReports integration is available as of Kyverno 1.15.
 
-Kyverno supports reporting policy results using the openreports.io/v1alpha1 API as an alternative to the default wgpolicyk8s reporting. This can be enabled using the `--openreportsEnabled` flag in the Kyverno controller.
+Kyverno supports reporting policy results using the `openreports.io/v1alpha1` API as an alternative to the default wgpolicyk8s reporting. This can be enabled using the `--openreportsEnabled` flag in the Kyverno controller.
 
 
 ### Enabling OpenReports
