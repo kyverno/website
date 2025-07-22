@@ -1029,3 +1029,386 @@ summary:
 ```
 
 As expected, the policy is only applied to `nginx-1` as it matches both the policy definition and its binding.
+
+### Applying ValidatingPolicies
+
+In this example, we will apply a `ValidatingPolicy` against two `Deployment` manifests: one that complies with the policy and one that violates it.
+
+First, we define a `ValidatingPolicy` that ensures any `Deployment` has no more than two replicas.
+
+Policy manifest (check-deployment-replicas.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-replicas
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   ["apps"]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["deployments"]
+  validations:
+    - expression: "object.spec.replicas <= 2"
+      message: "Deployment replicas must be less than or equal to 2"
+```
+
+Next, we have two `Deployment` manifests. The `good-deployment` is compliant with 2 replicas, while the `bad-deployment` is non-compliant with 3 replicas.
+
+Resource manifest (deployments.yaml):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+Now, we use the `kyverno apply` command to test the policy against both resources.
+
+```bash
+kyverno apply /path/to/check-deployment-replicas.yaml --resource /path/to/deployments.yaml --policy-report
+```
+
+The following output will be generated:
+
+```bash
+apiVersion: openreports.io/v1alpha1
+kind: ClusterReport
+metadata:
+  creationTimestamp: null
+  name: merged
+results:
+- message: Deployment replicas must be less than or equal 2
+  policy: check-deployment-replicas
+  properties:
+    process: background scan
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: bad-deployment
+    namespace: default
+  result: fail
+  scored: true
+  source: KyvernoValidatingPolicy
+  timestamp:
+    nanos: 0
+    seconds: 1752755472
+- message: success
+  policy: check-deployment-replicas
+  properties:
+    process: background scan
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: good-deployment
+    namespace: default
+  result: pass
+  scored: true
+  source: KyvernoValidatingPolicy
+  timestamp:
+    nanos: 0
+    seconds: 1752755472
+source: ""
+summary:
+  error: 0
+  fail: 1
+  pass: 1
+  skip: 0
+  warn: 0
+```
+
+In addition to testing local YAML files, you can use the `kyverno apply` command to validate policies against resources that are already running in a Kubernetes cluster. Instead of specifying resource files with the `--resource` flag, you can use the `--cluster` flag.
+
+For example, to test the `check-deployment-replicas` policy against all Deployment resources in your currently active cluster, you would run:
+
+```bash
+kyverno apply /path/to/check-deployment-replicas.yaml --cluster --policy-report
+```
+
+Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](docs/policy-types/validating-policy/#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag. 
+
+This flag allows you to specify the resources that the policy will reference. The CLI will then use these resources to evaluate the policy.
+
+This example demonstrates how to test a policy that validates an incoming Pod by checking its name against a value stored in a ConfigMap.
+
+First, we define a `ValidatingPolicy` that uses `resource.Get()` to fetch a ConfigMap named `policy-cm`. The policy then validates that the incoming Pod's name matches the `name` key in the ConfigMap's data.
+
+Policy manifest (check-pod-name-from-configmap.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-pod-name-from-configmap
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["pods"]
+  variables:
+    # This variable uses a Kyverno CEL function to get a ConfigMap from the cluster.
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "policy-cm")
+  validations:
+    # This rule validates that the Pod's name matches the 'name' key in the ConfigMap's data.
+    - expression: >-
+        object.metadata.name == variables.cm.data.name
+```
+
+Next, we define two Pod manifests: `good-pod`, which should pass the validation, and `bad-pod`, which should fail.
+
+Resource manifest (pods.yaml):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: good-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+```
+
+Because the CLI cannot connect to a cluster to fetch the `policy-cm` ConfigMap, we must provide it in a context file. This file contains a mock ConfigMap that `resource.Get()` will use during local evaluation.
+
+Context file (context.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Context
+metadata:
+  name: context
+spec:
+  # The resources defined here will be available to functions like resource.Get()
+  resources:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: default
+      name: policy-cm
+    data:
+      # According to this, the valid pod name is 'good-pod'.
+      name: good-pod
+```
+
+Now, we can run the `kyverno apply` command, providing the policy, the resources, and the context file. We also use the `-p` (or `--policy-report`) flag to generate a ClusterReport detailing the results.
+
+```bash
+kyverno apply /path/to/policy.yaml --resource /path/to/pods.yaml --context-file /path/to/context.yaml -p
+```
+
+The following output will be generated:
+
+```yaml
+apiVersion: openreports.io/v1alpha1
+kind: ClusterReport
+metadata:
+  creationTimestamp: null
+  name: merged
+results:
+- message: success
+  policy: check-pod-name-from-configmap
+  properties:
+    process: background scan
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: good-pod
+    namespace: default
+  result: pass
+  scored: true
+  source: KyvernoValidatingPolicy
+  timestamp:
+    nanos: 0
+    seconds: 1752756617
+- policy: check-pod-name-from-configmap
+  properties:
+    process: background scan
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: bad-pod
+    namespace: default
+  result: fail
+  scored: true
+  source: KyvernoValidatingPolicy
+  timestamp:
+    nanos: 0
+    seconds: 1752756617
+source: ""
+summary:
+  error: 0
+  fail: 1
+  pass: 1
+  skip: 0
+  warn: 0
+```
+
+- The `good-pod` resource resulted in a `pass` because its name matches the value in the ConfigMap provided by the context file.
+
+- The `bad-pod` resource resulted in a `fail` because its name does not match, and the report includes the validation error message from the policy.
+
+When using the `--cluster` flag, the CLI connects to your active Kubernetes cluster, so a local context file is not needed. The `resource.Get()` function will fetch the live ConfigMap directly from the cluster so you have to ensure the ConfigMap and the Pod resources exist in your cluster before running the command.
+
+```bash
+kyverno apply /path/to/check-pod-name-from-configmap.yaml --cluster --policy-report
+```
+
+In case of applying a `ValidatingPolicy` with a `PolicyException`, you can use the `--exception` flag to specify the exception manifest. The CLI will then apply the policy and the exception together.
+
+In this example, we will test a policy that disallows `hostPath` volumes, but we will use a PolicyException to create an exemption for a specific Pod.
+
+Policy manifest (disallow-host-path.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-host-path
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["pods"]
+  validations:
+    - expression: "!has(object.spec.volumes) || object.spec.volumes.all(volume, !has(volume.hostPath))"
+      message: "HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset."
+```
+
+Next, we define a Pod that clearly violates this policy by mounting a `hostPath` volume. Without an exception, this Pod would be blocked.
+
+Resource manifest (pod-with-hostpath.yaml):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-hostpath
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+  volumes:
+  - name: udev
+    hostPath:
+      path: /etc/udev
+```
+
+Now, we create a PolicyException to exempt our specific Pod from this policy. The exception matches the Pod by name and references the `disallow-host-path` policy.
+
+Policy Exception manifest (exception.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: exempt-hostpath-pod
+spec:
+  policyRefs:
+  - name: disallow-host-path
+    kind: ValidatingPolicy
+  matchConditions:
+    - name: "skip-pod-by-name"
+      expression: "object.metadata.name == 'pod-with-hostpath'"
+```
+
+Now, we use the `kyverno apply` command, providing the policy, the resource, and the exception using the `--exception` flag. We will also use `-p` to generate a detailed report.
+
+```bash
+kyverno apply policy.yaml --resource resource.yaml --exception exception.yaml -p
+```
+
+The following output will be generated:
+
+```yaml
+apiVersion: openreports.io/v1alpha1
+kind: ClusterReport
+metadata:
+  creationTimestamp: null
+  name: merged
+results:
+- message: 'rule is skipped due to policy exception: exempt-hostpath-pod'
+  policy: disallow-host-path
+  properties:
+    exceptions: exempt-hostpath-pod
+    process: background scan
+  resources:
+  - apiVersion: v1
+    kind: Pod
+    name: pod-with-hostpath
+    namespace: default
+  result: skip
+  rule: exception
+  scored: true
+  source: KyvernoValidatingPolicy
+  timestamp:
+    nanos: 0
+    seconds: 1752759828
+source: ""
+summary:
+  error: 0
+  fail: 0
+  pass: 0
+  skip: 1
+  warn: 0
+```
+
+The output confirms that the PolicyException worked as intended:
+- `result: skip`: The policy rule was not enforced on the resource.
+
+- `properties.exceptions: exempt-hostpath-pod`: The report explicitly names the PolicyException responsible for the skip.
+
+- `summary.skip: 1`: The final count reflects that one rule was skipped.
