@@ -379,3 +379,79 @@ spec:
 
 This policy is triggered whenever a ConfigMap is created. It captures the list of namespaces from the ConfigMap's data field, splits it into a list, and stores it in `nsList`. It also fetches all Secrets from the `default` namespace and stores them in `sources`. The `generate` block then uses `variables.nsList.all(ns, ...)` to iterate over each namespace in `nsList`, generating copies of all fetched Secrets in each namespace.
 
+## Synchronization
+
+Synchronization ensures that downstream resources remain consistent with their source. The source can be the policy itself (for data source) or a cloned resource (for clone source). When synchronization is enabled, Kyverno monitors for changes and automatically updates or deletes downstream resources as needed.
+
+This is configured using the `evaluation.synchronize.enabled: true` field.
+
+### Synchronization with a Data Source
+
+When synchronize is enabled for a data source, the lifecycle of the downstream resource is tied to the policy and the trigger. For example, if you modify the policy, the generated resource is updated. If you delete the trigger, the generated resource is deleted.
+
+The following table shows the behavior of deletion and modification events on the components of a GeneratingPolicy with a data source declaration.
+
+| Action             | Sync Effect                                                             | NoSync Effect         |
+|--------------------|-------------------------------------------------------------------------|-----------------------|
+| Delete Downstream  | Downstream recreated                                                    | Downstream deleted    |
+| Delete Rule/Policy | Downstream retained <br>`orphanDownstreamOnPolicyDelete.enabled: true` | Downstream retained   |
+| Delete Rule/Policy | Downstream deleted <br>`orphanDownstreamOnPolicyDelete.enabled: false` | Downstream retained   |
+| Delete Trigger     | Downstream deleted                                                      | None                  |
+| Modify Downstream  | Downstream reverted                                                     | Downstream modified   |
+| Modify Rule/Policy | Downstream synced                                                       | Downstream unmodified |
+| Modify Trigger     | Downstream deleted                                                      | None                  |
+
+The `evaluation.orphanDownstreamOnPolicyDelete` property can be used to preserve generated resources on policy deletion when synchronization is enabled. The default is false. When set to true, the generated resources will be retained (orphaned) in the cluster after the policy that created them is deleted.
+
+### Synchronization with a Clone Source
+
+For clone source mode, synchronization keeps the downstream copies in sync with the original source resource. If the source resource is updated or deleted, all downstream clones are updated or deleted accordingly.
+
+The following table shows the behavior of events on components of a GeneratingPolicy with a clone source. Note that deleting the policy does not delete the downstream resources, as their lifecycle is primarily tied to the source.
+
+| Action             | Sync Effect           | NoSync Effect         |
+|--------------------|-----------------------|-----------------------|
+| Delete Downstream  | Downstream recreated  | Downstream deleted    |
+| Delete Rule/Policy | Downstream retained   | Downstream retained   |
+| Delete Source      | Downstream deleted    | Downstream retained   |
+| Delete Trigger     | Downstream deleted    | None                  |
+| Modify Downstream  | Downstream reverted   | Downstream modified   |
+| Modify Rule/Policy | Downstream unmodified | Downstream unmodified |
+| Modify Source      | Downstream synced     | Downstream unmodified |
+| Modify Trigger     | Downstream deleted    | None                  |
+
+## Generating for Existing Resources
+
+By default, a GeneratingPolicy triggers only for `CREATE`, `UPDATE` and `DELETE` events on resources that match its rules. This means if you apply a policy to a cluster that already contains matching resources (e.g., existing namespaces), the policy will not run for them.
+
+To address this, you can set `evaluation.generateExisting.enabled` to true. This setting instructs Kyverno to perform a one-time scan for all existing resources that match the trigger rules and apply the generation logic to them when the policy is created.
+
+**When to Use:** Use this when you need to retroactively apply a generatingpolicy to existing resources in your cluster, such as distributing a standard Secret or NetworkPolicy to all existing Namespaces.
+
+The following policy clones a secret to all new **and** existing namespaces:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
+metadata:
+  name: generate-secrets
+spec:
+  evaluation:
+    generateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["namespaces"]
+  variables:
+    - name: nsName
+      expression: "object.metadata.name"
+    - name: source
+      expression: resource.Get("v1", "secrets", "default", "regcred")
+  generate:
+    - expression: generator.Apply(variables.nsName, [variables.source])
+```
+
+When you apply this policy to a cluster with, for example, 10 existing namespaces, `generateExisting.enabled: true` ensures that Kyverno will immediately generate a copy of the `regcred` secret in each of those 10 namespaces. Without this field, the secret would only be created in namespaces created after the policy was applied.
