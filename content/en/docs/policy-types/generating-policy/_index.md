@@ -5,7 +5,7 @@ description: >-
 weight: 30
 ---
 
-The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate.md), but is reimagined with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
+The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate.md), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
 
 By leveraging CEL, GeneratingPolicy aligns with native Kubernetes constructs like ValidatingAdmissionPolicy and MutatingAdmissionPolicy, providing a consistent and powerful experience.
 
