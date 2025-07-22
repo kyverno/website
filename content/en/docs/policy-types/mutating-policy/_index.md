@@ -124,14 +124,16 @@ spec:
         resources: ["pods"]
         operations: ["CREATE"]
   mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            spec: Object.spec{
-              serviceAccountName: "default-sa"
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              foo: "bar"
             }
           }
+        } 
 ```
 
 ### Conditional ApplyConfiguration
@@ -165,34 +167,6 @@ spec:
           }
 ```
 
-### Nested Object Mutation
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-container-security
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            spec: Object.spec{
-              securityContext: Object.spec.securityContext{
-                runAsNonRoot: true,
-                runAsUser: 1000
-              }
-            }
-          }
-```
-
 ## RFC 6902 JSON Patches
 
 JSONPatch provides fine-grained control over mutations using RFC 6902 JSON Patch operations. This method is useful for complex mutations that require precise control over the patch operations.
@@ -205,31 +179,31 @@ kind: MutatingPolicy
 metadata:
   name: add-labels-jsonpatch
 spec:
-  matchConstraints:
-    resourceRules:
+    matchConstraints:
+        resourceRules:
       - apiGroups: [""]
-        apiVersions: ["v1"]
+            apiVersions: ["v1"]
         resources: ["pods"]
-        operations: ["CREATE"]
-  mutations:
+            operations: ["CREATE"]
+    mutations:
     - patchType: JSONPatch
-      jsonPatch:
-        expression: |
-          has(object.metadata.labels) ?
-          [
-            JSONPatch{
-              op: "add",
-              path: "/metadata/labels/managed",
-              value: "true"
-            }
-          ] : 
-          [
-            JSONPatch{
-              op: "add",
-              path: "/metadata/labels",
-              value: {"managed": "true"}
-            }
-          ]
+        jsonPatch:
+            expression: |
+                has(object.metadata.labels) ?
+                [
+                    JSONPatch{
+                        op: "add",
+                        path: "/metadata/labels/managed",
+                        value: "true"
+                    }
+                ] : 
+                [
+                    JSONPatch{
+                        op: "add",
+                        path: "/metadata/labels",
+                        value: {"managed": "true"}
+                    }
+                ]
 ```
 
 ### Multiple JSONPatch Operations
@@ -274,16 +248,16 @@ spec:
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
-metadata:
+metadata: 
   name: escape-jsonpatch
 spec:
-  matchConstraints:
-    resourceRules:
+    matchConstraints: 
+        resourceRules:
       - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
-  mutations:
+                apiVersions: ["v1"]
+                resources: ["pods"]
+                operations: ["CREATE"]
+    mutations:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
@@ -296,14 +270,43 @@ spec:
           ]
 ```
 
-## Looping (Foreach)
+## Looping with CEL Functions
 
-Kyverno supports looping through resources using the `foreach` construct, allowing you to apply mutations to multiple resources or elements within a resource.
+Kyverno supports looping through elements within resources using CEL functions like `map()`, allowing you to apply mutations to multiple elements within a resource.
 
-### Foreach on Pod Controllers
+### Iterating Through Containers
 
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: foreach
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE" ]
+      resources: [ "pods" ]
+  mutations:
+  - patchType: ApplyConfiguration
+            applyConfiguration: 
+      expression: >
+                    Object{
+                        spec: Object.spec{
+            containers: object.spec.containers.map(container, Object.spec.containers{
+              name: container.name,
+              securityContext: Object.spec.containers.securityContext{
+                allowPrivilegeEscalation: false
+              }
+            })
+          } 
+        } 
+```
 
-### Foreach with Conditions
+This example uses CEL's `map()` function to iterate through all containers in a pod and add a `securityContext` with `allowPrivilegeEscalation: false` to each container.
+
+### Conditional Iteration with Filter
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -311,12 +314,12 @@ kind: MutatingPolicy
 metadata:
   name: foreach-conditional
 spec:
-  matchConstraints:
-    resourceRules:
+matchConstraints:
+  resourceRules:
       - apiGroups: [""]
-        apiVersions: ["v1"]
+      apiVersions: ["v1"]
         resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      operations: ["CREATE", "UPDATE"]
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -331,54 +334,117 @@ spec:
           ).filter(p, p != null)
 ```
 
+This example uses CEL's `map()` and `filter()` functions to conditionally add environment variables only to containers that use nginx images.
+
 ## Mutating Existing Resources
 
-MutatingPolicy supports background processing to mutate existing resources in the cluster, not just during admission.
+MutatingPolicy supports background processing to mutate existing resources in the cluster, not just during admission. This is enabled by setting `spec.evaluation.mutateExisting.enabled: true`.
 
-### Background Mutation
+### Important Considerations
+
+1. **Asynchronous Processing**: Mutation for existing resources is an asynchronous process. There will be a variable amount of delay between when the trigger is observed and when the existing resource is mutated.
+
+2. **Custom Permissions**: Custom permissions are almost always required. Because these mutations occur on existing resources and not during an AdmissionReview, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization.md#customizing-permissions) for how to grant additional permissions to the Kyverno background controller's ServiceAccount. Kyverno will perform these permissions checks when a mutate existing policy is installed.
+
+### Same Trigger and Target
+
+When the trigger and target are the same resource type, the policy will mutate ALL existing resources of that type when a trigger occurs:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
 metadata:
-  name: background-mutation
+  name: same-trigger-target
 spec:
   evaluation:
-    background:
+    mutateExisting:
       enabled: true
-    admission:
-      enabled: false
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE", "UPDATE"]
+      resources: [ "namespaces" ]
   mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {"background-managed": "true"}
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              foo: "bar"
             }
           }
+        }
 ```
 
-### Periodic Background Processing
+In this example, when any namespace is created or updated, Kyverno will:
+1. Mutate the namespace that triggered the policy
+2. Fetch and mutate ALL existing namespaces that match the criteria
 
+This means if you have 10 existing namespaces and create a new one, all 11 namespaces will be mutated to add the `foo: "bar"` label.
+
+### Different Trigger and Target
+
+You can specify different trigger and target resources using `targetMatchConstraints`. When a trigger occurs, Kyverno will mutate ALL existing resources that match the target criteria:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: different-trigger-target
+spec:
+  evaluation:
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE", "UPDATE"]
+      resources: [ "namespaces" ]
+      resourceNames: ["test-namespace"]
+  targetMatchConstraints:
+  namespaceSelector:
+    matchLabels:
+        test: "enabled"
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE", "UPDATE"]
+      resources: [ "configmaps" ]
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              foo: "bar"
+            }
+          }
+        }
+```
+
+In this example:
+- **Trigger**: When the namespace `test-namespace` is created or updated
+- **Target**: ALL existing ConfigMaps in namespaces with the label `test: enabled` will be mutated to add the `foo: "bar"` label
+
+This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
 ## Mutate Ordering
 
-The order of mutations is important when multiple mutations are applied. Kyverno processes mutations in the order they appear in the policy.
+The order of mutations is important when multiple mutations are applied. Kyverno processes mutations in the order they appear in the policy. However, **the order is not guaranteed across multiple MutatingPolicies** - if multiple policies apply to the same resource, their execution order is not deterministic.
 
 ### Sequential Mutations
+
+When multiple mutations are defined within the same policy, they are processed in order. This allows you to create mutations that depend on the results of previous mutations:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
 metadata:
-  name: sequential-mutations
+  name: simple-database-policy
 spec:
   matchConstraints:
     resourceRules:
@@ -387,40 +453,42 @@ spec:
         resources: ["pods"]
         operations: ["CREATE"]
   mutations:
-    # First mutation: Add basic labels
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {"app": "my-app"}
+    # First mutation
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: |
+        object.spec.containers.exists(c, c.image.contains("cassandra") || c.image.contains("mongo")) ?
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              type: "database"
             }
           }
-    # Second mutation: Add environment-specific labels
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {"environment": "production"}
+        } : Object{}
+
+  # Second mutation  
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: |
+        object.metadata.labels.type == "database" ?
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              backup: "yes"
             }
           }
-    # Third mutation: Add security context
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            spec: Object.spec{
-              securityContext: Object.spec.securityContext{
-                runAsNonRoot: true
-              }
-            }
-          }
+        } : Object{}
 ```
+
+In this example:
+1. **First mutation**: Checks if any container uses cassandra or mongo images and adds `type: database` label
+2. **Second mutation**: Checks if the `type: database` label exists, then adds `backup: yes`
+
+The mutations must be ordered from top to bottom in the order of their dependencies within the same policy to ensure consistent results.
 
 ### Reinvocation Policy
 
-The `reinvocationPolicy` controls whether mutations are reapplied when earlier mutations modify the object.
+The `reinvocationPolicy` controls whether mutations are reapplied when earlier mutations modify the object:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -435,27 +503,22 @@ spec:
         apiVersions: ["v1"]
         resources: ["pods"]
         operations: ["CREATE"]
-  mutations:
-    # First mutation: Add a label
+mutations:
     - patchType: ApplyConfiguration
-      applyConfiguration:
+        applyConfiguration:
         expression: |
-          Object{
-            metadata: Object.metadata{
+            Object{
+                metadata: Object.metadata{
               labels: {"stage": "initial"}
+                }
             }
-          }
-    # Second mutation: Use the label added by the first mutation
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          object.metadata.labels.stage == "initial" ?
-          Object{
-            metadata: Object.metadata{
-              labels: {"processed": "true"}
-            }
-          } : Object{}
 ```
+
+**Reinvocation Policy Options:**
+- **`Never`**: Apply mutation once per binding (default)
+- **`IfNeeded`**: Re-apply if a previous mutation modifies the object
+
+The `IfNeeded` policy is useful when mutations depend on one another, as it ensures that subsequent mutations can react to changes made by earlier mutations.
 
 ## Combining Mutation and Generation
 
@@ -465,110 +528,6 @@ MutatingPolicy can be combined with generation capabilities to create resources 
 
 ## GitOps Considerations
 
-When using MutatingPolicy in GitOps workflows, consider the following:
+When using MutatingPolicy in GitOps workflows, the same considerations apply as with ClusterPolicy mutate rules. MutatingPolicy can interoperate with GitOps solutions, but there are important considerations to prevent "fighting" between the mutating admission controller and GitOps controllers.
 
-### Immutable Resources
-
-Some resources become immutable after creation. MutatingPolicy can help ensure proper configuration from the start:
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: gitops-immutable
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            spec: Object.spec{
-              securityContext: Object.spec.securityContext{
-                runAsNonRoot: true,
-                runAsUser: 1000,
-                fsGroup: 2000
-              }
-            }
-          }
-```
-
-### Policy Versioning
-
-Version your policies and use proper labeling for GitOps tracking:
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: gitops-versioned
-  labels:
-    app.kubernetes.io/version: "v1.0.0"
-    app.kubernetes.io/part-of: "gitops-policies"
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {
-                "policy-version": "v1.0.0",
-                "gitops-managed": "true"
-              }
-            }
-          }
-```
-
-### Rollback Strategy
-
-Implement rollback strategies for mutations:
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: rollback-safe
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              annotations: {
-                "kyverno.io~1last-mutation": string(timestamp.now()),
-                "kyverno.io~1policy-version": "v1.0.0"
-              }
-            }
-          }
-```
-
-## Policy Execution Flow
-
-1. **Admission Request**: A Kubernetes resource creation or update request is received
-2. **Match Evaluation**: Kyverno checks `matchConstraints` to determine if the policy applies
-3. **Condition Evaluation**: CEL `matchConditions` are evaluated if present
-4. **Variable Resolution**: Variables are computed using CEL expressions
-5. **Mutation Execution**: Each mutation is executed in order:
-   - ApplyConfiguration mutations merge changes
-   - JSONPatch mutations apply precise patches
-6. **Reinvocation**: If `reinvocationPolicy` is `IfNeeded`, mutations may re-run
-7. **Final Object**: The mutated object is passed to the Kubernetes API server
+For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate.md#gitops-considerations) in the ClusterPolicy mutate documentation.
