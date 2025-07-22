@@ -1,7 +1,7 @@
 ---
 title: GeneratingPolicy
 description: >-
-    Create new Kubernetes resources based on a policy and optionally keep them in sync.
+    Dynamically Create and Synchronize Resources Across Namespaces.
 weight: 30
 ---
 
