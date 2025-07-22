@@ -103,7 +103,166 @@ Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/k
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. The same libraries available in `ValidatingPolicy` are also available in `MutatingPolicy`.
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
+
+### Resource Library Examples
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-registry-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  variables:
+    - name: cm
+      expression: >-
+        resource.Get("v1", "configmaps", "kube-system", "allowed-registry")
+    - name: allowedRegistry
+      expression: "variables.cm.data[?'registry'].orValue('')"
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {"registry": string(variables.allowedRegistry)}
+            }
+          }
+```
+
+### HTTP Library Examples
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-external-team-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  variables:
+    - name: externalData
+      expression: >-
+        http.Get("http://test-api-service.default.svc.cluster.local:80")
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {"external-team": string(variables.externalData.metadata.team)}
+            }
+          }
+```
+
+### User Library Examples
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-service-account-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  variables:
+    - name: sa
+      expression: parseServiceAccount(request.userInfo.username)
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "service-account": string(variables.sa.Name),
+                "namespace": string(variables.sa.Namespace)
+              }
+            }
+          }
+```
+
+### Image Library Examples
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-image-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  variables:
+    - name: images
+      expression: >-
+        object.spec.containers.map(e, image(e.image))
+        + object.spec.?initContainers.orValue([]).map(e, image(e.image))
+        + object.spec.?ephemeralContainers.orValue([]).map(e, image(e.image))
+    - name: firstImage
+      expression: "variables.images[0]"
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "image-registry": string(variables.firstImage.registry()),
+                "image-repository": string(variables.firstImage.repository())
+              }
+            }
+          }
+```
+
+### GlobalContext Library Examples
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-global-context-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  variables:
+    - name: globalData
+      expression: >-
+        globalContext.Get("team-cluster-values", "")
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "team": string(variables.globalData.team),
+                "environment": string(variables.globalData.environment)
+              }
+            }
+          }
+```
 
 ## Patches with ApplyConfiguration
 
