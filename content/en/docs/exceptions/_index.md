@@ -584,7 +584,7 @@ spec:
       message: sbom is not a cyclone dx sbom
 ```
 
-This `PolicyException` is defined to exempt this pod from enforcement. The exception uses a CEL `expression—object.metadata.name == 'skipped-pod'`to identify the specific resource. It links to the `ImageValidatingPolicy` named `ivpol-sample`, and when the background controller processes the pod, it detects that the exception applies. As a result, none of the image validation rules are executed for this resource.
+This `PolicyException` is defined to exempt this pod from enforcement. The exception uses a CEL `expression—object.metadata.name == 'skipped-pod'`to identify the specific resource. It links to the `ImageValidatingPolicy` named `ivpol-sample`, and when the reports controller processes the pod, it detects that the exception applies. As a result, none of the image validation rules are executed for this resource.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -601,7 +601,7 @@ spec:
 
 ```
 
-Kyverno background controller evaluates the pod. It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
+Kyverno reports controller evaluates the pod as a result of [background scan](docs/policy-reports/background.md). It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
 
 ```yaml
 apiVersion: wgpolicyk8s.io/v1alpha2
@@ -645,3 +645,170 @@ summary:
 - **exceptions: check-name** — references the applied `PolicyException`.  
 
 This enables fine-grained, declarative exemptions without modifying the core policy logic, keeping your security posture strong while allowing flexibility for exceptional cases.
+
+### Using PolicyException with GeneratingPolicy
+
+`PolicyException` can also be used to selectively skip `GeneratingPolicy`. This is useful for preventing resource generation in specific contexts, such as certain namespaces or for resources with particular labels, without altering the base policy.
+
+The following `GeneratingPolicy` is designed to automatically create a ConfigMap named `zk-kafka-address` in any newly created Namespace.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
+metadata:
+  name: generate-configmap
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["namespaces"]
+  variables:
+    - name: nsName
+      expression: "object.metadata.name"
+    - name: configmap
+      expression: >-
+        [
+          {
+            "kind": dyn("ConfigMap"),
+            "apiVersion": dyn("v1"),
+            "metadata": dyn({
+              "name": "zk-kafka-address",
+              "namespace": string(variables.nsName),
+            }),
+            "data": dyn({
+              "KAFKA_ADDRESS": "192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092",
+              "ZK_ADDRESS": "192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181"
+            })
+          }
+        ]
+  generate:
+    - expression: generator.Apply(variables.nsName, variables.configmap)
+```
+
+To prevent this `ConfigMap` from being created in a specific namespace (e.g., a "testing" namespace), we can define a `PolicyException`. This exception uses a CEL expression to match any Namespace with the name `testing` and skips the `generate-configmap` policy for it.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: exclude-namespace-by-name
+spec:
+  policyRefs:
+  - name: generate-configmap
+    kind: GeneratingPolicy
+  matchConditions:
+    - name: "check-namespace-name"
+      expression: "object.metadata.name == 'testing'"
+```
+
+When three namespaces—`testing`, `production`, and `staging`—are created, the `GeneratingPolicy` is triggered for each.
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testing
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+```
+
+However, the `PolicyException` matches the `testing` namespace, causing the `GeneratingPolicy` to be skipped. As a result, the `zk-kafka-address` ConfigMap is only created in the `production` and `staging` namespaces. The resulting `ConfigMaps` are shown below; note that no `ConfigMap` was created for the `testing` namespace.
+
+```yaml
+apiVersion: v1
+data:
+  KAFKA_ADDRESS: 192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092
+  ZK_ADDRESS: 192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181
+kind: ConfigMap
+metadata:
+  name: zk-kafka-address
+  namespace: staging
+---
+apiVersion: v1
+data:
+  KAFKA_ADDRESS: 192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092
+  ZK_ADDRESS: 192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181
+kind: ConfigMap
+metadata:
+  name: zk-kafka-address
+  namespace: production
+```
+
+When the namespaces are created, the Kyverno admission controller queues the work by creating an intermediate object called an `UpdateRequest`. The background controller then processes these `UpdateRequests` to perform the final resource generation. It successfully creates the `ConfigMap` in the `production` and `staging` namespaces. However, due to the matching `PolicyException`, the controller skips the generation step for the `testing` namespace. The reports controller then creates a `ClusterPolicyReport` for each event, showing a `pass` result for the successful generation in the `production` and `staging` namespaces and a `skip` result for the `testing` namespace, correctly identifying the applied exception.
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: v1
+    kind: Namespace
+    name: production
+results:
+- message: policy evaluated successfully
+  policy: generate-configmap
+  properties:
+    generated-resources: /v1, Kind=ConfigMap Name=zk-kafka-address Namespace=production
+    process: admission review
+  result: pass
+  rule: generate-configmap
+  scored: true
+  source: KyvernoGeneratingPolicy
+scope:
+  apiVersion: v1
+  kind: Namespace
+  name: production
+summary:
+  error: 0
+  fail: 0
+  pass: 1
+  skip: 0
+  warn: 0
+---
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: v1
+    kind: Namespace
+    name: testing
+results:
+- policy: generate-configmap
+  properties:
+    exceptions: exclude-namespace-by-name
+    process: admission review
+  result: skip
+  rule: generate-configmap
+  scored: true
+  source: KyvernoGeneratingPolicy
+scope:
+  apiVersion: v1
+  kind: Namespace
+  name: testing
+summary:
+  error: 0
+  fail: 0
+  pass: 0
+  skip: 1
+  warn: 0
+```
+
+#### Interpreting PolicyReport Results
+
+- The report for the `production` namespace shows a `result: pass`, and the `properties.generated-resources` field confirms that the `ConfigMap` was successfully created.
+
+- Conversely, the report for the `testing` namespace shows a `result: skip`. The `properties.exceptions` field references `exclude-namespace-by-name`, indicating that the `PolicyException` was successfully applied, and no resource was generated.
