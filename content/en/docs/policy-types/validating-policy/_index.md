@@ -29,7 +29,7 @@ The table below compares major features across the Kubernetes `ValidatingAdmissi
 
 ## Additional Fields
 
-The `ValidatingPolicy` extends the [Kubernetes ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) with the following additional fields for Kyverno features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ValidatingPolicy)
+The `ValidatingPolicy` extends the [Kubernetes ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) with the following additional fields for Kyverno features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ValidatingPolicy).
 
 ### evaluation
 
@@ -105,25 +105,15 @@ Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/k
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features.
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
 
 ### Resource library
 
-The **Resource library** provides functions like `resource.Get()` and `resource.List()` to retrieve Kubernetes resources from the cluster, either individually or as a list. These are useful for writing policies that depend on the state of other resources, such as checking existing ConfigMaps, Services, or Deployments before validating a new object.
-
-| CEL Expression | Purpose |
-|----------------|---------|
-| `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]` | Fetch a ConfigMap value from a specific namespace |
-| `resource.List("apps/v1", "deployments", "").items.size() > 0` | Check if there are any Deployments across all namespaces |
-| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})` | Perform a live SubjectAccessReview (authz check) against the Kubernetes API |
-| `resource.List("apps/v1", "deployments", object.metadata.namespace).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace has more than 3 replicas |
-| `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()` | Verify that Service names in the `default` namespace are sorted alphabetically |
-| `resource.List("v1", "services", object.metadata.namespace).items.map(s, s.metadata.name).isSorted()` |  Use `object.metadata.namespace` to dynamically target the current resource's namespace |
-
+### Resource Library Examples
 
 In the sample policy below, `resource.Get()` retrieves a ConfigMap which is then used in the policy evaluation logic:  
 
-``` yaml
+```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
@@ -156,7 +146,7 @@ spec:
       messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
 ```
 
-This sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes’ `SubjectAccessReview` API:
+This sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes' `SubjectAccessReview` API:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -196,7 +186,6 @@ spec:
         has(variables.subjectaccessreview.status) && variables.subjectaccessreview.status.allowed == true
       message: >-
         User is not authorized.
-  
 ```
 
 This sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
@@ -252,19 +241,9 @@ spec:
 
       message: >-
         The root path already exists in the cluster but not in the namespace.
-
 ```
-### HTTP library
 
-The **HTTP library** allows interaction with external HTTP/S endpoints using `http.Get()` and `http.Post()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
-
-| **CEL Expression**        | **Purpose**                          |
-|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
-| `http.Get("https://internal.api/health").status == "ok"  `                                                                      | Validate external service health before proceeding                     |
-| `http.Get("https://service/data").metadata.team == object.metadata.labels.team `                                                | Enforce label matching from remote service metadata                    |
-| `http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true`               | Confirm logging of the resource to an external system                  |
-| `http.Get("https://certs.api/rootCA").cert == object.spec.cert`                                                                 | Validate a certificate field in the object against external data       |
-
+### HTTP Library Examples
 
 The following policy fetches data from an external or internal HTTP(S) endpoint and makes it accessible within the policy:
 
@@ -290,7 +269,6 @@ spec:
     - expression: >-
         variables.externalData.metadata.labels.app == object.metadata.labels.app
       messageExpression: "'only create pod with labels, variables.get.metadata.labels.app: ' + string(variables.get.metadata.labels.app)"
-
 ```
 
 The following sample sends a `POST` request with a payload to an external service:
@@ -319,23 +297,11 @@ spec:
     - expression: variables.response.received == "test"
       messageExpression: >-
        'External POST call did not return the expected response ' + string(variables.response.received)
-
 ```
 
 When communicating over HTTPS, Kyverno uses the provided CA bundle to validate the server's certificate.
 
-
-### User library
-
-The **User library** includes functions like `parseServiceAccount()` to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
-
-
-| CEL Expression | Purpose |
-|----------------|---------|
-| `parseServiceAccount(request.userInfo.username).Name == "my-sa"` | Validate that the request is made by a specific ServiceAccount |
-| `parseServiceAccount(request.userInfo.username).Namespace == "system"` | Ensure the ServiceAccount belongs to the `system` namespace |
-| `parseServiceAccount(request.userInfo.username).Name.startsWith("team-")` | Enforce naming convention for ServiceAccounts |
-| `parseServiceAccount(request.userInfo.username).Namespace in ["dev", "prod"]` | Restrict access to specific namespaces only |
+### User Library Examples
 
 This sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
 
@@ -361,30 +327,11 @@ spec:
       message: Only kube-system service accounts can create pods
     - expression: variables.sa.Name in ["replicaset-controller", "deployment-controller", "daemonset-controller"]
       message: Only trusted system controllers can create pods
-
 ```
 
-### parseImageReference library
-
-The **parseImageReference library** offers functions to parse and analyze image references. It allows policy authors to inspect registries, tags, and digests, ensuring image standards, such as requiring images from a specific registry or prohibiting tags, are enforced.
-
-| CEL Expression | Purpose |
-|----------------|---------|
-| `parseImageReference("nginx:latest")` | Convert an image string into an image object (must be used before calling any image methods) |
-| `isImage("nginx:latest")` | Check if the string is a valid image |
-| `parseImageReference("nginx:latest").registry()` | Get the image registry (e.g., `docker.io`) |
-| `parseImageReference("nginx:latest").repository()` | Get the image repository path (e.g., `library/nginx`) |
-| `parseImageReference("nginx:latest").identifier()` | Get the image identifier (e.g., tag or digest part) |
-| `parseImageReference("nginx:latest").tag()` | Get the tag portion of the image (e.g., `latest`) |
-| `parseImageReference("nginx@sha256:abcd...").digest()` | Get the digest portion of the image |
-| `parseImageReference("nginx:sha256:abcd...").containsDigest()` | Check if the image string includes a digest |
-| `object.spec.containers.map(c, parseImageReference(c.image)).map(i, i.registry()).all(r, r == "ghcr.io")` | Ensure all container images come from the `ghcr.io` registry |
-| `object.spec.containers.map(c, parseImageReference(c.image)).all(i, i.containsDigest())` | Ensure all images include a digest |
-
-
+### Image Library Examples
 
 The following sample ensures that all images use a digest:
-
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -411,28 +358,7 @@ spec:
         images must be specified using a digest
 ```
 
-### ImageData library
-
-The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `image.GetMetadata()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
-
-| CEL Expression | Purpose |
-|----------------|---------|
-| `image.GetMetadata("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
-| `image.GetMetadata("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
-| `image.GetMetadata("nginx:1.21").config.author == "docker"` | Check the image author |
-| `image.GetMetadata("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
-| `image.GetMetadata("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
-| `image.GetMetadata("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
-| `image.GetMetadata("nginx:1.21").config.container == "nginx"` | Validate container name |
-| `image.GetMetadata("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
-| `image.GetMetadata("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
-| `image.GetMetadata("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
-| `image.GetMetadata("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
-| `image.GetMetadata("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
-| `image.GetMetadata("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
-| `image.GetMetadata("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
-| `image.GetMetadata("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
-| `image.GetMetadata("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
+### ImageData Library Examples
 
 The `image.GetMetadata()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
@@ -471,35 +397,9 @@ spec:
     - expression: variables.image.manifest.schemaVersion == 2
       message: >-
        Only schemaVersion 2 image manifests are supported
-
-
 ```
 
-
-| **Field**       | **Description**                                    | **Example** |
-|---------------|------------------------------------------------|-------------|
-| `digest`      | The immutable SHA256 hash of the image.        | `sha256:abc123...` |
-| `tag`         | The tag associated with the image version.     | `latest`, `v1.2.3` |
-| `registry`    | The container registry hosting the image.      | `docker.io`, `gcr.io`, `myregistry.com` |
-| `repository`  | The specific repository where the image is stored. | `library/nginx`, `myorg/myapp` |
-| `architecture` | The CPU architecture the image is built for.  | `amd64`, `arm64` |
-| `os`         | The operating system the image is compatible with. | `linux`, `windows` |
-| `mediaType`   | The media type of the image manifest.          | `application/vnd.docker.distribution.manifest.v2+json` |
-| `layers`      | A list of layer digests that make up the image. | `["sha256:layer1...", "sha256:layer2..."]` |
-
-In addition to these fields, `image.GetMetadata()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
-
-
-### GlobalContext library
-
-The **GlobalContext library** introduces shared variables across policies through `globalContext.Get()`. These variables are populated from external API calls via `GlobalContextEntry` resources, making it possible to validate requests against cluster-wide configurations or aggregated data with improved efficiency.
-
-| **CEL Expression**                                                       | **Purpose**                                                         |
-|--------------------------------------------------------------------------|----------------------------------------------------------------------|
-| `globalContext.Get("gctxentry-apicall-correct", "") != 0`                  | Ensure a specific deployment exists before allowing resource creation |
-| `globalContext.Get("team-cluster-values", "").someValue == "enabled"`     | Validate shared cluster-wide configuration using global context data |
-| `globalContext.Get("global-pod-labels", "").contains(object.metadata.labels)` | Check that pod labels match predefined global labels                |
-
+### GlobalContext Library Examples
 
 To use this feature, first a `GlobalContextEntry` must be defined:
 
