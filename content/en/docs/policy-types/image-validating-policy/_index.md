@@ -70,7 +70,7 @@ spec:
   variables:
     - name: cm
       expression: >-
-        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
+        resource.Get("v1", "configmaps", namespaceObject.metadata.name, "keys")
   attestors:
   - name: cosign                      # A unique name to identify this attestor
     cosign:
@@ -158,7 +158,7 @@ spec:
   variables:
     - name: cm
       expression: >-
-        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
+        resource.Get("v1", "configmaps", namespaceObject.metadata.name, "keys")
      expression:
    - name: 
      expression:
