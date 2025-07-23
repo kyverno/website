@@ -679,10 +679,6 @@ mutations:
 
 The `IfNeeded` policy is useful when mutations depend on one another, as it ensures that subsequent mutations can react to changes made by earlier mutations.
 
-## Combining Mutation and Generation
-
-MutatingPolicy can be combined with generation capabilities to create resources based on mutations.
-
 ### Mutation with Generation
 
 ## GitOps Considerations
