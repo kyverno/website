@@ -1,15 +1,17 @@
 ---
 title: ImageValidatingPolicy
 description: >-
-    Validate container images and their metadata
-weight: 0
+    Verify container image signatures and attestations
+weight: 15
 ---
+
+{{< feature-state state="alpha" version="v1.14" />}}
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations. 
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy)
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy).
 
 
 ### images
@@ -272,7 +274,7 @@ spec:
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/validating-policy/#kyverno-cel-libraries) the following additional libraries are supported for ImageValidatingPolicy types. 
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/) the following additional libraries are supported for ImageValidatingPolicy types. 
 
 ### Image Verification Library
 
