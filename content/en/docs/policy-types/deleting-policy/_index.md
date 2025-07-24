@@ -1,9 +1,11 @@
 ---
 title: DeletingPolicy
 description: >-
-  Deletes Matching Resources
-weight: 20
+  Deletes matching resources based on a schedule
+weight: 50
 ---
+
+{{< feature-state state="alpha" version="v1.15" />}}
 
 ## Introduction
 
@@ -20,44 +22,49 @@ Unlike admission policies that react to API requests, DeletingPolicy:
 - Deletes resources when matching rules and conditions are satisfied
 
 ## Key Use Cases
+
 - Find and delete orphaned resources, like completed jobs, periodically
 
 - Remove expired secrets or configmaps
 
 - Implement time-bound leases for critical resources
 
-## Additional Fields
-`schedule`  
+## Fields
+
+### schedule
 A cron expression that defines when the policy will be evaluated.
+
 ```yaml
 schedule: "0 0 * * *" #everyday at midnight
 ```
+
 - Must follow standard cron format
 - Minimum granularity is 1 minute
 
-`matchPolicy`   
+
+### matchPolicy
 Controls how rules are matched against the API request:
+
 ```yaml
 matchPolicy: "Equivalent"
 ```
 - **Exact:** strict matching on group/version
-
 - **Equivalent:** match across equivalent group/versions (recommended)
 
-`deletionPropogationPolicy`     
- DeletionPropagationPolicy defines how resources will
- be deleted (Foreground, Background, Orphan)
-```yaml
-deletionProgrationPolicy: "Orphan"
-```
-- **Orphan:** Ensures dependent resources are deleted before the primary resource is removed.
-- **Foreground:** Deletes the primary resource first, while dependents are removed asynchronously.
-- **Background:** Deletes the primary resource but leaves its dependents untouched.
+### deletionPropogationPolicy
 
-`lastExecutionTime`     
-Records last time the `DeletingPolicy` was executed or triggered
+```yaml
+deletionPropagationPolicy: "Orphan"
+```
+
+DeletionPropagationPolicy defines how resources will be deleted (Foreground, Background, Orphan)
+- **Orphan**: Leaves dependent resources untouched - they become "orphaned" and are not deleted.
+- **Background**: Deletes the primary resource first, then the garbage collector deletes dependents in the background.
+- **Foreground**: The primary resource exists until the garbage collector deletes all dependents (cascading deletion).
+
 
 ## Example
+
 This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically delete pods in Kubernetes once per day at 1 AM. It targets pods that are:
 
 - Located in namespaces labeled environment: test
@@ -66,7 +73,6 @@ This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically
 
 The policy uses a cron schedule to run periodically and applies conditions using CEL expressions to ensure only stale pods are cleaned up. Additionally, it defines a variable (isEphemeral) that could be used to further refine deletion logic, such as deleting only temporary or ephemeral pods.
 
-`policy:`
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: DeletingPolicy
@@ -91,131 +97,13 @@ spec:
     - name: isEphemeral
       expression: "has(object.metadata.labels.ephermal) && object.metadata.labels.ephemeral == 'true'"
 ```
-`resource:`
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: example
-  namespace: default
-spec:
-  containers:
-  - image: nginx:latest
-    name: example
-```
 
 ## Kyverno CEL Libraries
+
 Kyverno extends the standard CEL environment with built-in libraries to support advanced deletion logic. While it includes the standard Kyverno Kyverno CEL Libraries, the **DeletingPolicy** explicitly excludes support for **user** CEL library (user-lib), which are available in other policy types such ImageValidatingPolicy. For comprehensive documentation of all available CEL libraries, see the [Kyverno CEL Libraries documentation](/docs/policy-types/cel-libraries/)
 
 
-### Resource library Examples
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: DeletingPolicy
-metadata:
-  name: dpol-resource-lib-check
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-  conditions:
-    - name: check-cm-value
-      expression: >-
-        resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"] == "enabled"
-  schedule: "*/1 * * * *"
-```
-
-### HTTP library Examples
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: DeletingPolicy
-metadata:
-  name: http-delete-check
-spec:
-  conditions:
-  - name: http-200-check
-    expression: >
-      http.Get("http://test-api-service.default.svc.cluster.local:80").metadata.labels.app == "test"
-  matchConstraints:
-    resourceRules:
-    - apiGroups: [""]
-      apiVersions: ["v1"]
-      resources: ["pods"]
-  schedule: "*/1 * * * *"
-```
-
-### ImageData library Examples
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: DeletingPolicy
-metadata:
-  name: image-date-delete
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-  schedule: "*/1 * * * *"
-  conditions:
-    - name: arch-check
-      expression: >
-        object.spec.containers.all(c, image.GetMetadata(c.image).config.architecture == "amd64")
-```
-
-### Image library Examples
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: DeletingPolicy
-metadata:
-  name: image-registry-delete
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-  schedule: "*/1 * * * *"
-  conditions:
-    - name: test-isImage
-      expression: >
-        object.spec.containers.all(c, isImage(c.image))
-```
-
-### GlobalContext library Examples
-`policy`
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: DeletingPolicy
-metadata:
-  name: delete-if-deployment-exists
-spec:
-  schedule: "*/1 * * * *"
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-  conditions:
-    - name: require-deployment
-      expression: globalContext.Get("gctxentry-apicall-correct", "") != 0
-```
-`gctxentry`
-```yaml
-apiVersion: kyverno.io/v2alpha1
-kind: GlobalContextEntry
-metadata:
-  name: gctxentry-apicall-correct
-spec:
-  apiCall:
-    urlPath: "/apis/apps/v1/namespaces/test-globalcontext-apicall-correct/deployments"
-    refreshInterval: 1h
-```
-
-
-## Observability: Tracking Deletion Events
+## Tracking Deletion Events
 Kyverno's DeletingPolicy not only removes resources on a schedule but also **emits a Kubernetes** `event` each time a deletion is executed. This event allows administrators and users to **trace exactly which policy deleted which resource**, improving transparency, auditing and troubleshooting.
 
 ### How to View Events
@@ -303,9 +191,9 @@ rules:
 ## Tips & Best Practices
 - Use dry runs or audit mode before enabling destructive deletes
 
-- Be careful when using wildcards * in resources
+- Be careful when using wildcards `*` in resources
 
 - Always validate your CEL expressions with Kyverno CLI
 
 - Use meaningful variable/condition names for observability
-Footer
+

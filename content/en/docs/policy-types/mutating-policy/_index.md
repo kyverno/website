@@ -1,11 +1,38 @@
 ---
 title: MutatingPolicy
 description: >-
-    Automatically mutates resources by modifying or adding fields, both at admission and in existing resources, based on defined match rules and conditions.
+    Mutate new or existing resources
 weight: 20
 ---
 
+{{< feature-state state="alpha" version="v1.15" />}}
+
 The Kyverno `MutatingPolicy` type extends the Kubernetes `MutatingAdmissionPolicy` type for complex mutation operations and other features required for Policy-as-Code. A `MutatingPolicy` is a superset of a `MutatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-label
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE" ]
+      resources: [ "pods" ]
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              foo: "bar"
+            }
+          }
+        } 
+```
 
 ## Comparison with MutatingAdmissionPolicy
 
@@ -70,7 +97,7 @@ spec:
   ...
 ```
 
-In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10s`, and the allowed range is `1–30s`. After this timeout, the request may fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `MutatingWebhookConfiguration`.
+In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10` seconds, and the allowed range is `1` to `30` seconds. After this timeout, the request will fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `MutatingWebhookConfiguration`.
 
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.WebhookConfiguration) for details.
 
@@ -104,165 +131,6 @@ Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/k
 ## Kyverno CEL Libraries
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
-
-### Resource Library Examples
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-registry-labels
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  variables:
-    - name: cm
-      expression: >-
-        resource.Get("v1", "configmaps", "kube-system", "allowed-registry")
-    - name: allowedRegistry
-      expression: "variables.cm.data[?'registry'].orValue('')"
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {"registry": string(variables.allowedRegistry)}
-            }
-          }
-```
-
-### HTTP Library Examples
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-external-team-labels
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  variables:
-    - name: externalData
-      expression: >-
-        http.Get("http://test-api-service.default.svc.cluster.local:80")
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {"external-team": string(variables.externalData.metadata.team)}
-            }
-          }
-```
-
-### User Library Examples
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-service-account-labels
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  variables:
-    - name: sa
-      expression: parseServiceAccount(request.userInfo.username)
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {
-                "service-account": string(variables.sa.Name),
-                "namespace": string(variables.sa.Namespace)
-              }
-            }
-          }
-```
-
-### Image Library Examples
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-image-labels
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  variables:
-    - name: images
-      expression: >-
-        object.spec.containers.map(e, image(e.image))
-        + object.spec.?initContainers.orValue([]).map(e, image(e.image))
-        + object.spec.?ephemeralContainers.orValue([]).map(e, image(e.image))
-    - name: firstImage
-      expression: "variables.images[0]"
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {
-                "image-registry": string(variables.firstImage.registry()),
-                "image-repository": string(variables.firstImage.repository())
-              }
-            }
-          }
-```
-
-### GlobalContext Library Examples
-
-```yaml
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
-metadata:
-  name: add-global-context-labels
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  variables:
-    - name: globalData
-      expression: >-
-        globalContext.Get("team-cluster-values", "")
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: |
-          Object{
-            metadata: Object.metadata{
-              labels: {
-                "team": string(variables.globalData.team),
-                "environment": string(variables.globalData.environment)
-              }
-            }
-          }
-```
 
 ## Patches with ApplyConfiguration
 
@@ -451,14 +319,14 @@ spec:
   - patchType: ApplyConfiguration
             applyConfiguration: 
       expression: >
-                    Object{
-                        spec: Object.spec{
+        Object{
+          spec: Object.spec{
             containers: object.spec.containers.map(container, Object.spec.containers{
               name: container.name,
               securityContext: Object.spec.containers.securityContext{
                 allowPrivilegeEscalation: false
               }
-            })
+            }
           } 
         } 
 ```
@@ -677,12 +545,10 @@ mutations:
 - **`Never`**: Apply mutation once per binding (default)
 - **`IfNeeded`**: Re-apply if a previous mutation modifies the object
 
-The `IfNeeded` policy is useful when mutations depend on one another, as it ensures that subsequent mutations can react to changes made by earlier mutations.
-
-### Mutation with Generation
-
 ## GitOps Considerations
 
-When using MutatingPolicy in GitOps workflows, the same considerations apply as with ClusterPolicy mutate rules. MutatingPolicy can interoperate with GitOps solutions, but there are important considerations to prevent "fighting" between the mutating admission controller and GitOps controllers.
+While GitOps is great at managing configurations, some changes such as label propagations are best handled using mutating policies. 
+
+Kyverno's MutatingPolicies are designed to interoperate nicely with GitOps solutions. 
 
 For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate.md#gitops-considerations) in the ClusterPolicy mutate documentation.
