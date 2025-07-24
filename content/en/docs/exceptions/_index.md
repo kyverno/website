@@ -601,7 +601,7 @@ spec:
 
 ```
 
-Kyverno reports controller evaluates the pod as a result of [background scan](docs/policy-reports/background.md). It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
+Kyverno reports controller evaluates the pod as a result of [background scan](/docs/policy-reports/background.md). It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
 
 ```yaml
 apiVersion: wgpolicyk8s.io/v1alpha2
