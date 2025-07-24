@@ -1,9 +1,11 @@
 ---
 title: ImageValidatingPolicy
 description: >-
-    Validate container images and their metadata
-weight: 0
+    Verify container image signatures and attestations
+weight: 15
 ---
+
+{{< feature-state state="alpha" version="v1.14" />}}
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations. 
 
