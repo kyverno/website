@@ -57,10 +57,10 @@ matchPolicy: "Equivalent"
 deletionPropagationPolicy: "Orphan"
 ```
 
- DeletionPropagationPolicy defines how resources will be deleted (Foreground, Background, Orphan)
-- **Orphan:** Ensures dependent resources are deleted before the primary resource is removed.
-- **Foreground:** Deletes the primary resource first, while dependents are removed asynchronously.
-- **Background:** Deletes the primary resource but leaves its dependents untouched.
+DeletionPropagationPolicy defines how resources will be deleted (Foreground, Background, Orphan)
+- **Orphan**: Leaves dependent resources untouched - they become "orphaned" and are not deleted.
+- **Background**: Deletes the primary resource first, then the garbage collector deletes dependents in the background.
+- **Foreground**: The primary resource exists until the garbage collector deletes all dependents (cascading deletion).
 
 
 ## Example
