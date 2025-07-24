@@ -61,7 +61,7 @@ Unified Policy-as-Code (PaC) for Kubernetes and cloud native environments
           <i class="fa fa-globe fa-3x text-primary"></i>
         </div>
         <h3 class="card-title font-weight-bold mb-3">Works Everywhere</h3>
-        <p class="card-text text-muted mb-3">Unified Policy as Code for any Kubernetes resource and any JSON payload.</p>
+        <p class="card-text text-muted mb-3">Apply Kubernetes style policies to any resource and any JSON payload using the CLI or SDK.</p>
       </div>
     </div>
   </div>
