@@ -23,6 +23,31 @@ Key Benefits:
 
 - **Kubernetes-Native Alignment:** Uses a familiar, CEL-based approach that integrates smoothly with the broader Kubernetes ecosystem.
 
+For example, the following policy automatically clones an image pull secret from the default namespace into any newly created Namespace:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
+metadata:
+  name: clone-image-pull-secret
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["namespaces"]
+  variables:
+    - name: targetNs
+      expression: "object.metadata.name"
+    - name: sourceSecret
+      expression: resource.Get("v1", "secrets", "default", "regcred")
+  generate:
+    - expression: generator.Apply(variables.targetNs, [variables.sourceSecret])
+```
+
+In this policy, the creation of a new Namespace (the **trigger**) causes Kyverno to fetch the `regcred` secret from the default namespace (the **source**) and create a copy of it in the new namespace (the **downstream** resource).
+
 ## Core Concepts
 
 Understanding these terms is key to working with GeneratingPolicy.
@@ -457,3 +482,19 @@ spec:
 ```
 
 When you apply this policy to a cluster with, for example, 10 existing namespaces, `generateExisting.enabled: true` ensures that Kyverno will immediately generate a copy of the `regcred` secret in each of those 10 namespaces. Without this field, the secret would only be created in namespaces created after the policy was applied.
+
+## Kyverno CEL Libraries
+
+Kyverno enhances Kubernetes' CEL environment with custom functions that enable powerful resource generation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/), the `GeneratingPolicy` type includes a specialized library for creating and managing resources.
+
+### Generator Library
+
+Kyverno provides specialized functions for resource generation:
+
+| CEL Expression | Purpose |
+|----------------|---------|
+| `generator.Apply(namespace, [resources])` | Creates one or more resources in a specified namespace. It takes two arguments: the target namespace (string) and a list of resource objects to be applied. The function returns `true` upon successful application, making it suitable for use in CEL loops like `list.all(...)`. |
+
+## Exceptions
+
+Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions/_index.md#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
