@@ -43,9 +43,9 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 
 | Kyverno Version                | Kubernetes Min | Kubernetes Max |
 |--------------------------------|----------------|----------------|
-| 1.11.x                         | 1.25           | 1.28           |
 | 1.12.x                         | 1.26           | 1.29           |
 | 1.13.x                         | 1.28           | 1.31           |
+| 1.14.x                         | 1.29           | 1.32           |
 
 **NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/nirmata).
 

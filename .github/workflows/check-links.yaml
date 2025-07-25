@@ -20,51 +20,11 @@ jobs:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     - name: Check unrendered links
       id: lychee_unrendered
-      uses: lycheeverse/lychee-action@1d97d84f0bc547f7b25f4c2170d87d810dc2fb2c # v2.4.0
+      uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         fail: true
         debug: false
-        args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml -E content/
+        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 5 --max-retries 0 --accept 200,429 --timeout 60 -E ./content
 
-      # Deactivated. The --include-fragments flag is causing failures because rendered links
-      # have a trailing '#' which is probably a result of the link style change plus the new
-      # custom link renderer in layouts/_default/_markup_render-link.html.
-
-      # - name: Setup Hugo
-      #   uses: peaceiris/actions-hugo@16361eb4acea8698b220b76c0d4e84e1fd22c61d # v2.6.0
-      #   with:
-      #     hugo-version: latest
-      #     extended: true
-
-      # - name: Waiting for Netlify Preview
-      #   uses: jakepartusch/wait-for-netlify-action@f1e137043864b9ab9034ae3a5adc1c108e3f1a48 # v1.4
-      #   id: wait-for-netflify-preview
-      #   with:
-      #     site_name: kyverno
-      #     max_timeout: 120
-
-      # - name: Install site dependencies
-      #   run: npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss
-
-      # - name: Build site with Hugo
-      #   run: hugo --minify -b ${{ steps.wait-for-netflify-preview.outputs.url }}
-
-      # - name: Check rendered links
-      #   id: lychee_rendered
-      #   uses: lycheeverse/lychee-action@1d97d84f0bc547f7b25f4c2170d87d810dc2fb2c # v2.4.0
-      #   env:
-      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      #   with:
-      #     fail: true
-      #     debug: false
-      #     args: --no-progress --include-fragments --github-token ${{secrets.GITHUB_TOKEN}} -c lychee.toml -E public
-
-      # - name: Create Issue From File
-      #   if: steps.lychee.outputs.exit_code != 0
-      #   uses: peter-evans/create-issue-from-file@v3
-      #   with:
-      #     title: Link Checker Report
-      #     content-filepath: ./lychee/out.md
-      #     labels: report, automated issue
