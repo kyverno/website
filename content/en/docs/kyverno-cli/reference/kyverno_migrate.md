@@ -1,5 +1,4 @@
 ---
-date: 2024-03-10T19:55:26Z
 title: "kyverno migrate"
 weight: 35
 ---

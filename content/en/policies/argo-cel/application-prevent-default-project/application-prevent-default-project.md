@@ -42,7 +42,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "has(object.spec.project) && object.spec.project != 'default'"
+            - expression: "object.spec.?project.orValue('') != 'default'"
               message: "The default project may not be used in an Application."
 
 

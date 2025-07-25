@@ -10,38 +10,41 @@ Depending on the application used to either install and manage Kyverno or the Ku
 
 ### Notes for ArgoCD users
 
-ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes’ Server Side Apply feature to resolve OutOfSync issues. This strategy ensures comparisons are handled on the server side, respecting fields like `skipBackgroundRequests` that Kubernetes sets by default, and fields set by mutating admission controllers like Kyverno, thereby preventing unnecessary `OutOfSync` errors caused by local manifest discrepancies.
+ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Server Side Apply feature to resolve OutOfSync issues. This strategy ensures comparisons are handled on the server side, respecting fields like `skipBackgroundRequests` that Kubernetes sets by default, and fields set by mutating admission controllers like Kyverno, thereby preventing unnecessary `OutOfSync` errors caused by local manifest discrepancies.
 
-You can enable `ServerSideDiff` in two ways:  
-* Per Application: Add the `argocd.argoproj.io/compare-options` annotation.
-* Globally: Configure it in the `argocd-cmd-params-cm` ConfigMap.
+#### Configuration Best Practices
 
-Here is a YAML fragment that shows the annotation in an ArgoCD Application resource:
+1. **Server-Side Configuration**
+   - Enable `ServerSideDiff` in one of two ways:
+     * Per Application: Add the `argocd.argoproj.io/compare-options` annotation
+     * Globally: Configure it in the `argocd-cmd-params-cm` ConfigMap
 
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  annotations:
-    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
+   ```yaml
+   apiVersion: argoproj.io/v1alpha1
+   kind: Application
+   metadata:
+     annotations:
+       argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true 
+       ...
+   ```
 
-    ...
+2. **RBAC and CRD Management**
+   - [Enable ServerSideApply](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply) in the `syncOptions` to handle metadata properly
+   - Configure ArgoCD to [ignore differences in aggregated ClusterRoles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
+   - Ensure proper RBAC permissions for ArgoCD to manage Kyverno CRDs
 
-```
+3. **Sync Options Configuration**
+   - Avoid using `Replace=true` as it may cause issues with existing resources
+   - Use `ServerSideApply=true` for smooth resource updates
+   - Enable `CreateNamespace=true` if deploying to a new namespace
 
-When deploying the Kyverno Helm chart with ArgoCD, it is recommended to use `ServerSideApply` in the `syncOptions`. This approach helps handle metadata issues that may arise when applying the chart.
+4. **Config Preservation**
+   - By default, `config.preserve=true` is set in the Helm chart. This is useful for Helm-based install, upgrade, and uninstall scenarios.
+   - This setting enables a Helm post-delete hook, which can cause ArgoCD to show the application as out-of-sync if deployed using an App of Apps pattern.
+   - It may also prevent ArgoCD from cleaning up the Kyverno application when the parent application is deleted.
+   - **Recommendation:** Set `config.preserve=false` when deploying Kyverno via ArgoCD to ensure proper resource cleanup and sync status.
 
-Additionally, you may want to ignore differences in aggregated ClusterRoles, which Kyverno uses by default. Aggregated ClusterRoles are dynamic and built by combining other ClusterRoles in the cluster, leading to discrepancies between desired and observed states.
-
-You can do so by following these instructions in the ArgoCD documentation:
-
-* [Enable ServerSideApply](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply)
-* [Ignore diff in aggregated cluster roles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
-
-**Note:** You may want to avoid using `Replace=true` in the `syncOptions` as it can cause issues with existing resources. It is generally recommended to rely on `ServerSideApply` for handling resource updates smoothly.
-
-
-Here’s an example of an ArgoCD Application manifest that should work with the Kyverno Helm chart:
+#### Complete Application Example
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -49,6 +52,8 @@ kind: Application
 metadata:
   name: kyverno
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
 spec:
   destination:
     namespace: kyverno
@@ -58,6 +63,10 @@ spec:
     chart: kyverno
     repoURL: https://kyverno.github.io/kyverno
     targetRevision: <my.target.version>
+    helm:
+      values: |
+        webhookLabels:
+          app.kubernetes.io/managed-by: argocd
   syncPolicy:
     automated:
       prune: true
@@ -65,16 +74,60 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-
 ```
 
-For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](../writing-policies/mutate.md#argocd).
+#### Troubleshooting Guide
+
+1. **CRD Check Failures**
+   - **Symptom**: Deployment fails during CRD validation
+   - **Common Causes**:
+     * Insufficient RBAC permissions
+     * CRDs not properly registered
+   - **Resolution**:
+     * Verify RBAC permissions for ArgoCD service account
+     * Ensure CRDs are installed before policies
+     * Check ArgoCD logs for specific permission errors
+
+2. **Sync Failures**
+   - **Symptom**: Resources show as OutOfSync
+   - **Common Causes**:
+     * Missing ServerSideDiff configuration
+     * Aggregated ClusterRole differences
+   - **Resolution**:
+     * Enable ServerSideDiff as shown above
+     * Configure resource exclusions for aggregated roles
+     * Check resource health status in ArgoCD UI
+
+3. **Resource Management Issues**
+   - **Symptom**: Resources not properly created or updated
+   - **Common Causes**:
+     * Incorrect sync options
+     * Resource ownership conflicts
+   - **Resolution**:
+     * Use ServerSideApply instead of Replace
+     * Configure resource tracking method
+     * Verify resource ownership labels
+
+4. **Performance and Scaling**
+   - **Symptom**: Slow syncs or resource processing
+   - **Common Causes**:
+     * Large number of resources
+     * Resource intensive operations
+   - **Resolution**:
+     * Use selective sync for large deployments
+     * Configure appropriate resource limits
+     * Enable background processing where applicable
+
+For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](/docs/policy-types/cluster-policy/mutate.md#argocd).
+
+#### Resource Tracking and Ownership
+
+ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to determine which resources form the app. The Kyverno Helm chart also sets this label for the same purposes. To resolve this conflict:
+
+1. Configure ArgoCD to use a different tracking mechanism as described in the [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).
+2. Add appropriate annotations to your Application manifest.
 
 Argo CD users may also have Kyverno add labels to webhooks via the `webhookLabels` key in the [Kyverno ConfigMap](customization.md#configmap-keys), helpful when viewing the Kyverno application in Argo CD.
-
-#### Ownership Clashes
-
-ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to determine which resources form the app. The Kyverno Helm chart also sets this label for the same purposes. In order to resolve this conflict, configure ArgoCD to use a different tracking mechanism as described in the ArgoCD [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).
 
 ### Notes for OpenShift Users
 

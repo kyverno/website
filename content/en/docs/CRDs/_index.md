@@ -1,8 +1,7 @@
 ---
-title: "Resource Definitions"
-weight: 80
-description: >-
-  Custom Resource Definitions (CRDs) for Kyverno policies and other types.
+title: Resource Definitions
+weight: 120
+description: Custom Resource Definitions (CRDs) for Kyverno policies and other types.
 ---
 
 Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types.
@@ -64,4 +63,4 @@ FIELDS:
      seconds.
 ```
 
-Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes) installed.
+Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes#_install-the-kubernetes-extension) installed.

@@ -1,1 +1,1 @@
-exclude_path = ["public/policies"]
+exclude_path = ["public/policies", "public/docs/kyverno-cli/reference/", "content/en/docs/kyverno-cli/reference/"]
