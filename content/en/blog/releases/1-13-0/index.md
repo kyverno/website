@@ -1,8 +1,8 @@
 ---
 date: 2024-10-30
-title: "Announcing Kyverno Release 1.13!"
-linkTitle: "Kyverno 1.13"
-description: "Kyverno 1.13 released with Sigstore bundle verification, exceptions for validatingAdmissionPolicies, new assertion trees, generate enhancments, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!"
+title: Announcing Kyverno Release 1.13!
+linkTitle: Kyverno 1.13
+description: Kyverno 1.13 released with Sigstore bundle verification, exceptions for validatingAdmissionPolicies, new assertion trees, generate enhancments, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!
 draft: false
 ---
 
@@ -353,7 +353,8 @@ spec:
             name: source-secret
 ```
 
-In addition, each `foreach` declaration supports the following declarations: Contex and Preconditions. For more information please see [Kyverno documentation](https://kyverno.io/docs/writing-policies/generate/#foreach).
+
+In addition, each `foreach` declaration supports the following declarations: Context and Preconditions. For more information please see [Kyverno documentation](../../../docs/policy-types/cluster-policy/generate.md#foreach).
 
 This release also allows updates to the generate rule pattern. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause the removal of the downstream resource.
 

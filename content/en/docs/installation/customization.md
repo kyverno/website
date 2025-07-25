@@ -14,7 +14,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Default certificates
 
-By default, Kyverno will automatically generate self-signed Certificate Authority (CA) and a leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manage its own certificates, it will gracefully handle regeneration upon expiry.
+By default, Kyverno will automatically generate a self-signed Certificate Authority (CA) and leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manages its own certificates, it will gracefully handle regeneration upon expiry.
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
@@ -63,7 +63,7 @@ The renewal process runs as follows:
 1. Remove expired certificates contained in the secret
 1. Check if remaining certificates will become invalid in less than 15 days
 1. If needed, generate a new certificate with the validity documented above
-1. The new certificates is added to the underlying secret along with current certificatess that are still valid
+1. The new certificate is added to the underlying secret along with current certificates that are still valid
 1. Reconfigure webhooks with the new certificates bundle
 1. Update the Kyverno server to use the new certificate
 
@@ -81,7 +81,7 @@ Using a separate self-signed root CA is difficult to manage and not recommended 
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
-Below is a process which shows how to create a self-signed root CA, and generate a signed certificates and keys using [step CLI](https://smallstep.com/cli/):
+Below is a process which shows how to create a self-signed root CA, and generate signed certificates and keys using [step CLI](https://smallstep.com/cli/):
 
 1. Create a self-signed CA
 
@@ -354,7 +354,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `admissionReports` (AR) | true | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport. |
 | `aggregateReports` (R) | true | Enables the report aggregating ability of AdmissionReports (1.10.2+). |
 | `aggregationWorkers` (R) | 10 | Configures the number of internal worker threads used to perform reports aggregation (1.12.3+). |
-| `allowInsecureRegistry` (ABR)| `"false"` | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](../writing-policies/verify-images/) rules or [variables from image registries](../writing-policies/external-data-sources.md#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
+| `allowInsecureRegistry` (ABR)| `"false"` | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/policy-types/cluster-policy/verify-images/) rules or [variables from image registries](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-image-registries). Only for testing purposes. Not to be used in production situations. |
 | `alsologtostderr` (ABCR) | | Log to standard error as well as files (no effect when -logtostderr=true) |
 | `autoUpdateWebhooks` (A) | true | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard. |
 | `backgroundServiceAccountName` (A) | | The name of the background controller's ServiceAccount name allowing the admission controller to disregard any AdmissionReview requests coming from Kyverno itself. This may need to be removed in situations where, for example, Kyverno needs to mutate a resource it just generated. Default is set to the ServiceAccount for the background controller.|
@@ -372,11 +372,11 @@ The following flags can be used to control the advanced behavior of the various 
 | `eventsRateLimitQPS` (ABCR) | 1000 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
 | `enableDeferredLoading` (A) | true | Enables deferred (lazy) loading of variables (1.10.1+). Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0. |
-| `enablePolicyException` (ABR) | false | Set to `true` to enable the [PolicyException capability](../writing-policies/exceptions.md). |
+| `enablePolicyException` (ABR) | false | Set to `true` to enable the [PolicyException capability](/docs/policy-types/cluster-policy/exceptions.md). |
 | `enableReporting` (ABCR) | validate,mutate,mutateExisting,generate,imageVerify | Comma separated list to enables reporting for different rule types. (validate,mutate,mutateExisting,generate,imageVerify) |
 | `enableTracing` (ABCR) | false | Set to enable exposing traces. |
 | `enableTuf` (AR) | | Enable tuf for private sigstore deployments. |
-| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](../writing-policies/exceptions.md) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If set to "*", PolicyExceptions from all Namespaces will be accepted. Note that wildcards and multiple Namespace entries are not supported. It is required if the `enablePolicyException` flag is set to true. |
+| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](/docs/policy-types/cluster-policy/exceptions.md) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If set to "*", PolicyExceptions from all Namespaces will be accepted. Note that wildcards and multiple Namespace entries are not supported. It is required if the `enablePolicyException` flag is set to true. |
 | `forceFailurePolicyIgnore` (A) | false | Set to force Failure Policy to `Ignore`. |
 | `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
 | `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
@@ -401,6 +401,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
 | `omitEvents` (ABR) | `"PolicyApplied,PolicySkipped"` | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is `PolicyApplied` and `PolicySkipped`. |
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
+| `openreportsEnabled` (R) | false | Use openreports.io/v1alpha1 for the reporting group |
 | `otelCollector` (ABCR) |  | Sets the OpenTelemetry collector service address. Kyverno will try to connect to this on the metrics port. Default is `opentelemetrycollector.kyverno.svc.cluster.local`. |
 | `otelConfig` (ABCR) | `prometheus` | Sets the preference for Prometheus or OpenTelemetry. Set to `grpc` to enable OpenTelemetry. |
 | `policyReports` (R) | true | Enables the Policy Reports system (1.10.2+). When enabled, Policy Report Custom Resources will be generated and managed in the cluster. |
@@ -422,7 +423,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
 | `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
-| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](../writing-policies/cleanup.md#cleanup-label) for details. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cluster-policy/cleanup.md#cleanup-label) for details. |
 | `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |
@@ -467,7 +468,7 @@ Kyverno requires a few different webhooks to function. The main resource validat
 
 The dynamic management of resource webhooks is enabled by default but can be turned off by the flag `--autoUpdateWebhooks=false`. If disabled, Kyverno creates the default webhook configurations that forward admission requests for all resources and with `FailurePolicy` set to `Ignore`. In the majority of cases, these dynamically-managed webhooks should not be disabled. Understand that using statically-configured webhooks instead means that you, the operator, are now responsible for their configuration and, if left at their default, will result in the Kubernetes API server sending *every* type of resource (including subresources like `/status`) creates, updates, deletes, and connect operations. This will dramatically increase the processing required by Kyverno, even if few policies exist.
 
-The failure policy of a webhook controls what happens when a request either takes too long to complete or encounters a failure. The default of `Fail` indicates the request will fail. A value of `Ignore` means the request will be allowed regardless of its status. Kyverno by default configures its webhooks in a mode of `Fail` to be more secure by default. This can be changed with a global flag `--forceFailurePolicyIgnore` which forces `Ignore` mode. Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configuration options](../writing-policies/policy-settings.md) allow granular control of webhook settings on a per-policy basis.
+The failure policy of a webhook controls what happens when a request either takes too long to complete or encounters a failure. The default of `Fail` indicates the request will fail. A value of `Ignore` means the request will be allowed regardless of its status. Kyverno by default configures its webhooks in a mode of `Fail` to be more secure by default. This can be changed with a global flag `--forceFailurePolicyIgnore` which forces `Ignore` mode. Additionally, the `failurePolicy` and `webhookTimeoutSeconds` [policy configuration options](/docs/policy-types/cluster-policy/policy-settings.md) allow granular control of webhook settings on a per-policy basis.
 
 #### Namespace Selectors
 
