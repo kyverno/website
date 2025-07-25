@@ -863,7 +863,11 @@ Applying 3 policy rule(s) to 1 resource(s) with 1 exception(s)...
 pass: 0, fail: 0, warn: 0, error: 0, skip: 1 
 ```
 
-### Applying ValidatingAdmissionPolicies
+### Kubernetes Native Policies
+
+The `kyverno apply` command can be used to apply native Kubernetes policies and their corresponding bindings to resources, allowing you to test them locally without a cluster.
+
+#### ValidatingAdmissionPolicy
 
 With the `apply` command, Kubernetes ValidatingAdmissionPolicies can be applied to resources as follows:
 
@@ -1029,6 +1033,229 @@ summary:
 ```
 
 As expected, the policy is only applied to `nginx-1` as it matches both the policy definition and its binding.
+
+#### MutatingAdmissionPolicy
+
+Similarly, you can test a MutatingAdmissionPolicy to preview the changes it would make to a resource. The CLI will output the final, mutated resource.
+
+##### Example 1: Basic Mutation
+
+For instance, you can test a MutatingAdmissionPolicy that adds a label to a ConfigMap.
+
+Policy manifest (add-label-to-configmap.yaml):
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "add-label-to-configmap"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["configmaps"]
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: "ApplyConfiguration"
+      applyConfiguration:
+        expression: >
+          object.metadata.?labels["lfx-mentorship"].hasValue() ? 
+              Object{} :
+              Object{ metadata: Object.metadata{ labels: {"lfx-mentorship": "kyverno"}}}
+```
+
+Resource manifest (configmap.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+  labels:
+    app: game
+data:
+  player_initial_lives: "3"
+```
+
+Now, apply the MutatingAdmissionPolicy to the ConfigMap resource:
+
+```bash
+kyverno apply /path/to/add-label-to-configmap.yaml --resource /path/to/configmap.yaml
+```
+
+The output will show the mutated ConfigMap with the added label:
+
+```bash
+Applying 1 policy rule(s) to 1 resource(s)...
+
+policy add-label-to-configmap applied to default/ConfigMap/game-demo:
+apiVersion: v1
+data:
+  player_initial_lives: "3"
+kind: ConfigMap
+metadata:
+  labels:
+    app: game
+    lfx-mentorship: kyverno
+  name: game-demo
+  namespace: default
+---
+
+Mutation has been applied successfully.
+pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
+```
+
+The output displays the ConfigMap with the new `lfx-mentorship: kyverno` label, confirming the mutation was applied correctly.
+
+##### Example 2: Mutation with a Binding and Namespace Selector
+
+You can also test policies that include a MutatingAdmissionPolicyBinding to control where the policy is applied. This example makes use of a namespace selector to apply the policy only to ConfigMaps in a specific namespace.
+
+To do this, you must provide a `values.yaml` file to simulate the labels of the Namespaces your resources belong to.
+
+Policy manifest (add-label-to-configmap.yaml):
+
+This file defines a policy to add a label and a binding that restricts it to Namespaces labeled `environment: staging` or `environment: production`.
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "add-label-to-configmap"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["configmaps"]
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: "ApplyConfiguration"
+      applyConfiguration:
+        expression: >
+          object.metadata.?labels["lfx-mentorship"].hasValue() ? 
+              Object{} :
+              Object{ metadata: Object.metadata{ labels: {"lfx-mentorship": "kyverno"}}}
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: "add-label-to-configmap-binding"
+spec:
+  policyName: "add-label-to-configmap"
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: environment
+        operator: In
+        values:
+        - staging
+        - production
+```
+
+Resource manifest (configmaps.yaml):
+
+This file contains three ConfigMap resources in different Namespaces. Only the ones in staging and production should be mutated.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-1
+  namespace: staging
+  labels:
+    color: red
+data:
+  player_initial_lives: "3"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-2
+  namespace: production
+  labels:
+    color: red
+data:
+  player_initial_lives: "3"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unmatched-cm
+  namespace: testing
+  labels:
+    color: blue
+data:
+  player_initial_lives: "3"
+```
+
+Values file (values.yaml):
+
+This file provides the necessary context. It tells the Kyverno CLI what labels are associated with the staging, production, and testing Namespaces so it can correctly evaluate the namespaceSelector in the binding.
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+namespaceSelector:
+- labels:
+    environment: staging
+  name: staging
+- labels:
+    environment: production
+  name: production
+- labels:
+    environment: testing
+  name: testing
+```
+
+Now, apply the MutatingAdmissionPolicy and its binding to the ConfigMaps:
+
+```bash
+kyverno apply /path/to/add-label-to-configmap.yaml --resource /path/to/configmaps.yaml -f /path/to/values.yaml
+```
+
+The output will show the mutated ConfigMaps in the staging and production Namespaces, while the one in the testing Namespace remains unchanged:
+
+```bash
+Applying 1 policy rule(s) to 3 resource(s)...
+
+policy add-label-to-configmap applied to staging/ConfigMap/matched-cm-1:
+apiVersion: v1
+data:
+  player_initial_lives: "3"
+kind: ConfigMap
+metadata:
+  labels:
+    color: red
+    lfx-mentorship: kyverno
+  name: matched-cm-1
+  namespace: staging
+---
+
+Mutation has been applied successfully.
+policy add-label-to-configmap applied to production/ConfigMap/matched-cm-2:
+apiVersion: v1
+data:
+  player_initial_lives: "3"
+kind: ConfigMap
+metadata:
+  labels:
+    color: red
+    lfx-mentorship: kyverno
+  name: matched-cm-2
+  namespace: production
+---
+
+Mutation has been applied successfully.
+pass: 2, fail: 0, warn: 0, error: 0, skip: 0
+```
 
 ### Applying ValidatingPolicies
 
