@@ -33,26 +33,143 @@ linkTitlem: Kyverno
 <br/>
 
 <h2>
-The Kyverno project provides a comprehensive set of tools to manage the complete Policy-as-Code (PaC) lifecycle for Kubernetes and other cloud native environments
+Unified Policy-as-Code (PaC) for Kubernetes and cloud native environments
 </h2>
 <br/>
 
 <p style="line-height:1.5">
 
-Kyverno policies are declarative YAML resources and <b>no new language</b> is required. Kyverno enables use of familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies. Kyverno supports JMESPath and the Common Expressions Language (CEL) for efficient handling of complex logic.
+<br/>
 
-In Kubernetes environments, Kyverno policies can <b>validate, mutate, generate, and cleanup</b> any Kubernetes resource, including custom resources. To help secure the software supply chain Kyverno policies can <b>verify OCI container image signatures and artifacts</b>. Kyverno policy reports and policy exceptions are also Kubernetes API resources.
+<div class="row">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-cube fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Kubernetes Native</h3>
+        <p class="card-text text-muted mb-3">Powerful extensions of Kubernetes policy types with integrated CEL support.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-globe fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Works Everywhere</h3>
+        <p class="card-text text-muted mb-3">Apply Kubernetes style policies to any resource and any JSON payload using the CLI or SDK.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-chart-bar fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Reporting</h3>
+        <p class="card-text text-muted mb-3">Integrated OpenReports compatible producers and dashboards.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-exclamation-triangle fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Exceptions</h3>
+        <p class="card-text text-muted mb-3">Time-bound and fine grained exception management decoupled from policies.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-terminal fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Shift-Left</h3>
+        <p class="card-text text-muted mb-3">Command Line Interface for integrations into CI/CD and IaC (Terraform, etc.) pipelines.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <i class="fa fa-vial fa-3x text-primary"></i>
+        </div>
+        <h3 class="card-title font-weight-bold mb-3">Testing</h3>
+        <p class="card-text text-muted mb-3">Tooling for declarative unit tests and end-to-end behavioral tests.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as part of an IaC and CI/CD pipelines.
+<br/>
 
-**Kyverno Policy Reporter** provides report management with a graphical web-based user interface.
+## Complete Policy-Based Resource Lifecycle Management { class="text-center" }
 
-**Kyverno JSON** allows applying Kyverno policies in non-Kubernetes environments and on any JSON payload.
+<br/>
 
-**Kyverno Chainsaw** provides declarative end-to-end testing for policies.
+<div class="row justify-content-center">
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+        <i class="fa fa-check-circle fa-2x"></i>
+      </div>
+      <h6 class="font-weight-bold">Validate</h6>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+        <i class="fa fa-edit fa-2x"></i>
+      </div>
+      <h6 class="font-weight-bold">Mutate</h6>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+        <i class="fa fa-plus-circle fa-2x"></i>
+      </div>
+      <h6 class="font-weight-bold">Generate</h6>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+        <i class="fa fa-trash-alt fa-2x"></i>
+      </div>
+      <h6 class="font-weight-bold">Cleanup</h6>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+        <i class="fa fa-shield-alt fa-2x"></i>
+      </div>
+      <h6 class="font-weight-bold">Verify Images</h6>
+    </div>
+  </div>
+</div>
 
-</p>
-
+<!-- Buttons -->
+<br/>
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="docs/introduction/">
 		Documentation <i class="fa fa-book ml-2"></i>
@@ -64,6 +181,7 @@ The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as 
 </div>
 
 {{% /blocks/lead %}}
+
 
 {{% blocks/lead color="gray" %}}
 
