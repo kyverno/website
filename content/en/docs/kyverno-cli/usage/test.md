@@ -851,7 +851,13 @@ Test Summary: 2 tests passed and 0 tests failed
 
 For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](../../../policies).
 
-### Testing ValidatingAdmissionPolicies
+### Kubernetes Native Policies
+
+The `kyverno test` command can be used to test native Kubernetes policies.
+
+#### ValidatingAdmissionPolicy
+
+To test a ValidatingAdmissionPolicy, the test manifest must include the `isValidatingAdmissionPolicy: true` field in each result entry.
 
 Below is an example of testing a ValidatingAdmissionPolicy against two resources, one of which violates the policy.
 
@@ -1233,6 +1239,278 @@ Loading test  ( kyverno-test.yaml ) ...
 
 
 Test Summary: 6 tests passed and 0 tests failed
+```
+
+#### MutatingAdmissionPolicy
+
+To test a `MutatingAdmissionPolicy`, the test manifest must include the `isMutatingAdmissionPolicy` field set to `true` in the test results array. In addition, the `patchedResource` field must be included to specify the resource that is expected to be patched by the policy.
+
+##### Example 1: Simple Mutation
+
+This example tests a policy that adds a label to a ConfigMap.
+
+Policy manifest (policy.yaml):
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "add-label-to-configmap"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["configmaps"]
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: "ApplyConfiguration"
+      applyConfiguration:
+        expression: >
+          object.metadata.?labels["lfx-mentorship"].hasValue() ? 
+              Object{} :
+              Object{ metadata: Object.metadata{ labels: {"lfx-mentorship": "kyverno"}}}
+```
+
+Resource manifest (resource.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+  labels:
+    app: game
+data:
+  player_initial_lives: "3"
+```
+
+Patched resource manifest (patched-resource.yaml):
+
+This file defines what the ConfigMap should look like after the policy is applied.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+  labels:
+    app: game
+    lfx-mentorship: kyverno
+data:
+  player_initial_lives: "3"
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: Test
+metadata:
+  name: test
+policies:
+- policy.yaml
+resources:
+- resource.yaml
+results:
+- isMutatingAdmissionPolicy: true
+  kind: ConfigMap
+  patchedResources: patched-resource.yaml
+  policy: add-label-to-configmap
+  resources:
+  - game-demo
+  result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│────────────────────────│──────│────────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE │ RESOURCE                       │ RESULT │ REASON │
+│────│────────────────────────│──────│────────────────────────────────│────────│────────│
+│ 1  │ add-label-to-configmap │      │ v1/ConfigMap/default/game-demo │ Pass   │ Ok     │
+│────│────────────────────────│──────│────────────────────────────────│────────│────────│
+
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+##### Example 2: Mutation with a Binding and Namespace Selector
+
+This example tests a policy that adds a label to ConfigMaps in specific namespaces.
+
+Policy manifest (policy.yaml):
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "add-label-to-configmap"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["configmaps"]
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  mutations:
+    - patchType: "ApplyConfiguration"
+      applyConfiguration:
+        expression: >
+          object.metadata.?labels["lfx-mentorship"].hasValue() ? 
+              Object{} :
+              Object{ metadata: Object.metadata{ labels: {"lfx-mentorship": "kyverno"}}}
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: "add-label-to-configmap-binding"
+spec:
+  policyName: "add-label-to-configmap"
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: environment
+        operator: In
+        values:
+        - staging
+        - production
+```
+
+Resource manifest (resource.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-1
+  namespace: staging
+  labels:
+    color: red
+data:
+  player_initial_lives: "3"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-2
+  namespace: production
+  labels:
+    color: red
+data:
+  player_initial_lives: "3"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unmatched-cm
+  namespace: testing
+  labels:
+    color: blue
+data:
+  player_initial_lives: "3"
+```
+
+Patched resource manifest (patched-resource.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-1
+  namespace: staging
+  labels:
+    color: red
+    lfx-mentorship: kyverno
+data:
+  player_initial_lives: "3"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matched-cm-2
+  namespace: production
+  labels:
+    color: red
+    lfx-mentorship: kyverno
+data:
+  player_initial_lives: "3"
+```
+
+Variables manifest (values.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+namespaceSelector:
+- labels:
+    environment: staging
+  name: staging
+- labels:
+    environment: production
+  name: production
+- labels:
+    environment: testing
+  name: testing
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: Test
+metadata:
+  name: test
+policies:
+- policy.yaml
+resources:
+- resource.yaml
+results:
+- isMutatingAdmissionPolicy: true
+  kind: ConfigMap
+  patchedResources: patched-resource.yaml
+  policy: add-label-to-configmap
+  resources:
+  - matched-cm-1
+  - matched-cm-2
+  result: pass
+variables: values.yaml
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 3 resources with 0 exceptions ...
+  Checking results ...
+
+│────│────────────────────────│──────│──────────────────────────────────────│────────│────────│
+│ ID │ POLICY                 │ RULE │ RESOURCE                             │ RESULT │ REASON │
+│────│────────────────────────│──────│──────────────────────────────────────│────────│────────│
+│ 1  │ add-label-to-configmap │      │ v1/ConfigMap/staging/matched-cm-1    │ Pass   │ Ok     │
+│ 2  │ add-label-to-configmap │      │ v1/ConfigMap/production/matched-cm-2 │ Pass   │ Ok     │
+│────│────────────────────────│──────│──────────────────────────────────────│────────│────────│
+
+
+Test Summary: 2 tests passed and 0 tests failed
 ```
 
 ### Testing ValidatingPolicies
