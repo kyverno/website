@@ -130,3 +130,50 @@ Kyverno enhances Kubernetes' CEL environment with libraries enabling complex pol
 ## Exceptions
 
 Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions/_index.md#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
+
+## JSON Payloads
+
+The Kyverno ValidatingPolicy can be applied to any JSON payload. Here is an example of a policy that can be applied to a Terraform plan, and ensures that EKS clusters do not expose a public endpoint: 
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-public-endpoint
+spec:
+  evaluation:
+    mode: JSON
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-eks-cluster
+      expression: |
+        has(object.planned_values) && 
+          (has(object.planned_values.root_module) && has(object.planned_values.root_module.child_modules) &&
+           object.planned_values.root_module.child_modules.exists(m, 
+             has(m.resources) && m.resources.exists(r, r.type == 'aws_eks_cluster')))
+  validations:
+    - message: "Public access to EKS cluster endpoint must be set to false"
+      expression: |
+        (
+          (!has(object.planned_values.root_module.child_modules) ||
+           object.planned_values.root_module.child_modules.all(module,
+             !has(module.resources) ||
+             module.resources.filter(r, r.type == 'aws_eks_cluster').all(cluster,
+               !has(cluster.values.vpc_config) ||
+               cluster.values.vpc_config.all(vpc,
+                 !has(vpc.endpoint_public_access) || vpc.endpoint_public_access == false
+               )
+             )
+           ))
+        )
+```
+
+To write a policy for JSON payloads:
+1. Set `spec.evaluation.mode` to `JSON`.
+2. Next, define a `spec.matchConditions` with CEL expressions to tell the engine which payloads should be matched. 
+3. Finally, define your validation rules in `spec.validations`.
+
+To evaluate JSON policies, use the [Kyverno CLI](../../kyverno-cli/). 
+
+A Kyverno Engine SDK is planned for a subsequent release.
