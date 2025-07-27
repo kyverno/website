@@ -26,5 +26,5 @@ jobs:
       with:
         fail: true
         debug: false
-        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 5 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E ./content
+        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E ./content
 
