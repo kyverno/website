@@ -1390,7 +1390,7 @@ For example, to test the `check-deployment-replicas` policy against all Deployme
 kyverno apply /path/to/check-deployment-replicas.yaml --cluster --policy-report
 ```
 
-Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](docs/policy-types/validating-policy/#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag. 
+Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](/docs/policy-types/validating-policy/#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag. 
 
 This flag allows you to specify the resources that the policy will reference. The CLI will then use these resources to evaluate the policy.
 
