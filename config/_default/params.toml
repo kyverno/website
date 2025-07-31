@@ -143,8 +143,12 @@ js = [
 # version_menu = "Versions"
 # Add your release versions here
 [[versions]]
-  version = "v1.14.0"
+  version = "v1.15.0"
   url = "https://kyverno.io"
+
+[[versions]]
+  version = "v1.14.0"
+  url = "https://release-1-14-0.kyverno.io"
 
 [[versions]]
   version = "v1.13.0"
