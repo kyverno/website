@@ -11,35 +11,35 @@ Kyverno contains several different capabilities, decoupled into separate control
 
 Kyverno consists of four different Deployments where each Deployment runs a controller of a single type. Each controller is responsible for one of the main capabilities within Kyverno as well as some supporting and related controllers.
 
-### Admission Controller
+### Admission Controller 
 
-* Responsible for receiving AdmissionReview requests from the Kubernetes API server to its resource validating and mutating webhooks.
-* Processes validate, mutate, and verifyImages rules.
-* Manages and renews certificates as Kubernetes Secrets for use in the webhook.
-* Manages and configures the webhook rules dynamically based on installed policies.
-* Performs policy validation for the `Policy`, `ClusterPolicy`, and `PolicyException` custom resources.
+* Receives AdmissionReview requests from the Kubernetes API server through validating and mutating webhooks.
+* Processes validate, mutate, and image validating rules.
+* Manages and renews certificates as Kubernetes Secrets for webhook use through the embedded Cert Renewer.
+* Manages and configures webhook rules dynamically based on installed policies through the embedded Webhook Controller.
+* Performs policy validation for the `Policy`, `ClusterPolicy`, `ValidatingPolicy`, `ImageValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy`, and `PolicyException` custom resources.
 * Processes Policy Exceptions.
-* Generates `AdmissionReport` and `ClusterAdmissionReport` intermediary resources for further processing by the Reports Controller.
+* Generates `EphemeralReport` and `ClusterEphemeralReport` intermediary resources for further processing by the Reports Controller.
 * Generates `UpdateRequest` intermediary resources for further processing by the Background Controller.
 
-### Reports Controller
+### Reports Controller 
 
 * Responsible for creation and reconciliation of the final `PolicyReport` and `ClusterPolicyReport` custom resources.
-* Performs background scans and generates and processes `BackgroundScanReport` and `ClusterBackgroundScanReport` intermediary resources.
-* Processes `AdmissionReport` and `ClusterAdmissionReport` intermediary resources into the final policy report resources.
+* Performs background scans and generates, processes, and converts `EphemeralReport` and `ClusterEphemeralReport` intermediary resources into the final policy report resources.
 
-### Background Controller
+### Background Controller 
 
-* Responsible for processing generate and mutate-existing rules.
+* Processes generate and mutate-existing rules of the `Policy` or `ClusterPolicy`, and the mutate-existing functionality of the `MutatingPolicy` and `GeneratingPolicy`.
 * Processes policy add, update, and delete events.
 * Processes and generates `UpdateRequest` intermediary resources to generate or mutate the final resource.
+* Generates `EphemeralReport` and `ClusterEphemeralReport` intermediary resources for further processing by the Reports Controller.
 * Has no relationship to the Reports Controller for background scans.
 
-### Cleanup Controller
+### Cleanup Controller 
 
-* Responsible for processing cleanup policies.
-* Performs policy validation for the `CleanupPolicy` and `ClusterCleanupPolicy` custom resources through a webhook server.
-* Responsible for reconciling its webhook through a webhook controller.
+* Processes `CleanupPolicy` and `DeletingPolicy` resources.
+* Performs policy validation for the CleanupPolicy and ClusterCleanupPolicy custom resources through a webhook server.
+* Reconciles its webhook through a webhook controller.
 * Manages and renews certificates as Kubernetes Secrets for use in the webhook.
 * Creates and reconciles CronJobs used as the mechanism to trigger cleanup.
 * Handles the cleanup by deleting resources from the Kubernetes API.
