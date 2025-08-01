@@ -159,17 +159,5 @@ js = [
   url = "https://release-1-12-0.kyverno.io"
 
 [[versions]]
-  version = "v1.11.0"
-  url = "https://release-1-11-0.kyverno.io"
-
-[[versions]]
-  version = "v1.10.0"
-  url = "https://release-1-10-0.kyverno.io"
-
-[[versions]]
-  version = "v1.9.0"
-  url = "https://release-1-9-0.kyverno.io"
-
-[[versions]]
   version = "main"
   url = "https://main.kyverno.io"
