@@ -410,7 +410,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | `"default,google,amazon,azure,github"` | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
-| `renewBefore` (AC) | `360h 0m 0s` | Sets the certificate renewal time before expiration (in hours). |
+| `renewBefore` (AC) | `360h 0m 0s` | Sets the certificate renewal time before expiration (in hours:minutes:seconds). |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. Deprecated. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
