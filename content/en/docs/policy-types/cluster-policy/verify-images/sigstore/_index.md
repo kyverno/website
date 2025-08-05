@@ -1130,6 +1130,54 @@ imageExtractors:
       jmesPath: "trim_prefix(@, 'docker://')"
 ```
 
+
+## Using a Custom Certificate Authority 
+
+In scenarios where you're running a custom Sigstore stack, such as a private Fulcio instance, you need a way to tell Kyverno to trust your custom Certificate Authority (CA). You can do this by providing the root CA certificate directly in the policy using the `roots` field.
+
+This field allows Kyverno to establish a chain of trust back to your private CA during keyless verification. The roots field is applicable when verifying signatures for both `container images and attestations`.
+
+Here is an example of a ClusterPolicy that uses the roots field to specify a custom Fulcio root certificate for keyless verification:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image-with-custom-ca
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: verify-image-signature-keyless-custom-ca
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+              - Deployment
+      verifyImages:
+      - imageReferences:
+        - "registry.example.com/my-app:*"
+        attestors:
+        - entries:
+          - keyless:
+              subject: "subject@example.com"
+              issuer: "https://fulcio.example.com"
+              rekor:
+                url: https://rekor.sigstore.dev
+              roots: |-
+                -----BEGIN CERTIFICATE-----
+                MIIBWjCCAQygAwIBAgIUFPDS+axV5MHzv+vkHAK2iwmSu4UwBQYDK2VwMCAxDjAM
+                BgNVBAMMBXN0YWFzMQ4wDAYDVQQKDAVFeGNJRDAgFw0yNDA0MDUwNjQ1MDVaGA8y
+                MTI0MDMxMjA2NDUwNVowIDEOMAwGA1UEAwwFc3RhYXMxDjAMBgNVBAoMBUV4Y0lE
+                MCowBQYDK2VwAyEAlP9VXPdDPkXyaEwdqEvNLMHUGqlV0BJaVp/Dkk1B+62jVjBU
+                MB0GA1UdDgQWBBTeaJm8uvtwe3ju/672sng5IQaozTAfBgNVHSMEGDAWgBTeaJm8
+                uvtwe3ju/672sng5IQaozTASBgNVHRMBAf8ECDAGAQH/AgEBMAUGAytlcANBAEhl
+
+                0Osao/HrZAHy3qvX20CdaJcLM/5IJOGchc19zkML0ydxeVVuMCu0l63QNKnkwshn
+                u6iURpe0wRJ8JPkzigk=
+                -----END CERTIFICATE-----
+```
+
 ## Special Variables
 
 A pre-defined, reserved special variable named `image` is available for use only in verifyImages rules. The following fields are available under the `image` object and may be used in a rule to reference the named fields.
