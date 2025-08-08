@@ -14,7 +14,7 @@ spec:
 ```
 
 {{% alert title="Note" color="info" %}}
-Background scans are handled by the reports controller and not the background controller.
+Background scans are handled by the **reports controller**, not the background controller. In Kyverno v1.12 and later, the internal reporting mechanism has been simplified. Instead of four separate intermediary resources (`AdmissionReport`, `ClusterAdmissionReport`, `BackgroundScanReport`, and `ClusterBackgroundScanReport`), Kyverno now uses ephemeral reports (`EphemeralReport` and `ClusterEphemeralReport`) which are short-lived and generated on-the-fly for both admission and background scans. These are used internally by Kyverno to construct the final `PolicyReport` and `ClusterPolicyReport` resources for users.
 {{% /alert %}}
 
 Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to periodically scan existing resources and find if they match any `validate` or `verifyImages` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a rule, even in `Enforce` mode. It has no effect on either `generate` or `mutate` rules for the purposes of reporting.

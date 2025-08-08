@@ -8,13 +8,13 @@ weight: 15
 
 Kyverno supports reporting policy results using the `openreports.io/v1alpha1` API as an alternative to the default wgpolicyk8s reporting. This can be enabled using the `--openreportsEnabled` flag in the Kyverno controller.
 
-This is an initial step to eventually deprecate `wgpolicyk8s` and fully depend on `openreports.io` as the API group for permanent reports
+This is an initial step to eventually deprecate `wgpolicyk8s` and fully depend on `openreports.io` as the API group for permanent reports.
 
 ### Enabling OpenReports
 
-To enable OpenReports integration, add the `--openreportsEnabled` flag to the Kyverno reports controller.
+To enable OpenReports integration, add the `--enableOpenReports` flag to the Kyverno reports controller.
 
-If you are deploying Kyverno using Helm, setting the chart value `openreports.enabled=true` will automatically add the `--openreportsEnabled` flag to the reports controller deployment.
+If you are deploying Kyverno using Helm, setting the chart value `reportsController.enableOpenReports=true` will automatically add the `--enableOpenReports` flag to the reports controller deployment.
 
 ### Example: Enforcing an 'app' Label
 

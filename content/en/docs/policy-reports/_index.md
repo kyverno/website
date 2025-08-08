@@ -250,47 +250,52 @@ timestamp:
 
 ## Report internals
 
-The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of matching resources as determined by Kyverno `Policy` and `ClusterPolicy` objects, however these reports are built of four intermediary resources. For matching resources which were caught during admission mode, `AdmissionReport` and `ClusterAdmissionReport` resources are created. For results of background processing, `BackgroundScanReport` and `ClusterBackgroundScanReport` resources are created. An example of a `ClusterAdmissionReport` is shown below.
+In Kyverno `v1.12` and later, the internal reporting mechanism has been simplified.
+
+The final `PolicyReport` and `ClusterPolicyReport` resources are still used to summarize policy results, but instead of being built from four separate intermediary report types, Kyverno now uses a unified ephemeral report format. These internal reports, called `EphemeralReport` and `ClusterEphemeralReport`, are generated for both admission and background scans. They exist temporarily in memory or briefly in the cluster, and Kyverno uses them to construct the final reports automatically. Users typically do not interact with them directly unless troubleshooting or debugging.
+
+### Example
 
 ```yaml
-apiVersion: kyverno.io/v1alpha2
-kind: ClusterAdmissionReport
+apiVersion: kyverno.io/v2alpha1
+kind: ClusterEphemeralReport
 metadata:
-  creationTimestamp: "2022-10-18T13:15:09Z"
-  generation: 1
+  name: report-ns-team-a-20250808
+  creationTimestamp: "2025-08-08T10:22:30Z"
   labels:
     app.kubernetes.io/managed-by: kyverno
-    audit.kyverno.io/resource.hash: a7ec5160f220c5b83c26b5c8f7dc35b6
-    audit.kyverno.io/resource.uid: 61946422-14ba-4aa2-94b4-229d38446381
-    cpol.kyverno.io/require-ns-labels: "4773"
-  name: c0cc7337-9bcd-4d53-abb2-93f7f5555216
-  resourceVersion: "4986"
-  uid: 10babc6c-9e6e-4386-abed-c13f50091523
+    policy.kyverno.io/name: require-team-label
+    policy.kyverno.io/namespace: ""
+    report.kyverno.io/resource.kind: Namespace
+    report.kyverno.io/resource.name: team-a
+    report.kyverno.io/resource.uid: 4567abcd-89ef-4cde-b123-abcdef123456
 spec:
-  owner:
+  scope:
     apiVersion: v1
     kind: Namespace
-    name: testing
-    uid: 61946422-14ba-4aa2-94b4-229d38446381
+    name: team-a
+    uid: 4567abcd-89ef-4cde-b123-abcdef123456
   results:
-  - message: 'validation error: The label `thisshouldntexist` is required. rule check-for-labels-on-namespace
-      failed at path /metadata/labels/thisshouldntexist/'
-    policy: require-ns-labels
-    result: fail
-    rule: check-for-labels-on-namespace
-    scored: true
-    source: kyverno
-    timestamp:
-      nanos: 0
-      seconds: 1666098909
+    - policy: require-team-label
+      rule: check-team-label
+      result: fail
+      message: 'validation error: The label `team` is required on Namespace.'
+      scored: true
+      source: kyverno
+      timestamp:
+        seconds: 1723111950
+        nanos: 0
   summary:
-    error: 0
-    fail: 1
     pass: 0
-    skip: 0
+    fail: 1
     warn: 0
+    error: 0
+    skip: 0
+
 ```
 
-These intermediary resources have the same basic contents as a policy report and are used internally by Kyverno to build the final policy report. Kyverno will merge these results automatically into the appropriate policy report and there is no manual interaction typically required.
+> **Note:** These reports are ephemeral and exist only in memory or temporarily in the cluster. They are used by Kyverno internally to accumulate rule evaluation results before merging them into final `PolicyReport` or `ClusterPolicyReport` resources. You typically don’t interact with them unless you are debugging policy behavior or inspecting the internal evaluation flow.
 
-For more details on the internal reporting processes, see the developer docs [here](https://github.com/kyverno/kyverno/tree/main/docs/dev/reports).
+### Reference
+
+For developers or advanced users, more technical information about these reports can be found in the [Kyverno developer documentation](https://github.com/kyverno/kyverno/tree/main/docs/dev/reports).
