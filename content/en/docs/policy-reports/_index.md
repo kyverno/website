@@ -250,7 +250,11 @@ timestamp:
 
 ## Report internals
 
-The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of matching resources as determined by Kyverno `Policy` and `ClusterPolicy` objects, however these reports are built of four intermediary resources. For matching resources which were caught during admission mode, `AdmissionReport` and `ClusterAdmissionReport` resources are created. For results of background processing, `BackgroundScanReport` and `ClusterBackgroundScanReport` resources are created. An example of a `ClusterAdmissionReport` is shown below.
+In Kyverno `v1.12` and later, the internal reporting mechanism has been simplified.
+
+The final `PolicyReport` and `ClusterPolicyReport` resources are still used to summarize policy results, but instead of being built from four separate intermediary report types, Kyverno now uses a unified ephemeral report format. These internal reports, called `EphemeralReport` and `ClusterEphemeralReport`, are generated for both admission and background scans. They exist temporarily in memory or briefly in the cluster, and Kyverno uses them to construct the final reports automatically. Users typically do not interact with them directly unless troubleshooting or debugging.
+
+### Example
 
 ```yaml
 apiVersion: kyverno.io/v1alpha2
@@ -291,6 +295,8 @@ spec:
     warn: 0
 ```
 
-These intermediary resources have the same basic contents as a policy report and are used internally by Kyverno to build the final policy report. Kyverno will merge these results automatically into the appropriate policy report and there is no manual interaction typically required.
+> **Note:** These reports are ephemeral and exist only in memory or temporarily in the cluster. They are used by Kyverno internally to accumulate rule evaluation results before merging them into final `PolicyReport` or `ClusterPolicyReport` resources. You typically don’t interact with them unless you are debugging policy behavior or inspecting the internal evaluation flow.
+
+### Reference
 
 For more details on the internal reporting processes, see the developer docs [here](https://github.com/kyverno/kyverno/tree/main/docs/dev/reports).
