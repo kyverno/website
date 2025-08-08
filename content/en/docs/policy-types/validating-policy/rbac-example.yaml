@@ -1,0 +1,152 @@
+# RBAC Configuration Required for ValidatingPolicy Auto-Conversion
+# These permissions allow Kyverno to create and manage ValidatingAdmissionPolicy resources
+
+---
+# ClusterRole with permissions for ValidatingAdmissionPolicy management
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:admission-controller:validating-admission-policy
+  labels:
+    app.kubernetes.io/name: kyverno
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/part-of: kyverno
+rules:
+# Core ValidatingAdmissionPolicy permissions
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingadmissionpolicies"]
+  verbs: ["create", "update", "delete", "list", "watch", "get"]
+
+# ValidatingAdmissionPolicyBinding permissions  
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingadmissionpolicybindings"]
+  verbs: ["create", "update", "delete", "list", "watch", "get"]
+
+# Status updates for generated resources
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingadmissionpolicies/status", "validatingadmissionpolicybindings/status"]
+  verbs: ["update", "patch"]
+
+---
+# ClusterRoleBinding to grant permissions to Kyverno admission controller
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno:admission-controller:validating-admission-policy
+  labels:
+    app.kubernetes.io/name: kyverno
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/part-of: kyverno
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno:admission-controller:validating-admission-policy
+subjects:
+- kind: ServiceAccount
+  name: kyverno-admission-controller
+  namespace: kyverno
+
+---
+# Alternative: Patch existing Kyverno ClusterRole if you prefer to extend it
+# Use this approach if you want to add permissions to the existing role
+# 
+# kubectl patch clusterrole kyverno:admission-controller --type='merge' -p='
+# {
+#   "rules": [
+#     {
+#       "apiGroups": ["admissionregistration.k8s.io"],
+#       "resources": ["validatingadmissionpolicies", "validatingadmissionpolicybindings"],
+#       "verbs": ["create", "update", "delete", "list", "watch", "get"]
+#     }
+#   ]
+# }'
+
+---
+# ServiceMonitor for monitoring auto-conversion metrics (optional)
+# Requires Prometheus Operator to be installed
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kyverno-validating-admission-policy-metrics
+  namespace: kyverno
+  labels:
+    app.kubernetes.io/name: kyverno
+    app.kubernetes.io/component: metrics
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kyverno
+      app.kubernetes.io/component: admission-controller
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+
+---
+# Example Helm values.yaml configuration for enabling auto-conversion
+# Use this configuration when installing or upgrading Kyverno
+#
+# admissionController:
+#   container:
+#     extraArgs:
+#       # Enable ValidatingAdmissionPolicy generation
+#       - --generateValidatingAdmissionPolicy=true
+#       # Optional: Set maximum number of policies that can auto-convert
+#       - --maxValidatingAdmissionPolicyCount=100
+#   
+#   rbac:
+#     clusterRole:
+#       extraResources:
+#       - apiGroups: ["admissionregistration.k8s.io"]
+#         resources: ["validatingadmissionpolicies", "validatingadmissionpolicybindings"]
+#         verbs: ["create", "update", "delete", "list", "watch", "get"]
+
+---
+# Network Policy to allow Kyverno admission controller to communicate with API server
+# This may be needed in clusters with strict network policies
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyverno-admission-controller-api-access
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: kyverno
+      app.kubernetes.io/component: admission-controller
+  policyTypes:
+  - Egress
+  egress:
+  # Allow communication with Kubernetes API server
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP  
+      port: 6443
+
+---
+# Example of verifying RBAC permissions after setup
+# Run these commands to verify the admission controller has proper permissions:
+#
+# kubectl auth can-i create validatingadmissionpolicies --as=system:serviceaccount:kyverno:kyverno-admission-controller
+# kubectl auth can-i create validatingadmissionpolicybindings --as=system:serviceaccount:kyverno:kyverno-admission-controller
+# kubectl auth can-i update validatingadmissionpolicies --as=system:serviceaccount:kyverno:kyverno-admission-controller
+# kubectl auth can-i delete validatingadmissionpolicies --as=system:serviceaccount:kyverno:kyverno-admission-controller
+
+# Expected output for all commands: "yes"
+
+---
+# Troubleshooting: If you see permission denied errors, check:
+# 
+# 1. ServiceAccount exists:
+#    kubectl get sa kyverno-admission-controller -n kyverno
+# 
+# 2. ClusterRoleBinding is correctly configured:
+#    kubectl get clusterrolebinding kyverno:admission-controller:validating-admission-policy -o yaml
+# 
+# 3. Admission controller logs for permission errors:
+#    kubectl logs -n kyverno deployment/kyverno-admission-controller | grep -i "validating.*policy"
+# 
+# 4. Feature flag is enabled:
+#    kubectl get deployment kyverno-admission-controller -n kyverno -o yaml | grep generateValidatingAdmissionPolicy
