@@ -27,7 +27,7 @@ The new policy types address these challenges by migrating each rule type into i
 
 ## New Policy Types: A Modular Approach
 
-Kyverno 1.14.0 begins a new chapter for Kyverno with the introduction of specialized policy types that separate concerns and provide more focused functionality.
+Kyverno 1.14.0 begins a new chapter for Kyverno with the introduction of specialized policy types that separate concerns and confusion about validation checks being written in various patterns by providing a more focused approach to functionality.
 
 ### ValidatingPolicy: Streamlined Validation
 
@@ -190,7 +190,7 @@ For more details of `ImageValidatingPolicy`, check the official document [here](
 
 ### PolicyExceptions in CEL
 
-Kyverno 1.14.0 extends the powerful `PolicyException` feature to work seamlessly with the new policy types. This enhancement provides granular control over policy enforcement, allowing administrators to define specific exemptions from policy rules when needed.
+Kyverno 1.14.0 extends the powerful [PolicyException](https://kyverno.io/docs/exceptions/#policyexceptions-with-cel-expressions) feature to work seamlessly with the new policy types. This enhancement provides granular control over policy enforcement, allowing administrators to define specific exemptions from policy rules when needed.
 
 Policy exceptions enable teams to:
 
@@ -225,7 +225,7 @@ Here are example signatures for each library. For a full list, please see [here]
 
 #### Resource Library
 
-The Resource library retrieves Kubernetes resources for real-time validations against current cluster state.
+The Resource library retrieves Kubernetes resources for real-time validations against the current cluster state.
 
 ```cel
 resource.Get("v1", "configmaps", "default", "my-config")
@@ -269,7 +269,7 @@ image("ghcr.io/company/app:v1.2.3").containsDigest()
 
 #### Image Data Library
 
-The ImageData library enables deep inspection of container image metadata from OCI registries, including architecture, OS, layers, and manifest details.
+The Image Data library enables deep inspection of container image metadata from OCI registries, including architecture, OS, layers, and manifest details.
 
 ```cel
 imagedata.Get("nginx:1.21").config.architecture == "amd64"
@@ -278,7 +278,7 @@ imagedata.Get("my-image:latest").manifest.layers.size() > 0
 
 ### CLI & Reporting
 
-Kyverno 1.14.0 enhances the CLI experience by extending support for the new `ValidatingPolicy` and `ImageValidatingPolicy` types, making it easier to test and validate policies before applying them to your cluster. The CLI is particularly useful for shift-left testing of policies during development or CI/CD pipelines.
+Kyverno 1.14.0 enhances the CLI experience by extending support for the new `ValidatingPolicy` and `ImageValidatingPolicy` types, making it easier to test and validate policies before applying them to your cluster. The CLI is beneficial for shift-left testing of policies during development or CI/CD pipelines.
 
 For example, you can validate a Dockerfile (represented as JSON) against security policies before building images. In the following ValidatingPolicy snippet, it uses CEL expressions to examine the Dockerfile structure and scans for prohibited commands like curl:
 
@@ -336,7 +336,7 @@ Kyverno 1.14 maintains full backward compatibility with existing `ClusterPolicy`
 
 ## Roadmap
 
-The introduction of `ValidatingPolicy` and `ImageValidatingPolicy` is just the beginning of our vision to make policy management in Kubernetes more modular, streamlined, and powerful. Looking ahead, we plan to complete the policy family with dedicated `MutatingPolicy` for targeted resource modifications, `GeneratingPolicy` for creating dependent resources, and `DeletingPolicy` for controlled resource cleanup - each designed to excel at specific functions while maintaining a consistent user experience. This modular approach will simplify policy definition and management, reducing complexity while expanding capabilities. We're also enhancing cross-cutting features like event generation to provide detailed audit trails of policy actions, and comprehensive metrics support to give operators visibility into policy performance and effectiveness.
+The introduction of `ValidatingPolicy` and `ImageValidatingPolicy` is just the beginning of our vision to make policy management in Kubernetes more modular, streamlined, and powerful. Looking ahead, we plan to complete the policy family with dedicated `MutatingPolicy` for targeted resource modifications, `GeneratingPolicy` for creating dependent resources, and `DeletingPolicy` for controlled resource cleanup - each designed to excel at specific functions while maintaining a consistent user experience.  This modular approach will simplify policy definition and management, reducing complexity while expanding capabilities. We're also enhancing cross-cutting features, such as event generation, to provide detailed audit trails of policy actions and comprehensive metrics support, giving operators visibility into policy performance and effectiveness.
 
 ## Conclusion
 

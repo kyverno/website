@@ -1,6 +1,6 @@
 ---
 title: ClusterPolicy
 description: >-
-    Validate, Mutate, Generate Resources; Verify Image Signatures and Attestations.
-weight: 10
+    Validate, mutate, generate resources; verify image signatures and attestations.
+weight: -20
 ---

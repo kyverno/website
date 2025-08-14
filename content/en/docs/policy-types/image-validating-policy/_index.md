@@ -1,15 +1,17 @@
 ---
 title: ImageValidatingPolicy
 description: >-
-    Validate container images and their metadata
-weight: 0
+    Verify container image signatures and attestations
+weight: 15
 ---
+
+{{< feature-state state="alpha" version="v1.15" />}}
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations. 
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy)
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy).
 
 
 ### images
@@ -89,7 +91,7 @@ spec:
             issuer: "https://token.actions.githubusercontent.com"
             subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
             issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        root: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+        roots: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
@@ -272,7 +274,7 @@ spec:
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/validating-policy/#kyverno-cel-libraries) the following additional libraries are supported for ImageValidatingPolicy types. 
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/) the following additional libraries are supported for ImageValidatingPolicy types. 
 
 ### Image Verification Library
 
@@ -331,7 +333,9 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
-Note: `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% alert title="Note" color="info" %}}
+`extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+{{% /alert %}}
 
 #### Cosign Keyless Signature and Attestation Verification
 
@@ -367,7 +371,7 @@ spec:
           ctlog:
                url: "https://rekor.sigstore.dev"
   attestations:
-   - name: cosign-attes
+   - name: cosignAttestation
      intoto:
        type: cosign.sigstore.dev/attestation/vuln/v1
   validations:
@@ -375,10 +379,18 @@ spec:
         images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
       message: "Failed image signature verification"
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image, [attestations.cosign-attes], [attestors.cosign])).all(e, e > 0)
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.cosignAttestation, [attestors.cosign])).all(e, e > 0)
       message: "Failed to verify vulnerability scan attestation with Cosign keyless"
 
 ```
+{{% alert title="Note" color="info" %}}
+If your attestation names include special characters like `-`, access them using bracket syntax:
+
+```cel
+attestations["cosign-attes"]
+```
+Alternatively, prefer using camelCase or snake_case to avoid parsing issues in CEL expressions.
+{{% /alert %}}
 
 #### Cosign Public Key Signature Verification
 
@@ -422,3 +434,5 @@ spec:
 ```
  
  Note: To learn how to sign container images using Cosign with keyless signing, refer to the [official Cosign documentation](https://docs.sigstore.dev/cosign/signing/signing_with_containers/).
+
+ Policies are applied cluster-wide to help secure your cluster. However, there may be times when teams or users need to test specific tools or resources. In such cases, users can use [PolicyException](../../exceptions/_index.md#policyexceptions-with-cel-expressions) to bypass policies without modifying or tweaking the policies themselves. This ensures that your policies remain secure while providing the flexibility to bypass them when needed.

@@ -92,7 +92,7 @@ We'll assume the following:
 2. A Namespaced called `qa` which is the subject of this tutorial.
 3. A user named `chip` who is currently subject to a PSP in the `qa` Namespace we wish to migrate onto Kyverno.
 
-First, we've identified the following PSP which requires that host namespaces, corresponding to Pod spec fields `hostNetwork`, `hostIPC`, and `hostPID` must be unset or set to `false` if they are defined. This is a common component of many PSPs because it prevents Pods from gaining access to the underlying host in a way which could compromise it. It's also a good illustration because this maps nicely onto the Pod Security Standards control of a similar name, and there is a Kyverno policy which covers this control [here](/policies/pod-security/baseline/disallow-host-namespaces/disallow-host-namespaces/).
+First, we've identified the following PSP which requires that host namespaces, corresponding to Pod spec fields `hostNetwork`, `hostIPC`, and `hostPID` must be unset or set to `false` if they are defined. This is a common component of many PSPs because it prevents Pods from gaining access to the underlying host in a way which could compromise it. It's also a good illustration because this maps nicely onto the Pod Security Standards control of a similar name, and there is a Kyverno policy which covers this control [here](/content/en/policies/pod-security/baseline/disallow-host-namespaces/).
 
 ```yaml
 apiVersion: policy/v1beta1

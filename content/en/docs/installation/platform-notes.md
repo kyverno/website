@@ -38,6 +38,12 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
    - Use `ServerSideApply=true` for smooth resource updates
    - Enable `CreateNamespace=true` if deploying to a new namespace
 
+4. **Config Preservation**
+   - By default, `config.preserve=true` is set in the Helm chart. This is useful for Helm-based install, upgrade, and uninstall scenarios.
+   - This setting enables a Helm post-delete hook, which can cause ArgoCD to show the application as out-of-sync if deployed using an App of Apps pattern.
+   - It may also prevent ArgoCD from cleaning up the Kyverno application when the parent application is deleted.
+   - **Recommendation:** Set `config.preserve=false` when deploying Kyverno via ArgoCD to ensure proper resource cleanup and sync status.
+
 #### Complete Application Example
 
 ```yaml
