@@ -1,0 +1,53 @@
+# Basic ValidatingPolicy with auto-conversion to ValidatingAdmissionPolicy
+# This example demonstrates the simplest form of auto-conversion
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-host-path
+  namespace: default
+  annotations:
+    policies.kyverno.io/title: "Disallow HostPath Volumes"
+    policies.kyverno.io/category: "Security"
+    policies.kyverno.io/description: >-
+      Prevents the use of hostPath volumes in Deployments as they can be used
+      to access and potentially modify the host filesystem.
+spec:
+  # Enable auto-conversion to ValidatingAdmissionPolicy
+  autogen:
+    validatingAdmissionPolicy:
+      enabled: true
+  
+  # Policy enforcement configuration
+  validationActions: [Deny]
+  
+  # Define which resources this policy applies to
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"] 
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  
+  # The validation logic
+  validations:
+  - expression: |
+      !has(object.spec.template.spec.volumes) || 
+      object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))
+    message: "HostPath volumes are not allowed in Deployments for security reasons"
+
+---
+# This policy will automatically generate the following resources:
+# 
+# 1. ValidatingAdmissionPolicy named "disallow-host-path"
+# 2. ValidatingAdmissionPolicyBinding named "disallow-host-path-binding"
+#
+# The generated ValidatingAdmissionPolicy will contain:
+# - Same validation logic converted to native Kubernetes CEL
+# - Equivalent matchConstraints configuration
+# - Owner reference to this ValidatingPolicy for lifecycle management
+#
+# Benefits of this auto-conversion:
+# - Up to 25% faster policy evaluation
+# - Reduced CPU and memory usage
+# - Native Kubernetes integration
+# - Maintained Kyverno policy management capabilities
