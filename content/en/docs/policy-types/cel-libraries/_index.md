@@ -5,7 +5,7 @@ description: >-
 weight: 60
 ---
 
-{{< feature-state state="alpha" version="v1.14" />}}
+{{< feature-state state="alpha" version="v1.15" />}}
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. These libraries are available in both ValidatingPolicy and MutatingPolicy.
 
