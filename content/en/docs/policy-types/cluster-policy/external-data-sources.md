@@ -920,6 +920,167 @@ For more examples of using an imageRegistry context, see the [samples page](/doc
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
+### Multi-Architecture Image Support
+
+The `manifestList` field in the `imageRegistry` context provides access to the [OCI Image Index](https://github.com/opencontainers/image-spec/blob/main/image-index.md) (also known as a manifest list), which contains information about multi-architecture images. This allows policies to make decisions based on the supported platforms and architectures of container images.
+
+When an image supports multiple architectures, the `manifestList` field contains an array of manifests, each representing a different platform (architecture/OS combination). This is particularly useful for:
+
+- Automatically configuring node selectors based on available architectures
+- Validating that images support required platforms
+- Implementing architecture-specific policies
+
+#### Example: Extracting Supported Architectures
+
+The following example shows how to extract the list of supported architectures from a multi-architecture image:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: extract-architectures
+spec:
+  rules:
+  - name: get-supported-archs
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    context:
+    - name: imageArchitectures
+      imageRegistry:
+        reference: "{{ request.object.spec.containers[0].image }}"
+        jmesPath: "manifestList.manifests[?platform.os=='linux'].platform.architecture"
+    mutate:
+      patchesJson6902: |-
+        - op: add
+          path: "/metadata/annotations/supported-architectures"
+          value: "{{ join(',', imageArchitectures) }}"
+```
+
+#### Example: Auto-Configure Node Selector for Multi-Arch Images
+
+This policy automatically adds node selector terms based on the architectures supported by an image:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: auto-arch-node-selector
+spec:
+  rules:
+  - name: add-arch-node-selector
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    context:
+    - name: supportedArchs
+      imageRegistry:
+        reference: "{{ request.object.spec.containers[0].image }}"
+        jmesPath: "manifestList.manifests[?platform.os=='linux'].platform.architecture"
+    mutate:
+      patchesJson6902: |-
+        - op: add
+          path: "/spec/affinity"
+          value:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: {{ supportedArchs }}
+    preconditions:
+      all:
+      - key: "{{ length(supportedArchs) }}"
+        operator: GreaterThan
+        value: 0
+```
+
+#### Example: Validate ARM64 Support
+
+This policy ensures that all container images support the ARM64 architecture:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-arm64-support
+spec:
+  rules:
+  - name: validate-arm64-support
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "All images must support ARM64 architecture"
+      foreach:
+      - list: "request.object.spec.containers"
+        context:
+        - name: hasARM64
+          imageRegistry:
+            reference: "{{ element.image }}"
+            jmesPath: "length(manifestList.manifests[?platform.architecture=='arm64' && platform.os=='linux']) > `0`"
+        deny:
+          conditions:
+            any:
+            - key: "{{ hasARM64 }}"
+              operator: Equals
+              value: false
+```
+
+{{% alert title="Note" color="info" %}}
+The `manifestList` field is only populated for multi-architecture images that use an OCI Image Index. For single-architecture images, this field may be empty or null. Always check for the existence of the field before using it in your policies.
+
+A typical `manifestList` structure for a multi-architecture image looks like this:
+
+```json
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+  "manifests": [
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1365,
+      "digest": "sha256:1234567890abcdef...",
+      "platform": {
+        "architecture": "amd64",
+        "os": "linux"
+      }
+    },
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1365,
+      "digest": "sha256:abcdef1234567890...",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    },
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1365,
+      "digest": "sha256:9876543210abcdef...",
+      "platform": {
+        "architecture": "ppc64le",
+        "os": "linux"
+      }
+    }
+  ]
+}
+```
+
+You can use JMESPath expressions to extract specific information from this structure, such as:
+- `manifestList.manifests[*].platform.architecture` - List all supported architectures
+- `manifestList.manifests[?platform.architecture=='arm64']` - Check if ARM64 is supported
+- `length(manifestList.manifests)` - Count the number of available manifests
+{{% /alert %}}
+
 ## Service API Calls with Custom HTTP Headers
 
 Kyverno now supports including custom HTTP headers when making API calls to external services. This enhancement allows users to add extra metadata—such as authentication tokens, user agents, or any other header information—that may be required by the external service.
