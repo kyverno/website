@@ -194,9 +194,54 @@ This is useful for adding metadata such as severity, team ownership, or any reso
 ***Example Policy:***
 
 ```yaml
-
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-labels
+spec:
+  auditAnnotations:
+    - key: team
+      valueExpression: "platform" 
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [apps]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [deployments]
+  variables:
+    - name: environment
+      expression: >-
+        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
+  validations:
+    - expression: >-
+        variables.environment == true
+      message: >-
+        Deployment labels must be env=prod
 ```
 
+***Example Deployment:***
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
 
 ***Resulting PolicyReport entry:***
 
