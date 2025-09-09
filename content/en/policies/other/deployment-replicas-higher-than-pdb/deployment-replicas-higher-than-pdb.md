@@ -66,8 +66,8 @@ spec:
           deny:
             conditions:
               all:
-              - key: "{{ element.spec.replicas }}"
-                operator: LessThanOrEquals  
-                value: "{{ request.object.spec.minAvailable }}"
+              - key: "{{ request.object.spec.minAvailable }}"
+                operator: GreaterThanOrEquals
+                value: "{{ element.spec.replicas }}"
 
 ```

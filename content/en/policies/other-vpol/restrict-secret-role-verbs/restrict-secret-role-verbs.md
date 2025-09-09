@@ -1,0 +1,57 @@
+---
+title: "Restrict Secret Verbs in Roles in ValidatingPolicy"
+category: Security in vpol
+version: 1.14.0
+subject: Role, ClusterRole, RBAC
+policyType: "validate"
+description: >
+    The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively allows Secrets to be read which may expose sensitive information. This policy prevents a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to fully implement this control, it is recommended to pair this policy with another which also prevents use of the wildcard ('*') in the verbs list either when explicitly naming Secrets or when also using a wildcard in the base API group.
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml" target="-blank">/other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-secret-role-verbs
+  annotations:
+    policies.kyverno.io/title: Restrict Secret Verbs in Roles in ValidatingPolicy
+    policies.kyverno.io/category: Security in vpol 
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Role, ClusterRole, RBAC
+    kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/description: >-
+      The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively
+      allows Secrets to be read which may expose sensitive information. This policy prevents
+      a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to
+      fully implement this control, it is recommended to pair this policy with another which
+      also prevents use of the wildcard ('*') in the verbs list either when explicitly naming Secrets
+      or when also using a wildcard in the base API group.
+spec:
+  validationActions: 
+    - Audit
+  evaluation:
+    background:
+      enabled: true  
+  matchConstraints:
+      resourceRules:
+        - apiGroups: ["rbac.authorization.k8s.io"]
+          apiVersions: ["v1"]
+          operations: ["CREATE", "UPDATE"]
+          resources: ["roles", "clusterroles"]
+  variables:
+            - name: forbiddenVerbs
+              expression: "['get','list','watch']"
+  validations:
+            - expression: >-
+                object.rules == null || 
+                !object.rules.exists(rule, 
+                'secrets' in rule.resources && rule.verbs.exists(verb, verb in variables.forbiddenVerbs))
+              message: "Requesting verbs `get`, `list`, or `watch` on Secrets is forbidden."
+
+
+```
