@@ -1,7 +1,7 @@
 ---
 date: 2025-09-23
-title: Optimizing Kyverno CLI Performance: My LFX Mentorship Journey
-linkTitle: Optimizing Kyverno CLI Performance: My LFX Mentorship Journey
+title: Optimizing Kyverno CLI Performance - My LFX Mentorship Journey
+linkTitle: Optimizing Kyverno CLI Performance - My LFX Mentorship Journey
 author: Abhishek Dhiman
 description: A deep dive into Kyverno's CLI performance through the lens of my LFX Mentorship Journey.
 ---
