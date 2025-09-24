@@ -5,6 +5,9 @@ description: >-
 weight: 10
 ---
 
+The `validate` rule type in Kyverno is used to enforce policies by checking if resources meet specific conditions before they are created or updated. If a resource does not follow the defined rules, Kyverno can block it or raise a warning. This helps maintain consistency, security, and best practices in your Kubernetes cluster.
+
+
 {{< feature-state state="alpha" version="v1.15" />}}
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
