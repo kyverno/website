@@ -72,6 +72,8 @@ Depending on the level of detail needed, you may need to increase the log level.
 
 * Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](/docs/policy-types/cluster-policy/mutate.md#rfc-6902-jsonpatch) method.
 
+* Need to check the path of mutation or the actual action performed by mutation? Set `-v=6` and grep on `generated patches`
+
 ## Generate
 
 * `generate` rules which trigger off the same source object should be organized in the same policy definition.

@@ -26,7 +26,7 @@
   url = "/community"
 
 [[main]]
-  name = "Products"
+  name = "Support"
   weight = -90
   url = "/support"
 
