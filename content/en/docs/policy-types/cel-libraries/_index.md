@@ -19,6 +19,7 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 | `resource.List("apps/v1", "deployments", "").items.size() > 0` | Check if there are any Deployments across all namespaces |
 | `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})` | Perform a live SubjectAccessReview (authz check) against the Kubernetes API |
 | `resource.List("apps/v1", "deployments", object.metadata.namespace).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace has more than 3 replicas |
+| `resource.List("apps/v1", "deployments", object.metadata.namespace, { "env": "pod" }).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace with an label pair `env:prod` has more than 3 replicas |
 | `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()` | Verify that Service names in the `default` namespace are sorted alphabetically |
 | `resource.List("v1", "services", object.metadata.namespace).items.map(s, s.metadata.name).isSorted()` |  Use `object.metadata.namespace` to dynamically target the current resource's namespace |
 
