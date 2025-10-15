@@ -362,7 +362,8 @@ The following flags can be used to control the advanced behavior of the various 
 |`backgroundScanInterval` (R) | 1h | Sets the time interval when periodic background scans for reporting take place. Supports minute durations as well (e.g., `10m`).|
 | `backgroundScanWorkers` (R) | 2 | Defines the number of internal worker threads to use when processing background scan reports. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time. |
 | `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
-| `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server. Usually changed in tandem with `webhookServerPort`.|
+| `cleanupServerHost` (C) | `""` | Defines the address used by the cleanup server webhook. This should only be used when `hostNetwork: true` is set in the manifest. |
+| `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server webhook. |
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
 | `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
@@ -398,7 +399,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `maxBackgroundReports` (BR) | `10000` | Maximum number of ephemeralreports created for the background policies before we stop creating new ones. |
 | `maxAuditCapacity` (A) | `1000` | Maximum number of workers for audit policy processing. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
-| `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
+| `metricsHost` (ABCR) | `""` | Specifies the address to expose prometheus metrics. This should only be used when `hostNetwork: true` is set in the manifest. Not used when `--otelConfig="grpc"`. |
+| `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. Specifies the target port for `otelCollector`. Depending on the `otelConfig` flag being `prometheus` or `grpc`. |
 | `omitEvents` (ABR) | `"PolicyApplied,PolicySkipped"` | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is `PolicyApplied` and `PolicySkipped`. |
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `openreportsEnabled` (R) | false | Use openreports.io/v1alpha1 for the reporting group |
@@ -430,7 +432,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `validatingAdmissionPolicyReports` (R) | false | Specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. |
 | `vmodule` (ABCR) | | Comma-separated list of pattern=N settings for file-filtered logging. |
 | `webhookRegistrationTimeout` (A) | `120s` | Specifies the length of time Kyverno will try to register webhooks with the API server. |
-| `webhookServerPort` (AC) | `9443` | Specifies the port to use for webhook call-backs. |
+| `webhookServerHost` (A) | `""` | Specifies the address to use for the webhook call-backs. This should only be used when `hostNetwork: true` is set in the manifest. |
+| `webhookServerPort` (A) | `9443` | Specifies the port to use for webhook call-backs. |
 | `webhookTimeout` (A) | `10` | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). |
 
 ### Policy Report access
