@@ -123,6 +123,39 @@ Generating a `ValidatingAdmissionPolicy` from a `ValidatingPolicy` provides the 
 
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
 
+## Policy Scope
+
+ValidatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`ValidatingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedValidatingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedValidatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: check-deployment-replicas
+  namespace: production
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: [CREATE, UPDATE]
+      resources: ["deployments"]
+  validations:
+    - message: "deployments must have at least 2 replicas for high availability"
+      expression: "object.spec.replicas >= 2"
+```
+
+As the name suggests, the `NamespacedValidatingPolicy` allows namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
+
 ## Kyverno CEL Libraries
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
