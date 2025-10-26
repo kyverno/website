@@ -271,6 +271,45 @@ spec:
       - "my-registry-secret"  # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
 
 ```
+## Policy Scope
+
+ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`ImageValidatingPolicy`**: Cluster-scoped, applies to image verification across all namespaces
+- **`NamespacedImageValidatingPolicy`**: Namespace-scoped, applies image verification only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedImageValidatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedImageValidatingPolicy
+metadata:
+  name: verify-team-images
+  namespace: development
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  matchImageReferences:
+    - glob: "ghcr.io/myorg/dev-*"
+  attestors:
+    - name: dev-attestor
+      cosign:
+        keyless:
+          identities:
+            - issuer: "https://token.actions.githubusercontent.com"
+              subject: "*@myorg.github.io"
+  validations:
+    - message: "image must be signed by the development team"
+      expression: "imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)"
+```
+
+The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.
 
 ## Kyverno CEL Libraries
 
