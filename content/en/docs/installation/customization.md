@@ -168,8 +168,10 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
 * `kyverno:admission-controller`
   * create, delete, get, patch, and update Leases to handle high availability configurations.
   * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
-  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, watch, create, update, patch and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
+  * get, list, watch, create, update, patch and delete MutatingWebhookConfiguration to configure webhook rules for admission mutations.
+  * get, list, watch, create, update, patch and delete ValidatingWebhookConfiguration to configure webhook rules for admission validations.
 * `kyverno:reports-controller`
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
@@ -177,9 +179,10 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
 * `kyverno:cleanup-controller`
-  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, watch, create, update and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
+  * get, list, watch, create, update and delete ValidatingWebhookConfiguration to perform resources deletion based on TTL cleanup label.
 
 #### ClusterRoles
 
