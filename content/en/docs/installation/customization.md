@@ -170,8 +170,7 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
   * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
   * get, list, watch, create, update, patch and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
-  * get, list, watch, create, update, patch and delete MutatingWebhookConfiguration to configure webhook rules for admission mutations.
-  * get, list, watch, create, update, patch and delete ValidatingWebhookConfiguration to configure webhook rules for admission validations.
+  * get, list, watch, create, update, patch and delete ServiceAccounts to manage webhook configurations auto-deletion.
 * `kyverno:reports-controller`
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
@@ -182,9 +181,31 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
   * get, list, watch, create, update and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
-  * get, list, watch, create, update and delete ValidatingWebhookConfiguration to perform resources deletion based on TTL cleanup label.
+  * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
 
 #### ClusterRoles
+
+Kyverno creates the following ClusterRoles, one per controller type:
+
+* `kyverno:admission-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update, patch and delete MutatingWebhookConfigurations to configure webhook rules for admission mutations.
+  * get, list, watch, create, update, patch and delete ValidatingWebhookConfigurations to configure webhook rules for admission validations.
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicies for auto-generating validatingadmissionpolicies. 
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicyBindings for auto-generating validatingadmissionpolicybindings.
+  * get, list and watch Roles to manage webhook configurations auto-deletion.
+  * get, list and watch ClusterRoles manage webhook configurations auto-deletion.
+  * get, list and watch RoleBindings manage webhook configurations auto-deletion.
+  * get, list and watch ClusterRolebindings manage webhook configurations auto-deletion.
+* `kyverno:reports-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicies for auto-generating validatingadmissionpolicies. 
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicyBindings for auto-generating validatingadmissionpolicybindings.
+* `kyverno:background-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+* `kyverno:cleanup-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update and delete ValidatingWebhookConfigurations to perform resources deletion based on TTL cleanup label.
 
 Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to search for and combine ClusterRoles which apply to Kyverno. Each controller has its own set of ClusterRoles. Those ending in `core` are the aggregate ClusterRoles which are then aggregated by the top-level role without the `core` suffix.
 
