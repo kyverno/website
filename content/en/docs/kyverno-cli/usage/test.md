@@ -57,6 +57,7 @@ results:
   patchedResources: <file_name.yaml> # when testing a mutate rule this field is required. File may contain one or more resources separated by ---
   generatedResource: <file_name.yaml> # when testing a generate rule this field is required.
   cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
+  failOnMissingResources: false # indicates if the test should fail if the patched/generated resources are missing.
   kind: <kind> # optional
   result: pass
 checks:
