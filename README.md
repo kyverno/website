@@ -38,6 +38,7 @@ hugo server
 ```
 
 **Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. You can do this by either:
+
 - Right-clicking on your terminal application (PowerShell/Command Prompt) and selecting "Run as administrator"
 - Or by pressing Windows key + X and selecting "Windows PowerShell (Admin)" or "Command Prompt (Admin)"
 
@@ -46,12 +47,14 @@ Then navigate to your project directory and run the `hugo server` command.
 By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
 
 **Note for Github Codespaces User:** You will be required to install the hugo extended version. To do so download the extended version from [hugo release](https://github.com/gohugoio/hugo/releases) based on your operation system (mostly it is Ubuntu for Codespaces). Use the below commands to install and then move the hugo directory to `usr/local/hugo/bin/hugo`
+
 ```
 wget https://github.com/gohugoio/hugo/releases/download/v0.145.0/hugo_extended_0.145.0_linux-amd64.deb
 sudo dpkg -i hugo_extended_0.145.0_linux-amd64.deb
 rm hugo_extended_0.145.0_linux-amd64.deb
 sudo mv /usr/local/bin/hugo /usr/local/hugo/bin/hugo
 ```
+
 Finally, Check the hugo version by running: `hugo version`
 
 ## Update Docsy theme
@@ -76,13 +79,13 @@ Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mut
 
 ### Code styling
 
-* Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
-* Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
-* Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
+- Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
+- Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
+- Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
 
 ### Grammar
 
-* We standardize on use of the Oxford comma.
+- We standardize on use of the Oxford comma.
 
 ### Links
 
