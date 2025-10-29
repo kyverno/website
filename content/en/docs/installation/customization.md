@@ -359,9 +359,11 @@ The following keys are used to control the behavior of Kyverno and must be set i
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
 10. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
-11. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
-12. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
-13. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+11. `enableUpdateRequestCleanup`: enables automatic cleanup of UpdateRequest resources by adding cleanup labels. When enabled, UpdateRequest resources will be annotated with a TTL label for automatic cleanup. Default is `false`.
+12. `updateRequestCleanupTTL`: sets the time-to-live (TTL) duration for UpdateRequest resources when cleanup is enabled. Accepts duration strings like "2m", "1h", "30s". Default is `"2m"`.
+13. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
+14. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
+15. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
 

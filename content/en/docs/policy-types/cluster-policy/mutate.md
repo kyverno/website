@@ -731,6 +731,10 @@ Events:
 
 To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
+{{% alert title="Tip" color="info" %}}
+Kyverno supports automatic cleanup of UpdateRequest resources through TTL labels. This feature can be enabled in the Kyverno configuration to help manage resource accumulation in large clusters. See the [UpdateRequest Cleanup](/docs/policy-types/cluster-policy/generate.md#updaterequest-cleanup) section for more details.
+{{% /alert %}}
+
 For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field, however a permission check is performed when a policy is installed.
 
 ```
