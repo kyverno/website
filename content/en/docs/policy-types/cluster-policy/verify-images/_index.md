@@ -47,6 +47,69 @@ The `imageRegistryCredentials.secrets` specifies a list of secrets that are prov
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
+## Limitations
+
+### Variables in `imageReferences`
+The `imageReferences` field does **not** support variable interpolation (e.g., `{{ }}` syntax). Only **static strings** or predefined lists should be used.
+
+ ####  Incorrect Usage (Using Variables – Not Allowed)
+ ```yaml
+ verifyImages:
+   - imageReferences: ["{{ parse_yaml(allowedregistryprefixes.data.allowedregistryprefixes) }}"]
+ ```
+  This will result in a validation error because variables are **not allowed** in `imageReferences`.
+
+ ####  Correct Usage (Using Static Values – Allowed)
+ ```yaml
+ verifyImages:
+   - imageReferences:
+       - "myregistry.com/app-image:v1"
+       - "myregistry.com/app-image:v2"
+ ```
+  Here, only **explicit, static image references** are used, which is allowed.
+
+
+### **Other Fields Where Variables Are Not Allowed**
+ In addition to `imageReferences`, the following fields **do not support variable interpolation** and must be defined with static values:
+
+ - `match.resources.kinds`
+ - `exclude.resources.kinds`
+ - `preconditions.all`
+ - `preconditions.any`
+
+ ####  Incorrect Usage (Using Variables – Not Allowed)
+ ```yaml
+ rules:
+   - name: restrict-deployment-kinds
+     match:
+       resources:
+         kinds:
+           - "{{ request.object.kind }}"
+ ```
+  **Why is this incorrect?**  
+ - `match.resources.kinds` must contain **static** resource kinds (e.g., `Pod`, `Deployment`).  
+ - Dynamic interpolation using `{{ request.object.kind }}` is **not supported**.  
+
+ ####  Correct Usage (Using Static Values – Allowed)
+ ```yaml
+ rules:
+   - name: restrict-deployment-kinds
+     match:
+       resources:
+         kinds:
+           - Deployment
+           - StatefulSet
+ ```
+ **Why is this correct?**  
+ - Only predefined, static resource kinds (`Deployment`, `StatefulSet`) are used.  
+
+
+
+### **Why Are Variables Not Allowed in These Fields?**
+ Kyverno requires these fields to be **static** to ensure policy validation and enforcement remain deterministic and efficient. Allowing variables in these fields could introduce unexpected behavior, making policy evaluation unreliable.
+
+
+
 ### Cache
 
 Image verification requires multiple network calls and can be time consuming. Kyverno has a TTL based cache for image verification which caches successful outcomes of image verification. When cache is enabled, an image once verified by a policy will be considered to be verified until TTL duration expires or there is a change in policy.
