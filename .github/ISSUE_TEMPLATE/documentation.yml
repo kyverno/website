@@ -1,7 +1,7 @@
-name: "Bug Report: Documentation"
+name: 'Bug Report: Documentation'
 description: Report a bug in the Kyverno documentation.
-title: "[Bug] "
-labels: ["bug"]
+title: '[Bug] '
+labels: ['bug']
 body:
   - type: markdown
     attributes:
