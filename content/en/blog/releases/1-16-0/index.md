@@ -152,11 +152,6 @@ spec:
   policies:
     - name: verify-sbom
       rules: ["require-slsa-level"]
-  match:
-    any:
-      - resources:
-          kinds: ["Pod"]
-          namespaces: ["supply-chain"]
   reportResult: pass
 ```
 
