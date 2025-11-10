@@ -18,7 +18,7 @@ CEL policy types are introduced as v1beta. The promotion plan provides a clear, 
 
 ## Namespaced Policies
 
-Kyverno 1.16 introduces namespaced CEL policy types - `NamespacedValidatingPolicy`, `NamespacedDeletingPolicy`, and `NamespacedImageValidatingPolicy` - which mirror their cluster-scoped counterparts but apply only within the policy’s namespace. This lets teams enforce guardrails with least-privilege RBAC and without central changes, improving multi-tenancy and safety during rollout. Choose namespaced types for team-owned namespaces and cluster-scoped types for global controls.
+Kyverno 1.16 introduces namespaced CEL policy types - NamespacedValidatingPolicy, NamespacedDeletingPolicy, and NamespacedImageValidatingPolicy - which mirror their cluster-scoped counterparts but apply only within the policy’s namespace. This lets teams enforce guardrails with least-privilege RBAC and without central changes, improving multi-tenancy and safety during rollout. Choose namespaced types for team-owned namespaces and cluster-scoped types for global controls.
 
 ## Observability Upgrades
 
@@ -50,7 +50,7 @@ CEL policies now emit Kubernetes Events for passes, violations, errors, and comp
 
 ### Image-based exceptions
 
-This exception allows `Pods` in `ci` using images, via `images` attribute, that match the provided patterns while keeping the no-latest rule enforced for all other images. It narrows the bypass to specific namespaces and teams for auditability.
+This exception allows Pods in `ci` using images, via `images` attribute, that match the provided patterns while keeping the no-latest rule enforced for all other images. It narrows the bypass to specific namespaces and teams for auditability.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1beta1
@@ -59,30 +59,31 @@ metadata:
   name: allow-ci-latest-images
   namespace: ci
 spec:
-  policies:
-    - name: restrict-image-tags
-      rules: ["no-latest"]
+  policyRefs:
+    - name: restrict-image-tag
+      kind: ValidatingPolicy
   images:
     - "ghcr.io/kyverno/*:latest"
   matchConditions:
     - expression: "has(object.metadata.labels.team) && object.metadata.labels.team == 'platform'"
 ```
 
-The following `ValidatingPolicy` references `exceptions.allowedImages` which skips validation checks for white-listed image(s):
+The following ValidatingPolicy references `exceptions.allowedImages` which skips validation checks for white-listed image(s):
 
 ```yaml
 apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
-  name: check-labels
+  name: restrict-image-tag
 spec:
   rules:
     - name: broker-config
-      match:
-        any:
-          - resources:
-              kinds: ["pods"]
-              namespaces: ["exceptions-allowed-images"]
+      matchConstraints:
+        resourceRules:
+          - apiGroups:   [apps]
+            apiVersions: [v1]
+            operations:  [CREATE, UPDATE]
+            resources:   [pods]
       matchConditions:
         - expression: "has(object.spec.containers) && object.spec.containers.exists(c, exceptions.allowedImages.exists(img, c.image == img))"
       validations:
@@ -100,9 +101,9 @@ metadata:
   name: allow-debug-annotation
   namespace: dev
 spec:
-  policies:
-    - name: require-approved-annotations
-      rules: ["no-debug-mode"]
+  policyRefs:
+    - name: check-security-context
+      kind: ValidatingPolicy
   allowedValues:
     - "debug-mode-temporary"
   matchConditions:
@@ -115,7 +116,7 @@ Here’s the policy leveraging the above allowed values. It denies resources unl
 apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
-  name: with-exception-skip-result
+  name: check-security-context
 spec:
   matchConstraints:
     resourceRules:
@@ -146,12 +147,16 @@ This exception sets `reportResult: pass`, so when it matches, Policy Reports sho
 apiVersion: policies.kyverno.io/v1beta1
 kind: PolicyException
 metadata:
-  name: green-exception-in-report
-  namespace: supply-chain
+  name: exclude-skipped-deployment-2
+  labels:
+    polex.kyverno.io/priority: "0.2"
 spec:
-  policies:
-    - name: verify-sbom
-      rules: ["require-slsa-level"]
+  policyRefs:
+  - name: "with-multiple-exceptions"
+    kind: ValidatingPolicy
+  matchConditions:
+    - name: "check-name"
+      expression: "object.metadata.name == 'skipped-deployment'"
   reportResult: pass
 ```
 
