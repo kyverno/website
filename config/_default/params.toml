@@ -151,6 +151,10 @@ js = [
   url = "https://release-1-15-0.kyverno.io"
 
 [[versions]]
+  version = "v1.15.0"
+  url = "https://release-1-15-0.kyverno.io"
+
+[[versions]]
   version = "v1.14.0"
   url = "https://release-1-14-0.kyverno.io"
 
