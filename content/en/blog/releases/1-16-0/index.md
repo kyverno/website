@@ -74,25 +74,32 @@ The following ValidatingPolicy references `exceptions.allowedImages` which skips
 apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
-  name: restrict-image-tag
+name: restrict-image-tag
 spec:
-  rules:
-    - name: broker-config
-      matchConstraints:
-        resourceRules:
-          - apiGroups:   [apps]
-            apiVersions: [v1]
-            operations:  [CREATE, UPDATE]
-            resources:   [pods]
-      matchConditions:
-        - expression: "has(object.spec.containers) && object.spec.containers.exists(c, exceptions.allowedImages.exists(img, c.image == img))"
-      validations:
-        # ...
+rules:
+  - name: broker-config
+    matchConstraints:
+      resourceRules:
+        - apiGroups:   [apps]
+          apiVersions: [v1]
+          operations:  [CREATE, UPDATE]
+          resources:   [pods]
+    validations:
+     - message: "Containers must not allow privilege escalation unless they are in the allowed images list."
+       expression: >
+         object.spec.containers.all(container,
+          string(container.image) in exceptions.allowedImages ||
+          (
+            has(container.securityContext) &&
+            has(container.securityContext.allowPrivilegeEscalation) &&
+            container.securityContext.allowPrivilegeEscalation == false
+          )
+        )
 ```
 
 ### Value-based exceptions
 
-This exception whitelists a list of values via `allowedValues` used by a CEL validation for a constrained set of targets so teams can proceed without weakening the entire policy.
+This exception allows a list of values via `allowedValues` used by a CEL validation for a constrained set of targets so teams can proceed without weakening the entire policy.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1beta1
@@ -160,7 +167,7 @@ spec:
   reportResult: pass
 ```
 
-## Kyverno Authorizer
+## Kyverno Authz Server
 
 Beyond enriching admission-time validation, Kyverno now extends policy decisions to your service edge. The Kyverno Authz Server applies Kyverno policies to authorize requests for Envoy (via the External Authorization filter) and for plain HTTP services as a standalone HTTP authorization server, returning allow/deny decisions based on the same policy engine you use in Kubernetes. This unifies policy enforcement across admission, gateways, and services, enabling consistent guardrails and faster adoption without duplicating logic.
 
