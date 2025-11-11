@@ -4,7 +4,7 @@
 
   [build.environment]
     NODE_VERSION = "23.6.0"
-    # Astro/Starlight don't use Go or Hugo, so those are omitted
+    GO_VERSION = "1.24.1"
     ASTRO_TELEMETRY_DISABLED = "1"
     SITE_URL = "https://kyverno.io/"
 
