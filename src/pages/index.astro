@@ -1,0 +1,31 @@
+---
+import "../styles/global.css";
+import "../layouts/DefaultLayout.astro";
+import DefaultLayout from "../layouts/DefaultLayout.astro";
+import { Header } from '../components/Header';
+import {HeroSection} from '../components/HeroSection';
+import {WhykyvernoSection} from '../components/WhykyvernoSection';
+import {ComparisonChart} from '../components/ComparisonChart';
+import {FeatureSection} from '../components/FeatureSection';
+import {CtaSection} from '../components/CtaSection';
+import {CelPolicySection} from '../components/CelPolicySection';
+import {PartnersSection} from '../components/PartnersSection';
+import {CncfSection} from '../components/CncfSection';
+import {Footer} from '../components/Footer';
+
+
+---
+
+<DefaultLayout>
+  <!-- <a href="/docs">Docs</a> -->
+  <Header client:load/>
+  <HeroSection client:load/>
+  <WhykyvernoSection />
+  <ComparisonChart />
+  <FeatureSection />
+  <CtaSection />
+  <CelPolicySection />
+  <PartnersSection />
+  <CncfSection />
+  <Footer />
+</DefaultLayout>
