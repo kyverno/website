@@ -16,7 +16,7 @@ With the ringing in of the new year the Kyverno team is proud to announce the re
 
 Something we've heard for a while now from the community was that they love the ease with which Kyverno can [select resources](/docs/policy-types/cluster-policy/match-exclude.md) (and, really, just ease of use in general) for action by policies but that this was limiting in certain ways. It may not be scalable to modify every policy with the same exclusions, and, secondarily, in real-world ops scenarios everyone has special exceptions that need careful handling. So we're excited to show off our new PolicyExceptions in 1.9!
 
-A [PolicyException](/docs/policy-types/cluster-policy/exceptions.md) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
+A [PolicyException](/docs/exceptions/) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
 
 Here's what it would look like to allow a special exception to one of the [Pod Security Standard](/policies/pod-security/) [policies](/policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)) but only for a very specific resource named `important-tool`.
 

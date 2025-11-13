@@ -5,7 +5,7 @@ description: >-
 weight: 20
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{{< feature-state state="beta" version="v1.16" />}}
 
 The Kyverno `MutatingPolicy` type extends the Kubernetes `MutatingAdmissionPolicy` type for complex mutation operations and other features required for Policy-as-Code. A `MutatingPolicy` is a superset of a `MutatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 

@@ -12,7 +12,7 @@ description: >
 <a href="https://github.com/kyverno/policies/raw/main//cleanup/cleanup-bare-pods/cleanup-bare-pods.yaml" target="-blank">/cleanup/cleanup-bare-pods/cleanup-bare-pods.yaml</a>
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v2
 kind: ClusterCleanupPolicy
 metadata:
   name: clean-bare-pods
