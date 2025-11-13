@@ -36,19 +36,6 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-    # TODO(lucchmielowski): Fix issue for commands with dash in their name then reactivate for finer-grained controls
-    # - name: Check for Command
-    #    id: command
-    #    uses: xt0rted/slash-command-action@v2
-    #   continue-on-error: true
-    #   with:
-    #     command: cherry-pick
-    #     reaction: "true"
-    #     reaction-type: "+1"
-    #     allow-edits: "false"
-    #     permission-level: write
-    #     repo-token: ${{ secrets.GITHUB_TOKEN }}
-
       # NOTE: can be removed if slash-command-action is uncommented
       - name: React to comment
         uses: dkershner6/reaction-action@97ede302a1b145b3739dec3ca84a489a34ef48b5 # v2.2.1
