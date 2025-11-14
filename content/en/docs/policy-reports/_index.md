@@ -250,7 +250,11 @@ timestamp:
 
 ## Report internals
 
-The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of matching resources as determined by Kyverno `Policy` and `ClusterPolicy` objects, however these reports are built of four intermediary resources. For matching resources which were caught during admission mode, `AdmissionReport` and `ClusterAdmissionReport` resources are created. For results of background processing, `BackgroundScanReport` and `ClusterBackgroundScanReport` resources are created. An example of a `ClusterAdmissionReport` is shown below.
+In Kyverno `v1.12` and later, the internal reporting mechanism has been simplified.
+
+The final `PolicyReport` and `ClusterPolicyReport` resources are still used to summarize policy results, but instead of being built from four separate intermediary report types, Kyverno now uses a unified ephemeral report format. These internal reports, called `EphemeralReport` and `ClusterEphemeralReport`, are generated for both admission and background scans. They exist temporarily in memory or briefly in the cluster, and Kyverno uses them to construct the final reports automatically. Users typically do not interact with them directly unless troubleshooting or debugging.
+
+### Example
 
 {{% alert title="Note" color="info" %}}
 As of kyverno 1.16, you can add the label `reports.kyverno.io/disabled` with any value to a policy of any type (YAML, CEL or VAP/MAP), which will result in no reports of any kind (ephemeral or permanent) be generated for this policy
