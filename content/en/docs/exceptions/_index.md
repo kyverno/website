@@ -411,6 +411,51 @@ spec:
     - infinity
 ```
 
+### Using PolicyException with (Namespace-)Selectors
+
+Using selectors inside `match` statements (`selector` and `namespaceSelector`) of a PolicyException offers an even more granular approach, for example to exclude the initContainers of Istio.
+
+> **Note:** Due to a bug in the past (see [#13941](https://github.com/kyverno/kyverno/issues/13941)), `namespaceSelector` are now fully working since **Kyverno 1.15.2**.
+
+```yaml
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: pod-security-exception
+  namespace: policy-exception-ns
+spec:
+  exceptions:
+  - policyName: psa
+    ruleNames:
+    - baseline
+  match:
+    any:
+      # Istio Sidecar injection at namespace level
+      # https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/#controlling-the-injection-policy
+    - resources:
+        kinds:
+          - Pod
+        namespaceSelector:
+          matchLabels:
+            istio-injection: enabled
+      # Sidecar injection can also be controlled on a per-pod basis, by configuring
+      # the `sidecar.istio.io/inject` label on a pod
+    - resources:
+        kinds:
+          - Pod
+        selector:
+          matchLabels:
+            sidecar.istio.io/inject: 'true'
+  podSecurity:
+    - controlName: Capabilities
+      images:
+        - "*/istio/proxyv2*"
+      restrictedField: spec.initContainers[*].securityContext.capabilities.add
+      values:
+        - NET_ADMIN
+        - NET_RAW
+```
+
 ## PolicyExceptions with CEL Expressions
 
 Since Kyverno 1.14.0, **PolicyExceptions**, introduced in the new group `policies.kyverno.io`, support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
