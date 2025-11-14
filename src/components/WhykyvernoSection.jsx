@@ -24,7 +24,7 @@ export const WhykyvernoSection = () => {
                     automation by letting you manage policies the same way 
                     you manage your cluster.
                 </p>
-                <div className="flex flex-col space-y-4 md:flex-row md:flex-wrap md:content-baseline justify-center 
+                <div className="flex flex-col space-y-4 md:flex-row md:content-baseline justify-center 
                 md:justify-center md:space-x-4">
                     {whyKyvernoCards.map((card) => (
                         <div key={card.title} className="bg-dark-50 p-4 rounded-2xl border 
