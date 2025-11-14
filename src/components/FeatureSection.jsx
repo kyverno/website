@@ -5,17 +5,17 @@ export const FeatureSection = () => {
   return (
      <section className="p-20 flex flex-col items-center space-y-5" id="features">
                 <div className="items-center flex flex-col space-y-6 my-5">
-                    <h2 className="text-4xl tracking-wide
+                    <h2 className="w-100 md:w-full text-4xl tracking-wide
                     capitalize text-center font-bold">
                         Complete Platform Engineering
                       <span className="text-primary-100">  Policy As Code Solution</span>
                     </h2>
-                    <p className="w-120 text-[1rem] sm:text-lg sm:w-220 text-center ">
+                    <p className="w-100 text-[1rem] sm:text-lg sm:w-220 text-center ">
                        From policy creation to enforcement, testing to reporting, and everything in between,
                        get comprehensive Kubernetes governance and compliance with Kyverno.
                     </p>
-                    <div className="flex flex-col space-y-4 sm:flex-row sm:flex-wrap 
-                    md:items-baseline sm:justify-center sm:space-x-4">
+                    <div className="flex flex-col items-center justify-center space-y-4 sm:flex-row sm:flex-wrap 
+                    md:items-baseline sm:justify-center sm:space-x-4 px-10">
                         {features.map((card) => (
                             <div key={card.title} className="bg-dark-50 p-4 rounded-2xl border 
                             border-stroke flex flex-col space-y-4 w-full sm:space-y-8 md:w-1/3 md:space-y-4 

@@ -9,11 +9,11 @@ export const CelPolicySection = () => {
                New in v1.16
             </div> 
             <div className="items-center flex flex-col space-y-6 my-5">
-                <h1 className="text-4xl sm:text-4xl font-bold tracking-wide
+                <h2 className="text-4xl sm:text-4xl font-bold tracking-wide
                 capitalize text-center">
                     Introducing
                   <span className="text-primary-100"> CEL Polices</span>
-                </h1>
+                </h2>
                 <p className="w-80 text-[1rem] sm:text-lg sm:w-150 lg:w-220 text-center ">
                     CEL (Common Expression Language) policies bring powerful, 
                     fine-grained control to Kyverno, enabling users to write more 
