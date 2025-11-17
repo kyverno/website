@@ -755,7 +755,7 @@ summary:
 
 ### Applying Policy Exceptions
 
-[Policy Exceptions](/docs/policy-types/cluster-policy/exceptions.md) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
+[Policy Exceptions](/docs/exceptions/) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
