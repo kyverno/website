@@ -203,7 +203,7 @@ kubectl apply -f tests/kind-manifests/noncompliant-pod.yaml
 
 **Critical for Complete CIS Coverage**: kube-bench provides essential validation that Kyverno cannot perform:
 
-**File:** [kube-bench/job-node.yaml](https://github.com/ATIC-Yugandhar/cis-eks-kyverno/blob/main/kube-bench/job-node.yaml)
+**File:** [kube-bench/job-node.yaml](https://github.com/ATIC-Yugandhar/cis-eks-kyverno/blob/d508560478d434921dfe78b28f028348265ec4fa/kube-bench/job-node.yaml)
 
 ```yaml
 apiVersion: batch/v1
