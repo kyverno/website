@@ -36,27 +36,33 @@ The test was conducted where we installed Kyverno policies to enforce the Kubern
 
 
 | replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max)  | Memory (max)  | CPU (max) | Memory Limit    |
-|----------|------------|-----------|---------|---------|--------------------------|--------------------|--------------|------------|-----------------|
-| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 42.67ms / 141.24ms |    114Mi     |    148m    | default (384Mi) |
-| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 80.74ms / 409.35ms |    215Mi     |    3237m   | default (384Mi) |
-| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 203.86ms / 1.5s    |    471Mi     |    4851m   |      512Mi      |
-| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 35.61ms / 92.61ms  |    104Mi     |    289m    | default (384Mi) |
-| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 67.37ms / 327.12ms |    122Mi     |    1336m   | default (384Mi) |
-| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 163.08ms / 3.02s   |    239Mi     |    2769m   |      512Mi      |
+|----------|------------|-------------------|---------|---------|------------------|--------------------|--------------|------------|-----------------|
+| 1        | 17         | Validate          | Enforce | Pods    | 100/1,000        | 37.71ms / 110.53ms |    152Mi     |    548m    | default (384Mi) |
+| 1        | 17         | Validate          | Enforce | Pods    | 200/5,000        | 80.74ms / 409.35ms |    182Mi     |    2885m   | default (384Mi) |
+| 1        | 17         | Validate          | Enforce | Pods    | 500/10,000       | 92.73ms / 3.15s    |    143Mi     |    3033m   |      512Mi      |
+| 3        | 17         | Validate          | Enforce | Pods    | 100/1,000        | 32.89ms / 121.19ms |    104Mi     |    262m    | default (384Mi) |
+| 3        | 17         | Validate          | Enforce | Pods    | 200/5,000        | 60.06ms / 1.01s    |    117Mi     |    1067m   | default (384Mi) |
+| 3        | 17         | Validate          | Enforce | Pods    | 500/10,000       | 151.97ms / 3.17s   |    107Mi     |    1182m   |      512Mi      |
+| 1        | 16         | ValidatingPolicy  | Deny    | Pods    | 100/1,000        | 28.3ms / 108.36ms  |    142Mi     |    108m    | default (384Mi) |
+| 1        | 16         | ValidatingPolicy  | Deny    | Pods    | 200/5,000        | 54.87ms / 346.74ms |    211Mi     |    2339m   | default (384Mi) |
+| 1        | 16         | ValidatingPolicy  | Deny    | Pods    | 500/10,000       | 133.67ms / 1.63s   |    163Mi     |    4123m   |      512Mi      |
+| 3        | 16         | ValidatingPolicy  | Deny    | Pods    | 100/1,000        | 24.87ms / 59.37ms  |    129Mi     |    135m    | default (384Mi) |
+| 3        | 16         | ValidatingPolicy  | Deny    | Pods    | 200/5,000        | 45.97ms / 1.12s    |    159Mi     |    554m    | default (384Mi) |
+| 3        | 16         | ValidatingPolicy  | Deny    | Pods    | 500/10,000       | 114.01ms / 3.28s   |    170Mi     |    810m    |      512Mi      |
 
 #### Reports Controller
 
-The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
+The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 16 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
 
 | # policyreports | total etcd size | CPU (max) | memory (max) |
 |-----------------|-----------------|-----------|--------------|
-| 1270            | 134 MB          | 575m      | 91Mi         |
-| 2470            | 223 MB          | 1389m     | 101Mi        |
-| 3770            | 280 MB          | 1238m     | 107Mi        |
-| 4970            | 334 MB          | 1174m     | 114Mi        |
-| 7370            | 467 MB          | 1749m     | 144Mi        |
-| 9770            | 552 MB          | 1859m     | 160Mi        |
-| 10010           | 552 MB          | 1859m     | 138Mi        |
+| 1284            | 373 MB          | 3709m     | 99Mi         |
+| 2524            | 381 MB          | 3729m     | 102Mi        |
+| 3572            | 390 MB          | 3721m     | 110Mi        |
+| 4879            | 398 MB          | 3981m     | 118Mi        |
+| 6099            | 418 MB          | 4014m     | 124Mi        |
+| 7319            | 431 MB          | 4034m     | 136Mi        |
+| 10254           | 483 MB          | 4273m     | 152Mi        |
 
 #### AdmissionReview Reference
 

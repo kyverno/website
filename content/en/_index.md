@@ -3,56 +3,306 @@ title: Kyverno
 linkTitlem: Kyverno
 ---
 
+<div class="homepage-content">
+
 {{< blocks/cover title="Kyverno" image_anchor="top" height="full" color="dark" >}}
 
-# Policy as Code, Simplified! { class="text-center" }
+# Unified Policy As Code for Platform Engineers { class="text-center" }
 
-<div class="mt-5 mx-auto">
-	<a class="btn btn-lg btn-primary mr-3 mb-4" href="#about-kyverno">
-		Learn More <i class="fa fa-chalkboard-teacher ml-2"></i>
-	</a>
-	&nbsp;
-	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="docs/introduction/#quick-start-guides">
-		Get Started <i class="fa fa-arrow-alt-circle-right ml-2 "></i>
-	</a>
-	<p>
-		<a class="btn btn-link text-info" href="#about-kyverno" aria-label="Read more">
-			<i class="fa fa-chevron-circle-down" style="font-size: 400%"></i>
-		</a>
-	</p>
+<p class="lead text-center mt-4 mb-5" style="font-size: 1.75rem; color: #cfe5f5;">
+Secure, Automate, and Govern Your Infrastructure and Applications With Declarative Policy as Code
+</p>
+
+<div class="row" id="features">
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/introduction/" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background: #cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-cube fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Kubernetes Native</h3>
+        <p class="card-text text-muted mb-0">Extends and completes Kubernetes policy types for platform engineering</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/policy-types/validating-policy/#json-payloads" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background: #cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-globe fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Works Everywhere</h3>
+        <p class="card-text text-muted mb-0">Executes Kubernetes-style policies on any JSON payload using the CLI or SDK</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/policy-reports/" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background: #cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Reporting</h3>
+        <p class="card-text text-muted mb-0">Integrated OpenReports compatible producers, routers, and dashboards</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/exceptions/" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background:#cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-exclamation-triangle fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Exceptions</h3>
+        <p class="card-text text-muted mb-0">Time-bound and fine grained exception management decoupled from policies</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/kyverno-cli/" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background: #cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-terminal fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Shift-Left</h3>
+        <p class="card-text text-muted mb-0">CLI for integrations into CI/CD and IaC (Terraform, etc.) pipelines.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="col-lg-4 col-md-6 mb-4">
+    <a href="/docs/testing-policies/" style="text-decoration: none; color: inherit; display: block;">
+      <div class="card h-100 border-0 shadow-sm text-center" style="transition: transform 0.2s; background: #cfe5f5; cursor: pointer;">
+                <div class="card-body p-3">
+          <div class="mb-2">
+            <i class="fa fa-vial fa-3x text-primary"></i>
+          </div>
+          <h3 class="card-title font-weight-bold mb-2">Testing</h3>
+        <p class="card-text text-muted mb-0">Tooling for declarative unit tests and end-to-end behavioral tests.</p>
+        </div>
+      </div>
+    </a>
+  </div>
 </div>
 
 {{< /blocks/cover >}}
 
+{{% blocks/lead color="gray" %}}
+
+<br/>
+
+# Trusted By Industry Leaders { class="text-center" }
+
+<br/>
+
+<div class="trusted-by-section">
+  <div class="scrolling-logos">
+          <div class="logo-item">
+        <img src="/logos/spotify.png" alt="Spotify" style="height: 50px;">
+      </div>
+    <div class="logo-item">
+      <img src="/logos/linkedin.png" alt="LinkedIn" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/yahoo.png" alt="Yahoo" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/bloomberg.png" alt="Bloomberg" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/vodafone.png" alt="Vodafone" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/deutsche-telekom.png" alt="Deutsche Telekom" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/robinhood.png" alt="Robinhood" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/razorpay.png" alt="Razorpay" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/adidas.png" alt="Adidas" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/wayfair.png" alt="Wayfair" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/us-dod.png" alt="US DoD" style="height: 50px;">
+    </div>
+    <!-- Duplicate logos for seamless loop -->
+    <div class="logo-item">
+      <img src="/logos/spotify.png" alt="Spotify" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/linkedin.png" alt="LinkedIn" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/yahoo.png" alt="Yahoo" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/bloomberg.png" alt="Bloomberg" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/vodafone.png" alt="Vodafone" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/deutsche-telekom.png" alt="Deutsche Telekom" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/robinhood.png" alt="Robinhood" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/razorpay.png" alt="Razorpay" style="height: 50px;">
+    </div>
+    <div class="logo-item">
+      <img src="/logos/adidas.png" alt="Adidas" style="height: 50px;">
+    </div>
+          <div class="logo-item">
+        <img src="/logos/wayfair.png" alt="Wayfair" style="height: 50px;">
+      </div>
+  	<div class="logo-item">
+         <img src="/logos/us-dod.png" alt="US DoD" style="height: 50px;">
+     </div>
+  </div>
+</div>
+
+<style>
+.trusted-by-section {
+  padding: 2rem 0;
+  overflow: hidden;
+}
+
+.scrolling-logos {
+  display: flex;
+  animation: scroll 30s linear infinite;
+  gap: 4rem;
+  align-items: center;
+  width: max-content;
+}
+
+.logo-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.scrolling-logos:hover {
+  animation-play-state: paused;
+}
+
+/* Feature card hover effects */
+#features a:hover .card {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+  background: rgba(240,248,255,0.98) !important;
+}
+</style>
+
+</br>
+<div class="text-center">
+  <a href="https://nirmata.com" style="text-decoration: none; color: inherit;">
+    <p style="font-size: 2.0rem; margin: 0;">
+      Created by
+      <img src="/images/nirmata-wt.png" class="img-fluid" alt="Nirmata" style="max-width: 200px; margin-left: 10px;">
+    </p>
+  </a>
+</div>
+
+{{% /blocks/lead %}}
+
 {{% blocks/lead color="light" %}}
-<br/>
-
-# About Kyverno { class="text-center" }
 
 <br/>
+
+# Complete Policy-Based Resource Lifecycle Management { class="text-center" }
+
 <br/>
 
-<h2>
-The Kyverno project provides a comprehensive set of tools to manage the complete Policy-as-Code (PaC) lifecycle for Kubernetes and other cloud native environments
-</h2>
+<div class="row justify-content-center">
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <a href="/docs/policy-types/validating-policy/" class="text-decoration-none">
+        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; transition: transform 0.2s;">
+          <i class="fa fa-check-circle fa-2x"></i>
+        </div>
+        <h6 class="font-weight-bold text-dark">Validate Resources</h6>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <a href="/docs/policy-types/mutating-policy/" class="text-decoration-none">
+        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; transition: transform 0.2s;">
+          <i class="fa fa-edit fa-2x"></i>
+        </div>
+        <h6 class="font-weight-bold text-dark">Mutate Resources</h6>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <a href="/docs/policy-types/generating-policy/" class="text-decoration-none">
+        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; transition: transform 0.2s;">
+          <i class="fa fa-plus-circle fa-2x"></i>
+        </div>
+        <h6 class="font-weight-bold text-dark">Generate Resources</h6>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <a href="/docs/policy-types/deleting-policy/" class="text-decoration-none">
+        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; transition: transform 0.2s;">
+          <i class="fa fa-trash-alt fa-2x"></i>
+        </div>
+        <h6 class="font-weight-bold text-dark">Cleanup Resources</h6>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-lg-2 col-md-4 col-6 mb-4">
+    <div class="text-center">
+      <a href="/docs/policy-types/image-validating-policy/" class="text-decoration-none">
+        <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; transition: transform 0.2s;">
+          <i class="fa fa-shield-alt fa-2x"></i>
+        </div>
+        <h6 class="font-weight-bold text-dark">Verify Images</h6>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Buttons -->
 <br/>
-
-<p style="line-height:1.5">
-
-Kyverno policies are declarative YAML resources and <b>no new language</b> is required. Kyverno enables use of familiar tools such as <code style="font-size: 1.35rem">kubectl</code>, <code style="font-size: 1.35rem">git</code>, and <code style="font-size: 1.35rem">kustomize</code> to manage policies. Kyverno supports JMESPath and the Common Expressions Language (CEL) for efficient handling of complex logic.
-
-In Kubernetes environments, Kyverno policies can <b>validate, mutate, generate, and cleanup</b> any Kubernetes resource, including custom resources. To help secure the software supply chain Kyverno policies can <b>verify OCI container image signatures and artifacts</b>. Kyverno policy reports and policy exceptions are also Kubernetes API resources.
-
-The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as part of an IaC and CI/CD pipelines.
-
-**Kyverno Policy Reporter** provides report management with a graphical web-based user interface.
-
-**Kyverno JSON** allows applying Kyverno policies in non-Kubernetes environments and on any JSON payload.
-
-**Kyverno Chainsaw** provides declarative end-to-end testing for policies.
-
-</p>
-
 <div class="mt-5 mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="docs/introduction/">
 		Documentation <i class="fa fa-book ml-2"></i>
@@ -73,7 +323,7 @@ The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as 
 
 <br/>
 
-### Interested in learning and contributing?
+<p class="text-center"> Interested in learning and contributing?</p>
 
 <p class="mt-5 mx-auto">
 	Sign up on our <a href="https://groups.google.com/g/kyverno" target="_blank">mailing list</a> 
@@ -81,10 +331,20 @@ The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as 
 	our next community meeting. Check out the <a href="/community/" target="_blank">community page</a> for more details. 
 </p>
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/kyverno)](https://goreportcard.com/report/github.com/kyverno/kyverno)
-[![License: Apache-2.0](https://img.shields.io/github/license/kyverno/kyverno?color=blue)](https://github.com/kyverno/kyverno/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/kyverno/kyverno)](https://github.com/kyverno/kyverno/stargazers)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5327/badge)](https://bestpractices.coreinfrastructure.org/projects/5327)
+<div style="text-align: center; margin: 2rem 0;">
+  <a href="https://goreportcard.com/report/github.com/kyverno/kyverno" style="display: inline-block; margin: 0 10px;">
+    <img src="https://goreportcard.com/badge/github.com/kyverno/kyverno" alt="Go Report Card" style="height: 35px;">
+  </a>
+  <a href="https://github.com/kyverno/kyverno/" style="display: inline-block; margin: 0 10px;">
+    <img src="https://img.shields.io/github/license/kyverno/kyverno?color=blue" alt="License: Apache-2.0" style="height: 35px;">
+  </a>
+  <a href="https://github.com/kyverno/kyverno/stargazers" style="display: inline-block; margin: 0 10px;">
+    <img src="https://img.shields.io/github/stars/kyverno/kyverno" alt="GitHub Repo stars" style="height: 35px;">
+  </a>
+  <a href="https://bestpractices.coreinfrastructure.org/projects/5327" style="display: inline-block; margin: 0 10px;">
+    <img src="https://bestpractices.coreinfrastructure.org/projects/5327/badge" alt="CII Best Practices" style="height: 35px;">
+  </a>
+</div>
 
 {{% /blocks/lead %}}
 
@@ -106,3 +366,5 @@ The **Kyverno CLI** can be used to apply and test policies off-cluster e.g., as 
 </div>
 
 {{% /blocks/lead %}}
+
+</div>

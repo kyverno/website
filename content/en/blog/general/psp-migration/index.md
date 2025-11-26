@@ -56,7 +56,7 @@ We've put together a comparison table below which allows you to see how the thre
 
 **No message customization.** When a PSP blocks a Pod the message can't be customized. Same situation with PSA. The message returned by Kyverno can be fully customized making it very useful to show, for example, a team name or email of someone for developers or users to contact.
 
-**No exclusions.** PSP has no ability to exclude a Pod once it is "caught" by a policy. PSA has only a few options here, all of which pertain to cluster-wide configuration. Kyverno basically exclude any criteria you can write. Its [policy exceptions](/docs/policy-types/cluster-policy/exceptions.md) feature takes this even further.
+**No exclusions.** PSP has no ability to exclude a Pod once it is "caught" by a policy. PSA has only a few options here, all of which pertain to cluster-wide configuration. Kyverno basically exclude any criteria you can write. Its [policy exceptions](/docs/exceptions/) feature takes this even further.
 
 **Integrated.** PSP and PSA are both integrated into the control plane. Kyverno is an external component (a dynamic admission controller) and so must be run separately in your cluster. In order to do this, Kyverno uses webhooks.
 
@@ -92,7 +92,7 @@ We'll assume the following:
 2. A Namespaced called `qa` which is the subject of this tutorial.
 3. A user named `chip` who is currently subject to a PSP in the `qa` Namespace we wish to migrate onto Kyverno.
 
-First, we've identified the following PSP which requires that host namespaces, corresponding to Pod spec fields `hostNetwork`, `hostIPC`, and `hostPID` must be unset or set to `false` if they are defined. This is a common component of many PSPs because it prevents Pods from gaining access to the underlying host in a way which could compromise it. It's also a good illustration because this maps nicely onto the Pod Security Standards control of a similar name, and there is a Kyverno policy which covers this control [here](/policies/pod-security/baseline/disallow-host-namespaces/disallow-host-namespaces/).
+First, we've identified the following PSP which requires that host namespaces, corresponding to Pod spec fields `hostNetwork`, `hostIPC`, and `hostPID` must be unset or set to `false` if they are defined. This is a common component of many PSPs because it prevents Pods from gaining access to the underlying host in a way which could compromise it. It's also a good illustration because this maps nicely onto the Pod Security Standards control of a similar name, and there is a Kyverno policy which covers this control [here](/content/en/policies/pod-security/baseline/disallow-host-namespaces/).
 
 ```yaml
 apiVersion: policy/v1beta1
