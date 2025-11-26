@@ -5,6 +5,8 @@ weight: 170
 hide_feedback: true
 ---
 
+{{< feature-state state="beta" version="v0.2.3" />}}
+
 Kyverno Chainsaw is a sub-project of Kyverno provides declarative end-to-end testing for Kubernetes controllers.
 
 <div class="mt-5 mx-auto">

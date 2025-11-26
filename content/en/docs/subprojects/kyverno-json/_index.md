@@ -5,6 +5,8 @@ weight: 160
 hide_feedback: true
 ---
 
+{{< feature-state state="deprecated" version="" />}}
+
 Kyverno JSON is a sub-project of Kyverno that allows applying Kyverno policies to non-Kubernetes workloads. It works on any JSON payload.
 
 <div class="mt-5 mx-auto">
