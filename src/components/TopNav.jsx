@@ -28,7 +28,7 @@ export const TopNav = () => {
     }
 
   return (
-    <nav className='w-full top-10 py-3 backdrop-blur-lg border-b border-neutral-700/80'>
+    <nav className='w-full top-10 py-6 lg:py-3 backdrop-blur-lg border-b border-neutral-700/80'>
             <div className='container px-4 md:w-full md:px-0 lg:px-4 mx-auto relative text-sm'>
                 <div className='flex justify-between items-center'>
                     <SiteLogo/>
@@ -54,10 +54,8 @@ export const TopNav = () => {
                 {mobileNavOpen && (
                     <div className="fixed right-0 z-20 bg-dark-50 w-full p-12 flex 
                     flex-col justify-start items-center space-y-3 lg:hidden" >
-                        <div>
                         <TopNavLinks links={navItemsOnsite} handleScroll = {handleScroll}/>
                         <TopNavLinks links={navItemsExternal}/>
-                        </div>
                         <div className="lg:hidden flex space-x-2">
                             <Button href='https://playground.kyverno.io/' variant='secondary' size='medium'>
                              Playground
