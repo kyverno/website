@@ -9,7 +9,7 @@ export const Button = ({
     ...restProps
 }) => {
 
-    const baseStyles = 'min-w-40 flex justify-center items-center py-2 px-3 rounded-md font-medium';
+    const baseStyles = 'min-w-40 flex justify-center items-center py-2 px-3 rounded-md font-medium md:text-base';
 
     const variantStyles = {
         primary: 'bg-primary-100 text-white hover:bg-blue-50 hover:text-primary-100',

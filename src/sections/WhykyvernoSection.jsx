@@ -22,8 +22,8 @@ export const WhykyvernoSection = () => {
                     you manage your cluster.
                 </p>
             </div>
-            <div className="flex flex-col space-y-4 md:flex-row md:content-baseline justify-center 
-                md:justify-center md:space-x-4 md:mt-8">
+            <div className="w-full flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
+            md:space-x-4 md:mt-8 lg:flex-nowrap">
                     {whyKyvernoCards.map((card, index) => (
                         <WhykyvCard card={card} color={cardColors1[index]} key={index}/>
                     ))}
