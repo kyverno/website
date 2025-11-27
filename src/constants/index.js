@@ -14,7 +14,7 @@ export const navItemsOnsite = [
 ];
 
 export const navItemsExternal = [
-  { label: "Docs", href: "/guides/example" },
+  { label: "Docs", href: "/getting-started/introduction" },
   { label: "Blog", href: "#"},
   { label: "Community", href: "https://kyverno.io/community/" } 
 ];
@@ -67,6 +67,77 @@ export const whyKyvernoCards = [
 
 ];
 
+export const cardColors1 = [
+  {
+    bg:'bg-blue-900/70',
+    text: 'text-blue-300'
+  },
+  {
+    bg:'bg-orange-900/70',
+    text: 'text-orange-300'
+  },
+  {
+    bg:'bg-green-900/70',
+    text: 'text-green-300'
+  },
+  {
+    bg:'bg-purple-900/70',
+    text: 'text-purple-300'
+  }
+]
+
+export const cardColors2 = [
+  {
+    bg:'bg-blue-900/70',
+    text: 'text-blue-300'
+  },
+  {
+    bg:'bg-orange-900/70',
+    text: 'text-orange-300'
+  },
+  {
+    bg:'bg-yellow-900/70',
+    text: 'text-yellow-300'
+  },
+  {
+    bg:'bg-green-900/70',
+    text: 'text-green-300'
+  },
+  {
+    bg:'bg-purple-900/70',
+    text: 'text-purple-300'
+  },
+  {
+    bg:'bg-cyan-900/70',
+    text: 'text-cyan-300'
+  },
+  {
+    bg:'bg-indigo-900/70',
+    text: 'text-indigo-300'
+  },
+  {
+    bg:'bg-amber-900/70',
+    text: 'text-amber-300'
+  },
+   {
+    bg:'bg-lime-900/70',
+    text: 'text-lime-300'
+  }
+];
+
+export const celPoliciesCardColors = [
+  {bg:'bg-blue-900'},
+  {bg:'bg-orange-900'},
+  {bg:'bg-green-900'},
+  {bg:'bg-purple-900'},
+  {bg:'bg-red-900'}
+];
+
+export const yamlCelCardColors = [
+  {bg:'bg-primary-100'},
+  {bg:'bg-primary-50'}
+]
+
 export const kyvernoVsOthers = [
   {
     feature: "Policy Language",
@@ -90,55 +161,46 @@ export const features = [
     icon: Box,
     title: "Kubernetes Native",
     details: "Extends and completes Kubernetes policy types for comprehensive platform engineering capabilities.",
-    color: "orange"
   },
   {
     icon: Globe,
     title: "Works Everywhere",
     details: "Executes Kubernetes-style policies on any JSON payload using CLI or SDK for universal compatibility.",    
-    color: "yellow"
   },
   {
     icon: ChartColumn,
     title: "Integrated Reporting",
     details: "OpenReports compatible producers, routers, and dashboards for comprehensive policy compliance visibility.",
-    color: "green"
   },
   {
     icon: Shield,
     title: "Exception Management",
     details: "Timebound and fine-grained exception management decoupled from policies for flexible governance.",
-    color: "cyan"
   },
   {
     icon: Terminal,
     title: "Shift-Left Integration",
     details: "CLI for seamless integrations into CI/CD and Infrastructure as Code (Terraform, etc.) pipelines.",
-    color: "purple"
   },
   {
     icon: TestTube,
     title: "Policy Testing",
     details: "Comprehensive tooling for declarative unit tests and end-to-end behavioral policy validation.",
-    color: "blue"
   },
   {
     icon: Zap,
     title: "CEL Performance",
     details: "Enhanced performance with Common Expression Language for faster policy, evaluation and execution.",
-    color: "amber"
   },
   {
     icon: GitBranch,
     title: "Version Control",
     details: "Full version control integration with GitOps workflows for policy lifecycle management.",
-    color: "indigo"
   },
   {
     icon: Lock,
     title: "Security Policies",
     details: "Comprehensive security policy templates and best practices for zero-trust architectures.",
-    color: "lime"
   }
 ];
 
@@ -147,31 +209,26 @@ export const celPolicies = [
   icon: CircleCheckBig,
   title: "ValidatingPolicy",
   description: "For validation of Kubernetes resources or arbitrary JSON payloads using CEL expressions.",
-  color: "purple" 
 },
  {
   icon: CircleCheckBig,
   title: "ImageValidatingPolicy",
   description: "Dedicated solely to verifying container images: their signatures, attestations, SBOMs, etc.",
-  color: "green" 
 },
  {
   icon: CircleCheckBig,
   title: "MutatingPolicy",
   description: "For mutating or modifying resources using CEL first, including patches/ApplyConfiguration.",
-   color: "red"  
 },
  {
   icon: CircleCheckBig,
   title: "GeneratingPolicy",
   description: "For creating or cloning resources in response to triggers (e.g. on creation of certain resources), but using CEL for more flexible logic.",
-  color: "orange" 
 },
  {
   icon: CircleCheckBig,
   title: "DeletingPolicy",
   description: "For controlled cleanup of resources, scheduled deletions or deletions when certain conditions in the cluster are met.",
-   color: "blue" 
 }
 ];
 

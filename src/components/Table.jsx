@@ -1,25 +1,13 @@
-import { kyvernoVsOthers } from "../constants"
 
-export const ComparisonChart = () => {
+import { kyvernoVsOthers } from "../constants";
+
+
+export const Table = () => {
   return (
-    <section className="flex flex-col justify-center items-center pb-6 px-6">
-         <div className="items-center flex flex-col space-y-6 my-5">
-                <h2 className="text-4xl font-bold tracking-wide
-                capitalize text-center">
-                    Kyverno Vs
-                  <span className="text-primary-100"> Other policy engines</span>
-                </h2>
-                <p className="text-[1rem] w-80 sm:text-lg md:w-150 lg:w-220 text-center ">
-                    As the industry's leading policy engine, here's how Kyverno 
-                    compares with other policy engines.
-                </p>
-        </div>
-        <div className="flex justify-center items-center w-full md:max-w-260 
-        bg-dark-50 border border-stroke p-6 rounded-2xl sm:overflow-x-auto text-[16px]" >
-          <table className="w-full p-12">
+   <table className="w-full p-12">
             <thead className="w-full hidden sm:table">
               <tr className="flex justify-start items-center">
-                <th className="w-1/3 text-left">Feature</th>
+                <th className="w-1/3 text-left pl-7">Feature</th>
                 <th className="flex items-center flex-between space-x-4 w-1/3 pr-4">
                   <img src="assets/images/kyverno-square.svg" alt="kyverno logo" className="
                   h-6 w-6 sm:h-10 sm:w-10"/>
@@ -55,9 +43,7 @@ export const ComparisonChart = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-    </section>
+       </table>
   )
 }
 
