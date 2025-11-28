@@ -128,6 +128,46 @@ Generating a `MutatingAdmissionPolicy` from a `MutatingPolicy` provides the bene
 
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
 
+## Policy Scope
+
+MutatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`MutatingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedMutatingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedMutatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedMutatingPolicy
+metadata:
+  name: add-team-label
+  namespace: production
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: [CREATE, UPDATE]
+      resources: ["deployments"]
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              team: "platform",
+              managed-by: "kyverno"
+            }
+          }
+        }
+```
+
+As the name suggests, the `NamespacedMutatingPolicy` allows namespace owners to manage mutation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
+
 ## Kyverno CEL Libraries
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
