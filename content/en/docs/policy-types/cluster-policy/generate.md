@@ -609,6 +609,48 @@ Note that Kyverno will retry up to three times to reconcile an `UpdateRequest` i
 
 Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/high-availability/) page.
 
+## UpdateRequest Cleanup
+
+To help manage the accumulation of `UpdateRequest` resources in large clusters, Kyverno supports automatic cleanup through TTL (Time-to-Live) labels. This feature can be enabled through the Kyverno configuration.
+
+### Configuring UpdateRequest Cleanup
+
+UpdateRequest cleanup is configured through the Kyverno ConfigMap with the following options:
+
+- `enableUpdateRequestCleanup`: Set to `true` to enable automatic cleanup labeling of UpdateRequest resources
+- `updateRequestCleanupTTL`: Specifies the TTL duration for cleanup (e.g., "2m", "1h", "30s")
+
+When enabled, Kyverno will automatically add the `cleanup.kyverno.io/ttl` label to newly created `UpdateRequest` resources with the specified TTL value.
+
+### Helm Configuration
+
+To enable UpdateRequest cleanup using Helm:
+
+```yaml
+config:
+  enableUpdateRequestCleanup: true
+  updateRequestCleanupTTL: "5m"  # Clean up after 5 minutes
+```
+
+### Example
+
+With cleanup enabled, UpdateRequest resources will have labels like:
+
+```yaml
+apiVersion: kyverno.io/v2
+kind: UpdateRequest
+metadata:
+  labels:
+    cleanup.kyverno.io/ttl: "5m"
+  # ... other metadata
+```
+
+This relies on a cleanup controller (like the Kyverno cleanup controller) being present in the cluster to process the TTL labels and delete expired resources.
+
+{{% alert title="Note" color="info" %}}
+The cleanup feature requires a cleanup controller to be running in your cluster to process the TTL labels. Kyverno includes a cleanup controller by default.
+{{% /alert %}}
+
 ## Troubleshooting
 
 Troubleshooting of problems with generate rules often comes down to only a few things:
