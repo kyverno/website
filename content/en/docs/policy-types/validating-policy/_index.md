@@ -9,11 +9,39 @@ weight: 10
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
+> **Note: Namespaced Policy Available**
+> 
+> `ValidatingPolicy` is available in both **cluster-scoped** (`ValidatingPolicy`) and **namespaced** (`NamespacedValidatingPolicy`) versions. Namespaced policies allow namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation. See the [Policy Scope](#policy-scope) section for details and examples.
+
 ```
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [pods]
+  validations:
+    - message: label 'environment' is required
+      expression: "'environment' in object.metadata.?labels.orValue([])"
+```
+
+### Namespaced Example
+
+This `NamespacedValidatingPolicy` provides the same functionality as the cluster-scoped version above, but operates only within the specific namespace where it's deployed:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: check-labels
+  namespace: production
 spec:
   validationActions:
     - Deny
