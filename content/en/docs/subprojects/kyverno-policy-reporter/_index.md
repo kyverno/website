@@ -5,6 +5,8 @@ weight: 180
 hide_feedback: true
 ---
 
+{{< feature-state state="stable" version="v3" />}}
+
 Policy Reporter is a sub-project of Kyverno that provides in-cluster management of policy reports with a web-based graphical user interface.
 
 <div class="mt-5 mx-auto">
