@@ -41,7 +41,7 @@ The `attestors.count` specifies the required count of attestors in the entries l
 
 The `imageRegistryCredentials` attribute allows configuration of registry credentials per policy. Kyverno falls back to global credentials if this is empty.
 
-The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
+The `imageRegistryCredentials.providers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
 The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
 
