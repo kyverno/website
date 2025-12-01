@@ -2,11 +2,8 @@
 import { defineConfig } from 'astro/config'
 import netlify from '@astrojs/netlify'
 import starlight from '@astrojs/starlight'
-import starlightThemeRapide from 'starlight-theme-rapide'
 import react from '@astrojs/react';
 import tailwindcss from "@tailwindcss/vite";
-import starlightUtils from "@lorenzo_lewis/starlight-utils";
-
 
 
 // https://astro.build/config
