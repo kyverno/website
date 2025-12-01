@@ -13,39 +13,106 @@ import starlightUtils from "@lorenzo_lewis/starlight-utils";
 export default defineConfig({
   integrations: [starlight({
     title: 'Kyverno',
-    logo: {
-      light: './src/docs-assets/kyverno-logo.svg',
-      dark: './src/docs-assets/kyverno-logo.svg'
-      },
     social: [
       {
         icon: 'github',
         label: 'GitHub',
         href: 'https://github.com/kyverno/kyverno',
       },
-      {
-        icon: 'slack',
-        label: 'Slack',
-        href: 'https://communityinviter.com/apps/kubernetes/community#kyverno',
-      }
     ],
-    editLink: {
-        baseUrl: 'https://github.com/kyverno/kyverno/',
-      },
     sidebar: [
+      // Autogenerate sidebar from the root: '/docs/docs'
+      // {
+      // 	label: 'Docs',
+      // 	collapsed: false,
+      // 	autogenerate: { directory: 'docs', collapsed: true, attrs: { style: 'text-transform: capitalize' }},
+      // },
       {
-        label: 'Getting Started',
-        items: [
-          // Each item here is one entry in the navigation menu.
-          { label: 'Introduction', slug: 'getting-started/introduction' },
-          { label: 'Quickstart', slug: 'getting-started/quickstart' },
-          { label: 'Installation', slug: 'getting-started/installation' },
-        ],
+        label: 'Introduction',
+        autogenerate: { directory: 'docs/introduction' },
       },
       {
-        label: 'Policy Types',
-        collapsed: false,
-        autogenerate: { directory: 'policy-types', collapsed: true },
+        label: 'Installation',
+        autogenerate: { directory: 'docs/installation' },
+      },
+      {
+        label: 'Applying Policies',
+        collapsed: true,
+        autogenerate: { directory: 'docs/applying-policies' },
+      },
+      {
+        label: 'CRDs',
+        collapsed: true,
+        autogenerate: { directory: 'docs/CRDs' },
+      },
+      {
+        label: 'Exceptions',
+        collapsed: true,
+        autogenerate: { directory: 'docs/exceptions' },
+      },
+      {
+        label: 'High Availability',
+        collapsed: true,
+        autogenerate: { directory: 'docs/high-availability' },
+      },
+      {
+        label: 'Kyverno Chainsaw',
+        collapsed: true,
+        autogenerate: { directory: 'docs/kyverno-chainsaw' },
+      },
+      {
+        label: 'Kyverno CLI',
+        collapsed: true,
+        autogenerate: { directory: 'docs/kyverno-cli' },
+      },
+      {
+        label: 'Kyverno JSON',
+        collapsed: true,
+        autogenerate: { directory: 'docs/kyverno-json' },
+      },
+      {
+        label: 'Kyverno Policy Reporter',
+        collapsed: true,
+        autogenerate: { directory: 'docs/kyverno-policy-reporter' },
+      },
+      {
+        label: 'Monitoring',
+        collapsed: true,
+        autogenerate: { directory: 'docs/monitoring' },
+      },
+      {
+        label: 'Policy Reports',
+        collapsed: true,
+        autogenerate: { directory: 'docs/policy-reports' },
+      },
+      {
+        label: 'Policy-Types',
+        collapsed: true,
+        autogenerate: { directory: 'docs/policy-types' },
+      },
+      {
+        label: 'Releases',
+        collapsed: true,
+        autogenerate: { directory: 'docs/releases' },
+      },
+      {
+        label: 'Security',
+        collapsed: true,
+        autogenerate: { directory: 'docs/security' },
+      },
+      {
+        label: 'Testing-Policies',
+        collapsed: true,
+        autogenerate: { directory: 'docs/testing-policies' },
+      },
+      {
+        label: 'Tracing',
+        collapsed: true,
+        autogenerate: { directory: 'docs/tracing' },
+      },
+      {
+        label: 'Troubleshooting',
+        autogenerate: { directory: 'docs/troubleshooting' },
       },
     ],
   }), react()],
