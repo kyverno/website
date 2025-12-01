@@ -52,7 +52,7 @@ export const HeaderContent = ({
 }
 
 
-HeaderContent.PropTypes = {
+HeaderContent.propTypes = {
   headerText: PropTypes.string.isRequired,
   paragraphText: PropTypes.string.isRequired,
   headerLevel: PropTypes.oneOf['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
