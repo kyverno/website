@@ -1,4 +1,5 @@
 import { Table } from '../components/Table'
+import { comparisonChartHeadingContent } from '../constants';
 
 export const ComparisonChart = () => {
 

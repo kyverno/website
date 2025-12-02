@@ -350,3 +350,88 @@ export const policies = [
   { href: '#', text: 'Terms of service' },
   { href: '#', text: 'Security' },
 ]
+
+export const heroSectionHeadingContent = {
+
+  headingText: [
+    {text: "Unified", color: "text-primary-100"},
+    {text: "Policy As Code", color: "text-white"},
+    {text: "For Platform Engineers", color: "text-accent-100"}
+  ],
+
+  paragraphText: `Kyverno, created by Nirmata, makes it simple to secure, 
+                  automate, and manage your infrastructures and applications 
+                  using Kubernetes-native YAML and CEL. Easy-to-learn and 
+                  powered by the CNCF community.`
+}
+
+export const whykyvernoHeadingContent = {
+
+  headingText: [
+     {text: "why", color: "text-white"},
+     {text: "Kyverno", color: "text-primary-100"}
+  ],
+
+  paragraphText: `Kyverno, created by Nirmata is the Kubernetes-native policy 
+                  engine designed to simplify security, compliance, and 
+                  automation by letting you manage policies the same way 
+                  you manage your cluster.`
+}
+
+export const comparisonChartHeadingContent = {
+
+  headingText: [
+      {text: "Kyverno Vs", color: "text-white"},
+      {text: "Other policy engines", color: "text-primary-100"},
+  ],
+
+  paragraphText: `As the industry's leading policy engine, here's how Kyverno 
+                    compares with other policy engines.`
+
+}
+
+
+export const featureSectionHeadingContent = {
+
+    headingText: [
+        {text: "Complete Platform Engineering", color: "text-white"},
+        {text: "Policy As Code Solution", color: "text-primary-100"}
+    ],
+
+    paragraphText: `From policy creation to enforcement, testing to reporting, and everything in between,
+                       get comprehensive Kubernetes governance and compliance with Kyverno.`              
+}
+
+
+export const celPoliciesHeadingContent = {
+  
+  headingText: [
+    {text: "Introducing", color: "text-white"},
+    {text: "CEL Polices", color: "text-primary-100"},
+  ],
+  paragraphText: `CEL (Common Expression Language) policies bring powerful, 
+                    fine-grained control to Kyverno, enabling users to write more 
+                    expressive and dynamic policy rules without sacrificing performance. `
+}
+
+
+export const ctaSectionHeadingContent = {
+  
+  headingText: [
+    {text: "Get started with Kyverno", color: "text-white"}
+  ],
+
+  paragraphText: `Deploy Kyverno in your Kubernetes cluster within minutes and start writing 
+                  policies using simple, familiar YAML.`
+
+}
+
+
+export const partnersSectionHeadingContent = {
+  
+  headingText: [
+    {text: "Trusted By Industry Leaders", color: "text-white"}
+  ],
+  
+  paragraphText: "Powering policy management for organizations worldwide"
+}

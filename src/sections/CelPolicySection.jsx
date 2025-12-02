@@ -1,10 +1,12 @@
 import { celPolicies, yamlCEL } from '../constants'
 import { celPoliciesCardColors, yamlCelCardColors } from '../constants'
-
 import { Button } from '../components/Button'
 import { CelPolicyCards } from '../components/CelPolicyCards'
 import { Tag } from '../components/Tag'
 import { YamlVsCelCard } from '../components/YamlVsCelCard'
+import { celPoliciesHeadingContent } from '../constants'
+import { HeadingContent } from '../components/HeadingContent'
+
 
 export const CelPolicySection = () => {
 
