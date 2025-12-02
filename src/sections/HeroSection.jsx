@@ -52,14 +52,6 @@ export const HeroSection = () => {
               </Button>
           </div>
         </div>
-        <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <Button href="/docs/quickstart" variant="primary" size="large">
-            Quickstart
-          </Button>
-          <Button href="/docs/introduction" variant="secondary" size="large">
-            Read Documentation
-          </Button>
-        </div>
     </section>
   )
 }
