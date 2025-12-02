@@ -1,16 +1,16 @@
 [build]
-  command = "yarn install --immutable && yarn build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
   [build.environment]
-    NODE_VERSION = "23.6.0"
+    NODE_VERSION = "24.11.1"
     GO_VERSION = "1.24.1"
     ASTRO_TELEMETRY_DISABLED = "1"
     SITE_URL = "https://kyverno.io/"
 
 # --- Production (main branch) ---
 [context.production]
-  command = "yarn install --immutable && yarn build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
   [context.production.environment]
@@ -20,7 +20,7 @@
 
 # --- Deploy Previews (PRs) ---
 [context.deploy-preview]
-  command = "yarn install --immutable && yarn build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
   [context.deploy-preview.environment]
@@ -30,7 +30,7 @@
 
 # --- Branch Deploys (non-main branches) ---
 [context.branch-deploy]
-  command = "yarn install --immutable && yarn build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
   [context.branch-deploy.environment]
