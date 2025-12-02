@@ -22,10 +22,10 @@ export const Footer = () => {
             govern your infrastructure with next-generation CEL-based policies.
           </p>
           <span className="flex justify-center items-center space-x-2 cursor-pointer">
-            <Github />
-            <Slack />
-            <Twitter />
-            <Mail />
+            <Github href="https://github.com/kyverno" />
+            <Slack href="https://slack.k8s.io/#kyverno" />
+            <Twitter href="https://twitter.com/kyverno" />
+            <Mail href="https://groups.google.com/g/kyverno" />
           </span>
         </div>
         <BottomLinkLists links={productsLinks} title="Products" />

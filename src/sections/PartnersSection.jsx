@@ -19,7 +19,7 @@ export const PartnersSection = () => {
       <p className="text-white/80">
         Join 1000+ organizations using Kyverno in production environments
       </p>
-      <Button variant="accent">Join us</Button>
+      <Button href="community/#join-kyverno-adopters" variant="accent">Join us</Button>
     </section>
   )
 }
