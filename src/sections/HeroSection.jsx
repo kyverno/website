@@ -58,7 +58,11 @@ export const HeroSection = () => {
           <Button href="/docs/introduction" variant="primary" size="large">
             Get Started
           </Button>
-          <Button href="https://playground.kyverno.io/" variant="secondary" size="large">
+          <Button
+            href="https://playground.kyverno.io/"
+            variant="secondary"
+            size="large"
+          >
             Explore Kyverno
           </Button>
         </div>

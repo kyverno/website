@@ -55,7 +55,9 @@ export const CelPolicySection = () => {
             />
           ))}
         </div>
-        <Button href="/policies" variant="primary">Explore CEL Policies</Button>
+        <Button href="/policies" variant="primary">
+          Explore CEL Policies
+        </Button>
       </div>
     </section>
   )

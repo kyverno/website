@@ -335,7 +335,10 @@ export const productsLinks = [
 
 export const ResourcesLinks = [
   { href: 'docs/introduction', text: 'Documentation' },
-  { href: 'https://kyverno.io/docs/kyverno-cli/reference/', text: 'API Reference' },
+  {
+    href: 'https://kyverno.io/docs/kyverno-cli/reference/',
+    text: 'API Reference',
+  },
   { href: 'policies', text: 'Policy Samples' },
   { href: '#', text: 'Blog' },
 ]
@@ -343,11 +346,20 @@ export const ResourcesLinks = [
 export const communityLinks = [
   { href: 'https://github.com/kyverno', text: 'Github' },
   { href: 'https://slack.k8s.io/#kyverno', text: 'Slack' },
-  { href: 'https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md', text: 'Contributing' },
+  {
+    href: 'https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md',
+    text: 'Contributing',
+  },
 ]
 
 export const policies = [
-  { href: 'https://www.linuxfoundation.org/legal/privacy-policy', text: 'Privacy Policy' },
-  { href: 'https://www.linuxfoundation.org/legal/terms', text: 'Terms of service' },
+  {
+    href: 'https://www.linuxfoundation.org/legal/privacy-policy',
+    text: 'Privacy Policy',
+  },
+  {
+    href: 'https://www.linuxfoundation.org/legal/terms',
+    text: 'Terms of service',
+  },
   { href: 'https://www.linuxfoundation.org/security', text: 'Security' },
 ]
