@@ -6,7 +6,8 @@ import { motion } from 'motion/react'
 import { HeadingContent } from '../components/HeadingContent'
 
 export const HeroSection = () => {
-  const zapIcon = Zap
+  
+  const zapIcon = Zap;
 
   const { headingText, paragraphText } = heroSectionHeadingContent
 
@@ -17,15 +18,10 @@ export const HeroSection = () => {
         alt="lg-hero-ball"
         className="
             hidden sm:inline-block absolute sm:top-20 sm:left-8 lg:top-20 
-            lg:left-20"
-      />
-      <img
-        src="assets/images/sm-hero-ball.svg"
-        alt="sm-hero-ball"
-        className="hidden
+            lg:left-20"/>
+            <img src="assets/images/sm-hero-ball.svg" alt="sm-hero-ball" className="hidden
             sm:inline-block absolute sm:right-15 sm:top-50 md:right-25
-            lg:top-50 lg:right-50 xl:right-90 "
-      />
+            lg:top-50 lg:right-50 xl:right-90 "/>
 
       <div
         className="container py-10 sm:py-0 sm:px-10 flex flex-col justify-center 
@@ -62,7 +58,6 @@ export const HeroSection = () => {
             Explore Kyverno
           </Button>
         </div>
-      </div>
     </section>
   )
 }
