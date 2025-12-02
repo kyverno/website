@@ -1,1 +1,1 @@
-yarn format:write
+npm run format:write

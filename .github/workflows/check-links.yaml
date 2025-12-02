@@ -1,29 +1,25 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+# # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+# TODO: Re-enable this workflow once we have the basis for the website
+# on:
+#   pull_request:
+#     branches:
+#       - astro
 
-name: Check Links
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
-permissions: {}
-
-on:
-  pull_request:
-    branches:
-      - main
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  linkChecker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - name: Check unrendered links
-        id: lychee_unrendered
-        uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          fail: true
-          debug: false
-          args: --github-token ${{secrets.GITHUB_TOKEN}} --config lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E ./src/content/docs
+# jobs:
+#   linkChecker:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+#       - name: Check unrendered links
+#         id: lychee_unrendered
+#         uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
+#         env:
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#         with:
+#           fail: true
+#           debug: false
+#           args: --github-token ${{secrets.GITHUB_TOKEN}} --config lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E ./src/content/docs
