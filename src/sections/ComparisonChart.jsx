@@ -1,9 +1,8 @@
 import { Table } from '../components/Table'
-import { comparisonChartHeadingContent } from '../constants';
+import { comparisonChartHeadingContent } from '../constants'
 
 export const ComparisonChart = () => {
-
-  const {headingText, paragraphText} = comparisonChartHeadingContent;
+  const { headingText, paragraphText } = comparisonChartHeadingContent
 
   return (
     <section className="flex flex-col justify-center items-center pb-6 px-6">
