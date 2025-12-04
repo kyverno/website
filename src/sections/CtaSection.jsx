@@ -35,7 +35,7 @@ export const CtaSection = () => {
         <Button href="docs/introduction" variant="primary">
           Get Started
         </Button>
-        <Button href="https://kyverno.io/policies/" variant="secondary">
+        <Button href="docs/applying-policies/" variant="secondary">
           Explore Policies
         </Button>
       </div>

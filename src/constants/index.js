@@ -29,9 +29,9 @@ export const navItemsOnsite = [
 ]
 
 export const navItemsExternal = [
-  { label: 'Docs', href: '/getting-started/introduction' },
+  { label: 'Docs', href: '/docs/introduction' },
   { label: 'Blog', href: '#' },
-  { label: 'Community', href: 'https://kyverno.io/community/' },
+  { label: 'Community', href: '/community' },
 ]
 
 export const heroTags = [
@@ -326,29 +326,42 @@ export const partners = [
 ]
 
 export const productsLinks = [
-  { href: '#', text: 'Features' },
-  { href: '#', text: 'CEL Policies' },
-  { href: '#', text: 'Migration Guide' },
-  { href: '#', text: 'Playground' },
+  { href: 'https://kyverno.io/support/blakyaks/', text: 'BlakYaks' },
+  { href: 'https://kyverno.io/support/giantswarm/', text: 'Giant Swarm' },
+  { href: 'https://kyverno.io/support/infracloud/', text: 'Infra Cloud' },
+  { href: 'https://kyverno.io/support/kodekloud/', text: 'Kodekloud' },
+  { href: 'https://kyverno.io/support/nirmata/', text: 'Nirmata' },
 ]
 
 export const ResourcesLinks = [
-  { href: '#', text: 'Documentation' },
-  { href: '#', text: 'API Reference' },
-  { href: '#', text: 'Policy Samples' },
+  { href: 'docs/introduction', text: 'Documentation' },
+  {
+    href: 'https://kyverno.io/docs/kyverno-cli/reference/',
+    text: 'API Reference',
+  },
+  { href: 'policies', text: 'Policy Samples' },
   { href: '#', text: 'Blog' },
 ]
 
 export const communityLinks = [
-  { href: '#', text: 'Github' },
-  { href: '#', text: 'Slack' },
-  { href: '#', text: 'Contributing' },
+  { href: 'https://github.com/kyverno', text: 'Github' },
+  { href: 'https://slack.k8s.io/#kyverno', text: 'Slack' },
+  {
+    href: 'https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md',
+    text: 'Contributing',
+  },
 ]
 
 export const policies = [
-  { href: '#', text: 'Privacy Policy' },
-  { href: '#', text: 'Terms of service' },
-  { href: '#', text: 'Security' },
+  {
+    href: 'https://www.linuxfoundation.org/legal/privacy-policy',
+    text: 'Privacy Policy',
+  },
+  {
+    href: 'https://www.linuxfoundation.org/legal/terms',
+    text: 'Terms of service',
+  },
+  { href: 'https://www.linuxfoundation.org/security', text: 'Security' },
 ]
 
 export const heroSectionHeadingContent = {
