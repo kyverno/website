@@ -1,5 +1,7 @@
 import { Button } from '../components/Button'
 import { motion } from 'motion/react'
+import { HeadingContent } from '../components/HeadingContent'
+import { ctaSectionHeadingContent } from '../constants'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -17,16 +19,17 @@ const fadeIn = {
 }
 
 export const CtaSection = () => {
+  const { headingText, paragraphText } = ctaSectionHeadingContent
+
   return (
     <motion.section className="w-full p-16 md:p-20 flex flex-col space-y-8 bg-dark-50 items-center">
       <div className="space-y-3 flex flex-col justify-center items-center">
-        <h2 className="font-bold text-2xl text-center">
-          Get started with Kyverno
-        </h2>
-        <p className="text-white/80 md:max-w-150 text-center">
-          Deploy Kyverno in your Kubernetes cluster within minutes and start
-          writing policies using simple, familiar YAML.
-        </p>
+        <HeadingContent
+          headingParts={headingText}
+          subheading={paragraphText}
+          variant="level3"
+          headerLevel="h3"
+        />
       </div>
       <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <Button href="docs/introduction" variant="primary">
