@@ -1,8 +1,15 @@
 import { Tag } from '../components/Tag'
-import { whyKyvernoCards, cardColors1 } from '../constants'
+import {
+  whyKyvernoCards,
+  cardColors1,
+  whykyvernoHeadingContent,
+} from '../constants'
 import { WhykyvCard } from '../components/WhykyvCard'
+import { HeadingContent } from '../components/HeadingContent'
 
 export const WhykyvernoSection = () => {
+  const { headingText, paragraphText } = whykyvernoHeadingContent
+
   return (
     <section
       className="p-20 flex flex-col items-center space-y-5"
@@ -10,18 +17,12 @@ export const WhykyvernoSection = () => {
     >
       <Tag variant="secondary">Created by Nirmata</Tag>
       <div className="items-center flex flex-col space-y-6 my-5">
-        <h2
-          className="text-4xl sm:text-4xl font-bold tracking-wide
-                capitalize text-center"
-        >
-          Why
-          <span className="text-primary-100"> Kyverno?</span>
-        </h2>
-        <p className="w-full text-[1rem] text-white/80 sm:text-lg md:w-150 lg:w-220 text-center ">
-          Kyverno, created by Nirmata is the Kubernetes-native policy engine
-          designed to simplify security, compliance, and automation by letting
-          you manage policies the same way you manage your cluster.
-        </p>
+        <HeadingContent
+          headingParts={headingText}
+          subheading={paragraphText}
+          variant="level2"
+          headerLevel="h2"
+        />
       </div>
       <div
         className="w-full flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
