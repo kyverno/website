@@ -98,7 +98,9 @@ export default defineConfig({
             {
               label: 'Policy Reporter',
               collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-policy-reporter' },
+              autogenerate: {
+                directory: 'docs/subprojects/kyverno-policy-reporter',
+              },
             },
           ],
         },
