@@ -33,7 +33,7 @@ export default defineConfig({
           autogenerate: { directory: 'docs/installation' },
         },
         {
-          label: 'Working with Policies',
+          label: 'Working With Policies',
           items: [
             {
               label: 'Policy Types',
@@ -76,6 +76,7 @@ export default defineConfig({
               autogenerate: { directory: 'docs/exceptions' },
             },
           ],
+          collapsed: true,
         },
         {
           label: 'Tools',
@@ -103,6 +104,7 @@ export default defineConfig({
               },
             },
           ],
+          collapsed: true,
         },
         {
           label: 'Resource Definitions',
