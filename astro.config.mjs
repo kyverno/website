@@ -79,6 +79,16 @@ export default defineConfig({
           collapsed: true,
         },
         {
+          label: 'Resource Definitions',
+          collapsed: true,
+          autogenerate: { directory: 'docs/CRDs' },
+        },
+        {
+          label: 'High Availability',
+          collapsed: true,
+          autogenerate: { directory: 'docs/high-availability' },
+        },
+        {
           label: 'Tools',
           items: [
             {
@@ -105,16 +115,6 @@ export default defineConfig({
             },
           ],
           collapsed: true,
-        },
-        {
-          label: 'Resource Definitions',
-          collapsed: true,
-          autogenerate: { directory: 'docs/CRDs' },
-        },
-        {
-          label: 'High Availability',
-          collapsed: true,
-          autogenerate: { directory: 'docs/high-availability' },
         },
         {
           label: 'Releases',
