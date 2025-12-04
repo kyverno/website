@@ -51,11 +51,15 @@ export const HeroSection = () => {
           ))}
         </div>
         <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <Button href="/docs/quickstart" variant="primary" size="large">
-            Quickstart
+          <Button href="/docs/introduction" variant="primary" size="large">
+            Get Started
           </Button>
-          <Button href="/docs/introduction" variant="secondary" size="large">
-            Read Documentation
+          <Button
+            href="https://playground.kyverno.io/"
+            variant="secondary"
+            size="large"
+          >
+            Explore Kyverno
           </Button>
         </div>
       </div>
