@@ -34,35 +34,46 @@ If you are new to the git contribution flow or GitHub in general, please see the
 
 #### Overview
 
-The Kyverno website is a static site designed and built using [Hugo](https://gohugo.io/). It uses Google's [Docsy theme](https://www.docsy.dev/) and is built and hosted on [Netlify](https://www.netlify.com/). The contents of the website are written as standard Markdown files allowing easy editing and contribution.
+The Kyverno website is a static site designed and built using [Astro](https://astro.build/). It uses the [Starlight](https://starlight.astro.build/) documentation theme and is built and hosted on [Netlify](https://www.netlify.com/). The contents of the website are written as standard Markdown and MDX files allowing easy editing and contribution. For more detailed development information, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 #### Developing on GitHub Codespaces
 
-This repository contains a custom [Codespaces](https://github.com/features/codespaces) [devcontainer](https://containers.dev/) which allows you to quickly get started with contributing through a containerized environment with all the tools necessary, all of which runs inside GitHub. Creation of a Codespace on this repository will result in a fully-provisioned containerized environment with the repository contents and Hugo extended.
+This repository can be developed using [GitHub Codespaces](https://github.com/features/codespaces), which provides a containerized development environment with all the necessary tools. If a devcontainer configuration is available, creating a Codespace will automatically set up the environment with Node.js and npm.
 
 If you are new to Codespaces and devcontainers, please see the introductory guide [here](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers).
 
 #### Developing Locally
 
-The Kyverno website requires the Hugo extended version be installed. When developing locally and not in the provided GitHub devcontainer, you must ensure you have the extended version of Hugo and not the standard version. Additionally, this website currently requires a Hugo version of v0.100 or greater.
+The Kyverno website requires Node.js v24 or higher and npm to be installed. When developing locally, ensure you have the correct Node.js version installed.
 
-To check and ensure you are using a compatible version of Hugo, both the version number and the extended edition, the output of the `hugo version` command should look something like below.
+To check your Node.js version:
 
 ```sh
-$ hugo version
-hugo v0.119.0-b84644c008e0dc2c4b67bd69cccf87a41a03937e+extended darwin/amd64 BuildDate=2023-09-24T15:20:17Z VendorInfo=brew
+$ node --version
+v24.11.1
 ```
+
+You should see v24 or higher. If you need to install or update Node.js, visit [nodejs.org](https://nodejs.org/).
+
+After cloning the repository, install dependencies:
+
+```sh
+npm install
+```
+
+For more detailed setup instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 #### Testing Changes
 
 Once you have made your changes, inspect them visually by rendering the website.
 
 ```sh
-hugo server
+npm run dev
 ```
 
-> [!Note]
-> On Windows, when running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. This is necessary to ensure proper access and functionality during the server execution.
+The development server will start at `http://localhost:4321`. The site will automatically reload when you make changes to source files.
+
+For more information about testing and building, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ### Get In Touch
 
