@@ -116,6 +116,7 @@ This website is built with:
 ### Making Changes
 
 1. **Create a branch** for your changes:
+
    ```bash
    git checkout -b your-feature-branch
    ```
@@ -127,12 +128,15 @@ This website is built with:
    - Pages: `src/pages/`
 
 3. **Preview your changes**:
+
    ```bash
    npm run dev
    ```
+
    Visit `http://localhost:4321` to see your changes.
 
 4. **Format your code**:
+
    ```bash
    npm run format:write
    ```
@@ -171,7 +175,7 @@ React components are located in `src/components/` and `src/sections/`. They use 
 
 ```astro
 ---
-import MyComponent from '../components/MyComponent.jsx';
+import MyComponent from '../components/MyComponent.jsx'
 ---
 
 <MyComponent />
@@ -183,7 +187,7 @@ The project uses Tailwind CSS for styling. You can use Tailwind utility classes 
 
 ### Code Generation
 
-#### Generating Policies
+#### Generating Policies (NOT WORKING ATM)
 
 Policies are automatically generated from the kyverno/policies repository. To regenerate:
 
@@ -192,6 +196,7 @@ make codegen-policies
 ```
 
 This requires:
+
 - Go installed
 - Access to the kyverno/policies repository
 
@@ -263,4 +268,3 @@ The site is deployed to [Netlify](https://www.netlify.com/). The build command i
 - [Starlight Documentation](https://starlight.astro.build/)
 - [React Documentation](https://react.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-
