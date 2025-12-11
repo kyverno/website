@@ -79,16 +79,6 @@ export default defineConfig({
           collapsed: true,
         },
         {
-          label: 'Resource Definitions',
-          collapsed: true,
-          autogenerate: { directory: 'docs/CRDs' },
-        },
-        {
-          label: 'High Availability',
-          collapsed: true,
-          autogenerate: { directory: 'docs/high-availability' },
-        },
-        {
           label: 'Tools',
           items: [
             {
@@ -117,13 +107,24 @@ export default defineConfig({
           collapsed: true,
         },
         {
+          label: 'Resource Definitions',
+          slug: 'docs/crds',
+        },
+        {
+          label: 'High Availability',
+          slug: 'docs/high-availability',
+        },
+        {
           label: 'Releases',
-          collapsed: true,
-          autogenerate: { directory: 'docs/releases' },
+          slug: 'docs/releases',
         },
         {
           label: 'Troubleshooting',
-          autogenerate: { directory: 'docs/troubleshooting' },
+          slug: 'docs/troubleshooting',
+        },
+        {
+          label: 'Community',
+          slug: 'community',
         },
       ],
     }),
