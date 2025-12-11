@@ -33,83 +33,98 @@ export default defineConfig({
           autogenerate: { directory: 'docs/installation' },
         },
         {
-          label: 'Applying Policies',
+          label: 'Working With Policies',
+          items: [
+            {
+              label: 'Policy Types',
+              collapsed: true,
+              autogenerate: { directory: 'docs/policy-types' },
+            },
+            {
+              label: 'Applying Policies',
+              collapsed: true,
+              autogenerate: { directory: 'docs/applying-policies' },
+            },
+            {
+              label: 'Testing Policies',
+              collapsed: true,
+              autogenerate: { directory: 'docs/testing-policies' },
+            },
+            {
+              label: 'Monitoring',
+              collapsed: true,
+              autogenerate: { directory: 'docs/monitoring' },
+            },
+            {
+              label: 'Security',
+              collapsed: true,
+              autogenerate: { directory: 'docs/security' },
+            },
+            {
+              label: 'Tracing',
+              collapsed: true,
+              autogenerate: { directory: 'docs/tracing' },
+            },
+            {
+              label: 'Reporting',
+              collapsed: true,
+              autogenerate: { directory: 'docs/policy-reports' },
+            },
+            {
+              label: 'Policy Exceptions',
+              collapsed: true,
+              autogenerate: { directory: 'docs/exceptions' },
+            },
+          ],
           collapsed: true,
-          autogenerate: { directory: 'docs/applying-policies' },
         },
         {
-          label: 'CRDs',
+          label: 'Tools',
+          items: [
+            {
+              label: 'Kyverno CLI',
+              collapsed: true,
+              autogenerate: { directory: 'docs/kyverno-cli' },
+            },
+            {
+              label: 'Kyverno JSON',
+              collapsed: true,
+              autogenerate: { directory: 'docs/subprojects/kyverno-json' },
+            },
+            {
+              label: 'Kyverno Chainsaw',
+              collapsed: true,
+              autogenerate: { directory: 'docs/subprojects/kyverno-chainsaw' },
+            },
+            {
+              label: 'Policy Reporter',
+              collapsed: true,
+              autogenerate: {
+                directory: 'docs/subprojects/kyverno-policy-reporter',
+              },
+            },
+          ],
           collapsed: true,
-          autogenerate: { directory: 'docs/CRDs' },
         },
         {
-          label: 'Exceptions',
-          collapsed: true,
-          autogenerate: { directory: 'docs/exceptions' },
+          label: 'Resource Definitions',
+          slug: 'docs/crds',
         },
         {
           label: 'High Availability',
-          collapsed: true,
-          autogenerate: { directory: 'docs/high-availability' },
-        },
-        {
-          label: 'Kyverno Chainsaw',
-          collapsed: true,
-          autogenerate: { directory: 'docs/kyverno-chainsaw' },
-        },
-        {
-          label: 'Kyverno CLI',
-          collapsed: true,
-          autogenerate: { directory: 'docs/kyverno-cli' },
-        },
-        {
-          label: 'Kyverno JSON',
-          collapsed: true,
-          autogenerate: { directory: 'docs/kyverno-json' },
-        },
-        {
-          label: 'Kyverno Policy Reporter',
-          collapsed: true,
-          autogenerate: { directory: 'docs/kyverno-policy-reporter' },
-        },
-        {
-          label: 'Monitoring',
-          collapsed: true,
-          autogenerate: { directory: 'docs/monitoring' },
-        },
-        {
-          label: 'Policy Reports',
-          collapsed: true,
-          autogenerate: { directory: 'docs/policy-reports' },
-        },
-        {
-          label: 'Policy-Types',
-          collapsed: true,
-          autogenerate: { directory: 'docs/policy-types' },
+          slug: 'docs/high-availability',
         },
         {
           label: 'Releases',
-          collapsed: true,
-          autogenerate: { directory: 'docs/releases' },
-        },
-        {
-          label: 'Security',
-          collapsed: true,
-          autogenerate: { directory: 'docs/security' },
-        },
-        {
-          label: 'Testing-Policies',
-          collapsed: true,
-          autogenerate: { directory: 'docs/testing-policies' },
-        },
-        {
-          label: 'Tracing',
-          collapsed: true,
-          autogenerate: { directory: 'docs/tracing' },
+          slug: 'docs/releases',
         },
         {
           label: 'Troubleshooting',
-          autogenerate: { directory: 'docs/troubleshooting' },
+          slug: 'docs/troubleshooting',
+        },
+        {
+          label: 'Community',
+          slug: 'community',
         },
       ],
     }),
