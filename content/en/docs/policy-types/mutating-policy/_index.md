@@ -499,6 +499,42 @@ In this example:
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
+As of kyverno 1.17, you can use a CEL expression to select the desired target(s) through the `targetMatchConstraints.expression` field. This gives you the flexibility to reference arbitrary information in the trigger object for target selection. For example.. the below policy will add a label to all configmaps in a potential namespace when a secret called `trigger-secret` gets created in it.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: test-mpol-different-trigger-target-expression
+spec:
+  failurePolicy: Fail
+  evaluation:
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE" ]
+      resources: [ "secrets" ]
+      resourceNames: ["trigger-secret"]
+  targetMatchConstraints:
+    expression: resource.Get("v1", "configmaps", object.metadata.namespace, "test-cm-1")
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              mentorship: "kyverno"
+            }
+          }
+        }
+```
+
+The expression used must use the kyverno resource library, for more information check the [documentation](https://kyverno.io/docs/policy-types/cel-libraries/#resource-library) for it
+
 ## Mutate Ordering
 
 The order of mutations is important when multiple mutations are applied. Kyverno processes mutations in the order they appear in the policy. However, **the order is not guaranteed across multiple MutatingPolicies** - if multiple policies apply to the same resource, their execution order is not deterministic.
