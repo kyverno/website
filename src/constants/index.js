@@ -342,7 +342,10 @@ export const ResourcesLinks = [
 
 export const communityLinks = [
   { href: 'https://github.com/kyverno/kyverno/', text: 'Github' },
-  { href: 'https://communityinviter.com/apps/kubernetes/community#kyverno', text: 'Slack' },
+  {
+    href: 'https://communityinviter.com/apps/kubernetes/community#kyverno',
+    text: 'Slack',
+  },
   { href: 'https://github.com/kyverno/kyverno/', text: 'Contributing' },
 ]
 
