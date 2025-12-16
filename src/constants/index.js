@@ -330,20 +330,20 @@ export const productsLinks = [
   { href: '#', text: 'Features' },
   { href: '#', text: 'CEL Policies' },
   { href: '#', text: 'Migration Guide' },
-  { href: '#', text: 'Playground' },
+  { href: 'https://playground.kyverno.io/', text: 'Playground' },
 ]
 
 export const ResourcesLinks = [
-  { href: '#', text: 'Documentation' },
+  { href: '/getting-started/introduction', text: 'Documentation' },
   { href: '#', text: 'API Reference' },
-  { href: '#', text: 'Policy Samples' },
-  { href: '#', text: 'Blog' },
+  { href: 'https://kyverno.io/community/', text: 'Policy Samples' },
+  { href: '/blog', text: 'Blog' },
 ]
 
 export const communityLinks = [
-  { href: '#', text: 'Github' },
-  { href: '#', text: 'Slack' },
-  { href: '#', text: 'Contributing' },
+  { href: 'https://github.com/kyverno/kyverno/', text: 'Github' },
+  { href: 'https://communityinviter.com/apps/kubernetes/community#kyverno', text: 'Slack' },
+  { href: 'https://github.com/kyverno/kyverno/', text: 'Contributing' },
 ]
 
 export const policies = [
@@ -438,4 +438,9 @@ export const blogSectionHeadingContent = {
 
   paragraphText:
     'Kyverno 1.15 makes policy management more modular, streamlined, and powerful.',
+}
+
+export const codingThemes = {
+  dark: themes.materialDark,
+  light: themes.materialLight,
 }

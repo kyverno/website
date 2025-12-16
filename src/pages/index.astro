@@ -11,6 +11,7 @@ import { CelPolicySection } from '../sections/CelPolicySection'
 import { PartnersSection } from '../sections/PartnersSection'
 import { getCollection } from 'astro:content'
 import { BlogSection } from '../sections/BlogSection'
+import { CncfSection } from '../sections/CncfSection'
 
 const posts = await getCollection('blog')
 const latestPosts = posts
@@ -27,7 +28,7 @@ const latestPosts = posts
   <WhykyvernoSection />
   <ComparisonChart />
   <FeatureSection />
-  <CtaSection client:load />
+  <CncfSection />
   <CelPolicySection />
   <PartnersSection />
   <BlogSection latestPosts={latestPosts} />
