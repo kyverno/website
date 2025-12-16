@@ -1,20 +1,20 @@
+import {} from 'lucide-react'
+
 import {
-  Shield,
-  Code,
-  Zap,
-  Globe,
   Box,
   ChartColumn,
-  Terminal,
-} from 'lucide-react'
-import {
-  TestTube,
-  GitBranch,
-  Lock,
   CircleCheckBig,
-  Github,
-  Book,
+  Code,
+  GitBranch,
+  Globe,
+  Lock,
+  Shield,
+  Terminal,
+  TestTube,
+  Zap,
 } from 'lucide-react'
+
+import { themes } from 'prism-react-renderer'
 
 export const versions = [
   { label: 'v1alpha1', href: '#' },
@@ -266,48 +266,49 @@ export const yamlCEL = [
     title: 'Traditional YAML Policies',
     color: 'light-blue',
     content: `apiVersion: kyverno.io/v1
-    kind: ClusterPolicy
-    metadata:
-        name: require-labels
-    spec:
-       validationFailureAction: Enforce
-       rules:
-    name: check-labels
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+  - name: check-for-labels
     match:
-        any:
-    resources:
-        kinds:
-        - Pod
-              validate:
-                  message: “Missing required labels”
-        pattern:
-            metadata:
-                            labels:
-            app:”?*”
-            version:”?*”`,
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Missing required labels"
+      pattern:
+        metadata:
+          labels:
+            app: "*"
+            version: "*"`,
   },
   {
     icon: Zap,
     title: 'New CEL-Based Policies',
     color: 'deep-blue',
-    content: `apiVersion: kyverno.io/v1alpha1
+    content: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-    name: require-labels-cel
+  name: check-labels
 spec:
-   rules:
-name: check-labels
-match:
-    any:
-resources:
-    kinds:
-    - Pod
-          assert:
-             all: 	   
-            -  expression: >
-		has(object.metadata.labels.app) && 
-		has(object.metadat.labels.version)
-           message: “Pod must have ‘app’ and ‘version’ labels”`,
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [pods]
+  validations:
+    - message: "Missing required labels"
+      expression: >
+        has(object.metadata.labels.app) && 
+        has(object.metadata.labels.version)`,
   },
 ]
 
@@ -430,4 +431,9 @@ export const partnersSectionHeadingContent = {
   headingText: [{ text: 'Trusted By Industry Leaders', color: 'text-white' }],
 
   paragraphText: 'Powering policy management for organizations worldwide',
+}
+
+export const codingThemes = {
+  dark: themes.materialDark,
+  light: themes.materialLight,
 }
