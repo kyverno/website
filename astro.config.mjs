@@ -16,6 +16,21 @@ export default defineConfig({
           label: 'GitHub',
           href: 'https://github.com/kyverno/kyverno',
         },
+        {
+          icon: 'twitter',
+          label: 'Twitter',
+          href: 'https://twitter.com/kyverno',
+        },
+        {
+          icon: 'slack',
+          label: 'Slack',
+          href: 'https://slack.k8s.io/#kyverno',
+        },
+        {
+          icon: 'email',
+          label: 'Google groups',
+          href: 'https://groups.google.com/g/kyverno',
+        },
       ],
       sidebar: [
         // Autogenerate sidebar from the root: '/docs/docs'
