@@ -14,9 +14,9 @@ export const HeadingContent = ({
       case 'level1':
         return type === 'header'
           ? `w-full flex flex-col justify-center items-center space-y-3
-                        text-5xl px-2 sm:text-[52px] md:text-6xl font-bold tracking-wide text-primary-100 
+                        text-4xl px-2 sm:text-[52px] md:text-6xl font-bold tracking-wide text-primary-100 
                         capitalize leading-12 sm:leading-16`
-          : 'text-[1.2rem] sm:text-lg max-w-80 sm:max-w-150 leading-6 text-white/80'
+          : 'text-[1.2rem] sm:text-lg max-w-80 sm:max-w-150 leading-8 text-white/80'
 
       case 'level2':
         return type === 'header'
@@ -25,7 +25,7 @@ export const HeadingContent = ({
 
       case 'level3':
         return type === 'header'
-          ? 'text-3xl sm:text-3xl font-bold tracking-wide capitalize text-center'
+          ? 'max-w-40 text-2xl sm:max-w-full sm:text-3xl font-bold tracking-wide capitalize text-center'
           : 'text-[0.8rem] sm:text-lg max-w-80 sm:max-w-150 leading-6 text-white/80'
     }
   }

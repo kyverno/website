@@ -12,7 +12,7 @@ export const WhykyvernoSection = () => {
 
   return (
     <section
-      className="p-20 flex flex-col items-center space-y-5"
+      className="py-20 px-10 md:p-20 flex flex-col items-center space-y-5"
       id="whykyverno"
     >
       <Tag variant="secondary">Created by Nirmata</Tag>

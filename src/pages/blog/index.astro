@@ -1,0 +1,44 @@
+---
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { BlogHeroSection } from '../../sections/BlogHeroSection'
+import { getCollection } from 'astro:content'
+import { BlogCard } from '../../components/BlogCard'
+import { getPostColorFromCategory } from '../../utils/postUtils'
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+)
+
+const latestPost = posts[0]
+---
+
+<DefaultLayout>
+  <section>
+    <BlogHeroSection
+      postTitle={latestPost.data.title}
+      postDescription={latestPost.data.description}
+      slug={latestPost.slug}
+    />
+  </section>
+  <section class="my-24">
+    <div class="container px-4 mx-auto">
+      <div
+        class="flex flex-col mt-16 md:flex-row md:flex-wrap md:items-stretch justify-center gap-8"
+      >
+        {
+          posts.map(({ data: { category, title, description }, slug }) => (
+            <a href={`/blog/${slug}`}>
+              <BlogCard
+                color={getPostColorFromCategory(category)}
+                title={title}
+                description={description}
+                category={category}
+                slug={slug}
+              />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</DefaultLayout>

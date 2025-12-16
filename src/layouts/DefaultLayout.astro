@@ -1,4 +1,7 @@
 ---
+import { CncfSection } from '../sections/CncfSection'
+import { Footer } from '../sections/Footer'
+import { Header } from '../sections/Header'
 import '../styles/global.css'
 ---
 
@@ -41,6 +44,9 @@ import '../styles/global.css'
     <link rel="icon" href="favicon.svg" type="image/svg" />
   </head>
   <body>
+    <Header client:load />
     <slot />
+    <CncfSection />
+    <Footer />
   </body>
 </html>

@@ -29,9 +29,9 @@ export const navItemsOnsite = [
 ]
 
 export const navItemsExternal = [
-  { label: 'Docs', href: '/docs/introduction' },
-  { label: 'Blog', href: '#' },
-  { label: 'Community', href: '/community' },
+  { label: 'Docs', href: '/getting-started/introduction' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Community', href: 'https://kyverno.io/community/' },
 ]
 
 export const heroTags = [
@@ -327,42 +327,29 @@ export const partners = [
 ]
 
 export const productsLinks = [
-  { href: 'https://kyverno.io/support/blakyaks/', text: 'BlakYaks' },
-  { href: 'https://kyverno.io/support/giantswarm/', text: 'Giant Swarm' },
-  { href: 'https://kyverno.io/support/infracloud/', text: 'Infra Cloud' },
-  { href: 'https://kyverno.io/support/kodekloud/', text: 'Kodekloud' },
-  { href: 'https://kyverno.io/support/nirmata/', text: 'Nirmata' },
+  { href: '#', text: 'Features' },
+  { href: '#', text: 'CEL Policies' },
+  { href: '#', text: 'Migration Guide' },
+  { href: '#', text: 'Playground' },
 ]
 
 export const ResourcesLinks = [
-  { href: 'docs/introduction', text: 'Documentation' },
-  {
-    href: 'https://kyverno.io/docs/kyverno-cli/reference/',
-    text: 'API Reference',
-  },
-  { href: 'policies', text: 'Policy Samples' },
+  { href: '#', text: 'Documentation' },
+  { href: '#', text: 'API Reference' },
+  { href: '#', text: 'Policy Samples' },
   { href: '#', text: 'Blog' },
 ]
 
 export const communityLinks = [
-  { href: 'https://github.com/kyverno', text: 'Github' },
-  { href: 'https://slack.k8s.io/#kyverno', text: 'Slack' },
-  {
-    href: 'https://github.com/kyverno/kyverno/blob/main/CONTRIBUTING.md',
-    text: 'Contributing',
-  },
+  { href: '#', text: 'Github' },
+  { href: '#', text: 'Slack' },
+  { href: '#', text: 'Contributing' },
 ]
 
 export const policies = [
-  {
-    href: 'https://www.linuxfoundation.org/legal/privacy-policy',
-    text: 'Privacy Policy',
-  },
-  {
-    href: 'https://www.linuxfoundation.org/legal/terms',
-    text: 'Terms of service',
-  },
-  { href: 'https://www.linuxfoundation.org/security', text: 'Security' },
+  { href: '#', text: 'Privacy Policy' },
+  { href: '#', text: 'Terms of service' },
+  { href: '#', text: 'Security' },
 ]
 
 export const heroSectionHeadingContent = {
@@ -433,7 +420,22 @@ export const partnersSectionHeadingContent = {
   paragraphText: 'Powering policy management for organizations worldwide',
 }
 
-export const codingThemes = {
-  dark: themes.materialDark,
-  light: themes.materialLight,
+export const BlogSectionContent = {
+  headingText: [
+    { text: 'Latest', color: 'text-white' },
+    { text: 'On Kyverno', color: 'text-primary-100' },
+  ],
+
+  paragraphText:
+    'Keep up with projects, updates and insights from the Kyverno community',
+}
+
+export const blogSectionHeadingContent = {
+  headingText: [
+    { text: 'Announcing', color: 'text-white' },
+    { text: 'Kyverno Release 1.15!', color: 'text-accent-100' },
+  ],
+
+  paragraphText:
+    'Kyverno 1.15 makes policy management more modular, streamlined, and powerful.',
 }

@@ -10,12 +10,13 @@ export const Button = ({
     'min-w-40 flex justify-center items-center py-2 px-3 rounded-md font-medium md:text-base'
 
   const variantStyles = {
-    primary:
-      'bg-primary-100 text-white hover:bg-blue-50 hover:text-primary-100',
-    secondary: 'border border-primary-100 text-white hover:border-white',
+    primary: 'bg-primary-100 text-white hover:bg-primary-100/60',
+    secondary:
+      'border border-primary-100 text-white hover:border-primary-100/60',
     accent: 'bg-accent-100 text-white hover:bg-accent-50 hover:text-dark-100',
     accentSecondary:
       'border border-primary-100 text-white hover:border-accent-25',
+    tertiary: 'justify-start text-left p-0 uppercase font-bold tracking-wider',
   }
 
   const sizeStyles = {

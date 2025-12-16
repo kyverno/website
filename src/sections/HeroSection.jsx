@@ -2,7 +2,6 @@ import { Zap } from 'lucide-react'
 import { heroTags, heroSectionHeadingContent } from '../constants'
 import { Tag } from '../components/Tag'
 import { Button } from '../components/Button'
-import { motion } from 'motion/react'
 import { HeadingContent } from '../components/HeadingContent'
 
 export const HeroSection = () => {
@@ -11,7 +10,7 @@ export const HeroSection = () => {
   const { headingText, paragraphText } = heroSectionHeadingContent
 
   return (
-    <section className="w-full bg-linear-to-br from-dark-50 to-dark-100 relative py-10 sm:p-20">
+    <section className="w-full bg-linear-to-br from-dark-50 to-dark-100 relative py-10 px-4 sm:p-20">
       <img
         src="assets/images/lg-hero-ball.svg"
         alt="lg-hero-ball"
@@ -49,18 +48,6 @@ export const HeroSection = () => {
               {tag.title}
             </Tag>
           ))}
-        </div>
-        <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <Button href="/docs/introduction" variant="primary" size="large">
-            Get Started
-          </Button>
-          <Button
-            href="https://playground.kyverno.io/"
-            variant="secondary"
-            size="large"
-          >
-            Explore Kyverno
-          </Button>
         </div>
         <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
           <Button href="/docs/quickstart" variant="primary" size="large">

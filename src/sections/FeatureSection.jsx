@@ -11,7 +11,7 @@ export const FeatureSection = () => {
 
   return (
     <section
-      className="p-20 flex flex-col items-center space-y-5"
+      className="py-20 px-4 md:p-20 flex flex-col items-center space-y-5"
       id="features"
     >
       <div className="items-center flex flex-col space-y-6 my-5">

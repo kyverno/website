@@ -1,0 +1,37 @@
+---
+import { Button } from '../components/Button'
+import { twMerge } from 'tailwind-merge'
+import { getPostColorFromCategory } from '../utils/postUtils'
+
+const { postTitle, postDescription, category } = Astro.props
+---
+
+<section
+  class="w-full bg-linear-to-br from-dark-50 to-dark-100 relative py-10 px-4 sm:p-20 overflow-x-clip"
+>
+  <div class="container">
+    <div
+      class="max-w-3xl mx-auto text-center flex flex-col justify-center items-center space-y-8"
+    >
+      <div
+        class={twMerge(
+          'px-3 py-1.5 uppercase font-heading rounded-full inline-flex font-extrabold tracking-wider text-xs',
+          getPostColorFromCategory(category),
+        )}
+      >
+        {category}
+      </div>
+      <h1
+        class="font-bold text-4xl text-center md:text-6xl capitalize leading-12 sm:leading-16 tracking-wide"
+      >
+        {postTitle}
+      </h1>
+      <p class="text-center text-xl text-white/80 max-w-xl mx-auto">
+        {postDescription}
+      </p>
+    </div>
+  </div>
+  <div>
+    <slot />
+  </div>
+</section>

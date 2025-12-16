@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import BlogHero from '../../sections/BlogHero.astro'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog')
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }))
+}
+
+const post = Astro.props
+const {
+  data: { category, title, description, author, date },
+} = post
+const { Content } = await post.render()
+
+const dateObject = new Date(date)
+
+const year = dateObject.getFullYear()
+const month = String(dateObject.getMonth() + 1).padStart(2, '0')
+const day = String(dateObject.getDate()).padStart(2, '0')
+
+const formattedDate = `${day}-${month}-${year}`
+---
+
+<DefaultLayout>
+  <BlogHero postTitle={title} postDescription={description} category={category}>
+    <div class="flex flex-col items-center mt-6 uppercase tracking-wide">
+      <div class="text-primary-100 font-bold">{author}</div>
+      <div class="text-white/50">{formattedDate}</div>
+    </div>
+  </BlogHero>
+  <section class="py-24">
+    <div class="container">
+      <div
+        class="prose prose-invert prose-lg prose-headings:font-bold prose-h2:text-4xl mx-auto"
+      >
+        <Content />
+      </div>
+    </div>
+  </section>
+</DefaultLayout>
