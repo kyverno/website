@@ -3,7 +3,7 @@ import { codingThemes } from '../constants'
 import { twMerge } from 'tailwind-merge'
 
 export const YamlVsCelCard = ({ card, color }) => (
-  <div className="w-[80%] sm:w-1/3 lg:w-1/2 bg-dark-50 rounded-2xl flex flex-col h-140">
+  <div className="w-[80%] sm:w-1/3 lg:w-1/2 bg-dark-50 rounded-2xl flex flex-col h-150">
     <div
       className={twMerge(
         'p-4 text-sm md:text-[16px] text-center text-dark-100 rounded-tl-2xl rounded-tr-2xl flex items-center justify-start space-x-2',
