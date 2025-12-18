@@ -65,9 +65,9 @@ reportsController:
 
 For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.13/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
 
-{{% alert title="Note" color="warning" %}}
+{% aside title="Note" type="caution" %}
 All Kyverno installations require the admission controller be among the controllers deployed. For a highly-available installation, at least 2 or more replicas are required. Based on scalability requirements, and cluster topology, additional replicas can be configured for each controller.
-{{% /alert %}}
+{% /aside %}
 
 By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
 
@@ -107,9 +107,9 @@ kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.11.1/i
 
 In some cases, you may wish to trial yet unreleased Kyverno code in a quick way. Kyverno provides an experimental installation manifest for these purposes which reflects the current state of the codebase as it is known on the `main` development branch.
 
-{{% alert title="Warning" color="warning" %}}
+{% aside title="Warning" type="caution" %}
 DO NOT use this manifest for anything other than testing or experimental purposes!
-{{% /alert %}}
+{% /aside %}
 
 ```sh
 kubectl create -f https://github.com/kyverno/kyverno/raw/main/config/install-latest-testing.yaml

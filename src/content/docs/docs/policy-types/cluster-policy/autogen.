@@ -90,9 +90,9 @@ status:
                         - image: registry.domain.com/*
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Auto-gen rules also cover ReplicaSet and ReplicationControllers. These two intermediary controllers share the same Pod template schema as DaemonSets, Deployments, StatefulSets, and Jobs. Although these intermediary controllers have rules auto-generated, the Kyverno ConfigMap may need to be updated to remove default [resource filters](/docs/installation/customization.md#resource-filters) for them.
-{{% /alert %}}
+{% /aside %}
 
 Rule auto-generation behavior is controlled by the policy annotation `pod-policies.kyverno.io/autogen-controllers`. You can change the value of the annotation to customize the target Pod controllers for the auto-generated rules. For example, Kyverno generates rules for a `Deployment` and `Job` if the annotation is defined as `pod-policies.kyverno.io/autogen-controllers=Deployment,Job`. To disable auto-generating rules for Pod controllers entirely, set it to the value `none`.
 
