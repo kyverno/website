@@ -23,8 +23,8 @@ helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update
 helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
-### Optional: Enable the Reports Server
-You can optionally enable the Reports Server as a subchart during installation. This deploys the Reports Server alongside Kyverno, configures Kyverno to use it for policy reports, and includes readiness checks (via `reportsServer.waitForReady` and `reportsServer.readinessTimeout`) to ensure Kyverno waits for the Reports Server to be operational before starting.
+### Optional: Configure Reports Server Usage
+If you are using the [reports-server](https://github.com/kyverno/reports-server) as an alternative storage backend for policy reports, set `crds.reportsServer.enabled` to `true`. This configuration prevents the installation of CRDs that are served by the reports-server and disables related validation checks, avoiding conflicts with the kubernetes API server. 
 
 To enable it with default settings:
 ```sh
