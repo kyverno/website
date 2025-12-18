@@ -128,9 +128,9 @@ spec:
                   - name: '*busybox*'
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Since preconditions often consider fields in Kubernetes resources which are optional, it is often necessary to use a JMESPath syntax for non-existence checks (`|| ''`). See the JMESPath page [here](jmespath.md#non-existence-checks) for more details on why these are necessary and how to use them.
-{{% /alert %}}
+{% /aside %}
 
 Adding an `all` block means that all of the statements within that block must evaluate to TRUE for the whole block to be considered TRUE. In this policy, in addition to the previous `any` conditions, it checks that all of `animal=cow` and `env=qa` but changes the validation to look for a container with name having the string `foxes` in it. Because the `any` block and `all` block evaluate to TRUE, the validation is performed, however the Deployment will fail to create because the name is still `busybox`. If one of the statements in the `all` block is changed so the value of the checked label is not among those in the Deployment, the rule will not be processed and the Deployment will be created.
 

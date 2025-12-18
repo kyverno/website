@@ -13,9 +13,9 @@ These Kyverno policies are based on the [Kubernetes Pod Security Standards](http
 kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply -f -
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The upstream `kustomize` should be used to apply customizations in these policies, available [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/). In many cases the version of `kustomize` built-in to `kubectl` will not work.
-{{% /alert %}}
+{% /aside %}
 
 Installation is also available via [Helm](docs/installation/methods.md#install-kyverno-using-helm) by using the chart `kyverno-policies`.
 
