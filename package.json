@@ -12,7 +12,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
+    "format:write": "lint-staged",
     "prepare": "husky"
   },
   "dependencies": {
@@ -42,6 +42,10 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
-    "prettier-plugin-astro": "^0.14.1"
+    "prettier-plugin-astro": "^0.14.1",
+    "lint-staged": "^16.2.7"
+  },
+  "lint-staged": {
+    "*.{js,ts,css,scss,jsx,tsx,md,mdx}": "prettier --write"
   }
 }
