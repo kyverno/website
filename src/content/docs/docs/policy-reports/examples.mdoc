@@ -133,8 +133,8 @@ $ kubectl get polr -o wide
 NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Note that a namespaced `Policy` applies only to namespaced resources and only in the Namespace in which they are created. This example would have been exactly the same if we had used a `Policy` instead of `ClusterPolicy`.
 
 For a cluster level resource, a `ClusterPolicyReport` would have been created at cluster level instead of a namespaced `PolicyReport`.
-{{% /alert %}}
+{% /aside %}

@@ -31,6 +31,6 @@ A [policy](/docs/policy-types/cluster-policy/policy_rule) contains one or more r
 
 - **webhookTimeoutSeconds**: specifies the maximum time in seconds allowed to apply this policy. The default timeout is 10s. The value must be between 1 and 30 seconds. This field is deprecated as of 1.13. Scheduled to be removed in a future version. Use `webhookConfiguration.timeoutSeconds` instead.
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 Use `kubectl explain policy.spec` for command-line help on the policy schema.
-{{% /alert %}}
+{% /aside %}

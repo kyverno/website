@@ -19,9 +19,9 @@ The following resource filters can be specified under an `any` or `all` clause.
 - `roles`: select namespaced roles
 - `clusterRoles`: select cluster wide roles
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Specifying resource filters directly under `match` and `exclude` has been marked for deprecation and will be removed in a future release. Matches and exclusions should always use `any` or `all` blocks.
-{{% /alert %}}
+{% /aside %}
 
 At least one element must be specified in a `match.(any/all).resources.kinds` or `exclude` block. The `kind` attribute is mandatory when working with the `resources` element. Wildcards (`*`) are supported in the `resources.kinds` and `subjects` fields.
 
@@ -45,14 +45,13 @@ Wildcards are supported with the following formats when used in the `resources.k
 - `*/Kind`
 - `*`
 
-{{% alert title="Note" color="info" %}}
-
+{% aside title="Note" type="note" %}
 - A policy using wildcards in `match` or `exclude` or that validates subresources is not allowed in background mode.
 - A policy using wildcards does not support `generate` or `verifyImages` rule types, and does not support `forEach` declarations.
 - For the `validate` rule type, a policy can only deal with `deny` statements and the `metadata` object in either `pattern` or `anyPattern` blocks.
 - For the `mutate` rule type, a policy can only deal with the `metadata` object.
 - Explicitly specifying the `subresource` field in policies is recommended to avoid ambiguity, particularly for shared subresources like `Scale`. With tools such as `kubectl` now supporting the `--subresource` flag, managing subresources has become simpler and more explicit.
-  {{% /alert %}}
+{% /aside %}
 
 Subresources may be specified with either a `/` or `.` as a separator between parent and subresource. For example, `Pods/status` or `Pods.status` will match on the `/status` subresource for a Pod. They may be combined with previous naming as well, for example `apps/v1/Deployment/scale` or `v1/Pod.eviction`. Wildcards are also supported when referencing subresources, for example `*/Node/status`. Some subresources are shared by multiple API resources, for example the `Scale` resource. Due to this, matching on `Scale` may apply to resources like `Deployment` as well as `ReplicationController` since `Scale` is common between both. Use of a parent resource followed by its subresource is necessary to be explicit in the matching decision. Specifying a subresource in the format `PodExecOptions` is not supported.
 
@@ -172,9 +171,9 @@ spec:
               app.kubernetes.io/name: '?*'
 ```
 
-{{% alert title="Warning" color="warning" %}}
+{% aside title="Warning" type="caution" %}
 Keep in mind that when matching on all kinds (`*`) the policy you write must be applicable across all of them. Typical uses for this type of wildcard matching are elements within the `metadata` object. This type of matching should be used sparingly and carefully as it will instruct the API server to send every eligible resource type to Kyverno, greatly increasing the amount of processing performed by Kyverno.
-{{% /alert %}}
+{% /aside %}
 
 Matches for Namespaced resources can also be selected using Namespace labels by using the `namespaceSelector` field. This field allows selection in two granular ways: by using `matchLabels` or `matchExpressions`. When using `matchLabels`, a map of Namespace labels can be used to specify the match. For more advanced selection logic, use the `matchExpressions` element.
 
@@ -278,9 +277,9 @@ spec:
               - cluster-admin
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Although the above snippet is useful for showing the types of matching that you can use, most policies either use one or just a couple different elements within their `match` statements.
-{{% /alert %}}
+{% /aside %}
 
 ### Match Deployments in Namespaces using labels
 
@@ -366,9 +365,9 @@ spec:
 
 The following example matches all resources with label `app=critical` excluding the resources created by ClusterRole `cluster-admin` **OR** by the user `John`.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Since `roles` and `clusterRoles` are built internally by Kyverno from AdmissionReview contents, rules which contain either of these must define `background: false` since the AdmissionReview payload is not available in background mode. `subjects` are also not allowed in background mode as this information is not available once a resource has been created.
-{{% /alert %}}
+{% /aside %}
 
 ```yaml
 spec:
