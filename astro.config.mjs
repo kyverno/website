@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight'
 import react from '@astrojs/react'
 import tailwindcss from '@tailwindcss/vite'
 import netlify from '@astrojs/netlify'
+import markdoc from '@astrojs/markdoc'
 
 const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
 
@@ -146,6 +147,7 @@ export default defineConfig({
       ],
     }),
     react(),
+    markdoc(),
   ],
 
   adapter: isDev ? undefined : netlify(),
