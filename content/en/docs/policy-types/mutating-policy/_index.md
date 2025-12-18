@@ -499,7 +499,7 @@ In this example:
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
-As of kyverno 1.17, you can use a CEL expression to select the desired target(s) through the `targetMatchConstraints.expression` field. This gives you the flexibility to reference arbitrary information in the trigger object for target selection. For example.. the below policy will add a label to all configmaps in a potential namespace when a secret called `trigger-secret` gets created in it.
+As of kyverno 1.17, you can use a CEL expression to select the desired target(s) through the `targetMatchConstraints.expression` field. This gives you the flexibility to reference arbitrary information in the trigger object for target selection. For example, the below policy will add a label to all configmaps in a potential namespace when a secret called `trigger-secret` gets created in it.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
