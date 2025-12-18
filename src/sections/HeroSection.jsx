@@ -1,8 +1,10 @@
-import { Zap } from 'lucide-react'
-import { heroTags, heroSectionHeadingContent } from '../constants'
-import { Tag } from '../components/Tag'
+import { heroSectionHeadingContent, heroTags } from '../constants'
+
 import { Button } from '../components/Button'
 import { HeadingContent } from '../components/HeadingContent'
+import { Tag } from '../components/Tag'
+import { Zap } from 'lucide-react'
+import { motion } from 'motion/react'
 
 export const HeroSection = () => {
   const zapIcon = Zap

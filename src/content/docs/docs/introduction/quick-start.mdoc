@@ -68,9 +68,9 @@ require-labels:
 
 In addition to the error returned, Kyverno also produces an Event in the same Namespace which contains this information.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
-{{% /alert %}}
+{% /aside %}
 
 Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
 
@@ -160,9 +160,9 @@ Let's now create a new Pod which does not have the desired label defined.
 kubectl run redis --image redis
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Pod in a user-defined Namespace or the `default` Namespace (for testing only).
-{{% /alert %}}
+{% /aside %}
 
 Once the Pod has been created, get the Pod to see if the `team` label was added.
 

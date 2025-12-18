@@ -22,7 +22,7 @@ export const FeatureSection = () => {
           headerLevel="h2"
         />
         <div
-          className="flex flex-col items-center justify-center space-y-4 sm:flex-row sm:flex-wrap 
+          className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center space-y-4 sm:flex-row sm:flex-wrap 
                     md:items-baseline sm:justify-center sm:space-x-4 px-10 mt-8"
         >
           {features.map((card, index) => (

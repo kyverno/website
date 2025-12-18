@@ -52,9 +52,9 @@ spec:
                       url: https://rekor.sigstore.dev
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The public key may either be defined in the policy directly or reference a standard Kubernetes Secret elsewhere in the cluster by specifying it in the format `k8s://<namespace>/<secret_name>`. The named Secret must specify a key `cosign.pub` containing the public key used for verification. Secrets may also be referenced using the `secret{}` object. See `kubectl explain clusterpolicy.spec.rules.verifyImages.attestors.entries.keys` for more details on the supported key options.
-{{% /alert %}}
+{% /aside %}
 
 A signed image can be run as follows:
 
@@ -284,9 +284,9 @@ The policy rule above fetches and verifies that the attestations are signed with
 
 Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The structure of the predicate may differ slightly depending on the predicate type used during attestation. Use `cosign verify-attestation` by passing the expected predicate type with the `--type` flag and examine the predicate structure to ensure the expression you're writing is accurate.
-{{% /alert %}}
+{% /aside %}
 
 ### Signing attestations
 
@@ -458,9 +458,9 @@ This enables use cases where, in an enterprise with a private CA, each team has 
 
 ### Using API Calls to Reference Certificates for Image Verification
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Note: Ensure the Kyverno admission controller has get permissions for secrets to allow API calls.
-{{% /alert %}}
+{% /aside %}
 
 The following ClusterPolicy demonstrates how to verify an image signature using a certificate stored in a Kubernetes secret:
 
@@ -679,9 +679,9 @@ Sample steps to enable IRSA for Kyverno using `eksctl` (see links above if you p
        --override-existing-serviceaccounts
    ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Kyverno needs to know the AWS region for the KMS store in use. To provide this information, the environment variables `AWS_DEFAULT_REGION` and `AWS_REGION` need to be set in the Kyverno Deployment.
-{{% /alert %}}
+{% /aside %}
 
 ## Verifying Image Annotations
 
