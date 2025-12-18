@@ -1,40 +1,15 @@
 #!/usr/bin/env sh
 
-# File extensions that Prettier can format
-PRETTIER_EXTENSIONS='\.(js|jsx|ts|tsx|json|css|md|mdx|astro|yml|yaml)$'
-
-# Get list of staged files that Prettier can format
-staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E "$PRETTIER_EXTENSIONS" || true)
-
 # Show info message about the hook
 cat <<EOF
 
-INFO: This project has a pre-commit hook to execute linting
+INFO: This project has a pre-commit hook that automatically formats staged files.
 If necessary, you can disable this with the "--no-verify" flag during the commit.
 Example:
     "git commit -m <message> --no-verify"
 
 EOF
 
-# Exit early if no staged files to check
-[ -z "$staged_files" ] && exit 0
-
-echo "Checking formatting for staged files..."
-
-# Check formatting - capture exit code without stopping script execution
-set +e
-printf '%s\n' "$staged_files" | xargs npx prettier --check
-exit_code=$?
-set -e
-
-# Handle formatting check result
-if [ $exit_code -ne 0 ]; then
-  cat <<EOF
-
-❌ Pre-commit hook failed: Some files are not properly formatted.
-Please run 'npm run format:write' to format your files, then try committing again.
-EOF
-  exit 1
-fi
-
-echo "✅ All files are properly formatted."
+# Format staged files using lint-staged (configured in package.json)
+# lint-staged automatically re-stages the files it processes, so no need for git add
+npm run format:write
