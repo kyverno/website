@@ -16,10 +16,12 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@astrojs/markdoc": "^0.15.10",
     "@astrojs/netlify": "^6.6.0",
     "@astrojs/prism": "^3.3.0",
     "@astrojs/react": "^4.4.2",
     "@astrojs/starlight": "^0.36.1",
+    "@astrojs/starlight-markdoc": "^0.5.1",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
     "@tailwindcss/vite": "^4.1.16",
     "@types/react": "^19.2.7",
