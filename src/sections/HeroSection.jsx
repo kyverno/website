@@ -1,9 +1,10 @@
-import { Zap } from 'lucide-react'
-import { heroTags, heroSectionHeadingContent } from '../constants'
-import { Tag } from '../components/Tag'
+import { heroSectionHeadingContent, heroTags } from '../constants'
+
 import { Button } from '../components/Button'
-import { motion } from 'motion/react'
 import { HeadingContent } from '../components/HeadingContent'
+import { Tag } from '../components/Tag'
+import { Zap } from 'lucide-react'
+import { motion } from 'motion/react'
 
 export const HeroSection = () => {
   const zapIcon = Zap
@@ -11,7 +12,7 @@ export const HeroSection = () => {
   const { headingText, paragraphText } = heroSectionHeadingContent
 
   return (
-    <section className="w-full bg-linear-to-br from-dark-50 to-dark-100 relative py-10 sm:p-20">
+    <section className="w-full bg-linear-to-br from-dark-50 to-dark-100 relative py-10 sm:p-20 place-items-center">
       <img
         src="assets/images/lg-hero-ball.svg"
         alt="lg-hero-ball"

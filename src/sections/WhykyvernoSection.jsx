@@ -25,7 +25,7 @@ export const WhykyvernoSection = () => {
         />
       </div>
       <div
-        className="w-full flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
+        className="w-full max-w-7xl mx-auto flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
             md:space-x-4 md:mt-8 lg:flex-nowrap"
       >
         {whyKyvernoCards.map((card, index) => (

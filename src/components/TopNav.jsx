@@ -1,9 +1,10 @@
+import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { navItemsExternal, navItemsOnsite } from '../constants/index.js'
-import { Menu, X } from 'lucide-react'
-import { TopNavLinks } from '../components/TopNavLinks.jsx'
-import { SiteLogo } from '../components/SiteLogo.jsx'
+
 import { Button } from '../components/Button.jsx'
+import { SiteLogo } from '../components/SiteLogo.jsx'
+import { TopNavLinks } from '../components/TopNavLinks.jsx'
 
 export const TopNav = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -44,11 +45,7 @@ export const TopNav = () => {
             >
               Playground
             </Button>
-            <Button
-              href="https://kyverno.io/support/"
-              variant="primary"
-              size="large"
-            >
+            <Button href="/" variant="primary" size="large">
               Support
             </Button>
           </div>
@@ -73,11 +70,8 @@ export const TopNav = () => {
               >
                 Playground
               </Button>
-              <Button
-                href="https://kyverno.io/support/"
-                variant="primary"
-                size="medium"
-              >
+              // Mobile
+              <Button href="/support" variant="primary" size="medium">
                 Support
               </Button>
             </div>
