@@ -24,7 +24,7 @@ export const CelPolicySection = () => {
       />
       <div className="flex flex-col items-center mt-6">
         <h3 className="font-bold text-2xl">CEL Policy Types</h3>
-        <div className="flex flex-col space-y-4 justify-center items-center md:flex-row md:flex-wrap sm:gap-4 sm:items-baseline sm:space-x-4 my-8">
+        <div className="w-full max-w-7xl mx-auto flex flex-col space-y-4 justify-center items-center md:flex-row md:flex-wrap sm:gap-4 sm:items-baseline sm:space-x-4 my-8">
           {celPolicies.map((card, index) => (
             <CelPolicyCards
               card={card}
