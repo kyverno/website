@@ -73,27 +73,27 @@ summary:
 
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](../monitoring/policy-results-info.md) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
-{{% /alert %}}
+{% /aside %}
 
 Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization.md#container-flags) section.
 
-{{% alert title="Note" color="warning" %}}
+{% aside title="Note" type="caution" %}
 Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization.md#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization.md#configmap-keys).
-{{% /alert %}}
+{% /aside %}
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 To configure Kyverno to generate reports for Kubernetes ValidatingAdmissionPolicies enable the `--validatingAdmissionPolicyReports` flag in the reports controller.
-{{% /alert %}}
+{% /aside %}
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Reporting can be enabled or disabled for rule types by modifying the value of the flag `--enableReporting=validate,mutate,mutateExisting,generate,imageVerify`.
-{{% /alert %}}
+{% /aside %}
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Creating reports for a resource require permissions to `get`, `list` and `watch` the resource in Kyverno reports controller.
-{{% /alert %}}
+{% /aside %}
 
 ## Report result logic
 
@@ -206,13 +206,13 @@ Similarly, you can view the cluster-wide report using:
 kubectl get clusterpolicyreport
 ```
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 Note that the name of the report is mostly random. Add `-o wide` to show additional information that will help identify the resource associated with the report.
-{{% /alert %}}
+{% /aside %}
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
-{{% /alert %}}
+{% /aside %}
 
 ## Viewing policy violations
 
