@@ -5,6 +5,8 @@ import react from '@astrojs/react'
 import tailwindcss from '@tailwindcss/vite'
 import netlify from '@astrojs/netlify'
 
+const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [
@@ -146,7 +148,7 @@ export default defineConfig({
     react(),
   ],
 
-  adapter: netlify(),
+  adapter: isDev ? undefined : netlify(),
   vite: {
     plugins: [tailwindcss()],
   },
