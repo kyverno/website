@@ -1,4 +1,5 @@
 label: CEL Policies
 order: 20
+collapsed: true
 badge:
   text: Alpha
