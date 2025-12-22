@@ -48,6 +48,6 @@
     "prettier-plugin-astro": "^0.14.1"
   },
   "lint-staged": {
-    "*.{js,ts,css,scss,jsx,tsx,md,mdx}": "prettier --write"
+    "*.{js,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
   }
 }
