@@ -10,7 +10,7 @@ Kyverno provides multiple methods for installation: Helm and YAML manifest. When
 
 The diagram below shows a typical Kyverno installation featuring all available controllers.
 
-<img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
+![Kyverno Installation](./assets/kyverno-installation.png)
 <br/><br/>
 
 A standard Kyverno installation consists of a number of different components, some of which are optional.

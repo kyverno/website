@@ -174,10 +174,10 @@ After that, navigate to the [Jaeger UI](http://localhost) and search for traces 
 
 The list should show the trace for the previous Pod creation request:
 
-<p align="center"><img src="walkthrough-jaeger-1.png" height="300px"/></p>
+![walkthrough-jaeger-1](walkthrough-jaeger-1.png)
 
 Clicking on the trace will take you to the trace details, showing all spans covered by the Pod admission request:
 
-<p align="center"><img src="walkthrough-jaeger-2.png" height="300px"/></p>
+![walkthrough-jaeger-2](walkthrough-jaeger-2.png)
 
 The trace shows individual spans of all the policies that were just installed, with child spans for every rule that was checked (but not necessarily evaluated). The sum of all spans equals the trace time or the entire time Kyverno spent processing the Pod admission request.
