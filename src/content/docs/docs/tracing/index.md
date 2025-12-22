@@ -17,7 +17,7 @@ In the context of Kyverno, requests are usually sent by the Kubernetes API serve
 
 Below is a trace for a validating admission request.
 
-<p align="center"><img src="./assets/trace-example-1.png" height="300px"/></p>
+![trace-example-1](./assets/trace-example-1.png)
 
 ## Installation and Setup
 

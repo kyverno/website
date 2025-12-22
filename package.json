@@ -35,15 +35,16 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sharp": "^0.34.2",
+    "starlight-image-zoom": "^0.13.2",
     "starlight-theme-rapide": "^0.5.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
     "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
-    "prettier-plugin-astro": "^0.14.1",
-    "lint-staged": "^16.2.7"
+    "prettier-plugin-astro": "^0.14.1"
   },
   "lint-staged": {
     "*.{js,ts,css,scss,jsx,tsx,md,mdx}": "prettier --write"
