@@ -1,10 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
-import starlight from '@astrojs/starlight'
-import react from '@astrojs/react'
-import tailwindcss from '@tailwindcss/vite'
-import netlify from '@astrojs/netlify'
 import markdoc from '@astrojs/markdoc'
+import netlify from '@astrojs/netlify'
+import react from '@astrojs/react'
+import starlight from '@astrojs/starlight'
+import starlightImageZoom from 'starlight-image-zoom'
+import tailwindcss from '@tailwindcss/vite'
 
 const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
 
@@ -145,6 +146,7 @@ export default defineConfig({
           slug: 'community',
         },
       ],
+      plugins: [starlightImageZoom()],
     }),
     react(),
     markdoc(),

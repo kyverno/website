@@ -15,7 +15,7 @@ There is no ordering within or across policies and all matching policy rules wil
 
 Each rule consists of a [`match`](/docs/policy-types/cluster-policy/match-exclude.md) declaration, an optional [`exclude`](/docs/policy-types/cluster-policy/match-exclude.md) declaration, and one of a [`validate`](/docs/policy-types/cluster-policy/validate.md), [`mutate`](/docs/policy-types/cluster-policy/mutate.md), [`generate`](/docs/policy-types/cluster-policy/generate.md), or [`verifyImages`](/docs/policy-types/cluster-policy/verify-images/_index.md) declaration. Each rule can contain only a single `validate`, `mutate`, `generate`, or `verifyImages` child declaration.
 
-<img src="/images/Kyverno-Policy-Structure.png" alt="Kyverno Policy" width="65%"/>
+![Kyverno Policy](./assets/Kyverno-Policy-Structure.png)
 <br/>
 <br/>
 
