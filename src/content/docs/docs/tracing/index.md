@@ -2,7 +2,7 @@
 title: Tracing
 description: Using distributed tracing to introspect the internal operations of Kyverno.
 sidebar:
-  order: 80
+  order: 10
 ---
 
 ## Introduction
