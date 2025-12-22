@@ -24,7 +24,7 @@
   publish = "dist"
 
   [context.deploy-preview.environment]
-    NODE_ENV = "development"
+    NODE_ENV = "production"
     ASTRO_ENV = "preview"
     SITE_URL = "$DEPLOY_PRIME_URL"
 
