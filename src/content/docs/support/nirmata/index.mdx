@@ -5,6 +5,8 @@ description: Kubernetes Policy and Governance from the creators of Kyverno
 type: docs
 ---
 
+import Feedback from '../../../../components/feedback.jsx'
+
 [Nirmata](https://nirmata.com/) is the creator of Kyverno and offers several commercial solutions for Kubernetes policy and governance for platform and operations teams.
 
 ### Nirmata Enterprise for Kyverno (N4K)
@@ -19,25 +21,35 @@ type: docs
 - Quarterly trainings, assessments, and upgrade assist
 - Custom policy authoring support & workshops
 
-{{% videos %}}
-{{< youtube id="LvZ66a9UUNM" start="0" class="video" >}}
-{{% /videos %}}
+<iframe
+  width="100%"
+  height="400"
+  src="https://www.youtube.com/embed/LvZ66a9UUNM"
+  title="Nirmata Enterprise for Kyverno"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+/>
 
-### Nirmata Policy Manager
+### Nirmata Control Hub
 
-[Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/) provides centralized visibility and governance across fleets of clusters. It includes:
+[Nirmata Control Hub](https://nirmata.com/nirmata-control-hub/) provides centralized visibility and governance across fleets of clusters. It includes:
 
 - All N4K features
-- Centralized reporting across clusters and clouds
+- AI copilot to automate governance uniformly across any infrastructure
+- Centralized reporting and analytics across clusters and clouds
 - Role-based access controls for teams with OIDC and SAML
 - Auto-assign ownership of violations to teams
-- Customizable alerting and notifications
-- DevSecOps Collaboration Workflows e.g., exception management
-- Auto-remediation with GitOps integrations
-- Pipeline scanning and integrations
-- Continuous Compliance
-- CIS Kubernetes Benchmarks
+- Customizable alerting and notifications via Slack, Jira, and other integrations
+- DevSecOps collaboration workflows with exception management
+- Automated remediation suggestions with GitOps integrations
+- Pipeline scanning and integrations for shift-left security
+- Continuous compliance throughout the development process
+- Software supply chain security with image signature verification
+- Intelligent policy-to-cluster and workload mappings
 
 ### Kyverno Training & Support
 
 Nirmata offers expert training and custom workshops for custom support for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.
+
+<Feedback client:load />

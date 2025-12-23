@@ -45,7 +45,7 @@ export const TopNav = () => {
             >
               Playground
             </Button>
-            <Button href="/" variant="primary" size="large">
+            <Button href="/support" variant="primary" size="large">
               Support
             </Button>
           </div>

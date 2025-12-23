@@ -145,6 +145,10 @@ export default defineConfig({
           label: 'Community',
           slug: 'community',
         },
+        {
+          label: 'Support',
+          slug: 'support',
+        },
       ],
       plugins: [starlightImageZoom()],
     }),
