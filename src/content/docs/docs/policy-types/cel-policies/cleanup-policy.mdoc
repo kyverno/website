@@ -3,7 +3,7 @@ title: Cleanup Policy
 description: >
   Delete matching resources based on a schedule
 sidebar:
-  order: -10
+  order: 50
 ---
 
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster in two different ways. The first way is via a declarative policy definition in either a `CleanupPolicy` or `ClusterCleanupPolicy`. See the section on [cleanup policies](#cleanup-policy) below for more details. The second way is via a reserved time-to-live (TTL) label added to a resource. See the [cleanup label](#cleanup-label) section for further details.

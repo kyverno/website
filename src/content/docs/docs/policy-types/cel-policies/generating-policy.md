@@ -3,7 +3,7 @@ title: GeneratingPolicy
 description: >-
   Create or clone resources based on flexible triggers
 sidebar:
-  order: 30
+  order: 50
 ---
 
 {{< feature-state state="alpha" version="v1.15" />}}
