@@ -2,7 +2,7 @@
 title: Policies and Rules
 description: Get an overview of how Kyverno policies and rules work.
 sidebar:
-  order: 10
+  order: -10
 ---
 
 A Kyverno ClusterPolicy contains a list of rules.
