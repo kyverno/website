@@ -28,13 +28,13 @@ npm run codegen:policies -- <repo-url> <output-dir>
 **Example:**
 
 ```bash
-npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/docs/policies/
+npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/policies/
 ```
 
 **Direct execution:**
 
 ```bash
-tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/docs/policies/
+tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/
 ```
 
 ### How it works

@@ -14,7 +14,7 @@
     "format:check": "prettier --check .",
     "format:write": "lint-staged",
     "prepare": "husky || true",
-    "codegen:policies": "tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/docs/policies/",
+    "codegen:policies": "tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/",
     "codegen:cli-docs": "scripts/codegen-cli-docs"
   },
   "dependencies": {
@@ -54,6 +54,11 @@
     "tsx": "^4.19.2"
   },
   "lint-staged": {
-    "*.{js,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
+    "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
+  },
+  "overrides": {
+    "tsx": {
+      "esbuild": "~0.27.0"
+    }
   }
 }

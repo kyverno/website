@@ -177,7 +177,7 @@ This will:
 4. Generate markdown files with frontmatter and full YAML content
 5. Preserve the directory structure from the source repository
 
-The generated files are placed in `src/content/docs/policies/`. The script uses TypeScript and requires Node.js v24+.
+The generated files are placed in `src/content/policies/`. The script uses TypeScript and requires Node.js v24+.
 
 ### Working with Components
 
@@ -222,7 +222,7 @@ npm run codegen:policies -- <repo-url> <output-dir>
 **Example with custom arguments:**
 
 ```bash
-npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/docs/policies/
+npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/policies/
 ```
 
 **What it does:**

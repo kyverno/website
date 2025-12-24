@@ -126,6 +126,13 @@ export default defineConfig({
           slug: 'docs/troubleshooting',
         },
         {
+          label: 'Policy Library',
+          collapsed: true,
+          autogenerate: {
+            directory: 'docs/policies',
+          },
+        },
+        {
           label: 'Security',
           slug: 'docs/security',
         },

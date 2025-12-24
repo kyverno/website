@@ -6,13 +6,29 @@ import * as yaml from 'js-yaml'
 
 import simpleGit from 'simple-git'
 
+// Schema constants - keep these in sync with src/content.config.ts
+// These can be easily updated if the schema changes
+const POLICY_CATEGORIES = [
+  'verifyImages',
+  'validate',
+  'mutate',
+  'generate',
+  'cleanup',
+] as const
+
+const POLICY_SEVERITIES = ['low', 'medium', 'high'] as const
+
+type PolicyCategory = (typeof POLICY_CATEGORIES)[number]
+type PolicySeverity = (typeof POLICY_SEVERITIES)[number]
+
 interface PolicyMetadata {
   title: string
-  category: string
-  version: string
-  subject: string
-  policyType: 'validate' | 'mutate' | 'generate'
-  description: string
+  category: PolicyCategory
+  severity: PolicySeverity
+  subjects: string[]
+  tags: string[]
+  version?: string
+  type: string // Full kind from YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
 }
 
 interface PolicyYaml {
@@ -33,11 +49,25 @@ interface PolicyYaml {
 }
 
 /**
- * Determines the policy type from the spec rules
+ * Determines the policy category from the spec rules and annotations
+ * Maps policy type to schema category enum
  */
-function getPolicyType(
+function getPolicyCategory(
   spec: PolicyYaml['spec'],
-): 'validate' | 'mutate' | 'generate' {
+  annotations: Record<string, string>,
+): PolicyCategory {
+  // Check for verifyImages category (typically has image verification rules)
+  const categoryAnnotation = annotations['policies.kyverno.io/category']
+  if (categoryAnnotation?.toLowerCase().includes('verifyimage')) {
+    return 'verifyImages'
+  }
+
+  // Check for cleanup category
+  if (categoryAnnotation?.toLowerCase().includes('cleanup')) {
+    return 'cleanup'
+  }
+
+  // Determine from rule types
   if (!spec.rules || spec.rules.length === 0) {
     return 'validate'
   }
@@ -54,24 +84,53 @@ function getPolicyType(
 
 /**
  * Extracts metadata from policy YAML annotations
+ * Matches the schema defined in src/content.config.ts
  */
 function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
   const annotations = policy.metadata.annotations || {}
 
   const title = annotations['policies.kyverno.io/title'] || policy.metadata.name
-  const category = annotations['policies.kyverno.io/category'] || 'Other'
-  const version = annotations['policies.kyverno.io/minversion'] || '1.0.0'
-  const subject = annotations['policies.kyverno.io/subject'] || ''
-  const description = annotations['policies.kyverno.io/description'] || ''
-  const policyType = getPolicyType(policy.spec)
+  const category = getPolicyCategory(policy.spec, annotations)
+
+  // Extract severity, default to 'medium' if not specified
+  const severityAnnotation =
+    annotations['policies.kyverno.io/severity']?.toLowerCase()
+  const severity: PolicySeverity =
+    severityAnnotation &&
+    POLICY_SEVERITIES.includes(severityAnnotation as PolicySeverity)
+      ? (severityAnnotation as PolicySeverity)
+      : 'medium'
+
+  // Extract subjects (plural) from subject annotation, split by comma if multiple
+  const subjectAnnotation = annotations['policies.kyverno.io/subject'] || ''
+  const subjects = subjectAnnotation
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+
+  // Extract tags from annotations (if available) or default to empty array
+  const tagsAnnotation = annotations['policies.kyverno.io/tags']
+  const tags = tagsAnnotation
+    ? tagsAnnotation
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0)
+    : []
+
+  // Version is optional
+  const version = annotations['policies.kyverno.io/minversion'] || undefined
+
+  // Extract the full kind from the policy YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
+  const type = policy.kind
 
   return {
     title,
     category,
+    severity,
+    subjects,
+    tags,
     version,
-    subject,
-    policyType,
-    description,
+    type,
   }
 }
 
@@ -96,25 +155,65 @@ function generateMarkdown(
     ? relativePath
     : `/${relativePath}`
 
-  const frontmatter = `---
-title: '${metadata.title.replace(/'/g, "''")}'
-category: ${metadata.category}
-version: ${metadata.version}
-subject: ${metadata.subject}
-policyType: '${metadata.policyType}'
-description: >
-  ${metadata.description.split('\n').join('\n  ')}
----
+  // Format frontmatter to match schema in src/content.config.ts
+  const frontmatterLines = [
+    '---',
+    `title: '${metadata.title.replace(/'/g, "''")}'`,
+    `category: ${metadata.category}`,
+    `severity: ${metadata.severity}`,
+    `type: ${metadata.type}`,
+    ...(metadata.subjects.length > 0
+      ? [`subjects:`, ...metadata.subjects.map((s) => `  - ${s}`)]
+      : ['subjects: []']),
+    ...(metadata.tags.length > 0
+      ? [`tags:`, ...metadata.tags.map((t) => `  - ${t}`)]
+      : ['tags: []']),
+  ]
 
-## Policy Definition
+  // Add version only if present (it's optional in schema)
+  if (metadata.version) {
+    frontmatterLines.push(`version: ${metadata.version}`)
+  }
 
-<a href="${rawUrl}" target="-blank">${displayPath}</a>
+  frontmatterLines.push('---', '', '## Policy Definition', '')
+  frontmatterLines.push(
+    `<a href="${rawUrl}" target="-blank">${displayPath}</a>`,
+    '',
+  )
+  frontmatterLines.push('```yaml')
+  frontmatterLines.push(yamlContent)
+  frontmatterLines.push('```', '')
 
-\`\`\`yaml
-${yamlContent}\`\`\`
-`
+  return frontmatterLines.join('\n')
+}
 
-  return frontmatter
+/**
+ * Checks if a directory or file should be excluded from processing
+ */
+function shouldExclude(filePath: string, baseDir: string): boolean {
+  const relativePath = path.relative(baseDir, filePath)
+  const pathParts = relativePath.split(path.sep)
+
+  // Exclude test directories and files
+  const excludePatterns = [
+    '.chainsaw-test',
+    '.test',
+    'test',
+    'tests',
+    '__tests__',
+    'examples',
+    'sample',
+    'samples',
+  ]
+
+  // Check if any part of the path matches exclude patterns
+  for (const part of pathParts) {
+    if (excludePatterns.some((pattern) => part.includes(pattern))) {
+      return true
+    }
+  }
+
+  return false
 }
 
 /**
@@ -129,11 +228,16 @@ async function findPolicyFiles(dir: string): Promise<string[]> {
     for (const entry of entries) {
       const fullPath = path.join(currentDir, entry.name)
 
+      // Skip excluded directories and files
+      if (shouldExclude(fullPath, dir)) {
+        continue
+      }
+
       if (entry.isDirectory()) {
         await walk(fullPath)
       } else if (
-        (entry.isFile() && entry.name.endsWith('.yaml')) ||
-        entry.name.endsWith('.yml')
+        entry.isFile() &&
+        (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml'))
       ) {
         files.push(fullPath)
       }
@@ -155,13 +259,40 @@ async function processPolicyFile(
 ): Promise<void> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
-    const policy = yaml.load(content) as PolicyYaml
+
+    // Handle multi-document YAML files
+    // Load all documents and find the policy one
+    let policy: PolicyYaml | null = null
+
+    try {
+      // Try loading as single document first
+      const loaded = yaml.load(content) as PolicyYaml
+      if (
+        loaded?.apiVersion?.includes('kyverno.io') &&
+        loaded?.kind?.includes('Policy')
+      ) {
+        policy = loaded
+      }
+    } catch (error) {
+      // If single document fails, try loading all documents
+      try {
+        const documents = yaml.loadAll(content) as PolicyYaml[]
+        // Find the first document that is a Kyverno policy
+        policy =
+          documents.find(
+            (doc) =>
+              doc?.apiVersion?.includes('kyverno.io') &&
+              doc?.kind?.includes('Policy'),
+          ) || null
+      } catch (multiDocError) {
+        // If both fail, skip this file
+        console.warn(`Skipping ${filePath}: Invalid YAML format`)
+        return
+      }
+    }
 
     // Skip if not a Kyverno policy
-    if (
-      !policy.apiVersion?.includes('kyverno.io') ||
-      !policy.kind?.includes('Policy')
-    ) {
+    if (!policy) {
       return
     }
 
@@ -192,6 +323,14 @@ async function processPolicyFile(
 
     console.log(`Generated: ${outputPath}`)
   } catch (error) {
+    // Only log errors that aren't expected skips
+    if (
+      error instanceof Error &&
+      error.message.includes('expected a single document')
+    ) {
+      // This is handled above, so we can skip logging
+      return
+    }
     console.error(`Error processing ${filePath}:`, error)
   }
 }
@@ -205,7 +344,7 @@ async function main() {
   if (args.length < 2) {
     console.error('Usage: render.ts <repo-url> <output-dir>')
     console.error(
-      'Example: render.ts https://github.com/kyverno/policies/main ../src/content/docs/policies/',
+      'Example: render.ts https://github.com/kyverno/policies/main ../src/content/policies/',
     )
     process.exit(1)
   }
