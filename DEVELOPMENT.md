@@ -49,26 +49,27 @@ The development server will start at `http://localhost:4321`. The site will auto
 .
 ├── public/                 # Static assets (images, favicons, etc.)
 │   └── assets/
-│       ├── images/        # Image assets
-│       └── product-icons/ # Product/company icons
+│       ├── images/           # Image assets
+│       └── product-icons/    # Product/company icons
 ├── src/
-│   ├── components/        # React components (JSX)
-│   ├── constants/         # Constants and configuration data
-│   ├── content/           # Content files (Markdown/MDX)
-│   │   └── docs/          # Documentation content
-│   │       ├── blog/      # Blog posts
-│   │       ├── docs/      # Documentation pages
-│   │       └── policies/  # Policy examples (generated)
-│   ├── layouts/           # Astro layout components
-│   ├── pages/             # Astro pages (file-based routing)
-│   ├── sections/          # Page section components
-│   ├── styles/            # Global CSS styles
-│   └── content.config.ts  # Content collection configuration
-├── render/                # Policy rendering tool (Go)
-├── astro.config.mjs       # Astro configuration
-├── package.json           # Dependencies and scripts
-├── tsconfig.json          # TypeScript configuration
-└── Makefile              # Code generation tasks
+│   ├── components/           # React components (JSX)
+│   ├── constants/            # Constants and configuration data
+│   ├── content/              # Content files (Markdown/MDX)
+│   │   └── docs/             # Documentation content
+│   │       ├── blog/         # Blog posts
+│   │       ├── docs/         # Documentation pages
+│   │       └── policies/     # Policy examples (generated)
+│   ├── layouts/              # Astro layout components
+│   ├── pages/                # Astro pages (file-based routing)
+│   ├── sections/             # Page section components
+│   ├── styles/               # Global CSS styles
+│   └── content.config.ts     # Content collection configuration
+├── scripts/                  # Development scripts and tools
+│   ├── render-policies.ts    # Policy rendering tool (TypeScript)
+│   └── codegen-cli-docs.sh   # CLI documentation generator
+├── astro.config.mjs          # Astro configuration
+├── package.json              # Dependencies and scripts
+└── tsconfig.json             # TypeScript configuration
 ```
 
 ## Available Commands
@@ -90,13 +91,16 @@ The development server will start at `http://localhost:4321`. The site will auto
 
 ### Code Generation
 
-The project uses a Makefile for generating content:
+The project uses npm scripts for generating content:
 
-- `make codegen` - Rebuild all generated code and docs (policies and CLI docs)
-- `make codegen-policies` - Generate policy markdown files from the kyverno/policies repository
-- `make codegen-cli-docs` - Generate CLI documentation from the kyverno-cli Docker image
-- `make verify-codegen` - Verify that all generated code is up to date
-- `make help` - Show all available Makefile commands
+- `npm run codegen:policies` - Generate policy markdown files from the kyverno/policies repository
+- `npm run codegen:cli-docs` - Generate CLI documentation from the kyverno-cli Docker image
+
+You can also run both in sequence:
+
+```bash
+npm run codegen:policies && npm run codegen:cli-docs
+```
 
 ## Technologies & Tools
 
@@ -162,10 +166,18 @@ Blog posts are located in `src/content/docs/blog/` and organized by category (e.
 Policy examples are generated from the [kyverno/policies](https://github.com/kyverno/policies) repository. To regenerate them:
 
 ```bash
-make codegen-policies
+npm run codegen:policies
 ```
 
-This requires Go to be installed and will pull the latest policies from the upstream repository.
+This will:
+
+1. Clone the kyverno/policies repository (shallow clone, single branch)
+2. Find all YAML policy files recursively
+3. Extract metadata from policy annotations
+4. Generate markdown files with frontmatter and full YAML content
+5. Preserve the directory structure from the source repository
+
+The generated files are placed in `src/content/docs/policies/`. The script uses TypeScript and requires Node.js v24+.
 
 ### Working with Components
 
@@ -187,35 +199,105 @@ The project uses Tailwind CSS for styling. You can use Tailwind utility classes 
 
 ### Code Generation
 
-#### Generating Policies (NOT WORKING ATM)
+The website includes automatically generated content that should be regenerated when upstream sources change.
 
-Policies are automatically generated from the kyverno/policies repository. To regenerate:
+#### Generating Policies
+
+Policy documentation is generated from the [kyverno/policies](https://github.com/kyverno/policies) repository. The TypeScript script (`scripts/render-policies.ts`) fetches policies and converts them to markdown format.
+
+**Usage:**
+
+Default (uses kyverno/policies repository):
 
 ```bash
-make codegen-policies
+npm run codegen:policies
 ```
 
-This requires:
+Custom repository and output directory:
 
-- Go installed
-- Access to the kyverno/policies repository
+```bash
+npm run codegen:policies -- <repo-url> <output-dir>
+```
+
+**Example with custom arguments:**
+
+```bash
+npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/docs/policies/
+```
+
+**What it does:**
+
+1. Clones the specified GitHub repository (shallow clone, single branch)
+2. Recursively finds all YAML policy files (`.yaml` or `.yml`)
+3. Extracts metadata from policy annotations:
+   - `policies.kyverno.io/title`
+   - `policies.kyverno.io/category`
+   - `policies.kyverno.io/minversion`
+   - `policies.kyverno.io/subject`
+   - `policies.kyverno.io/description`
+4. Determines policy type (`validate`, `mutate`, or `generate`) from the spec
+5. Generates markdown files with frontmatter and full YAML content
+6. Preserves the directory structure from the source repository
+
+**Output format:**
+Each generated markdown file includes:
+
+- Frontmatter with policy metadata (title, category, version, subject, policyType, description)
+- A link to the raw YAML file on GitHub
+- The complete policy YAML in a code block
+
+**Requirements:**
+
+- Node.js v24 or higher
+- Dependencies installed (`npm install`)
+- Git (for cloning repositories)
 
 #### Generating CLI Documentation
 
 CLI documentation is generated from the kyverno-cli Docker image:
 
 ```bash
-make codegen-cli-docs
+npm run codegen:cli-docs
 ```
 
-This requires Docker to be installed and running.
+This script:
+
+1. Removes existing CLI documentation files
+2. Runs the kyverno-cli Docker container to generate documentation
+3. Outputs markdown files to `src/content/docs/docs/kyverno-cli/reference/`
+
+**Requirements:**
+
+- Docker installed and running
+- Access to pull `ghcr.io/kyverno/kyverno-cli` image
+
+#### Verifying Generated Content
+
+Before committing changes, ensure generated content is up to date. You can verify by:
+
+1. Running the codegen scripts:
+
+   ```bash
+   npm run codegen:policies
+   npm run codegen:cli-docs
+   ```
+
+2. Checking git status to see if any files changed:
+
+   ```bash
+   git status
+   ```
+
+3. If files changed, commit them along with your changes
+
+**Note:** Generated content should be committed to the repository so the website can be built without requiring codegen steps during deployment.
 
 ## Testing Your Changes
 
 1. **Visual Testing**: Use the development server to visually inspect your changes
 2. **Build Testing**: Run `npm run build` to ensure the site builds without errors
 3. **Format Checking**: Run `npm run format:check` to ensure code is properly formatted
-4. **Code Generation**: Run `make verify-codegen` to ensure generated content is up to date
+4. **Code Generation**: Run `npm run codegen:policies` and `npm run codegen:cli-docs` to ensure generated content is up to date, then check `git status` for any changes
 
 ## Common Tasks
 

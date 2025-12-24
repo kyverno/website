@@ -13,7 +13,9 @@
     "astro": "astro",
     "format:check": "prettier --check .",
     "format:write": "lint-staged",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "codegen:policies": "tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/docs/policies/",
+    "codegen:cli-docs": "scripts/codegen-cli-docs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^0.15.10",
@@ -42,10 +44,14 @@
     "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
-    "prettier-plugin-astro": "^0.14.1"
+    "prettier-plugin-astro": "^0.14.1",
+    "simple-git": "^3.25.0",
+    "tsx": "^4.19.2"
   },
   "lint-staged": {
     "*.{js,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
