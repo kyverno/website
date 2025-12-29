@@ -5,7 +5,7 @@ description: >-
 weight: 50
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{{< feature-state state="beta" version="v1.16" />}}
 
 ## Introduction
 
@@ -62,6 +62,35 @@ DeletionPropagationPolicy defines how resources will be deleted (Foreground, Bac
 - **Background**: Deletes the primary resource first, then the garbage collector deletes dependents in the background.
 - **Foreground**: The primary resource exists until the garbage collector deletes all dependents (cascading deletion).
 
+## Policy Scope
+
+DeletingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`DeletingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedDeletingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedDeletingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedDeletingPolicy
+metadata:
+  name: cleanup-jobs
+  namespace: production
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["batch"]
+      apiVersions: ["v1"]
+      resources: ["jobs"]
+  conditions:
+  - name: "completed-jobs"
+    expression: "object.status.conditions[?type=='Complete'].status == 'True'"
+```
+As the name suggests, the `NamespacedDeletingPolicy` allows namespace owners to manage deletion policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
 
 ## Example
 

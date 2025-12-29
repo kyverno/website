@@ -23,20 +23,22 @@ type: docs
 {{< youtube id="LvZ66a9UUNM" start="0" class="video" >}}
 {{% /videos %}}
 
-### Nirmata Policy Manager
+### Nirmata Control Hub
 
-[Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/) provides centralized visibility and governance across fleets of clusters. It includes:
+[Nirmata Control Hub](https://nirmata.com/nirmata-control-hub/) provides centralized visibility and governance across fleets of clusters. It includes:
 
 * All N4K features
-* Centralized reporting across clusters and clouds
+* AI copilot to automate governance uniformly across any infrastructure
+* Centralized reporting and analytics across clusters and clouds
 * Role-based access controls for teams with OIDC and SAML
 * Auto-assign ownership of violations to teams
-* Customizable alerting and notifications
-* DevSecOps Collaboration Workflows e.g., exception management
-* Auto-remediation with GitOps integrations
-* Pipeline scanning and integrations
-* Continuous Compliance
-* CIS Kubernetes Benchmarks
+* Customizable alerting and notifications via Slack, Jira, and other integrations
+* DevSecOps collaboration workflows with exception management
+* Automated remediation suggestions with GitOps integrations
+* Pipeline scanning and integrations for shift-left security
+* Continuous compliance throughout the development process
+* Software supply chain security with image signature verification
+* Intelligent policy-to-cluster and workload mappings
 
 ### Kyverno Training & Support
 
