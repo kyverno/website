@@ -25,6 +25,9 @@ node_modules
 # render binary
 /render/render
 
+# temporary policy clone directory
+.temp-policies
+
 # Hugo related files
 # build output
 dist/
