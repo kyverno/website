@@ -46,14 +46,11 @@ spec:
       object.spec.containers + 
       object.spec.?initContainers.orValue([]) + 
       object.spec.?ephemeralContainers.orValue([])
-
   - name: allowedProfileTypes
     expression: "['RuntimeDefault', 'Localhost']"
-
   - name: hasValidSeccompProfile
     expression: >-
       object.spec.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes
-
   validations:
   - expression: >-
       variables.hasValidSeccompProfile &&

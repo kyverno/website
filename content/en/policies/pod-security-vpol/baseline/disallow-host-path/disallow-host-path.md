@@ -40,9 +40,9 @@ spec:
         operations:  ["CREATE", "UPDATE"]
         resources:   ["pods"]
   validations:
-        - expression: >-
-            object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
-          message: >-
-            HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
+    - expression: >-
+        object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
+      message: >-
+        HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
 
 ```
