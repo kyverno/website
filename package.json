@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">= 24"
+    "node": ">=24.0.0 <25.0.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "esbuild": "^0.27.2",
     "husky": "^9.1.7",
     "js-yaml": "^4.1.0",
     "lint-staged": "^16.2.7",
@@ -55,10 +56,5 @@
   },
   "lint-staged": {
     "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
-  },
-  "overrides": {
-    "tsx": {
-      "esbuild": "~0.27.0"
-    }
   }
 }
