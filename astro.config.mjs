@@ -15,6 +15,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Kyverno',
+      customCss: ['./src/styles/global.css'],
       social: [
         {
           icon: 'github',
