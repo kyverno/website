@@ -1,0 +1,49 @@
+---
+title: "Deny Secret Service Account Token Type in ValidatingPolicy"
+category: Security in vpol
+version: 
+subject: Secret, ServiceAccount
+policyType: "validate"
+description: >
+    Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. When creating a Secret, you can specify its type using the  type field of the Secret resource . The type kubernetes.io/service-account-token is used for legacy ServiceAccount tokens . These legacy Tokens can be of security concern and should be audited.
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml" target="-blank">/other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: deny-secret-service-account-token-type
+  annotations:
+    policies.kyverno.io/title: Deny Secret Service Account Token Type in ValidatingPolicy
+    policies.kyverno.io/category: Security in vpol 
+    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Secret, ServiceAccount
+    policies.kyverno.io/description: >-
+      Before version 1.24, Kubernetes automatically generated Secret-based tokens 
+      for ServiceAccounts. When creating a Secret, you can specify its type using the 
+      type field of the Secret resource . The type kubernetes.io/service-account-token
+      is used for legacy ServiceAccount tokens . These legacy Tokens can
+      be of security concern and should be audited.
+spec:
+  validationActions: 
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["secrets"]
+  validations:
+    - expression: "object.type != 'kubernetes.io/service-account-token'"
+      message: "Secret ServiceAccount token type is not allowed."
+            
+
+```
