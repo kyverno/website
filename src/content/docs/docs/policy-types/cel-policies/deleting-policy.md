@@ -6,7 +6,7 @@ sidebar:
   order: 50
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{% feature-state state="alpha" version="v1.15" /%}
 
 ## Introduction
 

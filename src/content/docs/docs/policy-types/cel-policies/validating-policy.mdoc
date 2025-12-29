@@ -6,11 +6,11 @@ sidebar:
   order: 10
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{% feature-state state="alpha" version="v1.15" /%}
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
-```
+```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
