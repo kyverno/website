@@ -1,0 +1,56 @@
+---
+title: 'Add priority class for DaemonSets to help Karpenter.'
+category: validate
+severity: medium
+type: MutatingPolicy
+subjects:
+  - DaemonSet
+tags: []
+version: 1.6.0
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-daemonset-priority-class/add-karpenter-daemonset-priority-class.yaml" target="-blank">/karpenter-mpol/add-karpenter-daemonset-priority-class/add-karpenter-daemonset-priority-class.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-karpenter-daemonset-priority-class
+  annotations:
+    policies.kyverno.io/title: Add priority class for DaemonSets to help Karpenter.
+    policies.kyverno.io/subject: DaemonSet
+    policies.kyverno.io/category: Karpenter
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: When a DaemonSet is added to a cluster every node will get a new pod. There may not be  enough room for this on every node. Karpenter cannot provision extra nodes just for the  DaemonSet because the new pods are not scheduled the way regular pods are. It would require parallel scheduling logic that is not proper to Kubernetes. Therefore, eviction of regular  pods should happen instead. This can be achieved with the priority class system-node-critical.
+spec:
+  evaluation:
+    admission:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - daemonsets
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            spec: Object.spec{
+              template: Object.spec.template{
+                spec: Object.spec.template.spec{
+                  priorityClassName: "system-node-critical"
+                }
+              }
+            }
+          }
+```

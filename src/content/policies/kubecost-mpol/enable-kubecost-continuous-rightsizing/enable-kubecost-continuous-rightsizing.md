@@ -1,0 +1,57 @@
+---
+title: 'Enable Kubecost Continuous Rightsizing'
+category: validate
+severity: medium
+type: MutatingPolicy
+subjects:
+  - Deployment
+  - Annotation
+tags: []
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml" target="-blank">/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: enable-kubecost-continuous-rightsizing
+  annotations:
+    policies.kyverno.io/title: Enable Kubecost Continuous Rightsizing
+    policies.kyverno.io/category: Kubecost
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Deployment, Annotation
+    kyverno.io/kyverno-version: 1.10.0
+    kyverno.io/kubernetes-version: '1.25'
+    policies.kyverno.io/description: Kubecost is able to modify container resource requests and limits dynamically based upon observed utilization patterns and recommendations. This provides an easy way to automatically improve allocation of cluster resources by increasing efficiency. This policy will annotate all Deployments which have the label `env=test` with `request.autoscaling.kubecost.com/enabled="true"` if the annotation is not already present. Other annotations may be added according to need and users should see the documentation for a complete list.
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+  matchConditions:
+    - name: check-env-label
+      expression: has(object.metadata.labels) && has(object.metadata.labels.env) && object.metadata.labels.env == 'test'
+    - name: check-annotation-not-exists
+      expression: "!has(object.metadata.annotations) || !object.metadata.annotations.exists(k, k == 'request.autoscaling.kubecost.com/enabled')"
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              annotations: {
+                "request.autoscaling.kubecost.com/enabled": "true"
+              }
+            }
+          }
+```
