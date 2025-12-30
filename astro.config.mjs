@@ -4,6 +4,7 @@ import markdoc from '@astrojs/markdoc'
 import netlify from '@astrojs/netlify'
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
+import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -14,6 +15,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Kyverno',
+      customCss: ['./src/styles/global.css'],
       social: [
         {
           icon: 'github',
@@ -60,42 +62,25 @@ export default defineConfig({
               autogenerate: { directory: 'docs/policy-types' },
             },
             {
-              label: 'Applying Policies',
-              collapsed: true,
-              autogenerate: { directory: 'docs/applying-policies' },
-            },
-            {
-              label: 'Testing Policies',
-              collapsed: true,
-              autogenerate: { directory: 'docs/testing-policies' },
-            },
-            {
-              label: 'Monitoring',
-              collapsed: true,
-              autogenerate: { directory: 'docs/monitoring' },
-            },
-            {
-              label: 'Security',
-              collapsed: true,
-              autogenerate: { directory: 'docs/security' },
-            },
-            {
-              label: 'Tracing',
-              collapsed: true,
-              autogenerate: { directory: 'docs/tracing' },
-            },
-            {
               label: 'Reporting',
               collapsed: true,
               autogenerate: { directory: 'docs/policy-reports' },
             },
-            {
-              label: 'Policy Exceptions',
-              collapsed: true,
-              autogenerate: { directory: 'docs/exceptions' },
-            },
+            'docs/working-with-policies/applying-policies',
+            'docs/working-with-policies/testing-policies',
+            'docs/working-with-policies/exceptions',
           ],
           collapsed: true,
+        },
+        {
+          label: 'Monitoring',
+          collapsed: true,
+          autogenerate: { directory: 'docs/monitoring' },
+        },
+        {
+          label: 'Tracing',
+          collapsed: true,
+          autogenerate: { directory: 'docs/tracing' },
         },
         {
           label: 'Tools',
@@ -142,6 +127,17 @@ export default defineConfig({
           slug: 'docs/troubleshooting',
         },
         {
+          label: 'Policy Library',
+          collapsed: true,
+          autogenerate: {
+            directory: 'docs/policies',
+          },
+        },
+        {
+          label: 'Security',
+          slug: 'docs/security',
+        },
+        {
           label: 'Community',
           slug: 'community',
         },
@@ -150,7 +146,7 @@ export default defineConfig({
           slug: 'support',
         },
       ],
-      plugins: [starlightImageZoom()],
+      plugins: [starlightImageZoom(), starlightAutoSidebar()],
     }),
     react(),
     markdoc(),

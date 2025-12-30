@@ -25,10 +25,10 @@ export const versions = [
 export const navItemsOnsite = [
   { label: 'Why Kyverno', targetId: 'whykyverno' },
   { label: 'Features', targetId: 'features' },
-  { label: 'Policies', targetId: 'policies' },
 ]
 
 export const navItemsExternal = [
+  { label: 'Policies', href: '/policies' },
   { label: 'Docs', href: '/docs/introduction' },
   { label: 'Blog', href: '#' },
   { label: 'Community', href: '/community' },

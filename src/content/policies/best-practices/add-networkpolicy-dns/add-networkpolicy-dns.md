@@ -1,0 +1,57 @@
+---
+title: 'Add Network Policy for DNS'
+category: generate
+severity: medium
+type: ClusterPolicy
+subjects:
+  - NetworkPolicy
+tags: []
+version: 1.6.0
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/best-practices/add-networkpolicy-dns/add-networkpolicy-dns.yaml" target="-blank">/best-practices/add-networkpolicy-dns/add-networkpolicy-dns.yaml</a>
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-networkpolicy-dns
+  annotations:
+    policies.kyverno.io/title: Add Network Policy for DNS
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
+    policies.kyverno.io/subject: NetworkPolicy
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: '1.23'
+    policies.kyverno.io/description: By default, Kubernetes allows communication across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict communication. A default NetworkPolicy should be configured for each Namespace to deny all egress traffic from the Pods while still allowing DNS resolution. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application Pods from select sources. This policy will create a new NetworkPolicy resource named `allow-dns` when a new Namespace is created,  which will deny all egress traffic while still allowing DNS queries to the kube-system Namespace.
+spec:
+  rules:
+    - name: add-netpol-dns
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-dns
+        namespace: '{{request.object.metadata.name}}'
+        synchronize: false
+        data:
+          spec:
+            podSelector:
+              matchLabels: {}
+            policyTypes:
+              - Egress
+            egress:
+              - to:
+                  - namespaceSelector:
+                      matchLabels:
+                        name: kube-system
+                ports:
+                  - protocol: UDP
+                    port: 53
+```
