@@ -451,7 +451,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
 | `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
-| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cluster-policy/cleanup.md#cleanup-label) for details. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cleanup-policy/#cleanup-label) for details. |
 | `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |
