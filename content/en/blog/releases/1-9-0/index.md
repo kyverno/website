@@ -16,7 +16,7 @@ With the ringing in of the new year the Kyverno team is proud to announce the re
 
 Something we've heard for a while now from the community was that they love the ease with which Kyverno can [select resources](/docs/policy-types/cluster-policy/match-exclude.md) (and, really, just ease of use in general) for action by policies but that this was limiting in certain ways. It may not be scalable to modify every policy with the same exclusions, and, secondarily, in real-world ops scenarios everyone has special exceptions that need careful handling. So we're excited to show off our new PolicyExceptions in 1.9!
 
-A [PolicyException](/docs/policy-types/cluster-policy/exceptions.md) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
+A [PolicyException](/docs/exceptions/) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
 
 Here's what it would look like to allow a special exception to one of the [Pod Security Standard](/policies/pod-security/) [policies](/policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)) but only for a very specific resource named `important-tool`.
 
@@ -50,7 +50,7 @@ Once a PolicyException is created, a resource which is selected by the exception
 
 With Kyverno's unique [generation rule](/docs/policy-types/cluster-policy/generate.md), which remains one of its most popular abilities and is beloved by ops teams everywhere, it has proven that Kyverno is far more capable than a simple admission controller which can only deliver "yes" or "no" responses. Generation, especially when combined with validation and mutation, unlocks tremendous power and turns Kyverno into a true tool of automation. That was a great first step, but we knew we could do more. We heard there was a piece missing from the story and that piece was the ability to delete as well as create. Well, we're really happy to say that as of Kyverno 1.9, our second new policy type will allow you to do just that: cleanup resources on a scheduled basis.
 
-A Kyverno [CleanupPolicy](/docs/policy-types/cluster-policy/cleanup.md) brings the all-familiar `match` and `exclude` capabilities with the powerful expressions and [JMESPath](/docs/policy-types/cluster-policy/jmespath.md) filtering system together with a scheduler which allows you to very granularly select and filter resources you want removed in your cluster based on a recurring schedule. Just take a look at the below sample.
+A Kyverno [CleanupPolicy](/docs/policy-types/cleanup-policy/) brings the all-familiar `match` and `exclude` capabilities with the powerful expressions and [JMESPath](/docs/policy-types/cluster-policy/jmespath/) filtering system together with a scheduler which allows you to very granularly select and filter resources you want removed in your cluster based on a recurring schedule. Just take a look at the below sample.
 
 ```yaml
 apiVersion: kyverno.io/v2alpha1
