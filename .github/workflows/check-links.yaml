@@ -35,7 +35,6 @@ jobs:
       run: npm i -D postcss postcss-cli autoprefixer
     - name: Build Hugo site
       run: hugo build
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
     - name: Check unrendered links
       id: lychee_unrendered
       uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2.4.1
@@ -44,5 +43,5 @@ jobs:
       with:
         fail: true
         debug: false
-        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E --root-dir ${{ github.workspace }}/public ./public
+        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E --root-dir ${{ github.workspace }}/public ${{ github.workspace }}/public
 
