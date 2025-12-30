@@ -19,7 +19,7 @@ Some of its many features include:
 * validate, mutate, generate, or cleanup (remove) any Kubernetes resource
 * verify container images and metadata for software supply chain security
 * policies for any JSON payload including Terraform resources, cloud resources, and service authorization
-* policy reporting using the [OpenReport](OpenReports.io) format
+* policy reporting using the [OpenReports](https://openreports.io) format
 * flexible policy exception management
 * tooling for comprehensive unit and e2e testing of policies
 * management of policies as code resources using familiar tools like `git` and `kustomize`
