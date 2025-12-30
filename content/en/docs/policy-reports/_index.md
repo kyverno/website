@@ -252,6 +252,10 @@ timestamp:
 
 The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of matching resources as determined by Kyverno `Policy` and `ClusterPolicy` objects, however these reports are built of four intermediary resources. For matching resources which were caught during admission mode, `AdmissionReport` and `ClusterAdmissionReport` resources are created. For results of background processing, `BackgroundScanReport` and `ClusterBackgroundScanReport` resources are created. An example of a `ClusterAdmissionReport` is shown below.
 
+{{% alert title="Note" color="info" %}}
+As of kyverno 1.16, you can add the label `reports.kyverno.io/disabled` with any value to a policy of any type (YAML, CEL or VAP/MAP), which will result in no reports of any kind (ephemeral or permanent) be generated for this policy
+{{% /alert %}}
+
 ```yaml
 apiVersion: kyverno.io/v1alpha2
 kind: ClusterAdmissionReport

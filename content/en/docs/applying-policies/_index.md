@@ -24,4 +24,4 @@ Refer to the [Kyverno apply command section](/docs/kyverno-cli/usage/apply.md) f
 
 ## Via APIs
 
-[Kyverno JSON policies](/docs/kyverno-json) and the new [ValidatingPolicy](/docs/policy-types/validating-policy/) and [ImageValidatingPolicy](/docs/policy-types/image-validating-policy/) types can be applied to any JSON payload. These policies can be applied via a Golang SDK or web service.
+[Kyverno JSON policies](/docs/subprojects/kyverno-json/) and the new [ValidatingPolicy](/docs/policy-types/validating-policy/) and [ImageValidatingPolicy](/docs/policy-types/image-validating-policy/) types can be applied to any JSON payload. These policies can be applied via a Golang SDK or web service.

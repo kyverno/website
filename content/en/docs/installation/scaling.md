@@ -52,17 +52,17 @@ The test was conducted where we installed Kyverno policies to enforce the Kubern
 
 #### Reports Controller
 
-The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 17 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
+The following table shows the resource consumption (memory and CPU) and objects sizes in etcd of increased workloads. The test was conducted where we installed Kyverno policies to audit the Kubernetes pod security standards using 16 policies. Subsequently, we created workloads and scheduled them on the fake KWOK nodes to measure total size of policy reports in etcd. [KWOK](https://kwok.sigs.k8s.io/) is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. For more details on these tests, refer to the testing documentation for [the report controller](https://github.com/kyverno/kyverno/tree/main/docs/perf-testing).
 
 | # policyreports | total etcd size | CPU (max) | memory (max) |
 |-----------------|-----------------|-----------|--------------|
-| 1270            | 134 MB          | 575m      | 91Mi         |
-| 2470            | 223 MB          | 1389m     | 101Mi        |
-| 3770            | 280 MB          | 1238m     | 107Mi        |
-| 4970            | 334 MB          | 1174m     | 114Mi        |
-| 7370            | 467 MB          | 1749m     | 144Mi        |
-| 9770            | 552 MB          | 1859m     | 160Mi        |
-| 10010           | 552 MB          | 1859m     | 138Mi        |
+| 1284            | 373 MB          | 3709m     | 99Mi         |
+| 2524            | 381 MB          | 3729m     | 102Mi        |
+| 3572            | 390 MB          | 3721m     | 110Mi        |
+| 4879            | 398 MB          | 3981m     | 118Mi        |
+| 6099            | 418 MB          | 4014m     | 124Mi        |
+| 7319            | 431 MB          | 4034m     | 136Mi        |
+| 10254           | 483 MB          | 4273m     | 152Mi        |
 
 #### AdmissionReview Reference
 
