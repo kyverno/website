@@ -916,7 +916,7 @@ context:
 
 To access images stored on private registries, see [using private registries](verify-images/sigstore/_index.md#using-private-registries)
 
-For more examples of using an imageRegistry context, see the [samples page](/docs/policies).
+For more examples of using an imageRegistry context, see the [samples page](/policies).
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
