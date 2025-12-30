@@ -17,6 +17,12 @@ Apply a policy to all matching resources in a cluster based on the current `kube
 kyverno apply /path/to/policy.yaml --cluster
 ```
 
+The resources can also be loaded concurrently in clusters with a large number of resources by configuring the number of parallel workers using the `--concurrent` flag and controlling the number of resources fetched per API call through the `--batch-size` flag. Additionally, the performance of concurrent resource loading can be analyzed by enabling the `--show-performance` flag:
+
+```sh
+kyverno apply /path/to/policy.yaml --cluster --concurrent 8 --batch-size 500 --show-performance
+```
+
 The resources can also be passed from stdin:
 
 ```sh
