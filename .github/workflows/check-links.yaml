@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25' # Specify the version of Go you need
     - name: Setup Hugo
       uses: peaceiris/actions-hugo@v3
       with:
@@ -30,7 +34,7 @@ jobs:
     - name: Install Node.js dependencies
       run: npm i -D postcss postcss-cli autoprefixer
     - name: Build Hugo site
-      run: hugo --minify
+      run: hugo build
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
     - name: Check unrendered links
       id: lychee_unrendered
