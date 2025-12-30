@@ -19,12 +19,25 @@ jobs:
     steps:
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
     - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v2
+      uses: peaceiris/actions-hugo@v3
       with:
         hugo-version: '0.147.9'
         extended: true
-    - name: Build Hugo site
-      run: hugo build
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        # The action defaults to search for the dependency file (package-lock.json,
+        # npm-shrinkwrap.json or yarn.lock) in the repository root, and uses its
+        # hash as a part of the cache key.
+        # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-data
+        cache-dependency-path: '**/package-lock.json'
+
+    - run: npm ci
+    - run: hugo --minify
+
+
   linkChecker:
     needs: hugo-build
     runs-on: ubuntu-latest
