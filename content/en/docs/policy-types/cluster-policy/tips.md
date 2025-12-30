@@ -8,7 +8,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 ## General
 
-* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/docs/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
+* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
 
 * Use `kubectl explain` to explain and explore the various parts and fields of a Kyverno policy. It works just like on native Kubernetes resources!
 
@@ -71,6 +71,8 @@ Depending on the level of detail needed, you may need to increase the log level.
 * When writing policies which perform [cascading mutations](/docs/policy-types/cluster-policy/mutate.md#mutate-rule-ordering-cascading), rule ordering matters. All rules which perform cascading mutations should be in the same policy definition and ordered top to bottom to ensure consistent results.
 
 * Need to mutate an object at a specific ordered position within an array? Use the [`patchesJson6902`](/docs/policy-types/cluster-policy/mutate.md#rfc-6902-jsonpatch) method.
+
+* Need to check the path of mutation or the actual action performed by mutation? Set `-v=6` and grep on `generated patches`
 
 ## Generate
 

@@ -3,7 +3,7 @@
 [[main]]
   name = "About"
   weight = -103
-  url = "#about-kyverno"
+  url = "/docs/introduction/#about-kyverno"
 
 [[main]]
   name = "Documentation"
@@ -26,7 +26,7 @@
   url = "/community"
 
 [[main]]
-  name = "Products"
+  name = "Support"
   weight = -90
   url = "/support"
 

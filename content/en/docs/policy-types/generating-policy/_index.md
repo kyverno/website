@@ -5,7 +5,7 @@ description: >-
 weight: 30
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{{< feature-state state="beta" version="v1.16" />}}
 
 The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate.md), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
 
@@ -446,6 +446,41 @@ The following table shows the behavior of events on components of a GeneratingPo
 | Modify Rule/Policy | Downstream unmodified | Downstream unmodified |
 | Modify Source      | Downstream synced     | Downstream unmodified |
 | Modify Trigger     | Downstream deleted    | None                  |
+
+## Policy Scope
+
+GeneratingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`GeneratingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedGeneratingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedGeneratingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedGeneratingPolicy
+metadata:
+  name: clone-secret
+  namespace: production
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE"]
+      resources: ["pods"]
+  variables:
+    - name: nsName
+      expression: "object.metadata.namespace"
+    - name: source
+      expression: resource.Get("v1", "secrets", "production", "regcred")
+  generate:
+    - expression: generator.Apply(variables.nsName, [variables.source])
+```
+
+As the name suggests, the `NamespacedGeneratingPolicy` allows namespace owners to manage generation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
 
 ## Generating for Existing Resources
 

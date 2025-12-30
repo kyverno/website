@@ -33,6 +33,30 @@ verify-codegen: codegen
 	@git diff --quiet --exit-code -- .
 
 ########
+# HUGO #
+########
+
+.PHONY: build
+build: ## Build the Hugo site
+	@hugo build
+
+.PHONY: serve
+serve: ## Run the Hugo development server
+	@hugo server
+
+.PHONY: clean
+clean: ## Clean generated files
+	@rm -rf public/
+
+###########
+# LINK CHECK #
+###########
+
+.PHONY: check-links
+check-links: build ## Check links in the built Hugo site using lychee
+	@lychee --config config/lychee.toml --max-concurrency 2 --max-retries 5 --retry-wait-time 10 --accept 200,429 --timeout 60 -E --root-dir "${PWD}/public" public
+
+########
 # HELP #
 ########
 
