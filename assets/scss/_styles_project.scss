@@ -6,6 +6,11 @@ a {
   text-decoration: none;
 }
 
+// Hide link icons for H1 titles only on home page
+.homepage-content h1 a {
+  display: none !important;
+}
+
 .alert {
   max-width: 100% !important;  
 }

@@ -1,0 +1,58 @@
+---
+title: "Schedule-based Resource Quotas"
+category: Resource Management
+version: 1.11.0
+subject: ResourceQuota, Namespace
+policyType: "mutate"
+description: >
+    Automatically adjusts resource quotas based on time schedules to optimize cloud costs. During non-business hours, the policy reduces resource quotas to prevent overprovisioning while ensuring essential services remain operational.
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//cost-optimization/schedule-based-quotas/schedule-based-quotas.yaml" target="-blank">/cost-optimization/schedule-based-quotas/schedule-based-quotas.yaml</a>
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: schedule-based-quotas
+  annotations:
+    policies.kyverno.io/title: Schedule-based Resource Quotas
+    policies.kyverno.io/category: Resource Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ResourceQuota, Namespace
+    policies.kyverno.io/description: >-
+      Automatically adjusts resource quotas based on time schedules to optimize cloud costs.
+      During non-business hours, the policy reduces resource quotas to prevent overprovisioning
+      while ensuring essential services remain operational.
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/minversion: 1.11.0
+    kyverno.io/kubernetes-version: "1.23-1.28"
+spec:
+  background: true
+  rules:
+    - name: update-quotas-by-schedule
+      match:
+        any:
+        - resources:
+            kinds:
+            - ResourceQuota
+      context:
+        - name: mockTime
+          configMap:
+            name: time-mock
+            namespace: default
+            key: time
+        - name: currentTime
+          variable: >-
+            {{ mockTime || time.Now() | time.ParseInLocation('America/Los_Angeles') }}
+        - name: isBusinessHours
+          variable: currentTime.Hour() >= 9 && currentTime.Hour() < 17 && (currentTime.Weekday() >= 1 && currentTime.Weekday() <= 5)
+      mutate:
+        patchStrategicMerge:
+          spec:
+            hard:
+              cpu: "{{ isBusinessHours ? '20' : '10' }}"
+              memory: "{{ isBusinessHours ? '40Gi' : '20Gi' }}"
+
+```
