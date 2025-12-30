@@ -14,7 +14,19 @@ concurrency:
   cancel-in-progress: true
       
 jobs:
+  hugo-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: '0.147.9'
+        extended: true
+    - name: Build Hugo site
+      run: hugo build
   linkChecker:
+    needs: hugo-build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
@@ -26,5 +38,5 @@ jobs:
       with:
         fail: true
         debug: false
-        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E ./content --root-dir ${{ github.workspace }}/content/en
+        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E --root-dir ${{ github.workspace }}/public ./public
 
