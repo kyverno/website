@@ -5,15 +5,43 @@ description: >-
 weight: 10
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{{< feature-state state="beta" version="v1.16" />}}
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
+
+> **Note: Namespaced Policy Available**
+> 
+> `ValidatingPolicy` is available in both **cluster-scoped** (`ValidatingPolicy`) and **namespaced** (`NamespacedValidatingPolicy`) versions. Namespaced policies allow namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation. See the [Policy Scope](#policy-scope) section for details and examples.
 
 ```
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [pods]
+  validations:
+    - message: label 'environment' is required
+      expression: "'environment' in object.metadata.?labels.orValue([])"
+```
+
+### Namespaced Example
+
+This `NamespacedValidatingPolicy` provides the same functionality as the cluster-scoped version above, but operates only within the specific namespace where it's deployed:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: check-labels
+  namespace: production
 spec:
   validationActions:
     - Deny
@@ -122,6 +150,39 @@ Here is an example of generating policies for deployments, jobs, cronjobs, and s
 Generating a `ValidatingAdmissionPolicy` from a `ValidatingPolicy` provides the benefits of faster and more resilient execution during admission controls while leveraging all features of Kyverno.
 
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
+
+## Policy Scope
+
+ValidatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`ValidatingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedValidatingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedValidatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: check-deployment-replicas
+  namespace: production
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: [CREATE, UPDATE]
+      resources: ["deployments"]
+  validations:
+    - message: "deployments must have at least 2 replicas for high availability"
+      expression: "object.spec.replicas >= 2"
+```
+
+As the name suggests, the `NamespacedValidatingPolicy` allows namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
 
 ## Kyverno CEL Libraries
 
