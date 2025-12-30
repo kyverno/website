@@ -10,7 +10,7 @@ The [Kyverno source code](https://github.com/kyverno/kyverno/) and project artif
 
 ## Slack Channel
 
-Kyverno maintains a thriving community with two different opportunities to participate. The largest is the [Kubernetes Slack workspace](https://slack.k8s.io/#kyverno), where end-users engage in the [#kyverno](https://slack.k8s.io/#kyverno) channel and contributors collaborate in the [#kyverno-dev](https://slack.k8s.io/#kyverno-dev) channel. The other is the [CNCF Slack workspace](https://cloud-native.slack.com/#kyverno), where the [#kyverno](https://slack.k8s.io/#kyverno) channel is dedicated to end-user interactions.
+Kyverno maintains an active community across two Slack workspaces. In the Kubernetes Slack, end users join [#kyverno](https://slack.k8s.io/#kyverno) and contributors collaborate in [#kyverno-dev](https://slack.k8s.io/#kyverno-dev). In the CNCF Slack, the [#kyverno](https://cloud-native.slack.com/#kyverno) channel is dedicated to end‑user discussions. The Chainsaw sub‑project also has its own channel, [#kyverno-chainsaw](https://kubernetes.slack.com/archives/C067LUFL43U), in the Kubernetes Slack.
 
 ## Meetings
 

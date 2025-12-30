@@ -1,0 +1,54 @@
+---
+title: "Label Existing Namespaces"
+category: Other
+version: 
+subject: Namespace
+policyType: ""
+description: >
+    Namespaces which preexist may need to be labeled after the fact and it is time consuming to identify which ones should be labeled and either doing so manually or with a scripted approach. This policy, which triggers on any AdmissionReview request to any Namespace, will result in applying the label `mykey=myvalue` to all existing Namespaces. If this policy is updated to change the desired label key or value, it will cause another mutation which updates all Namespaces.
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other-mpol/label-existing-namespaces/label-existing-namespaces.yaml" target="-blank">/other-mpol/label-existing-namespaces/label-existing-namespaces.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: label-existing-namespaces
+  annotations:
+    policies.kyverno.io/title: Label Existing Namespaces
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/description: >-
+      Namespaces which preexist may need to be labeled after the fact and it is
+      time consuming to identify which ones should be labeled and either doing so manually
+      or with a scripted approach. This policy, which triggers on any AdmissionReview request
+      to any Namespace, will result in applying the label `mykey=myvalue` to all existing
+      Namespaces. If this policy is updated to change the desired label key or value, it will
+      cause another mutation which updates all Namespaces.
+spec:
+  evaluation:
+    admission:
+      enabled: true
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["namespaces"]
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "mykey": "myvalue"
+              }
+            }
+          }
+```
