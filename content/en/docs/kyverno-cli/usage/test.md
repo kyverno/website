@@ -325,7 +325,7 @@ Loading test  ( kyverno-test.yaml ) ...
 Test Summary: 2 tests passed and 0 tests failed
 ```
 
-In the below case, a `mutate` policy which adds default resources to a Pod is being tested against two resources. Notice the addition of the `patchedResource` field in the `results[]` array, which is a requirement when testing `mutate` rules.
+In the below case, a `mutate` policy which adds default resources to a Pod is being tested against two resources. Notice the addition of the `patchedResources` field in the `results[]` array, which is a requirement when testing `mutate` rules.
 
 Policy manifest (`add-default-resources.yaml`):
 
@@ -467,7 +467,7 @@ resources:
 targetResources:
 - raw-secret.yaml
 results:
-- patchedResource: mutated-secret.yaml
+- patchedResources: mutated-secret.yaml
   policy: mutate-existing-secret
   resources:
     - secret-1
@@ -1243,7 +1243,7 @@ Test Summary: 6 tests passed and 0 tests failed
 
 #### MutatingAdmissionPolicy
 
-To test a `MutatingAdmissionPolicy`, the test manifest must include the `isMutatingAdmissionPolicy` field set to `true` in the test results array. In addition, the `patchedResource` field must be included to specify the resource that is expected to be patched by the policy.
+To test a `MutatingAdmissionPolicy`, the test manifest must include the `isMutatingAdmissionPolicy` field set to `true` in the test results array. In addition, the `patchedResources` field must be included to specify the resource that is expected to be patched by the policy.
 
 ##### Example 1: Simple Mutation
 

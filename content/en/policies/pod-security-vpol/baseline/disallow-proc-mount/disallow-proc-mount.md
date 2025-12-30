@@ -42,12 +42,12 @@ spec:
         operations:  ["CREATE", "UPDATE"]
         resources:   ["pods"]
   variables:
-      - name: allContainers
-        expression: >-
-          object.spec.containers + 
-            object.spec.?initContainers.orValue([]) + 
-            object.spec.?ephemeralContainers.orValue([])
+    - name: allContainers
+      expression: >-
+        object.spec.containers + 
+          object.spec.?initContainers.orValue([]) + 
+          object.spec.?ephemeralContainers.orValue([])
   validations:
-      - expression: "variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')"
-        message: "Changing the proc mount from the default is not allowed."
+    - expression: "variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')"
+      message: "Changing the proc mount from the default is not allowed."
 ```
