@@ -410,3 +410,528 @@ spec:
     - sleep
     - infinity
 ```
+
+## PolicyExceptions with CEL Expressions
+
+Since Kyverno 1.14.0, **PolicyExceptions**, introduced in the new group `policies.kyverno.io`, support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
+
+- A **CEL expression** under `matchConditions` dynamically matches target resources (e.g., by name, namespace, or labels).
+- The `policyRefs` field specifies the **policy name** and **policy kind** being excluded from enforcement.
+- If the match condition evaluates to `true`, the referenced rule is **skipped** and logged accordingly in **PolicyReports**.
+
+### Using PolicyException with ValidatingPolicy in Admission Mode
+
+The following `ValidatingPolicy` enforce that all `Deployment` resources must include the label `env=prod`. If this condition is not met, the policy denies the request.
+
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: require-prod-label
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["deployments"]
+        operations: ["CREATE", "UPDATE"]
+  validations:
+    - expression: >-
+        has(object.metadata.labels) && object.metadata.labels.env == 'prod'
+      messageExpression: "'Deployment must have label env=prod.'"
+
+```
+
+To exclude a specific `Deployment` from the above policy enforcement, a `PolicyException` can be defined. This example uses a CEL expression to match the `Deployment` named `skipped-deployment`, allowing it to bypass the validation.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: exclude-skipped-deployment
+  namespace: default
+spec:
+  policyRefs:
+    - name: require-prod-label
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: skip-by-name
+      expression: "object.metadata.name == 'skipped-deployment'"
+
+```
+
+When the exception is triggered during a live admission request, Kyverno logs the decision in a `PolicyReport`. Below is an example showing the policy rule was skipped due to the matching `PolicyException`.
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: PolicyReport
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: skipped-deployment
+results:
+  - policy: vpol-report-background-sample
+    rule: exception
+    result: skip
+    message: "rule is skipped due to policy exception: default/exclude-skipped-deployment"
+    properties:
+      exceptions: exclude-skipped-deployment
+      process: admission review
+    source: KyvernoValidatingPolicy
+    scored: true
+scope:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: skipped-deployment
+  namespace: default
+summary:
+  pass: 0
+  fail: 0
+  warn: 0
+  error: 0
+  skip: 1
+
+```
+
+#### Interpreting PolicyReport Results from PolicyException
+
+- **result: skip** — indicates the rule was not applied.  
+- **process: admission review** — confirms the evaluation occurred during a live admission request.  
+- **exceptions: exclude-skipped-deployment** — references the applied `PolicyException`.  
+
+Just like in admission mode, `PolicyException` also functions in background mode and supports other policy type `ImageValidatingPolicy`.
+ 
+ 
+### Using PolicyException with ImageValidatingPolicy in Background Mode
+
+In this example, a Pod named `skipped-pod` meets the match criteria of the policy. It is located in the default namespace, includes the label `prod: true`, and references an unsigned image from ghcr.io. as result,this image should fail the background policy evaluation due to missing or invalid attestations and signatures.
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: skipped-pod
+  namespace: default
+  labels:
+    prod: "true"
+spec:
+  containers:
+    - name: nginx
+      image: 'ghcr.io/kyverno/test-verify-image:unsigned'
+
+```
+
+The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ImageValidatingPolicy
+metadata:
+  name: ivpol-sample
+spec:
+  webhookConfiguration:
+    timeoutSeconds: 20
+  failurePolicy: Ignore
+  evaluation:
+    admission:
+      enabled: false
+    background:
+      enabled: true
+  validationActions:
+    - Audit
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: "check-prod-label"
+      expression: >-
+        has(object.metadata.labels) && has(object.metadata.labels.prod) && object.metadata.labels.prod == 'true'
+  matchImageReferences:
+    - glob: ghcr.io/*
+  attestors:
+    - name: notary
+      notary:
+        certs:
+          value: |-
+            -----BEGIN CERTIFICATE-----
+            MIIDTTCCAjWgAwIBAgIJAPI+zAzn4s0xMA0GCSqGSIb3DQEBCwUAMEwxCzAJB
+            ...
+            -----END CERTIFICATE-----
+  attestations:
+    - name: sbom
+      referrer:
+        type: sbom/cyclone-dx
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e, e > 0)
+      message: failed to verify image with notary cert
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom, [attestors.notary])).all(e, e > 0)
+      message: failed to verify attestation with notary cert
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.sbom).bomFormat == 'CycloneDX').all(e, e)
+      message: sbom is not a cyclone dx sbom
+```
+
+This `PolicyException` is defined to exempt this pod from enforcement. The exception uses a CEL `expression—object.metadata.name == 'skipped-pod'`to identify the specific resource. It links to the `ImageValidatingPolicy` named `ivpol-sample`, and when the reports controller processes the pod, it detects that the exception applies. As a result, none of the image validation rules are executed for this resource.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: check-name
+spec:
+  policyRefs:
+    - name: ivpol-sample
+      kind: ImageValidatingPolicy
+  matchConditions:
+    - name: "check-name"
+      expression: "object.metadata.name == 'skipped-pod'"
+
+```
+
+Kyverno reports controller evaluates the pod as a result of [background scan](/docs/policy-reports/background.md). It detects that the resource matches the `PolicyException` and  Kyverno logs the decision in a `PolicyReport`
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: PolicyReport
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+    - apiVersion: v1
+      kind: Pod
+      name: skipped-pod
+results:
+  - policy: ivpol-sample
+    rule: exception
+    result: skip
+    message: "rule is skipped due to policy exception: "
+    properties:
+      exceptions: check-name
+      process: background scan
+    source: KyvernoImageValidatingPolicy
+    scored: true
+scope:
+  apiVersion: v1
+  kind: Pod
+  name: skipped-pod
+  namespace: default
+summary:
+  pass: 0
+  fail: 0
+  warn: 0
+  error: 0
+  skip: 1
+
+```
+
+#### Interpreting PolicyReport Results from PolicyException
+
+- **result: skip** — indicates the rule was not applied.  
+- **process: background scan** — confirms the evaluation occurred during a background policy check.  
+- **exceptions: check-name** — references the applied `PolicyException`.  
+
+This enables fine-grained, declarative exemptions without modifying the core policy logic, keeping your security posture strong while allowing flexibility for exceptional cases.
+
+### Using PolicyException with GeneratingPolicy
+
+`PolicyException` can also be used to selectively skip `GeneratingPolicy`. This is useful for preventing resource generation in specific contexts, such as certain namespaces or for resources with particular labels, without altering the base policy.
+
+The following `GeneratingPolicy` is designed to automatically create a ConfigMap named `zk-kafka-address` in any newly created Namespace.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
+metadata:
+  name: generate-configmap
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["namespaces"]
+  variables:
+    - name: nsName
+      expression: "object.metadata.name"
+    - name: configmap
+      expression: >-
+        [
+          {
+            "kind": dyn("ConfigMap"),
+            "apiVersion": dyn("v1"),
+            "metadata": dyn({
+              "name": "zk-kafka-address",
+              "namespace": string(variables.nsName),
+            }),
+            "data": dyn({
+              "KAFKA_ADDRESS": "192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092",
+              "ZK_ADDRESS": "192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181"
+            })
+          }
+        ]
+  generate:
+    - expression: generator.Apply(variables.nsName, variables.configmap)
+```
+
+To prevent this `ConfigMap` from being created in a specific namespace (e.g., a "testing" namespace), we can define a `PolicyException`. This exception uses a CEL expression to match any Namespace with the name `testing` and skips the `generate-configmap` policy for it.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: PolicyException
+metadata:
+  name: exclude-namespace-by-name
+spec:
+  policyRefs:
+  - name: generate-configmap
+    kind: GeneratingPolicy
+  matchConditions:
+    - name: "check-namespace-name"
+      expression: "object.metadata.name == 'testing'"
+```
+
+When three namespaces—`testing`, `production`, and `staging`—are created, the `GeneratingPolicy` is triggered for each.
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testing
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+```
+
+However, the `PolicyException` matches the `testing` namespace, causing the `GeneratingPolicy` to be skipped. As a result, the `zk-kafka-address` ConfigMap is only created in the `production` and `staging` namespaces. The resulting `ConfigMaps` are shown below; note that no `ConfigMap` was created for the `testing` namespace.
+
+```yaml
+apiVersion: v1
+data:
+  KAFKA_ADDRESS: 192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092
+  ZK_ADDRESS: 192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181
+kind: ConfigMap
+metadata:
+  name: zk-kafka-address
+  namespace: staging
+---
+apiVersion: v1
+data:
+  KAFKA_ADDRESS: 192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092
+  ZK_ADDRESS: 192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181
+kind: ConfigMap
+metadata:
+  name: zk-kafka-address
+  namespace: production
+```
+
+When the namespaces are created, the Kyverno admission controller queues the work by creating an intermediate object called an `UpdateRequest`. The background controller then processes these `UpdateRequests` to perform the final resource generation. It successfully creates the `ConfigMap` in the `production` and `staging` namespaces. However, due to the matching `PolicyException`, the controller skips the generation step for the `testing` namespace. The reports controller then creates a `ClusterPolicyReport` for each event, showing a `pass` result for the successful generation in the `production` and `staging` namespaces and a `skip` result for the `testing` namespace, correctly identifying the applied exception.
+
+```yaml
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: v1
+    kind: Namespace
+    name: production
+results:
+- message: policy evaluated successfully
+  policy: generate-configmap
+  properties:
+    generated-resources: /v1, Kind=ConfigMap Name=zk-kafka-address Namespace=production
+    process: admission review
+  result: pass
+  rule: generate-configmap
+  scored: true
+  source: KyvernoGeneratingPolicy
+scope:
+  apiVersion: v1
+  kind: Namespace
+  name: production
+summary:
+  error: 0
+  fail: 0
+  pass: 1
+  skip: 0
+  warn: 0
+---
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  ownerReferences:
+  - apiVersion: v1
+    kind: Namespace
+    name: testing
+results:
+- policy: generate-configmap
+  properties:
+    exceptions: exclude-namespace-by-name
+    process: admission review
+  result: skip
+  rule: generate-configmap
+  scored: true
+  source: KyvernoGeneratingPolicy
+scope:
+  apiVersion: v1
+  kind: Namespace
+  name: testing
+summary:
+  error: 0
+  fail: 0
+  pass: 0
+  skip: 1
+  warn: 0
+```
+
+### Fine-Grained Policy Exceptions
+
+Kyverno supports narrowly scoped, CEL-aware exceptions so you can permit specific deviations without weakening entire policies. Exceptions can supply structured allowlists into CEL (for example, `exceptions.allowedImages` and `exceptions.allowedValues`) and can also control how results appear in PolicyReports via `reportResult`.
+
+#### Image-based exceptions
+
+This exception allows Pods in the `ci` namespace to use images matching the provided patterns while keeping the “no latest tag” guardrail enforced for all others. The match condition narrows the bypass to a specific team for auditability.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: allow-ci-latest-images
+  namespace: ci
+spec:
+  policyRefs:
+    - name: restrict-image-tag
+      kind: ValidatingPolicy
+  images:
+    - "ghcr.io/kyverno/*:latest"
+  matchConditions:
+    - expression: "has(object.metadata.labels.team) && object.metadata.labels.team == 'platform'"
+```
+
+The following `ValidatingPolicy` references `exceptions.allowedImages` to skip validation checks for whitelisted image(s).
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-image-tag
+spec:
+  rules:
+    - name: broker-config
+      matchConstraints:
+        resourceRules:
+          - apiGroups:   [apps]
+            apiVersions: [v1]
+            operations:  [CREATE, UPDATE]
+            resources:   [pods]
+      validations:
+        - message: "Containers must not allow privilege escalation unless they are in the allowed images list."
+          expression: >-
+            object.spec.containers.all(container,
+              string(container.image) in exceptions.allowedImages ||
+              (
+                has(container.securityContext) &&
+                has(container.securityContext.allowPrivilegeEscalation) &&
+                container.securityContext.allowPrivilegeEscalation == false
+              )
+            )
+```
+
+#### Value-based exceptions
+
+This exception supplies a list of values via `allowedValues` that a CEL validation may accept for a constrained set of targets so teams can proceed without weakening the entire policy.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: allow-debug-annotation
+  namespace: dev
+spec:
+  policyRefs:
+    - name: check-security-context
+      kind: ValidatingPolicy
+  allowedValues:
+    - "debug-mode-temporary"
+  matchConditions:
+    - expression: "object.metadata.name.startsWith('experiments-')"
+```
+
+Here’s the policy leveraging the above allowed values. It denies resources unless the annotation/capability value is present in `exceptions.allowedValues`.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: check-security-context
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:   [apps]
+        apiVersions: [v1]
+        operations:  [CREATE, UPDATE]
+        resources:   [deployments]
+  variables:
+    - name: allowedCapabilities
+      expression: "['AUDIT_WRITE','CHOWN','DAC_OVERRIDE','FOWNER','FSETID','KILL','MKNOD','NET_BIND_SERVICE','SETFCAP','SETGID','SETPCAP','SETUID','SYS_CHROOT']"
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          container.?securityContext.?capabilities.?add.orValue([]).all(capability,
+            capability in exceptions.allowedValues ||
+            capability in variables.allowedCapabilities))
+      message: >-
+        Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER,
+        FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT)
+        are disallowed.
+```
+
+#### Configurable reporting status
+
+Use `reportResult` in a `PolicyException` to control how matches appear in PolicyReports. Setting `reportResult: pass` marks exceptions as “pass” instead of the default “skip”.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: exclude-skipped-deployment-2
+  labels:
+    polex.kyverno.io/priority: "0.2"
+spec:
+  policyRefs:
+    - name: "with-multiple-exceptions"
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: "check-name"
+      expression: "object.metadata.name == 'skipped-deployment'"
+  reportResult: pass
+```
+
+#### Interpreting PolicyReport Results
+
+- The report for the `production` namespace shows a `result: pass`, and the `properties.generated-resources` field confirms that the `ConfigMap` was successfully created.
+
+- Conversely, the report for the `testing` namespace shows a `result: skip`. The `properties.exceptions` field references `exclude-namespace-by-name`, indicating that the `PolicyException` was successfully applied, and no resource was generated.

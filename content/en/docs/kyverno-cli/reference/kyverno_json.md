@@ -12,6 +12,8 @@ Runs tests against any json compatible payloads/policies.
 
   NOTE: This is an experimental command, use `KYVERNO_EXPERIMENTAL=true` to enable it.
 
+  For more information visit https://kyverno.io/docs/kyverno-cli/#json
+
 ```
 kyverno json [flags]
 ```
@@ -43,6 +45,6 @@ kyverno json [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno json scan](../kyverno_json_scan)	 - Runs tests against any json compatible payloads/policies.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno json scan](kyverno_json_scan.md)	 - Runs tests against any json compatible payloads/policies.
 

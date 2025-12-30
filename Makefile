@@ -6,7 +6,12 @@
 .PHONY: codegen-cli-docs
 codegen-cli-docs: ## Build CLI docs
 	@rm -rf ./content/en/docs/kyverno-cli/reference/kyverno*.md
-	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs --autogenTag=false --website --noDate --output "/work/content/en/docs/kyverno-cli/reference"
+	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
+		--autogenTag=false															\
+		--website																	\
+		--noDate																	\
+		--markdownLinks																\
+		--output "/work/content/en/docs/kyverno-cli/reference"
 
 .PHONY: codegen-policies
 codegen-policies: ## Render policies
@@ -26,6 +31,30 @@ verify-codegen: codegen
 	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen".' >&2
 	@echo 'To correct this, locally run "make codegen", commit the changes, and re-run tests.' >&2
 	@git diff --quiet --exit-code -- .
+
+########
+# HUGO #
+########
+
+.PHONY: build
+build: ## Build the Hugo site
+	@hugo build
+
+.PHONY: serve
+serve: ## Run the Hugo development server
+	@hugo server
+
+.PHONY: clean
+clean: ## Clean generated files
+	@rm -rf public/
+
+###########
+# LINK CHECK #
+###########
+
+.PHONY: check-links
+check-links: build ## Check links in the built Hugo site using lychee
+	@lychee --config config/lychee.toml --max-concurrency 2 --max-retries 5 --retry-wait-time 10 --accept 200,429 --timeout 60 -E --root-dir "${PWD}/public" public
 
 ########
 # HELP #

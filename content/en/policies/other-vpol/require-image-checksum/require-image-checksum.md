@@ -1,0 +1,47 @@
+---
+title: "Require Images Use Checksums in ValidatingPolicy"
+category: Sample in Vpol
+version: 1.14.0
+subject: Pod
+policyType: "validate"
+description: >
+    Use of a SHA checksum when pulling an image is often preferable because tags are mutable and can be overwritten. This policy checks to ensure that all images use SHA checksums rather than tags.
+---
+
+## Policy Definition
+<a href="https://github.com/kyverno/policies/raw/main//other-vpol/require-image-checksum/require-image-checksum.yaml" target="-blank">/other-vpol/require-image-checksum/require-image-checksum.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: require-image-checksum
+  annotations:
+    policies.kyverno.io/title: Require Images Use Checksums in ValidatingPolicy
+    policies.kyverno.io/category: Sample in Vpol 
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/description: >-
+      Use of a SHA checksum when pulling an image is often preferable because tags
+      are mutable and can be overwritten. This policy checks to ensure that all images
+      use SHA checksums rather than tags.
+spec:
+  validationActions: 
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE", "UPDATE"]
+      resources:   ["pods"]
+  validations:
+    - expression: "object.spec.containers.all(container, container.image.contains('@'))"
+      message: "Images must use checksums rather than tags."
+
+
+```

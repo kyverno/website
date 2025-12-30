@@ -29,4 +29,4 @@ Counter - An only-increasing integer representing the number of objects deleted 
 #### Useful Queries
 
 * Number of resource cleaned up per second per cleanup policy:<br> 
-`sum by (policy_name, policy_namespace, resource_kind) (rate(kyverno_cleanup_controller_errors_total{}[5m]))`
+`sum by (policy_name, policy_namespace, resource_kind) (rate(kyverno_cleanup_controller_deletedobjects_total{}[5m]))`

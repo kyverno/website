@@ -10,6 +10,8 @@ Migrate one or more resources to the stored version.
 
 Migrate one or more resources to the stored version.
 
+  For more information visit https://kyverno.io/docs/kyverno-cli/#migrate
+
 ```
 kyverno migrate [flags]
 ```
@@ -50,5 +52,5 @@ kyverno migrate [flags]
 
 ### SEE ALSO
 
-* [kyverno](../kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
 

@@ -545,11 +545,11 @@ This sample policy retrieves the list of Services in the Namespace and stores th
 
 ## Variables from Service Calls
 
-Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster. This feature is nested under the apiCall context type and builds upon it. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
+Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster—and even publish data to it. This functionality is nested under the `apiCall` context type and builds upon the logic used for Kubernetes API calls. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
 
-By using the `apiCall.service` object, a call may be made to another URL to retrieve and store data. The fields `caBundle` and `url` are used to specify the CA bundle and URL, respectively, for the call. The fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be to either the Kubernetes API or some other service. At this time, authentication as part of these service calls is not supported. The response from a Service call must only be JSON.
+By using the `apiCall.service` object, a call may be made to any external URL to both retrieve data and publish data (for example, via a `POST` operation). The fields `caBundle` and `url` are used to specify the CA bundle and target URL, respectively. Note that the fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be directed to either the Kubernetes API server or to an external service. At this time, authentication as part of these service calls is not supported. Additionally, the response from an external service call must be JSON.
 
-For example, the following policy makes a `POST` request to another Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace` and sends it the data `{"name":"foonamespace"}` when a ConfigMap is created in the `foonamespace` Namespace. The JSON result Kyverno receives is stored in the context called `result`. The value of `result` is JSON where the key `allowed` is either `true` or `false`. The request is blocked if the value is `false`.
+For example, consider the following policy which makes a `POST` request to an external Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace`. In this example, when a ConfigMap is created in the `foonamespace` Namespace, Kyverno sends the data `{"name":"foonamespace"}` to the external service. The JSON result Kyverno receives is stored in the context variable named `result`. The key `allowed` within `result` dictates whether the request is permitted—if `allowed` is `false`, the request will be blocked.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -586,6 +586,41 @@ spec:
           - key: "{{ result.allowed }}"
             operator: Equals
             value: false
+```
+
+**Note:** API calls can also be used to publish data externally, such as sending notifications or aggregating information in external systems. When exposing services for these calls, enforce a default [Kubernetes Network Policy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to restrict access to trusted sources. Ensure Kyverno's egress is allowed to the Kubernetes API server, DNS, and any external services (e.g., image registries or webhooks) required by your policies. Restrictive egress rules may block image registry calls, so allow egress to necessary registries. Below is a sample network policy that can be customized for your environment:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyverno-allow-in-cluster
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app: kyverno
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector: {}
+    - from:
+        - namespaceSelector: {}
+  egress:
+    - to:
+        - podSelector: {}
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+    - to:
+        - namespaceSelector: {}
 ```
 
 ## Global Context
@@ -751,7 +786,7 @@ the output `imageData` variable will have a structure which looks like the follo
     "registry":      "ghcr.io",
     "repository":    "kyverno/kyverno",
     "identifier":    "latest",
-    "imageIndex":    imageIndex,
+    "manifestList":  manifestList,
     "manifest":      manifest,
     "configData":    config,
 }
@@ -771,7 +806,7 @@ The `imageData` variable represents a "normalized" view of an image after any re
 ```
 {{% /alert %}}
 
-The `imageIndex`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
+The `manifestList`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
 
 For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
@@ -916,7 +951,7 @@ context:
 
 To access images stored on private registries, see [using private registries](verify-images/sigstore/_index.md#using-private-registries)
 
-For more examples of using an imageRegistry context, see the [samples page](/docs/policies).
+For more examples of using an imageRegistry context, see the [samples page](/policies).
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
