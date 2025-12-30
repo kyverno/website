@@ -8,7 +8,7 @@ These are some tips and tricks you can use when putting together your Kyverno po
 
 ## General
 
-* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/docs/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
+* Need more examples or struggling to see a practical use case? Remember to check out the extensive [community samples library](/policies/) for ideas on how to author certain types, as well as to kickstart your own needs. Very often, you may not need to start from scratch but can instead use one of the samples as a starting point to further customize.
 
 * Use `kubectl explain` to explain and explore the various parts and fields of a Kyverno policy. It works just like on native Kubernetes resources!
 
