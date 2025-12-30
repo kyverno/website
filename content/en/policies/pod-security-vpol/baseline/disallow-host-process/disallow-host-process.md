@@ -46,7 +46,6 @@ spec:
         object.spec.containers + 
           object.spec.?initContainers.orValue([]) + 
           object.spec.?ephemeralContainers.orValue([])
-
   validations:
     - expression: >-
         variables.allContainers.all(container,
