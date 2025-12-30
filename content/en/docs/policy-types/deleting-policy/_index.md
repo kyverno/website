@@ -11,6 +11,10 @@ weight: 50
 
 `DeletingPolicy` is a Kyverno custom resource that allows cluster administrators to automatically delete Kubernetes resources matching specified criteria, based on a cron schedule. This policy is helpful for implementing lifecycle management, garbage collection, or enforcing retention policies.
 
+> **Note: Namespaced Policy Available**
+> 
+> `DeletingPolicy` is available in both **cluster-scoped** (`DeletingPolicy`) and **namespaced** (`NamespacedDeletingPolicy`) versions. Namespaced policies allow namespace owners to manage deletion policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation. See the [Policy Scope](#policy-scope) section for details and examples.
+
 This policy provides the same functionality as the `CleanupPolicy` but it is designed to use CEL expressions for Kubernetes compatibility. 
 
 Unlike admission policies that react to API requests, DeletingPolicy:
@@ -119,6 +123,33 @@ spec:
     namespaceSelector:
       matchLabels:
         environment: test
+  conditions:
+    - name: isOld
+      expression: "now() - object.metadata.creationTimestamp > duration('72h')"
+  variables:
+    - name: isEphemeral
+      expression: "has(object.metadata.labels.ephermal) && object.metadata.labels.ephemeral == 'true'"
+```
+
+### Namespaced Example
+
+This `NamespacedDeletingPolicy` provides the same functionality as the cluster-scoped version above, but operates only within the specific namespace where it's deployed:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedDeletingPolicy
+metadata:
+  name: cleanup-old-test-pods
+  namespace: test-environment
+spec:
+  schedule: "0 1 * * *"  # Run daily at 1 AM
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["*"]
+        resources: ["pods"]
+        scope: "Namespaced"
   conditions:
     - name: isOld
       expression: "now() - object.metadata.creationTimestamp > duration('72h')"
