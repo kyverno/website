@@ -14,7 +14,7 @@ The Kyverno policy engine runs as an admission webhook and requires a CA-signed 
 
 #### Default certificates
 
-By default, Kyverno will automatically generate a self-signed Certificate Authority (CA) and leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manages its own certificates, it will gracefully handle regeneration upon expiry.
+By default, Kyverno will automatically generate a self-signed Certificate Authority (CA) and leaf certificates for use in its webhook registrations. The CA certificate expires after one year. When Kyverno manages its own certificates, it will gracefully handle regeneration upon expiry. By default, RSA 2048-bit keys are used, but other [key algorithms](#key-algorithm) can be configured.
 
 After installing Kyverno, use the [step CLI](https://smallstep.com/cli/) to check and verify certificate details.
 
@@ -68,6 +68,40 @@ The renewal process runs as follows:
 1. Update the Kyverno server to use the new certificate
 
 Basically, certificates will be renewed approximately 15 days before expiry.
+
+#### Key Algorithm
+
+When Kyverno manages its own certificates (the default behavior), you can configure the cryptographic algorithm used to generate the CA and TLS certificates. The supported algorithms are:
+
+| Algorithm | Description |
+|-----------|-------------|
+| `RSA` | RSA 2048-bit keys (default) |
+| `ECDSA` | ECDSA P-256 keys |
+| `Ed25519` | Ed25519 keys |
+
+The key algorithm can be configured via Helm values for both the admission controller and cleanup controller:
+
+```yaml
+admissionController:
+  tlsKeyAlgorithm: ECDSA
+
+cleanupController:
+  tlsKeyAlgorithm: ECDSA
+```
+
+Or directly via the `--tlsKeyAlgorithm` container flag (see [Container Flags](#container-flags)).
+
+{{% alert title="Note" color="info" %}}
+The key algorithm setting only applies when Kyverno manages its own certificates. If you are using custom certificates or cert-manager to provision certificates, you should configure the algorithm in your certificate generation process instead.
+{{% /alert %}}
+
+After installing Kyverno, you can verify the certificate type:
+
+```sh
+$ kubectl -n kyverno get secret kyverno-svc.kyverno.svc.kyverno-tls-ca -o jsonpath='{.data.tls\.crt}' | \
+  base64 -d | openssl x509 -noout -text | grep "Public Key Algorithm"
+        Public Key Algorithm: id-ecPublicKey
+```
 
 #### Custom certificates
 
@@ -447,6 +481,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `skip_log_headers` (ABCR) | | If true, avoid headers when opening log files (no effect when -logtostderr=true). |
 | `stderrthreshold` (ABCR) | `2` | Logs at or above this threshold go to stderr when writing to files and stderr (no effect when -logtostderr=true or -alsologtostderr=false). |
 | `tlsSecretName` (AC) | | Overwrites the default secret name of the TLS certificate. See also the related flag `caSecretName`. |
+| `tlsKeyAlgorithm` (AC) | `RSA` | Specifies the key algorithm for Kyverno-managed TLS certificates. Supported values: `RSA`, `ECDSA`, `Ed25519`. Only used when Kyverno manages its own certificates (not when using custom certificates or cert-manager). |
 |`tracingAddress` (ABCR) | `''` | Tracing receiver address.|
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
