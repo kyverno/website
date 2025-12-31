@@ -777,7 +777,7 @@ context:
     reference: "ghcr.io/kyverno/kyverno"
 ```
 
-the output `imageData` variable will have a structure which looks like the following:
+the output `imageData` variable (or the name specified in the context entry) will have a structure which looks like the following:
 
 ```json
 {
@@ -791,6 +791,8 @@ the output `imageData` variable will have a structure which looks like the follo
     "configData":    config,
 }
 ```
+
+The `manifestList` field contains the raw JSON of the image manifest list (also known as an image index). This field is only populated for multi-architecture images and will be `null` for single-architecture images. For multi-architecture images, you can use JMESPath expressions to query supported architectures, for example: `manifestList.manifests[?platform.architecture == 'arm64']` or extract all supported architectures with `manifestList.manifests[*].platform.architecture`.
 
 {{% alert title="Note" color="info" %}}
 The `imageData` variable represents a "normalized" view of an image after any redirects by the registry are performed and internal modifications by Kyverno (Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`). Most notably, this impacts [official images](https://docs.docker.com/docker-hub/official_images/) hosted on [Docker Hub](https://hub.docker.com/). Official images on Docker Hub are differentiated from other images in that their repository is prefixed by `library/` even if the image being pulled does not contain it. For example, pulling the [python](https://hub.docker.com/_/python) official image with `python:slim` results in the following fields of `imageData` being set:
