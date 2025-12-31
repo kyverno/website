@@ -359,9 +359,11 @@ The following keys are used to control the behavior of Kyverno and must be set i
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
 10. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
-11. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
-12. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
-13. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+11. `enableUpdateRequestCleanup`: enables automatic cleanup of UpdateRequest resources by adding cleanup labels. When enabled, UpdateRequest resources will be annotated with a TTL label for automatic cleanup. Default is `false`.
+12. `updateRequestCleanupTTL`: sets the time-to-live (TTL) duration for UpdateRequest resources when cleanup is enabled. Accepts duration strings like "2m", "1h", "30s". Default is `"2m"`.
+13. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
+14. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
+15. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
 
@@ -436,7 +438,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | `"default,google,amazon,azure,github"` | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
-| `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
+| `renewBefore` (AC) | `360h0m0s` | Sets the certificate renewal time before expiration.  Please specify the duration using Go's duration format (hours, minutes, and seconds), e.g., `360h0m0s` for 15 days. |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. Deprecated. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
@@ -449,7 +451,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
 | `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
-| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cluster-policy/cleanup.md#cleanup-label) for details. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cleanup-policy/#cleanup-label) for details. |
 | `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |

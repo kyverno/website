@@ -9,11 +9,39 @@ weight: 10
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
+> **Note: Namespaced Policy Available**
+> 
+> `ValidatingPolicy` is available in both **cluster-scoped** (`ValidatingPolicy`) and **namespaced** (`NamespacedValidatingPolicy`) versions. Namespaced policies allow namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation. See the [Policy Scope](#policy-scope) section for details and examples.
+
 ```
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [pods]
+  validations:
+    - message: label 'environment' is required
+      expression: "'environment' in object.metadata.?labels.orValue([])"
+```
+
+### Namespaced Example
+
+This `NamespacedValidatingPolicy` provides the same functionality as the cluster-scoped version above, but operates only within the specific namespace where it's deployed:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: check-labels
+  namespace: production
 spec:
   validationActions:
     - Deny
@@ -202,7 +230,7 @@ spec:
         )
 ```
 
-To write a policy for JSON payloads:
+***To write a policy for JSON payloads:***
 1. Set `spec.evaluation.mode` to `JSON`.
 2. Next, define a `spec.matchConditions` with CEL expressions to tell the engine which payloads should be matched. 
 3. Finally, define your validation rules in `spec.validations`.
@@ -210,3 +238,174 @@ To write a policy for JSON payloads:
 To evaluate JSON policies, use the [Kyverno CLI](../../kyverno-cli/). 
 
 A Kyverno Engine SDK is planned for a subsequent release.
+
+## Reporting Details in ValidatingPolicy
+
+When a ValidatingPolicy is evaluated, the results are recorded in PolicyReports. PolicyReports are standard Kubernetes custom resources that summarize the outcomes of policy evaluations, including whether resources passed or failed validation.
+
+Kyverno provides additional fields in ValidatingPolicy rules to make PolicyReports more informative and contextual. Two important features are:
+
+### Using auditAnnotations to add custom data
+
+The auditAnnotations field allows attaching custom key-value data to the results stored in PolicyReports. These values can be static strings or dynamic expressions using [CEL (Common Expression Language)](/docs/policy-types/cel-libraries/)
+.
+
+This is useful for adding metadata such as severity, team ownership, or any resource-specific values that help consumers of the PolicyReport better understand and act on violations.
+
+***Example Policy:***
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-labels
+spec:
+  auditAnnotations:
+    - key: team
+      valueExpression: "platform" 
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [apps]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [deployments]
+  variables:
+    - name: environment
+      expression: >-
+        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
+  validations:
+    - expression: >-
+        variables.environment == true
+      message: >-
+        Deployment labels must be env=prod
+```
+
+***Example Deployment:***
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+***Resulting PolicyReport entry:***
+
+```bash
+# Example: Add PolicyReport output here
+```
+
+### Using messageExpression to generate dynamic messages
+
+While the message field provides a static failure message, messageExpression allows you to dynamically build messages using CEL expressions. This produces more contextual and precise failure descriptions.
+
+If both message and messageExpression are defined, the messageExpression takes precedence.
+
+The expression must evaluate to a string.
+
+If the expression fails or produces an invalid string (empty, whitespace-only, or multi-line), Kyverno falls back to the static message.
+
+***Example Policy:***
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-labels
+  annotations:
+    policies.kyverno.io/title: Check Deployment Labels
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/severity: medium
+spec:
+  validationActions: 
+   - Audit
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [apps]
+      apiVersions: [v1]
+      operations:  [CREATE, UPDATE]
+      resources:   [deployments]
+  variables:
+    - name: environment
+      expression: >-
+        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
+  validations:
+    - expression: >-
+        variables.environment == true
+      messageExpression: >-
+        'Deployment labels must be env=prod' + (has(object.metadata.labels) && 'env' in object.metadata.labels ? ' but found env=' + string(object.metadata.labels['env']) : ' but no env label is present')
+```
+***Example Resource Deployment:***
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment
+  labels:
+    app: nginx
+    env: testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+***Resulting PolicyReport entry:***
+
+```yaml
+apiVersion: v1
+items:
+- apiVersion: wgpolicyk8s.io/v1alpha2
+  kind: PolicyReport
+  metadata:
+    generation: 1
+    labels:
+      app.kubernetes.io/managed-by: kyverno
+    ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: no-env
+  results:
+  - category: Other
+    message: Deployment labels must be env=prod but no env label is present
+    policy: check-deployment-labels
+    result: fail
+    scored: true
+    severity: medium
+    source: KyvernoValidatingPolicy
+  scope:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: no-env
+  summary:
+    error: 0
+    fail: 1
+    pass: 0
+    skip: 0
+    warn: 0
+```
