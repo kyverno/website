@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 
 export default function Feedback() {
-  const [messageType, setMessageType] = useState(null)
+  const [isHelpful, setIsHelpful] = useState(null)
 
-  const handleFeedback = (isHelpful) => {
-    if (messageType) return
-    setMessageType(isHelpful ? 'positive' : 'negative')
+  const handleFeedback = (value) => {
+    if (isHelpful !== null) return
+    setIsHelpful(value)
   }
 
   const containerStyle = {
@@ -51,27 +51,25 @@ export default function Feedback() {
 
       <div style={buttonsWrapper}>
         <button
-          style={buttonStyle(!!messageType)}
-          disabled={!!messageType}
+          style={buttonStyle(isHelpful !== null)}
+          disabled={isHelpful !== null}
           onClick={() => handleFeedback(true)}
         >
           Yes
         </button>
 
         <button
-          style={buttonStyle(!!messageType)}
-          disabled={!!messageType}
+          style={buttonStyle(isHelpful !== null)}
+          disabled={isHelpful !== null}
           onClick={() => handleFeedback(false)}
         >
           No
         </button>
       </div>
 
-      {messageType && (
+      {isHelpful !== null && (
         <p style={{ marginTop: '20px' }}>
-          {messageType === 'positive'
-            ? 'Glad to hear it! '
-            : 'Sorry to hear that. '}
+          {isHelpful ? 'Glad to hear it! ' : 'Sorry to hear that. '}
           Please{' '}
           <a
             href="https://github.com/kyverno/website/issues/new/choose"
