@@ -408,6 +408,9 @@ spec:
                 hRkMf01X7+GAI75hpgoX/CuCjd8J5kozsXLzUtKRop5gXyZxuFL8yUW9gfQs
                 -----END CERTIFICATE-----
 ```
+              signatureAlgorithm: sha256
+
+You can specify the `signatureAlgorithm` to be used for certificate-based verification. By default, cosign uses `sha256` when computing digests, but you can specify a different algorithm using the `signatureAlgorithm` field. Allowed values are `sha224`, `sha256`, `sha384`, and `sha512`.
 
 To verify using the root certificate only, the leaf certificate declaration `cert` can be omitted.
 
@@ -642,6 +645,34 @@ The supported formats include:
 
 Refer to https://docs.sigstore.dev/cosign/key_management/overview/ for additional details.
 
+Here's an example of using AWS KMS for verification with a signature algorithm:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-aws-kms
+spec:
+  rules:
+    - name: check-image-aws-kms
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image:signed-aws-kms"
+        failureAction: Enforce 
+        attestors:
+        - entries:
+          - keys:
+              kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+              signatureAlgorithm: sha256
+```
+
+When using KMS for verification, you can specify the signature algorithm using the `signatureAlgorithm` field. The allowed values are `sha224`, `sha256`, `sha384`, and `sha512`.
+
 ### Enabling IRSA to access AWS KMS
 
 When running Kyverno in a AWS EKS cluster, you can use IAM Roles for Service Accounts ([IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)) to grant the Kyverno ServiceAccount permission to retrieve the public key(s) it needs from AWS KMS.
@@ -773,6 +804,10 @@ spec:
         - --imagePullSecrets=regcred
 ```
 
+{{% alert title="Note" color="info" %}}
+When using Helm to deploy Kyverno, the `imagePullSecrets` in the chart templates are sorted alphabetically by name to ensure consistent ordering. This prevents GitOps tools like ArgoCD from detecting differences solely based on the order of secrets and marking resources as out of sync when there are no functional changes.
+{{% /alert %}}
+
 ### Trust
 
 Kyverno does not by default have the same chain of trust as the underlying Kubernetes Nodes nor is it able to access them due to security concerns. Because the Nodes in your cluster can pull an image from a private registry (even if no authentication is required) does not mean Kyverno can. Kyverno ships with trust for the most common third-party certificate authorities and has no knowledge of internal PKI which may be in use by your private registry. Without the chain of trust established, Kyverno will not be able to fetch image metadata, signatures, or other OCI artifacts from a registry. Perform the following steps to present the necessary root certificates to Kyverno to establish trust.
@@ -838,25 +873,51 @@ verifyImages:
 
 ## Using a different signature algorithm
 
-By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
+When verifying image signatures, you can specify the signature algorithm to be used. This applies to all verification methods (keys, certificates, and KMS). The allowed values are `sha224`, `sha256`, `sha384`, and `sha512`. By default, cosign uses `sha256`.
+
+Here's an example showing how to specify the signature algorithm with different verification methods:
 
 ```yaml
-...
-verifyImages:
-- imageReferences:
-  - ghcr.io/kyverno/test-verify-image*
-  attestors:
-  - entries:
-    - signatureAlgorithm: sha256
-      keys:
-        publicKeys: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-...
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image-signature-algorithm
+spec:
+  rules:
+    - name: check-image
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "ghcr.io/kyverno/test-verify-image*"
+        failureAction: Enforce
+        attestors:
+        - entries:
+          # Using public key
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+              signatureAlgorithm: sha256
+          # Using certificate
+          - certificates:
+              cert: |-
+                -----BEGIN CERTIFICATE-----
+                ...
+                -----END CERTIFICATE-----
+              signatureAlgorithm: sha256
+          # Using KMS
+          - keys:
+              kms: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+              signatureAlgorithm: sha256
 ```
-Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
+
+The `signatureAlgorithm` field can be used with any verification method to ensure consistent signature verification across your infrastructure.
 
 ## Ignoring Tlogs and SCT Verification
 
@@ -898,15 +959,15 @@ verifyImages:
           url: https://rekor.sigstore.dev
           pubkey: |-
           -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
           -----END PUBLIC KEY-----
         ctlog:
           ignoreSCT: true
           pubkey: |-
           -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
           -----END PUBLIC KEY-----
 ```
 
