@@ -168,8 +168,9 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
 * `kyverno:admission-controller`
   * create, delete, get, patch, and update Leases to handle high availability configurations.
   * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
-  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, watch, create, update, patch and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
+  * get, list, watch, create, update, patch and delete ServiceAccounts to manage webhook configurations auto-deletion.
 * `kyverno:reports-controller`
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
@@ -177,11 +178,34 @@ Kyverno creates the following Roles in its Namespace, one per controller type:
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
 * `kyverno:cleanup-controller`
-  * get, list, watch, create, and update Secrets to manage certificates used for webhook management.
+  * get, list, watch, create, update and delete Secrets to manage certificates used for webhook management.
   * get, list, and watch ConfigMaps for configuration changes.
   * create, delete, get, patch, and update Leases to handle high availability configurations.
+  * get, list, and watch Deployments so it can manage the Kyverno Deployment itself.
 
 #### ClusterRoles
+
+Kyverno creates the following ClusterRoles, one per controller type:
+
+* `kyverno:admission-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update, patch and delete MutatingWebhookConfigurations to configure webhook rules for admission mutations.
+  * get, list, watch, create, update, patch and delete ValidatingWebhookConfigurations to configure webhook rules for admission validations.
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicies for auto-generating validatingadmissionpolicies. 
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicyBindings for auto-generating validatingadmissionpolicybindings.
+  * get, list and watch Roles to manage webhook configurations auto-deletion.
+  * get, list and watch ClusterRoles manage webhook configurations auto-deletion.
+  * get, list and watch RoleBindings manage webhook configurations auto-deletion.
+  * get, list and watch ClusterRolebindings manage webhook configurations auto-deletion.
+* `kyverno:reports-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicies for auto-generating validatingadmissionpolicies. 
+  * get, list, watch, create, update, patch and delete ValidatingAdmissionPolicyBindings for auto-generating validatingadmissionpolicybindings.
+* `kyverno:background-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+* `kyverno:cleanup-controller`
+  * get CustomResourceDefinitions to perform sanity checks.
+  * get, list, watch, create, update and delete ValidatingWebhookConfigurations to perform resources deletion based on TTL cleanup label.
 
 Kyverno uses [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to search for and combine ClusterRoles which apply to Kyverno. Each controller has its own set of ClusterRoles. Those ending in `core` are the aggregate ClusterRoles which are then aggregated by the top-level role without the `core` suffix.
 
@@ -335,9 +359,11 @@ The following keys are used to control the behavior of Kyverno and must be set i
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
 10. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
-11. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
-12. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
-13. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+11. `enableUpdateRequestCleanup`: enables automatic cleanup of UpdateRequest resources by adding cleanup labels. When enabled, UpdateRequest resources will be annotated with a TTL label for automatic cleanup. Default is `false`.
+12. `updateRequestCleanupTTL`: sets the time-to-live (TTL) duration for UpdateRequest resources when cleanup is enabled. Accepts duration strings like "2m", "1h", "30s". Default is `"2m"`.
+13. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
+14. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](platform-notes.md#notes-for-aks-users) section for details.
+15. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
 ### Container Flags
 
@@ -362,7 +388,8 @@ The following flags can be used to control the advanced behavior of the various 
 |`backgroundScanInterval` (R) | 1h | Sets the time interval when periodic background scans for reporting take place. Supports minute durations as well (e.g., `10m`).|
 | `backgroundScanWorkers` (R) | 2 | Defines the number of internal worker threads to use when processing background scan reports. More workers means faster report processing at the cost of more resources consumed. Since the reports controller uses leader election, all reports processing will only be done by a single replica at a time. |
 | `caSecretName` (AC) | | overwrites the default secret name of the RootCA certificate. See also the related flag `tlsSecretName`.|
-| `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server. Usually changed in tandem with `webhookServerPort`.|
+| `cleanupServerHost` (C) | `""` | Defines the address used by the cleanup server webhook. This should only be used when `hostNetwork: true` is set in the manifest. |
+| `cleanupServerPort` (C) | 9443 | Defines the port used by the cleanup server webhook. |
 | `clientRateLimitBurst` (ABCR) | 300 | Configures the maximum burst for throttling. Uses the client default if zero. |
 | `clientRateLimitQPS` (ABCR) | 300 | Configures the maximum QPS to the API server from Kyverno. Uses the client default if zero. |
 | `disableMetrics` (ABCR) | false | Specifies whether to enable exposing the metrics. |
@@ -372,11 +399,11 @@ The following flags can be used to control the advanced behavior of the various 
 | `eventsRateLimitQPS` (ABCR) | 1000 | Configures the maximum QPS to the API server from Kyverno for events. Uses the client default if zero. |
 | `enableConfigMapCaching` (ABR) | true | Enables the ConfigMap caching feature. |
 | `enableDeferredLoading` (A) | true | Enables deferred (lazy) loading of variables (1.10.1+). Set to `false` to disable deferred loading of variables which was the default behavior in versions < 1.10.0. |
-| `enablePolicyException` (ABR) | false | Set to `true` to enable the [PolicyException capability](/docs/policy-types/cluster-policy/exceptions.md). |
+| `enablePolicyException` (ABR) | false | Set to `true` to enable the [PolicyException capability](/docs/exceptions/). |
 | `enableReporting` (ABCR) | validate,mutate,mutateExisting,generate,imageVerify | Comma separated list to enables reporting for different rule types. (validate,mutate,mutateExisting,generate,imageVerify) |
 | `enableTracing` (ABCR) | false | Set to enable exposing traces. |
 | `enableTuf` (AR) | | Enable tuf for private sigstore deployments. |
-| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](/docs/policy-types/cluster-policy/exceptions.md) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If set to "*", PolicyExceptions from all Namespaces will be accepted. Note that wildcards and multiple Namespace entries are not supported. It is required if the `enablePolicyException` flag is set to true. |
+| `exceptionNamespace` (ABR) | | Set to the name of a Namespace where [PolicyExceptions](/docs/exceptions/) will only be permitted. PolicyExceptions created in any other Namespace will throw a warning. If set to "*", PolicyExceptions from all Namespaces will be accepted. Note that wildcards and multiple Namespace entries are not supported. It is required if the `enablePolicyException` flag is set to true. |
 | `forceFailurePolicyIgnore` (A) | false | Set to force Failure Policy to `Ignore`. |
 | `generateValidatingAdmissionPolicy` (A) | false | Specifies whether to enable generating Kubernetes ValidatingAdmissionPolicies. |
 | `genWorkers` (B) | 10 | The number of workers for processing generate policies concurrently. |
@@ -398,7 +425,8 @@ The following flags can be used to control the advanced behavior of the various 
 | `maxBackgroundReports` (BR) | `10000` | Maximum number of ephemeralreports created for the background policies before we stop creating new ones. |
 | `maxAuditCapacity` (A) | `1000` | Maximum number of workers for audit policy processing. |
 | `maxQueuedEvents` (ABR) | `1000` | Defines the upper limit of events that are queued internally. |
-| `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. |
+| `metricsHost` (ABCR) | `""` | Specifies the address to expose prometheus metrics. This should only be used when `hostNetwork: true` is set in the manifest. Not used when `--otelConfig="grpc"`. |
+| `metricsPort` (ABCR) | `8000` | Specifies the port to expose prometheus metrics. Specifies the target port for `otelCollector`. Depending on the `otelConfig` flag being `prometheus` or `grpc`. |
 | `omitEvents` (ABR) | `"PolicyApplied,PolicySkipped"` | Specifies the type of Kyverno events which should not be emitted. Accepts a comma-separated string with possible values `PolicyViolation`, `PolicyApplied`, `PolicyError`, and `PolicySkipped`. Default is `PolicyApplied` and `PolicySkipped`. |
 | `one_output` (ABCR) | | If true, only write logs to their native severity level (vs also writing to each lower severity level; no effect when -logtostderr=true). |
 | `openreportsEnabled` (R) | false | Use openreports.io/v1alpha1 for the reporting group |
@@ -410,7 +438,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `profilePort` (ABCR) | `6060` | Specifies port to enable profiling. |
 | `protectManagedResources` (AC) | false | Protects the Kyverno resources from being altered by anyone other than the Kyverno Service Account. Set to `true` to enable. |
 | `registryCredentialHelpers` (ABR) | `"default,google,amazon,azure,github"` | Enables cloud-registry-specific authentication helpers. Defaults to `"default,google,amazon,azure,github"`. |
-| `renewBefore` (AC) | `15d` | Sets the certificate renewal time before expiration (in days). |
+| `renewBefore` (AC) | `360h0m0s` | Sets the certificate renewal time before expiration.  Please specify the duration using Go's duration format (hours, minutes, and seconds), e.g., `360h0m0s` for 15 days. |
 | `reportsChunkSize` (R) | `1000` | Maximum number of results in generated reports before splitting occurs if there are more results to be stored. Deprecated. |
 | `serverIP` (AC) | | Like the `kubeconfig` flag, used when running Kyverno outside of the cluster which it serves. |
 | `servicePort` (AC) | `443` | Port used by the Kyverno Service resource and for webhook configurations. |
@@ -423,14 +451,15 @@ The following flags can be used to control the advanced behavior of the various 
 | `tracingCreds` (ABCR) | | Set to the CA secret containing the certificate which is used by the Opentelemetry Tracing Client. If empty string is set, an insecure connection will be used. |
 | `tracingPort` (ABCR) | `4137` | Tracing receiver port. |
 | `transportCreds` (ABCR) | `""` | Set to the CA secret containing the certificate used by the OpenTelemetry metrics client. Empty string means an insecure connection will be used. |
-| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cluster-policy/cleanup.md#cleanup-label) for details. |
+| `ttlReconciliationInterval` (C) | `1m` | Defines the interval the cleanup controller should perform reconciliation of resources labeled with the cleanup TTL label. See the cleanup documentation [here](/docs/policy-types/cleanup-policy/#cleanup-label) for details. |
 | `tufMirror` (AR) | | Specifies alternate TUF mirror for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `tufRoot` (AR) | | Specifies alternate TUF root.json for sigstore. If left blank, public sigstore one is used for cosign verification. |
 | `v` (ABCR) | `2` | Sets the verbosity level of Kyverno log output. Takes an integer from 1 to 6 with 6 being the most verbose. Level 4 shows variable substitution messages. |
 | `validatingAdmissionPolicyReports` (R) | false | Specifies whether to enable generating Policy Reports for Kubernetes ValidatingAdmissionPolicies. |
 | `vmodule` (ABCR) | | Comma-separated list of pattern=N settings for file-filtered logging. |
 | `webhookRegistrationTimeout` (A) | `120s` | Specifies the length of time Kyverno will try to register webhooks with the API server. |
-| `webhookServerPort` (AC) | `9443` | Specifies the port to use for webhook call-backs. |
+| `webhookServerHost` (A) | `""` | Specifies the address to use for the webhook call-backs. This should only be used when `hostNetwork: true` is set in the manifest. |
+| `webhookServerPort` (A) | `9443` | Specifies the port to use for webhook call-backs. |
 | `webhookTimeout` (A) | `10` | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds). |
 
 ### Policy Report access

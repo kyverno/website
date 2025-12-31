@@ -256,6 +256,10 @@ The final `PolicyReport` and `ClusterPolicyReport` resources are still used to s
 
 ### Example
 
+{{% alert title="Note" color="info" %}}
+As of kyverno 1.16, you can add the label `reports.kyverno.io/disabled` with any value to a policy of any type (YAML, CEL or VAP/MAP), which will result in no reports of any kind (ephemeral or permanent) be generated for this policy
+{{% /alert %}}
+
 ```yaml
 apiVersion: kyverno.io/v1alpha2
 kind: ClusterAdmissionReport

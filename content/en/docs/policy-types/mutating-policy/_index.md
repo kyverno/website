@@ -5,7 +5,7 @@ description: >-
 weight: 20
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{{< feature-state state="beta" version="v1.16" />}}
 
 The Kyverno `MutatingPolicy` type extends the Kubernetes `MutatingAdmissionPolicy` type for complex mutation operations and other features required for Policy-as-Code. A `MutatingPolicy` is a superset of a `MutatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
@@ -127,6 +127,46 @@ spec:
 Generating a `MutatingAdmissionPolicy` from a `MutatingPolicy` provides the benefits of faster and more resilient execution during admission controls while leveraging all features of Kyverno.
 
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
+
+## Policy Scope
+
+MutatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`MutatingPolicy`**: Cluster-scoped, applies to resources across all namespaces
+- **`NamespacedMutatingPolicy`**: Namespace-scoped, applies only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedMutatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedMutatingPolicy
+metadata:
+  name: add-labels
+  namespace: production
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              environment: "production",
+              managed: "true"
+            }
+          }
+        }
+```
+
+As the name suggests, the `NamespacedMutatingPolicy` allows namespace owners to manage mutation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
 
 ## Kyverno CEL Libraries
 
@@ -458,6 +498,42 @@ In this example:
 - **Target**: ALL existing ConfigMaps in namespaces with the label `test: enabled` will be mutated to add the `foo: "bar"` label
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
+
+As of kyverno 1.17, you can use a CEL expression to select the desired target(s) through the `targetMatchConstraints.expression` field. This gives you the flexibility to reference arbitrary information in the trigger object for target selection. For example, the below policy will add a label to all configmaps in a potential namespace when a secret called `trigger-secret` gets created in it.
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: test-mpol-different-trigger-target-expression
+spec:
+  failurePolicy: Fail
+  evaluation:
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE" ]
+      resources: [ "secrets" ]
+      resourceNames: ["trigger-secret"]
+  targetMatchConstraints:
+    expression: resource.Get("v1", "configmaps", object.metadata.namespace, "test-cm-1")
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: >
+        Object{
+          metadata: Object.metadata{
+            labels: Object.metadata.labels{
+              mentorship: "kyverno"
+            }
+          }
+        }
+```
+
+The expression used must use the kyverno resource library, for more information check the [documentation](https://kyverno.io/docs/policy-types/cel-libraries/#resource-library) for it
 
 ## Mutate Ordering
 
