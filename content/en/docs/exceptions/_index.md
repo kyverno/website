@@ -807,6 +807,129 @@ summary:
   warn: 0
 ```
 
+### Fine-Grained Policy Exceptions
+
+Kyverno supports narrowly scoped, CEL-aware exceptions so you can permit specific deviations without weakening entire policies. Exceptions can supply structured allowlists into CEL (for example, `exceptions.allowedImages` and `exceptions.allowedValues`) and can also control how results appear in PolicyReports via `reportResult`.
+
+#### Image-based exceptions
+
+This exception allows Pods in the `ci` namespace to use images matching the provided patterns while keeping the “no latest tag” guardrail enforced for all others. The match condition narrows the bypass to a specific team for auditability.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: allow-ci-latest-images
+  namespace: ci
+spec:
+  policyRefs:
+    - name: restrict-image-tag
+      kind: ValidatingPolicy
+  images:
+    - "ghcr.io/kyverno/*:latest"
+  matchConditions:
+    - expression: "has(object.metadata.labels.team) && object.metadata.labels.team == 'platform'"
+```
+
+The following `ValidatingPolicy` references `exceptions.allowedImages` to skip validation checks for whitelisted image(s).
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-image-tag
+spec:
+  rules:
+    - name: broker-config
+      matchConstraints:
+        resourceRules:
+          - apiGroups:   [apps]
+            apiVersions: [v1]
+            operations:  [CREATE, UPDATE]
+            resources:   [pods]
+      validations:
+        - message: "Containers must not allow privilege escalation unless they are in the allowed images list."
+          expression: >-
+            object.spec.containers.all(container,
+              string(container.image) in exceptions.allowedImages ||
+              (
+                has(container.securityContext) &&
+                has(container.securityContext.allowPrivilegeEscalation) &&
+                container.securityContext.allowPrivilegeEscalation == false
+              )
+            )
+```
+
+#### Value-based exceptions
+
+This exception supplies a list of values via `allowedValues` that a CEL validation may accept for a constrained set of targets so teams can proceed without weakening the entire policy.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: allow-debug-annotation
+  namespace: dev
+spec:
+  policyRefs:
+    - name: check-security-context
+      kind: ValidatingPolicy
+  allowedValues:
+    - "debug-mode-temporary"
+  matchConditions:
+    - expression: "object.metadata.name.startsWith('experiments-')"
+```
+
+Here’s the policy leveraging the above allowed values. It denies resources unless the annotation/capability value is present in `exceptions.allowedValues`.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: check-security-context
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:   [apps]
+        apiVersions: [v1]
+        operations:  [CREATE, UPDATE]
+        resources:   [deployments]
+  variables:
+    - name: allowedCapabilities
+      expression: "['AUDIT_WRITE','CHOWN','DAC_OVERRIDE','FOWNER','FSETID','KILL','MKNOD','NET_BIND_SERVICE','SETFCAP','SETGID','SETPCAP','SETUID','SYS_CHROOT']"
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          container.?securityContext.?capabilities.?add.orValue([]).all(capability,
+            capability in exceptions.allowedValues ||
+            capability in variables.allowedCapabilities))
+      message: >-
+        Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER,
+        FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT)
+        are disallowed.
+```
+
+#### Configurable reporting status
+
+Use `reportResult` in a `PolicyException` to control how matches appear in PolicyReports. Setting `reportResult: pass` marks exceptions as “pass” instead of the default “skip”.
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: PolicyException
+metadata:
+  name: exclude-skipped-deployment-2
+  labels:
+    polex.kyverno.io/priority: "0.2"
+spec:
+  policyRefs:
+    - name: "with-multiple-exceptions"
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: "check-name"
+      expression: "object.metadata.name == 'skipped-deployment'"
+  reportResult: pass
+```
+
 #### Interpreting PolicyReport Results
 
 - The report for the `production` namespace shows a `result: pass`, and the `properties.generated-resources` field confirms that the `ConfigMap` was successfully created.
