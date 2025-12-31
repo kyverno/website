@@ -1,15 +1,17 @@
 ---
 title: ImageValidatingPolicy
 description: >-
-    Validate container images and their metadata
-weight: 0
+    Verify container image signatures and attestations
+weight: 15
 ---
+
+{{< feature-state state="beta" version="v1.16" />}}
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations. 
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy)
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy).
 
 
 ### images
@@ -269,10 +271,49 @@ spec:
       - "my-registry-secret"  # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
 
 ```
+## Policy Scope
+
+ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`ImageValidatingPolicy`**: Cluster-scoped, applies to image verification across all namespaces
+- **`NamespacedImageValidatingPolicy`**: Namespace-scoped, applies image verification only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+### Example NamespacedImageValidatingPolicy
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: NamespacedImageValidatingPolicy
+metadata:
+  name: verify-team-images
+  namespace: development
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  matchImageReferences:
+    - glob: "ghcr.io/myorg/dev-*"
+  attestors:
+    - name: dev-attestor
+      cosign:
+        keyless:
+          identities:
+            - issuer: "https://token.actions.githubusercontent.com"
+              subject: "*@myorg.github.io"
+  validations:
+    - message: "image must be signed by the development team"
+      expression: "imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)"
+```
+
+The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/validating-policy/#kyverno-cel-libraries) the following additional libraries are supported for ImageValidatingPolicy types. 
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/) the following additional libraries are supported for ImageValidatingPolicy types. 
 
 ### Image Verification Library
 

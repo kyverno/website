@@ -16,7 +16,7 @@ Gauge - A constant value of 1 with labels to include relevant information
 
 | Label                    | Allowed Values | Description                                                                                                               |
 |--------------------------|----------------|---------------------------------------------------------------------------------------------------------------------------|
-| version                  |                | Current version of Kyvero being used                                                                                      |
+| version                  |                | Current version of Kyverno being used                                                                                      |
 
 #### Use cases
 

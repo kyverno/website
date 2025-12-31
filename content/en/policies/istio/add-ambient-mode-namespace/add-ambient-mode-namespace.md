@@ -37,6 +37,12 @@ spec:
       - resources:
           kinds:
           - Namespace
+    exclude:
+      any:
+      - resources:
+          names:
+            - kube-system
+            - istio-system      
     mutate:
       patchStrategicMerge:
         metadata:
