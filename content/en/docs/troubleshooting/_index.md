@@ -6,6 +6,11 @@ weight: 130
 
 Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following sections can be used to help troubleshoot and recover when things go wrong.
 
+## Troubleshooting Guides
+
+- **[CEL Expressions](cel-expressions/)** - Debug and troubleshoot CEL expressions in policies
+- **[General Kyverno Issues](#api-server-is-blocked)** - Common Kyverno operational issues
+
 ## API server is blocked
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
@@ -100,7 +105,7 @@ Use [Namespace selectors](/docs/installation/customization.md#namespace-selector
 2. Which controller is experiencing the load? Each Kyverno controller has different responsibilities. See the [controller guide](../high-availability/_index.md#controllers-in-kyverno) for more details. Each controller can be independently scaled, but before immediately scaling in any direction take the time to study the load.
 3. Are the default requests and limits still in effect? It is possible the amount of load Kyverno (any of its controllers) is experiencing is beyond the capabilities of the default requests and limits. These defaults have been selected based on a good mix of real-world usage and feedback but **may not suit everyone**. In extremely large and active clusters, from Kyverno's perspective, you may need to increase these.
 4. What do your monitoring metrics say? Kyverno is a critical piece of cluster infrastructure and must be monitored effectively just like other pieces. There are several metrics which give a sense of how active Kyverno is, the most important being [admission request count](../monitoring/admission-requests.md). Others include consumed memory and CPU utilization. Sizing should always be done based on peak consumption and not averages.
-5. Have you checked the number of pending update requests when using generate or mutate existing rules? In addition to the admission request count metric, you can use `kubectl -n kyverno get updaterequests` to get a sense of the request count. If there are many requests in a `Pending` status this could be a sign of a permissions issue or, for clone-type generate rules with synchronization enabled, excessive updates to the source resource. Ensure you grant the background controller the required permissions to the resources and operations it needs, and ensure Kyverno is able to label clone sources.
+5. Have you checked the number of pending update requests when using generate or mutate existing rules? In addition to the admission request count metric, you can use `kubectl -n kyverno get updaterequests` to get a sense of the request count. If there are many requests in a `Pending` status this could be a sign of a permissions issue or, for clone-type generate rules with synchronization enabled, excessive updates to the source resource. Ensure you grant the background controller the required permissions to the resources and operations it needs, and ensure Kyverno is able to label clone sources. To help manage accumulation of completed UpdateRequest resources, consider enabling [UpdateRequest cleanup](/docs/policy-types/cluster-policy/generate.md#updaterequest-cleanup) through the Kyverno configuration.
 
 You can also follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling.
 

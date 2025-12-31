@@ -731,6 +731,10 @@ Events:
 
 To troubleshoot policy application failure, inspect the `UpdateRequest` Custom Resource to get details. Successful `UpdateRequests` may be automatically cleaned up by Kyverno.
 
+{{% alert title="Tip" color="info" %}}
+Kyverno supports automatic cleanup of UpdateRequest resources through TTL labels. This feature can be enabled in the Kyverno configuration to help manage resource accumulation in large clusters. See the [UpdateRequest Cleanup](/docs/policy-types/cluster-policy/generate.md#updaterequest-cleanup) section for more details.
+{{% /alert %}}
+
 For example, if the corresponding permission is not granted to Kyverno, you should see a value of `Failed` in the `updaterequest.status` field, however a permission check is performed when a policy is installed.
 
 ```
@@ -1167,7 +1171,7 @@ spec:
     secretName: mytlscertsecret
 ```
 
-This type of advanced mutation can be performed with nested foreach loops as shown below. Notice that in the JSON patch, the `path` value references the current index of `tls[]` as `{{elementIndex0}}` and the current index of `hosts[]` as `{{elementIndex1}}`. In the `value` field, the `{{element1}}` variable still references the current value of the `hosts[]` array being processed.
+This type of advanced mutation can be performed with nested foreach loops as shown below. Notice that in the JSON patch, the `path` value references the current index of `tls[]` as `{{elementIndex0}}` and the current index of `hosts[]` as `{{elementIndex1}}`. In the `value` field, the `{{element1}}` variable references the current value of the `hosts[]` array being processed.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -1186,41 +1190,15 @@ spec:
       mutate:
         foreach:
           - list: request.object.spec.tls[]
-            as: element0  # Outer loop element (tls array)
+            # Outer loop element (tls array) is available as element0
             foreach:
               - list: "element.hosts"
-                as: element1  # Inner loop element (hosts array)
+                # Inner loop element (hosts array) is available as element1
                 patchesJson6902: |-
                   - path: /spec/tls/{{elementIndex0}}/hosts/{{elementIndex1}}
                     op: replace
                     value: "{{ replace_all('{{element1}}', '.old.com', '.new.com') }}"
 ```
-For older Kyverno versions that do not support as:, elements can be accessed directly using {{element0}} and {{element1}}.
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: replace-dns-suffix-legacy
-spec:
-  background: false
-  rules:
-    - name: replace-dns-suffix
-      match:
-        any:
-          - resources:
-              kinds:
-                - Ingress
-      mutate:
-        foreach:
-          - list: request.object.spec.tls[]
-            foreach:
-              - list: element.hosts
-                patchesJson6902: |-
-                  - path: /spec/tls/{{elementIndex0}}/hosts/{{elementIndex1}}
-                    op: replace
-                    value: "{{ replace_all('{{element}}', '.old.com', '.new.com') }}"
-```                    
 
 ## GitOps Considerations
 
