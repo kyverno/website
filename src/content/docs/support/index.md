@@ -5,23 +5,19 @@ description: Commercial Products and Services for Kyverno
 type: docs
 ---
 
-import Feedback from '../../../components/feedback.jsx'
-
 ## Commercial Support Providers
 
-- **[Blakyaks](./blakyaks/)**  
+- **[Blakyaks](./support/blakyaks/)**  
   Cloud-native, containers, serverless, automation.
 
-- **[Giantswarm](./giantswarm/)**  
+- **[Giantswarm](./support/giantswarm/)**  
   Managed Kubernetes as a Service.
 
-- **[Infracloud](./infracloud/)**  
+- **[Infracloud](./support/infracloud/)**  
   Kyverno Consulting and Implementation Partner.
 
-- **[KodeKloud](./kodekloud/)**  
+- **[KodeKloud](./support/kodekloud/)**  
   Hands-on Kubernetes and DevOps Training.
 
-- **[Nirmata](./nirmata/)**  
+- **[Nirmata](./support/nirmata/)**  
   Enterprise policy management and governance with Kyverno.
-
-<Feedback client:load />

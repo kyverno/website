@@ -5,8 +5,6 @@ description: Kubernetes Policy and Governance from the creators of Kyverno
 type: docs
 ---
 
-import Feedback from '../../../../components/feedback.jsx'
-
 [Nirmata](https://nirmata.com/) is the creator of Kyverno and offers several commercial solutions for Kubernetes policy and governance for platform and operations teams.
 
 ### Nirmata Enterprise for Kyverno (N4K)
@@ -49,5 +47,3 @@ import Feedback from '../../../../components/feedback.jsx'
 ### Kyverno Training & Support
 
 Nirmata offers expert training and custom workshops for custom support for teams looking at accelerating their cloud-native journey. Reach out at: https://nirmata.com/contact-us/.
-
-<Feedback client:load />

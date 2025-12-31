@@ -5,8 +5,6 @@ description: Hands-on Kubernetes and DevOps Training
 type: docs
 ---
 
-import Feedback from '../../../../components/feedback.jsx'
-
 [KodeKloud](https://kodekloud.com/) is a leading online platform for DevOps and Kubernetes training, offering hands-on labs and comprehensive courses for engineers at all skill levels.
 
 ### Kyverno Training
@@ -30,5 +28,3 @@ KodeKloud's [Kubernetes Learning Path](https://kodekloud.com/learning-path/kuber
 KodeKloud offers [enterprise training solutions](https://kodekloud.com/business/) for teams looking to master Kubernetes and policy management at scale. Their hands-on approach ensures engineers learn by doing, with practical labs that validate skills in real-world scenarios.
 
 For more information about KodeKloud's Kyverno and Kubernetes training offerings, visit: [https://kodekloud.com](https://kodekloud.com/).
-
-<Feedback client:load />
