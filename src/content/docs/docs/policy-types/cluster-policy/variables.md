@@ -35,9 +35,9 @@ Kyverno automatically creates a few useful variables and makes them available wi
 
 5. `images`: a map of container image information, if available. See [Variables from container images](#variables-from-container-images) for more information.
 
-{{% alert title="Note" color="warning" %}}
+{% aside title="Note" type="caution" %}
 Variables such as `serviceAccountName`, `serviceAccountNamespace`, `request.roles`, and `request.clusterRoles` may not occur in rules in which the parent policy is set for background scanning (`spec.background: true`) as this information is not available for existing resources. To use any of these variables you must disable background scanning in the policy.
-{{% /alert %}}
+{% /aside %}
 
 ## Variables from policy definitions
 
@@ -393,9 +393,9 @@ This same pattern and image variable arrangement also works for ephemeral contai
 
 Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization.md#configmap-keys).
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](jmespath.md#formatting).
-{{% /alert %}}
+{% /aside %}
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
 
@@ -590,9 +590,9 @@ This ordering makes it possible to use request data when defining the context, a
 
 In addition to the list of [built-in functions](https://jmespath.org/specification.html#builtin-functions) JMESPath offers, Kyverno augments these by adding several others which makes it even easier to craft Kyverno policies.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The JMESPath arithmetic functions work for scalars (ex., 10), resource quantities (ex., 10Mi), and durations (ex., 10h). If the input is a scalar, it must be enclosed in backticks so the parameter is treated as a number. Resource quantities and durations are enclosed in single quotes to be treated as strings.
-{{% /alert %}}
+{% /aside %}
 
 The special variable `{{ @ }}` may be used to refer to the current value in a given field, useful for source values.
 

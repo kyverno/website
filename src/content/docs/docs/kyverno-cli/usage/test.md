@@ -19,9 +19,9 @@ In each test, there are four desired results which can be tested for. If the act
 
 Use `--detailed-results` for a comprehensive output (default value `false`). For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The Kyverno CLI via the `test` command does not embed the Kubernetes control plane components and therefore is not able to perform the types of initial mutations subjected to a resource as part of an in-cluster creation flow. Take care to ensure the manifests you test account for these modifications.
-{{% /alert %}}
+{% /aside %}
 
 ### Test File Structures
 

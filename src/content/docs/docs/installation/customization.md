@@ -77,9 +77,9 @@ You can install your own CA-signed certificate, or generate a self-signed CA and
 
 ##### Generate a self-signed CA and signed certificate-key pairs
 
-{{% alert title="Note" color="warning" %}}
+{% aside title="Note" type="caution" %}
 Using a separate self-signed root CA is difficult to manage and not recommended for production use.
-{{% /alert %}}
+{% /aside %}
 
 If you already have a CA and a signed certificate, you can directly proceed to Step 2.
 
@@ -226,9 +226,9 @@ The following `ClusterRoles` provide Kyverno with permissions to policies and ot
 | kyverno:reports-controller:view    | kyverno-reports-controller    | view                          |
 | kyverno:reports-controller:core    | --                            | --                            |
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using the variables `admissionController.rbac.viewRoleName`, `backgroundController.rbac.viewRoleName`, and `reportsController.rbac.viewRoleName`.
-{{% /alert %}}
+{% /aside %}
 
 #### Customizing Permissions
 

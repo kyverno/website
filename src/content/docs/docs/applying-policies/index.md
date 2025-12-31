@@ -5,9 +5,9 @@ sidebar:
   order: 40
 ---
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 The [Kyverno Policies](/policies/) repository contains several policies you can immediately apply to your clusters.
-{{% /alert %}}
+{% /aside %}
 
 ## In Clusters
 

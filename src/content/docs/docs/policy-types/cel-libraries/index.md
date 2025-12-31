@@ -6,7 +6,7 @@ sidebar:
   order: 60
 ---
 
-{{< feature-state state="alpha" version="v1.15" />}}
+{% feature-state state="alpha" version="v1.15" /%}
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. These libraries are available in both ValidatingPolicy and MutatingPolicy.
 

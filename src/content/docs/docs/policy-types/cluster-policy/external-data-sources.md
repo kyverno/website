@@ -84,7 +84,7 @@ spec:
 
 In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a context which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 ConfigMap names and keys can contain characters that are not supported by [JMESPath](http://jmespath.org/), such as "-" (minus or dash) or "/" (slash). To evaluate these characters as literals, add double quotes to that part of the JMESPath expression as follows:
 
 ```
@@ -92,7 +92,7 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 ```
 
 See the [JMESPath page](jmespath.md#formatting) for more information on formatting.
-{{% /alert %}}
+{% /aside %}
 
 Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](/docs/installation/customization.md#container-flags) if desired.
 
@@ -148,9 +148,9 @@ spec:
 
 This rule denies the request for a new Deployment if the annotation `role` is not found in the array we defined in the earlier ConfigMap named `roles-dictionary`.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 You may also notice that this sample uses variables from both AdmissionReview and ConfigMap sources in a single rule. This combination can prove to be very powerful and flexible in crafting useful policies.
-{{% /alert %}}
+{% /aside %}
 
 Once creating this sample policy, attempt to create a new Deployment where the annotation `role=super-user` and test the result.
 
@@ -208,9 +208,9 @@ For example, this command uses `kubectl` to fetch the list of Pods in a Namespac
 kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp query "items | length(@)"
 ```
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/usage/jp.md) command to test API calls and parse results.
-{{% /alert %}}
+{% /aside %}
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
 
@@ -310,7 +310,7 @@ coordination.k8s.io/v1
 
 You can use these commands together to find the URL path for resources, as shown below:
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 
 To find the API group and version for a resource use `kubectl api-resources` to find the group and then `kubectl api-versions` to find the available versions.
 
@@ -328,7 +328,7 @@ kubectl api-versions | grep apps
 
 The output of this will be `apps/v1`.
 
-{{% /alert %}}
+{% /aside %}
 
 Kyverno can also fetch data from other API locations such as `/version` and [aggregated APIs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/).
 
@@ -431,9 +431,9 @@ Here is an example that fetches all Namespace resources:
 kubectl get --raw /api/v1/namespaces | jq
 ```
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 Use [`jq`](https://stedolan.github.io/jq/) to format output for readability.  
-{{% /alert %}}
+{% /aside %}
 
 This will return a `NamespaceList` object with a property `items` that contains the list of Namespaces:
 
@@ -696,9 +696,9 @@ spec:
         -----END CERTIFICATE-----
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 `apiCall` GlobalContextEntries are implemented by periodically making a call to the specified endpoint every `refreshInterval`, thus beware of stale data.
-{{% /alert %}}
+{% /aside %}
 
 Reference the GlobalContextEntry in a policy using the `context.globalReference` type. Shown below is an example referencing the `redisdata` cache entry and applying a JMESPath filter to its contents. The resulting `location` variable will be the result of the `address.city` filter applied to the contents of `redisdata`.
 
@@ -714,9 +714,9 @@ The data returned by GlobalContextEntries may vary depending on whether it is a 
 
 To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](/docs/kyverno-cli/usage/apply.md).
 
-{{% alert title="Warning" color="warning" %}}
+{% aside title="Warning" type="caution" %}
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
-{{% /alert %}}
+{% /aside %}
 
 #### Default values for API calls
 
@@ -762,7 +762,7 @@ the output `imageData` variable will have a structure which looks like the follo
 }
 ```
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 The `imageData` variable represents a "normalized" view of an image after any redirects by the registry are performed and internal modifications by Kyverno (Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`). Most notably, this impacts [official images](https://docs.docker.com/docker-hub/official_images/) hosted on [Docker Hub](https://hub.docker.com/). Official images on Docker Hub are differentiated from other images in that their repository is prefixed by `library/` even if the image being pulled does not contain it. For example, pulling the [python](https://hub.docker.com/_/python) official image with `python:slim` results in the following fields of `imageData` being set:
 
 ```json
@@ -775,7 +775,7 @@ The `imageData` variable represents a "normalized" view of an image after any re
 }
 ```
 
-{{% /alert %}}
+{% /aside %}
 
 The `manifestList`, `manifest` and `config` keys contain the output from `crane manifest <image>` and `crane config <image>` respectively.
 

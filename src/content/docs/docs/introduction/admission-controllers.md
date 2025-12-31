@@ -15,7 +15,7 @@ Admission controllers, regardless of whether they are considered built-in or ext
 
 <br>
 
-<img src="/images/kubernetes-admission-controllers.png" alt="Kubernetes Admission Controllers" />
+![Kubernetes Admission Controllers](./assets/kubernetes-admission-controllers.png)
 
 <center>
 <i>Source: https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/</i>

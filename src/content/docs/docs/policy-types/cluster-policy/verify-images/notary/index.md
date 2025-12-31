@@ -149,9 +149,9 @@ check-image-notary:
     make sure the image was signed successfully'
 ```
 
-{{% alert title="Tip" color="info" %}}
+{% aside title="Tip" type="note" %}
 You can manage public keys and certificates as external data in a ConfigMap. See [Variables from ConfigMaps](../../external-data-sources.md#variables-from-configmaps) for details.
-{{% /alert %}}
+{% /aside %}
 
 ## Verifying Image Attestations
 

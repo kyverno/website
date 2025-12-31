@@ -125,9 +125,9 @@ Use `-f` or `--values-file` for applying multiple policies to multiple resources
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
-{{% alert title="Note" color="info" %}}
+{% aside title="Note" type="note" %}
 When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources.md#handling-configmap-array-values).
-{{% /alert %}}
+{% /aside %}
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml --userinfo /path/to/user_info.yaml

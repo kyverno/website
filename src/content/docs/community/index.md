@@ -1,6 +1,7 @@
 ---
 title: Community
 linkTitle: Community
+type: docs
 ---
 
 ## GitHub
