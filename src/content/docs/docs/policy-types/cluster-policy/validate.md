@@ -83,13 +83,13 @@ Change the `development` value to `production` and try again. Kyverno permits cr
 
 The `FailureAction` attribute controls admission control behaviors for resources that are not compliant with a policy. If the value is set to `Enforce`, resource creation or updates are blocked when the resource does not comply. When the value is set to `Audit`, a policy violation is logged in a `PolicyReport` or `ClusterPolicyReport` but the resource creation or update is allowed. For preexisting resources which violate a newly-created policy set to `Enforce` mode, Kyverno will allow subsequent updates to those resources which continue to violate the policy as a way to ensure no existing resources are impacted. However, should a subsequent update to the violating resource(s) make them compliant, any further updates which would produce a violation are blocked. This behaviour can be disabled using `validate.allowExistingViolations`, when `validate.allowExistingViolations` is set to `false` in an `Enforce` mode validate rule, updates to preexisting resources which violate that rule will be blocked.
 
-{% aside title="Warning" type="caution" %}
+{{% alert title="Warning" color="warning" %}}
 The field `spec.validationFailureAction` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureAction`.
-{% /aside %}
+{{% /alert %}}
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 When `spec.rules[*].validate[*].failureAction` is set to `Audit`, set `spec.emitWarning` to `true` to show audit policy violation in admission response warnings.
-{% /aside %}
+{{% /alert %}}
 
 ## Failure Action Overrides
 
@@ -126,9 +126,9 @@ spec:
 
 In the above policy, for Namespace `default`, `failureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `failureAction` field.
 
-{% aside title="Warning" type="caution" %}
+{{% alert title="Warning" color="warning" %}}
 The field `spec.validationFailureActionOverrides` is deprecated and will be removed in a future release. Instead, use `spec.rules[*].validate[*].failureActionOverrides`.
-{% /aside %}
+{{% /alert %}}
 
 ## Patterns
 
@@ -231,13 +231,13 @@ Operators in the following support list values in addition to scalar values. Man
 | `-`      | within a range            |
 | `!-`     | outside a range           |
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 The `-` operator provides an easier way of validating the value in question falls within a closed interval `[a,b]`. Thus, constructing the `a-b` condition is equivalent of writing the `value >= a & value <= b`. Likewise, the `!-` operator can be used to negate a range. Thus, constructing the `a!-b` condition is equivalent of writing the `value < a | value > b`.
-{% /aside %}
+{{% /alert %}}
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 There is no operator for `equals` as providing a field value in the pattern requires equality to the value.
-{% /aside %}
+{{% /alert %}}
 
 An example of using an operator in a pattern style validation rule is shown below.
 
@@ -337,9 +337,9 @@ spec:
 
 This is read as "If a hostPath volume exists, then the path must not be equal to /var/run/docker.sock". In this sample, the object `spec.volumes.hostPath` is being checked, which is where the "If" evaluation ends. Similar to the conditional example above, the `path` key is a child to `hostPath` and therefore is the one being evaluated under the "then" check.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 In both of these examples, the validation rule merely checks for the existence of a `hostPath` volume definition. It does not validate whether a container is actually consuming the volume.
-{% /aside %}
+{{% /alert %}}
 
 #### Existence anchor: At Least One
 
@@ -439,9 +439,9 @@ In some cases, content can be defined at different levels. For example, a securi
 
 The `anyPattern` tag is a logical OR across multiple validation patterns and can be used to check if any one of the patterns in the list match.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Either one of `pattern` or `anyPattern` is allowed in a rule; they both can't be declared in the same rule.
-{% /aside %}
+{{% /alert %}}
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -500,9 +500,9 @@ validate:
 
 If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weave.works/` may be present", then this would need two separate rules to express as including either one would mean the other is valid and therefore the resource is allowed.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern` in the v1.23 release requires v1.23.3 at a minimum.
-{% /aside %}
+{{% /alert %}}
 
 ## Deny rules
 
@@ -1032,9 +1032,9 @@ psa:
     ({Allowed:false ForbiddenReason:seccompProfile ForbiddenDetail:pod or container "container01" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost"})
 ```
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 The `restricted` profile is inclusive of the `baseline` profile. Therefore, any Pod in violation of `baseline` is implicitly in violation of `restricted`.
-{% /aside %}
+{{% /alert %}}
 
 In the ever-evolving landscape of Kubernetes security, achieving a balance between robust enforcement and nuanced control is paramount. Kyverno, starting from version `1.12.0`, introduces an advanced feature for even finer-grained pod security control. This innovative capability empowers users to apply precise security configurations at an unprecedented level, allowing for the exemption of specific controls within a profile.
 
@@ -1154,9 +1154,9 @@ psa:
     ({Allowed:false ForbiddenReason:unrestricted capabilities ForbiddenDetail:container "container01" must not include "SYS_ADMIN" in securityContext.capabilities.add})
 ```
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Note that in the above error message, the Pod is in violation of the Capabilities control at both the baseline and restricted profiles, hence the multiple entries.
-{% /aside %}
+{{% /alert %}}
 
 When a control is to be excluded which contains fields at both the `spec` and `containers[]` level, in order for that control to be fully excluded it must have exclusions for both. The `controlName` field assumes `spec` level while `controlName` plus `images[]` assumes the `containers[]` level.
 
@@ -1361,9 +1361,9 @@ Multiple control names may be excluded by listing them individually keeping in m
 
 Kyverno's podSecurity validate subrule type and Kubernetes' Pod Security Admission (PSA) are compatible and may be used together in a single cluster with an understanding of where each begins and ends. These are a few of the most common strategies when employing both technologies.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Pods which are blocked by PSA in enforce mode do not result in an AdmissionReview request being sent to admission controllers. Therefore, if a Pod is blocked by PSA, Kyverno cannot apply policies to it.
-{% /aside %}
+{{% /alert %}}
 
 1. Use PSA to enforce the baseline profile cluster-wide and use Kyverno podSecurity subrule to enforce or audit the restricted profile with more granularity.
 
@@ -1419,9 +1419,9 @@ spec:
 
 The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `validate[*].failureAction` field.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 You can quickly test CEL expressions in the [CEL Playground](https://playcel.undistro.io/).
-{% /aside %}
+{{% /alert %}}
 
 When trying to create a Deployment with replicas set not satisfying the validation expression, the creation of the Deployment will be blocked.
 
@@ -1580,9 +1580,9 @@ maxReplicas: 4
 
 This policy parameter resource limits deployments to a max of 4 replicas.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 The native types such like ConfigMap could also be used as parameter reference.
-{% /aside %}
+{{% /alert %}}
 
 #### Per-namespace Parameters
 
@@ -1639,9 +1639,9 @@ spec:
   externalTrafficPolicy: 'Cluster'
 ```
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 CEL Preconditions can be used only with `validate.cel` subrules.
-{% /aside %}
+{{% /alert %}}
 
 ### CEL Variables
 
@@ -1713,14 +1713,14 @@ A ValidatingAdmissionPolicy provides a declarative, in-process option for valida
 
 Kubernetes [ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) was first introduced in 1.26, and it is enabled by default in 1.30.
 
-{% aside title="Tip" type="note" %}
+{{% alert title="Tip" color="info" %}}
 The Kyverno Command Line Interface (CLI) enables the validation and testing of ValidatingAdmissionPolicies on resources before adding them to a cluster. It can be integrated into CI/CD pipelines to help with the resource authoring process, ensuring that they adhere to the required standards before deployment.
 
 Check the below sections for more information:
 
 1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply.md#applying-validatingadmissionpolicies).
 2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test.md#testing-validatingadmissionpolicies)
-   {% /aside %}
+   {{% /alert %}}
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
 
@@ -1900,13 +1900,13 @@ The response returned from the API server.
 The deployments "nginx" is invalid:  ValidatingAdmissionPolicy 'disallow-host-path' with binding 'disallow-host-path-binding' denied request: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.
 ```
 
-{% aside title="Warning" type="caution" %}
+{{% alert title="Warning" color="warning" %}}
 Since Kubernetes ValidatingAdmissionPolicies are cluster-scoped resources, ClusterPolicies can only be used to generate them.
-{% /aside %}
+{{% /alert %}}
 
-{% aside title="Warning" type="caution" %}
+{{% alert title="Warning" color="warning" %}}
 When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionPolicy will match both `pods` and `pods/ephemeralcontainers`. This occurs because Kyverno inherently includes `pods/ephemeralcontainers` by default in the corresponding ValidatingWebhookConfiguration, and we require analogous behavior for the ValidatingAdmissionPolicies.
-{% /aside %}
+{{% /alert %}}
 
 The generated ValidatingAdmissionPolicy with its binding are totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
 

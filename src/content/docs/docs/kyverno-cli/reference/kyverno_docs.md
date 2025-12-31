@@ -16,6 +16,8 @@ The docs command generates Kyverno CLI reference documentation.
 
 It can be used to generate simple markdown files or markdown to be used for the website.
 
+For more information visit https://kyverno.io/docs/kyverno-cli/#docs
+
 ```
 kyverno docs [flags]
 ```

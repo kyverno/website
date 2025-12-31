@@ -10,7 +10,7 @@ Kyverno provides multiple methods for installation: Helm and YAML manifest. When
 
 The diagram below shows a typical Kyverno installation featuring all available controllers.
 
-![Kyverno Installation](./assets/kyverno-installation.png)
+<img src="/images/kyverno-installation.png" alt="Kyverno Installation" width="80%"/>
 <br/><br/>
 
 A standard Kyverno installation consists of a number of different components, some of which are optional.
@@ -44,10 +44,9 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 
 | Kyverno Version | Kubernetes Min | Kubernetes Max |
 | --------------- | -------------- | -------------- |
-| 1.12.x          | 1.26           | 1.29           |
-| 1.13.x          | 1.28           | 1.31           |
 | 1.14.x          | 1.29           | 1.32           |
 | 1.15.x          | 1.30           | 1.33           |
+| 1.16.x          | 1.31           | 1.34           |
 
 **NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/nirmata).
 
@@ -63,19 +62,19 @@ The following combination may result in cluster inoperability if the Kyverno Nam
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](../troubleshooting/_index.md#api-server-is-blocked).
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Kubernetes will not send ValidatingWebhookConfiguration or MutatingWebhookConfiguration objects to admission controllers, so therefore it is not possible to use a Kyverno policy to validate or mutate these objects.
-{% /aside %}
+{{% /alert %}}
 
 By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. This is the default behavior as of the Helm chart version 2.5.0. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 Namespaces and/or objects within Namespaces may be excluded in a variety of ways including namespaceSelectors and objectSelectors. The Helm chart provides options for both, but by default the Kyverno Namespace will be excluded.
-{% /aside %}
+{{% /alert %}}
 
-{% aside title="Note" type="caution" %}
+{{% alert title="Note" color="warning" %}}
 When using objectSelector, it may be possible for users to spoof the same label key/value used to configure the webhooks should they discover how it is configured, thereby allowing resources to circumvent policy detection. For this reason, a namespaceSelector using the `kubernetes.io/metadata.name` immutable label is recommended.
-{% /aside %}
+{{% /alert %}}
 
 The choices and their implications are therefore:
 
@@ -84,6 +83,6 @@ The choices and their implications are therefore:
 
 You should choose the best option based upon your risk aversion, needs, and operational practices.
 
-{% aside title="Note" type="note" %}
+{{% alert title="Note" color="info" %}}
 If you choose to _not_ exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/customization.md#resource-filters) entry in the [ConfigMap](/docs/installation/customization.md#configmap-keys) to remove those items.
-{% /aside %}
+{{% /alert %}}

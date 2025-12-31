@@ -2,7 +2,7 @@
 title: Tracing
 description: Using distributed tracing to introspect the internal operations of Kyverno.
 sidebar:
-  order: 10
+  order: 80
 ---
 
 ## Introduction
@@ -17,7 +17,7 @@ In the context of Kyverno, requests are usually sent by the Kubernetes API serve
 
 Below is a trace for a validating admission request.
 
-![trace-example-1](./assets/trace-example-1.png)
+<p align="center"><img src="./assets/trace-example-1.png" height="300px"/></p>
 
 ## Installation and Setup
 

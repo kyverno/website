@@ -2,12 +2,12 @@
 title: Verify Images Rules
 description: Check container image signatures and attestations for software supply chain security.
 sidebar:
-  order: -10
+  order: 60
 ---
 
 The logical structure of an verifyImages rule is shown below:
 
-![Image Verification Rule](./assets/verify-image-rule.png)
+<img src="/images/verify-image-rule.png" alt="Image Verification Rule" width="60%"/>
 <br/><br/>
 
 Each rule contains the following common configuration attributes:

@@ -18,7 +18,7 @@ Policy enforcement is captured using Kubernetes events. For requests that are ei
 
 The diagram below shows the high-level logical architecture of Kyverno.
 
-![Kyverno Architecture](./assets/kyverno-architecture.png)
+<img src="/images/kyverno-architecture.png" alt="Kyverno Architecture" width="80%"/>
 <br/><br/>
 
 The **Webhook** is the server which handles incoming AdmissionReview requests from the Kubernetes API server and sends them to the **Engine** for processing. It is dynamically configured by the **Webhook Controller** which watches the installed policies and modifies the webhooks to request only the resources matched by those policies. The **Cert Renewer** is responsible for watching and renewing the certificates, stored as Kubernetes Secrets, needed by the webhook. The **Background Controller** handles all generate and mutate-existing policies by reconciling UpdateRequests, an intermediary resource. And the **Report Controllers** handle creation and reconciliation of Policy Reports from their intermediary resources, Admission Reports and Background Scan Reports.
