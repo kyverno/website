@@ -20,7 +20,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Install go
-      uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+      uses: actions/setup-go@4aaadf42668403795cdfdb15b1c4250e9fed12b9 # v5.6.0
       with:
         go-version-file: render/go.mod
     - name: Verify generated code is up to date
