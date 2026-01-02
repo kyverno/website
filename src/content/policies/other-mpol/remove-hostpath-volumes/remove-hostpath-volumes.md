@@ -31,7 +31,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -106,4 +106,5 @@ spec:
                   })
               : JSONPatch{op: "test", path: "/", value: null}
             ).filter(p, p.op != "test") : [])
+
 ```

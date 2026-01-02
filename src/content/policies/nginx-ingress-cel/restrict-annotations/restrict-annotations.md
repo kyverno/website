@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
     kyverno.io/kubernetes-version: 1.26-1.27
-    policies.kyverno.io/description: 'This policy mitigates CVE-2021-25746 by restricting `metadata.annotations` to safe values. See: https://github.com/kubernetes/ingress-nginx/blame/main/internal/ingress/inspector/rules.go. This issue has been fixed in NGINX Ingress v1.2.0. For NGINX Ingress version 1.0.5+ the  "annotation-value-word-blocklist" configuration setting is also recommended.  Please refer to the CVE for details. '
+    policies.kyverno.io/description: "This policy mitigates CVE-2021-25746 by restricting `metadata.annotations` to safe values. See: https://github.com/kubernetes/ingress-nginx/blame/main/internal/ingress/inspector/rules.go. This issue has been fixed in NGINX Ingress v1.2.0. For NGINX Ingress version 1.0.5+ the  \"annotation-value-word-blocklist\" configuration setting is also recommended.  Please refer to the CVE for details. "
 spec:
   validationFailureAction: Enforce
   rules:
@@ -51,4 +51,5 @@ spec:
                   !object.metadata.annotations.exists(annotation, object.metadata.annotations[annotation].matches('.*_by_lua.*'))
                 )
               message: spec.rules[].http.paths[].path value is not allowed
+
 ```

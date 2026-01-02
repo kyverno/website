@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -53,4 +53,5 @@ spec:
   validations:
     - expression: variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')
       message: Changing the proc mount from the default is not allowed.
+
 ```

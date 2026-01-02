@@ -37,7 +37,7 @@ spec:
         all:
           - key: "{{request.object.spec.template.metadata.labels.app || ''}}"
             operator: NotEquals
-            value: ''
+            value: ""
       mutate:
         patchStrategicMerge:
           spec:
@@ -54,5 +54,6 @@ spec:
                               - key: app
                                 operator: In
                                 values:
-                                  - '{{request.object.spec.template.metadata.labels.app}}'
+                                  - "{{request.object.spec.template.metadata.labels.app}}"
+
 ```

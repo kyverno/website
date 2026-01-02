@@ -39,7 +39,7 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: Equals
             value: CONNECT
-          - key: '{{ request.name }}'
+          - key: "{{ request.name }}"
             operator: Equals
             value: myapp-maintenance*
       validate:
@@ -47,7 +47,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.container }}'
+              - key: "{{ request.object.container }}"
                 operator: Equals
                 value: nginx
+
 ```

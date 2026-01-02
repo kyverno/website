@@ -51,4 +51,5 @@ spec:
           expressions:
             - expression: object.rules == null ||  !object.rules.exists(rule,  'secrets' in rule.resources && rule.verbs.exists(verb, verb in variables.forbiddenVerbs))
               message: Requesting verbs `get`, `list`, or `watch` on Secrets is forbidden.
+
 ```

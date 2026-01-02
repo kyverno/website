@@ -62,4 +62,5 @@ spec:
           expressions:
             - expression: object.spec.jobTemplate.spec.template.spec.?serviceAccountName.orValue('empty') == oldObject.spec.jobTemplate.spec.template.spec.?serviceAccountName.orValue('empty')
         message: The serviceAccountName field may not be changed once created.
+
 ```

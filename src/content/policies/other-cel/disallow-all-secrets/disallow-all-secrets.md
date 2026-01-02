@@ -52,4 +52,5 @@ spec:
               message: No Secrets from envFrom.
             - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.secret))
               message: No Secrets from volumes.
+
 ```

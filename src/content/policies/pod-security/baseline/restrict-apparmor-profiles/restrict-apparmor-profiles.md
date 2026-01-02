@@ -41,7 +41,8 @@ spec:
       validate:
         message: Specifying other AppArmor profiles is disallowed. The annotation `container.apparmor.security.beta.kubernetes.io` if defined must not be set to anything other than `runtime/default` or `localhost/*`.
         pattern:
-          '=(metadata)':
-            '=(annotations)':
-              '=(container.apparmor.security.beta.kubernetes.io/*)': runtime/default | localhost/*
+          "=(metadata)":
+            "=(annotations)":
+              "=(container.apparmor.security.beta.kubernetes.io/*)": runtime/default | localhost/*
+
 ```

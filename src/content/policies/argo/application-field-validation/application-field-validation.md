@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Application
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.
 spec:
   validationFailureAction: Audit
@@ -38,16 +38,16 @@ spec:
               kinds:
                 - Application
       validate:
-        message: '`spec.source.path` OR `spec.source.chart` should be specified but never both.'
+        message: "`spec.source.path` OR `spec.source.chart` should be specified but never both."
         anyPattern:
           - spec:
               source:
-                path: '?*'
+                path: "?*"
                 X(chart): null
           - spec:
               source:
                 X(path): null
-                chart: '?*'
+                chart: "?*"
     - name: destination-server-name
       match:
         any:
@@ -55,14 +55,15 @@ spec:
               kinds:
                 - Application
       validate:
-        message: '`spec.destination.server` OR `spec.destination.name` should be specified but never both.'
+        message: "`spec.destination.server` OR `spec.destination.name` should be specified but never both."
         anyPattern:
           - spec:
               destination:
-                server: '?*'
+                server: "?*"
                 X(name): null
           - spec:
               destination:
                 X(server): null
-                name: '?*'
+                name: "?*"
+
 ```

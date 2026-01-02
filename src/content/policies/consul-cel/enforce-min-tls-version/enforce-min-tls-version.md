@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.?spec.?tls.?incoming.?tlsMinVersion.orValue('') == 'TLSv1_2'
               message: The minimum version of TLS is TLS v1_2
+
 ```

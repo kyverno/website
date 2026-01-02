@@ -31,7 +31,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -59,4 +59,5 @@ spec:
         ]
   generate:
     - expression: generator.Apply(variables.targetNs, variables.downstream)
+
 ```

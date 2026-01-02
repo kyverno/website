@@ -1,9 +1,7 @@
 ---
-title: 'kyverno test'
-sidebar:
-  order: 35
+title: "kyverno test"
+weight: 35
 ---
-
 ## kyverno test
 
 Run tests from a local filesystem or a remote git repository.
@@ -11,14 +9,14 @@ Run tests from a local filesystem or a remote git repository.
 ### Synopsis
 
 Run tests from a local filesystem or a remote git repository.
+  
+  The test command provides a facility to test resources against policies by comparing expected results,
+  declared ahead of time in a test manifest file, to actual results reported by Kyverno.
+  
+  Users provide the path to the folder containing a kyverno-test.yaml file where the location could be
+  on a local filesystem or a remote git repository.
 
-The test command provides a facility to test resources against policies by comparing expected results,
-declared ahead of time in a test manifest file, to actual results reported by Kyverno.
-
-Users provide the path to the folder containing a kyverno-test.yaml file where the location could be
-on a local filesystem or a remote git repository.
-
-For more information visit https://kyverno.io/docs/kyverno-cli/usage/test/
+  For more information visit https://kyverno.io/docs/kyverno-cli/usage/test/
 
 ```
 kyverno test [local folder or git repository]... [flags]
@@ -73,4 +71,5 @@ kyverno test [local folder or git repository]... [flags]
 
 ### SEE ALSO
 
-- [kyverno](kyverno.md) - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+

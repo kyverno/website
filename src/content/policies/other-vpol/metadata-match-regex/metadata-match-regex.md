@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Label
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.
 spec:
   validationActions:
@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -46,5 +46,6 @@ spec:
           - pods
   validations:
     - expression: object.metadata.?labels[?'corp.org/version'].orValue('default').matches('^v[0-9].[0-9].[0-9]$')
-      message: 'The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$'
+      message: "The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$"
+
 ```

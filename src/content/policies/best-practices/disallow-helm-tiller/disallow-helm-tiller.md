@@ -40,11 +40,12 @@ spec:
         foreach:
           - list: request.object.spec.containers
             pattern:
-              image: '!*tiller*'
+              image: "!*tiller*"
           - list: request.object.spec.initContainers
             pattern:
-              image: '!*tiller*'
+              image: "!*tiller*"
           - list: request.object.spec.ephemeralContainers
             pattern:
-              image: '!*tiller*'
+              image: "!*tiller*"
+
 ```

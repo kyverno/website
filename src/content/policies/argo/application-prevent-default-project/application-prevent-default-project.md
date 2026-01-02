@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Application
     policies.kyverno.io/description: This policy prevents the use of the default project in an Application.
 spec:
@@ -46,5 +46,6 @@ spec:
         message: The default project may not be used in an Application.
         pattern:
           spec:
-            project: '!default'
+            project: "!default"
+
 ```

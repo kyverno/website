@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively allows Secrets to be read which may expose sensitive information. This policy prevents a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to fully implement this control, it is recommended to pair this policy with another which also prevents use of the wildcard ('*') in the verbs list either when explicitly naming Secrets or when also using a wildcard in the base API group.
 spec:
   validationFailureAction: Audit
@@ -51,4 +51,5 @@ spec:
                   - watch
                 operator: AnyIn
                 value: "{{ request.object.rules[?resources.contains(@,'secrets')].verbs[] }}"
+
 ```

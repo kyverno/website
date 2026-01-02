@@ -38,7 +38,8 @@ spec:
         pattern:
           spec:
             instancetype:
-              name: '?*'
+              name: "?*"
             preference:
-              name: '?*'
+              name: "?*"
+
 ```

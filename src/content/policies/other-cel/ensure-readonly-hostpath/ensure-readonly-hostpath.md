@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: variables.hostPathVolumes.all(hostPath, variables.allContainers.all(container,  container.volumeMounts.orValue([]).all(volume, (hostPath.name != volume.name) || volume.?readOnly.orValue(false) == true)))
               message: All hostPath volumes must be mounted as readOnly.
+
 ```

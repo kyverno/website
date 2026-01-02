@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: object.type != 'kubernetes.io/service-account-token'
               message: Secret ServiceAccount token type is not allowed.
+
 ```

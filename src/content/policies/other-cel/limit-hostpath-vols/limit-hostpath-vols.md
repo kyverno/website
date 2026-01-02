@@ -48,4 +48,5 @@ spec:
           expressions:
             - expression: object.spec.volumes.all(volume, !has(volume.hostPath) || volume.hostPath.path.split('/')[1] == 'data')
               message: hostPath volumes are confined to /data.
+
 ```

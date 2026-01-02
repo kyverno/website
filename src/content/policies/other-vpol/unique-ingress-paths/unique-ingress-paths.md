@@ -46,7 +46,7 @@ spec:
     - name: allpaths
       expression: resource.List("networking.k8s.io/v1", "ingresses", "" ).items
     - name: nspath
-      expression: 'resource.List("networking.k8s.io/v1", "ingresses", object.metadata.namespace ).items    '
+      expression: "resource.List(\"networking.k8s.io/v1\", \"ingresses\", object.metadata.namespace ).items    "
   validations:
     - expression: |-
         !object.spec.rules.orValue([]).exists(rule, 
@@ -73,4 +73,5 @@ spec:
             )
           )
       message: The root path already exists in the cluster but not in the namespace.
+
 ```

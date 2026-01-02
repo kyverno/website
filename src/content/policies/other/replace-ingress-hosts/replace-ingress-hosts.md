@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: An Ingress may specify host names at a variety of locations in the same resource. In some cases, those host names should be modified to, for example, update domain names silently. The replacement must be done in all the fields where a host name can be specified. This policy, illustrating the use of nested foreach loops and operable in Kyverno 1.9+, replaces host names that end with `old.com` with `new.com`.
 spec:
@@ -55,4 +55,5 @@ spec:
               - path: /spec/tls/{{elementIndex}}/secretName
                 op: replace
                 value: "{{ replace_all('{{element.secretName}}', '.old.com', '.new.com') }}"
+
 ```

@@ -48,4 +48,5 @@ spec:
           expressions:
             - expression: object.spec.rules.all(rule,  !has(rule.host) ||  variables.tls.exists(tls, tls.?hosts.orValue([]).exists(tlsHost, tlsHost == rule.host)))
               message: The host(s) in spec.rules[].host must match those in spec.tls[].hosts[].
+
 ```

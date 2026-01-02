@@ -40,9 +40,10 @@ spec:
         pattern:
           spec:
             containers:
-              - image: '*@*'
-            '=(ephemeralContainers)':
-              - image: '*@*'
-            '=(initContainers)':
-              - image: '*@*'
+              - image: "*@*"
+            "=(ephemeralContainers)":
+              - image: "*@*"
+            "=(initContainers)":
+              - image: "*@*"
+
 ```

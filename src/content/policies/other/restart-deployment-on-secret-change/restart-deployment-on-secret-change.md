@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Deployment
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: If Secrets are mounted in ways which do not naturally allow updates to be live refreshed it may be necessary to modify a Deployment. This policy watches a Secret and if it changes will write an annotation to one or more target Deployments thus triggering a new rollout and thereby refreshing the referred Secret. It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.
 spec:
   mutateExistingOnPolicyUpdate: false
@@ -56,5 +56,6 @@ spec:
             template:
               metadata:
                 annotations:
-                  ops.corp.com/triggerrestart: '{{request.object.metadata.resourceVersion}}'
+                  ops.corp.com/triggerrestart: "{{request.object.metadata.resourceVersion}}"
+
 ```

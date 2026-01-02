@@ -39,7 +39,8 @@ spec:
         message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.
         pattern:
           spec:
-            '=(hostPID)': 'false'
-            '=(hostIPC)': 'false'
-            '=(hostNetwork)': 'false'
+            "=(hostPID)": "false"
+            "=(hostIPC)": "false"
+            "=(hostNetwork)": "false"
+
 ```

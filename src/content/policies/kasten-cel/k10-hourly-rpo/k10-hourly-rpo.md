@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kubernetes-version: 1.26-1.27
     policies.kyverno.io/subject: Policy
-    policies.kyverno.io/description: 'K10 Policy resources can be educated to adhere to common Recovery Point Objective (RPO) best practices.  This policy is advising to use an RPO frequency that with hourly granularity if it has the appPriority: Mission Critical'
+    policies.kyverno.io/description: "K10 Policy resources can be educated to adhere to common Recovery Point Objective (RPO) best practices.  This policy is advising to use an RPO frequency that with hourly granularity if it has the appPriority: Mission Critical"
 spec:
   validationFailureAction: Audit
   rules:
@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: has(object.spec.frequency) && object.spec.frequency == '@hourly'
               message: Mission Critical RPO frequency should use no shorter than @hourly frequency
+
 ```

@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -58,4 +58,5 @@ spec:
   validations:
     - expression: images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
       message: failed the verification
+
 ```

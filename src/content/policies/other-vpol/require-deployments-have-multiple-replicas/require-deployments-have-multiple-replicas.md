@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
 spec:
   validationActions:
@@ -46,4 +46,5 @@ spec:
   validations:
     - expression: object.spec.replicas > 1
       message: Deployments should have more than one replica to ensure availability.
+
 ```

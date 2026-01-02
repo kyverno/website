@@ -42,4 +42,5 @@ spec:
           expressions:
             - expression: int(object.spec.?maxUnavailable.orValue(1)) > 0
               message: The value of maxUnavailable must be greater than zero.
+
 ```

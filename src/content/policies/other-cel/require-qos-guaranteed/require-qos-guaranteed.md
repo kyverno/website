@@ -43,4 +43,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, has(container.resources) &&  has(container.resources.requests) && has(container.resources.requests.cpu) && has(container.resources.requests.memory) && has(container.resources.limits) &&  has(container.resources.limits.cpu) && has(container.resources.limits.memory) && container.resources.requests.cpu == container.resources.limits.cpu && container.resources.requests.memory == container.resources.limits.memory)
               message: All containers must define memory and CPU requests and limits where they are equal.
+
 ```

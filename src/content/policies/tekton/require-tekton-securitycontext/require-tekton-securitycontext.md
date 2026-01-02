@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: TaskRun
     kyverno.io/kyverno-version: 1.7.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: A securityContext is required for each TaskRun step.
 spec:
   validationFailureAction: Audit
@@ -40,11 +40,12 @@ spec:
       validate:
         message: A securityContext is required with `privileged` and `allowPrivilegeEscalation` set to `false`.
         pattern:
-          '=(status)':
-            '=(taskSpec)':
+          "=(status)":
+            "=(taskSpec)":
               steps:
-                - (name): '!digest-to-results'
+                - (name): "!digest-to-results"
                   securityContext:
                     privileged: false
                     allowPrivilegeEscalation: false
+
 ```

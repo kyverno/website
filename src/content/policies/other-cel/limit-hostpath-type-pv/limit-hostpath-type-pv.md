@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: "!has(object.spec.hostPath) || object.spec.hostPath.path.startsWith('/data')"
               message: hostPath type persistent volumes are confined to /data.
+
 ```

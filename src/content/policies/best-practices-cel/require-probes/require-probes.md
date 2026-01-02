@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, has(container.livenessProbe) ||  has(container.startupProbe) ||  has(container.readinessProbe))
               message: Liveness, readiness, or startup probes are required for all containers.
+
 ```

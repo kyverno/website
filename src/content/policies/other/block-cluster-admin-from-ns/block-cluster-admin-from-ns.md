@@ -35,7 +35,7 @@ spec:
         any:
           - resources:
               kinds:
-                - '*'
+                - "*"
               namespaces:
                 - testnamespace
             clusterRoles:
@@ -54,4 +54,5 @@ spec:
                   - CREATE
                   - UPDATE
                   - DELETE
+
 ```

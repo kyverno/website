@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: "!object.spec.?rules.orValue([]).exists(rule, has(rule.host) && rule.host.contains('*'))"
               message: Wildcards are not permitted as hosts.
+
 ```

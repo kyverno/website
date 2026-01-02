@@ -33,7 +33,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         resources:
@@ -70,7 +70,7 @@ spec:
     - name: isCronJob
       expression: has(object.spec.jobTemplate)
     - name: containers
-      expression: 'variables.isPod ? object.spec.containers : variables.isController ? object.spec.template.spec.containers : variables.isCronJob ? object.spec.jobTemplate.spec.template.spec.containers : []'
+      expression: "variables.isPod ? object.spec.containers : variables.isController ? object.spec.template.spec.containers : variables.isCronJob ? object.spec.jobTemplate.spec.template.spec.containers : []"
     - name: resolvedContainers
       expression: |-
         variables.containers.map(container, {
@@ -129,4 +129,5 @@ spec:
               }
             }
           } : Object{}
+
 ```

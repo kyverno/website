@@ -40,7 +40,7 @@ spec:
         message: Using 'default' namespace is not allowed.
         pattern:
           metadata:
-            namespace: '!default'
+            namespace: "!default"
     - name: validate-podcontroller-namespace
       match:
         any:
@@ -54,5 +54,6 @@ spec:
         message: Using 'default' namespace is not allowed for pod controllers.
         pattern:
           metadata:
-            namespace: '!default'
+            namespace: "!default"
+
 ```

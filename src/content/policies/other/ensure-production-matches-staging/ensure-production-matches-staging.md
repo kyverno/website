@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/description: It is common to have two separate Namespaces such as staging and production in order to test and promote app deployments in a controlled manner. In order to ensure that level of control, certain guardrails must be present so as to minimize regressions or unintended behavior. This policy has a set of three rules to try and provide some sane defaults for app promotion across these two environments (Namespaces) called staging and production. First, it makes sure that every Deployment in production has a corresponding Deployment in staging. Second, that a production Deployment uses same image name as its staging counterpart. Third, that a production Deployment uses an older or equal image version as its staging counterpart.
 spec:
@@ -55,7 +55,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{deployment_count}}'
+              - key: "{{deployment_count}}"
                 operator: Equals
                 value: 0
     - name: require-same-image
@@ -73,7 +73,7 @@ spec:
             value:
               - CREATE
               - UPDATE
-          - key: '{{ deployment_count }}'
+          - key: "{{ deployment_count }}"
             operator: GreaterThan
             value: 0
       context:
@@ -92,7 +92,7 @@ spec:
             any:
               - key: "{{ request.object.spec.template.spec.containers[].image.split(@, ':')[0]  }}"
                 operator: AnyNotIn
-                value: '{{ deployment_images }}'
+                value: "{{ deployment_images }}"
     - name: require-same-or-older-imageversion
       match:
         any:
@@ -108,7 +108,7 @@ spec:
             value:
               - CREATE
               - UPDATE
-          - key: '{{ deployment_count }}'
+          - key: "{{ deployment_count }}"
             operator: GreaterThan
             value: 0
       context:
@@ -130,4 +130,5 @@ spec:
                   - key: "{{ element.image.split(@,':')[1] }}"
                     operator: GreaterThan
                     value: "{{ deployment_containers[?name == '{{element.name}}'].image.split(@,':')[1] | [0] }}"
+
 ```

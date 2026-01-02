@@ -46,6 +46,7 @@ spec:
         message: hostPath type persistent volumes are confined to /data.
         pattern:
           spec:
-            '=(hostPath)':
+            "=(hostPath)":
               path: /data*
+
 ```

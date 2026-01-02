@@ -22,10 +22,10 @@ metadata:
     policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens in Service Account in ValidatingPolicy
     policies.kyverno.io/category: Security in vpol
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret,ServiceAccount
-    policies.kyverno.io/description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
+    policies.kyverno.io/description: "Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      "
 spec:
   validationActions:
     - Audit
@@ -35,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -46,4 +46,5 @@ spec:
   validations:
     - expression: object.?automountServiceAccountToken.orValue(true) == false
       message: ServiceAccounts must set automountServiceAccountToken to false.
+
 ```

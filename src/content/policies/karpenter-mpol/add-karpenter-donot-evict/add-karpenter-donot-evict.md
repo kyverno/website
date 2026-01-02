@@ -54,4 +54,5 @@ spec:
               ) :
               [JSONPatch{op: "add", path: "/spec/jobTemplate/spec/template/metadata", value: {"annotations": {"karpenter.sh/do-not-evict": "true"}}}]
             )
+
 ```

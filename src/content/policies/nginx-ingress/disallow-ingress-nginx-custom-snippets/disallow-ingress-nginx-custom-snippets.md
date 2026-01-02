@@ -25,8 +25,8 @@ metadata:
     policies.kyverno.io/subject: ConfigMap, Ingress
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
-    policies.kyverno.io/description: 'Users that can create or update ingress objects can use the custom snippets  feature to obtain all secrets in the cluster (CVE-2021-25742). This policy  disables allow-snippet-annotations in the ingress-nginx configuration and  blocks *-snippet annotations on an Ingress. See: https://github.com/kubernetes/ingress-nginx/issues/7837'
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: "Users that can create or update ingress objects can use the custom snippets  feature to obtain all secrets in the cluster (CVE-2021-25742). This policy  disables allow-snippet-annotations in the ingress-nginx configuration and  blocks *-snippet annotations on an Ingress. See: https://github.com/kubernetes/ingress-nginx/issues/7837"
 spec:
   validationFailureAction: Enforce
   rules:
@@ -39,8 +39,8 @@ spec:
       validate:
         message: ingress-nginx allow-snippet-annotations must be set to false
         pattern:
-          '=(data)':
-            '=(allow-snippet-annotations)': 'false'
+          "=(data)":
+            "=(allow-snippet-annotations)": "false"
     - name: check-ingress-annotations
       match:
         any:
@@ -51,6 +51,7 @@ spec:
         message: ingress-nginx custom snippets are not allowed
         pattern:
           metadata:
-            '=(annotations)':
-              X(*-snippet): '?*'
+            "=(annotations)":
+              X(*-snippet): "?*"
+
 ```

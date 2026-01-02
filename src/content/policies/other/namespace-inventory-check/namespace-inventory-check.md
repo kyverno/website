@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: In cases such as multi-tenancy where new Namespaces must be fully provisioned before they can be used, it may not be easy to declare and understand if/when the Namespace is ready. Having a policy which defines all the resources which are required for each Namespace can assist in determining compliance. This policy, expected to be run in background mode only, performs a Namespace inventory check to ensure that all Namespaces have a ResourceQuota and NetworkPolicy. Additional rules may be written to extend the check for your needs. By default, background scans occur every one hour which may be changed with an additional container flag. Please see the installation documentation for details.
 spec:
   background: true
@@ -54,7 +54,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ resourcequotas }}'
+              - key: "{{ resourcequotas }}"
                 operator: Equals
                 value: 0
     - name: networkpolicies
@@ -80,7 +80,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ netpols }}'
+              - key: "{{ netpols }}"
                 operator: Equals
                 value: 0
+
 ```

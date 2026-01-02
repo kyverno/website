@@ -47,4 +47,5 @@ spec:
               message: AppProject must specify clusterResourceBlacklist.
             - expression: object.spec.clusterResourceBlacklist.all(element, element.group.contains('*') && element.kind.contains('*'))
               message: Wildcards must be present in group and kind for clusterResourceBlacklist.
+
 ```

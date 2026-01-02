@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/category: PSP Migration
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/description: In the earlier Pod Security Policy controller, it was possible to configure a policy to add capabilities to containers within a Pod. This made it easier to assign some basic defaults rather than blocking Pods or to simply provide capabilities for certain workloads if not specified. This policy mutates Pods to add the capabilities SETFCAP and SETUID so long as they are not listed as dropped capabilities first.
 spec:
@@ -47,7 +47,7 @@ spec:
               all:
                 - key: SETFCAP
                   operator: AnyNotIn
-                  value: '{{ element.securityContext.capabilities.drop[] || `[]` }}'
+                  value: "{{ element.securityContext.capabilities.drop[] || `[]` }}"
             patchesJson6902: |-
               - path: /spec/containers/{{elementIndex}}/securityContext/capabilities/add/-
                 op: add
@@ -57,9 +57,10 @@ spec:
               all:
                 - key: SETUID
                   operator: AnyNotIn
-                  value: '{{ element.securityContext.capabilities.drop[] || `[]` }}'
+                  value: "{{ element.securityContext.capabilities.drop[] || `[]` }}"
             patchesJson6902: |-
               - path: /spec/containers/{{elementIndex}}/securityContext/capabilities/add/-
                 op: add
                 value: SETUID
+
 ```

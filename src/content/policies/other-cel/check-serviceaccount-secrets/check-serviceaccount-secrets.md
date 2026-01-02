@@ -42,6 +42,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!has(object.secrets)'
+            - expression: "!has(object.secrets)"
               message: Long-lived API tokens are not allowed.
+
 ```

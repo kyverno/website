@@ -48,4 +48,5 @@ spec:
           expressions:
             - expression: object.spec.url.startsWith('https://github.com/fluxcd/') || object.spec.url.startsWith('ssh://git@github.com:fluxcd/')
               message: .spec.url must be from a repository within the organisation X
+
 ```

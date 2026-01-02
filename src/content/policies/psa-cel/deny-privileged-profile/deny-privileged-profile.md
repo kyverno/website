@@ -47,6 +47,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               message: Only cluster-admins may create Namespaces that allow setting the privileged level.
+
 ```

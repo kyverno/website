@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: 'Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.'
+    policies.kyverno.io/description: "Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: [\"ALL\"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards."
 spec:
   validationFailureAction: Audit
   background: true
@@ -49,5 +49,6 @@ spec:
                 all:
                   - key: ALL
                     operator: AnyNotIn
-                    value: '{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}'
+                    value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+
 ```

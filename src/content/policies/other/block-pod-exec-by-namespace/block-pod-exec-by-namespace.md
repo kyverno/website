@@ -44,7 +44,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ request.namespace }}'
+              - key: "{{ request.namespace }}"
                 operator: Equals
                 value: pci
+
 ```

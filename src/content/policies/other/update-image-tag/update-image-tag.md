@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Deployment
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: For use cases like sidecar injection, it is often the case where existing Deployments need the sidecar image updated without destroying the whole Deployment or Pods. This policy updates the image tag on containers named vault-agent for existing Deployments which have the annotation vault.hashicorp.com/agent-inject="true". It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.
 spec:
   mutateExistingOnPolicyUpdate: true
@@ -37,12 +37,12 @@ spec:
               kinds:
                 - Deployment
               annotations:
-                vault.hashicorp.com/agent-inject: 'true'
+                vault.hashicorp.com/agent-inject: "true"
       mutate:
         targets:
           - apiVersion: apps/v1
             kind: Deployment
-            name: '{{ request.object.metadata.name }}'
+            name: "{{ request.object.metadata.name }}"
         patchStrategicMerge:
           spec:
             template:
@@ -50,4 +50,5 @@ spec:
                 containers:
                   - (name): vault-agent
                     image: vault:1.5.4
+
 ```

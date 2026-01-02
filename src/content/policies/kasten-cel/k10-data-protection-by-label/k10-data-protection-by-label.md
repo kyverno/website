@@ -48,4 +48,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels.?dataprotection.orValue('').startsWith('k10-')
               message: "Deployments and StatefulSets that specify 'dataprotection' label must have a valid k10-?* name (use labels: dataprotection: k10-<policyname>)"
+
 ```

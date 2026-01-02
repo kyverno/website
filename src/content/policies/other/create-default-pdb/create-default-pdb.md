@@ -36,10 +36,11 @@ spec:
       generate:
         apiVersion: policy/v1
         kind: PodDisruptionBudget
-        name: '{{request.object.metadata.name}}-default-pdb'
-        namespace: '{{request.object.metadata.namespace}}'
+        name: "{{request.object.metadata.name}}-default-pdb"
+        namespace: "{{request.object.metadata.namespace}}"
         data:
           spec:
             minAvailable: 1
-            selector: '{{request.object.spec.selector}}'
+            selector: "{{request.object.spec.selector}}"
+
 ```

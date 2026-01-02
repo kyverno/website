@@ -50,7 +50,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ podcounts }}'
+              - key: "{{ podcounts }}"
                 operator: GreaterThan
                 value: 10
+
 ```

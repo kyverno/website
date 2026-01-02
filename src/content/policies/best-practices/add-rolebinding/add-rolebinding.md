@@ -41,17 +41,18 @@ spec:
         synchronize: true
         apiVersion: rbac.authorization.k8s.io/v1
         kind: RoleBinding
-        name: '{{request.userInfo.username}}-admin-binding'
-        namespace: '{{request.object.metadata.name}}'
+        name: "{{request.userInfo.username}}-admin-binding"
+        namespace: "{{request.object.metadata.name}}"
         data:
           metadata:
             annotations:
-              kyverno.io/user: '{{request.userInfo.username}}'
+              kyverno.io/user: "{{request.userInfo.username}}"
           roleRef:
             apiGroup: rbac.authorization.k8s.io
             kind: ClusterRole
             name: admin
           subjects:
             - kind: User
-              name: '{{request.userInfo.username}}'
+              name: "{{request.userInfo.username}}"
+
 ```

@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/subject: Pod, Secret
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.
 spec:
   validationActions:
@@ -34,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -54,4 +54,5 @@ spec:
       message: No Secrets from envFrom.
     - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.secret))
       message: No Secrets from volumes.
+
 ```

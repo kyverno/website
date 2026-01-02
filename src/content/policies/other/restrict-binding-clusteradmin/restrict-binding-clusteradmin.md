@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.
 spec:
   validationFailureAction: Audit
@@ -44,5 +44,6 @@ spec:
         message: Binding to cluster-admin is not allowed.
         pattern:
           roleRef:
-            name: '!cluster-admin'
+            name: "!cluster-admin"
+
 ```

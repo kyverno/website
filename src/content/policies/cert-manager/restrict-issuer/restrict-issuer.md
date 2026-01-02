@@ -38,9 +38,10 @@ spec:
         pattern:
           spec:
             (dnsNames):
-              - '*.corp.com'
+              - "*.corp.com"
             issuerRef:
               name: our-corp-issuer
               kind: ClusterIssuer
               group: cert-manager.io
+
 ```

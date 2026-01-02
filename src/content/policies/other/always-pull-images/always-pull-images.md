@@ -37,6 +37,7 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - (name): '?*'
+              - (name): "?*"
                 imagePullPolicy: Always
+
 ```

@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Application
     policies.kyverno.io/description: This policy prevents updates to the project field after an Application is created.
 spec:
@@ -47,7 +47,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{request.object.spec.project}}'
+              - key: "{{request.object.spec.project}}"
                 operator: NotEquals
-                value: '{{request.oldObject.spec.project}}'
+                value: "{{request.oldObject.spec.project}}"
+
 ```

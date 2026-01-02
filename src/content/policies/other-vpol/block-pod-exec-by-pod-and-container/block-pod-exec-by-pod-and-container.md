@@ -37,10 +37,11 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
     - message: Nginx containers inside myapp-maintenance Pods may not be exec'd into.
       expression: "!(request.name.startsWith('myapp-maintenance') && has(object.container) && object.container == 'nginx')"
+
 ```

@@ -43,7 +43,7 @@ spec:
         message: Setting the nodeSelector field is prohibited.
         pattern:
           spec:
-            X(nodeSelector): 'null'
+            X(nodeSelector): "null"
     - name: restrict-nodename
       match:
         any:
@@ -59,5 +59,6 @@ spec:
         message: Setting the nodeName field is prohibited.
         pattern:
           spec:
-            X(nodeName): 'null'
+            X(nodeName): "null"
+
 ```

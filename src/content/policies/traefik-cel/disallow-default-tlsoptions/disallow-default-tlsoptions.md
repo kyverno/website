@@ -43,6 +43,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               message: Only cluster administrators are allowed to set default TLSOptions.
+
 ```

@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Node, Label
     kyverno.io/kyverno-version: 1.12.1
     kyverno.io/kubernetes-version: 1.26-1.27
-    policies.kyverno.io/description: 'Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. Many cloud providers also use Node labels to signal specific functions to applications. This policy prevents setting of a new label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0.'
+    policies.kyverno.io/description: "Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. Many cloud providers also use Node labels to signal specific functions to applications. This policy prevents setting of a new label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0."
 spec:
   validationFailureAction: Enforce
   background: false
@@ -43,6 +43,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               message: Setting the `foo` label on a Node is not allowed.
+
 ```

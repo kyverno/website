@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -50,4 +50,5 @@ spec:
   validations:
     - expression: variables.allContainers.all(container,  container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
       message: Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
+
 ```

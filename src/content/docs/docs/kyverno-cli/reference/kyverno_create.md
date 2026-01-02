@@ -1,9 +1,7 @@
 ---
-title: 'kyverno create'
-sidebar:
-  order: 35
+title: "kyverno create"
+weight: 35
 ---
-
 ## kyverno create
 
 Helps with the creation of various Kyverno resources.
@@ -12,7 +10,7 @@ Helps with the creation of various Kyverno resources.
 
 Helps with the creation of various Kyverno resources.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#create
+  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create [flags]
@@ -61,10 +59,11 @@ kyverno create [flags]
 
 ### SEE ALSO
 
-- [kyverno](kyverno.md) - Kubernetes Native Policy Management.
-- [kyverno create cluster-role](kyverno_create_cluster-role.md) - Create an aggregated role for given resource types
-- [kyverno create exception](kyverno_create_exception.md) - Create a Kyverno policy exception file.
-- [kyverno create metrics-config](kyverno_create_metrics-config.md) - Create a Kyverno metrics-config file.
-- [kyverno create test](kyverno_create_test.md) - Create a Kyverno test file.
-- [kyverno create user-info](kyverno_create_user-info.md) - Create a Kyverno user-info file.
-- [kyverno create values](kyverno_create_values.md) - Create a Kyverno values file.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno create cluster-role](kyverno_create_cluster-role.md)	 - Create an aggregated role for given resource types
+* [kyverno create exception](kyverno_create_exception.md)	 - Create a Kyverno policy exception file.
+* [kyverno create metrics-config](kyverno_create_metrics-config.md)	 - Create a Kyverno metrics-config file.
+* [kyverno create test](kyverno_create_test.md)	 - Create a Kyverno test file.
+* [kyverno create user-info](kyverno_create_user-info.md)	 - Create a Kyverno user-info file.
+* [kyverno create values](kyverno_create_values.md)	 - Create a Kyverno values file.
+

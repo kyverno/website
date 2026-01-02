@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: DestinationRule
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: Once a routing decision has been made, a DestinationRule can be used to define how traffic should be sent to another service. The trafficPolicy object can control how TLS is handled to the destination host. This policy enforces that the TLS mode cannot be set to a value of `DISABLE`.
 spec:
   validationFailureAction: Audit
@@ -40,8 +40,9 @@ spec:
       validate:
         message: TLS may not be disabled for the trafficPolicy in any host.
         pattern:
-          '=(spec)':
-            '=(trafficPolicy)':
-              '=(tls)':
-                '=(mode)': '!DISABLE'
+          "=(spec)":
+            "=(trafficPolicy)":
+              "=(tls)":
+                "=(mode)": "!DISABLE"
+
 ```

@@ -35,11 +35,12 @@ spec:
               kinds:
                 - Pod
       validate:
-        message: 'The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$'
+        message: "The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$"
         deny:
           conditions:
             all:
-              - key: '{{ regex_match(''^v[0-9].[0-9].[0-9]$'',''{{request.object.metadata.labels."corp.org/version" || ''empty''}}'') }}'
+              - key: "{{ regex_match('^v[0-9].[0-9].[0-9]$','{{request.object.metadata.labels.\"corp.org/version\" || 'empty'}}') }}"
                 operator: Equals
                 value: false
+
 ```

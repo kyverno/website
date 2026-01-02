@@ -21,7 +21,7 @@ metadata:
     policies.kyverno.io/title: Verify Git Repositories
     policies.kyverno.io/category: Flux
     policies.kyverno.io/severity: medium
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: GitRepository
     policies.kyverno.io/description: Ensures that Git repositories used for Flux deployments in a cluster originate from a specific, trusted organization. Prevents the use of untrusted or potentially risky Git repositories. Protects the integrity and security of Flux deployments.
 spec:
@@ -43,4 +43,5 @@ spec:
         pattern:
           spec:
             url: https://github.com/fluxcd/?* | ssh://git@github.com:fluxcd/?*
+
 ```

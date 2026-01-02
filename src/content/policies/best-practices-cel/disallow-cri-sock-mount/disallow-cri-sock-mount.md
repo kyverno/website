@@ -43,7 +43,7 @@ spec:
         cel:
           variables:
             - name: hasVolumes
-              expression: '!has(object.spec.volumes)'
+              expression: "!has(object.spec.volumes)"
             - name: volumes
               expression: object.spec.volumes
             - name: volumesWithHostPath
@@ -57,4 +57,5 @@ spec:
               message: Use of the CRI-O Unix socket is not allowed.
             - expression: variables.hasVolumes ||  variables.volumesWithHostPath.all(volume, !volume.hostPath.path.matches('/var/run/cri-dockerd.sock'))
               message: Use of the Docker CRI socket is not allowed.
+
 ```

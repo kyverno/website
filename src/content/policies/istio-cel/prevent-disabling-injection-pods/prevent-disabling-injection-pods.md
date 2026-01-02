@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'sidecar.istio.io/inject'].orValue('') != 'false'
               message: Pods may not disable sidecar injection by setting the annotation sidecar.istio.io/inject to a value of false.
+
 ```

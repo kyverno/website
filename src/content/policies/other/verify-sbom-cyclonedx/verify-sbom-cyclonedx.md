@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.8.3
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: Software Bill of Materials (SBOM) provide details on the composition of a given container image and may be represented in a couple different standards. Having an SBOM can be important to ensuring images are built using verified processes. This policy verifies that an image has an SBOM in CycloneDX format and was signed by the expected subject and issuer when produced through GitHub Actions and using Cosign's keyless signing. It requires configuration based upon your own values.
 spec:
   validationFailureAction: Audit
@@ -51,7 +51,8 @@ spec:
                           url: https://rekor.sigstore.dev
               conditions:
                 - all:
-                    - key: '{{ Data.bomFormat }}'
+                    - key: "{{ Data.bomFormat }}"
                       operator: Equals
                       value: CycloneDX
+
 ```

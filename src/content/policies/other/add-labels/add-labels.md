@@ -41,4 +41,5 @@ spec:
           metadata:
             labels:
               foo: bar
+
 ```

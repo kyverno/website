@@ -58,4 +58,5 @@ spec:
           expressions:
             - expression: "!has(object.spec.volumeClaimTemplates) ||  object.spec.volumeClaimTemplates.all(volumeClaimTemplate,  volumeClaimTemplate.spec.?storageClassName.orValue('')  != '')"
               message: StatefulSets must define a storageClassName.
+
 ```

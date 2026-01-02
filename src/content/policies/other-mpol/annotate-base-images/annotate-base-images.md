@@ -33,7 +33,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -69,4 +69,5 @@ spec:
               value: variables.imageMetadata[idx].manifest.annotations["org.opencontainers.image.base.name"]
             } : null
           ).filter(p, p != null)
+
 ```

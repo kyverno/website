@@ -45,6 +45,7 @@ spec:
             - name: allContainers
               expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
           expressions:
-            - expression: 'variables.allContainers.all(container,  container.?ports.orValue([]).all(port, size(port) == 0 || !has(port.hostPort) || (port.hostPort >= 5000 && port.hostPort <= 6000) ))             '
+            - expression: "variables.allContainers.all(container,  container.?ports.orValue([]).all(port, size(port) == 0 || !has(port.hostPort) || (port.hostPort >= 5000 && port.hostPort <= 6000) ))             "
               message: The only permitted hostPorts are in the range 5000-6000.
+
 ```

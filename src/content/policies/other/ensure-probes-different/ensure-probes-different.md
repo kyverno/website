@@ -43,7 +43,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ request.object.spec.template.spec.containers[?readinessProbe==livenessProbe] | length(@) }}'
+              - key: "{{ request.object.spec.template.spec.containers[?readinessProbe==livenessProbe] | length(@) }}"
                 operator: GreaterThan
                 value: 0
+
 ```

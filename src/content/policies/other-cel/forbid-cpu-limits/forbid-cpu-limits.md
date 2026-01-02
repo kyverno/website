@@ -40,6 +40,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())'
+            - expression: "!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())"
               message: Containers may not define CPU limits.
+
 ```

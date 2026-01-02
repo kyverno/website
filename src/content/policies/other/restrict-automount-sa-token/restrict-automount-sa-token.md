@@ -38,12 +38,13 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{ request."object".metadata.labels."app.kubernetes.io/part-of" || '''' }}'
+          - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"
             operator: NotEquals
             value: policy-reporter
       validate:
         message: Auto-mounting of Service Account tokens is not allowed.
         pattern:
           spec:
-            automountServiceAccountToken: 'false'
+            automountServiceAccountToken: "false"
+
 ```

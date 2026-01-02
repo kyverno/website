@@ -37,7 +37,7 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
@@ -45,4 +45,5 @@ spec:
         Pods in this namespace may not be exec'd into.
       expression: |
         request.namespace != "pci"
+
 ```

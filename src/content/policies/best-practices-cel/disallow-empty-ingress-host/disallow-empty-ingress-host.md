@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: object.spec.?rules.orValue([]).all(rule, has(rule.host) && has(rule.http))
               message: The Ingress host name must be defined, not empty.
+
 ```

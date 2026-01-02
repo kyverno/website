@@ -34,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         resources:
@@ -45,4 +45,5 @@ spec:
   validations:
     - expression: "'ReadWriteOncePod' in object.spec.accessModes"
       message: The accessMode must be set to ReadWriteOncePod.
+
 ```

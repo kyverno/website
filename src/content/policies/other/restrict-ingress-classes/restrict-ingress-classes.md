@@ -41,4 +41,5 @@ spec:
           metadata:
             annotations:
               kubernetes.io/ingress.class: HAProxy | nginx
+
 ```

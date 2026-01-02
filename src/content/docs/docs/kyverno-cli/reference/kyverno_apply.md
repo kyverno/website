@@ -1,9 +1,7 @@
 ---
-title: 'kyverno apply'
-sidebar:
-  order: 35
+title: "kyverno apply"
+weight: 35
 ---
-
 ## kyverno apply
 
 Applies policies on resources.
@@ -12,7 +10,7 @@ Applies policies on resources.
 
 Applies policies on resources.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/usage/apply/
+  For more information visit https://kyverno.io/docs/kyverno-cli/usage/apply/
 
 ```
 kyverno apply [flags]
@@ -105,4 +103,5 @@ kyverno apply [flags]
 
 ### SEE ALSO
 
-- [kyverno](kyverno.md) - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+

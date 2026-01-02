@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.20'
+    kyverno.io/kubernetes-version: "1.20"
     policies.kyverno.io/subject: Route
     policies.kyverno.io/description: HTTP traffic is not encrypted and hence insecure. This policy prevents configuration of OpenShift HTTP routes.
 spec:
@@ -51,4 +51,5 @@ spec:
               - key: "{{ keys(request.object.spec) | contains(@, 'tls') }}"
                 operator: Equals
                 value: false
+
 ```

@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.1
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The Default DNS policy in Kubernetes gives the flexibility of service  access; however, it costs some latency on a high scale, and it needs to  be optimized. This policy helps us to optimize the performance of DNS  queries by setting DNS Options, nodelocalDNS IP, and search Domains. This policy can be applied for the clusters provisioned by kubeadm.
 spec:
@@ -54,13 +54,14 @@ spec:
                 - 169.254.25.10
               options:
                 - name: timeout
-                  value: '1'
+                  value: "1"
                 - name: ndots
-                  value: '2'
+                  value: "2"
                 - name: attempts
-                  value: '1'
+                  value: "1"
               searches:
                 - svc.{{dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName}}
-                - '{{ request.namespace }}.svc.{{ dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName }}'
+                - "{{ request.namespace }}.svc.{{ dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName }}"
             dnsPolicy: None
+
 ```

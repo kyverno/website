@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: ( object.spec.?hostNetwork.orValue(false) == false) && ( object.spec.?hostIPC.orValue(false) == false) && ( object.spec.?hostPID.orValue(false) == false)
               message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.
+
 ```

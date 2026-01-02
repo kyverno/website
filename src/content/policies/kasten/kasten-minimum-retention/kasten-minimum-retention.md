@@ -38,7 +38,7 @@ spec:
         all:
           - key: "{{ request.object.spec.frequency || ''}}"
             operator: Equals
-            value: '@hourly'
+            value: "@hourly"
       mutate:
         patchesJson6902: |-
           - path: "/spec/retention"
@@ -48,4 +48,5 @@ spec:
               daily: 30
               weekly: 4
               monthly: 3
+
 ```

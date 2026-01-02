@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Images that are old usually have some open security vulnerabilities which are not patched. This policy checks the contents of every container image and inspects them for the create time. If it finds any image which was built more than 6 months ago this policy blocks the deployment.
 spec:
@@ -43,11 +43,12 @@ spec:
             context:
               - name: imageData
                 imageRegistry:
-                  reference: '{{ element.image }}'
+                  reference: "{{ element.image }}"
             deny:
               conditions:
                 all:
                   - key: "{{ time_since('', '{{ imageData.configData.created }}', '') }}"
                     operator: GreaterThan
                     value: 4380h
+
 ```

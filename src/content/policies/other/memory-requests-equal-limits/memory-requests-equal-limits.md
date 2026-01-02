@@ -40,7 +40,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}'
+              - key: "{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
                 operator: NotEquals
                 value: 0
+
 ```

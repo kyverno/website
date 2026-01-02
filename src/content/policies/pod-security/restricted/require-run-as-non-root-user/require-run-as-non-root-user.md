@@ -39,15 +39,16 @@ spec:
         message: Running as root is not allowed. The fields spec.securityContext.runAsUser, spec.containers[*].securityContext.runAsUser, spec.initContainers[*].securityContext.runAsUser, and spec.ephemeralContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero.
         pattern:
           spec:
-            '=(securityContext)':
-              '=(runAsUser)': '>0'
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(runAsUser)': '>0'
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(runAsUser)': '>0'
+            "=(securityContext)":
+              "=(runAsUser)": ">0"
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(runAsUser)": ">0"
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(runAsUser)": ">0"
             containers:
-              - '=(securityContext)':
-                  '=(runAsUser)': '>0'
+              - "=(securityContext)":
+                  "=(runAsUser)": ">0"
+
 ```

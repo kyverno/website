@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.20'
+    kyverno.io/kubernetes-version: "1.20"
     policies.kyverno.io/subject: APIServer
     policies.kyverno.io/description: Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.
 spec:
@@ -45,4 +45,5 @@ spec:
               - key: "{{ keys(request.object.spec) | contains(@, 'encryption') }}"
                 operator: NotEquals
                 value: true
+
 ```

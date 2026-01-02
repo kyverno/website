@@ -44,5 +44,6 @@ spec:
         cel:
           expressions:
             - expression: object.metadata.?labels[?'corp.org/version'].orValue('default').matches('^v[0-9].[0-9].[0-9]$')
-              message: 'The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$'
+              message: "The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$"
+
 ```

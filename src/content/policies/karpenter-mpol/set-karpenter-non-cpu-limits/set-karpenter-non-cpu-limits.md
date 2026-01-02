@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -80,9 +80,9 @@ spec:
         )
   variables:
     - name: containers
-      expression: 'object.kind == "Pod" ? object.spec.containers : object.kind == "CronJob" ? object.spec.jobTemplate.spec.template.spec.containers : object.spec.template.spec.containers'
+      expression: "object.kind == \"Pod\" ? object.spec.containers : object.kind == \"CronJob\" ? object.spec.jobTemplate.spec.template.spec.containers : object.spec.template.spec.containers"
     - name: basePath
-      expression: 'object.kind == "Pod" ? "/spec/containers/" : object.kind == "CronJob" ? "/spec/jobTemplate/spec/template/spec/containers/" : "/spec/template/spec/containers/"'
+      expression: "object.kind == \"Pod\" ? \"/spec/containers/\" : object.kind == \"CronJob\" ? \"/spec/jobTemplate/spec/template/spec/containers/\" : \"/spec/template/spec/containers/\""
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -184,4 +184,5 @@ spec:
                   )
               ) : null
           ).filter(p, p != null)
+
 ```

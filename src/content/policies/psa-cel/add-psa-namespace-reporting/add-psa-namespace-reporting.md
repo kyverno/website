@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels.orValue([]).exists(label, label.startsWith('pod-security.kubernetes.io/') && object.metadata.labels[label] != '')
               message: This Namespace is missing a PSA label.
+
 ```

@@ -37,7 +37,7 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
@@ -45,4 +45,5 @@ spec:
         Exec'ing into Pods called "myapp-maintenance" is not allowed.
       expression: |
         !request.name.startsWith("myapp-maintenance-")
+
 ```

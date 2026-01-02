@@ -49,7 +49,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ nslabelexec }}'
+              - key: "{{ nslabelexec }}"
                 operator: Equals
-                value: 'false'
+                value: "false"
+
 ```

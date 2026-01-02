@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/category: Other
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Kubernetes Events are limited in that the circumstances under which they are created cannot be changed and with what they are associated is fixed. It may be advantageous in many cases to augment these out-of-the-box Events with custom Events which can be custom designed to your needs. This policy generates an Event on a Pod when an exec has been made to it. It lists the userInfo of the actor performing the exec along with the command used in the exec.
 spec:
@@ -44,20 +44,21 @@ spec:
         apiVersion: v1
         kind: Event
         name: exec.{{ random('[a-z0-9]{6}') }}
-        namespace: '{{request.namespace}}'
+        namespace: "{{request.namespace}}"
         synchronize: false
         data:
-          firstTimestamp: '{{ time_now_utc() }}'
+          firstTimestamp: "{{ time_now_utc() }}"
           involvedObject:
             apiVersion: v1
             kind: Pod
-            name: '{{ request.name }}'
-            namespace: '{{ request.namespace }}'
-            uid: '{{ parentPodUID }}'
-          lastTimestamp: '{{ time_now_utc() }}'
+            name: "{{ request.name }}"
+            namespace: "{{ request.namespace }}"
+            uid: "{{ parentPodUID }}"
+          lastTimestamp: "{{ time_now_utc() }}"
           message: An exec was performed by {{ request.userInfo | to_string(@) }} running commands {{ request.object.command }}
           reason: Exec
           source:
             component: kyverno
           type: Warning
+
 ```

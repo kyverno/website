@@ -39,16 +39,17 @@ spec:
         message: HostProcess containers are disallowed. The fields spec.securityContext.windowsOptions.hostProcess, spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`.
         pattern:
           spec:
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(windowsOptions)':
-                    '=(hostProcess)': 'false'
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(windowsOptions)':
-                    '=(hostProcess)': 'false'
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(windowsOptions)":
+                    "=(hostProcess)": "false"
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(windowsOptions)":
+                    "=(hostProcess)": "false"
             containers:
-              - '=(securityContext)':
-                  '=(windowsOptions)':
-                    '=(hostProcess)': 'false'
+              - "=(securityContext)":
+                  "=(windowsOptions)":
+                    "=(hostProcess)": "false"
+
 ```

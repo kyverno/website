@@ -53,4 +53,5 @@ spec:
             hard:
               cpu: "{{ isBusinessHours ? '20' : '10' }}"
               memory: "{{ isBusinessHours ? '40Gi' : '20Gi' }}"
+
 ```

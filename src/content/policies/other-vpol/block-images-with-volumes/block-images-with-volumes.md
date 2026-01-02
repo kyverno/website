@@ -42,10 +42,11 @@ spec:
           - CREATE
           - UPDATE
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
     - message: Images containing built-in volumes are prohibited.
       expression: variables.allContainers.all(container, !has(image.GetMetadata(container.image).config.Volumes) || size(image.GetMetadata(container.image).config.?Volumes.orValue({})) == 0)
+
 ```

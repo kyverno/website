@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: 'Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. '
+    policies.kyverno.io/description: "Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. "
 spec:
   validationActions:
     - Audit
@@ -35,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -54,4 +54,5 @@ spec:
         variables.allContainers.all(container, 
           container.?ports.orValue([]).all(port, port.?hostPort.orValue(0) == 0))
       message: Use of host ports is disallowed. The field spec.containers[*].ports[*].hostPort must either be unset or set to `0`.
+
 ```

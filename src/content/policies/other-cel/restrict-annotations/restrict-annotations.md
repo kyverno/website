@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: "!object.metadata.?annotations.orValue([]).exists(annotation, annotation.startsWith('fluxcd.io/'))"
               message: Cannot use Flux v1 annotation.
+
 ```

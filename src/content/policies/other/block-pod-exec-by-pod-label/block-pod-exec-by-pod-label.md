@@ -49,7 +49,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ podexeclabel }}'
+              - key: "{{ podexeclabel }}"
                 operator: Equals
-                value: 'false'
+                value: "false"
+
 ```

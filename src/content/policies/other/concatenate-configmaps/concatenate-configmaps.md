@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: ConfigMap
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: In some cases, an update to an existing resource should have downstream effects on a different resource in another Namespace. Rather than overwriting the target, the current state of the source can be concatenated to the target. This policy, triggered by an update to a source ConfigMap, concatenates that value of a target ConfigMap in a different Namespace.
 spec:
   mutateExistingOnPolicyUpdate: false
@@ -48,5 +48,6 @@ spec:
             namespace: bar
         patchStrategicMerge:
           data:
-            keytwo: '{{ @ }} plus {{request.object.data.keyone}}'
+            keytwo: "{{ @ }} plus {{request.object.data.keyone}}"
+
 ```

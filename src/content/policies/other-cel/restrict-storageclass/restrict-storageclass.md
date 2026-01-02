@@ -43,4 +43,5 @@ spec:
           expressions:
             - expression: object.reclaimPolicy == 'Delete'
               message: StorageClass must define a reclaimPolicy of Delete.
+
 ```

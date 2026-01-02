@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: "object.spec.?securityContext.?sysctls.orValue([]).all(sysctl,  !has(sysctl.value) || (!sysctl.value.contains('+') && !sysctl.value.contains('='))) "
               message: characters '+' or '=' are not allowed in sysctls values
+
 ```

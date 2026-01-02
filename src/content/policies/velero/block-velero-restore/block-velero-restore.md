@@ -33,13 +33,14 @@ spec:
               kinds:
                 - velero.io/v1/Restore
       validate:
-        message: 'Warning! Restore to protected namespace: {{request.object.spec.namespaceMapping | values(@)}} is not allowed!'
+        message: "Warning! Restore to protected namespace: {{request.object.spec.namespaceMapping | values(@)}} is not allowed!"
         deny:
           conditions:
             any:
-              - key: '{{request.object.spec.namespaceMapping || `{}` | values(@)}}'
+              - key: "{{request.object.spec.namespaceMapping || `{}` | values(@)}}"
                 operator: AnyIn
                 value:
                   - kube-system
                   - kube-node-lease
+
 ```

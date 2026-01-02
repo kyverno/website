@@ -6,4 +6,4 @@ docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
   --website																	\
   --noDate																	\
   --markdownLinks																\
-  --output "/work/content/docs/docs/kyverno-cli/reference"
+  --output "/work/src/content/docs/docs/kyverno-cli/reference"

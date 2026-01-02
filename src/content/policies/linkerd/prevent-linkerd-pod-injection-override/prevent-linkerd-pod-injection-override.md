@@ -37,6 +37,7 @@ spec:
         message: Pods may not disable sidecar injection.
         pattern:
           metadata:
-            '=(annotations)':
-              '=(linkerd.io/inject)': '!disabled'
+            "=(annotations)":
+              "=(linkerd.io/inject)": "!disabled"
+
 ```

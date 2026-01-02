@@ -40,7 +40,7 @@ spec:
         pattern:
           spec:
             securityContext:
-              runAsUser: '1000'
+              runAsUser: "1000"
     - name: validate-groupid
       match:
         any:
@@ -52,7 +52,7 @@ spec:
         pattern:
           spec:
             securityContext:
-              runAsGroup: '3000'
+              runAsGroup: "3000"
     - name: validate-fsgroup
       match:
         any:
@@ -64,5 +64,6 @@ spec:
         pattern:
           spec:
             securityContext:
-              fsGroup: '2000'
+              fsGroup: "2000"
+
 ```

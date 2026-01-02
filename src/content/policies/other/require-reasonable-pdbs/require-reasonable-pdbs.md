@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: PodDisruptionBudget
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     policies.kyverno.io/description: PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Achieving a balance between availability and maintainability is important. This policy validates that a PodDisruptionBudget, specified as percentages, allows 50% of the replicas to be out of service in that minAvailable should be no higher than 50% and maxUnavailable should be no lower than 50%.
 spec:
   validationFailureAction: Audit
@@ -53,4 +53,5 @@ spec:
               - key: "{{ regex_match('^([5-9][0-9]|100)%$', '{{ request.object.spec.maxUnavailable || '50%'}}') }}"
                 operator: Equals
                 value: false
+
 ```

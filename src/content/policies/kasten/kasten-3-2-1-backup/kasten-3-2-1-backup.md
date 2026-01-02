@@ -50,5 +50,6 @@ spec:
                   - backup
                   - export
                 operator: AnyNotIn
-                value: '{{ request.object.spec.actions[].action }}'
+                value: "{{ request.object.spec.actions[].action }}"
+
 ```

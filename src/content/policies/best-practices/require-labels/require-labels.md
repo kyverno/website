@@ -41,5 +41,6 @@ spec:
         pattern:
           metadata:
             labels:
-              app.kubernetes.io/name: '?*'
+              app.kubernetes.io/name: "?*"
+
 ```

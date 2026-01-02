@@ -1,9 +1,7 @@
 ---
-title: 'kyverno docs'
-sidebar:
-  order: 35
+title: "kyverno docs"
+weight: 35
 ---
-
 ## kyverno docs
 
 Generates reference documentation.
@@ -11,12 +9,12 @@ Generates reference documentation.
 ### Synopsis
 
 Generates reference documentation.
+  
+  The docs command generates Kyverno CLI reference documentation.
+  
+  It can be used to generate simple markdown files or markdown to be used for the website.
 
-The docs command generates Kyverno CLI reference documentation.
-
-It can be used to generate simple markdown files or markdown to be used for the website.
-
-For more information visit https://kyverno.io/docs/kyverno-cli/#docs
+  For more information visit https://kyverno.io/docs/kyverno-cli/#docs
 
 ```
 kyverno docs [flags]
@@ -64,4 +62,5 @@ kyverno docs [flags]
 
 ### SEE ALSO
 
-- [kyverno](kyverno.md) - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+

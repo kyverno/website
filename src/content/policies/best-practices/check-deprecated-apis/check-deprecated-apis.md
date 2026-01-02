@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Kubernetes APIs
     kyverno.io/kyverno-version: 1.7.4
     policies.kyverno.io/minversion: 1.7.4
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters. In the validate-v1-22-removals rule, the Lease kind has been commented out due to a check for this kind having a performance penalty on Kubernetes clusters with many leases. Its enabling should be attended carefully and is not recommended on large clusters. PodSecurityPolicy is removed in v1.25 so therefore the validate-v1-25-removals rule may not completely work on 1.25+. This policy requires Kyverno v1.7.4+ to function properly.
 spec:
   validationFailureAction: Audit
@@ -46,7 +46,7 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: DELETE
-          - key: '{{request.object.apiVersion}}'
+          - key: "{{request.object.apiVersion}}"
             operator: AnyIn
             value:
               - batch/v1beta1
@@ -55,7 +55,7 @@ spec:
               - policy/v1beta1
               - node.k8s.io/v1beta1
       validate:
-        message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+        message: "{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
         deny: {}
     - name: validate-v1-26-removals
       match:
@@ -70,13 +70,13 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: DELETE
-          - key: '{{request.object.apiVersion}}'
+          - key: "{{request.object.apiVersion}}"
             operator: AnyIn
             value:
               - flowcontrol.apiserver.k8s.io/v1beta1
               - autoscaling/v2beta2
       validate:
-        message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+        message: "{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
         deny: {}
     - name: validate-v1-27-removals
       match:
@@ -89,12 +89,12 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: DELETE
-          - key: '{{request.object.apiVersion}}'
+          - key: "{{request.object.apiVersion}}"
             operator: AnyIn
             value:
               - storage.k8s.io/v1beta1
       validate:
-        message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+        message: "{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
         deny: {}
     - name: validate-v1-29-removals
       match:
@@ -108,12 +108,12 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: DELETE
-          - key: '{{request.object.apiVersion}}'
+          - key: "{{request.object.apiVersion}}"
             operator: AnyIn
             value:
               - flowcontrol.apiserver.k8s.io/v1beta2
       validate:
-        message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.29. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+        message: "{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.29. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
         deny: {}
     - name: validate-v1-32-removals
       match:
@@ -127,11 +127,12 @@ spec:
           - key: "{{ request.operation || 'BACKGROUND' }}"
             operator: NotEquals
             value: DELETE
-          - key: '{{request.object.apiVersion}}'
+          - key: "{{request.object.apiVersion}}"
             operator: AnyIn
             value:
               - flowcontrol.apiserver.k8s.io/v1beta3
       validate:
-        message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.32. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+        message: "{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated and will be removed in v1.32. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
         deny: {}
+
 ```

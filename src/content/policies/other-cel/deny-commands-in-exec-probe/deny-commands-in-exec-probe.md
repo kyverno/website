@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container,  !container.?livenessProbe.?exec.?command.orValue([]).exists(command,  command.matches('\\bjcmd\\b') || command.matches('\\bps\\b') || command.matches('\\bls\\b')))
               message: Cannot use commands `jcmd`, `ps`, or `ls` in liveness probes.
+
 ```

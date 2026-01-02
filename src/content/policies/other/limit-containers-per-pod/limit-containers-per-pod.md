@@ -46,7 +46,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{request.object.spec.containers[] | length(@)}}'
+              - key: "{{request.object.spec.containers[] | length(@)}}"
                 operator: GreaterThan
-                value: '4'
+                value: "4"
+
 ```

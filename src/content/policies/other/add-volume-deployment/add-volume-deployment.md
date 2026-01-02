@@ -35,7 +35,7 @@ spec:
                 - Deployment
       preconditions:
         any:
-          - key: '{{request.object.spec.template.metadata.annotations."vault.k8s.corp.net/inject"}}'
+          - key: "{{request.object.spec.template.metadata.annotations.\"vault.k8s.corp.net/inject\"}}"
             operator: Equals
             value: enabled
       mutate:
@@ -51,4 +51,5 @@ spec:
             value:
               mountPath: /secret
               name: vault-secret
+
 ```

@@ -52,4 +52,5 @@ spec:
               message: Binding to system:unauthenticated is not allowed.
             - expression: object.subjects.all(subject, subject.name != 'system:masters')
               message: Binding to system:masters is not allowed.
+
 ```

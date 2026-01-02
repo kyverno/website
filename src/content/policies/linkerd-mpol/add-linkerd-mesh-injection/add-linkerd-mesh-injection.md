@@ -28,7 +28,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -46,9 +46,9 @@ spec:
         has(object.metadata.annotations) && 
         object.metadata.annotations.exists(k, k == 'config.linkerd.io/proxy-await')
     - name: needsInject
-      expression: '!variables.hasInjectAnnotation'
+      expression: "!variables.hasInjectAnnotation"
     - name: needsProxyAwait
-      expression: '!variables.hasProxyAwaitAnnotation'
+      expression: "!variables.hasProxyAwaitAnnotation"
   matchConditions:
     - name: needs-at-least-one-annotation
       expression: variables.needsInject || variables.needsProxyAwait
@@ -80,4 +80,5 @@ spec:
               }
             }
           }
+
 ```

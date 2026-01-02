@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: SubjectAccessReview
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/description: In some cases a validation check for one type of resource may need to take into consideration the requesting user's permissions on a different type of resource. Rather than parsing through all Roles and/or ClusterRoles to check if these permissions are held, Kyverno can perform a SubjectAccessReview request to the Kubernetes API server and have it figure out those permissions. This policy illustrates how to perform a POST request to the API server to subject a SubjectAccessReview for a user creating/updating a ConfigMap. It is intended to be used as a component in a more functional rule.
 spec:
   validationFailureAction: Audit
@@ -50,16 +50,17 @@ spec:
                 value:
                   resourceAttributes:
                     resource: namespaces
-                    namespace: '{{ request.namespace }}'
+                    namespace: "{{ request.namespace }}"
                     verb: delete
-                    group: ''
-                  user: '{{ request.userInfo.username }}'
+                    group: ""
+                  user: "{{ request.userInfo.username }}"
       validate:
         message: User is not authorized.
         deny:
           conditions:
             any:
-              - key: '{{ subjectaccessreview.status.allowed }}'
+              - key: "{{ subjectaccessreview.status.allowed }}"
                 operator: NotEquals
                 value: true
+
 ```

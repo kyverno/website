@@ -44,10 +44,11 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.command[0] }}'
+              - key: "{{ request.object.command[0] }}"
                 operator: Equals
                 value: tar
-              - key: '{{ request.object.command[1] }}'
+              - key: "{{ request.object.command[1] }}"
                 operator: Equals
                 value: cf
+
 ```

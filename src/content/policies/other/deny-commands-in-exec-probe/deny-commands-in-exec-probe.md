@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.1.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/description: Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod's liveness exec probe.
 spec:
   validationFailureAction: Audit
@@ -38,10 +38,10 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{ length(request.object.spec.containers[].livenessProbe.exec.command[] || `[]`) }}'
+          - key: "{{ length(request.object.spec.containers[].livenessProbe.exec.command[] || `[]`) }}"
             operator: GreaterThan
             value: 0
-          - key: '{{ request.operation }}'
+          - key: "{{ request.operation }}"
             operator: NotEquals
             value: DELETE
       validate:
@@ -61,4 +61,5 @@ spec:
                   - true
                 operator: AnyIn
                 value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bls\\b',@) }}"
+
 ```

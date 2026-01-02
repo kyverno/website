@@ -22,7 +22,7 @@ metadata:
     policies.kyverno.io/title: Limit Containers per Pod in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods can have many different containers which are tightly coupled. It may be desirable to limit the amount of containers that can be in a single Pod to control best practice application or so policy can be applied consistently. This policy checks all Pods to ensure they have no more than four containers.
 spec:
@@ -34,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -45,4 +45,5 @@ spec:
   validations:
     - expression: size(object.spec.containers) <= 4
       message: Pods can only have a maximum of 4 containers.
+
 ```

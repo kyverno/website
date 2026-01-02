@@ -48,4 +48,5 @@ spec:
           expressions:
             - expression: object.rules == null || !object.rules.exists(rule, '*' in rule.verbs)
               message: Use of a wildcard ('*') in any verbs is forbidden.
+
 ```

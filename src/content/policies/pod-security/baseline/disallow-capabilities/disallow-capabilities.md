@@ -47,7 +47,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].securityContext.capabilities.add[] }}'
+              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].securityContext.capabilities.add[] }}"
                 operator: AnyNotIn
                 value:
                   - AUDIT_WRITE
@@ -63,4 +63,5 @@ spec:
                   - SETPCAP
                   - SETUID
                   - SYS_CHROOT
+
 ```

@@ -40,11 +40,12 @@ spec:
               kinds:
                 - Pod
       validate:
-        message: 'The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data."{{request.namespace}}" }}.'
+        message: "The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.\"{{request.namespace}}\" }}."
         deny:
           conditions:
             any:
               - key: "{{ request.object.spec.priorityClassName || '' }}"
                 operator: AnyNotIn
-                value: '{{ podprioritydict.data."{{request.namespace}}" || "" }}'
+                value: "{{ podprioritydict.data.\"{{request.namespace}}\" || \"\" }}"
+
 ```

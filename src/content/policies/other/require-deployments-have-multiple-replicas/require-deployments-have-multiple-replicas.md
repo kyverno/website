@@ -39,5 +39,6 @@ spec:
         message: Deployments should have more than one replica to ensure availability.
         pattern:
           spec:
-            replicas: '>1'
+            replicas: ">1"
+
 ```

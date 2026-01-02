@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/subject: Node, Label
     kyverno.io/kyverno-version: 1.7.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: CRI engines log in different formats. Loggers deployed as DaemonSets don't know which format to apply because they can't see this information. By Kyverno writing a label to each node with its runtime, loggers can use node label selectors to know which parsing logic to use. This policy detects the CRI engine in use and writes a label to the Node called `runtime` with it. The Node resource filter should be removed and users may need to grant the Kyverno ServiceAccount permission to update Nodes.
 spec:
   mutateExistingOnPolicyUpdate: true
@@ -41,7 +41,7 @@ spec:
         targets:
           - apiVersion: v1
             kind: Node
-            name: '{{ request.object.metadata.name }}'
+            name: "{{ request.object.metadata.name }}"
         patchStrategicMerge:
           metadata:
             labels:
@@ -59,7 +59,7 @@ spec:
         targets:
           - apiVersion: v1
             kind: Node
-            name: '{{ request.object.metadata.name }}'
+            name: "{{ request.object.metadata.name }}"
         patchStrategicMerge:
           metadata:
             labels:
@@ -67,4 +67,5 @@ spec:
           status:
             nodeInfo:
               <(containerRuntimeVersion): docker*
+
 ```

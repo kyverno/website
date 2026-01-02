@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: ServiceAccount
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.21'
+    kyverno.io/kubernetes-version: "1.21"
     policies.kyverno.io/description: A new ServiceAccount called `default` is created whenever a new Namespace is created. Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount. This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token into Pods obviating the need to do so individually.
 spec:
   rules:
@@ -40,4 +40,5 @@ spec:
       mutate:
         patchStrategicMerge:
           automountServiceAccountToken: false
+
 ```

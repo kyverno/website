@@ -50,11 +50,12 @@ spec:
                 all:
                   - key: livenessProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
                   - key: startupProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
                   - key: readinessProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
+
 ```

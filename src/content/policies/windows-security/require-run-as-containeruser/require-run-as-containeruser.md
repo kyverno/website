@@ -39,15 +39,16 @@ spec:
         message: Running the container as ContainerAdministrator,NT AUTHORITY\NETWORK SERVICE, NT AUTHORITY\LOCAL SERVICE is not allowed.
         pattern:
           spec:
-            '=(securityContext)':
-              '=(windowsOptions)':
-                '=(runAsUserName)': ContainerUser
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(windowsOptions)':
-                    '=(runAsUserName)': ContainerUser
+            "=(securityContext)":
+              "=(windowsOptions)":
+                "=(runAsUserName)": ContainerUser
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(windowsOptions)":
+                    "=(runAsUserName)": ContainerUser
             containers:
-              - '=(securityContext)':
-                  '=(windowsOptions)':
-                    '=(runAsUserName)': ContainerUser
+              - "=(securityContext)":
+                  "=(windowsOptions)":
+                    "=(runAsUserName)": ContainerUser
+
 ```

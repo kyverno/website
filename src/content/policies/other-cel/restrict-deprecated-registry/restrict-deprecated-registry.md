@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kubernetes-version: 1.27-1.28
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: 'Legacy k8s.gcr.io container image registry will be frozen in early April 2023 k8s.gcr.io image registry will be frozen from the 3rd of April 2023.   Images for Kubernetes 1.27 will not be available in the k8s.gcr.io image registry. Please read our announcement for more details. https://kubernetes.io/blog/2023/02/06/k8s-gcr-io-freeze-announcement/     '
+    policies.kyverno.io/description: "Legacy k8s.gcr.io container image registry will be frozen in early April 2023 k8s.gcr.io image registry will be frozen from the 3rd of April 2023.   Images for Kubernetes 1.27 will not be available in the k8s.gcr.io image registry. Please read our announcement for more details. https://kubernetes.io/blog/2023/02/06/k8s-gcr-io-freeze-announcement/     "
 spec:
   validationFailureAction: Enforce
   background: true
@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container, !container.image.startsWith('k8s.gcr.io/'))
               message: The "k8s.gcr.io" image registry is deprecated. "registry.k8s.io" should now be used.
+
 ```

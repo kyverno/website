@@ -25,8 +25,8 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
-    policies.kyverno.io/description: 'If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node, and a request is made to delete the Node, Karpenter will not drain any Pods from that Node or otherwise try to delete the Node. This is useful for Pods that should run uninterrupted to completion. This policy mutates Jobs and CronJobs so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation.'
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: "If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node, and a request is made to delete the Node, Karpenter will not drain any Pods from that Node or otherwise try to delete the Node. This is useful for Pods that should run uninterrupted to completion. This policy mutates Jobs and CronJobs so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation."
 spec:
   rules:
     - name: do-not-evict-jobs
@@ -41,7 +41,7 @@ spec:
             template:
               metadata:
                 annotations:
-                  karpenter.sh/do-not-evict: 'true'
+                  karpenter.sh/do-not-evict: "true"
     - name: do-not-evict-cronjobs
       match:
         any:
@@ -56,5 +56,6 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      karpenter.sh/do-not-evict: 'true'
+                      karpenter.sh/do-not-evict: "true"
+
 ```

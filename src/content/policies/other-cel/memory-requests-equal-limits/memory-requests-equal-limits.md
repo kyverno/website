@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container,  !container.?resources.?requests.?memory.hasValue() || container.resources.requests.memory == container.resources.?limits.?memory.orValue('-1'))
               message: resources.requests.memory must be equal to resources.limits.memory
+
 ```

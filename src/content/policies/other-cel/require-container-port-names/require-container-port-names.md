@@ -24,7 +24,7 @@ metadata:
     kyverno.io/kyverno-version: 1.11.0
     kyverno.io/kubernetes-version: 1.26-1.27
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: 'Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      '
+    policies.kyverno.io/description: "Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      "
 spec:
   validationFailureAction: Audit
   background: true
@@ -43,4 +43,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, container.?ports.orValue([]).all(port, has(port.name)))
               message: Name is required for every containerPort.
+
 ```

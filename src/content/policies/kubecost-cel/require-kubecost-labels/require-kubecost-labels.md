@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels.?owner.orValue('') != '' &&  object.metadata.?labels.?team.orValue('') != '' && object.metadata.?labels.?department.orValue('') != '' && object.metadata.?labels.?app.orValue('') != '' && object.metadata.?labels.?env.orValue('') != ''
               message: The Kubecost labels `owner`, `team`, `department`, `app`, and `env` are all required for Pods.
+
 ```

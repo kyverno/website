@@ -57,4 +57,5 @@ spec:
           expressions:
             - expression: has(object.spec.tls)
               message: TLS must be defined.
+
 ```

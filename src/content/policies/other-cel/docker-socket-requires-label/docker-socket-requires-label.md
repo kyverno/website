@@ -46,6 +46,7 @@ spec:
             - name: isAllowDockerLabelTrue
               expression: object.metadata.?labels[?'allow-docker'].orValue('false') == 'true'
           expressions:
-            - expression: '!variables.hasDockerSocket || variables.isAllowDockerLabelTrue'
+            - expression: "!variables.hasDockerSocket || variables.isAllowDockerLabelTrue"
               message: If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`.
+
 ```

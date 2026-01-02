@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: "!has(object.metadata.annotations) ||  (!('config.linkerd.io/skip-inbound-ports' in object.metadata.annotations) && !('config.linkerd.io/skip-outbound-ports' in object.metadata.annotations))"
               message: Pods may not skip ports. The annotations `config.linkerd.io/skip-inbound-ports` or `config.linkerd.io/skip-outbound-ports` must not be set.
+
 ```

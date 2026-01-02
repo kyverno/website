@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.1
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: This policy denies the creation and updating of resources specifically for Deployment  and Pod kinds during a specified time window. The policy is designed to enhance control  over resource modifications during critical periods, ensuring stability and consistency  within the Kubernetes environment.
 spec:
@@ -47,9 +47,10 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{request.operation}}'
+              - key: "{{request.operation}}"
                 operator: AnyIn
                 value:
                   - CREATE
                   - UPDATE
+
 ```

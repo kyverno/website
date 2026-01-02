@@ -43,4 +43,5 @@ spec:
           expressions:
             - expression: "!object.spec.containers.exists(container,  container.?env.orValue([]).exists(e, e.name == 'DISABLE_OPA' && e.value == 'true'))"
               message: DISABLE_OPA must not be set to true.
+
 ```

@@ -26,7 +26,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -143,4 +143,5 @@ spec:
               value: [{"name": "my-secret"}]
             }]
           ) : []
+
 ```

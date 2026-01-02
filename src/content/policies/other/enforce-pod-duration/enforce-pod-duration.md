@@ -39,7 +39,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ request.object.metadata.annotations."pod.kubernetes.io/lifetime" || ''0s'' }}'
+              - key: "{{ request.object.metadata.annotations.\"pod.kubernetes.io/lifetime\" || '0s' }}"
                 operator: GreaterThan
                 value: 8h
+
 ```

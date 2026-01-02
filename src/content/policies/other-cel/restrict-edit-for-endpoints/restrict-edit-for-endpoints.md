@@ -42,4 +42,5 @@ spec:
           expressions:
             - expression: "!object.rules.exists(rule, 'endpoints' in rule.resources && 'edit' in rule.verbs)"
               message: This cluster may still be vulnerable to CVE-2021-25740. The system:aggregate-to-edit ClusterRole should not have edit permission over Endpoints.
+
 ```

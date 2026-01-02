@@ -1,9 +1,7 @@
 ---
-title: 'kyverno create test'
-sidebar:
-  order: 35
+title: "kyverno create test"
+weight: 35
 ---
-
 ## kyverno create test
 
 Create a Kyverno test file.
@@ -12,7 +10,7 @@ Create a Kyverno test file.
 
 Create a Kyverno test file.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#create
+  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create test [flags]
@@ -60,4 +58,5 @@ kyverno create test [flags]
 
 ### SEE ALSO
 
-- [kyverno create](kyverno_create.md) - Helps with the creation of various Kyverno resources.
+* [kyverno create](kyverno_create.md)	 - Helps with the creation of various Kyverno resources.
+

@@ -1,9 +1,7 @@
 ---
-title: 'kyverno create cluster-role'
-sidebar:
-  order: 35
+title: "kyverno create cluster-role"
+weight: 35
 ---
-
 ## kyverno create cluster-role
 
 Create an aggregated role for given resource types
@@ -50,4 +48,5 @@ kyverno create cluster-role [name]  [flags]
 
 ### SEE ALSO
 
-- [kyverno create](kyverno_create.md) - Helps with the creation of various Kyverno resources.
+* [kyverno create](kyverno_create.md)	 - Helps with the creation of various Kyverno resources.
+

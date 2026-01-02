@@ -44,6 +44,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!has(object.spec.strategy.jenkinsPipelineStrategy)'
+            - expression: "!has(object.spec.strategy.jenkinsPipelineStrategy)"
               message: Jenkins Pipeline Build Strategy has been deprecated and is not allowed
+
 ```

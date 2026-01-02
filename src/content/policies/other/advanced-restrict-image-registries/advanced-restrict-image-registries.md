@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: In instances where a ClusterPolicy defines all the approved image registries is insufficient, more granular control may be needed to set permitted registries, especially in multi-tenant use cases where some registries may be based on the Namespace. This policy shows an advanced version of the Restrict Image Registries policy which gets a global approved registry from a ConfigMap and, based upon an annotation at the Namespace level, gets the registry approved for that Namespace.
 spec:
@@ -60,10 +60,11 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: '{{element.image}}'
+                  - key: "{{element.image}}"
                     operator: NotEquals
-                    value: '{{nsregistries}}'
-                  - key: '{{element.image}}'
+                    value: "{{nsregistries}}"
+                  - key: "{{element.image}}"
                     operator: NotEquals
-                    value: '{{clusterregistries.data.registries}}'
+                    value: "{{clusterregistries.data.registries}}"
+
 ```

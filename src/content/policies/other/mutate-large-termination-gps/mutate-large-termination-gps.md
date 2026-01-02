@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods with large terminationGracePeriodSeconds (tGPS) might prevent cluster nodes from getting drained, ultimately making the whole cluster unstable. This policy mutates all incoming Pods to set their tGPS under 50s. If the user creates a pod without specifying tGPS, then the Kubernetes default of 30s is maintained.
 spec:
@@ -38,11 +38,12 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{request.object.spec.terminationGracePeriodSeconds || `0` }}'
+          - key: "{{request.object.spec.terminationGracePeriodSeconds || `0` }}"
             operator: GreaterThan
             value: 50
       mutate:
         patchStrategicMerge:
           spec:
             terminationGracePeriodSeconds: 50
+
 ```

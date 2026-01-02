@@ -82,4 +82,5 @@ spec:
           expressions:
             - expression: object.spec.?securityContext.?fsGroup.orValue(1) > 0
               message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.fsGroup must be unset or set to a value greater than zero.
+
 ```

@@ -38,13 +38,13 @@ spec:
         kind: ResourceQuota
         name: default-resourcequota
         synchronize: true
-        namespace: '{{request.object.metadata.name}}'
+        namespace: "{{request.object.metadata.name}}"
         data:
           spec:
             hard:
-              requests.cpu: '4'
+              requests.cpu: "4"
               requests.memory: 16Gi
-              limits.cpu: '4'
+              limits.cpu: "4"
               limits.memory: 16Gi
     - name: generate-limitrange
       match:
@@ -57,7 +57,7 @@ spec:
         kind: LimitRange
         name: default-limitrange
         synchronize: true
-        namespace: '{{request.object.metadata.name}}'
+        namespace: "{{request.object.metadata.name}}"
         data:
           spec:
             limits:
@@ -68,4 +68,5 @@ spec:
                   cpu: 200m
                   memory: 256Mi
                 type: Container
+
 ```

@@ -37,4 +37,5 @@ spec:
           metadata:
             annotations:
               +(config.linkerd.io/default-inbound-policy): deny
+
 ```

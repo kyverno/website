@@ -44,7 +44,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.name }}'
+              - key: "{{ request.name }}"
                 operator: Equals
                 value: myapp-maintenance-*
+
 ```

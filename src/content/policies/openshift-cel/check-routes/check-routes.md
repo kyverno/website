@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: has(object.spec.tls)
               message: HTTP routes are not allowed. Configure TLS for secure routes.
+
 ```

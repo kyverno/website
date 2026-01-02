@@ -37,7 +37,7 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   variables:
@@ -48,4 +48,5 @@ spec:
         Pods in this namespace may not be exec'd into.
       expression: |
         variables.pod.metadata.?labels[?'exec'].orValue('') != 'false'
+
 ```

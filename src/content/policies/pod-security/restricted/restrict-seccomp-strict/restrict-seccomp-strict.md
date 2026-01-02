@@ -42,24 +42,24 @@ spec:
               securityContext:
                 seccompProfile:
                   type: RuntimeDefault | Localhost
-              '=(ephemeralContainers)':
-                - '=(securityContext)':
-                    '=(seccompProfile)':
-                      '=(type)': RuntimeDefault | Localhost
-              '=(initContainers)':
-                - '=(securityContext)':
-                    '=(seccompProfile)':
-                      '=(type)': RuntimeDefault | Localhost
+              "=(ephemeralContainers)":
+                - "=(securityContext)":
+                    "=(seccompProfile)":
+                      "=(type)": RuntimeDefault | Localhost
+              "=(initContainers)":
+                - "=(securityContext)":
+                    "=(seccompProfile)":
+                      "=(type)": RuntimeDefault | Localhost
               containers:
-                - '=(securityContext)':
-                    '=(seccompProfile)':
-                      '=(type)': RuntimeDefault | Localhost
+                - "=(securityContext)":
+                    "=(seccompProfile)":
+                      "=(type)": RuntimeDefault | Localhost
           - spec:
-              '=(ephemeralContainers)':
+              "=(ephemeralContainers)":
                 - securityContext:
                     seccompProfile:
                       type: RuntimeDefault | Localhost
-              '=(initContainers)':
+              "=(initContainers)":
                 - securityContext:
                     seccompProfile:
                       type: RuntimeDefault | Localhost
@@ -67,4 +67,5 @@ spec:
                 - securityContext:
                     seccompProfile:
                       type: RuntimeDefault | Localhost
+
 ```

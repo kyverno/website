@@ -45,6 +45,7 @@ spec:
         message: Cannot use Flux v1 annotation.
         pattern:
           metadata:
-            '=(annotations)':
-              X(fluxcd.io/*): '*?'
+            "=(annotations)":
+              X(fluxcd.io/*): "*?"
+
 ```

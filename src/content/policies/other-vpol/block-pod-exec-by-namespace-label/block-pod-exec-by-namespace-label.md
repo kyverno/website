@@ -39,10 +39,11 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
-    - messageExpression: '''Exec operations are not allowed in namespace "'' + request.namespace + ''" due to exec=false label'''
+    - messageExpression: "'Exec operations are not allowed in namespace \"' + request.namespace + '\" due to exec=false label'"
       expression: variables.execLabelValue != 'false'
+
 ```

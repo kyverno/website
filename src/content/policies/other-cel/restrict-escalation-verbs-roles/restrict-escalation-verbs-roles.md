@@ -55,4 +55,5 @@ spec:
           expressions:
             - expression: object.rules == null ||  !object.rules.exists(rule, rule.apiGroups.exists(apiGroup, apiGroup in variables.apiGroups) && rule.resources.exists(resource, resource in variables.resources) && rule.verbs.exists(verb, verb in variables.verbs))
               message: Use of verbs `escalate`, `bind`, and `impersonate` are forbidden.
+
 ```

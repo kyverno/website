@@ -111,4 +111,5 @@ spec:
             - expression: has(object.spec.jobTemplate.spec.template.metadata) && has(object.spec.jobTemplate.spec.template.metadata.labels) && 'foo' in object.spec.jobTemplate.spec.template.metadata.labels
               messageExpression: |
                 'Creating Pods in the ' + request.namespace + ' namespace,' + ' which is not in the excluded list of namespaces ' + params.data.exclude + ',' + ' is forbidden unless it carries the label `foo`.'
+
 ```

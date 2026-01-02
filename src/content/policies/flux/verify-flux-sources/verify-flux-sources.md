@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: GitRepository, Bucket, HelmRepository, ImageRepository
     policies.kyverno.io/description: Flux source APIs include a number of different sources such as GitRepository, Bucket, HelmRepository, and ImageRepository resources. Each of these by default can be pointed to any location. In a production environment, it may be desired to restrict these to only known sources to prevent accessing outside sources. This policy verifies that each of the Flux sources comes from a trusted location.
 spec:
@@ -64,7 +64,7 @@ spec:
         message: .spec.endpoint must reference an address within the myorg organization.
         pattern:
           spec:
-            endpoint: '*.myorg.com'
+            endpoint: "*.myorg.com"
     - name: flux-helm-repositories
       match:
         any:
@@ -97,4 +97,5 @@ spec:
         pattern:
           spec:
             image: ghcr.io/myorg/*
+
 ```

@@ -34,7 +34,7 @@ spec:
                 - Service
               selector:
                 matchLabels:
-                  protected: 'true'
+                  protected: "true"
       exclude:
         any:
           - clusterRoles:
@@ -49,4 +49,5 @@ spec:
                 value:
                   - DELETE
                   - UPDATE
+
 ```

@@ -40,9 +40,9 @@ spec:
           - key: "{{ contains(request.object.spec.issuerRef.name, 'letsencrypt') }}"
             operator: Equals
             value: false
-          - key: '{{ request.object.spec.duration }}'
+          - key: "{{ request.object.spec.duration }}"
             operator: NotEquals
-            value: ''
+            value: ""
       validate:
         message: certificate duration must be < than 2400h (100 days)
         deny:
@@ -51,4 +51,5 @@ spec:
               - key: "{{ max( [ to_number(regex_replace_all('h.*',request.object.spec.duration,'')), to_number('2400') ] ) }}"
                 operator: NotEquals
                 value: 2400
+
 ```

@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.metadata.?annotations.orValue([]).all(annotation, !annotation.contains('fluxcd.io/') || annotation in ['fluxcd.io/cow', 'fluxcd.io/dog'])
               message: The only approved FluxCD annotations are `fluxcd.io/cow` and `fluxcd.io/dog`.
+
 ```

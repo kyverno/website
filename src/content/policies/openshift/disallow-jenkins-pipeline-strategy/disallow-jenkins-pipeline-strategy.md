@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.20'
+    kyverno.io/kubernetes-version: "1.20"
     policies.kyverno.io/subject: BuildConfig
     policies.kyverno.io/description: The Jenkins Pipeline Build Strategy has been deprecated. This policy prevents its use. Use OpenShift Pipelines instead.
 spec:
@@ -46,4 +46,5 @@ spec:
               - key: "{{ keys(request.object.spec.strategy) | contains(@, 'jenkinsPipelineStrategy') }}"
                 operator: Equals
                 value: true
+
 ```

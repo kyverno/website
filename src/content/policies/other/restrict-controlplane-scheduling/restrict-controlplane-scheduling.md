@@ -38,8 +38,8 @@ spec:
         message: Pods may not use tolerations which schedule on control plane nodes.
         pattern:
           spec:
-            '=(tolerations)':
-              - key: '!node-role.kubernetes.io/master'
+            "=(tolerations)":
+              - key: "!node-role.kubernetes.io/master"
     - name: restrict-controlplane-scheduling-control-plane
       match:
         any:
@@ -50,6 +50,7 @@ spec:
         message: Pods may not use tolerations which schedule on control plane nodes.
         pattern:
           spec:
-            '=(tolerations)':
-              - key: '!node-role.kubernetes.io/control-plane'
+            "=(tolerations)":
+              - key: "!node-role.kubernetes.io/control-plane"
+
 ```

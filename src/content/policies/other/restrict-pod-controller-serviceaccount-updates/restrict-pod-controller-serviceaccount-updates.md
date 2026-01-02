@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: Medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
 spec:
   validationFailureAction: Audit
@@ -42,7 +42,7 @@ spec:
                 - ReplicationController
       preconditions:
         all:
-          - key: '{{ request.operation }}'
+          - key: "{{ request.operation }}"
             operator: Equals
             value: UPDATE
       validate:
@@ -61,7 +61,7 @@ spec:
                 - CronJob
       preconditions:
         all:
-          - key: '{{ request.operation }}'
+          - key: "{{ request.operation }}"
             operator: Equals
             value: UPDATE
       validate:
@@ -72,4 +72,5 @@ spec:
               - key: "{{ request.object.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
                 operator: NotEquals
                 value: "{{ request.oldObject.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
+
 ```

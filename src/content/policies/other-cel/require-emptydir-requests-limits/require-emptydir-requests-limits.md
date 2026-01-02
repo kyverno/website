@@ -47,8 +47,9 @@ spec:
             - name: containers
               expression: object.spec.containers + object.spec.?initContainers.orValue([])
             - name: emptydirnames
-              expression: 'has(object.spec.volumes) ?  object.spec.volumes.filter(volume, has(volume.emptyDir) && !has(volume.emptyDir.sizeLimit)).map(volume, volume.name) : []'
+              expression: "has(object.spec.volumes) ?  object.spec.volumes.filter(volume, has(volume.emptyDir) && !has(volume.emptyDir.sizeLimit)).map(volume, volume.name) : []"
           expressions:
             - expression: variables.containers.all(container, !container.?volumeMounts.orValue([]).exists(mount, mount.name in variables.emptydirnames) ||  container.resources.?requests[?'ephemeral-storage'].hasValue() && container.resources.?limits[?'ephemeral-storage'].hasValue())
               message: Containers mounting emptyDir volumes must specify requests and limits for ephemeral-storage.
+
 ```

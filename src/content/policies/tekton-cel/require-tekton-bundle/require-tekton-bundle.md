@@ -60,4 +60,5 @@ spec:
           expressions:
             - expression: object.spec.?taskRef.?bundle.orValue('') != ''
               message: A bundle is required.
+
 ```

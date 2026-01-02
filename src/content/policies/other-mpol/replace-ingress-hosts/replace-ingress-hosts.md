@@ -94,4 +94,5 @@ spec:
               value: tlsEntry.secretName.replace('.old.com', '.new.com')
             } : null
           ).filter(patch, patch != null)
+
 ```

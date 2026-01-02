@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/description: Kubecost Enterprise allows users to define budgets for Namespaces and clusters as well as predict the cost of new Deployments based on historical cost data. By combining these abilities, users can achieve proactive cost controls for clusters with Kubecost installed by denying Deployments which would exceed the remaining configured monthly budget, if applicable. This policy checks for the creation of Deployments and compares the predicted cost of the Deployment to the remaining amount in the monthly budget, if one is found. If the predicted cost is greater than the remaining budget, the Deployment is denied. This policy requires Kubecost Enterprise at a version of 1.108 or greater.
 spec:
   validationFailureAction: Audit
@@ -40,7 +40,7 @@ spec:
                 - CREATE
       preconditions:
         all:
-          - key: '{{ budget }}'
+          - key: "{{ budget }}"
             operator: NotEquals
             value: nobudget
       context:
@@ -55,14 +55,14 @@ spec:
             method: POST
             data:
               - key: apiVersion
-                value: '{{ request.object.apiVersion }}'
+                value: "{{ request.object.apiVersion }}"
               - key: kind
-                value: '{{ request.object.kind }}'
+                value: "{{ request.object.kind }}"
               - key: spec
-                value: '{{ request.object.spec }}'
+                value: "{{ request.object.spec }}"
             service:
               url: http://kubecost-cost-analyzer.kubecost:9090/model/prediction/speccost?clusterID=cluster-one&defaultNamespace=default
-            jmesPath: '[0].costChange.totalMonthlyRate'
+            jmesPath: "[0].costChange.totalMonthlyRate"
         - name: remainingBudget
           variable:
             jmesPath: subtract(budget.spendLimit,budget.currentSpend)
@@ -71,7 +71,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ predictedMonthlyCost }}'
+              - key: "{{ predictedMonthlyCost }}"
                 operator: GreaterThan
-                value: '{{ remainingBudget }}'
+                value: "{{ remainingBudget }}"
+
 ```

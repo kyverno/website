@@ -30,7 +30,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -55,4 +55,5 @@ spec:
               value: {"name": "K8S_IMAGE", "value": string(c.image)}
             }
           )
+
 ```

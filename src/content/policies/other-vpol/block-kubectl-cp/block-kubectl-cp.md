@@ -37,7 +37,7 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
@@ -45,4 +45,5 @@ spec:
         Cannot use `kubectl cp` on pods
       expression: |
         object.command.size() >= 2 && object.command[0] != "tar" && object.command[1] != "cf"
+
 ```

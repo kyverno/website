@@ -1,9 +1,7 @@
 ---
-title: 'kyverno version'
-sidebar:
-  order: 35
+title: "kyverno version"
+weight: 35
 ---
-
 ## kyverno version
 
 Prints the version of Kyverno CLI.
@@ -12,7 +10,7 @@ Prints the version of Kyverno CLI.
 
 Prints the version of Kyverno CLI.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#version
+  For more information visit https://kyverno.io/docs/kyverno-cli/#version
 
 ```
 kyverno version [flags]
@@ -52,4 +50,5 @@ kyverno version [flags]
 
 ### SEE ALSO
 
-- [kyverno](kyverno.md) - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+

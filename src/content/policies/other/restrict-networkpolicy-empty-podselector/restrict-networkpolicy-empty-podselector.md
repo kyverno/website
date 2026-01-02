@@ -45,7 +45,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{request.object.spec.podSelector.keys(@) | length(@)}}'
+              - key: "{{request.object.spec.podSelector.keys(@) | length(@)}}"
                 operator: Equals
                 value: 0
+
 ```

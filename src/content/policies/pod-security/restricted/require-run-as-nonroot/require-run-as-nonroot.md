@@ -40,24 +40,25 @@ spec:
         anyPattern:
           - spec:
               securityContext:
-                runAsNonRoot: 'true'
-              '=(ephemeralContainers)':
-                - '=(securityContext)':
-                    '=(runAsNonRoot)': 'true'
-              '=(initContainers)':
-                - '=(securityContext)':
-                    '=(runAsNonRoot)': 'true'
+                runAsNonRoot: "true"
+              "=(ephemeralContainers)":
+                - "=(securityContext)":
+                    "=(runAsNonRoot)": "true"
+              "=(initContainers)":
+                - "=(securityContext)":
+                    "=(runAsNonRoot)": "true"
               containers:
-                - '=(securityContext)':
-                    '=(runAsNonRoot)': 'true'
+                - "=(securityContext)":
+                    "=(runAsNonRoot)": "true"
           - spec:
-              '=(ephemeralContainers)':
+              "=(ephemeralContainers)":
                 - securityContext:
-                    runAsNonRoot: 'true'
-              '=(initContainers)':
+                    runAsNonRoot: "true"
+              "=(initContainers)":
                 - securityContext:
-                    runAsNonRoot: 'true'
+                    runAsNonRoot: "true"
               containers:
                 - securityContext:
-                    runAsNonRoot: 'true'
+                    runAsNonRoot: "true"
+
 ```

@@ -42,7 +42,7 @@ spec:
                 - StatefulSet
       preconditions:
         all:
-          - key: '{{ request.object.spec.replicas }}'
+          - key: "{{ request.object.spec.replicas }}"
             operator: GreaterThanOrEquals
             value: 3
       validate:
@@ -53,4 +53,5 @@ spec:
               - key: "{{request.object.spec.template.spec.topologySpreadConstraints[?topologyKey=='kubernetes.io/hostname' || topologyKey=='topology.kubernetes.io/zone'] || `[]` | length(@) }}"
                 operator: NotEquals
                 value: 2
+
 ```

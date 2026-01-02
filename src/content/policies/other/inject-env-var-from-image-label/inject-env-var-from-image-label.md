@@ -25,7 +25,7 @@ metadata:
     pod-policies.kyverno.io/autogen-controllers: none
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Container images which use metadata such as the LABEL directive in a Dockerfile do not surface this information to apps running within. In some cases, running the image as a container may need access to this information. This policy injects the value of a label set in a Dockerfile named `maintainer` as an environment variable to the corresponding container in the Pod.
 spec:
@@ -47,17 +47,18 @@ spec:
             context:
               - name: maintainer
                 imageRegistry:
-                  reference: '{{ element.image }}'
+                  reference: "{{ element.image }}"
                   jmesPath: configData.config.Labels.maintainer || ''
             preconditions:
               all:
-                - key: '{{maintainer}}'
+                - key: "{{maintainer}}"
                   operator: NotEquals
-                  value: ''
+                  value: ""
             patchesJson6902: |-
               - op: add
                 path: "/spec/containers/{{elementIndex}}/env/-"
                 value:
                   name: MAINTAINER
                   value: "{{maintainer}}"
+
 ```

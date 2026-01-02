@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels[?'app.kubernetes.io/name'].orValue('') != ""
               message: The label `app.kubernetes.io/name` is required.
+
 ```

@@ -39,13 +39,14 @@ spec:
         message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged, spec.initContainers[*].securityContext.privileged, and spec.ephemeralContainers[*].securityContext.privileged must be unset or set to `false`.
         pattern:
           spec:
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(privileged)': 'false'
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(privileged)': 'false'
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(privileged)": "false"
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(privileged)": "false"
             containers:
-              - '=(securityContext)':
-                  '=(privileged)': 'false'
+              - "=(securityContext)":
+                  "=(privileged)": "false"
+
 ```

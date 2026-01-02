@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -50,4 +50,5 @@ spec:
   validations:
     - expression: variables.allContainers.all(container, container.?securityContext.?privileged.orValue(false) == false)
       message: Privileged mode is disallowed. All containers must set the securityContext.privileged field to `false` or unset the field.
+
 ```

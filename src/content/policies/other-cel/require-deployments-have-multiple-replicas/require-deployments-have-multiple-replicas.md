@@ -44,4 +44,5 @@ spec:
           expressions:
             - expression: object.spec.replicas > 1
               message: Deployments should have more than one replica to ensure availability.
+
 ```

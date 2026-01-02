@@ -63,4 +63,5 @@ spec:
           expressions:
             - expression: object.roleRef.name != 'system:openshift:scc:anyuid'
               message: Use of the SecurityContextConstraint (SCC) anyuid is not allowed
+
 ```

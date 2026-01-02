@@ -44,16 +44,17 @@ spec:
         kubernetes.io/metadata.name: testnamespace
     resourceRules:
       - resources:
-          - '*'
+          - "*"
         operations:
           - CREATE
           - UPDATE
           - DELETE
         apiGroups:
-          - '*'
+          - "*"
         apiVersions:
-          - '*'
+          - "*"
   validations:
-    - messageExpression: '"The cluster-admin ''testuser'' user cannot touch testnamespace Namespace."'
-      expression: '!(variables.isTestUser && variables.isTestNamespace && variables.isBlockedOperation)'
+    - messageExpression: "\"The cluster-admin 'testuser' user cannot touch testnamespace Namespace.\""
+      expression: "!(variables.isTestUser && variables.isTestNamespace && variables.isBlockedOperation)"
+
 ```

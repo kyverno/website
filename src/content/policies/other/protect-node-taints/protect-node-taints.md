@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Node
     policies.kyverno.io/minversion: 1.6.0
-    policies.kyverno.io/description: 'Node taints are often used as a control in multi-tenant use cases. If users can alter them, they may be able to affect scheduling of Pods which may impact other workloads. This sample prohibits altering of node taints unless by a user holding the `cluster-admin` ClusterRole. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0.'
+    policies.kyverno.io/description: "Node taints are often used as a control in multi-tenant use cases. If users can alter them, they may be able to affect scheduling of Pods which may impact other workloads. This sample prohibits altering of node taints unless by a user holding the `cluster-admin` ClusterRole. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0."
 spec:
   validationFailureAction: Enforce
   background: false
@@ -47,10 +47,11 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{request.object.spec.taints}}'
+              - key: "{{request.object.spec.taints}}"
                 operator: NotEquals
-                value: ''
-              - key: '{{request.oldObject.spec.taints}}'
+                value: ""
+              - key: "{{request.oldObject.spec.taints}}"
                 operator: NotEquals
-                value: '{{request.object.spec.taints}}'
+                value: "{{request.object.spec.taints}}"
+
 ```

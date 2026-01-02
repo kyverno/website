@@ -45,7 +45,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-26-removals
       match:
@@ -61,7 +61,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-27-removals
       match:
@@ -75,7 +75,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-29-removals
       match:
@@ -90,7 +90,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.29. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-32-removals
       match:
@@ -105,6 +105,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.32. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
+
 ```

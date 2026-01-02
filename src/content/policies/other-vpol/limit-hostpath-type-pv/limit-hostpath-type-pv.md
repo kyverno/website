@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: PersistentVolume
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: hostPath persistentvolumes consume the underlying node's file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data.
 spec:
   evaluation:
@@ -35,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -46,4 +46,5 @@ spec:
   validations:
     - expression: "!has(object.spec.hostPath) || object.spec.hostPath.path.startsWith('/data')"
       message: hostPath type persistent volumes are confined to /data.
+
 ```
