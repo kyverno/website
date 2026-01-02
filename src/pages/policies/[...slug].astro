@@ -1,0 +1,143 @@
+---
+// Import the `<StarlightPage>` component first to set up cascade layers.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+
+// Import any other components you want to use in your custom page.
+import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro'
+
+// Import collection
+import { getCollection, render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const policies = await getCollection('policies')
+  return policies.map((policy) => ({
+    params: { slug: policy.id },
+    props: { policy },
+  }))
+}
+
+const { policy } = Astro.props
+const { Content } = await render(policy)
+
+// Extract metadata
+const { data } = policy
+const severityColors = {
+  low: '#10b981', // green
+  medium: '#f59e0b', // amber
+  high: '#ef4444', // red
+}
+---
+
+<StarlightPage
+  frontmatter={{ title: data.title }}
+  sidebar={[
+    {
+      label: 'Policies',
+      collapsed: false,
+      autogenerate: {
+        directory: 'policies',
+        collapsed: true,
+        attrs: { style: 'text-transform: capitalize' },
+      },
+    },
+  ]}
+>
+  <!-- Policy Metadata -->
+  <div
+    class="policy-metadata"
+    style="margin-bottom: 2rem; padding: 1.5rem; background: var(--sl-color-gray-5); border-radius: 0.5rem; border: 1px solid var(--sl-color-gray-4);"
+  >
+    <dl
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 0;"
+    >
+      <div>
+        <dt
+          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
+        >
+          Category
+        </dt>
+        <dd style="margin: 0; font-weight: 500; color: var(--sl-color-text);">
+          {data.category}
+        </dd>
+      </div>
+
+      <div>
+        <dt
+          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
+        >
+          Severity
+        </dt>
+        <dd style="margin: 0; font-weight: 500;">
+          <span
+            style={`color: ${severityColors[data.severity]}; font-weight: 600; text-transform: capitalize;`}
+          >
+            {data.severity}
+          </span>
+        </dd>
+      </div>
+
+      <div>
+        <dt
+          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
+        >
+          Type
+        </dt>
+        <dd
+          style="margin: 0; font-weight: 500; color: var(--sl-color-text); font-family: var(--sl-font-mono); font-size: 0.9em;"
+        >
+          {data.type}
+        </dd>
+      </div>
+
+      {
+        data.version && (
+          <div>
+            <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
+              Version
+            </dt>
+            <dd style="margin: 0; font-weight: 500; color: var(--sl-color-text);">
+              {data.version}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+
+    {
+      data.subjects && data.subjects.length > 0 && (
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-4);">
+          <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Subjects
+          </dt>
+          <dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {data.subjects.map((subject) => (
+              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--sl-color-accent-low); color: var(--sl-color-accent); border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500;">
+                {subject}
+              </span>
+            ))}
+          </dd>
+        </div>
+      )
+    }
+
+    {
+      data.tags && data.tags.length > 0 && (
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-4);">
+          <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Tags
+          </dt>
+          <dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {data.tags.map((tag) => (
+              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--sl-color-gray-4); color: var(--sl-color-text); border-radius: 0.25rem; font-size: 0.875rem;">
+                {tag}
+              </span>
+            ))}
+          </dd>
+        </div>
+      )
+    }
+  </div>
+
+  <!-- Policy Content -->
+  <Content />
+</StarlightPage>

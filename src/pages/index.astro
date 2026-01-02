@@ -1,0 +1,29 @@
+---
+import '../styles/global.css'
+import '../layouts/DefaultLayout.astro'
+import DefaultLayout from '../layouts/DefaultLayout.astro'
+import { Header } from '../sections/Header'
+import { HeroSection } from '../sections/HeroSection'
+import { WhykyvernoSection } from '../sections/WhykyvernoSection'
+import { ComparisonChart } from '../sections/ComparisonChart'
+import { FeatureSection } from '../sections/FeatureSection'
+import { CtaSection } from '../sections/CtaSection'
+import { CelPolicySection } from '../sections/CelPolicySection'
+import { PartnersSection } from '../sections/PartnersSection'
+import { CncfSection } from '../sections/CncfSection'
+import { Footer } from '../sections/Footer'
+---
+
+<DefaultLayout>
+  <!-- <a href="/docs">Docs</a> -->
+  <Header client:load />
+  <HeroSection client:load />
+  <WhykyvernoSection />
+  <ComparisonChart />
+  <FeatureSection />
+  <CtaSection client:load />
+  <CelPolicySection />
+  <PartnersSection />
+  <CncfSection />
+  <Footer />
+</DefaultLayout>

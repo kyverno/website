@@ -1,0 +1,36 @@
+---
+// Import the `<StarlightPage>` component first to set up cascade layers.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+
+// Import collection
+import { getCollection } from 'astro:content'
+
+const allPolicy = await getCollection('policies')
+---
+
+<StarlightPage
+  frontmatter={{ title: 'Kyverno Policies' }}
+  sidebar={[
+    {
+      label: 'Policies',
+      collapsed: false,
+      autogenerate: {
+        directory: 'policies',
+        collapsed: true,
+        attrs: { style: 'text-transform: capitalize' },
+      },
+    },
+  ]}
+>
+  <ul>
+    {
+      allPolicy.map((policy) => (
+        <li>
+          <a class="" href={`/policies/${policy.id}/`} data-astro-prefetch>
+            {policy?.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</StarlightPage>

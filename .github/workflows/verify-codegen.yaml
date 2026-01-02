@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-
 name: Verify codegen
 
 permissions: {}
@@ -7,7 +6,8 @@ permissions: {}
 on:
   pull_request:
     branches:
-    - main
+      - main
+      - release-*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,11 +17,14 @@ jobs:
   verify-codegen:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-    - name: Install go
-      uses: actions/setup-go@4aaadf42668403795cdfdb15b1c4250e9fed12b9 # v5.6.0
-      with:
-        go-version-file: render/go.mod
-    - name: Verify generated code is up to date
-      run: make verify-codegen
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Verify generated code is up to date
+        run: npm run codegen:verify

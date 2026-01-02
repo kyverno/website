@@ -1,4 +1,4 @@
-## Related issue #
+## Related issue
 
 <!--
 Please link the GitHub issue this pull request resolves in the format of `#1234`. If you discussed this change
@@ -13,7 +13,7 @@ You can discuss changes with maintainers in the [Kyverno Slack Channel](https://
 ## Proposed Changes
 
 <!--
-Describe the big picture of your changes here to communicate to the maintainers why we should accept this pull request. 
+Describe the big picture of your changes here to communicate to the maintainers why we should accept this pull request.
 
 ***NOTE***: If this PR results in new or altered behavior which is user facing, you **MUST** read and follow the steps outlined in the [PR documentation guide](pr_documentation.md) and add Proof Manifests as defined below.
 -->

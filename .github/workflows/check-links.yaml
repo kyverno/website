@@ -7,41 +7,24 @@ permissions: {}
 on:
   pull_request:
     branches:
-    - main
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-      
+
 jobs:
   check-links:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-    - name: Setup Go
-      uses: actions/setup-go@v6.1.0
-      with:
-        go-version: '1.25' # Specify the version of Go you need
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v3
-      with:
-        hugo-version: '0.147.9'
-        extended: true
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '20'
-    - name: Install Node.js dependencies
-      run: npm i -D postcss postcss-cli autoprefixer
-    - name: Build Hugo site
-      run: hugo build
-    - name: Check unrendered links
-      id: lychee_unrendered
-      uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # v2.7.0
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        fail: true
-        debug: false
-        args: --github-token ${{secrets.GITHUB_TOKEN}} --config config/lychee.toml --max-concurrency 2 --max-retries 3 --retry-wait-time 5 --accept 200,429 --timeout 60 -E --root-dir ${{ github.workspace }}/public ${{ github.workspace }}/public
-
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check links
+        run: npm run check:links

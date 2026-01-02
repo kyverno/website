@@ -1,0 +1,69 @@
+---
+interface Props {
+  state: string
+  version: string
+}
+
+const { state, version } = Astro.props
+const normalizedState = (state?.toLowerCase() || 'beta') as
+  | 'alpha'
+  | 'beta'
+  | 'stable'
+  | 'deprecated'
+
+// State configuration with colors and labels
+const stateConfig = {
+  alpha: {
+    label: 'Alpha',
+    badgeColor: 'bg-purple-600 text-white dark:bg-purple-500',
+    bgColor: 'bg-purple-50 dark:bg-purple-950/30',
+    borderColor: 'border-purple-500 dark:border-purple-600',
+  },
+  beta: {
+    label: 'Beta',
+    badgeColor: 'bg-orange-600 text-white dark:bg-orange-500',
+    bgColor: 'bg-orange-50 dark:bg-orange-950/30',
+    borderColor: 'border-orange-500 dark:border-orange-600',
+  },
+  stable: {
+    label: 'Stable',
+    badgeColor: 'bg-green-600 text-white dark:bg-green-500',
+    bgColor: 'bg-green-50 dark:bg-green-950/30',
+    borderColor: 'border-green-500 dark:border-green-600',
+  },
+  deprecated: {
+    label: 'Deprecated',
+    badgeColor: 'bg-gray-600 text-white dark:bg-gray-500',
+    bgColor: 'bg-gray-50 dark:bg-gray-900/40',
+    borderColor: 'border-gray-400 dark:border-gray-600',
+  },
+}
+
+const config = stateConfig[normalizedState] || stateConfig.beta
+---
+
+<div
+  class={`feature-state-banner my-6 flex items-center gap-3 px-4 py-2 rounded-lg border-2 ${config.bgColor} ${config.borderColor} text-sm w-fit shadow-sm`}
+  role="status"
+  aria-label={`Feature state: ${config.label}, introduced in ${version || 'unknown version'}`}
+>
+  <span
+    class="font-semibold text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wide"
+    >FEATURE STATE:</span
+  >
+  <span
+    class={`inline-flex items-center px-3 py-1 rounded-md text-xs font-bold text-white whitespace-nowrap shadow-md ${config.badgeColor}`}
+  >
+    {config.label}
+  </span>
+  {
+    version && (
+      <>
+        <span class="text-gray-400 dark:text-gray-500 font-bold mx-1">•</span>
+        <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold text-white whitespace-nowrap shadow-md bg-blue-600 dark:bg-blue-500">
+          Kyverno {version}
+        </span>
+      </>
+    )
+  }
+</div>

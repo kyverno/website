@@ -1,0 +1,50 @@
+---
+title: 'Memory Requests Equal Limits in ValidatingPolicy'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - Pod
+tags: []
+version: 1.14.0
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml" target="-blank">/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: memory-requests-equal-limits
+  annotations:
+    policies.kyverno.io/title: Memory Requests Equal Limits in ValidatingPolicy
+    policies.kyverno.io/category: Sample in Vpol
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/description: Pods which have memory limits equal to requests could be given a QoS class of Guaranteed if they also set CPU limits equal to requests. Guaranteed is the highest schedulable class.  This policy checks that all containers in a given Pod have memory requests equal to limits.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  validations:
+    - expression: object.spec.containers.all(container,  !container.?resources.?requests.?memory.hasValue() || container.resources.requests.memory == container.resources.?limits.?memory.orValue('-1'))
+      message: resources.requests.memory must be equal to resources.limits.memory
+
+```

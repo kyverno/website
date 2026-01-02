@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+:root {
+  font-family: 'Inter', sans-serif;
+  background-color: #12171b;
+  color: #eee;
+}
+
+@theme {
+  --color-dark-100: #12171b;
+  --color-dark-50: #171e22;
+  --color-dark-footer: #0d1012;
+  --color-primary-100: #3783c4;
+  --color-primary-75: #69a2d3;
+  --color-primary-50: #9bc1e1;
+  --color-primary-25: #cde0f0;
+  --color-accent-100: #e77e5b;
+  --color-accent-75: #ed9e84;
+  --color-accent-50: #f3bfad;
+  --color-accent-25: #f9dfd6;
+  --color-stroke: #28353c;
+}

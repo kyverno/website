@@ -1,0 +1,58 @@
+---
+title: 'Restrict Binding System Groups in ValidatingPolicy'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - RoleBinding
+  - ClusterRoleBinding
+  - RBAC
+tags: []
+version: 1.14.0
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml" target="-blank">/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-binding-system-groups
+  annotations:
+    policies.kyverno.io/title: Restrict Binding System Groups in ValidatingPolicy
+    policies.kyverno.io/category: Security, EKS Best Practices in vpol
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
+    kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/description: Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - rbac.authorization.k8s.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - rolebindings
+          - clusterrolebindings
+  validations:
+    - expression: object.subjects.all(subject, subject.name != 'system:anonymous')
+      message: Binding to system:anonymous is not allowed.
+    - expression: object.subjects.all(subject, subject.name != 'system:unauthenticated')
+      message: Binding to system:unauthenticated is not allowed.
+    - expression: object.subjects.all(subject, subject.name != 'system:masters')
+      message: Binding to system:masters is not allowed.
+
+```
