@@ -8,6 +8,8 @@ subjects:
   - Volume
 tags: []
 version: 1.11.0
+description: 'HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: object.spec.?volumes.orValue([]).all(volume, size(volume) == 0 || !has(volume.hostPath))
               message: HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
-
 ```

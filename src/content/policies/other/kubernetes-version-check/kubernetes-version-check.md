@@ -7,6 +7,8 @@ subjects:
   - Secret
 tags: []
 version: 1.8.0
+description: 'It is often needed to make decisions for resources based upon the version of the Kubernetes API server in the cluster. This policy serves as an example for how to retrieve the minor version of the Kubernetes API server and subsequently use in a policy behavior. It will mutate a Secret upon its creation with a label called `apiminorversion` the value of which is the minor version of the API server.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Secret
     kyverno.io/kyverno-version: 1.8.0-rc2
     policies.kyverno.io/minversion: 1.8.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: It is often needed to make decisions for resources based upon the version of the Kubernetes API server in the cluster. This policy serves as an example for how to retrieve the minor version of the Kubernetes API server and subsequently use in a policy behavior. It will mutate a Secret upon its creation with a label called `apiminorversion` the value of which is the minor version of the API server.
 spec:
   rules:
@@ -49,6 +51,5 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              apiminorversion: "{{minorversion}}"
-
+              apiminorversion: '{{minorversion}}'
 ```

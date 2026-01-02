@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,9 +46,8 @@ spec:
         cel:
           variables:
             - name: allContainers
-              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
+              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
           expressions:
             - expression: variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')
               message: Changing the proc mount from the default is not allowed.
-
 ```

@@ -8,6 +8,8 @@ subjects:
   - PodDisruptionBudget
 tags: []
 version: 1.6.0
+description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This policy checks all incoming Deployments and StatefulSets to ensure they have a matching, preexisting PodDisruptionBudget. Note: This policy must be run in `enforce` mode to ensure accuracy.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,9 +26,9 @@ metadata:
     policies.kyverno.io/category: Sample, EKS Best Practices
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Deployment, PodDisruptionBudget
-    policies.kyverno.io/description: "PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This policy checks all incoming Deployments and StatefulSets to ensure they have a matching, preexisting PodDisruptionBudget. Note: This policy must be run in `enforce` mode to ensure accuracy."
+    policies.kyverno.io/description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This policy checks all incoming Deployments and StatefulSets to ensure they have a matching, preexisting PodDisruptionBudget. Note: This policy must be run in `enforce` mode to ensure accuracy.'
 spec:
   validationFailureAction: Audit
   background: false
@@ -43,7 +45,7 @@ spec:
           - key: "{{request.operation || 'BACKGROUND'}}"
             operator: Equals
             value: CREATE
-          - key: "{{ request.object.spec.replicas }}"
+          - key: '{{ request.object.spec.replicas }}'
             operator: GreaterThanOrEquals
             value: 3
       context:
@@ -56,8 +58,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{pdb_count}}"
+              - key: '{{pdb_count}}'
                 operator: LessThan
                 value: 1
-
 ```

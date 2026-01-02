@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - AuthorizationPolicy
 tags: []
+description: 'As of Linkerd 2.12, an AuthorizationPolicy is a resource used to selectively allow traffic to either a Server or HTTPRoute resource. Creating AuthorizationPolicies is needed when a Server exists in order to control what traffic is permitted within the mesh to the Pods selected by the Server or HTTPRoute. This policy, requiring Linkerd 2.12+, checks incoming AuthorizationPolicy resources to ensure that either a matching Server or HTTPRoute exists first.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: AuthorizationPolicy
     kyverno.io/kyverno-version: 1.8.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: As of Linkerd 2.12, an AuthorizationPolicy is a resource used to selectively allow traffic to either a Server or HTTPRoute resource. Creating AuthorizationPolicies is needed when a Server exists in order to control what traffic is permitted within the mesh to the Pods selected by the Server or HTTPRoute. This policy, requiring Linkerd 2.12+, checks incoming AuthorizationPolicy resources to ensure that either a matching Server or HTTPRoute exists first.
 spec:
   validationFailureAction: Audit
@@ -49,11 +51,10 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{request.object.spec.targetRef.name}}"
+              - key: '{{request.object.spec.targetRef.name}}'
                 operator: AnyNotIn
-                value: "{{servers}}"
-              - key: "{{request.object.spec.targetRef.name}}"
+                value: '{{servers}}'
+              - key: '{{request.object.spec.targetRef.name}}'
                 operator: AnyNotIn
-                value: "{{httproutes}}"
-
+                value: '{{httproutes}}'
 ```

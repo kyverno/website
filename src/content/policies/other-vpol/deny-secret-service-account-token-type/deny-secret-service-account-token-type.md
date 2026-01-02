@@ -7,6 +7,8 @@ subjects:
   - Secret
   - ServiceAccount
 tags: []
+description: 'Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. When creating a Secret, you can specify its type using the  type field of the Secret resource . The type kubernetes.io/service-account-token is used for legacy ServiceAccount tokens . These legacy Tokens can be of security concern and should be audited.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -21,7 +23,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Deny Secret Service Account Token Type in ValidatingPolicy
     policies.kyverno.io/category: Security in vpol
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret, ServiceAccount
@@ -35,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -46,5 +48,4 @@ spec:
   validations:
     - expression: object.type != 'kubernetes.io/service-account-token'
       message: Secret ServiceAccount token type is not allowed.
-
 ```

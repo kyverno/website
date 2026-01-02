@@ -5,6 +5,7 @@ severity: medium
 type: ValidatingPolicy
 subjects: []
 tags: []
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +26,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -37,5 +38,4 @@ spec:
   validations:
     - expression: object.spec.?ephemeralContainers.orValue([]).size() == 0
       message: Ephemeral (debug) containers are not permitted.
-
 ```

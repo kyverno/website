@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Certificate
 tags: []
+description: 'Certificates for trusted domains should always be steered to a controlled issuer to ensure the chain of trust is appropriate for that application. Users may otherwise be able to create their own issuers and sign certificates for other domains. This policy ensures that a certificate request for a specific domain uses a designated ClusterIssuer.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -38,10 +40,9 @@ spec:
         pattern:
           spec:
             (dnsNames):
-              - "*.corp.com"
+              - '*.corp.com'
             issuerRef:
               name: our-corp-issuer
               kind: ClusterIssuer
               group: cert-manager.io
-
 ```

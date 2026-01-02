@@ -8,6 +8,8 @@ subjects:
   - Annotation
 tags: []
 version: 1.11.0
+description: 'Rather than creating a deny list of annotations, it may be more useful to invert that list and create an allow list which then denies any others. This policy demonstrates how to allow two annotations with a specific key name of fluxcd.io/ while denying others that do not meet the pattern.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -46,5 +48,4 @@ spec:
           expressions:
             - expression: object.metadata.?annotations.orValue([]).all(annotation, !annotation.contains('fluxcd.io/') || annotation in ['fluxcd.io/cow', 'fluxcd.io/dog'])
               message: The only approved FluxCD annotations are `fluxcd.io/cow` and `fluxcd.io/dog`.
-
 ```

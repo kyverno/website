@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: 'Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.
 spec:
@@ -49,7 +51,6 @@ spec:
           - CREATE
           - UPDATE
   validations:
-    - expression: "!object.spec.template.spec.containers.exists(container,  has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe)"
+    - expression: '!object.spec.template.spec.containers.exists(container,  has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe)'
       message: Liveness and readiness probes cannot be the same.
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -36,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -56,5 +58,4 @@ spec:
           (container.securityContext.capabilities.add.orValue([]).size() == 1 && 
           container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE'))
       message: Any capabilities added other than NET_BIND_SERVICE are disallowed.
-
 ```

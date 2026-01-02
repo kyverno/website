@@ -8,6 +8,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: "It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied."
+isNew: true
 ---
 
 ## Policy Definition
@@ -26,7 +28,7 @@ metadata:
     policies.kyverno.io/subject: Namespace, Pod
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
 spec:
   validationActions:
@@ -58,7 +60,7 @@ spec:
         resources:
           - cronjobs
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -74,12 +76,11 @@ spec:
   validations:
     - expression: |
         request.kind.kind == 'Pod' ?  ( variables.filter || (has(object.metadata.labels) && 'foo' in object.metadata.labels)) :  request.kind.kind in ['Deployment', 'CronJob'] ? true : false
-      messageExpression: "'Pods must have the \"foo\" label in metadata.labels unless in namespaces: ' + variables.cm.data['exclude'] +  (has(object.metadata.labels) && 'foo' in object.metadata.labels ? ', but the label is present.' : ', but no \"foo\" label is found.')"
+      messageExpression: '''Pods must have the "foo" label in metadata.labels unless in namespaces: '' + variables.cm.data[''exclude''] +  (has(object.metadata.labels) && ''foo'' in object.metadata.labels ? '', but the label is present.'' : '', but no "foo" label is found.'')'
     - expression: |
         request.kind.kind == 'Deployment' ?  (  variables.filter || has(object.spec.template.metadata) && has(object.spec.template.metadata.labels) && 'foo' in object.spec.template.metadata.labels) :  request.kind.kind in ['Pod', 'CronJob'] ? true : false
-      messageExpression: "'Deployments must have the \"foo\" label in the Pod template metadata.labels unless in namespaces: ' + variables.cm.data['exclude'] +  (has(object.spec.template.metadata) && has(object.spec.template.metadata.labels) && 'foo' in object.spec.template.metadata.labels ? ', but the label is present.' : ', but no \"foo\" label is found.')"
+      messageExpression: '''Deployments must have the "foo" label in the Pod template metadata.labels unless in namespaces: '' + variables.cm.data[''exclude''] +  (has(object.spec.template.metadata) && has(object.spec.template.metadata.labels) && ''foo'' in object.spec.template.metadata.labels ? '', but the label is present.'' : '', but no "foo" label is found.'')'
     - expression: |
         request.kind.kind == 'CronJob' ?  ( variables.filter || has(object.spec.jobTemplate.spec.template.metadata) && has(object.spec.jobTemplate.spec.template.metadata.labels) && 'foo' in object.spec.jobTemplate.spec.template.metadata.labels) :  request.kind.kind in ['Pod', 'Deployment'] ? true : false
-      messageExpression: "'CronJobs must have the \"foo\" label in the Pod template metadata.labels unless in namespaces: ' + variables.cm.data['exclude'] +  (has(object.spec.jobTemplate.spec.template.metadata) && has(object.spec.jobTemplate.spec.template.metadata.labels) && 'foo' in object.spec.jobTemplate.spec.template.metadata.labels ? ', but the label is present.' : ', but no \"foo\" label is found.')"
-
+      messageExpression: '''CronJobs must have the "foo" label in the Pod template metadata.labels unless in namespaces: '' + variables.cm.data[''exclude''] +  (has(object.spec.jobTemplate.spec.template.metadata) && has(object.spec.jobTemplate.spec.template.metadata.labels) && ''foo'' in object.spec.jobTemplate.spec.template.metadata.labels ? '', but the label is present.'' : '', but no "foo" label is found.'')'
 ```

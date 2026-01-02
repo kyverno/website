@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'All processes inside a Pod can be made to run with specific user and groupID by setting `runAsUser` and `runAsGroup` respectively. `fsGroup` can be specified to make sure any file created in the volume will have the specified groupID. This policy validates that these fields are set to the defined values.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,7 +42,7 @@ spec:
         pattern:
           spec:
             securityContext:
-              runAsUser: "1000"
+              runAsUser: '1000'
     - name: validate-groupid
       match:
         any:
@@ -52,7 +54,7 @@ spec:
         pattern:
           spec:
             securityContext:
-              runAsGroup: "3000"
+              runAsGroup: '3000'
     - name: validate-fsgroup
       match:
         any:
@@ -64,6 +66,5 @@ spec:
         pattern:
           spec:
             securityContext:
-              fsGroup: "2000"
-
+              fsGroup: '2000'
 ```

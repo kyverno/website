@@ -6,6 +6,8 @@ type: MutatingPolicy
 subjects:
   - Pod
 tags: []
+description: "Rather than blocking Pods which come from outside registries, it is also possible to mutate them so the pulls are directed to approved registries. In some cases, those registries may function as pull-through proxies and can fetch the image if not cached. This policy mutates all images either in the form 'image:tag' or 'registry.corp.com/image:tag' to be 'myregistry.corp.com/'. Any path in the image name will be preserved."
+isNew: true
 ---
 
 ## Policy Definition
@@ -27,7 +29,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -74,5 +76,4 @@ spec:
       enabled: true
   webhookConfiguration:
     timeoutSeconds: 10
-
 ```

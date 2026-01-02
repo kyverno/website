@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.15.0
+description: 'OCI images may optionally be built with VOLUME statements which, if run in read-only mode, would still result in write access to the specified location. This may be unexpected and undesirable. This policy checks the contents of every container image and inspects them for such VOLUME statements, then blocks if found.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -42,11 +44,10 @@ spec:
           - CREATE
           - UPDATE
         apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
   validations:
     - message: Images containing built-in volumes are prohibited.
       expression: variables.allContainers.all(container, !has(image.GetMetadata(container.image).config.Volumes) || size(image.GetMetadata(container.image).config.?Volumes.orValue({})) == 0)
-
 ```

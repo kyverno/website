@@ -12,6 +12,8 @@ subjects:
   - CronJob
 tags: []
 version: 1.6.0
+description: 'For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -38,7 +40,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -80,9 +82,9 @@ spec:
         )
   variables:
     - name: containers
-      expression: "object.kind == \"Pod\" ? object.spec.containers : object.kind == \"CronJob\" ? object.spec.jobTemplate.spec.template.spec.containers : object.spec.template.spec.containers"
+      expression: 'object.kind == "Pod" ? object.spec.containers : object.kind == "CronJob" ? object.spec.jobTemplate.spec.template.spec.containers : object.spec.template.spec.containers'
     - name: basePath
-      expression: "object.kind == \"Pod\" ? \"/spec/containers/\" : object.kind == \"CronJob\" ? \"/spec/jobTemplate/spec/template/spec/containers/\" : \"/spec/template/spec/containers/\""
+      expression: 'object.kind == "Pod" ? "/spec/containers/" : object.kind == "CronJob" ? "/spec/jobTemplate/spec/template/spec/containers/" : "/spec/template/spec/containers/"'
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -184,5 +186,4 @@ spec:
                   )
               ) : null
           ).filter(p, p != null)
-
 ```

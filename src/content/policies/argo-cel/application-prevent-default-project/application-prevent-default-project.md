@@ -7,6 +7,8 @@ subjects:
   - Application
 tags: []
 version: 1.11.0
+description: 'This policy prevents the use of the default project in an Application.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: object.spec.?project.orValue('') != 'default'
               message: The default project may not be used in an Application.
-
 ```

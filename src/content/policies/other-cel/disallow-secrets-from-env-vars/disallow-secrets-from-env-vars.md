@@ -7,6 +7,8 @@ subjects:
   - Pod
   - Secret
 tags: []
+description: 'Secrets used as environment variables containing sensitive information may, if not carefully controlled,  be printed in log output which could be visible to unauthorized people and captured in forwarding applications. This policy disallows using Secrets as environment variables.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -46,5 +48,4 @@ spec:
               message: Secrets must be mounted as volumes, not as environment variables.
             - expression: object.spec.containers.all(container, container.?envFrom.orValue([]).all(envFrom, !has(envFrom.secretRef)))
               message: Secrets must not come from envFrom statements.
-
 ```

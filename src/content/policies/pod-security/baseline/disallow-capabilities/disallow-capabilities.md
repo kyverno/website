@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Adding capabilities beyond those listed in the policy must be disallowed.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -47,7 +49,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].securityContext.capabilities.add[] }}"
+              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].securityContext.capabilities.add[] }}'
                 operator: AnyNotIn
                 value:
                   - AUDIT_WRITE
@@ -63,5 +65,4 @@ spec:
                   - SETPCAP
                   - SETUID
                   - SYS_CHROOT
-
 ```

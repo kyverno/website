@@ -7,6 +7,8 @@ subjects:
   - CertificateSigningRequest
 tags: []
 version: 1.10.0
+description: 'The Kubernetes API includes a CertificateSigningRequest resource which can be used to generate a certificate for an entity. Because this API can be abused to create a long-lived credential, it is important to be able to audit this API to understand who/what is creating these CSRs and for what actors they are being created. This policy, intended to always be run in Audit mode and produce failure results in a Policy Report, inspects all incoming CertificateSigningRequests and writes out into the Policy Report information on who/what requested it and parsing the CSR to show the Subject information of that CSR resource.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: CertificateSigningRequest
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/description: The Kubernetes API includes a CertificateSigningRequest resource which can be used to generate a certificate for an entity. Because this API can be abused to create a long-lived credential, it is important to be able to audit this API to understand who/what is creating these CSRs and for what actors they are being created. This policy, intended to always be run in Audit mode and produce failure results in a Policy Report, inspects all incoming CertificateSigningRequests and writes out into the Policy Report information on who/what requested it and parsing the CSR to show the Subject information of that CSR resource.
 spec:
   background: false
@@ -36,7 +38,6 @@ spec:
               kinds:
                 - CertificateSigningRequest
       validate:
-        message: "A CSR was created by {{ request.userInfo.{groups: groups, username: username} | to_string(@) }} holding ClusterRoles {{ request.clusterRoles | to_string(@) }} and Roles {{ request.roles | to_string(@) }}. The subjects and groups requested in the CSR were \"{{ x509_decode(base64_decode('{{ request.object.spec.request }}')).Subject | to_string(@) }}\""
+        message: 'A CSR was created by {{ request.userInfo.{groups: groups, username: username} | to_string(@) }} holding ClusterRoles {{ request.clusterRoles | to_string(@) }} and Roles {{ request.roles | to_string(@) }}. The subjects and groups requested in the CSR were "{{ x509_decode(base64_decode(''{{ request.object.spec.request }}'')).Subject | to_string(@) }}"'
         deny: {}
-
 ```

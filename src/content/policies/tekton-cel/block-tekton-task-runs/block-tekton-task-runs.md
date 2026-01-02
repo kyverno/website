@@ -7,6 +7,8 @@ subjects:
   - TaskRun
 tags: []
 version: 1.11.0
+description: 'Restrict creation of TaskRun resources to the Tekton pipelines controller.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,7 +50,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               message: Creating a TaskRun is not allowed.
-
 ```

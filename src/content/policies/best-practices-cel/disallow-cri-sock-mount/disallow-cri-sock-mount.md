@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used. In addition to or replacement of this policy, preventing users from mounting the parent directories (/var/run and /var) may be necessary to completely prevent socket bind mounts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,7 +45,7 @@ spec:
         cel:
           variables:
             - name: hasVolumes
-              expression: "!has(object.spec.volumes)"
+              expression: '!has(object.spec.volumes)'
             - name: volumes
               expression: object.spec.volumes
             - name: volumesWithHostPath
@@ -57,5 +59,4 @@ spec:
               message: Use of the CRI-O Unix socket is not allowed.
             - expression: variables.hasVolumes ||  variables.volumesWithHostPath.all(volume, !volume.hostPath.path.matches('/var/run/cri-dockerd.sock'))
               message: Use of the Docker CRI socket is not allowed.
-
 ```

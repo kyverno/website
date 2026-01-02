@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.15.0
+description: 'A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -32,14 +34,13 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         resources:
           - pods
   conditions:
     - name: is-bare-pod
-      expression: "!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0"
-  schedule: "*/5 * * * *"
-
+      expression: '!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0'
+  schedule: '*/5 * * * *'
 ```

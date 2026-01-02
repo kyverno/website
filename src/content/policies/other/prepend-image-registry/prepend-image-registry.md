@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Pulling images from outside registries may be undesirable due to untrustworthiness or simply because the traffic results in an excess of bandwidth usage. Instead of blocking them, they can be mutated to divert to an internal registry which may already contain them or function as a pull-through proxy. This policy prepends all images in both containers and initContainers to come from `registry.io`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/description: Pulling images from outside registries may be undesirable due to untrustworthiness or simply because the traffic results in an excess of bandwidth usage. Instead of blocking them, they can be mutated to divert to an internal registry which may already contain them or function as a pull-through proxy. This policy prepends all images in both containers and initContainers to come from `registry.io`.
 spec:
   background: false
@@ -48,7 +50,7 @@ spec:
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: "{{ element.name }}"
+                  - name: '{{ element.name }}'
                     image: registry.io/{{ images.containers."{{element.name}}".path}}:{{images.containers."{{element.name}}".tag}}
     - name: prepend-registry-initcontainers
       match:
@@ -72,7 +74,6 @@ spec:
             patchStrategicMerge:
               spec:
                 initContainers:
-                  - name: "{{ element.name }}"
+                  - name: '{{ element.name }}'
                     image: registry.io/{{ images.initContainers."{{element.name}}".path}}:{{images.initContainers."{{element.name}}".tag}}
-
 ```

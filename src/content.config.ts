@@ -22,6 +22,8 @@ const policiesCollection = defineCollection({
     subjects: z.array(z.string()), // Pod, Deployment, ...
     tags: z.array(z.string()),
     version: z.string().optional(),
+    description: z.string().optional(), // Policy description from annotations
+    isNew: z.boolean().optional(), // Flag to mark new policies
   }),
 })
 

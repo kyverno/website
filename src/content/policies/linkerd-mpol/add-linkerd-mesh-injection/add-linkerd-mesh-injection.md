@@ -7,6 +7,8 @@ subjects:
   - Namespace
   - Annotation
 tags: []
+description: 'Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. In addition, a second annotation may be applied which controls the Pod startup behavior. This policy sets the annotations, if not present, `linkerd.io/inject` and `config.linkerd.io/proxy-await` to `enabled` on all new Namespaces.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -28,7 +30,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -46,9 +48,9 @@ spec:
         has(object.metadata.annotations) && 
         object.metadata.annotations.exists(k, k == 'config.linkerd.io/proxy-await')
     - name: needsInject
-      expression: "!variables.hasInjectAnnotation"
+      expression: '!variables.hasInjectAnnotation'
     - name: needsProxyAwait
-      expression: "!variables.hasProxyAwaitAnnotation"
+      expression: '!variables.hasProxyAwaitAnnotation'
   matchConditions:
     - name: needs-at-least-one-annotation
       expression: variables.needsInject || variables.needsProxyAwait
@@ -80,5 +82,4 @@ spec:
               }
             }
           }
-
 ```

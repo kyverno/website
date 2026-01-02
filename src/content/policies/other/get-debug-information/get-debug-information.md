@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'This policy generates a job which gathers troubleshooting data (including logs, kubectl describe output and events from the namespace) from pods that are in CrashLoopBackOff and have 3 restarts. This data can further be used to automatically create a Jira issue using some kind of automation or another Kyverno policy. For more information on the image used in this policy in addition to the necessary RBAC resources required in order for this policy to operate, see the documentation at https://github.com/nirmata/SRE-Operational-Usecases/tree/main/get-troubleshooting-data/get-debug-data. '
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,8 +25,8 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.11.5
-    kyverno.io/kubernetes-version: "1.27"
-    policies.kyverno.io/description: "This policy generates a job which gathers troubleshooting data (including logs, kubectl describe output and events from the namespace) from pods that are in CrashLoopBackOff and have 3 restarts. This data can further be used to automatically create a Jira issue using some kind of automation or another Kyverno policy. For more information on the image used in this policy in addition to the necessary RBAC resources required in order for this policy to operate, see the documentation at https://github.com/nirmata/SRE-Operational-Usecases/tree/main/get-troubleshooting-data/get-debug-data. "
+    kyverno.io/kubernetes-version: '1.27'
+    policies.kyverno.io/description: 'This policy generates a job which gathers troubleshooting data (including logs, kubectl describe output and events from the namespace) from pods that are in CrashLoopBackOff and have 3 restarts. This data can further be used to automatically create a Jira issue using some kind of automation or another Kyverno policy. For more information on the image used in this policy in addition to the necessary RBAC resources required in order for this policy to operate, see the documentation at https://github.com/nirmata/SRE-Operational-Usecases/tree/main/get-troubleshooting-data/get-debug-data. '
 spec:
   rules:
     - name: get-debug-data-policy-rule
@@ -40,20 +42,20 @@ spec:
             jmesPath: items | length(@)
       preconditions:
         all:
-          - key: "{{ sum(request.object.status.containerStatuses[*].restartCount || `0`) }}"
+          - key: '{{ sum(request.object.status.containerStatuses[*].restartCount || `0`) }}'
             operator: Equals
             value: 3
           - key: "{{ request.object.metadata.labels.deleteme || 'empty' }}"
             operator: Equals
             value: empty
-          - key: "{{ pdcount }}"
+          - key: '{{ pdcount }}'
             operator: Equals
             value: 0
       generate:
         apiVersion: batch/v1
         kind: Job
         name: get-debug-data-{{request.object.metadata.name}}-{{ random('[0-9a-z]{8}') }}
-        namespace: "{{request.namespace}}"
+        namespace: '{{request.namespace}}'
         synchronize: false
         data:
           metadata:
@@ -79,8 +81,8 @@ spec:
                         readOnly: true
                     args:
                       - /app/get-debug-jira-v2.sh
-                      - "{{request.namespace}}"
-                      - "{{request.object.metadata.name}}"
+                      - '{{request.namespace}}'
+                      - '{{request.object.metadata.name}}'
                 serviceAccount: default
                 volumes:
                   - name: token
@@ -95,5 +97,4 @@ spec:
                               - key: ca.crt
                                 path: ca.crt
                             name: kube-root-ca.crt
-
 ```

@@ -8,6 +8,8 @@ subjects:
   - StatefulSet
 tags: []
 version: 1.11.0
+description: "Check the 'dataprotection' label that production Deployments and StatefulSet have a named K10 Policy. Use in combination with 'generate' ClusterPolicy to 'generate' a specific K10 Policy by name."
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,5 +50,4 @@ spec:
           expressions:
             - expression: object.metadata.?labels.?dataprotection.orValue('').startsWith('k10-')
               message: "Deployments and StatefulSets that specify 'dataprotection' label must have a valid k10-?* name (use labels: dataprotection: k10-<policyname>)"
-
 ```

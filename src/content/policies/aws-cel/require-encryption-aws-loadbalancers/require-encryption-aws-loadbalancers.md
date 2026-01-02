@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Service
 tags: []
+description: 'Services of type LoadBalancer when deployed inside AWS have support for transport encryption if it is enabled via an annotation. This policy requires that Services of type LoadBalancer contain the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert with some value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -46,5 +48,4 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'service.beta.kubernetes.io/aws-load-balancer-ssl-cert'].orValue('') != ''
               message: Service of type LoadBalancer must carry the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert.
-
 ```

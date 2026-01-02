@@ -1,0 +1,73 @@
+---
+interface Props {
+  searchQuery?: string
+}
+
+const { searchQuery = '' } = Astro.props
+---
+
+<div class="flex gap-4 mb-10 flex-wrap">
+  <div class="flex-1 min-w-[300px] relative">
+    <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="9" cy="9" r="7" />
+      <path d="M14 14l5 5" />
+    </svg>
+    <input
+      type="text"
+      id="policy-search"
+      placeholder="Search policies by name, description, or tag..."
+      value={searchQuery}
+      class="w-full py-4 pl-14 pr-5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-base transition-all focus:outline-none focus:border-primary-100 focus:ring-4 focus:ring-primary-100/20 focus:bg-dark-50 placeholder:text-white/40 shadow-lg"
+    />
+  </div>
+  <div class="flex gap-2 flex-wrap" id="category-filters">
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-gradient-to-r from-primary-100 to-primary-75 border border-primary-100 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap font-semibold shadow-lg shadow-primary-100/20 hover:shadow-primary-100/30 hover:scale-105"
+      data-category="all"
+    >
+      All
+    </button>
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-400 font-medium shadow-md"
+      data-category="verifyImages"
+    >
+      Verify Images
+    </button>
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap hover:border-primary-100/50 hover:bg-primary-100/10 hover:text-primary-100 font-medium shadow-md"
+      data-category="validate"
+    >
+      Validate
+    </button>
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap hover:border-purple-400/50 hover:bg-purple-400/10 hover:text-purple-400 font-medium shadow-md"
+      data-category="mutate"
+    >
+      Mutate
+    </button>
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap hover:border-emerald-400/50 hover:bg-emerald-400/10 hover:text-emerald-400 font-medium shadow-md"
+      data-category="generate"
+    >
+      Generate
+    </button>
+    <button
+      type="button"
+      class="category-filter-btn px-5 py-3.5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-sm cursor-pointer transition-all whitespace-nowrap hover:border-orange-400/50 hover:bg-orange-400/10 hover:text-orange-400 font-medium shadow-md"
+      data-category="cleanup"
+    >
+      Cleanup
+    </button>
+  </div>
+</div>
+
+<script>
+  // Client-side filtering will be handled here
+  // This is a placeholder for now
+</script>
+

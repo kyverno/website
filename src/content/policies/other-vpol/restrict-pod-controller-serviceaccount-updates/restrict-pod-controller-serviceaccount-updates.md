@@ -6,6 +6,8 @@ type: ValidatingPolicy
 subjects:
   - Pod
 tags: []
+description: 'ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: Medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.12.1
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
 spec:
   validationActions:
@@ -52,5 +54,4 @@ spec:
   validations:
     - expression: object.spec.template.?spec.?serviceAccountName.orValue('') == oldObject.spec.template.?spec.?serviceAccountName.orValue('') || object.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue('') == oldObject.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue('')
       message: The serviceAccountName field may not be changed once created.
-
 ```

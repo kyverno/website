@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Some containers must be built to run as root in order to function properly, but use of those images should be carefully restricted to prevent unneeded privileges. This policy blocks any image that runs as root if it does not come from a trustworthy registry, `ghcr.io` in this case.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,15 +50,14 @@ spec:
             context:
               - name: imageData
                 imageRegistry:
-                  reference: "{{ element.image }}"
+                  reference: '{{ element.image }}'
             deny:
               conditions:
                 all:
                   - key: "{{ imageData.configData.config.User || ''}}"
                     operator: Equals
-                    value: ""
-                  - key: "{{ imageData.registry }}"
+                    value: ''
+                  - key: '{{ imageData.registry }}'
                     operator: NotEquals
                     value: ghcr.io
-
 ```

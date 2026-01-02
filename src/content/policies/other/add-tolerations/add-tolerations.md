@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Pod tolerations are used to schedule on Nodes which have a matching taint. This policy adds the toleration `org.com/role=service:NoSchedule` if existing tolerations do not contain the key `org.com/role`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: Pod tolerations are used to schedule on Nodes which have a matching taint. This policy adds the toleration `org.com/role=service:NoSchedule` if existing tolerations do not contain the key `org.com/role`.
 spec:
   rules:
@@ -39,7 +41,7 @@ spec:
         any:
           - key: org.com/role
             operator: AnyNotIn
-            value: "{{ request.object.spec.tolerations[].key || `[]` }}"
+            value: '{{ request.object.spec.tolerations[].key || `[]` }}'
       mutate:
         patchesJson6902: |-
           - op: add
@@ -49,5 +51,4 @@ spec:
               operator: Equal
               value: service
               effect: NoSchedule
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - NetworkPolicy
 tags: []
 version: 1.11.0
+description: 'By default, all pods in a Kubernetes cluster are allowed to communicate with each other, and all network traffic is unencrypted. It is recommended to not use an empty podSelector in order to more closely control the necessary traffic flows. This policy requires that all NetworkPolicies other than that of `default-deny` not use an empty podSelector.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -51,5 +53,4 @@ spec:
           expressions:
             - expression: size(object.spec.podSelector) != 0
               message: NetworkPolicies must not use an empty podSelector.
-
 ```

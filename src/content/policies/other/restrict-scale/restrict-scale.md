@@ -7,6 +7,8 @@ subjects:
   - Deployment
 tags: []
 version: 1.9.0
+description: 'Pod controllers such as Deployments which implement replicas and permit the scale action use a `/scale` subresource to control this behavior. In addition to checks for creations of such controllers that their replica is in a certain shape, the scale operation and subresource needs to be accounted for as well. This policy, operable beginning in Kyverno 1.9, is a collection of rules which can be used to limit the replica count both upon creation of a Deployment and when a scale operation is performed.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/description: Pod controllers such as Deployments which implement replicas and permit the scale action use a `/scale` subresource to control this behavior. In addition to checks for creations of such controllers that their replica is in a certain shape, the scale operation and subresource needs to be accounted for as well. This policy, operable beginning in Kyverno 1.9, is a collection of rules which can be used to limit the replica count both upon creation of a Deployment and when a scale operation is performed.
 spec:
@@ -41,7 +43,7 @@ spec:
         message: The replica count for this Deployment may not exceed 8.
         pattern:
           (status):
-            (selector): "*type=monitoring*"
+            (selector): '*type=monitoring*'
           spec:
             replicas: <9
     - name: scale-max-eight-annotations
@@ -64,10 +66,10 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{dept}}"
+              - key: '{{dept}}'
                 operator: Equals
                 value: engineering
-              - key: "{{request.object.spec.replicas}}"
+              - key: '{{request.object.spec.replicas}}'
                 operator: GreaterThan
                 value: 8
     - name: create-max-four
@@ -84,5 +86,4 @@ spec:
         pattern:
           spec:
             replicas: <5
-
 ```

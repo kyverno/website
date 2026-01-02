@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - VirtualMachine
 tags: []
+description: 'Check VirtualMachines and validate that they are using an instance type and preference.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -38,8 +40,7 @@ spec:
         pattern:
           spec:
             instancetype:
-              name: "?*"
+              name: '?*'
             preference:
-              name: "?*"
-
+              name: '?*'
 ```

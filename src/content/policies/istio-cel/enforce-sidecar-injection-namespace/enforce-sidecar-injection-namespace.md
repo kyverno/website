@@ -7,6 +7,8 @@ subjects:
   - Namespace
 tags: []
 version: 1.11.0
+description: 'In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. This policy ensures that all new Namespaces set `istio-inject` to `enabled`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: object.metadata.?labels[?'istio-injection'].orValue('') == 'enabled'
               message: All new Namespaces must have Istio sidecar injection enabled.
-
 ```

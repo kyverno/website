@@ -7,6 +7,8 @@ subjects:
   - AppProject
 tags: []
 version: 1.6.0
+description: 'An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy is a combination of two rules which enforce that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: AppProject
     policies.kyverno.io/description: An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy is a combination of two rules which enforce that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.
 spec:
@@ -77,6 +79,5 @@ spec:
             any:
               - key: clusterResourceBlacklist
                 operator: AnyNotIn
-                value: "{{ request.object.spec.keys(@) }}"
-
+                value: '{{ request.object.spec.keys(@) }}'
 ```

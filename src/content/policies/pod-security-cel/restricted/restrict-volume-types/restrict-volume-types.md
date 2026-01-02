@@ -8,6 +8,8 @@ subjects:
   - Volume
 tags: []
 version: 1.11.0
+description: 'In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes. This policy blocks any other type of volume other than those in the allow list.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,7 +46,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.volumes) || object.spec.volumes.all(vol, has(vol.configMap) || has(vol.csi) || has(vol.downwardAPI) || has(vol.emptyDir) || has(vol.ephemeral) || has(vol.persistentVolumeClaim) || has(vol.projected) || has(vol.secret))"
-              message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret."
-
+            - expression: '!has(object.spec.volumes) || object.spec.volumes.all(vol, has(vol.configMap) || has(vol.csi) || has(vol.downwardAPI) || has(vol.emptyDir) || has(vol.ephemeral) || has(vol.persistentVolumeClaim) || has(vol.projected) || has(vol.secret))'
+              message: 'Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.'
 ```

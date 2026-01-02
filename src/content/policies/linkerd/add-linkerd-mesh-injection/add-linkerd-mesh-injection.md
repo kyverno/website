@@ -7,6 +7,8 @@ subjects:
   - Namespace
   - Annotation
 tags: []
+description: 'Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. In addition, a second annotation may be applied which controls the Pod startup behavior. This policy sets the annotations, if not present, `linkerd.io/inject` and `config.linkerd.io/proxy-await` to `enabled` on all new Namespaces.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -38,5 +40,4 @@ spec:
             annotations:
               +(linkerd.io/inject): enabled
               +(config.linkerd.io/proxy-await): enabled
-
 ```

@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Setting CPU limits on containers ensures fair distribution of resources, preventing any single container from monopolizing CPU and impacting the performance of other containers. This practice enhances stability, predictability, and cost control, while also mitigating the noisy neighbor problem and facilitating efficient scaling in Kubernetes clusters. This policy ensures that cpu limits are set on every container.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/description: Setting CPU limits on containers ensures fair distribution of resources, preventing any single container from monopolizing CPU and impacting the performance of other containers. This practice enhances stability, predictability, and cost control, while also mitigating the noisy neighbor problem and facilitating efficient scaling in Kubernetes clusters. This policy ensures that cpu limits are set on every container.
 spec:
   validationFailureAction: Audit
@@ -39,19 +41,18 @@ spec:
         pattern:
           spec:
             containers:
-              - (name): "*"
+              - (name): '*'
                 resources:
                   limits:
-                    cpu: "?*"
-            "=(ephemeralContainers)":
-              - "=(name)": "*"
+                    cpu: '?*'
+            '=(ephemeralContainers)':
+              - '=(name)': '*'
                 resources:
                   limits:
-                    cpu: "?*"
-            "=(initContainers)":
-              - "=(name)": "*"
+                    cpu: '?*'
+            '=(initContainers)':
+              - '=(name)': '*'
                 resources:
                   limits:
-                    cpu: "?*"
-
+                    cpu: '?*'
 ```

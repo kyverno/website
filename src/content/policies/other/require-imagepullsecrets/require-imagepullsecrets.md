@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Some registries, both public and private, require credentials in order to pull images from them. This policy checks those images and if they come from a registry other than ghcr.io or quay.io an `imagePullSecret` is required.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -36,7 +38,7 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: "{{ images.containers.*.registry }}"
+          - key: '{{ images.containers.*.registry }}'
             operator: AnyNotIn
             value:
               - ghcr.io
@@ -46,6 +48,5 @@ spec:
         pattern:
           spec:
             imagePullSecrets:
-              - name: "?*"
-
+              - name: '?*'
 ```

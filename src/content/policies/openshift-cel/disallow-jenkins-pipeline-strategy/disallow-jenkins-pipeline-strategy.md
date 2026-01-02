@@ -7,6 +7,8 @@ subjects:
   - BuildConfig
 tags: []
 version: 1.11.0
+description: 'The Jenkins Pipeline Build Strategy has been deprecated. This policy prevents its use. Use OpenShift Pipelines instead.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,7 +46,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.strategy.jenkinsPipelineStrategy)"
+            - expression: '!has(object.spec.strategy.jenkinsPipelineStrategy)'
               message: Jenkins Pipeline Build Strategy has been deprecated and is not allowed
-
 ```

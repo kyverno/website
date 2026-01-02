@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'The Kubernetes scheduler uses complex logic to determine the optimal placement for new Pods. Users who have access to set certain fields in a Pod spec may sidestep this logic which in many cases is undesirable. This policy prevents users from targeting specific Nodes for scheduling of Pods by prohibiting the use of the `nodeSelector` and `nodeName` fields. Note that this policy is only designed to work on initial creation and not in background mode.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,7 +45,7 @@ spec:
         message: Setting the nodeSelector field is prohibited.
         pattern:
           spec:
-            X(nodeSelector): "null"
+            X(nodeSelector): 'null'
     - name: restrict-nodename
       match:
         any:
@@ -59,6 +61,5 @@ spec:
         message: Setting the nodeName field is prohibited.
         pattern:
           spec:
-            X(nodeName): "null"
-
+            X(nodeName): 'null'
 ```

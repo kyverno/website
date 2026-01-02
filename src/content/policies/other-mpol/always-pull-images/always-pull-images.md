@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.15.0
+description: 'By default, images that have already been pulled can be accessed by other Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios, this may be undesirable. This policy mutates all incoming Pods to set their imagePullPolicy to Always. An alternative to the Kubernetes admission controller AlwaysPullImages.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -37,7 +39,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -59,5 +61,4 @@ spec:
               )
             }
           }
-
 ```

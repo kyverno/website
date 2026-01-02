@@ -7,6 +7,8 @@ subjects:
   - Policy
 tags: []
 version: 1.12.0
+description: 'Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist. Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -49,13 +51,13 @@ spec:
             jmesPath: items[][[@.spec.presetRef][?name=='{{ request.object.metadata.labels.dataprotection }}'] && [@.spec.selector.matchExpressions[].values[?@=='{{ request.namespace }}']]][][][][] | length(@)
       preconditions:
         any:
-          - key: "{{ existingPolicy }}"
+          - key: '{{ existingPolicy }}'
             operator: Equals
             value: 0
       generate:
         apiVersion: config.kio.kasten.io/v1alpha1
         kind: Policy
-        name: "{{ request.namespace }}-{{ request.object.metadata.labels.dataprotection }}-backup"
+        name: '{{ request.namespace }}-{{ request.object.metadata.labels.dataprotection }}-backup'
         namespace: kasten-io
         data:
           spec:
@@ -64,13 +66,12 @@ spec:
             actions:
               - action: backup
             presetRef:
-              name: "{{ request.object.metadata.labels.dataprotection }}"
+              name: '{{ request.object.metadata.labels.dataprotection }}'
               namespace: kasten-io
             selector:
               matchExpressions:
                 - key: k10.kasten.io/appNamespace
                   operator: In
                   values:
-                    - "{{ request.namespace }}"
-
+                    - '{{ request.namespace }}'
 ```

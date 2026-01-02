@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.14.0
+description: 'Just like the need to ensure uniqueness among Ingress hosts, there is a need to have the paths be unique as well. This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).'
+isNew: true
 ---
 
 ## Policy Definition
@@ -46,7 +48,7 @@ spec:
     - name: allpaths
       expression: resource.List("networking.k8s.io/v1", "ingresses", "" ).items
     - name: nspath
-      expression: "resource.List(\"networking.k8s.io/v1\", \"ingresses\", object.metadata.namespace ).items    "
+      expression: 'resource.List("networking.k8s.io/v1", "ingresses", object.metadata.namespace ).items    '
   validations:
     - expression: |-
         !object.spec.rules.orValue([]).exists(rule, 
@@ -73,5 +75,4 @@ spec:
             )
           )
       message: The root path already exists in the cluster but not in the namespace.
-
 ```

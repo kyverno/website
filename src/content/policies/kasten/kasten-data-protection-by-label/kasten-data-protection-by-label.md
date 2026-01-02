@@ -8,6 +8,8 @@ subjects:
   - StatefulSet
 tags: []
 version: 1.6.2
+description: "Check the 'dataprotection' label for production Deployments and StatefulSet workloads. Use in combination with 'kasten-generate-example-backup-policy' policy to generate a Kasten policy for the workload namespace, if it doesn't already exist."
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,5 +50,4 @@ spec:
           metadata:
             labels:
               dataprotection: kasten-example|none
-
 ```

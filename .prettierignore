@@ -1,7 +1,3 @@
 .pnp.cjs
 node_modules
 dist
-
-# Codegen directories to avoid codegen diffs
-src/content/policies/
-src/content/docs/docs/kyverno-cli/reference/

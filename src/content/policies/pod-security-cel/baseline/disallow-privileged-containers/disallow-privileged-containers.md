@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,9 +46,8 @@ spec:
         cel:
           variables:
             - name: allContainers
-              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
+              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
           expressions:
             - expression: variables.allContainers.all(container, container.?securityContext.?privileged.orValue(false) == false)
               message: Privileged mode is disallowed. All containers must set the securityContext.privileged field to `false` or unset the field.
-
 ```

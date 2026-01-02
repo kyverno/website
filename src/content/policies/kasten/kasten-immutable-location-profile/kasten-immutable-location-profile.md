@@ -7,6 +7,8 @@ subjects:
   - config.kio.kasten.io/v1alpha1/Profile
 tags: []
 version: 1.6.0
+description: 'Ensure Kasten Location Profiles have enabled immutability to prevent unintentional or malicious changes to backup data.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -41,6 +43,5 @@ spec:
             (type): Location
             locationSpec:
               objectStore:
-                protectionPeriod: "*"
-
+                protectionPeriod: '*'
 ```

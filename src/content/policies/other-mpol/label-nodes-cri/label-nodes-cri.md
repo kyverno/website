@@ -7,6 +7,8 @@ subjects:
   - Node
   - Label
 tags: []
+description: "CRI engines log in different formats. Loggers deployed as DaemonSets don't know which format to apply because they can't see this information. By Kyverno writing a label to each node with its runtime, loggers can use node label selectors to know which parsing logic to use. This policy detects the CRI engine in use and writes a label to the Node called `runtime` with it. Users may need to grant the Kyverno ServiceAccount permission to update Nodes."
+isNew: true
 ---
 
 ## Policy Definition
@@ -33,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -66,5 +68,4 @@ spec:
               }
             }
           } : Object{}
-
 ```

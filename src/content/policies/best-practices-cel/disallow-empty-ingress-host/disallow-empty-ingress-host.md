@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.11.0
+description: 'An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: object.spec.?rules.orValue([]).all(rule, has(rule.host) && has(rule.http))
               message: The Ingress host name must be defined, not empty.
-
 ```

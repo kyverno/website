@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -62,5 +64,4 @@ spec:
           expressions:
             - expression: variables.podLevelEnforced || variables.containerLevelEnforced
               message: Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot or all of spec.containers[*].securityContext.runAsNonRoot, spec.initContainers[*].securityContext.runAsNonRoot and spec.ephemeralContainers[*].securityContext.runAsNonRoot, must be set to true.
-
 ```

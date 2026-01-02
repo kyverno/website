@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,13 +45,12 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.runAsUser) || object.spec.securityContext.runAsUser > 0"
+            - expression: '!has(object.spec.securityContext) || !has(object.spec.securityContext.runAsUser) || object.spec.securityContext.runAsUser > 0'
               message: Running as root is not allowed. The field spec.securityContext.runAsUser must be unset or set to a number greater than zero.
             - expression: object.spec.containers.all(container, !has(container.securityContext) || !has(container.securityContext.runAsUser) || container.securityContext.runAsUser > 0)
               message: Running as root is not allowed. The field spec.containers[*].securityContext.runAsUser must be unset or set to a number greater than zero
-            - expression: "!has(object.spec.initContainers) || object.spec.initContainers.all(container, !has(container.securityContext) || !has(container.securityContext.runAsUser) || container.securityContext.runAsUser > 0)"
+            - expression: '!has(object.spec.initContainers) || object.spec.initContainers.all(container, !has(container.securityContext) || !has(container.securityContext.runAsUser) || container.securityContext.runAsUser > 0)'
               message: Running as root is not allowed. The field spec.initContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero
-            - expression: "!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.all(container, !has(container.securityContext) || !has(container.securityContext.runAsUser) || container.securityContext.runAsUser > 0)"
+            - expression: '!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.all(container, !has(container.securityContext) || !has(container.securityContext.runAsUser) || container.securityContext.runAsUser > 0)'
               message: Running as root is not allowed. The field spec.ephemeralContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero
-
 ```

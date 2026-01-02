@@ -7,6 +7,8 @@ subjects:
   - PipelineRun
 tags: []
 version: 1.7.0
+description: 'A Namespace is required for a PipelineRun and may not be set to `default`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: PipelineRun
     kyverno.io/kyverno-version: 1.7.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: A Namespace is required for a PipelineRun and may not be set to `default`.
 spec:
   validationFailureAction: Audit
@@ -46,6 +48,5 @@ spec:
         message: A namespace is required and may not be set to default.
         pattern:
           metadata:
-            namespace: "!default"
-
+            namespace: '!default'
 ```

@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Setting the annotation on a Pod (or its controller) `linkerd.io/inject` to `disabled` may effectively disable mesh participation for that workload reducing security and visibility. This policy prevents setting the annotation `linkerd.io/inject` to `disabled` for Pods.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,5 +45,4 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'linkerd.io/inject'].orValue('') != 'disabled'
               message: Pods may not disable sidecar injection.
-
 ```

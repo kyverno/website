@@ -7,6 +7,8 @@ subjects:
   - Service
 tags: []
 version: 1.6.0
+description: 'ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with internal DNS, duplicates must be avoided. This policy requires every such Service have a cluster-unique hostname present in the value of the annotation.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     kyverno.io/kyverno-version: 1.5.1
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with internal DNS, duplicates must be avoided. This policy requires every such Service have a cluster-unique hostname present in the value of the annotation.
 spec:
@@ -38,7 +40,7 @@ spec:
               kinds:
                 - Service
               annotations:
-                external-dns.alpha.kubernetes.io/hostname: "*"
+                external-dns.alpha.kubernetes.io/hostname: '*'
       context:
         - name: alldns
           apiCall:
@@ -56,8 +58,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{request.object.metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\"}}"
+              - key: '{{request.object.metadata.annotations."external-dns.alpha.kubernetes.io/hostname"}}'
                 operator: AnyIn
-                value: "{{alldns}}"
-
+                value: '{{alldns}}'
 ```

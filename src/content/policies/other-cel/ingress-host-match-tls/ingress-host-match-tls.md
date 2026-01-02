@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.11.0
+description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,5 +50,4 @@ spec:
           expressions:
             - expression: object.spec.rules.all(rule,  !has(rule.host) ||  variables.tls.exists(tls, tls.?hosts.orValue([]).exists(tlsHost, tlsHost == rule.host)))
               message: The host(s) in spec.rules[].host must match those in spec.tls[].hosts[].
-
 ```

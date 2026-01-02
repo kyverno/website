@@ -8,6 +8,8 @@ subjects:
   - ServiceAccount
 tags: []
 version: 1.6.0
+description: 'Kubernetes automatically mounts ServiceAccount credentials in each Pod. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -38,13 +40,12 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"
+          - key: '{{ request."object".metadata.labels."app.kubernetes.io/part-of" || '''' }}'
             operator: NotEquals
             value: policy-reporter
       validate:
         message: Auto-mounting of Service Account tokens is not allowed.
         pattern:
           spec:
-            automountServiceAccountToken: "false"
-
+            automountServiceAccountToken: 'false'
 ```

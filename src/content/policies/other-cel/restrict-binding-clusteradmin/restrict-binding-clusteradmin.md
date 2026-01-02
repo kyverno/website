@@ -9,6 +9,8 @@ subjects:
   - RBAC
 tags: []
 version: 1.11.0
+description: 'The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,5 +50,4 @@ spec:
           expressions:
             - expression: object.roleRef.name != 'cluster-admin'
               message: Binding to cluster-admin is not allowed.
-
 ```

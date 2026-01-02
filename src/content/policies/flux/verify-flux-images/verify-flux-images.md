@@ -7,6 +7,8 @@ subjects:
   - GitRepository
 tags: []
 version: 1.6.0
+description: 'Ensures that container images used to run Flux controllers in the cluster are signed with valid Cosign signatures. Prevents the deployment of untrusted or potentially compromised Flux images. Protects the integrity and security  of the Flux deployment process.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: GitRepository
     policies.kyverno.io/description: Ensures that container images used to run Flux controllers in the cluster are signed with valid Cosign signatures. Prevents the deployment of untrusted or potentially compromised Flux images. Protects the integrity and security  of the Flux deployment process.
 spec:
@@ -60,5 +62,4 @@ spec:
                     issuer: https://token.actions.githubusercontent.com
                     rekor:
                       url: https://rekor.sigstore.dev
-
 ```

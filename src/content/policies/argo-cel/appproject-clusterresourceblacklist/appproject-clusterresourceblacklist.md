@@ -7,6 +7,8 @@ subjects:
   - AppProject
 tags: []
 version: 1.11.0
+description: 'An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy is a combination of two rules which enforce that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -47,5 +49,4 @@ spec:
               message: AppProject must specify clusterResourceBlacklist.
             - expression: object.spec.clusterResourceBlacklist.all(element, element.group.contains('*') && element.kind.contains('*'))
               message: Wildcards must be present in group and kind for clusterResourceBlacklist.
-
 ```

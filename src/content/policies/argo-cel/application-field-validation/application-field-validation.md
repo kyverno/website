@@ -7,6 +7,8 @@ subjects:
   - Application
 tags: []
 version: 1.11.0
+description: 'This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -48,7 +50,7 @@ spec:
                   (has(object.spec.source.path) && !has(object.spec.source.chart)) ||
                   (!has(object.spec.source.path) && has(object.spec.source.chart))
                 )
-              message: "`spec.source.path` OR `spec.source.chart` should be specified but never both."
+              message: '`spec.source.path` OR `spec.source.chart` should be specified but never both.'
     - name: destination-server-name
       match:
         any:
@@ -66,6 +68,5 @@ spec:
                   (has(object.spec.destination.server) && !has(object.spec.destination.name)) ||
                   (!has(object.spec.destination.server) && has(object.spec.destination.name))
                 )
-              message: "`spec.destination.server` OR `spec.destination.name` should be specified but never both."
-
+              message: '`spec.destination.server` OR `spec.destination.name` should be specified but never both.'
 ```

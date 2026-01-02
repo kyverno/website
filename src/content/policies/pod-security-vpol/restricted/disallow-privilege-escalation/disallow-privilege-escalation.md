@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: 'Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -36,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -50,5 +52,4 @@ spec:
   validations:
     - expression: variables.allContainers.all(container,  container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
       message: Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
-
 ```

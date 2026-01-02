@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.8.0
+description: 'The baseline profile of the Pod Security Standards is a collection of the most basic and important steps that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. This policy configures the baseline profile through the latest version of the Pod Security Standards cluster wide.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.8.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The baseline profile of the Pod Security Standards is a collection of the most basic and important steps that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. This policy configures the baseline profile through the latest version of the Pod Security Standards cluster wide.
 spec:
@@ -41,5 +43,4 @@ spec:
         podSecurity:
           level: baseline
           version: latest
-
 ```

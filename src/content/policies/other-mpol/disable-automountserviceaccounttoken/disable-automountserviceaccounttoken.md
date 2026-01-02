@@ -6,6 +6,8 @@ type: MutatingPolicy
 subjects:
   - ServiceAccount
 tags: []
+description: 'A new ServiceAccount called `default` is created whenever a new Namespace is created. Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount. This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token into Pods obviating the need to do so individually.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -27,7 +29,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -44,5 +46,4 @@ spec:
           Object{
             automountServiceAccountToken: false
           }
-
 ```

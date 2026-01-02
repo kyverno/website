@@ -7,6 +7,8 @@ subjects:
   - Pod
   - Secret
 tags: []
+description: 'Secrets used as environment variables containing sensitive information may, if not carefully controlled,  be printed in log output which could be visible to unauthorized people and captured in forwarding applications. This policy disallows using Secrets as environment variables.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,10 +42,10 @@ spec:
         pattern:
           spec:
             containers:
-              - name: "*"
-                "=(env)":
-                  - "=(valueFrom)":
-                      X(secretKeyRef): "null"
+              - name: '*'
+                '=(env)':
+                  - '=(valueFrom)':
+                      X(secretKeyRef): 'null'
     - name: secrets-not-from-envfrom
       match:
         any:
@@ -55,8 +57,7 @@ spec:
         pattern:
           spec:
             containers:
-              - name: "*"
-                "=(envFrom)":
-                  - X(secretRef): "null"
-
+              - name: '*'
+                '=(envFrom)':
+                  - X(secretRef): 'null'
 ```

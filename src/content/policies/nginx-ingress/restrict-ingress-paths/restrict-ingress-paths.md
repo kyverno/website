@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.6.0
+description: 'This policy mitigates CVE-2021-25745 by restricting `spec.rules[].http.paths[].path` to safe values. Additional paths can be added as required. This issue has been fixed in NGINX Ingress v1.2.0.  Please refer to the CVE for details.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: This policy mitigates CVE-2021-25745 by restricting `spec.rules[].http.paths[].path` to safe values. Additional paths can be added as required. This issue has been fixed in NGINX Ingress v1.2.0.  Please refer to the CVE for details.
 spec:
   validationFailureAction: Enforce
@@ -61,5 +63,4 @@ spec:
                 operator: AnyIn
                 value:
                   - true
-
 ```

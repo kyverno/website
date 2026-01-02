@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      '
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,9 +24,9 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.2
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: "Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      "
+    policies.kyverno.io/description: 'Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      '
 spec:
   validationFailureAction: Audit
   background: true
@@ -40,8 +42,7 @@ spec:
         pattern:
           spec:
             containers:
-              - name: "*"
-                "=(ports)":
-                  - name: "*"
-
+              - name: '*'
+                '=(ports)':
+                  - name: '*'
 ```

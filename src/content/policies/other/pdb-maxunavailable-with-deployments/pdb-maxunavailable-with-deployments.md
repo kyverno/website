@@ -7,6 +7,8 @@ subjects:
   - PodDisruptionBudget
   - Deployment
 tags: []
+description: 'A PodDisruptionBudget which sets its maxUnavailable value to zero prevents all voluntary evictions including Node drains which may impact maintenance tasks. This may be acceptable if there are no matching controllers, but if there are then creation of such a PDB could allow unintended disruption. This policy enforces that a PodDisruptionBudget may not specify the maxUnavailable field as zero if there are any existing matching Deployments having greater than zero replicas.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/title: PodDisruptionBudget maxUnavailable Non-Zero with Deployments
     policies.kyverno.io/category: Other
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment
     policies.kyverno.io/description: A PodDisruptionBudget which sets its maxUnavailable value to zero prevents all voluntary evictions including Node drains which may impact maintenance tasks. This may be acceptable if there are no matching controllers, but if there are then creation of such a PDB could allow unintended disruption. This policy enforces that a PodDisruptionBudget may not specify the maxUnavailable field as zero if there are any existing matching Deployments having greater than zero replicas.
 spec:
@@ -48,7 +50,7 @@ spec:
           - key: "{{ regex_match('^[0-9]+$', '{{ request.object.spec.maxUnavailable || ''}}') }}"
             operator: Equals
             value: true
-          - key: "{{ length(deploymentreplicas) }}"
+          - key: '{{ length(deploymentreplicas) }}'
             operator: GreaterThan
             value: 0
       validate:
@@ -58,8 +60,7 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: "{{ request.object.spec.maxUnavailable }}"
+                  - key: '{{ request.object.spec.maxUnavailable }}'
                     operator: LessThan
-                    value: "{{ element.spec.replicas }}"
-
+                    value: '{{ element.spec.replicas }}'
 ```

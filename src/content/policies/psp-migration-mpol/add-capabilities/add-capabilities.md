@@ -6,6 +6,8 @@ type: MutatingPolicy
 subjects:
   - Pod
 tags: []
+description: 'In the earlier Pod Security Policy controller, it was possible to configure a policy to add capabilities to containers within a Pod. This made it easier to assign some basic defaults rather than blocking Pods or to simply provide capabilities for certain workloads if not specified. This policy mutates Pods to add the capabilities SETFCAP and SETUID so long as they are not listed as dropped capabilities first.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -30,7 +32,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -253,5 +255,4 @@ spec:
               } : null
             ) : null
           ).filter(p, p != null) : []
-
 ```

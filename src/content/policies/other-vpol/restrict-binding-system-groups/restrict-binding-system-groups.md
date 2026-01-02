@@ -9,6 +9,8 @@ subjects:
   - RBAC
 tags: []
 version: 1.14.0
+description: 'Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -27,7 +29,7 @@ metadata:
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.
 spec:
   validationActions:
@@ -54,5 +56,4 @@ spec:
       message: Binding to system:unauthenticated is not allowed.
     - expression: object.subjects.all(subject, subject.name != 'system:masters')
       message: Binding to system:masters is not allowed.
-
 ```

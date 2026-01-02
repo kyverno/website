@@ -7,6 +7,8 @@ subjects:
   - Namespace
   - Annotation
 tags: []
+description: 'Linkerd will, by default, allow all incoming traffic to Pods in the mesh including that from outside the cluster network. In many cases, this default needs to be changed to deny all traffic so it may be selectively opened using Linkerd policy objects. This policy sets the annotation `config.linkerd.io/default-inbound-policy` to `deny`, if not present, for new Namespaces. It can be customized with exclusions to more tightly control its application.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -28,7 +30,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -52,5 +54,4 @@ spec:
               }
             }
           }
-
 ```

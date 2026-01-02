@@ -7,6 +7,8 @@ subjects:
   - Namespace
 tags: []
 version: 1.9.0
+description: 'Kubernetes applications are typically deployed into a single, logical namespace.  Veeam Kasten policies will discover and protect all resources within the selected namespace(s).  This policy ensures all new namespaces include a label referencing a valid Kasten SLA  (Policy Preset) for data protection.This policy can be used in combination with /Users/the `kasten-generate-policy-by-preset-label` ClusterPolicy to automatically create a Kasten policy based on the specified SLA.  The combination ensures that new applications are not inadvertently left unprotected.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -47,5 +49,4 @@ spec:
           metadata:
             labels:
               dataprotection: gold|silver|bronze|none
-
 ```

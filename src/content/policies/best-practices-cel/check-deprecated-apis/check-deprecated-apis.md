@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Kubernetes APIs
 tags: []
+description: 'Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters. PodSecurityPolicy is removed in v1.25 so therefore the validate-v1-25-removals rule may not completely work on 1.25+.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,7 +47,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-26-removals
       match:
@@ -61,7 +63,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-27-removals
       match:
@@ -75,7 +77,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-29-removals
       match:
@@ -90,7 +92,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.29. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
     - name: validate-v1-32-removals
       match:
@@ -105,7 +107,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               messageExpression: "object.apiVersion + '/' + object.kind + ' is deprecated and will be removed in v1.32. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
-
 ```

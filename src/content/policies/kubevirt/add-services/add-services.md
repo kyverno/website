@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - VirtualMachineInstance
 tags: []
+description: 'Add an SSH Service to every VirtualMachineInstance which is getting created. This Service will use a ClusterIP, thus the admin has to ensure that the IP space is large enough and ClusterIP type can be met.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -36,22 +38,21 @@ spec:
       generate:
         apiVersion: v1
         kind: Service
-        name: "{{request.object.metadata.name}}"
-        namespace: "{{request.object.metadata.namespace}}"
+        name: '{{request.object.metadata.name}}'
+        namespace: '{{request.object.metadata.namespace}}'
         synchronize: true
         data:
           metadata:
             ownerReferences:
               - apiVersion: kubevirt.io/v1
                 kind: VirtualMachineInstance
-                name: "{{request.object.metadata.name}}"
-                uid: "{{request.object.metadata.uid}}"
+                name: '{{request.object.metadata.name}}'
+                uid: '{{request.object.metadata.uid}}'
           spec:
             ports:
               - protocol: TCP
                 port: 22
             selector:
-              kubevirt.io/domain: "{{request.object.metadata.name}}"
+              kubevirt.io/domain: '{{request.object.metadata.name}}'
             type: ClusterIP
-
 ```

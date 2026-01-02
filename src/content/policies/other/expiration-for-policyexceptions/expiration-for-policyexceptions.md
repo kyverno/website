@@ -7,6 +7,8 @@ subjects:
   - PolicyException
 tags: []
 version: 1.9.0
+description: 'In situations where Ops/Platform teams want to allow exceptions on a temporary basis, there must be a way to remove the PolicyException once the expiration time has been reached. After the exception is removed, the rule(s) for which the exception is granted go back into full effect. This policy generates a ClusterCleanupPolicy with a four hour expiration time after which the PolicyException is deleted. It may be necessary to grant both the Kyverno as well as cleanup controller ServiceAccounts additional permissions to operate this policy.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: PolicyException
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: In situations where Ops/Platform teams want to allow exceptions on a temporary basis, there must be a way to remove the PolicyException once the expiration time has been reached. After the exception is removed, the rule(s) for which the exception is granted go back into full effect. This policy generates a ClusterCleanupPolicy with a four hour expiration time after which the PolicyException is deleted. It may be necessary to grant both the Kyverno as well as cleanup controller ServiceAccounts additional permissions to operate this policy.
 spec:
   rules:
@@ -43,7 +45,7 @@ spec:
         data:
           metadata:
             labels:
-              kyverno.io/automated: "true"
+              kyverno.io/automated: 'true'
           spec:
             schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
             match:
@@ -52,8 +54,7 @@ spec:
                     kinds:
                       - PolicyException
                     namespaces:
-                      - "{{ request.namespace }}"
+                      - '{{ request.namespace }}'
                     names:
-                      - "{{ request.object.metadata.name }}"
-
+                      - '{{ request.object.metadata.name }}'
 ```

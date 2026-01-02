@@ -8,6 +8,8 @@ subjects:
   - Pod
 tags: []
 version: 1.9.0
+description: 'This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.28"
+    kyverno.io/kubernetes-version: '1.28'
     policies.kyverno.io/subject: Ingress, Pod
     policies.kyverno.io/description: This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.
 spec:
@@ -42,7 +44,7 @@ spec:
         pattern:
           metadata:
             annotations:
-              X(nginx.ingress.kubernetes.io/server-snippet): ""
+              X(nginx.ingress.kubernetes.io/server-snippet): ''
     - name: validate-auth-tls-verify-client
       match:
         resources:
@@ -53,11 +55,11 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{request.object.metadata.annotations.\"nginx.ingress.kubernetes.io/auth-tls-verify-client\"}}"
+              - key: '{{request.object.metadata.annotations."nginx.ingress.kubernetes.io/auth-tls-verify-client"}}'
                 operator: AnyNotIn
                 value:
-                  - "on"
-                  - "off"
+                  - 'on'
+                  - 'off'
                   - optional
                   - optional_no_ca
     - name: ensure-ingress-nginx-controller-version-pattern
@@ -97,5 +99,4 @@ spec:
                 - registry.k8s.io/ingress-nginx/controller:v1.2.*
                 - registry.k8s.io/ingress-nginx/controller:v1.1.*
                 - registry.k8s.io/ingress-nginx/controller:v1.0.*
-
 ```

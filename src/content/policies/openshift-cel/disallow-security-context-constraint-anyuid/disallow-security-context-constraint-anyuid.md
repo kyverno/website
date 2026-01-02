@@ -9,6 +9,8 @@ subjects:
   - RBAC
 tags: []
 version: 1.11.0
+description: 'Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID as declared in the image instead of a random UID'
+isNew: true
 ---
 
 ## Policy Definition
@@ -63,5 +65,4 @@ spec:
           expressions:
             - expression: object.roleRef.name != 'system:openshift:scc:anyuid'
               message: Use of the SecurityContextConstraint (SCC) anyuid is not allowed
-
 ```

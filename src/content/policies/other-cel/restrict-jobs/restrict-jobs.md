@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Job
 tags: []
+description: 'Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,7 +42,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "false"
+            - expression: 'false'
               message: Jobs are only allowed if spawned from CronJobs.
-
 ```

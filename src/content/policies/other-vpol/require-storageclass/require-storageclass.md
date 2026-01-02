@@ -7,6 +7,8 @@ subjects:
   - PersistentVolumeClaim
   - StatefulSet
 tags: []
+description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: PersistentVolumeClaim, StatefulSet
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.
 spec:
   validationActions:
@@ -35,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         resources:
@@ -56,6 +58,5 @@ spec:
     - expression: |-
         object.kind == 'PersistentVolumeClaim' ?  object.spec.?storageClassName.orValue('') != '' :  object.spec.?volumeClaimTemplates.orValue([]).all(volumeClaimTemplate, 
           volumeClaimTemplate.spec.?storageClassName.orValue('') != '')
-      message: "\"Storage class name is required: PersistentVolumeClaims must have a non-empty storageClassName,  and StatefulSets must define a non-empty storageClassName for all volumeClaimTemplates.\""
-
+      message: '"Storage class name is required: PersistentVolumeClaims must have a non-empty storageClassName,  and StatefulSets must define a non-empty storageClassName for all volumeClaimTemplates."'
 ```

@@ -6,6 +6,8 @@ type: ValidatingPolicy
 subjects:
   - RBAC
 tags: []
+description: 'Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -41,11 +43,10 @@ spec:
           - DELETE
           - UPDATE
         apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
   validations:
     - message: This resource is protected and changes are not allowed. Please seek a cluster-admin.
-      expression: "!(variables.isProtectedService && !variables.hasClusterAdminRole)"
-
+      expression: '!(variables.isProtectedService && !variables.hasClusterAdminRole)'
 ```
