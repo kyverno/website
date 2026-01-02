@@ -129,7 +129,7 @@ This defines a Service for the discovery of the collector Deployment.
 
 ### Setting up Kyverno and passing required flags
 
-See the [installation instructions](/docs/installation/_index.md) for Kyverno. Depending on the method used, the following flags must be passed.
+See the [installation instructions](/docs/installation/) for Kyverno. Depending on the method used, the following flags must be passed.
 
 - Pass the flag `metricsPort` to defined the OpenTelemetry Collector endpoint for collecting metrics.
 - Pass the flag `otelConfig=grpc` to export the metrics and traces to an OpenTelemetry collector on the metrics port endpoint

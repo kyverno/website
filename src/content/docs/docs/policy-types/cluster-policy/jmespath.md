@@ -91,17 +91,17 @@ spec:
 
 Notice in the highlighted lines that the new label `appns` has been added to the Pod and the value set equal to the expression `{{request.namespace}}` which, in this instance, happened to be `foo` because it was created in the `foo` Namespace. Should this Pod be created in another Namespace called `bar`, the label would be `appns: bar`.
 
-{% aside title="Remember" type="note" %}
+:::note[Remember]
 JMESPath, like JSONPath, is a query language _for JSON_ and, as such, it only works when fed with a JSON-encoded document. Although most work with Kubernetes resources using YAML, the API server will convert this to JSON internally and use that format when storing and sending objects to webhooks like Kyverno. This is why the program `yq` will be invaluable when building the correct expression based upon Kubernetes manifests written in YAML.
-{% /aside %}
+:::
 
 ### AdmissionReview
 
-Kyverno is an example, although there are many others, of an [admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-are-they). As the name implies, these are pieces of software which have some stake in whether a given resource is _admitted_ into the cluster or not. They may be either validating, mutating, or both. The latter applies to Kyverno as it has both capabilities. For a graphical representation of the order in which these requests make their way into Kyverno, see the [introduction page](/docs/introduction/#how-kyverno-works).
+Kyverno is an example, although there are many others, of an [admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-are-they). As the name implies, these are pieces of software which have some stake in whether a given resource is _admitted_ into the cluster or not. They may be either validating, mutating, or both. The latter applies to Kyverno as it has both capabilities. For a graphical representation of the order in which these requests make their way into Kyverno, see the [introduction page](/docs/introduction/how-kyverno-works).
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 As the name "admission" implies, this process only takes place when an object _does not_ already exist. Pre-existing objects have already been admitted successfully in the past and therefore do not apply here. Certain other _operations_ on pre-existing objects, however, are subject to the admissions process including examples like executing (`exec`) commands inside Pods and deleting objects but, importantly, not when reading back objects. The act of reading, getting, or listing resources does not result in an admission review process.
-{% /aside %}
+:::
 
 When a resource that matches the criteria of a selection statement gets sent to the Kubernetes API server, after the API server performs some basic modifications to it, it then gets sent to webhooks which have told the API server via a MutatingWebhookConfiguration or ValidatingWebhookConfiguration resource--which Kyverno creates for you based upon the policies you write--that it wishes to be informed. The API server will "wrap" the matching resource in another resource called an [AdmissionReview](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#request) which contains a number of other descriptive data about that request, for example what _type_ or request this is (like a creation or deletion), the user who submitted the request, and, most importantly, the contents of the resource itself. Given the simple Pod example above that a user wishes to be created in the `foo` Namespace, the AdmissionReview request that hits Kyverno might look like following.
 
@@ -168,7 +168,7 @@ When a resource that matches the criteria of a selection statement gets sent to 
 
 As can be seen, the full Pod is represented along with other metadata surrounding its creation.
 
-These AdmissionReview resources serve as the most common source of data when building JMESPath expressions, specifically `request.object`. For the other data properties which can be consumed via an AdmissionReview resource, refer back to the [variables page](variables.md#variables-from-admission-review-requests).
+These AdmissionReview resources serve as the most common source of data when building JMESPath expressions, specifically `request.object`. For the other data properties which can be consumed via an AdmissionReview resource, refer back to the [variables page](/docs/policy-types/cluster-policy/variables#variables-from-admission-review-requests).
 
 ## Formatting
 
@@ -220,7 +220,7 @@ spec:
       image: nginx
 ```
 
-Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/usage/jp.md).
+Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/usage/jp).
 
 ```sh
 $ kyverno jp query -i pod.yaml "spec.containers[]"
@@ -306,13 +306,13 @@ deny:
 
 It is common for a JMESPath expression to name a specific field so that its value may be acted upon. For example, in the [basics section](#basics) above, the label `appns` is written to a Pod via a mutate rule which does not contain it or is set to a different value. A Kyverno validate rule which exists to check the value of that label or any other field is commonplace. Because the schema for many Kubernetes resources is flexible in that many fields are optional, policy rules must contend with the scenario in which a matching resource does not contain the field being checked. When using JMESPath to check the value of such a field, a simple expression might be written `{{request.object.metadata.labels.appns}}`. If a resource is submitted which either does not contain any labels at all or does not contain a label with the specified key then the expression cannot be evaluated. An error is likely to result similar to `JMESPath query failed: Unknown key "labels" in path`. In these types of cases, the JMESPath expression should use a non-existence check in the form of the [OR expression](https://jmespath.org/specification.html#or-expressions) followed by a "default" value if the field does not exist. The resulting full expression which will correctly evaluate is `{{request.object.metadata.labels.appns || ''}}`. This expression reads, "take the value of the key request.object.metadata.labels.appns or, if it does not exist, set it to an empty string". Note that the value on the right side may need to be customized given the ultimate use of the value expected to be produced. This non-existence pattern can be used in almost any JMESPath expression to mitigate scenarios in which the initial query may be invalid.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 When using the OR expression, if the left side equals `null`/`nil` or a value of `false` it will cause the right side to be evaluated instead. Some fields in Kubernetes define boolean values so be aware of what effect this might have if the field is present but with a value of `false`. One way to work around this is to use `to_string()` to convert the boolean to a string.
-{% /aside %}
+:::
 
 ### Matching Special Characters
 
-Kyverno reserves [special behavior for wildcard characters](/docs/policy-types/cluster-policy/validate.md#wildcards) such as `*` and `?`. However, certain Kubernetes resources permit wildcards as values in various fields which are treated literally. It may be necessary to construct a policy which validates literal usage of such wildcards. Using the JMESPath [`contains()`](https://jmespath.org/specification.html#contains) filter it is possible to do so. The below policy shows how to use `contains()` to match on wildcards as literal characters.
+Kyverno reserves [special behavior for wildcard characters](/docs/policy-types/cluster-policy/validate#wildcards) such as `*` and `?`. However, certain Kubernetes resources permit wildcards as values in various fields which are treated literally. It may be necessary to construct a policy which validates literal usage of such wildcards. Using the JMESPath [`contains()`](https://jmespath.org/specification.html#contains) filter it is possible to do so. The below policy shows how to use `contains()` to match on wildcards as literal characters.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -344,7 +344,7 @@ spec:
 
 In addition to the filters available in the upstream JMESPath library which Kyverno uses, there are also many new and custom filters developed for Kyverno's use found nowhere else. These filters augment the already robust capabilities of JMESPath to bring new functionality and capabilities which help solve common use cases in running Kubernetes. The filters endemic to Kyverno can be used in addition to any of those found in the upstream JMESPath library used by Kyverno and do not represent replaced or removed functionality.
 
-For instructions on how to test these filters in a standalone method (i.e., outside of Kyverno policy), see the [documentation](/docs/kyverno-cli/usage/jp.md) on the `kyverno jp` subcommand.
+For instructions on how to test these filters in a standalone method (i.e., outside of Kyverno policy), see the [documentation](/docs/kyverno-cli/usage/jp) on the `kyverno jp` subcommand.
 
 Information on each subcommand, its inputs and output, and specific usage instructions can be found below along with helpful and common use cases that have been identified.
 
@@ -520,7 +520,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `compare()` filter is provided as an analog to the [inbuilt function to Golang](https://pkg.go.dev/strings#Compare) of the same name. It compares two strings [lexicographically](https://en.wikipedia.org/wiki/Lexicographic_order) where the first string is compared against the second. If both strings are equal, the result is `0` (ex., "a" compared to "a"). If the first is in lower lexical order than the second, the result is `-1` (ex., "a" compared to "b"). And if the first is in higher order than the second, the result is `1` (ex., "b" compared to "a"). Kyverno also has built-in [operators](/docs/policy-types/cluster-policy/preconditions.md#operators) for string comparison where `Equals` is usually the most common, and in most use cases it is more practical to use the `Equals` operator in expressions such as preconditions and `deny.conditions` blocks.
+The `compare()` filter is provided as an analog to the [inbuilt function to Golang](https://pkg.go.dev/strings#Compare) of the same name. It compares two strings [lexicographically](https://en.wikipedia.org/wiki/Lexicographic_order) where the first string is compared against the second. If both strings are equal, the result is `0` (ex., "a" compared to "a"). If the first is in lower lexical order than the second, the result is `-1` (ex., "a" compared to "b"). And if the first is in higher order than the second, the result is `1` (ex., "b" compared to "a"). Kyverno also has built-in [operators](/docs/policy-types/cluster-policy/preconditions#operators) for string comparison where `Equals` is usually the most common, and in most use cases it is more practical to use the `Equals` operator in expressions such as preconditions and `deny.conditions` blocks.
 
 | Input 1 | Input 2 | Output |
 | ------- | ------- | ------ |
@@ -1139,9 +1139,9 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | ------- | ------- | ------ |
 | Number  | Number  | Number |
 
-{% aside type="caution" %}
+:::caution
 The inputs list is currently under construction.
-{% /aside %}
+:::
 
 **Example:** This policy checks every container and ensures that memory limits are evenly divisible by its requests.
 
@@ -1203,9 +1203,9 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 
 Due to the [commutative property](https://www.khanacademy.org/math/arithmetic-home/multiply-divide/properties-of-multiplication/a/commutative-property-review) of multiplication, the ordering of inputs (unlike with `divide()`) is irrelevant.
 
-{% aside type="caution" %}
+:::caution
 The inputs list is currently under construction.
-{% /aside %}
+:::
 
 **Example:** This policy sets the replica count for a Deployment to a value of two times the current number of Nodes in a cluster.
 
@@ -1891,7 +1891,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `semver_compare()` filter compares two strings which comply with the [semantic versioning](https://semver.org/) schema and outputs a boolean response as to the position of the second relative to the first. The first input is the "base" semver string for comparison while the second is the version is compared against the first. The second string accepts an [operator prefix](/docs/policy-types/cluster-policy/validate.md#operators) and supports AND and OR logic. It also supports the special placeholder variable "x" in any position. For some examples, `semver_compare('1.2.3','1.2.4')` results in the output `false` because version 1.2.4 is not equal to version 1.2.3. `semver_compare('4.1.3','>=4.1.x')` results in the output `true` because 4.1.3 is greater than or equal to 4.1.x. `semver_compare('4.1.3','!4.x.x')` returns `false` because 4.1.3 is equal to 4.x.x. `semver_compare('1.8.6','>1.0.0 <2.0.0')` returns `true` because the second input is an AND expression and 1.8.6 is both greater than 1.0.0 and less than 2.0.0. And `semver_compare('2.1.5','<2.0.0 || >=3.0.0')` returns `false` because 2.1.5 is neither less than 2.0.0 nor greater than or equal to 3.0.0.
+The `semver_compare()` filter compares two strings which comply with the [semantic versioning](https://semver.org/) schema and outputs a boolean response as to the position of the second relative to the first. The first input is the "base" semver string for comparison while the second is the version is compared against the first. The second string accepts an [operator prefix](/docs/policy-types/cluster-policy/validate#operators) and supports AND and OR logic. It also supports the special placeholder variable "x" in any position. For some examples, `semver_compare('1.2.3','1.2.4')` results in the output `false` because version 1.2.4 is not equal to version 1.2.3. `semver_compare('4.1.3','>=4.1.x')` results in the output `true` because 4.1.3 is greater than or equal to 4.1.x. `semver_compare('4.1.3','!4.x.x')` returns `false` because 4.1.3 is equal to 4.x.x. `semver_compare('1.8.6','>1.0.0 <2.0.0')` returns `true` because the second input is an AND expression and 1.8.6 is both greater than 1.0.0 and less than 2.0.0. And `semver_compare('2.1.5','<2.0.0 || >=3.0.0')` returns `false` because 2.1.5 is neither less than 2.0.0 nor greater than or equal to 3.0.0.
 
 | Input 1 | Input 2 | Output  |
 | ------- | ------- | ------- |

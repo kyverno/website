@@ -8,7 +8,7 @@ description: An introduction to Kyverno policy and rule types
 
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
 
-These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/_index.md) for more complete information on how to install Kyverno in production.
+These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/) for more complete information on how to install Kyverno in production.
 
 First, install Kyverno from the latest release manifest.
 
@@ -20,7 +20,7 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 ## Validate Resources
 
-In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](../policy-reports/_index.md) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
+In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/policy-reports/) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
@@ -68,11 +68,11 @@ require-labels:
 
 In addition to the error returned, Kyverno also produces an Event in the same Namespace which contains this information.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
-{% /aside %}
+:::
 
-Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen.md) feature, to all standard Kubernetes Pod controllers including the Deployment above.
+Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen) feature, to all standard Kubernetes Pod controllers including the Deployment above.
 
 Now, create a Pod with the required label.
 
@@ -124,7 +124,7 @@ Now that you've experienced validate policies and seen a bit about policy report
 kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate.md).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate).
 
 ## Mutate Resources
 
@@ -160,9 +160,9 @@ Let's now create a new Pod which does not have the desired label defined.
 kubectl run redis --image redis
 ```
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Pod in a user-defined Namespace or the `default` Namespace (for testing only).
-{% /aside %}
+:::
 
 Once the Pod has been created, get the Pod to see if the `team` label was added.
 
@@ -192,7 +192,7 @@ Now that you've experienced mutate policies and seen how logic can be written ea
 kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate.md).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate).
 
 ## Generate Resources
 
@@ -210,7 +210,7 @@ kubectl -n default create secret docker-registry regcred \
   --docker-email=john.doe@corp.com
 ```
 
-By default, Kyverno is [configured with minimal permissions](/docs/installation/customization.md#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
+By default, Kyverno is [configured with minimal permissions](/docs/installation/customization#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
 ```yaml
 kubectl apply -f- << EOF
@@ -298,4 +298,4 @@ With a basic understanding of generate policies, clean up by deleting the policy
 kubectl delete clusterpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate.md).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate).

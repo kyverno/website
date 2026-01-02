@@ -6,7 +6,7 @@ author: Shuting Zhao
 description: Using Kyverno to verify images with IRSA
 ---
 
-When running workloads in Amazon Elastic Kubernetes Service (EKS), it is essential to ensure supply chain security by verifying container image signatures and other metadata. To achieve this, you can configure Kyverno, a CNCF policy engine designed for Kubernetes, to pull from ECR private registries for image verification. It's possible to [pass in the credentials via secrets](/docs/policy-types/cluster-policy/verify-images/sigstore/_index.md#using-private-registries), but that can get difficult to manage and automate across multiple clusters. In this blog post, we will explore an alternative method that simplifies the authentication process by leveraging Kyverno and IRSA (IAM Roles for Service Accounts) in EKS for image verification.
+When running workloads in Amazon Elastic Kubernetes Service (EKS), it is essential to ensure supply chain security by verifying container image signatures and other metadata. To achieve this, you can configure Kyverno, a CNCF policy engine designed for Kubernetes, to pull from ECR private registries for image verification. It's possible to [pass in the credentials via secrets](/docs/policy-types/cluster-policy/verify-images/sigstore/#using-private-registries), but that can get difficult to manage and automate across multiple clusters. In this blog post, we will explore an alternative method that simplifies the authentication process by leveraging Kyverno and IRSA (IAM Roles for Service Accounts) in EKS for image verification.
 
 Applications, such as Kyverno, running within a Pod's containers can utilize the AWS SDK to make API requests to AWS services by leveraging AWS Identity and Access Management (IAM) permissions. IAM roles for service accounts enable the management of credentials for these applications. Instead of manually creating and distributing AWS credentials to the containers, you can associate an IAM role with a Kubernetes service account and configure your Pods to utilize this service account. The detailed steps for this process can be found in the [documentation](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html). In this blog, we will guide you through the complete process of enabling IAM roles for the Kyverno service account and demonstrate how to verify this using the Kyverno `verifyImages` rule.
 
@@ -37,7 +37,7 @@ aws ec2 modify-instance-metadata-options --instance-id <instance-id> --http-toke
 
 ## Installing Kyverno
 
-Once you have the cluster set up, you can use Helm to [install Kyverno into the cluster](../../../docs/installation/methods.md):
+Once you have the cluster set up, you can use Helm to [install Kyverno into the cluster](/docs/installation/methods):
 
 ```sh
 helm upgrade --install kyverno kyverno/kyverno --namespace kyverno --create-namespace

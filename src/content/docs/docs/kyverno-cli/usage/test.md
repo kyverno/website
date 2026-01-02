@@ -6,7 +6,7 @@ sidebar:
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
 
-`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/policy-types/cluster-policy/autogen.md) making it possible to test, for example, Deployment resources against a Pod policy.
+`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/policy-types/cluster-policy/autogen) making it possible to test, for example, Deployment resources against a Pod policy.
 
 `test` will search for a file named `kyverno-test.yaml` and, if found, will execute the tests within.
 
@@ -19,9 +19,9 @@ In each test, there are four desired results which can be tested for. If the act
 
 Use `--detailed-results` for a comprehensive output (default value `false`). For help with the `test` command, pass the `-h` flag for extensive output including usage, flags, and sample manifests.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 The Kyverno CLI via the `test` command does not embed the Kubernetes control plane components and therefore is not able to perform the types of initial mutations subjected to a resource as part of an in-cluster creation flow. Take care to ensure the manifests you test account for these modifications.
-{% /aside %}
+:::
 
 ### Test File Structures
 
@@ -77,9 +77,9 @@ The test declaration consists of the following parts:
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
-7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](../assertion-trees.md)).
+7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](/docs/kyverno-cli/assertion-trees)).
 
-If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources.md) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
+If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
@@ -845,7 +845,7 @@ Loading test  ( .kyverno-test/kyverno-test.yaml ) ...
 Test Summary: 2 tests passed and 0 tests failed
 ```
 
-For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](../../../policies).
+For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](/policies/).
 
 ### Kubernetes Native Policies
 

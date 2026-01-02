@@ -29,7 +29,7 @@ rules:
           externalTrafficPolicy: Local
 ```
 
-While, in the above snippet, a precondition is used, it would have been possible to also express this desire using multiple types of [anchors](/docs/policy-types/cluster-policy/validate.md#anchors) instead. It is more common for preconditions to exist when needing to perform more advanced comparisons between [context data](external-data-sources.md) (e.g., results from a stored ConfigMap, Kubernetes API call, service call, etc.) and admission data. In the below snippet, a precondition is used to measure the length of an array of volumes coming from a Pod which are of type hostPath. Preconditions can use context variables, the JMESPath system, and perform comparisons between the two and more.
+While, in the above snippet, a precondition is used, it would have been possible to also express this desire using multiple types of [anchors](/docs/policy-types/cluster-policy/validate#anchors) instead. It is more common for preconditions to exist when needing to perform more advanced comparisons between [context data](/docs/policy-types/cluster-policy/external-data-sources) (e.g., results from a stored ConfigMap, Kubernetes API call, service call, etc.) and admission data. In the below snippet, a precondition is used to measure the length of an array of volumes coming from a Pod which are of type hostPath. Preconditions can use context variables, the JMESPath system, and perform comparisons between the two and more.
 
 ```yaml
 rules:
@@ -51,13 +51,13 @@ rules:
           value: 0
 ```
 
-Preconditions are similar in nature to [deny rules](/docs/policy-types/cluster-policy/validate.md#deny-rules) in that they are built of the same type of expressions and have the same fields. Also like deny rules, preconditions use [short circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) to stop or continue processing depending on whether they occur in an `any` or `all` block.
+Preconditions are similar in nature to [deny rules](/docs/policy-types/cluster-policy/validate#deny-rules) in that they are built of the same type of expressions and have the same fields. Also like deny rules, preconditions use [short circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) to stop or continue processing depending on whether they occur in an `any` or `all` block.
 
-Because preconditions very commonly use variables in JMESPath format (e.g., `{{ request.object.spec.type }}`), there are some special considerations when it comes to their formatting. See the [JMESPath formatting page](jmespath.md#formatting) for further details.
+Because preconditions very commonly use variables in JMESPath format (e.g., `{{ request.object.spec.type }}`), there are some special considerations when it comes to their formatting. See the [JMESPath formatting page](/docs/policy-types/cluster-policy/jmespath#formatting) for further details.
 
 When preconditions are used in the rule types which support reporting, a result will be scored as a `skip` if a resource is matched by a rule but discarded by the combined preconditions. Note that this result differs from if it applies to an `exclude` block where the resource is immediately ignored.
 
-Preconditions are also used in mutate rules inside a `foreach` loop for more granular selection of array entries to be mutated. See the documentation [here](/docs/policy-types/cluster-policy/mutate.md#foreach) for more details.
+Preconditions are also used in mutate rules inside a `foreach` loop for more granular selection of array entries to be mutated. See the documentation [here](/docs/policy-types/cluster-policy/mutate#foreach) for more details.
 
 ## Any and All Statements
 
@@ -128,9 +128,9 @@ spec:
                   - name: '*busybox*'
 ```
 
-{% aside title="Note" type="note" %}
-Since preconditions often consider fields in Kubernetes resources which are optional, it is often necessary to use a JMESPath syntax for non-existence checks (`|| ''`). See the JMESPath page [here](jmespath.md#non-existence-checks) for more details on why these are necessary and how to use them.
-{% /aside %}
+:::note[Note]
+Since preconditions often consider fields in Kubernetes resources which are optional, it is often necessary to use a JMESPath syntax for non-existence checks (`|| ''`). See the JMESPath page [here](/docs/policy-types/cluster-policy/jmespath#non-existence-checks) for more details on why these are necessary and how to use them.
+:::
 
 Adding an `all` block means that all of the statements within that block must evaluate to TRUE for the whole block to be considered TRUE. In this policy, in addition to the previous `any` conditions, it checks that all of `animal=cow` and `env=qa` but changes the validation to look for a container with name having the string `foxes` in it. Because the `any` block and `all` block evaluate to TRUE, the validation is performed, however the Deployment will fail to create because the name is still `busybox`. If one of the statements in the `all` block is changed so the value of the checked label is not among those in the Deployment, the rule will not be processed and the Deployment will be created.
 
@@ -248,7 +248,7 @@ String values support the use of wildcards to allow for partial matches. The fol
 
 ## Matching requests without a service account
 
-Preconditions have access to [predefined variables](variables.md#pre-defined-variables) from Kyverno further extending their power.
+Preconditions have access to [predefined variables](/docs/policy-types/cluster-policy/variables#pre-defined-variables) from Kyverno further extending their power.
 
 In this example, the rule is only applied to requests from ServiceAccounts (i.e. when the `{{serviceAccountName}}` variable is not empty).
 

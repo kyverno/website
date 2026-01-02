@@ -125,9 +125,9 @@ Use `-f` or `--values-file` for applying multiple policies to multiple resources
 
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
-{% aside title="Note" type="note" %}
-When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources.md#handling-configmap-array-values).
-{% /aside %}
+:::note[Note]
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources#handling-configmap-array-values).
+:::
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml --userinfo /path/to/user_info.yaml
@@ -376,7 +376,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude.md#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -1396,7 +1396,7 @@ For example, to test the `check-deployment-replicas` policy against all Deployme
 kyverno apply /path/to/check-deployment-replicas.yaml --cluster --policy-report
 ```
 
-Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](/docs/policy-types/validating-policy/#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag.
+Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](/docs/policy-types/cel-policies/validating-policy#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag.
 
 This flag allows you to specify the resources that the policy will reference. The CLI will then use these resources to evaluate the policy.
 

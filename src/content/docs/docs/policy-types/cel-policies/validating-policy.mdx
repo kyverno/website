@@ -6,7 +6,9 @@ sidebar:
   order: 10
 ---
 
-{% feature-state state="beta" version="v1.16" /%}
+import FeatureState from '../../../../../components/FeatureState.astro'
+
+<FeatureState state="beta" version="v1.16" />
 
 The Kyverno `ValidatingPolicy` type extends the Kubernetes `ValidatingAdmissionPolicy` type for complex policy evaluations and other features required for Policy-as-Code. A `ValidatingPolicy` is a superset of a `ValidatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
@@ -20,10 +22,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-    - apiGroups:   [""]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [pods]
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
   validations:
     - message: label 'environment' is required
       expression: "'environment' in object.metadata.?labels.orValue([])"
@@ -160,7 +162,7 @@ Kyverno enhances Kubernetes' CEL environment with libraries enabling complex pol
 
 ## Exceptions
 
-Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions/_index.md#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
+Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
 
 ## JSON Payloads
 
@@ -206,6 +208,6 @@ To write a policy for JSON payloads:
 2. Next, define a `spec.matchConditions` with CEL expressions to tell the engine which payloads should be matched.
 3. Finally, define your validation rules in `spec.validations`.
 
-To evaluate JSON policies, use the [Kyverno CLI](../../kyverno-cli/).
+To evaluate JSON policies, use the [Kyverno CLI](/docs/kyverno-cli).
 
 A Kyverno Engine SDK is planned for a subsequent release.
