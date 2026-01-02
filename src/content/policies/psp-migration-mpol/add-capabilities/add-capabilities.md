@@ -33,7 +33,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -256,4 +256,5 @@ spec:
               } : null
             ) : null
           ).filter(p, p != null) : []
+
 ```

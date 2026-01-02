@@ -49,4 +49,5 @@ spec:
           metadata:
             labels:
               dataprotection: gold|silver|bronze|none
+
 ```

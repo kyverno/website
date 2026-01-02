@@ -15,7 +15,7 @@
     "format:write": "lint-staged",
     "prepare": "husky || true",
     "codegen:policies": "tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/",
-    "codegen:cli-docs": "scripts/codegen-cli-docs",
+    "codegen:cli-docs": "scripts/codegen-cli-docs.sh",
     "codegen": "npm run codegen:policies && npm run codegen:cli-docs",
     "codegen:verify": "npm run codegen && git diff --exit-code && git diff --cached --exit-code",
     "check:links": "CHECK_LINKS=true astro build"

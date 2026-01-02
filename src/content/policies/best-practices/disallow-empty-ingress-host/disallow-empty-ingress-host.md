@@ -42,7 +42,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.rules[].host || `[]` | length(@) }}'
+              - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
                 operator: NotEquals
-                value: '{{ request.object.spec.rules[].http || `[]` | length(@) }}'
+                value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
+
 ```

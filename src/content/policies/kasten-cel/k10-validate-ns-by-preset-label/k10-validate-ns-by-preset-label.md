@@ -51,4 +51,5 @@ spec:
                   "silver" - <For example, hourly backups, exported to immutable S3 storage>
                   "bronze" - <Or, daily local snapshots, NOT exported to external storage>
                   "none" - No local snapshots or backups
+
 ```

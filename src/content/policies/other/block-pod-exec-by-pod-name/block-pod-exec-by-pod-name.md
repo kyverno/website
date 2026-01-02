@@ -8,7 +8,7 @@ subjects:
 tags:
   - Sample
 version: 1.6.0
-description: "The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to Pods beginning with the name `myapp-maintenance-`."
+description: 'The `exec` command may be used to gain shell access, or run other commands, in a Pod''s container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to Pods beginning with the name `myapp-maintenance-`.'
 ---
 
 ## Policy Definition
@@ -46,7 +46,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.name }}'
+              - key: "{{ request.name }}"
                 operator: Equals
                 value: myapp-maintenance-*
+
 ```

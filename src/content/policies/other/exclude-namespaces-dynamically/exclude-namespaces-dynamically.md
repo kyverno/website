@@ -9,7 +9,7 @@ subjects:
 tags:
   - Sample
 version: 1.6.0
-description: "It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied."
+description: 'It''s common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.'
 ---
 
 ## Policy Definition
@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/minversion: 1.6.0
     pod-policies.kyverno.io/autogen-controllers: none
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.
 spec:
   validationFailureAction: Audit
@@ -51,9 +51,9 @@ spec:
                 - Job
       preconditions:
         all:
-          - key: '{{request.object.metadata.namespace}}'
+          - key: "{{request.object.metadata.namespace}}"
             operator: AnyNotIn
-            value: '{{namespacefilters.data.exclude}}'
+            value: "{{namespacefilters.data.exclude}}"
       validate:
         message: |
           Creating Pods in the {{request.namespace}} namespace, which is not in the excluded list of namespaces {{ namespacefilters.data.exclude }}, is forbidden unless it carries the label `foo`.
@@ -62,7 +62,7 @@ spec:
             template:
               metadata:
                 labels:
-                  foo: '*'
+                  foo: "*"
     - name: exclude-namespaces-dynamically-pods
       context:
         - name: namespacefilters
@@ -76,16 +76,16 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{request.object.metadata.namespace}}'
+          - key: "{{request.object.metadata.namespace}}"
             operator: AnyNotIn
-            value: '{{namespacefilters.data.exclude}}'
+            value: "{{namespacefilters.data.exclude}}"
       validate:
         message: |
           Creating Pods in the {{request.namespace}} namespace, which is not in the excluded list of namespaces {{ namespacefilters.data.exclude }}, is forbidden unless it carries the label `foo`.
         pattern:
           metadata:
             labels:
-              foo: '*'
+              foo: "*"
     - name: exclude-namespaces-dynamically-cronjobs
       context:
         - name: namespacefilters
@@ -99,9 +99,9 @@ spec:
                 - CronJob
       preconditions:
         all:
-          - key: '{{request.object.metadata.namespace}}'
+          - key: "{{request.object.metadata.namespace}}"
             operator: AnyNotIn
-            value: '{{namespacefilters.data.exclude}}'
+            value: "{{namespacefilters.data.exclude}}"
       validate:
         message: |
           Creating Pods in the {{request.namespace}} namespace, which is not in the excluded list of namespaces {{ namespacefilters.data.exclude }}, is forbidden unless it carries the label `foo`.
@@ -112,5 +112,6 @@ spec:
                 template:
                   metadata:
                     labels:
-                      foo: '*'
+                      foo: "*"
+
 ```

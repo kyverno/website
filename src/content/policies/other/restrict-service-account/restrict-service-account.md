@@ -28,8 +28,8 @@ metadata:
     policies.kyverno.io/subject: Pod,ServiceAccount
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: '1.23'
-    policies.kyverno.io/description: 'Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example: ''sa-name: ["registry/image-name"]'''
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: "Users may be able to specify any ServiceAccount which exists in their Namespace without restrictions. Confining Pods to a list of authorized ServiceAccounts can be useful to ensure applications in those Pods do not have more privileges than they should. This policy verifies that in the `staging` Namespace the ServiceAccount being specified is matched based on the image and name of the container. For example: 'sa-name: [\"registry/image-name\"]'"
 spec:
   validationFailureAction: Audit
   background: true
@@ -52,7 +52,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}'
+              - key: "{{ images.containers.*.registry | [0] }}/{{ images.containers.*.name | [0] }}"
                 operator: AnyNotIn
-                value: '{{ saMap.data."{{ request.object.spec.serviceAccountName }}" }}'
+                value: "{{ saMap.data.\"{{ request.object.spec.serviceAccountName }}\" }}"
+
 ```

@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.type != 'ExternalName' || object.spec.externalName != 'localhost'
               message: Service of type ExternalName cannot point to localhost.
+
 ```

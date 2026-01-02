@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/subject: Pod,ServiceAccount,Volume
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: '1.25'
+    kyverno.io/kubernetes-version: "1.25"
     policies.kyverno.io/description: Pods running with a ServiceAccount are presented with a volume, containing the token, and volume mounts for all containers in the Pod. Applications that do not need to communicate with the Kubernetes API do not need a ServiceAccount and therefore limiting which Pods have access rights is important. Rather than, or in addition to, requiring that certain Pods disable mounting of a ServiceAccount, it is possible to silently remove this token if it has been presented. This policy ensures that Pods which do not have the label `corp.org/can-use-serviceaccount` and are consuming a ServiceAccount have that stripped away. It should be customized to restrict the scope of its operation as it will not distinguish between an explicitly-defined ServiceAccount or one provided by default.
 spec:
   background: false
@@ -48,12 +48,12 @@ spec:
         - name: tokenvolname
           variable:
             jmesPath: request.object.spec.volumes[?projected].name[?starts_with(@,'kube-api-access-')] | [0] || ''
-            default: ''
+            default: ""
       preconditions:
         all:
-          - key: '{{ tokenvolname }}'
+          - key: "{{ tokenvolname }}"
             operator: Equals
-            value: '?*'
+            value: "?*"
       mutate:
         foreach:
           - list: request.object.spec.volumes[]
@@ -62,8 +62,8 @@ spec:
               all:
                 - key: projected
                   operator: AnyIn
-                  value: '{{ element.keys(@) }}'
-                - key: '{{ element.name }}'
+                  value: "{{ element.keys(@) }}"
+                - key: "{{ element.name }}"
                   operator: Equals
                   value: kube-api-access-*
             patchesJson6902: |-
@@ -75,10 +75,11 @@ spec:
                 order: Descending
                 preconditions:
                   all:
-                    - key: '{{element.name}}'
+                    - key: "{{element.name}}"
                       operator: AnyIn
-                      value: '{{ tokenvolname }}'
+                      value: "{{ tokenvolname }}"
                 patchesJson6902: |-
                   - path: /spec/containers/{{elementIndex0}}/volumeMounts/{{elementIndex1}}
                     op: remove
+
 ```

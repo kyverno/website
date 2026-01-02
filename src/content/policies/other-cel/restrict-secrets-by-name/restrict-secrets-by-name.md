@@ -79,4 +79,5 @@ spec:
           expressions:
             - expression: object.spec.?volumes.orValue([]).all(volume, volume.?secret.?secretName.orValue('safe-').startsWith("safe-"))
               message: Only Secrets beginning with `safe-` may be consumed in volumes.
+
 ```

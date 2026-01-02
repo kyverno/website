@@ -41,13 +41,14 @@ spec:
         message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount, spec.initContainers[*].securityContext.procMount, and spec.ephemeralContainers[*].securityContext.procMount must be unset or set to `Default`.
         pattern:
           spec:
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(procMount)': Default
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(procMount)': Default
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(procMount)": Default
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(procMount)": Default
             containers:
-              - '=(securityContext)':
-                  '=(procMount)': Default
+              - "=(securityContext)":
+                  "=(procMount)": Default
+
 ```

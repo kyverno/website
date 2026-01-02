@@ -9,7 +9,7 @@ subjects:
 tags:
   - Sample in CEL
 version: 1.11.0
-description: "Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation."
+description: 'Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don''t set reserved annotations or to force them to use a newer version of an annotation.'
 ---
 
 ## Policy Definition
@@ -52,4 +52,5 @@ spec:
           expressions:
             - expression: "!object.metadata.?annotations.orValue([]).exists(annotation, annotation.startsWith('fluxcd.io/'))"
               message: Cannot use Flux v1 annotation.
+
 ```

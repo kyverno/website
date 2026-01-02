@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: object.roleRef.name != 'cluster-admin'
               message: Binding to cluster-admin is not allowed.
+
 ```

@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
 version: 1.7.0
-description: "Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container's base, found in an OCI annotation, is in a cluster-wide allow list."
+description: 'Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container''s base, found in an OCI annotation, is in a cluster-wide allow list.'
 ---
 
 ## Policy Definition
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container's base, found in an OCI annotation, is in a cluster-wide allow list.
 spec:
@@ -55,15 +55,16 @@ spec:
             context:
               - name: imageData
                 imageRegistry:
-                  reference: '{{ element.image }}'
+                  reference: "{{ element.image }}"
               - name: basename
                 variable:
                   jmesPath: imageData.manifest.annotations."org.opencontainers.image.base.name"
-                  default: ''
+                  default: ""
             deny:
               conditions:
                 all:
-                  - key: '{{ basename }}'
+                  - key: "{{ basename }}"
                     operator: AnyNotIn
-                    value: '{{ baseimages.data.allowedbaseimages }}'
+                    value: "{{ baseimages.data.allowedbaseimages }}"
+
 ```

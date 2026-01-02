@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels[?'istio-injection'].orValue('') == 'enabled'
               message: All new Namespaces must have Istio sidecar injection enabled.
+
 ```

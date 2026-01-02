@@ -28,9 +28,9 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Job, CronJob
     kyverno.io/kyverno-version: 1.15.0
-    kyverno.io/kubernetes-version: '1.25'
+    kyverno.io/kubernetes-version: "1.25"
     policies.kyverno.io/minversion: 1.15.0
-    policies.kyverno.io/description: 'CAST AI will not downscale a node that includes a pod with the  autoscaling.cast.ai/removal-disabled="true" label on it, this protects sensitive workloads from being evicted and can be attributed to any pod to protect against unwanted downscaling. This policy will mutate jobs and  cronjobs to add the removal-disabled label to protect against eviction. '
+    policies.kyverno.io/description: "CAST AI will not downscale a node that includes a pod with the  autoscaling.cast.ai/removal-disabled=\"true\" label on it, this protects sensitive workloads from being evicted and can be attributed to any pod to protect against unwanted downscaling. This policy will mutate jobs and  cronjobs to add the removal-disabled label to protect against eviction. "
 spec:
   matchConstraints:
     resourceRules:
@@ -77,4 +77,5 @@ spec:
             }
           } : Object{}
   reinvocationPolicy: Never
+
 ```

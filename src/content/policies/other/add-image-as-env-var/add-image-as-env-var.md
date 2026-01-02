@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.10.0-alpha.2
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The Kubernetes downward API only has the ability to express so many options as environment variables. The image consumed in a Pod is commonly needed to make the application aware of some logic it must take. This policy takes the value of the `image` field and adds it as an environment variable to Pods.
 spec:
@@ -45,4 +45,5 @@ spec:
                 value:
                   name: K8S_IMAGE
                   value: "{{ element.image }}"
+
 ```

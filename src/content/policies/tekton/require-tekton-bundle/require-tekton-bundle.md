@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/subject: TaskRun, PipelineRun
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: PipelineRun and TaskRun resources must be executed from a bundle
 spec:
   validationFailureAction: Audit
@@ -45,7 +45,7 @@ spec:
         pattern:
           spec:
             pipelineRef:
-              bundle: '?*'
+              bundle: "?*"
     - name: check-bundle-taskrun
       match:
         any:
@@ -57,5 +57,6 @@ spec:
         pattern:
           spec:
             taskRef:
-              bundle: '?*'
+              bundle: "?*"
+
 ```

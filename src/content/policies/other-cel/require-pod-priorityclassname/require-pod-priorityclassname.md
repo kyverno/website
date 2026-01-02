@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.?priorityClassName.orValue('') != ''
               message: Pods must define the priorityClassName field.
+
 ```

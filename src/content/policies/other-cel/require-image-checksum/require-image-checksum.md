@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, container.image.contains('@'))
               message: Images must use checksums rather than tags.
+
 ```

@@ -47,7 +47,7 @@ spec:
         cel:
           variables:
             - name: allContainers
-              expression: '(has(object.spec.containers) ? object.spec.containers : []) + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])'
+              expression: "(has(object.spec.containers) ? object.spec.containers : []) + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])"
           expressions:
             - expression: |-
                 variables.allContainers.all(container,
@@ -69,7 +69,7 @@ spec:
         cel:
           variables:
             - name: allContainers
-              expression: '(has(object.spec.containers) ? object.spec.containers : []) + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])'
+              expression: "(has(object.spec.containers) ? object.spec.containers : []) + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])"
           expressions:
             - expression: |-
                 variables.allContainers.all(container,
@@ -82,4 +82,5 @@ spec:
                   )
                 )
               message: Any capabilities added other than NET_BIND_SERVICE are disallowed.
+
 ```

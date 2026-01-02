@@ -40,4 +40,5 @@ spec:
             annotations:
               +(linkerd.io/inject): enabled
               +(config.linkerd.io/proxy-await): enabled
+
 ```

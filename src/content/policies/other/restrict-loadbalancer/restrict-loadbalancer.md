@@ -41,5 +41,6 @@ spec:
         message: Service of type LoadBalancer is not allowed.
         pattern:
           spec:
-            type: '!LoadBalancer'
+            type: "!LoadBalancer"
+
 ```

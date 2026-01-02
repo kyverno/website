@@ -40,5 +40,6 @@ spec:
         message: Pods must define the priorityClassName field.
         pattern:
           spec:
-            priorityClassName: '?*'
+            priorityClassName: "?*"
+
 ```

@@ -57,4 +57,5 @@ spec:
           expressions:
             - expression: variables.priorities == [] || object.spec.priorityClassName in variables.priorities
               messageExpression: "'The Pod PriorityClass ' + object.spec.priorityClassName + ' is not in the list of the following PriorityClasses allowed in this Namespace: ' + params.data[variables.namespaceName]"
+
 ```

@@ -23,7 +23,7 @@ metadata:
   name: topologyspreadconstraints-policy
   annotations:
     policies.kyverno.io/title: Spread Pods Across Nodes & Zones in ValidatingPolicy
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/description: Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with less than 3  replicas are skipped.
@@ -54,4 +54,5 @@ spec:
   validations:
     - expression: size(object.spec.template.spec.?topologySpreadConstraints.orValue([]).filter(t, t.topologyKey == 'kubernetes.io/hostname' || t.topologyKey == 'topology.kubernetes.io/zone')) == 2
       message: topologySpreadConstraint for kubernetes.io/hostname & topology.kubernetes.io/zone are required
+
 ```

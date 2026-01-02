@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.9.0
     kyverno.io/kyverno-version: 1.11.1
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.
 spec:
@@ -59,13 +59,14 @@ spec:
           - list: request.object.spec.[initContainers, containers][]
             preconditions:
               any:
-                - key: '{{ element.volumeMounts[].name }}'
+                - key: "{{ element.volumeMounts[].name }}"
                   operator: AnyIn
-                  value: '{{ emptydirnames }}'
+                  value: "{{ emptydirnames }}"
             pattern:
               resources:
                 requests:
-                  ephemeral-storage: '?*'
+                  ephemeral-storage: "?*"
                 limits:
-                  ephemeral-storage: '?*'
+                  ephemeral-storage: "?*"
+
 ```

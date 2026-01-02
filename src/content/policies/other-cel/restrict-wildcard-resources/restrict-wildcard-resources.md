@@ -11,7 +11,7 @@ tags:
   - Security
   - EKS Best Practices in CEL
 version: 1.11.0
-description: "Wildcards ('*') in resources grants access to all of the resources referenced by the given API group and does not follow the principal of least privilege. As much as possible, avoid such open resources unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the resources list found in any rule."
+description: 'Wildcards (''*'') in resources grants access to all of the resources referenced by the given API group and does not follow the principal of least privilege. As much as possible, avoid such open resources unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the resources list found in any rule.'
 ---
 
 ## Policy Definition
@@ -51,4 +51,5 @@ spec:
           expressions:
             - expression: object.rules == null || !object.rules.exists(rule, '*' in rule.resources)
               message: Use of a wildcard ('*') in any resources is forbidden.
+
 ```

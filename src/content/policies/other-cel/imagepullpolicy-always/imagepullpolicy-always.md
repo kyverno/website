@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: "object.spec.containers.all(container,  (container.image.endsWith(':latest') || !container.image.contains(':')) ?  container.imagePullPolicy == 'Always' : true)"
               message: The imagePullPolicy must be set to `Always` when the tag `latest` is used.
+
 ```

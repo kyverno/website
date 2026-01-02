@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: "object.metadata.?annotations[?'kubernetes.io/ingress.class'].orValue('') in ['HAProxy', 'nginx']      "
               message: Unknown ingress class.
+
 ```

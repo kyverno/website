@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/subject: Pod,Deployment,Secret
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: When Pods consume Secrets or ConfigMaps through environment variables, should the contents of those source resources change, the downstream Pods are normally not aware of them. In order for the changes to be reflected, Pods must either restart or be respawned. This policy watches for changes to Secrets which have been marked for this refreshing process which contain the label `kyverno.io/watch=true` and will write an annotation to any Deployment Pod template which consume them as env vars. This will result in a new rollout of Pods which will pick up the changed values. See the related policy entitled "Refresh Volumes in Pods" for a similar reloading process when ConfigMaps and Secrets are consumed as volumes instead. Use of this policy may require providing the Kyverno ServiceAccount with permission to update Deployments.
 spec:
   mutateExistingOnPolicyUpdate: false
@@ -42,17 +42,17 @@ spec:
                 - Secret
               selector:
                 matchLabels:
-                  kyverno.io/watch: 'true'
+                  kyverno.io/watch: "true"
       preconditions:
         all:
-          - key: '{{request.operation}}'
+          - key: "{{request.operation}}"
             operator: Equals
             value: UPDATE
       mutate:
         targets:
           - apiVersion: apps/v1
             kind: Deployment
-            namespace: '{{request.namespace}}'
+            namespace: "{{request.namespace}}"
         patchStrategicMerge:
           spec:
             template:
@@ -64,5 +64,6 @@ spec:
                   - env:
                       - valueFrom:
                           secretKeyRef:
-                            <(name): '{{ request.object.metadata.name }}'
+                            <(name): "{{ request.object.metadata.name }}"
+
 ```

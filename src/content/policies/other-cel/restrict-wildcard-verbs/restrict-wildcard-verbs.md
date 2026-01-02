@@ -11,7 +11,7 @@ tags:
   - Security
   - EKS Best Practices in CEL
 version: 1.11.0
-description: "Wildcards ('*') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule."
+description: 'Wildcards (''*'') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.'
 ---
 
 ## Policy Definition
@@ -51,4 +51,5 @@ spec:
           expressions:
             - expression: object.rules == null || !object.rules.exists(rule, '*' in rule.verbs)
               message: Use of a wildcard ('*') in any verbs is forbidden.
+
 ```

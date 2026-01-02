@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Mesh
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: This policy will check the TLS Min version to ensure that whenever the mesh is set, there is a minimum version of TLS set for all the service mesh proxies and this enforces that service mesh mTLS traffic uses TLS v1.2 or newer.
 spec:
   validationFailureAction: Enforce
@@ -46,4 +46,5 @@ spec:
             tls:
               incoming:
                 tlsMinVersion: TLSv1_2
+
 ```

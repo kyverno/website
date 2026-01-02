@@ -53,4 +53,5 @@ spec:
           expressions:
             - expression: size(object.spec.template.spec.?topologySpreadConstraints.orValue([]).filter(t, t.topologyKey == 'kubernetes.io/hostname' || t.topologyKey == 'topology.kubernetes.io/zone')) == 2
               message: topologySpreadConstraint for kubernetes.io/hostname & topology.kubernetes.io/zone are required
+
 ```

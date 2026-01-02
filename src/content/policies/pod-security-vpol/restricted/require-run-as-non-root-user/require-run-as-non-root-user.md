@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -56,4 +56,5 @@ spec:
         variables.allContainers.all(container, 
           container.?securityContext.?runAsUser.orValue(1) > 0)
       message: Running as root is not allowed. The field spec.containers[*].securityContext.runAsUser,  spec.initContainers[*].securityContext.runAsUser, and  spec.ephemeralContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero.
+
 ```

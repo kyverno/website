@@ -8,7 +8,7 @@ subjects:
 tags:
   - Sample
 version: 1.15.0
-description: "The kubectl cp command is used to copy files between a local machine and a Pod's container.  While this functionality is useful for transferring data, it may introduce security risks,  such as unauthorized data exfiltration or modification. This policy blocks the use of the  kubectl cp command on all Pods with label `block-kubectl-cp=true`, ensuring that sensitive  workloads are protected from unintended file transfers. Other kubectl operations are unaffected,  allowing for normal Pod management while preventing potential misuse of file copy capabilities."
+description: 'The kubectl cp command is used to copy files between a local machine and a Pod''s container.  While this functionality is useful for transferring data, it may introduce security risks,  such as unauthorized data exfiltration or modification. This policy blocks the use of the  kubectl cp command on all Pods with label `block-kubectl-cp=true`, ensuring that sensitive  workloads are protected from unintended file transfers. Other kubectl operations are unaffected,  allowing for normal Pod management while preventing potential misuse of file copy capabilities.'
 isNew: true
 ---
 
@@ -40,7 +40,7 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
@@ -48,4 +48,5 @@ spec:
         Cannot use `kubectl cp` on pods
       expression: |
         object.command.size() >= 2 && object.command[0] != "tar" && object.command[1] != "cf"
+
 ```

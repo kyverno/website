@@ -1,10 +1,16 @@
 ---
 // Import collection
-import { getCollection, render } from 'astro:content'
+import { getCollection } from 'astro:content'
 import DefaultLayout from '../../layouts/DefaultLayout.astro'
 import { Header } from '../../sections/Header'
 import { YamlCodeBlock } from '../../components/policy/YamlCodeBlock.jsx'
 import { PolicyActionButtons } from '../../components/policy/PolicyActionButtons.jsx'
+import {
+  formatCategoryLabel,
+  formatSeverityLabel,
+  getCategoryColor,
+  getSeverityColor,
+} from '../../components/policy/utils'
 
 export async function getStaticPaths() {
   const policies = await getCollection('policies')
@@ -15,12 +21,11 @@ export async function getStaticPaths() {
 }
 
 const { policy } = Astro.props
-const { Content } = await render(policy)
+const { data } = policy
 
 // Extract YAML content from policy body
 let yamlContent = ''
 const bodyContent = policy.body || ''
-// Match YAML code block - be more specific to get the policy YAML block
 const yamlMatch = bodyContent.match(/```\s*yaml\s*\n([\s\S]*?)\n```/)
 if (yamlMatch && yamlMatch[1]) {
   yamlContent = yamlMatch[1].trim()
@@ -32,46 +37,13 @@ if (yamlMatch && yamlMatch[1]) {
 }
 
 // Extract metadata
-const { data } = policy
-
-const categoryLabels = {
-  verifyImages: 'Verify Images',
-  validate: 'Validate',
-  mutate: 'Mutate',
-  generate: 'Generate',
-  cleanup: 'Cleanup',
-}
-
-const categoryColors = {
-  verifyImages: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-  validate: 'bg-primary-100/15 text-primary-100 border-primary-100/30',
-  mutate: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-  generate: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  cleanup: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-}
-
-const severityColors = {
-  high: 'bg-red-500/10 text-red-400 border-red-500/20',
-  medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-  low: 'bg-green-500/10 text-green-400 border-green-500/20',
-}
-
-const severityLabels = {
-  high: 'High',
-  medium: 'Medium',
-  low: 'Low',
-}
-
 const category = data.category || 'validate'
 const severity = data.severity || 'medium'
 const description = data.description || null
 const isNew = data.isNew || false
 
 // Construct GitHub URL from policy ID
-const pathParts = policy.id.split('/')
-const fileName = pathParts[pathParts.length - 1]
-const yamlUrl = `https://github.com/kyverno/policies/raw/main/${policy.id}/${fileName}.yaml`
-const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}/${fileName}.yaml`
+const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}.yaml`
 ---
 
 <DefaultLayout>
@@ -110,7 +82,7 @@ const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}/${
 
       <!-- Action Buttons -->
       <PolicyActionButtons
-        yamlUrl={yamlUrl}
+        yamlUrl={githubUrl}
         yamlContent={yamlContent}
         client:load
       />
@@ -149,11 +121,9 @@ const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}/${
             </dt>
             <dd>
               <span
-                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${
-                  categoryColors[category] || categoryColors.validate
-                } shadow-sm`}
+                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${getCategoryColor(category)} shadow-sm`}
               >
-                {categoryLabels[category] || category}
+                {formatCategoryLabel(category)}
               </span>
             </dd>
           </div>
@@ -166,11 +136,9 @@ const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}/${
             </dt>
             <dd>
               <span
-                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${
-                  severityColors[severity] || severityColors.medium
-                } shadow-sm`}
+                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${getSeverityColor(severity)} shadow-sm`}
               >
-                {severityLabels[severity] || severity}
+                {formatSeverityLabel(severity)}
               </span>
             </dd>
           </div>

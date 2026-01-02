@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: has(object.spec.encryption)
               message: Encryption should be enabled for etcd
+
 ```

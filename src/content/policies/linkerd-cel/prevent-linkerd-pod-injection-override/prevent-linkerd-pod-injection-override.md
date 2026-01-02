@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'linkerd.io/inject'].orValue('') != 'disabled'
               message: Pods may not disable sidecar injection.
+
 ```

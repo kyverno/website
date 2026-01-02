@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.containers.exists(container,  has(container.resources) &&  (has(container.resources.requests) || has(container.resources.limits)))
               message: At least one container in the Pod must define either requests or limits for either CPU or memory.
+
 ```

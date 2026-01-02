@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.spec.?securityContext.?supplementalGroups.orValue([]).all(supplementalGroup, (supplementalGroup >= 100 && supplementalGroup <= 200) || (supplementalGroup >= 500 && supplementalGroup <= 600))
               message: Any supplementalGroup ID must be within the range 100-200 or 500-600.
+
 ```

@@ -42,4 +42,5 @@ spec:
           metadata:
             annotations:
               linkerd.io/inject: enabled
+
 ```

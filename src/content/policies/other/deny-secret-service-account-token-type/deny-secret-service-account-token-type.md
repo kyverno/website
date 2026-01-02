@@ -23,7 +23,7 @@ metadata:
   annotations:
     policies.kyverno.io/title: Deny Secret Service Account Token Type
     policies.kyverno.io/category: Security
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     kyverno.io/kyverno-version: 1.11.1
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret, ServiceAccount
@@ -41,5 +41,6 @@ spec:
       validate:
         message: Secret ServiceAccount token type is not allowed.
         pattern:
-          type: '!kubernetes.io/service-account-token'
+          type: "!kubernetes.io/service-account-token"
+
 ```

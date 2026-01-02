@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Resource requests often need to be tailored to the type of workload in the container/Pod. With many different types of applications in a cluster, enforcing hard limits on requests or limits may not work and a ratio may be better suited instead. This policy checks every container in a Pod and ensures that memory limits are no more than 2.5x its requests.
 spec:
@@ -55,4 +55,5 @@ spec:
                   - key: "{{ divide('{{ element.resources.limits.memory || '0' }}', '{{ element.resources.requests.memory || '1m' }}') }}"
                     operator: GreaterThan
                     value: 2.5
+
 ```

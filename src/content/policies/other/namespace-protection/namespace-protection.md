@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: Cases where RBAC may be applied at a higher level and where Namespace-level protections may be necessary can be accomplished with a separate policy. For example, one may want to protect creates, updates, and deletes on only a single Namespace. This policy will block creates, updates, and deletes to any Namespace labeled with `freeze=true`. Caution should be exercised when using rules which match on all kinds (`"*"`) as this will involve, for larger clusters, a substantial amount of processing on Kyverno's part. Additional resource requests and/or limits may be required.
 spec:
   validationFailureAction: Enforce
@@ -38,14 +38,15 @@ spec:
         any:
           - resources:
               kinds:
-                - '*'
+                - "*"
               namespaceSelector:
                 matchExpressions:
                   - key: freeze
                     operator: In
                     values:
-                      - 'true'
+                      - "true"
       validate:
         message: This Namespace is frozen and no modifications may be performed.
         deny: {}
+
 ```

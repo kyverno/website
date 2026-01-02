@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-description: "Accessing a container engine's socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`."
+description: 'Accessing a container engine''s socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`.'
 ---
 
 ## Policy Definition
@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Accessing a container engine's socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`.
 spec:
@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -50,6 +50,7 @@ spec:
     - name: isAllowDockerLabelTrue
       expression: object.metadata.?labels[?'allow-docker'].orValue('false') == 'true'
   validations:
-    - expression: '!variables.hasDockerSocket || variables.isAllowDockerLabelTrue'
+    - expression: "!variables.hasDockerSocket || variables.isAllowDockerLabelTrue"
       message: If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`.
+
 ```

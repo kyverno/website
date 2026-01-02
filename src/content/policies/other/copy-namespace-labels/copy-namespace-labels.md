@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment, Label, Namespace
     kyverno.io/kyverno-version: 1.11.1
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     policies.kyverno.io/description: It is common for Namespaced resources to need access to labels which have been assigned to the Namespace in which they reside. This policy demonstrates two different ways of assigning Namespace labels to a Deployment. The first method copies only the `owner` label while the second copies all labels except for `kubernetes.io/metadata.name`.
 spec:
   rules:
@@ -48,7 +48,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              owner: '{{ owner }}'
+              owner: "{{ owner }}"
     - name: all-label-deployment-from-ns
       match:
         any:
@@ -65,5 +65,6 @@ spec:
       mutate:
         patchStrategicMerge:
           metadata:
-            labels: '{{ alllabels }}'
+            labels: "{{ alllabels }}"
+
 ```

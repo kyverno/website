@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
 version: 1.10.0
-description: "Containers running in Pods may sometimes need access to node-specific information on which the Pod has been scheduled. Scheduling decisions are made by kube-scheduler after the Pod has been persisted and so only at that time may the Node to which the Pod is bound can be fetched. The Kubernetes API allows specifically the projection of annotations from these Binding resources to the Pods which are their subject. This policy watches for then mutates the /binding subresource of a Pod to add an annotation named `foo` the value of which comes from the bound Node's label also called `foo`. Use of this policy may require removal of the Binding resourceFilter in Kyverno's ConfigMap."
+description: 'Containers running in Pods may sometimes need access to node-specific information on which the Pod has been scheduled. Scheduling decisions are made by kube-scheduler after the Pod has been persisted and so only at that time may the Node to which the Pod is bound can be fetched. The Kubernetes API allows specifically the projection of annotations from these Binding resources to the Pods which are their subject. This policy watches for then mutates the /binding subresource of a Pod to add an annotation named `foo` the value of which comes from the bound Node''s label also called `foo`. Use of this policy may require removal of the Binding resourceFilter in Kyverno''s ConfigMap.'
 ---
 
 ## Policy Definition
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: '1.26'
+    kyverno.io/kubernetes-version: "1.26"
     policies.kyverno.io/description: Containers running in Pods may sometimes need access to node-specific information on which the Pod has been scheduled. Scheduling decisions are made by kube-scheduler after the Pod has been persisted and so only at that time may the Node to which the Pod is bound can be fetched. The Kubernetes API allows specifically the projection of annotations from these Binding resources to the Pods which are their subject. This policy watches for then mutates the /binding subresource of a Pod to add an annotation named `foo` the value of which comes from the bound Node's label also called `foo`. Use of this policy may require removal of the Binding resourceFilter in Kyverno's ConfigMap.
 spec:
   background: false
@@ -42,7 +42,7 @@ spec:
         - name: node
           variable:
             jmesPath: request.object.target.name
-            default: ''
+            default: ""
         - name: foolabel
           apiCall:
             urlPath: /api/v1/nodes/{{node}}
@@ -51,5 +51,6 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              foo: '{{ foolabel }}'
+              foo: "{{ foolabel }}"
+
 ```

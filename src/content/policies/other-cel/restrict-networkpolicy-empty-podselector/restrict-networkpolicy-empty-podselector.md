@@ -54,4 +54,5 @@ spec:
           expressions:
             - expression: size(object.spec.podSelector) != 0
               message: NetworkPolicies must not use an empty podSelector.
+
 ```

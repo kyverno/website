@@ -9,7 +9,7 @@ subjects:
 tags:
   - Kasten K10 by Veeam in CEL
 version: 1.11.0
-description: "Check the 'dataprotection' label that production Deployments and StatefulSet have a named K10 Policy. Use in combination with 'generate' ClusterPolicy to 'generate' a specific K10 Policy by name."
+description: 'Check the ''dataprotection'' label that production Deployments and StatefulSet have a named K10 Policy. Use in combination with ''generate'' ClusterPolicy to ''generate'' a specific K10 Policy by name.'
 ---
 
 ## Policy Definition
@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: object.metadata.?labels.?dataprotection.orValue('').startsWith('k10-')
               message: "Deployments and StatefulSets that specify 'dataprotection' label must have a valid k10-?* name (use labels: dataprotection: k10-<policyname>)"
+
 ```

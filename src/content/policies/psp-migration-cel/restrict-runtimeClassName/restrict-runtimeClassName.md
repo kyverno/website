@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: "!has(object.spec.runtimeClassName) || object.spec.runtimeClassName in ['prodclass', 'expclass']"
               message: Only the runtime classes prodclass or expclass may be used.
+
 ```

@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.spec.?project.orValue('') != 'default'
               message: The default project may not be used in an Application.
+
 ```

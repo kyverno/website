@@ -43,6 +43,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!object.spec.?affinity.?nodeAffinity.hasValue()'
+            - expression: "!object.spec.?affinity.?nodeAffinity.hasValue()"
               message: Node affinity cannot be used.
+
 ```

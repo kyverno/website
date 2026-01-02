@@ -45,6 +45,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!has(object.spec.ephemeralContainers)'
+            - expression: "!has(object.spec.ephemeralContainers)"
               message: Ephemeral (debug) containers are not permitted.
+
 ```

@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.8.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The restricted profile of the Pod Security Standards, which is inclusive of the baseline profile, is a collection of all the most common configurations that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. In some cases, specific exemptions must be made on a per-control basis. This policy configures the restricted profile through the latest version of the Pod Security Standards cluster wide while completely exempting Seccomp control check.
 spec:
@@ -47,5 +47,6 @@ spec:
             - controlName: Seccomp
             - controlName: Seccomp
               images:
-                - '*'
+                - "*"
+
 ```

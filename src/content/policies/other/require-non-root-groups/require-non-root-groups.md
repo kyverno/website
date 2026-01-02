@@ -45,26 +45,26 @@ spec:
         anyPattern:
           - spec:
               securityContext:
-                runAsGroup: '>0'
-              '=(ephemeralContainers)':
-                - '=(securityContext)':
-                    '=(runAsGroup)': '>0'
-              '=(initContainers)':
-                - '=(securityContext)':
-                    '=(runAsGroup)': '>0'
+                runAsGroup: ">0"
+              "=(ephemeralContainers)":
+                - "=(securityContext)":
+                    "=(runAsGroup)": ">0"
+              "=(initContainers)":
+                - "=(securityContext)":
+                    "=(runAsGroup)": ">0"
               containers:
-                - '=(securityContext)':
-                    '=(runAsGroup)': '>0'
+                - "=(securityContext)":
+                    "=(runAsGroup)": ">0"
           - spec:
-              '=(ephemeralContainers)':
+              "=(ephemeralContainers)":
                 - securityContext:
-                    runAsGroup: '>0'
-              '=(initContainers)':
+                    runAsGroup: ">0"
+              "=(initContainers)":
                 - securityContext:
-                    runAsGroup: '>0'
+                    runAsGroup: ">0"
               containers:
                 - securityContext:
-                    runAsGroup: '>0'
+                    runAsGroup: ">0"
     - name: check-supplementalgroups
       match:
         any:
@@ -75,8 +75,8 @@ spec:
         message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.supplementalGroups must be unset or set to a value greater than zero.
         pattern:
           spec:
-            '=(securityContext)':
-              '=(supplementalGroups)': '>0'
+            "=(securityContext)":
+              "=(supplementalGroups)": ">0"
     - name: check-fsgroup
       match:
         any:
@@ -87,6 +87,7 @@ spec:
         message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.fsGroup must be unset or set to a value greater than zero.
         pattern:
           spec:
-            '=(securityContext)':
-              '=(fsGroup)': '>0'
+            "=(securityContext)":
+              "=(fsGroup)": ">0"
+
 ```

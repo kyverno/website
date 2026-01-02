@@ -45,22 +45,23 @@ spec:
             containers:
               - resources:
                   requests:
-                    memory: '?*'
-                    cpu: '?*'
+                    memory: "?*"
+                    cpu: "?*"
                   limits:
-                    memory: '?*'
-            '=(initContainers)':
+                    memory: "?*"
+            "=(initContainers)":
               - resources:
                   requests:
-                    memory: '?*'
-                    cpu: '?*'
+                    memory: "?*"
+                    cpu: "?*"
                   limits:
-                    memory: '?*'
-            '=(ephemeralContainers)':
+                    memory: "?*"
+            "=(ephemeralContainers)":
               - resources:
                   requests:
-                    memory: '?*'
-                    cpu: '?*'
+                    memory: "?*"
+                    cpu: "?*"
                   limits:
-                    memory: '?*'
+                    memory: "?*"
+
 ```

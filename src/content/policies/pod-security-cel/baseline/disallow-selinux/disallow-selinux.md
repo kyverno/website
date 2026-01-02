@@ -46,7 +46,7 @@ spec:
         cel:
           variables:
             - name: allContainerTypes
-              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
+              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
             - name: seLinuxTypes
               expression: "['container_t', 'container_init_t', 'container_kvm_t']"
           expressions:
@@ -65,8 +65,9 @@ spec:
         cel:
           variables:
             - name: allContainerTypes
-              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
+              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
           expressions:
             - expression: (!has(object.spec.securityContext) || !has(object.spec.securityContext.seLinuxOptions) || (!has(object.spec.securityContext.seLinuxOptions.user) && !has(object.spec.securityContext.seLinuxOptions.role))) && variables.allContainerTypes.all(container, !has(container.securityContext) || !has(container.securityContext.seLinuxOptions) || (!has(container.securityContext.seLinuxOptions.user) && !has(container.securityContext.seLinuxOptions.role)))
               message: Setting the SELinux user or role is forbidden. The fields seLinuxOptions.user and seLinuxOptions.role must be unset.
+
 ```

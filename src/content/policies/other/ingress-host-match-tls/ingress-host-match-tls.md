@@ -51,7 +51,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ (request.object.spec.rules[].host || `[]`) | sort(@) }}'
+              - key: "{{ (request.object.spec.rules[].host || `[]`) | sort(@) }}"
                 operator: AnyNotIn
-                value: '{{ (request.object.spec.tls[].hosts[] || `[]`) | sort(@) }}'
+                value: "{{ (request.object.spec.tls[].hosts[] || `[]`) | sort(@) }}"
+
 ```

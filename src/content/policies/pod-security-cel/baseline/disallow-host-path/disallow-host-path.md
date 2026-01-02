@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.spec.?volumes.orValue([]).all(volume, size(volume) == 0 || !has(volume.hostPath))
               message: HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
+
 ```

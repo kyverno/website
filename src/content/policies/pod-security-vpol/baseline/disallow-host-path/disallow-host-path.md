@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -49,4 +49,5 @@ spec:
   validations:
     - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
       message: HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
+
 ```

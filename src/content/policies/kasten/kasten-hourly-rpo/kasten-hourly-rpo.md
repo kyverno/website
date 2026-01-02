@@ -44,7 +44,7 @@ spec:
             jmesPath: items[].metadata.name
       preconditions:
         any:
-          - key: '{{ length(namespacesWithPriorityLabel) }}'
+          - key: "{{ length(namespacesWithPriorityLabel) }}"
             operator: GreaterThan
             value: 0
       validate:
@@ -54,10 +54,11 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: '{{ element }}'
+                  - key: "{{ element }}"
                     operator: AnyIn
-                    value: '{{ namespacesWithPriorityLabel }}'
-                  - key: '{{ request.object.spec.frequency }}'
+                    value: "{{ namespacesWithPriorityLabel }}"
+                  - key: "{{ request.object.spec.frequency }}"
                     operator: NotEquals
-                    value: '@hourly'
+                    value: "@hourly"
+
 ```

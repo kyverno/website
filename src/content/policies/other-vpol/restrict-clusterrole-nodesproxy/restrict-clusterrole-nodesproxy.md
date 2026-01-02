@@ -28,8 +28,8 @@ metadata:
     policies.kyverno.io/subject: ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
-    policies.kyverno.io/description: 'A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. '
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/description: "A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. "
 spec:
   validationActions:
     - Audit
@@ -50,4 +50,5 @@ spec:
   validations:
     - expression: object.rules == null ||  !object.rules.exists(rule,  rule.resources.exists(resource, resource == 'nodes/proxy') &&  rule.apiGroups.exists(apiGroup, apiGroup == ''))
       message: A ClusterRole containing the nodes/proxy resource is not allowed.
+
 ```

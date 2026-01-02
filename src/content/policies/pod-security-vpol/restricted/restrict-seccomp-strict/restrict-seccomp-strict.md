@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -52,4 +52,5 @@ spec:
   validations:
     - expression: object.spec.?securityContext.?seccompProfile.?type.orValue('RuntimeDefault') in ['RuntimeDefault', 'Localhost'] && variables.allContainers.all(container,  container.?securityContext.?seccompProfile.?type.orValue('RuntimeDefault') in ['RuntimeDefault', 'Localhost'])
       message: seccompProfile.type must be either 'RuntimeDefault' or 'Localhost'.
+
 ```

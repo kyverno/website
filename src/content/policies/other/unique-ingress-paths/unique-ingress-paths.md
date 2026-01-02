@@ -60,8 +60,9 @@ spec:
             all:
               - key: /{{request.object.spec.rules[].http.paths[].path | [0] | to_string(@) | split(@, '/') | [1]}}
                 operator: AnyIn
-                value: '{{allpaths}}'
+                value: "{{allpaths}}"
               - key: /{{request.object.spec.rules[].http.paths[].path | [0] | to_string(@) | split(@, '/') | [1]}}
                 operator: AnyNotIn
-                value: '{{nspath}}'
+                value: "{{nspath}}"
+
 ```

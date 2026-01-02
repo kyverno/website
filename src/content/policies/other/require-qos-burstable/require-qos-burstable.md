@@ -43,8 +43,9 @@ spec:
             all:
               - key: requests
                 operator: AnyNotIn
-                value: '{{ request.object.spec.containers[].resources.keys(@)[] }}'
+                value: "{{ request.object.spec.containers[].resources.keys(@)[] }}"
               - key: limits
                 operator: AnyNotIn
-                value: '{{ request.object.spec.containers[].resources.keys(@)[] }}'
+                value: "{{ request.object.spec.containers[].resources.keys(@)[] }}"
+
 ```

@@ -41,4 +41,5 @@ spec:
               - <(image): corp.reg.com/*
             imagePullSecrets:
               - name: my-secret
+
 ```

@@ -45,7 +45,8 @@ spec:
         pattern:
           metadata:
             annotations:
-              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: '?*'
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "?*"
           (spec):
             (type): LoadBalancer
+
 ```

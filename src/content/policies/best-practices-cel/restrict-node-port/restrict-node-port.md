@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: "has(object.spec.type) ? (object.spec.type != 'NodePort') : true"
               message: Services of type NodePort are not allowed.
+
 ```

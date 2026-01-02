@@ -61,4 +61,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container, container.image.startsWith(variables.nsregistries) || container.image.startsWith(variables.clusterregistries))
               message: This Pod names an image that is not from an approved registry.
+
 ```

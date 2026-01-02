@@ -43,8 +43,9 @@ spec:
         cel:
           variables:
             - name: namespaceMappingValues
-              expression: 'has(object.spec.namespaceMapping) ? object.spec.namespaceMapping.map(nsmap, object.spec.namespaceMapping[nsmap]) : []'
+              expression: "has(object.spec.namespaceMapping) ? object.spec.namespaceMapping.map(nsmap, object.spec.namespaceMapping[nsmap]) : []"
           expressions:
             - expression: "!variables.namespaceMappingValues.exists(val, val in ['kube-system', 'kube-node-lease'])"
               messageExpression: "'Warning! Restore to protected namespace: ' + variables.namespaceMappingValues.join(', ') + ' is not allowed!'"
+
 ```

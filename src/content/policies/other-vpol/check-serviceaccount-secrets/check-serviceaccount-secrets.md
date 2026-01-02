@@ -8,7 +8,7 @@ subjects:
   - ServiceAccount
 tags:
   - Security in vpol
-description: "Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount's secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited."
+description: 'Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount''s secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited.'
 ---
 
 ## Policy Definition
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Security in vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Secret,ServiceAccount
     policies.kyverno.io/description: Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount's secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited.
 spec:
@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -46,6 +46,7 @@ spec:
         resources:
           - serviceaccounts
   validations:
-    - expression: '!has(object.secrets)'
+    - expression: "!has(object.secrets)"
       message: Long-lived API tokens are not allowed.
+
 ```

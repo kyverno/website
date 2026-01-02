@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -53,5 +53,6 @@ spec:
           object.spec.?ephemeralContainers.orValue([])
   validations:
     - expression: variables.allContainers.all(container, container.?securityContext.?windowsOptions.?hostProcess.orValue(false) == false)
-      message: 'HostProcess containers are disallowed. The field spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`. '
+      message: "HostProcess containers are disallowed. The field spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`. "
+
 ```

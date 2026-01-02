@@ -1,8 +1,7 @@
 ---
-title: 'kyverno'
+title: "kyverno"
 weight: 35
 ---
-
 ## kyverno
 
 Kubernetes Native Policy Management.
@@ -10,15 +9,15 @@ Kubernetes Native Policy Management.
 ### Synopsis
 
 Kubernetes Native Policy Management.
+  
+  The Kyverno CLI provides a command-line interface to work with Kyverno resources.
+  It can be used to validate and test policy behavior to resources prior to adding them to a cluster.
+  
+  The Kyverno CLI comes with additional commands to help creating and manipulating various Kyverno resources.
+  
+  NOTE: To enable experimental commands, environment variable "KYVERNO_EXPERIMENTAL" should be set true or 1.
 
-The Kyverno CLI provides a command-line interface to work with Kyverno resources.
-It can be used to validate and test policy behavior to resources prior to adding them to a cluster.
-
-The Kyverno CLI comes with additional commands to help creating and manipulating various Kyverno resources.
-
-NOTE: To enable experimental commands, environment variable "KYVERNO_EXPERIMENTAL" should be set true or 1.
-
-For more information visit https://kyverno.io/docs/kyverno-cli
+  For more information visit https://kyverno.io/docs/kyverno-cli
 
 ```
 kyverno [flags]
@@ -46,12 +45,13 @@ kyverno [flags]
 
 ### SEE ALSO
 
-- [kyverno apply](/docs/kyverno-cli/reference/kyverno_apply) - Applies policies on resources.
-- [kyverno completion](/docs/kyverno-cli/reference/kyverno_completion) - Generate the autocompletion script for kyverno for the specified shell.
-- [kyverno create](/docs/kyverno-cli/reference/kyverno_create) - Helps with the creation of various Kyverno resources.
-- [kyverno docs](/docs/kyverno-cli/reference/kyverno_docs) - Generates reference documentation.
-- [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp) - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
-- [kyverno json](/docs/kyverno-cli/reference/kyverno_json) - Runs tests against any json compatible payloads/policies.
-- [kyverno migrate](/docs/kyverno-cli/reference/kyverno_migrate) - Migrate one or more resources to the stored version.
-- [kyverno test](/docs/kyverno-cli/reference/kyverno_test) - Run tests from a local filesystem or a remote git repository.
-- [kyverno version](/docs/kyverno-cli/reference/kyverno_version) - Prints the version of Kyverno CLI.
+* [kyverno apply](/docs/kyverno-cli/reference/kyverno_apply)	 - Applies policies on resources.
+* [kyverno completion](/docs/kyverno-cli/reference/kyverno_completion)	 - Generate the autocompletion script for kyverno for the specified shell.
+* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
+* [kyverno docs](/docs/kyverno-cli/reference/kyverno_docs)	 - Generates reference documentation.
+* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno json](/docs/kyverno-cli/reference/kyverno_json)	 - Runs tests against any json compatible payloads/policies.
+* [kyverno migrate](/docs/kyverno-cli/reference/kyverno_migrate)	 - Migrate one or more resources to the stored version.
+* [kyverno test](/docs/kyverno-cli/reference/kyverno_test)	 - Run tests from a local filesystem or a remote git repository.
+* [kyverno version](/docs/kyverno-cli/reference/kyverno_version)	 - Prints the version of Kyverno CLI.
+

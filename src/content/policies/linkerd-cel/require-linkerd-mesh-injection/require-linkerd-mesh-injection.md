@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'linkerd.io/inject'].orValue('') == 'enabled'
               message: All Namespaces must set the annotation `linkerd.io/inject` to `enabled`.
+
 ```

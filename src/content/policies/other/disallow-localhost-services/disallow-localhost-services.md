@@ -42,5 +42,6 @@ spec:
         pattern:
           spec:
             (type): ExternalName
-            externalName: '!localhost'
+            externalName: "!localhost"
+
 ```

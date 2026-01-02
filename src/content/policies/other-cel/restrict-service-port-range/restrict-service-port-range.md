@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.ports.all(p, p.port >= 32000 && p.port <= 33000)
               message: Ports must be between 32000-33000
+
 ```

@@ -11,8 +11,6 @@ export const Header = () => {
     // Check localStorage on initial render
     if (typeof window !== 'undefined') {
       const bannerClosed = localStorage.getItem(BANNER_STORAGE_KEY)
-      // If key doesn't exist, it's first visit - show banner (return true)
-      // If key exists and is 'true', user closed it - hide banner (return false)
       return bannerClosed !== 'true'
     }
     // Server-side: default to closed
@@ -21,7 +19,6 @@ export const Header = () => {
 
   const handleCloseBanner = () => {
     setIsBannerVisble(false)
-    // Persist the closed state to localStorage
     localStorage.setItem(BANNER_STORAGE_KEY, 'true')
   }
 

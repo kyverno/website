@@ -111,4 +111,5 @@ spec:
           expressions:
             - expression: object.spec.?image.orValue('').startsWith('ghcr.io/myorg/')
               message: .spec.image must be from an image repository within the myorg organization.
+
 ```

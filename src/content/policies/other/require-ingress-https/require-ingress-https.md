@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: Ingress resources should only allow secure traffic by disabling HTTP and therefore only allowing HTTPS. This policy requires that all Ingress resources set the annotation `kubernetes.io/ingress.allow-http` to `"false"` and specify TLS in the spec.
 spec:
@@ -49,7 +49,7 @@ spec:
         pattern:
           metadata:
             annotations:
-              kubernetes.io/ingress.allow-http: 'false'
+              kubernetes.io/ingress.allow-http: "false"
     - name: has-tls
       match:
         any:
@@ -70,5 +70,6 @@ spec:
             all:
               - key: tls
                 operator: AnyNotIn
-                value: '{{ request.object.spec.keys(@) }}'
+                value: "{{ request.object.spec.keys(@) }}"
+
 ```

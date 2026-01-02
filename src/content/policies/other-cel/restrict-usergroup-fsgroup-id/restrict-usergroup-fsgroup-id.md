@@ -51,4 +51,5 @@ spec:
               message: Group ID should be 3000.
             - expression: object.spec.?securityContext.?fsGroup.orValue(1) == 2000
               message: fs Group should be 2000.
+
 ```
