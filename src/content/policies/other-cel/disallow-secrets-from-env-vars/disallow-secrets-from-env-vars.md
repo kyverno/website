@@ -49,4 +49,5 @@ spec:
               message: Secrets must be mounted as volumes, not as environment variables.
             - expression: object.spec.containers.all(container, container.?envFrom.orValue([]).all(envFrom, !has(envFrom.secretRef)))
               message: Secrets must not come from envFrom statements.
+
 ```

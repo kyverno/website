@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: "!has(object.spec.tolerations) ||  !object.spec.tolerations.exists(toleration, toleration.?key.orValue('') in ['node-role.kubernetes.io/master', 'node-role.kubernetes.io/control-plane'])"
               message: Pods may not use tolerations which schedule on control plane nodes.
+
 ```

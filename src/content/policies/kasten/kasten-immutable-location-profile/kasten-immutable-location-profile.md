@@ -43,5 +43,6 @@ spec:
             (type): Location
             locationSpec:
               objectStore:
-                protectionPeriod: '*'
+                protectionPeriod: "*"
+
 ```

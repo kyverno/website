@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: "!has(object.spec) || !has(object.spec.mtls) || !has(object.spec.mtls.mode) ||  object.spec.mtls.mode in ['UNSET', 'STRICT']"
               message: PeerAuthentication resources may only set UNSET or STRICT for the mode.
+
 ```

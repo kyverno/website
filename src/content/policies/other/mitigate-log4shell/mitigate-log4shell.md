@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/category: Sample
     policies.kyverno.io/description: In response to CVE-2021-44228 referred to as Log4Shell, a RCE vulnerability in the Log4j library, a partial yet incomplete workaround for versions 2.10 to 2.14.1 of the library is to set the environment variable LOG4J_FORMAT_MSG_NO_LOOKUPS to "true". While this does provide some benefit by limiting exposure, there are still code paths which can exploit this vulnerability. It is highly recommended to upgrade log4j as soon as possible. See https://logging.apache.org/log4j/2.x/security.html for more details. This policy will mutate all initContainers and containers in an incoming Pod to add this environment variable automatically.
 spec:
@@ -40,10 +40,10 @@ spec:
         patchStrategicMerge:
           spec:
             initContainers:
-              - (name): '*'
+              - (name): "*"
                 env:
                   - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-                    value: 'true'
+                    value: "true"
     - name: add-log4shell-mitigation-containers
       match:
         any:
@@ -54,8 +54,9 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - (name): '*'
+              - (name): "*"
                 env:
                   - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-                    value: 'true'
+                    value: "true"
+
 ```

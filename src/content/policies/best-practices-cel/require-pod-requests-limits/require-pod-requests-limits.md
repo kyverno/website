@@ -47,4 +47,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, has(container.resources) && has(container.resources.requests) && has(container.resources.requests.memory) && has(container.resources.requests.cpu) && has(container.resources.limits) && has(container.resources.limits.memory))
               message: CPU and memory resource requests and limits are required.
+
 ```

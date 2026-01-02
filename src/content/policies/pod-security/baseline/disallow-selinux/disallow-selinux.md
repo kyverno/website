@@ -41,21 +41,21 @@ spec:
         message: Setting the SELinux type is restricted. The fields spec.securityContext.seLinuxOptions.type, spec.containers[*].securityContext.seLinuxOptions.type, , spec.initContainers[*].securityContext.seLinuxOptions, and spec.ephemeralContainers[*].securityContext.seLinuxOptions.type must either be unset or set to one of the allowed values (container_t, container_init_t, or container_kvm_t).
         pattern:
           spec:
-            '=(securityContext)':
-              '=(seLinuxOptions)':
-                '=(type)': container_t | container_init_t | container_kvm_t
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    '=(type)': container_t | container_init_t | container_kvm_t
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    '=(type)': container_t | container_init_t | container_kvm_t
+            "=(securityContext)":
+              "=(seLinuxOptions)":
+                "=(type)": container_t | container_init_t | container_kvm_t
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    "=(type)": container_t | container_init_t | container_kvm_t
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    "=(type)": container_t | container_init_t | container_kvm_t
             containers:
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    '=(type)': container_t | container_init_t | container_kvm_t
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    "=(type)": container_t | container_init_t | container_kvm_t
     - name: selinux-user-role
       match:
         any:
@@ -66,23 +66,24 @@ spec:
         message: Setting the SELinux user or role is forbidden. The fields spec.securityContext.seLinuxOptions.user, spec.securityContext.seLinuxOptions.role, spec.containers[*].securityContext.seLinuxOptions.user, spec.containers[*].securityContext.seLinuxOptions.role, spec.initContainers[*].securityContext.seLinuxOptions.user, spec.initContainers[*].securityContext.seLinuxOptions.role, spec.ephemeralContainers[*].securityContext.seLinuxOptions.user, and spec.ephemeralContainers[*].securityContext.seLinuxOptions.role must be unset.
         pattern:
           spec:
-            '=(securityContext)':
-              '=(seLinuxOptions)':
-                X(user): 'null'
-                X(role): 'null'
-            '=(ephemeralContainers)':
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    X(user): 'null'
-                    X(role): 'null'
-            '=(initContainers)':
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    X(user): 'null'
-                    X(role): 'null'
+            "=(securityContext)":
+              "=(seLinuxOptions)":
+                X(user): "null"
+                X(role): "null"
+            "=(ephemeralContainers)":
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    X(user): "null"
+                    X(role): "null"
+            "=(initContainers)":
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    X(user): "null"
+                    X(role): "null"
             containers:
-              - '=(securityContext)':
-                  '=(seLinuxOptions)':
-                    X(user): 'null'
-                    X(role): 'null'
+              - "=(securityContext)":
+                  "=(seLinuxOptions)":
+                    X(user): "null"
+                    X(role): "null"
+
 ```

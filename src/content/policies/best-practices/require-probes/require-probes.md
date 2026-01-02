@@ -8,7 +8,7 @@ subjects:
 tags:
   - Best Practices
   - EKS Best Practices
-description: "Liveness and readiness probes need to be configured to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod's containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have one of livenessProbe, readinessProbe, or startupProbe defined."
+description: 'Liveness and readiness probes need to be configured to correctly manage a Pod''s lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod''s containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have one of livenessProbe, readinessProbe, or startupProbe defined.'
 ---
 
 ## Policy Definition
@@ -53,11 +53,12 @@ spec:
                 all:
                   - key: livenessProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
                   - key: startupProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
                   - key: readinessProbe
                     operator: AllNotIn
-                    value: '{{ element.keys(@)[] }}'
+                    value: "{{ element.keys(@)[] }}"
+
 ```

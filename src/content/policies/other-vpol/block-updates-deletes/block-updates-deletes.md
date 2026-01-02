@@ -44,10 +44,11 @@ spec:
           - DELETE
           - UPDATE
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
     - message: This resource is protected and changes are not allowed. Please seek a cluster-admin.
-      expression: '!(variables.isProtectedService && !variables.hasClusterAdminRole)'
+      expression: "!(variables.isProtectedService && !variables.hasClusterAdminRole)"
+
 ```

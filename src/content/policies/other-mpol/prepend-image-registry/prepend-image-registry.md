@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-description: "Prepends 'registry.io/' to all container and initContainer images in Pods."
+description: 'Prepends ''registry.io/'' to all container and initContainer images in Pods.'
 isNew: true
 ---
 
@@ -32,7 +32,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -61,4 +61,5 @@ spec:
                 ) : []
             }
           }
+
 ```

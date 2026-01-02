@@ -23,7 +23,7 @@ metadata:
     policies.kyverno.io/title: PodDisruptionBudget maxUnavailable Non-Zero in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: PodDisruptionBudget
     policies.kyverno.io/description: A PodDisruptionBudget which sets its maxUnavailable value to zero prevents all voluntary evictions including Node drains which may impact maintenance tasks. This policy enforces that if a PodDisruptionBudget specifies the maxUnavailable field it must be greater than zero.
 spec:
@@ -46,4 +46,5 @@ spec:
   validations:
     - expression: int(object.spec.?maxUnavailable.orValue(1)) > 0
       message: The value of maxUnavailable must be greater than zero.
+
 ```

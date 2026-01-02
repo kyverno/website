@@ -35,13 +35,14 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         resources:
           - pods
   conditions:
     - name: is-bare-pod
-      expression: '!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0'
-  schedule: '*/5 * * * *'
+      expression: "!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0"
+  schedule: "*/5 * * * *"
+
 ```

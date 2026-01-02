@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods which are allowed to mount hostPath volumes in read/write mode pose a security risk even if confined to a "safe" file system on the host and may escape those confines (see https://blog.aquasec.com/kubernetes-security-pod-escape-log-mounts). The only true way to ensure safety is to enforce that all Pods mounting hostPath volumes do so in read only mode. This policy checks all containers for any hostPath volumes and ensures they are explicitly mounted in readOnly mode.
 spec:
@@ -56,4 +56,5 @@ spec:
                   - key: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].volumeMounts[?name == '{{element.name}}'][] | length(@) }}"
                     operator: NotEquals
                     value: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].volumeMounts[?name == '{{element.name}}' && readOnly] [] | length(@) }}"
+
 ```

@@ -43,9 +43,10 @@ spec:
             pattern:
               resources:
                 requests:
-                  cpu: '?*'
-                  memory: '?*'
+                  cpu: "?*"
+                  memory: "?*"
                 limits:
-                  cpu: '{{element.resources.requests.cpu}}'
-                  memory: '{{element.resources.requests.memory}}'
+                  cpu: "{{element.resources.requests.cpu}}"
+                  memory: "{{element.resources.requests.memory}}"
+
 ```

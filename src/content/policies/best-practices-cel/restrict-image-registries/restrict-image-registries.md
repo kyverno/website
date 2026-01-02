@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container, container.image.startsWith('eu.foo.io/') || container.image.startsWith('bar.io/'))
               message: Unknown image registry.
+
 ```

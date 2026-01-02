@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -58,4 +58,5 @@ spec:
           (container.securityContext.capabilities.add.orValue([]).size() == 1 && 
           container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE'))
       message: Any capabilities added other than NET_BIND_SERVICE are disallowed.
+
 ```

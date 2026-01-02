@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Image tags are mutable and the change of an image can result in the same tag. This policy resolves the image digest of each image in a container and replaces the image with the fully resolved reference which includes the digest rather than tag.
 spec:
@@ -49,11 +49,12 @@ spec:
             context:
               - name: resolvedRef
                 imageRegistry:
-                  reference: '{{ element.image }}'
+                  reference: "{{ element.image }}"
                   jmesPath: resolvedImage
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: '{{ element.name }}'
-                    image: '{{ resolvedRef }}'
+                  - name: "{{ element.name }}"
+                    image: "{{ resolvedRef }}"
+
 ```

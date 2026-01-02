@@ -49,4 +49,5 @@ spec:
           expressions:
             - expression: "'ownerReferences' in object.metadata"
               message: Bare Pods are not allowed. They must be created by Pod controllers.
+
 ```

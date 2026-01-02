@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/subject: Pod,ServiceAccount
     kyverno.io/kyverno-version: 1.15.0
     policies.kyverno.io/minversion: 1.15.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.
 spec:
   evaluation:
@@ -48,10 +48,11 @@ spec:
         operations:
           - CREATE
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
     - message: The ServiceAccount used to create this Pod is confined to using the same account when running the Pod.
       expression: "!request.userInfo.username.startsWith('system:serviceaccount:') || variables.creatorServiceAccount.Name == variables.podServiceAccountName"
+
 ```

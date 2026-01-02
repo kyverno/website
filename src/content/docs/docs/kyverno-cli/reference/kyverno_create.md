@@ -1,8 +1,7 @@
 ---
-title: 'kyverno create'
+title: "kyverno create"
 weight: 35
 ---
-
 ## kyverno create
 
 Helps with the creation of various Kyverno resources.
@@ -11,7 +10,7 @@ Helps with the creation of various Kyverno resources.
 
 Helps with the creation of various Kyverno resources.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#create
+  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create [flags]
@@ -60,10 +59,11 @@ kyverno create [flags]
 
 ### SEE ALSO
 
-- [kyverno](/docs/kyverno-cli/reference/kyverno) - Kubernetes Native Policy Management.
-- [kyverno create cluster-role](/docs/kyverno-cli/reference/kyverno_create_cluster-role) - Create an aggregated role for given resource types
-- [kyverno create exception](/docs/kyverno-cli/reference/kyverno_create_exception) - Create a Kyverno policy exception file.
-- [kyverno create metrics-config](/docs/kyverno-cli/reference/kyverno_create_metrics-config) - Create a Kyverno metrics-config file.
-- [kyverno create test](/docs/kyverno-cli/reference/kyverno_create_test) - Create a Kyverno test file.
-- [kyverno create user-info](/docs/kyverno-cli/reference/kyverno_create_user-info) - Create a Kyverno user-info file.
-- [kyverno create values](/docs/kyverno-cli/reference/kyverno_create_values) - Create a Kyverno values file.
+* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno create cluster-role](/docs/kyverno-cli/reference/kyverno_create_cluster-role)	 - Create an aggregated role for given resource types
+* [kyverno create exception](/docs/kyverno-cli/reference/kyverno_create_exception)	 - Create a Kyverno policy exception file.
+* [kyverno create metrics-config](/docs/kyverno-cli/reference/kyverno_create_metrics-config)	 - Create a Kyverno metrics-config file.
+* [kyverno create test](/docs/kyverno-cli/reference/kyverno_create_test)	 - Create a Kyverno test file.
+* [kyverno create user-info](/docs/kyverno-cli/reference/kyverno_create_user-info)	 - Create a Kyverno user-info file.
+* [kyverno create values](/docs/kyverno-cli/reference/kyverno_create_values)	 - Create a Kyverno values file.
+

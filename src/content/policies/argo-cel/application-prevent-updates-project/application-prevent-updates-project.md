@@ -45,4 +45,5 @@ spec:
           expressions:
             - expression: object.spec.project == oldObject.spec.project
               message: The spec.project cannot be changed once the Application is created.
+
 ```

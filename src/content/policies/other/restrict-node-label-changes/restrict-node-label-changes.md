@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Node, Label
     policies.kyverno.io/minversion: 1.6.0
-    policies.kyverno.io/description: 'Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. This policy prevents changes or deletions to a label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0.'
+    policies.kyverno.io/description: "Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. This policy prevents changes or deletions to a label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0."
 spec:
   validationFailureAction: Enforce
   background: false
@@ -45,7 +45,7 @@ spec:
             all:
               - key: "{{ request.object.metadata.labels.foo || '' }}"
                 operator: NotEquals
-                value: ''
+                value: ""
               - key: "{{ request.object.metadata.labels.foo || '' }}"
                 operator: NotEquals
                 value: "{{ request.oldObject.metadata.labels.foo || '' }}"
@@ -62,12 +62,13 @@ spec:
             value: UPDATE
           - key: "{{ request.oldObject.metadata.labels.foo || '' }}"
             operator: Equals
-            value: '?*'
+            value: "?*"
       validate:
         allowExistingViolations: false
         message: Removing the `foo` label on a Node is not allowed.
         pattern:
           metadata:
             labels:
-              foo: '*'
+              foo: "*"
+
 ```

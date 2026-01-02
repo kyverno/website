@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Secret
     policies.kyverno.io/minversion: 1.6.0
-    policies.kyverno.io/description: 'Secrets like registry credentials often need to exist in multiple Namespaces so Pods there have access. Manually duplicating those Secrets is time consuming and error prone. This policy will copy a Secret called `regcred` which exists in the `default` Namespace to new Namespaces when they are created. It will also push updates to the copied Secrets should the source Secret be changed.      '
+    policies.kyverno.io/description: "Secrets like registry credentials often need to exist in multiple Namespaces so Pods there have access. Manually duplicating those Secrets is time consuming and error prone. This policy will copy a Secret called `regcred` which exists in the `default` Namespace to new Namespaces when they are created. It will also push updates to the copied Secrets should the source Secret be changed.      "
 spec:
   rules:
     - name: sync-image-pull-secret
@@ -38,9 +38,10 @@ spec:
         apiVersion: v1
         kind: Secret
         name: regcred
-        namespace: '{{request.object.metadata.name}}'
+        namespace: "{{request.object.metadata.name}}"
         synchronize: true
         clone:
           namespace: default
           name: regcred
+
 ```

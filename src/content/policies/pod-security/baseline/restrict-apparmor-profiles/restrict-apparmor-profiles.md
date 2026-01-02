@@ -9,7 +9,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 version: 1.3.0
-description: "On supported hosts, the 'runtime/default' AppArmor profile is applied by default. The default policy should prevent overriding or disabling the policy, or restrict overrides to an allowed set of profiles. This policy ensures Pods do not specify any other AppArmor profiles than `runtime/default` or `localhost/*`."
+description: 'On supported hosts, the ''runtime/default'' AppArmor profile is applied by default. The default policy should prevent overriding or disabling the policy, or restrict overrides to an allowed set of profiles. This policy ensures Pods do not specify any other AppArmor profiles than `runtime/default` or `localhost/*`.'
 ---
 
 ## Policy Definition
@@ -43,7 +43,8 @@ spec:
       validate:
         message: Specifying other AppArmor profiles is disallowed. The annotation `container.apparmor.security.beta.kubernetes.io` if defined must not be set to anything other than `runtime/default` or `localhost/*`.
         pattern:
-          '=(metadata)':
-            '=(annotations)':
-              '=(container.apparmor.security.beta.kubernetes.io/*)': runtime/default | localhost/*
+          "=(metadata)":
+            "=(annotations)":
+              "=(container.apparmor.security.beta.kubernetes.io/*)": runtime/default | localhost/*
+
 ```

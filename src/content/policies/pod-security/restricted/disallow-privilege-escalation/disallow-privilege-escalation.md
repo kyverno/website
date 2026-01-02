@@ -41,13 +41,14 @@ spec:
         message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation, spec.initContainers[*].securityContext.allowPrivilegeEscalation, and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation must be set to `false`.
         pattern:
           spec:
-            '=(ephemeralContainers)':
+            "=(ephemeralContainers)":
               - securityContext:
-                  allowPrivilegeEscalation: 'false'
-            '=(initContainers)':
+                  allowPrivilegeEscalation: "false"
+            "=(initContainers)":
               - securityContext:
-                  allowPrivilegeEscalation: 'false'
+                  allowPrivilegeEscalation: "false"
             containers:
               - securityContext:
-                  allowPrivilegeEscalation: 'false'
+                  allowPrivilegeEscalation: "false"
+
 ```

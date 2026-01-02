@@ -52,4 +52,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?add.orValue([]).all(capability, capability in variables.allowedCapabilities))
               message: Any capabilities added other than NET_BIND_SERVICE or CAP_CHOWN are disallowed.
+
 ```

@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Ingress
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Similar to the ability to check the uniqueness of hosts and paths independently, it is possible to check for uniqueness of them both together across a cluster. This policy ensures that no Ingress can be created or updated unless it is globally unique with respect to host plus path combination.
 spec:
   validationFailureAction: Audit
@@ -56,7 +56,8 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: '{{ element.http.paths[].path }}'
+                  - key: "{{ element.http.paths[].path }}"
                     operator: AnyIn
                     value: "{{ rules[?host=='{{element.host}}'][].http.paths[].path }}"
+
 ```

@@ -47,6 +47,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!object.spec.template.spec.containers.exists(container,  has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe)'
+            - expression: "!object.spec.template.spec.containers.exists(container,  has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe)"
               message: Liveness and readiness probes cannot be the same.
+
 ```

@@ -42,7 +42,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{request.object.spec.dnsNames || `[]` | length(@)}}'
+              - key: "{{request.object.spec.dnsNames || `[]` | length(@)}}"
                 operator: GreaterThan
-                value: '1'
+                value: "1"
+
 ```

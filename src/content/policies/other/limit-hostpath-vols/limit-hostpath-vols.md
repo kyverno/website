@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
 version: 1.6.0
-description: "hostPath volumes consume the underlying node's file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data. It is strongly recommended to pair this policy with a second to ensure readOnly access is enforced preventing directory escape."
+description: 'hostPath volumes consume the underlying node''s file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data. It is strongly recommended to pair this policy with a second to ensure readOnly access is enforced preventing directory escape.'
 ---
 
 ## Policy Definition
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: hostPath volumes consume the underlying node's file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data. It is strongly recommended to pair this policy with a second to ensure readOnly access is enforced preventing directory escape.
 spec:
@@ -41,7 +41,7 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{ request.object.spec.volumes[?hostPath] | length(@) }}'
+          - key: "{{ request.object.spec.volumes[?hostPath] | length(@) }}"
             operator: GreaterThanOrEquals
             value: 1
           - key: "{{request.operation || 'BACKGROUND'}}"
@@ -59,4 +59,5 @@ spec:
                   - key: "{{ element.path  | to_string(@) | split(@, '/') | [1] }}"
                     operator: NotEquals
                     value: data
+
 ```

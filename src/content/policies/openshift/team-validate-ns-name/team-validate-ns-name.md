@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: Naming patterns are commonplace in clusters where creation activities are granted to other users. In order to maintain organization, it is often such that patterns should be established for organizational consistency. This policy denies the creation of a Namespace if the name of the Namespace does not follow a specific naming defined by the cluster admins.
 spec:
@@ -46,7 +46,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{request.object.metadata.name}}'
+              - key: "{{request.object.metadata.name}}"
                 operator: AnyNotIn
                 value: "{{ request.userInfo.groups[?contains(@,':') == `false`][].join('-', [@, '*']) }}"
+
 ```

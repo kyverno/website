@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/title: Check Environment Variables
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     kyverno.io/kyverno-version: 1.8.2
     policies.kyverno.io/description: Environment variables control many aspects of a container's execution and are often the source of many different configuration settings. Being able to ensure that the value of a specific environment variable either is or is not set to a specific string is useful to maintain such controls. This policy checks every container to ensure that if the `DISABLE_OPA` environment variable is defined, it must not be set to a value of `"true"`.
 spec:
@@ -42,8 +42,9 @@ spec:
         pattern:
           spec:
             containers:
-              - name: '*'
-                '=(env)':
+              - name: "*"
+                "=(env)":
                   - (name): DISABLE_OPA
-                    value: '!true'
+                    value: "!true"
+
 ```

@@ -41,7 +41,7 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{ request.operation }}'
+          - key: "{{ request.operation }}"
             operator: NotEquals
             value: DELETE
       validate:
@@ -49,11 +49,12 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}'
+              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}"
                 operator: AnyNotIn
                 value: 5000-6000
-              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}'
+              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}"
                 operator: AnyNotIn
                 value:
                   - 0
+
 ```

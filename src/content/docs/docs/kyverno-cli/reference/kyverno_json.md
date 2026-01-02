@@ -1,8 +1,7 @@
 ---
-title: 'kyverno json'
+title: "kyverno json"
 weight: 35
 ---
-
 ## kyverno json
 
 Runs tests against any json compatible payloads/policies.
@@ -11,9 +10,9 @@ Runs tests against any json compatible payloads/policies.
 
 Runs tests against any json compatible payloads/policies.
 
-NOTE: This is an experimental command, use `KYVERNO_EXPERIMENTAL=true` to enable it.
+  NOTE: This is an experimental command, use `KYVERNO_EXPERIMENTAL=true` to enable it.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#json
+  For more information visit https://kyverno.io/docs/kyverno-cli/#json
 
 ```
 kyverno json [flags]
@@ -46,5 +45,6 @@ kyverno json [flags]
 
 ### SEE ALSO
 
-- [kyverno](/docs/kyverno-cli/reference/kyverno) - Kubernetes Native Policy Management.
-- [kyverno json scan](/docs/kyverno-cli/reference/kyverno_json_scan) - Runs tests against any json compatible payloads/policies.
+* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno json scan](/docs/kyverno-cli/reference/kyverno_json_scan)	 - Runs tests against any json compatible payloads/policies.
+

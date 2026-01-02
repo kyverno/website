@@ -51,8 +51,9 @@ spec:
                 all:
                   - key: CAP_NET_RAW
                     operator: AnyNotIn
-                    value: '{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}'
+                    value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
                   - key: NET_RAW
                     operator: AnyNotIn
-                    value: '{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}'
+                    value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+
 ```

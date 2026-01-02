@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in CEL
-description: "Accessing a container engine's socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`."
+description: 'Accessing a container engine''s socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`.'
 ---
 
 ## Policy Definition
@@ -48,6 +48,7 @@ spec:
             - name: isAllowDockerLabelTrue
               expression: object.metadata.?labels[?'allow-docker'].orValue('false') == 'true'
           expressions:
-            - expression: '!variables.hasDockerSocket || variables.isAllowDockerLabelTrue'
+            - expression: "!variables.hasDockerSocket || variables.isAllowDockerLabelTrue"
               message: If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`.
+
 ```

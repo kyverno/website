@@ -9,7 +9,7 @@ subjects:
 tags:
   - Sample
 version: 1.6.0
-description: "Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation."
+description: 'Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don''t set reserved annotations or to force them to use a newer version of an annotation.'
 ---
 
 ## Policy Definition
@@ -47,6 +47,7 @@ spec:
         message: Cannot use Flux v1 annotation.
         pattern:
           metadata:
-            '=(annotations)':
-              X(fluxcd.io/*): '*?'
+            "=(annotations)":
+              X(fluxcd.io/*): "*?"
+
 ```

@@ -1,8 +1,7 @@
 ---
-title: 'kyverno create metrics-config'
+title: "kyverno create metrics-config"
 weight: 35
 ---
-
 ## kyverno create metrics-config
 
 Create a Kyverno metrics-config file.
@@ -11,7 +10,7 @@ Create a Kyverno metrics-config file.
 
 Create a Kyverno metrics-config file.
 
-For more information visit https://kyverno.io/docs/kyverno-cli/#create
+  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create metrics-config [flags]
@@ -56,4 +55,5 @@ kyverno create metrics-config [flags]
 
 ### SEE ALSO
 
-- [kyverno create](/docs/kyverno-cli/reference/kyverno_create) - Helps with the creation of various Kyverno resources.
+* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
+

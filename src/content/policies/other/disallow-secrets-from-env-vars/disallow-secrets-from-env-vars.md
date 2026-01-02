@@ -43,10 +43,10 @@ spec:
         pattern:
           spec:
             containers:
-              - name: '*'
-                '=(env)':
-                  - '=(valueFrom)':
-                      X(secretKeyRef): 'null'
+              - name: "*"
+                "=(env)":
+                  - "=(valueFrom)":
+                      X(secretKeyRef): "null"
     - name: secrets-not-from-envfrom
       match:
         any:
@@ -58,7 +58,8 @@ spec:
         pattern:
           spec:
             containers:
-              - name: '*'
-                '=(envFrom)':
-                  - X(secretRef): 'null'
+              - name: "*"
+                "=(envFrom)":
+                  - X(secretRef): "null"
+
 ```

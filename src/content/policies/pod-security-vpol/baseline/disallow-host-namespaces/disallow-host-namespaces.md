@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -53,6 +53,7 @@ spec:
     - name: hostPID
       expression: object.spec.?hostPID.orValue(false)
   validations:
-    - expression: '!(variables.hostNetwork || variables.hostIPC || variables.hostPID)'
-      message: 'Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.         '
+    - expression: "!(variables.hostNetwork || variables.hostIPC || variables.hostPID)"
+      message: "Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.         "
+
 ```

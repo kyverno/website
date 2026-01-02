@@ -68,4 +68,5 @@ spec:
                   container.securityContext.seccompProfile.type == 'Localhost'
                 )
               message: Use of custom Seccomp profiles is disallowed. The field spec.ephemeralContainers[*].securityContext.seccompProfile.type must be set to `RuntimeDefault` or `Localhost`.
+
 ```

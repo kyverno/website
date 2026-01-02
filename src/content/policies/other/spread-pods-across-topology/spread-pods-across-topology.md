@@ -50,4 +50,5 @@ spec:
                     labelSelector:
                       matchLabels:
                         distributed: required
+
 ```

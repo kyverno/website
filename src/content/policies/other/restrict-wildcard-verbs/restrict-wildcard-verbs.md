@@ -11,7 +11,7 @@ tags:
   - Security
   - EKS Best Practices
 version: 1.6.0
-description: "Wildcards ('*') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule."
+description: 'Wildcards (''*'') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.'
 ---
 
 ## Policy Definition
@@ -30,7 +30,7 @@ metadata:
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Wildcards ('*') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.
 spec:
   validationFailureAction: Audit
@@ -51,4 +51,5 @@ spec:
               - key: "{{ contains(to_array(request.object.rules[].verbs[]), '*') }}"
                 operator: Equals
                 value: true
+
 ```

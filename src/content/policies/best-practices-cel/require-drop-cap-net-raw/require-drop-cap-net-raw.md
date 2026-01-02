@@ -51,4 +51,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability.upperAscii() in variables.mustDropCapabilities))
               message: Containers must drop the `CAP_NET_RAW` capability.
+
 ```

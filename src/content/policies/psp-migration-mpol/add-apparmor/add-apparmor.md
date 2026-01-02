@@ -34,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -44,7 +44,7 @@ spec:
           - pods
   variables:
     - name: allContainers
-      expression: 'object.spec.containers +  (has(object.spec.initContainers) ? object.spec.initContainers : []) +  (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])'
+      expression: "object.spec.containers +  (has(object.spec.initContainers) ? object.spec.initContainers : []) +  (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])"
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -67,4 +67,5 @@ spec:
               value: "runtime/default"
             }
           )
+
 ```

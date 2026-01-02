@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container,  container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
               message: Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation field to `false`.
+
 ```

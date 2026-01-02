@@ -36,7 +36,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -67,22 +67,22 @@ spec:
           - cronjobs
     namespaceSelector:
       matchLabels:
-        velero-backup-pvc: 'true'
+        velero-backup-pvc: "true"
   variables:
     - name: podPvcVolumes
-      expression: 'object.kind == "Pod" && has(object.spec.volumes) ?  object.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []'
+      expression: "object.kind == \"Pod\" && has(object.spec.volumes) ?  object.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []"
     - name: podVolumesList
       expression: "variables.podPvcVolumes.size() > 0 ? variables.podPvcVolumes.join(',') : ''"
     - name: deploymentPvcVolumes
-      expression: '(object.kind == "Deployment" || object.kind == "DaemonSet" || object.kind == "StatefulSet") &&  has(object.spec.template.spec.volumes) ?  object.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []'
+      expression: "(object.kind == \"Deployment\" || object.kind == \"DaemonSet\" || object.kind == \"StatefulSet\") &&  has(object.spec.template.spec.volumes) ?  object.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []"
     - name: deploymentVolumesList
       expression: "variables.deploymentPvcVolumes.size() > 0 ? variables.deploymentPvcVolumes.join(',') : ''"
     - name: jobPvcVolumes
-      expression: 'object.kind == "Job" && has(object.spec.template.spec.volumes) ?  object.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []'
+      expression: "object.kind == \"Job\" && has(object.spec.template.spec.volumes) ?  object.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []"
     - name: jobVolumesList
       expression: "variables.jobPvcVolumes.size() > 0 ? variables.jobPvcVolumes.join(',') : ''"
     - name: cronjobPvcVolumes
-      expression: 'object.kind == "CronJob" && has(object.spec.jobTemplate.spec.template.spec.volumes) ?  object.spec.jobTemplate.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []'
+      expression: "object.kind == \"CronJob\" && has(object.spec.jobTemplate.spec.template.spec.volumes) ?  object.spec.jobTemplate.spec.template.spec.volumes.filter(v, has(v.persistentVolumeClaim)).map(v, v.name) :  []"
     - name: cronjobVolumesList
       expression: "variables.cronjobPvcVolumes.size() > 0 ? variables.cronjobPvcVolumes.join(',') : ''"
   mutations:
@@ -171,4 +171,5 @@ spec:
               }
             ]
           ) : []
+
 ```

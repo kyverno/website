@@ -45,6 +45,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: '!has(object.spec.defaultBackend)'
+            - expression: "!has(object.spec.defaultBackend)"
         message: Setting the defaultBackend field is prohibited.
+
 ```

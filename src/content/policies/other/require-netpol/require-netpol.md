@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Deployment, NetworkPolicy
     policies.kyverno.io/description: NetworkPolicy is used to control Pod-to-Pod communication and is a good practice to ensure only authorized Pods can send/receive traffic. This policy checks incoming Deployments to ensure they have a matching, preexisting NetworkPolicy.
 spec:
@@ -54,7 +54,8 @@ spec:
         deny:
           conditions:
             any:
-              - key: '{{policies_count}}'
+              - key: "{{policies_count}}"
                 operator: LessThan
                 value: 1
+
 ```

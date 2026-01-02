@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, !container.image.contains('tiller'))
               message: Helm Tiller is not allowed
+
 ```

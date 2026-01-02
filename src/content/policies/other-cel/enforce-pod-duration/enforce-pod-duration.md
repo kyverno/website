@@ -50,4 +50,5 @@ spec:
           expressions:
             - expression: "!(duration(variables.lifetimeAnnotationValue) > duration('8h'))"
               message: Pod lifetime exceeds limit of 8h
+
 ```

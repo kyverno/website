@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Ingress, Security
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.15.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Ingress, Pod
     policies.kyverno.io/description: This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.
 spec:
@@ -39,7 +39,7 @@ spec:
     - name: isPod
       expression: object.kind == 'Pod'
     - name: allContainers
-      expression: 'variables.isPod ? object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]) : []'
+      expression: "variables.isPod ? object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]) : []"
     - name: controllerContainers
       expression: variables.allContainers.filter(c, c.name == 'controller')
     - name: authTlsAnnotation
@@ -63,7 +63,7 @@ spec:
           - CREATE
           - UPDATE
         apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
   validations:
@@ -76,4 +76,5 @@ spec:
     - reason: Invalid
       messageExpression: "'controller container must use ingress-nginx version 1.11.2 or higher, excluding v1.11.0 and v1.11.1'"
       expression: "!variables.isPod || variables.controllerContainers.all(c, c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.0') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.1') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.10.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.9.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.8.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.7.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.6.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.5.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.4.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.3.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.2.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.1.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.0.'))"
+
 ```

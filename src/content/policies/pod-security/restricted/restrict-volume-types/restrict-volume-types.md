@@ -46,7 +46,7 @@ spec:
             operator: NotEquals
             value: DELETE
       validate:
-        message: 'Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.'
+        message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret."
         deny:
           conditions:
             all:
@@ -62,5 +62,6 @@ spec:
                   - persistentVolumeClaim
                   - projected
                   - secret
-                  - ''
+                  - ""
+
 ```

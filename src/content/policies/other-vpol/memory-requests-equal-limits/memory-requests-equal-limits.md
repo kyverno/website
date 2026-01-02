@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Pods which have memory limits equal to requests could be given a QoS class of Guaranteed if they also set CPU limits equal to requests. Guaranteed is the highest schedulable class.  This policy checks that all containers in a given Pod have memory requests equal to limits.
 spec:
   validationActions:
@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -48,4 +48,5 @@ spec:
   validations:
     - expression: object.spec.containers.all(container,  !container.?resources.?requests.?memory.hasValue() || container.resources.requests.memory == container.resources.?limits.?memory.orValue('-1'))
       message: resources.requests.memory must be equal to resources.limits.memory
+
 ```

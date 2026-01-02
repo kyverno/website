@@ -8,7 +8,7 @@ subjects:
 tags:
   - Veeam Kasten
 version: 1.6.2
-description: "Example Kyverno policy to enforce common compliance retention standards by modifying Kasten Policy backup retention settings. Based on regulation/compliance standard requirements, uncomment (1) of the desired GFS retention schedules to mutate existing and future Kasten Policies. Alternatively, this policy can be used to reduce retention lengths to enforce cost optimization. NOTE: This example only applies to Kasten Policies with an '@hourly' frequency. Refer to Kasten documentation for Policy API specification if modifications are necessary: https://docs.kasten.io/latest/api/policies.html#policy-api-type"
+description: 'Example Kyverno policy to enforce common compliance retention standards by modifying Kasten Policy backup retention settings. Based on regulation/compliance standard requirements, uncomment (1) of the desired GFS retention schedules to mutate existing and future Kasten Policies. Alternatively, this policy can be used to reduce retention lengths to enforce cost optimization. NOTE: This example only applies to Kasten Policies with an ''@hourly'' frequency. Refer to Kasten documentation for Policy API specification if modifications are necessary: https://docs.kasten.io/latest/api/policies.html#policy-api-type'
 ---
 
 ## Policy Definition
@@ -40,7 +40,7 @@ spec:
         all:
           - key: "{{ request.object.spec.frequency || ''}}"
             operator: Equals
-            value: '@hourly'
+            value: "@hourly"
       mutate:
         patchesJson6902: |-
           - path: "/spec/retention"
@@ -50,4 +50,5 @@ spec:
               daily: 30
               weekly: 4
               monthly: 3
+
 ```

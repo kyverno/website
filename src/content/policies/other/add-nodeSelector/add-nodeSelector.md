@@ -40,4 +40,5 @@ spec:
             nodeSelector:
               foo: bar
               color: orange
+
 ```

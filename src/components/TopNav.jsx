@@ -1,10 +1,13 @@
 import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
-import { navItemsExternal, navItemsOnsite } from '../constants/index.js'
 
 import { Button } from '../components/Button.jsx'
 import { SiteLogo } from '../components/SiteLogo.jsx'
 import { TopNavLinks } from '../components/TopNavLinks.jsx'
+import { navItemsExternal } from '../constants/index.js'
+
+// navItemsOnsite is the same as navItemsExternal for now
+const navItemsOnsite = navItemsExternal
 
 export const TopNav = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -12,16 +15,35 @@ export const TopNav = () => {
     setMobileNavOpen(!mobileNavOpen)
   }
 
-  const handleScroll = (event, targetId) => {
-    event.preventDefault()
-    const targetElement = document.getElementById(targetId)
-    if (targetElement) {
-      const offsetTop = targetElement.offsetTop - 80
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth',
-      })
+  const handleScroll = (event, href) => {
+    // Check if href contains an anchor (contains #)
+    if (href.includes('#')) {
+      const [path, hash] = href.split('#')
+      const targetId = hash
+
+      // Check if we're on the same page (path matches or is just '/')
+      const currentPath = window.location.pathname
+      const targetPath = path || '/'
+
+      if (
+        targetPath === currentPath ||
+        (targetPath === '/' && currentPath === '/')
+      ) {
+        event.preventDefault()
+        const targetElement = document.getElementById(targetId)
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 80
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          })
+        }
+        setMobileNavOpen(false)
+        return
+      }
+      // If different page, let default navigation handle it (will scroll after page load)
     }
+    // If no anchor, let the default link behavior handle it
     setMobileNavOpen(false)
   }
 
@@ -31,8 +53,7 @@ export const TopNav = () => {
         <div className="flex justify-between items-center">
           <SiteLogo />
           <div className="hidden xl:flex justify-between items-center md:text-sm lg:text-base xl:text-lg space-x-12">
-            <TopNavLinks links={navItemsOnsite} handleScroll={handleScroll} />
-            <TopNavLinks links={navItemsExternal} />
+            <TopNavLinks links={navItemsExternal} handleScroll={handleScroll} />
           </div>
           <div
             className="hidden xl:flex xl:text-lg justify-center space-x-6 

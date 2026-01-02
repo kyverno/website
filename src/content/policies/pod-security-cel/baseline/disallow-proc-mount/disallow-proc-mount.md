@@ -46,8 +46,9 @@ spec:
         cel:
           variables:
             - name: allContainers
-              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
+              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
           expressions:
             - expression: variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')
               message: Changing the proc mount from the default is not allowed.
+
 ```

@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -58,4 +58,5 @@ spec:
         variables.hasValidSeccompProfile && variables.allContainers.all(container, 
           container.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes)
       message: Use of custom Seccomp profiles is disallowed. The field  `securityContext.seccompProfile.type` must be unset or set to `RuntimeDefault` or `Localhost`.
+
 ```

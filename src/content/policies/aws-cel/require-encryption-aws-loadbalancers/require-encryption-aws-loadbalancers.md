@@ -49,4 +49,5 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'service.beta.kubernetes.io/aws-load-balancer-ssl-cert'].orValue('') != ''
               message: Service of type LoadBalancer must carry the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert.
+
 ```

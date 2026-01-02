@@ -41,7 +41,7 @@ spec:
         message: PersistentVolumeClaims must define a storageClassName.
         pattern:
           spec:
-            storageClassName: '?*'
+            storageClassName: "?*"
     - name: ss-storageclass
       match:
         any:
@@ -52,7 +52,8 @@ spec:
         message: StatefulSets must define a storageClassName.
         pattern:
           spec:
-            '=(volumeClaimTemplates)':
+            "=(volumeClaimTemplates)":
               - spec:
-                  storageClassName: '?*'
+                  storageClassName: "?*"
+
 ```

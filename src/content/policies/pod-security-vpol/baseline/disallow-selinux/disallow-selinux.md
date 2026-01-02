@@ -38,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -66,4 +66,5 @@ spec:
           container.?securityContext.?seLinuxOptions.?user.orValue('') == '' &&
           container.?securityContext.?seLinuxOptions.?role.orValue('') == '')
       message: Setting the SELinux user or role is forbidden. The fields seLinuxOptions.user and seLinuxOptions.role must be unset.
+
 ```

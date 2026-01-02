@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. This policy ensures that all new Namespaces set `istio-inject` to `enabled`.
 spec:
@@ -45,4 +45,5 @@ spec:
           metadata:
             labels:
               istio-injection: enabled
+
 ```

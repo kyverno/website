@@ -42,6 +42,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               message: Jobs are only allowed if spawned from CronJobs.
+
 ```

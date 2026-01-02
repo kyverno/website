@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: TaskRun
     kyverno.io/kyverno-version: 1.7.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: A signed bundle is required.
 spec:
   validationFailureAction: Audit
@@ -46,7 +46,7 @@ spec:
             key: name
       verifyImages:
         - imageReferences:
-            - '*'
+            - "*"
           attestors:
             - entries:
                 - keys:
@@ -55,4 +55,5 @@ spec:
                       MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
                       gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
                       -----END PUBLIC KEY-----
+
 ```

@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: '1.27'
+    kyverno.io/kubernetes-version: "1.27"
     policies.kyverno.io/subject: VerticalPodAutoscaler
     policies.kyverno.io/description: VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods. It requires defining a specific target resource by kind and name. There are no built-in validation checks by the VPA controller to ensure that the target resource exists or that the target kind is specified correctly. This policy contains two rules, the first of which verifies that the kind is specified exactly as Deployment, StatefulSet, ReplicaSet, or DaemonSet, which helps avoid typos. The second rule verifies that the target resource exists before allowing the VPA to be created.
 spec:
@@ -61,7 +61,7 @@ spec:
               - ReplicaSet
               - DaemonSet
             operator: AnyIn
-            value: '{{ request.object.spec.targetRef.kind }}'
+            value: "{{ request.object.spec.targetRef.kind }}"
       context:
         - name: map
           variable:
@@ -82,7 +82,8 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.targetRef.name }}'
+              - key: "{{ request.object.spec.targetRef.name }}"
                 operator: AnyNotIn
-                value: '{{ targets }}'
+                value: "{{ targets }}"
+
 ```

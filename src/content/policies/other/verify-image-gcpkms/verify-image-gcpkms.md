@@ -45,4 +45,5 @@ spec:
               entries:
                 - keys:
                     kms: gcpkms://projects/omni-163105/locations/asia-south1/keyRings/first-ring/cryptoKeys/jerry/versions/1
+
 ```

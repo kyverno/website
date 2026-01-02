@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/minversion: 1.6.0
-    policies.kyverno.io/description: 'An Ingress host is a URL at which services may be made available externally. In most cases, these hosts should be unique across the cluster to ensure no routing conflicts occur. This policy checks an incoming Ingress resource to ensure its hosts are unique to the cluster. It also ensures that only a single host may be specified in a given manifest.      '
+    policies.kyverno.io/description: "An Ingress host is a URL at which services may be made available externally. In most cases, these hosts should be unique across the cluster to ensure no routing conflicts occur. This policy checks an incoming Ingress resource to ensure its hosts are unique to the cluster. It also ensures that only a single host may be specified in a given manifest.      "
 spec:
   validationFailureAction: Audit
   background: false
@@ -52,9 +52,9 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.rules[].host }}'
+              - key: "{{ request.object.spec.rules[].host }}"
                 operator: AnyIn
-                value: '{{ hosts }}'
+                value: "{{ hosts }}"
     - name: check-single-host-update
       match:
         any:
@@ -76,9 +76,9 @@ spec:
         deny:
           conditions:
             all:
-              - key: '{{ request.object.spec.rules[].host }}'
+              - key: "{{ request.object.spec.rules[].host }}"
                 operator: AnyIn
-                value: '{{ allhosts }}'
+                value: "{{ allhosts }}"
     - name: deny-multiple-hosts
       match:
         any:
@@ -92,10 +92,11 @@ spec:
             value:
               - CREATE
               - UPDATE
-          - key: '{{ request.object.spec.rules[].host | length(@)}}'
+          - key: "{{ request.object.spec.rules[].host | length(@)}}"
             operator: GreaterThan
             value: 1
       validate:
         message: An Ingress resource may only contain a single host entry.
         deny: {}
+
 ```

@@ -38,7 +38,7 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: '{{ images.containers.*.registry }}'
+          - key: "{{ images.containers.*.registry }}"
             operator: AnyNotIn
             value:
               - ghcr.io
@@ -48,5 +48,6 @@ spec:
         pattern:
           spec:
             imagePullSecrets:
-              - name: '?*'
+              - name: "?*"
+
 ```

@@ -40,4 +40,5 @@ spec:
         message: StorageClass must define a reclaimPolicy of Delete.
         pattern:
           reclaimPolicy: Delete
+
 ```

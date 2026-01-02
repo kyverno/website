@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.20'
+    kyverno.io/kubernetes-version: "1.20"
     policies.kyverno.io/subject: ClusterRoleBinding, RBAC
     policies.kyverno.io/description: This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
 spec:
@@ -42,7 +42,7 @@ spec:
                 - ClusterRoleBinding
       preconditions:
         all:
-          - key: '{{request.object.metadata.name}}'
+          - key: "{{request.object.metadata.name}}"
             operator: Equals
             value: self-provisioners
           - key: "{{request.operation || 'BACKGROUND'}}"
@@ -69,5 +69,6 @@ spec:
             all:
               - key: self-provisioner
                 operator: AnyIn
-                value: '{{request.object.roleRef.name}}'
+                value: "{{request.object.roleRef.name}}"
+
 ```

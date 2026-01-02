@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: Job
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Jobs which are user created can often pile up and consume excess space in the cluster. In Kubernetes 1.23, the TTL-after-finished controller is stable and will automatically clean up these Jobs if the ttlSecondsAfterFinished is specified. This policy adds the ttlSecondsAfterFinished field to an Job that does not have an ownerReference set if not already specified.
 spec:
   rules:
@@ -39,11 +39,12 @@ spec:
                 - Job
       preconditions:
         any:
-          - key: '{{ request.object.metadata.ownerReferences || `[]` }}'
+          - key: "{{ request.object.metadata.ownerReferences || `[]` }}"
             operator: Equals
             value: []
       mutate:
         patchStrategicMerge:
           spec:
             +(ttlSecondsAfterFinished): 900
+
 ```

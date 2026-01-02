@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/minversion: 1.9.0
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: ConfigMap
     policies.kyverno.io/description: Sometimes a policy should be active or inactive based on a time window determined as part of the policy. Whether the policy should come into play should be dependent on that time. This policy illustrates how to time-bound any policy by using preconditions with JMESPath time filters. In this case, the policy enforces that label `foo` be required on all ConfigMaps during the hours of 8am-5pm EST (expressed in UTC). Additional, similar preconditions may be added to perform other time checks, for example a range of days.
 spec:
@@ -48,5 +48,6 @@ spec:
         pattern:
           metadata:
             labels:
-              foo: '?*'
+              foo: "?*"
+
 ```

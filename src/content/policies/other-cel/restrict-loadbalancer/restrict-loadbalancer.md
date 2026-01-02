@@ -46,4 +46,5 @@ spec:
           expressions:
             - expression: object.spec.type != 'LoadBalancer'
               message: Service of type LoadBalancer is not allowed.
+
 ```

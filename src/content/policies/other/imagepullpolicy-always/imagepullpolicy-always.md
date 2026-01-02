@@ -42,6 +42,7 @@ spec:
         pattern:
           spec:
             containers:
-              - (image): '*:latest | !*:*'
+              - (image): "*:latest | !*:*"
                 imagePullPolicy: Always
+
 ```

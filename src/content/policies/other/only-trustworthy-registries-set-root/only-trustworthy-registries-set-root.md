@@ -51,14 +51,15 @@ spec:
             context:
               - name: imageData
                 imageRegistry:
-                  reference: '{{ element.image }}'
+                  reference: "{{ element.image }}"
             deny:
               conditions:
                 all:
                   - key: "{{ imageData.configData.config.User || ''}}"
                     operator: Equals
-                    value: ''
-                  - key: '{{ imageData.registry }}'
+                    value: ""
+                  - key: "{{ imageData.registry }}"
                     operator: NotEquals
                     value: ghcr.io
+
 ```

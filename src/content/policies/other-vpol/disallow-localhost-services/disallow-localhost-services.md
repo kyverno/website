@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.
 spec:
   validationActions:
@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -48,4 +48,5 @@ spec:
   validations:
     - expression: object.spec.type != 'ExternalName' || object.spec.externalName != 'localhost'
       message: Service of type ExternalName cannot point to localhost.
+
 ```

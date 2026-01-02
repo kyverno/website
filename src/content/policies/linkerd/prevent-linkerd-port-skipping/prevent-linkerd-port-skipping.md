@@ -39,7 +39,8 @@ spec:
         message: Pods may not skip ports. The annotations `config.linkerd.io/skip-inbound-ports` or `config.linkerd.io/skip-outbound-ports` must not be set.
         pattern:
           metadata:
-            '=(annotations)':
-              X(config.linkerd.io/skip-inbound-ports): 'null'
-              X(config.linkerd.io/skip-outbound-ports): 'null'
+            "=(annotations)":
+              X(config.linkerd.io/skip-inbound-ports): "null"
+              X(config.linkerd.io/skip-outbound-ports): "null"
+
 ```

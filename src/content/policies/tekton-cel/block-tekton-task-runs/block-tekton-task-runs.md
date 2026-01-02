@@ -50,6 +50,7 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: 'false'
+            - expression: "false"
               message: Creating a TaskRun is not allowed.
+
 ```

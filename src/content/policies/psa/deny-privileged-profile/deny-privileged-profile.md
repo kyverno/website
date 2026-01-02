@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.24'
+    kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: When Pod Security Admission (PSA) is enforced at the cluster level via an AdmissionConfiguration file which defines a default level at baseline or restricted, setting of a label at the `privileged` profile will effectively cause unrestricted workloads in that Namespace, overriding the cluster default. This may effectively represent a circumvention attempt and should be closely controlled. This policy ensures that only those holding the cluster-admin ClusterRole may create Namespaces which assign the label `pod-security.kubernetes.io/enforce=privileged`.
 spec:
@@ -49,4 +49,5 @@ spec:
       validate:
         message: Only cluster-admins may create Namespaces that allow setting the privileged level.
         deny: {}
+
 ```

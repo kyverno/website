@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Pod Quality of Service (QoS) is a mechanism to ensure Pods receive certain priority guarantees based upon the resources they define. When a Pod has at least one container which defines either requests or limits for either memory or CPU, Kubernetes grants the QoS class as burstable if it does not otherwise qualify for a QoS class of guaranteed. This policy requires that a Pod meet the criteria qualify for a QoS of burstable. This policy is provided with the intention that users will need to control its scope by using exclusions, preconditions, and other policy language mechanisms.
 spec:
   validationActions:
@@ -37,7 +37,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -48,4 +48,5 @@ spec:
   validations:
     - expression: object.spec.containers.exists(container,  has(container.resources) && (has(container.resources.requests) || has(container.resources.limits)))
       message: At least one container in the Pod must define either requests or limits for either CPU or memory.
+
 ```

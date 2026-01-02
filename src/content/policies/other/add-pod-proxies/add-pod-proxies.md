@@ -38,7 +38,7 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - (name): '*'
+              - (name): "*"
                 env:
                   - name: HTTP_PROXY
                     value: http://proxy.corp.domain:8080
@@ -46,4 +46,5 @@ spec:
                     value: https://secureproxy.corp.domain:8080
                   - name: NO_PROXY
                     value: localhost,*.example.com
+
 ```

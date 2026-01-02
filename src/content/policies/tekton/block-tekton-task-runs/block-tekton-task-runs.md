@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: TaskRun
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Restrict creation of TaskRun resources to the Tekton pipelines controller.
 spec:
   validationFailureAction: Audit
@@ -54,4 +54,5 @@ spec:
       validate:
         message: Creating a TaskRun is not allowed.
         deny: {}
+
 ```

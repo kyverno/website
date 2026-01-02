@@ -40,5 +40,6 @@ spec:
             dnsConfig:
               options:
                 - name: ndots
-                  value: '1'
+                  value: "1"
+
 ```

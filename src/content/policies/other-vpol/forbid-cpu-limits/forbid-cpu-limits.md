@@ -24,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: '1.30'
+    kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.
 spec:
   evaluation:
@@ -35,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ''
+          - ""
         apiVersions:
           - v1
         operations:
@@ -44,6 +44,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: '!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())'
+    - expression: "!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())"
       message: Containers may not define CPU limits.
+
 ```

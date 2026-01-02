@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: NetworkPolicy
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: '1.23'
+    kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: By default, Kubernetes allows communication across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict communication. A default NetworkPolicy should be configured for each Namespace to deny all egress traffic from the Pods while still allowing DNS resolution. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application Pods from select sources. This policy will create a new NetworkPolicy resource named `allow-dns` when a new Namespace is created,  which will deny all egress traffic while still allowing DNS queries to the kube-system Namespace.
 spec:
   rules:
@@ -41,7 +41,7 @@ spec:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
         name: allow-dns
-        namespace: '{{request.object.metadata.name}}'
+        namespace: "{{request.object.metadata.name}}"
         synchronize: false
         data:
           spec:
@@ -57,4 +57,5 @@ spec:
                 ports:
                   - protocol: UDP
                     port: 53
+
 ```
