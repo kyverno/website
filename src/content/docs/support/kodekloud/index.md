@@ -2,7 +2,6 @@
 title: KodeKloud
 linkTitle: KodeKloud
 description: Hands-on Kubernetes and DevOps Training
-type: docs
 ---
 
 [KodeKloud](https://kodekloud.com/) is a leading online platform for DevOps and Kubernetes training, offering hands-on labs and comprehensive courses for engineers at all skill levels.

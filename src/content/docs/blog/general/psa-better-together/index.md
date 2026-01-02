@@ -134,7 +134,6 @@ policy psa -> resource default/Deployment/busybox failed:
 ({Allowed:false ForbiddenReason:runAsNonRoot != true ForbiddenDetail:pod or container "busybox" must set securityContext.runAsNonRoot=true})
 ({Allowed:false ForbiddenReason:seccompProfile ForbiddenDetail:pod or container "busybox" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost"})
 
-
 pass: 0, fail: 1, warn: 0, error: 0, skip: 2
 ```
 

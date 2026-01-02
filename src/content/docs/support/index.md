@@ -2,22 +2,21 @@
 title: Products
 linkTitle: Products
 description: Commercial Products and Services for Kyverno
-type: docs
 ---
 
 ## Commercial Support Providers
 
-- **[Blakyaks](./support/blakyaks/)**  
+- **[Blakyaks](./blakyaks/)**  
   Cloud-native, containers, serverless, automation.
 
-- **[Giantswarm](./support/giantswarm/)**  
+- **[Giantswarm](./giantswarm/)**  
   Managed Kubernetes as a Service.
 
-- **[Infracloud](./support/infracloud/)**  
+- **[Infracloud](./infracloud/)**  
   Kyverno Consulting and Implementation Partner.
 
-- **[KodeKloud](./support/kodekloud/)**  
+- **[KodeKloud](./kodekloud/)**  
   Hands-on Kubernetes and DevOps Training.
 
-- **[Nirmata](./support/nirmata/)**  
+- **[Nirmata](./nirmata/)**  
   Enterprise policy management and governance with Kyverno.

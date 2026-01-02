@@ -66,9 +66,9 @@ export default defineConfig({
               collapsed: true,
               autogenerate: { directory: 'docs/policy-reports' },
             },
-            'docs/working-with-policies/applying-policies',
-            'docs/working-with-policies/testing-policies',
-            'docs/working-with-policies/exceptions',
+            'docs/applying-policies',
+            'docs/testing-policies',
+            'docs/exceptions',
           ],
           collapsed: true,
         },
@@ -125,13 +125,6 @@ export default defineConfig({
         {
           label: 'Troubleshooting',
           slug: 'docs/troubleshooting',
-        },
-        {
-          label: 'Policy Library',
-          collapsed: true,
-          autogenerate: {
-            directory: 'docs/policies',
-          },
         },
         {
           label: 'Security',

@@ -2,7 +2,6 @@
 title: Nirmata
 linkTitle: Nirmata
 description: Kubernetes Policy and Governance from the creators of Kyverno
-type: docs
 ---
 
 [Nirmata](https://nirmata.com/) is the creator of Kyverno and offers several commercial solutions for Kubernetes policy and governance for platform and operations teams.

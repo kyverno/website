@@ -2,7 +2,6 @@
 title: BlakYaks
 linkTitle: BlakYaks
 description: Cloud-native, containers, serverless, automation
-type: docs
 ---
 
 [BlakYaks](https://blakyaks.com) are a Microsoft Gold Partner speeding up enterprise container platform adoption, specializing in Azure, DevOps, and cloud-native. BlakYaks focuses on building and managing enterprise-grade Azure, container, PaaS, and serverless platforms solutions that are secure, compliant, and software-defined.
