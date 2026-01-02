@@ -1,6 +1,6 @@
 ---
 title: 'Set non-CPU limits for pods to work well with Karpenter.'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
@@ -10,7 +10,9 @@ subjects:
   - DaemonSet
   - Job
   - CronJob
-tags: []
+tags:
+  - Karpenter
+  - EKS Best Practices
 version: 1.6.0
 description: 'For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.'
 isNew: true

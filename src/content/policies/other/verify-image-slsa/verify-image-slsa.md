@@ -1,14 +1,14 @@
 ---
 title: 'Verify SLSA Provenance (Keyless)'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Software Supply Chain Security
 version: 1.8.3
 description: 'Provenance is used to identify how an artifact was produced and from where it originated. SLSA provenance is an industry-standard method of representing that provenance. This policy verifies that an image has SLSA provenance and was signed by the expected subject and issuer when produced through GitHub Actions. It requires configuration based upon your own values.'
-isNew: true
 ---
 
 ## Policy Definition

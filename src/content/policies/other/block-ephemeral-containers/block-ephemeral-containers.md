@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 version: 1.6.0
 description: 'Ephemeral containers, enabled by default in Kubernetes 1.23, allow users to use the `kubectl debug` functionality and attach a temporary container to an existing Pod. This may potentially be used to gain access to unauthorized information executing inside one or more containers in that Pod. This policy blocks the use of ephemeral containers.'
-isNew: true
 ---
 
 ## Policy Definition

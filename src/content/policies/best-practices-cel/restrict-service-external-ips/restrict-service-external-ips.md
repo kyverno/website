@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - Best Practices in CEL
 version: 1.11.0
 description: 'Service externalIPs can be used for a MITM attack (CVE-2020-8554). Restrict externalIPs or limit to a known set of addresses. See: https://github.com/kyverno/kyverno/issues/1367. This policy validates that the `externalIPs` field is not set on a Service.'
-isNew: true
 ---
 
 ## Policy Definition

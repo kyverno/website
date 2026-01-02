@@ -6,9 +6,9 @@ type: ValidatingPolicy
 subjects:
   - Secret
   - ServiceAccount
-tags: []
+tags:
+  - Security in vpol
 description: "Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount's secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited."
-isNew: true
 ---
 
 ## Policy Definition

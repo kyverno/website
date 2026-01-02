@@ -8,10 +8,10 @@ subjects:
   - ReplicaSet
   - StatefulSet
   - DaemonSet
-tags: []
+tags:
+  - Other
 version: 1.9.0
 description: 'This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.'
-isNew: true
 ---
 
 ## Policy Definition

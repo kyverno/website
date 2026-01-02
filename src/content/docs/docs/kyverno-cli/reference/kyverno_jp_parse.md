@@ -1,7 +1,8 @@
 ---
-title: "kyverno jp parse"
+title: 'kyverno jp parse'
 weight: 35
 ---
+
 ## kyverno jp parse
 
 Parses jmespath expression and shows corresponding AST.
@@ -10,7 +11,7 @@ Parses jmespath expression and shows corresponding AST.
 
 Parses jmespath expression and shows corresponding AST.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
+For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
 
 ```
 kyverno jp parse [-f file|expression]... [flags]
@@ -63,5 +64,4 @@ kyverno jp parse [-f file|expression]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
-
+- [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp) - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.

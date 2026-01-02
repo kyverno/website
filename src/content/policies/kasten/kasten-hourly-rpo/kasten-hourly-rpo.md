@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Policy
-tags: []
+tags:
+  - Veeam Kasten
 version: 1.12.0
 description: 'Kasten Policy resources can be required to adhere to common Recovery Point Objective (RPO) best practices.  This example policy validates that the Policy is set to run hourly if it explicitly protects any namespaces containing the `appPriority=critical` label. This policy can be adapted to enforce any Kasten Policy requirements based on a namespace label.'
-isNew: true
 ---
 
 ## Policy Definition

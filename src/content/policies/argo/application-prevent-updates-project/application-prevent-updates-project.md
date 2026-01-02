@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Application
-tags: []
+tags:
+  - Argo
 version: 1.6.0
 description: 'This policy prevents updates to the project field after an Application is created.'
-isNew: true
 ---
 
 ## Policy Definition

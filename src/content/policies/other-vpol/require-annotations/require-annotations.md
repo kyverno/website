@@ -6,9 +6,9 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Other in Vpol
 description: 'Define and use annotations that identify semantic attributes of your application or Deployment. A common set of annotations allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended annotations describe applications in a way that can be queried. This policy validates that the annotation `corp.org/department` is specified with some value.      '
-isNew: true
 ---
 
 ## Policy Definition

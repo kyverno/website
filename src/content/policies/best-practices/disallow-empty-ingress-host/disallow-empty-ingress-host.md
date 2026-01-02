@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Ingress
-tags: []
+tags:
+  - Best Practices
 version: 1.6.0
 description: 'An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.'
-isNew: true
 ---
 
 ## Policy Definition

@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Application
-tags: []
+tags:
+  - Argo
 version: 1.6.0
 description: 'This policy prevents the use of the default project in an Application.'
-isNew: true
 ---
 
 ## Policy Definition

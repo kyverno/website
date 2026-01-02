@@ -6,7 +6,12 @@ interface Props {
   selectedResources?: string[]
 }
 
-const { policies, selectedCategories = [], selectedSeverities = [], selectedResources = [] } = Astro.props
+const {
+  policies,
+  selectedCategories = [],
+  selectedSeverities = [],
+  selectedResources = [],
+} = Astro.props
 
 // Calculate counts
 const categoryCounts: Record<string, number> = {}
@@ -51,67 +56,102 @@ const topResources = Object.entries(resourceCounts)
 
 // Sort severities by priority
 const severityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 }
-const sortedSeverities = Object.entries(severityCounts)
-  .sort(([a], [b]) => {
-    return (severityOrder[a] || 99) - (severityOrder[b] || 99)
-  })
+const sortedSeverities = Object.entries(severityCounts).sort(([a], [b]) => {
+  return (severityOrder[a] || 99) - (severityOrder[b] || 99)
+})
 ---
 
 <aside class="static lg:sticky lg:top-8 h-fit space-y-4">
-  <div class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg">
-    <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">Policy Type</h3>
+  <div
+    class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg"
+  >
+    <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">
+      Policy Type
+    </h3>
     <div class="space-y-2">
-      {Object.entries(categoryCounts).map(([category, count]) => (
-        <label class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group" data-category={category}>
-          <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">{categoryLabels[category] || category}</span>
-          <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">{count}</span>
-          <input
-            type="checkbox"
-            class="w-4 h-4 cursor-pointer accent-primary-100 category-filter rounded"
+      {
+        Object.entries(categoryCounts).map(([category, count]) => (
+          <label
+            class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group"
             data-category={category}
-            checked={selectedCategories.includes(category)}
-          />
-        </label>
-      ))}
-    </div>
-  </div>
-
-  <div class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg">
-    <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">Severity</h3>
-    <div class="space-y-2">
-      {sortedSeverities.map(([severity, count]) => (
-        <label class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group" data-severity={severity}>
-          <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">{severityLabels[severity] || severity}</span>
-          <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">{count}</span>
-          <input
-            type="checkbox"
-            class="w-4 h-4 cursor-pointer accent-primary-100 severity-filter rounded"
-            data-severity={severity}
-            checked={selectedSeverities.includes(severity)}
-          />
-        </label>
-      ))}
-    </div>
-  </div>
-
-  {topResources.length > 0 && (
-    <div class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg">
-      <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">Resources</h3>
-      <div class="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-        {topResources.map(([resource, count]) => (
-          <label class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group" data-resource={resource}>
-            <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">{resource}</span>
-            <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">{count}</span>
+          >
+            <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">
+              {categoryLabels[category] || category}
+            </span>
+            <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">
+              {count}
+            </span>
             <input
               type="checkbox"
-              class="w-4 h-4 cursor-pointer accent-primary-100 resource-filter rounded"
-              data-resource={resource}
-              checked={selectedResources.includes(resource)}
+              class="w-4 h-4 cursor-pointer accent-primary-100 category-filter rounded"
+              data-category={category}
+              checked={selectedCategories.includes(category)}
             />
           </label>
-        ))}
-      </div>
+        ))
+      }
     </div>
-  )}
-</aside>
+  </div>
 
+  <div
+    class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg"
+  >
+    <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">
+      Severity
+    </h3>
+    <div class="space-y-2">
+      {
+        sortedSeverities.map(([severity, count]) => (
+          <label
+            class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group"
+            data-severity={severity}
+          >
+            <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">
+              {severityLabels[severity] || severity}
+            </span>
+            <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">
+              {count}
+            </span>
+            <input
+              type="checkbox"
+              class="w-4 h-4 cursor-pointer accent-primary-100 severity-filter rounded"
+              data-severity={severity}
+              checked={selectedSeverities.includes(severity)}
+            />
+          </label>
+        ))
+      }
+    </div>
+  </div>
+
+  {
+    topResources.length > 0 && (
+      <div class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 mb-4 hidden lg:block shadow-lg">
+        <h3 class="text-xs uppercase tracking-widest text-white/50 mb-5 font-bold">
+          Resources
+        </h3>
+        <div class="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+          {topResources.map(([resource, count]) => (
+            <label
+              class="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 hover:text-primary-100 filter-option group"
+              data-resource={resource}
+            >
+              <span class="text-sm font-medium text-white/80 group-hover:text-primary-100">
+                {resource}
+              </span>
+              <span class="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md">
+                {count}
+              </span>
+              <input
+                type="checkbox"
+                class="w-4 h-4 cursor-pointer accent-primary-100 resource-filter rounded"
+                data-resource={resource}
+                checked={selectedResources.includes(resource)}
+              />
+            </label>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</aside>

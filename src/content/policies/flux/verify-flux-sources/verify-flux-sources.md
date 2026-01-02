@@ -8,10 +8,10 @@ subjects:
   - Bucket
   - HelmRepository
   - ImageRepository
-tags: []
+tags:
+  - Flux
 version: 1.6.0
 description: 'Flux source APIs include a number of different sources such as GitRepository, Bucket, HelmRepository, and ImageRepository resources. Each of these by default can be pointed to any location. In a production environment, it may be desired to restrict these to only known sources to prevent accessing outside sources. This policy verifies that each of the Flux sources comes from a trusted location.'
-isNew: true
 ---
 
 ## Policy Definition

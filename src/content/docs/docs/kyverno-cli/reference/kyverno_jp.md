@@ -1,7 +1,8 @@
 ---
-title: "kyverno jp"
+title: 'kyverno jp'
 weight: 35
 ---
+
 ## kyverno jp
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
@@ -10,7 +11,7 @@ Provides a command-line interface to JMESPath, enhanced with Kyverno specific cu
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
+For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
 
 ```
 kyverno jp [flags]
@@ -56,8 +57,7 @@ kyverno jp [flags]
 
 ### SEE ALSO
 
-* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno jp function](/docs/kyverno-cli/reference/kyverno_jp_function)	 - Provides function informations.
-* [kyverno jp parse](/docs/kyverno-cli/reference/kyverno_jp_parse)	 - Parses jmespath expression and shows corresponding AST.
-* [kyverno jp query](/docs/kyverno-cli/reference/kyverno_jp_query)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
-
+- [kyverno](/docs/kyverno-cli/reference/kyverno) - Kubernetes Native Policy Management.
+- [kyverno jp function](/docs/kyverno-cli/reference/kyverno_jp_function) - Provides function informations.
+- [kyverno jp parse](/docs/kyverno-cli/reference/kyverno_jp_parse) - Parses jmespath expression and shows corresponding AST.
+- [kyverno jp query](/docs/kyverno-cli/reference/kyverno_jp_query) - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.

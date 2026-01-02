@@ -1,11 +1,12 @@
 ---
 title: 'Add Istio Sidecar Injection'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Istio
 version: 1.6.0
 description: "In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. As an alternative to rejecting Namespace definitions which don't already contain this label, it can be added automatically. This policy adds the label `istio-injection` set to `enabled` for all new Namespaces."
 isNew: true

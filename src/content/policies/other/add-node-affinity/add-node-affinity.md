@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Deployment
-tags: []
+tags:
+  - Other
 description: 'Node affinity, similar to node selection, is a way to specify which node(s) on which Pods will be scheduled but based on more complex conditions. This policy will add node affinity to a Deployment and if one already exists an expression will be added to it.'
-isNew: true
 ---
 
 ## Policy Definition

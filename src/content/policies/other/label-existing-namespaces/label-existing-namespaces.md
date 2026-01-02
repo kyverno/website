@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Other
 version: 1.7.0
 description: 'Namespaces which preexist may need to be labeled after the fact and it is time consuming to identify which ones should be labeled and either doing so manually or with a scripted approach. This policy, which triggers on any AdmissionReview request to any Namespace, will result in applying the label `mykey=myvalue` to all existing Namespaces. If this policy is updated to change the desired label key or value, it will cause another mutation which updates all Namespaces.'
-isNew: true
 ---
 
 ## Policy Definition

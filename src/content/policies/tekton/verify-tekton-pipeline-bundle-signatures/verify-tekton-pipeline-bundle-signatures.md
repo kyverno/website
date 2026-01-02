@@ -1,14 +1,14 @@
 ---
 title: 'Require Signed Tekton Pipeline'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - PipelineRun
-tags: []
+tags:
+  - Tekton
 version: 1.7.0
 description: 'A signed bundle is required'
-isNew: true
 ---
 
 ## Policy Definition

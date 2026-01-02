@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 version: 1.6.0
 description: 'Resource requests often need to be tailored to the type of workload in the container/Pod. With many different types of applications in a cluster, enforcing hard limits on requests or limits may not work and a ratio may be better suited instead. This policy checks every container in a Pod and ensures that memory limits are no more than 2.5x its requests.'
-isNew: true
 ---
 
 ## Policy Definition

@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - GitRepository
-tags: []
+tags:
+  - Flux
 description: 'Ensures that Git repositories used for Flux deployments in a cluster originate from a specific, trusted organization. Prevents the use of untrusted or potentially risky Git repositories. Protects the integrity and security of Flux deployments.'
-isNew: true
 ---
 
 ## Policy Definition

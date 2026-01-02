@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - TLSOption
-tags: []
+tags:
+  - Traefik in CEL
 description: 'The TLSOption CustomResource sets cluster-wide TLS configuration options for Traefik when  none are specified in a TLS router. Since this can take effect for all Ingress resources, creating the `default` TLSOption is a restricted operation. This policy ensures that only a cluster-admin can create the `default` TLSOption resource.'
-isNew: true
 ---
 
 ## Policy Definition

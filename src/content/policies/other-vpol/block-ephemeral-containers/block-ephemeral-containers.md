@@ -5,7 +5,6 @@ severity: medium
 type: ValidatingPolicy
 subjects: []
 tags: []
-isNew: true
 ---
 
 ## Policy Definition

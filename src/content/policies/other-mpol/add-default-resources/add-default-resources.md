@@ -1,6 +1,6 @@
 ---
 title: 'add-default-resources'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects: []

@@ -1,7 +1,8 @@
 ---
-title: "kyverno create exception"
+title: 'kyverno create exception'
 weight: 35
 ---
+
 ## kyverno create exception
 
 Create a Kyverno policy exception file.
@@ -10,7 +11,7 @@ Create a Kyverno policy exception file.
 
 Create a Kyverno policy exception file.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#create
+For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create exception [name] [flags]
@@ -56,5 +57,4 @@ kyverno create exception [name] [flags]
 
 ### SEE ALSO
 
-* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
-
+- [kyverno create](/docs/kyverno-cli/reference/kyverno_create) - Helps with the creation of various Kyverno resources.

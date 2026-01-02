@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - TaskRun
-tags: []
+tags:
+  - Tekton
 version: 1.6.0
 description: 'Restrict creation of TaskRun resources to the Tekton pipelines controller.'
-isNew: true
 ---
 
 ## Policy Definition

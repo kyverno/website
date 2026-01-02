@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in CEL
 version: 1.11.0
 description: 'Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.'
-isNew: true
 ---
 
 ## Policy Definition

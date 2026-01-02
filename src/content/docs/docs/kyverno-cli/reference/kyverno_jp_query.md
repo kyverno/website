@@ -1,7 +1,8 @@
 ---
-title: "kyverno jp query"
+title: 'kyverno jp query'
 weight: 35
 ---
+
 ## kyverno jp query
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
@@ -10,7 +11,7 @@ Provides a command-line interface to JMESPath, enhanced with Kyverno specific cu
 
 Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
+For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
 
 ```
 kyverno jp query [-i input] [-q query|query]... [flags]
@@ -66,5 +67,4 @@ kyverno jp query [-i input] [-q query|query]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
-
+- [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp) - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.

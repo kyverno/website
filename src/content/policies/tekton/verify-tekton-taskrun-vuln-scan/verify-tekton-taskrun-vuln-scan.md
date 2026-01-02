@@ -1,14 +1,14 @@
 ---
 title: 'Check Tekton TaskRun Vulnerability Scan'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - TaskRun
-tags: []
+tags:
+  - Tekton
 version: 1.7.0
 description: 'A signed bundle is required and a vulnerability scan made by Grype must return no vulnerabilities greater than 8.0.'
-isNew: true
 ---
 
 ## Policy Definition

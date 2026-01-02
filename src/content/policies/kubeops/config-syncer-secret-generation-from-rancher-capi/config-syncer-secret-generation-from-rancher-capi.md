@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Secret
-tags: []
+tags:
+  - Kubeops
 version: 1.7.1
 description: 'This policy generates and synchronizes a Kubeops Config Syncer merged kubeconfig Secret from Rancher managed cluster CAPI secrets. This kubeconfig Secret is required by the Kubeops Config Syncer for it to sync ConfigMaps/Secrets from the Rancher management cluster to downstream clusters.'
-isNew: true
 ---
 
 ## Policy Definition

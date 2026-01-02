@@ -5,10 +5,10 @@ severity: high
 type: ClusterPolicy
 subjects:
   - APIServer
-tags: []
+tags:
+  - OpenShift
 version: 1.11.0
 description: 'Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.'
-isNew: true
 ---
 
 ## Policy Definition

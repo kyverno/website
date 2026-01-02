@@ -1,14 +1,14 @@
 ---
 title: 'Cleanup Bare Pods'
-category: validate
+category: cleanup
 severity: medium
 type: ClusterCleanupPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 version: 1.10.0
 description: 'A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.'
-isNew: true
 ---
 
 ## Policy Definition

@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample
 version: 1.6.0
 description: 'Some registries, both public and private, require credentials in order to pull images from them. This policy checks those images and if they come from a registry other than ghcr.io or quay.io an `imagePullSecret` is required.'
-isNew: true
 ---
 
 ## Policy Definition

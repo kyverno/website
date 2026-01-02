@@ -6,9 +6,9 @@ type: ClusterPolicy
 subjects:
   - ConfigMap
   - ServiceAccount
-tags: []
+tags:
+  - Other
 description: 'This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.'
-isNew: true
 ---
 
 ## Policy Definition

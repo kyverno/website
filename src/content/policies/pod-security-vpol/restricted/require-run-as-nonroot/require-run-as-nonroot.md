@@ -5,10 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 description: 'Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.'
-isNew: true
 ---
 
 ## Policy Definition

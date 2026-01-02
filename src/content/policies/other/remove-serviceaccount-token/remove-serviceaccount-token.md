@@ -7,10 +7,10 @@ subjects:
   - Pod
   - ServiceAccount
   - Volume
-tags: []
+tags:
+  - Other
 version: 1.10.0
 description: 'Pods running with a ServiceAccount are presented with a volume, containing the token, and volume mounts for all containers in the Pod. Applications that do not need to communicate with the Kubernetes API do not need a ServiceAccount and therefore limiting which Pods have access rights is important. Rather than, or in addition to, requiring that certain Pods disable mounting of a ServiceAccount, it is possible to silently remove this token if it has been presented. This policy ensures that Pods which do not have the label `corp.org/can-use-serviceaccount` and are consuming a ServiceAccount have that stripped away. It should be customized to restrict the scope of its operation as it will not distinguish between an explicitly-defined ServiceAccount or one provided by default.'
-isNew: true
 ---
 
 ## Policy Definition

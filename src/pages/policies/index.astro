@@ -8,6 +8,28 @@ import { Header } from '../../sections/Header'
 import DefaultLayout from '../../layouts/DefaultLayout.astro'
 
 const allPolicy = await getCollection('policies')
+
+// Extract YAML content from each policy body
+const policiesWithYaml = allPolicy.map((policy) => {
+  let yamlContent = ''
+  const bodyContent = policy.body || ''
+  // Match YAML code block - be more specific to get the policy YAML block
+  const yamlMatch = bodyContent.match(/```\s*yaml\s*\n([\s\S]*?)\n```/)
+  if (yamlMatch && yamlMatch[1]) {
+    yamlContent = yamlMatch[1].trim()
+    // Verify it looks like a Kyverno policy
+    if (
+      !yamlContent.includes('apiVersion:') ||
+      !yamlContent.includes('kind:')
+    ) {
+      yamlContent = ''
+    }
+  }
+  return {
+    ...policy,
+    yamlContent,
+  }
+})
 ---
 
 <DefaultLayout>
@@ -15,10 +37,11 @@ const allPolicy = await getCollection('policies')
   <div class="max-w-[1600px] mx-auto px-6 py-12">
     <header class="mb-12">
       <p class="text-white/70 text-xl mb-6 leading-relaxed">
-        Browse and discover Kyverno policies for Kubernetes security and governance
+        Browse and discover Kyverno policies for Kubernetes security and
+        governance
       </p>
     </header>
 
-    <PolicyBrowser policies={allPolicy} client:load />
+    <PolicyBrowser policies={policiesWithYaml} client:load />
   </div>
 </DefaultLayout>

@@ -51,47 +51,83 @@ const severity = policy.data.severity || 'medium'
   <div class="flex justify-between items-start mb-5">
     <div class="w-full">
       <div class="flex gap-2 flex-wrap mb-4">
-        <span class={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${categoryColors[category] || categoryColors.validate} shadow-sm`}>
+        <span
+          class={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${categoryColors[category] || categoryColors.validate} shadow-sm`}
+        >
           {categoryLabels[category] || category}
         </span>
-        <span class={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${severityColors[severity] || severityColors.medium} shadow-sm`}>
+        <span
+          class={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${severityColors[severity] || severityColors.medium} shadow-sm`}
+        >
           {severityLabels[severity] || severity}
         </span>
       </div>
-      <h3 class="text-xl font-bold mb-3 text-white leading-tight group-hover:text-primary-100 transition-colors">
-        <a href={`${baseUrl}/${policy.id}/`} class="hover:text-primary-100 transition-colors" data-astro-prefetch>
+      <h3
+        class="text-xl font-bold mb-3 text-white leading-tight group-hover:text-primary-100 transition-colors"
+      >
+        <a
+          href={`${baseUrl}/${policy.id}/`}
+          class="hover:text-primary-100 transition-colors"
+          data-astro-prefetch
+        >
           {policy.data.title}
         </a>
       </h3>
     </div>
   </div>
-  {policy.data.tags && policy.data.tags.length > 0 && (
-    <div class="flex flex-wrap gap-2 mb-5">
-      {policy.data.tags.map((tag: string) => (
-        <span class="tag px-2.5 py-1 bg-stroke/60 backdrop-blur-sm rounded-lg text-xs text-white/70 transition-all hover:bg-primary-100/20 hover:text-primary-100 border border-stroke/50">
-          #{tag}
-        </span>
-      ))}
-    </div>
-  )}
-  <div class="flex flex-wrap gap-4 pt-5 border-t border-stroke/50 text-sm text-white/50 mb-5">
-    {policy.data.subjects && policy.data.subjects.length > 0 && (
-      <div class="flex items-center gap-2">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-primary-100/60">
-          <rect x="2" y="2" width="12" height="12" rx="1.5" />
-        </svg>
-        <span class="font-medium">{policy.data.subjects.slice(0, 3).join(', ')}</span>
-        {policy.data.subjects.length > 3 && <span class="text-white/30">...</span>}
+  {
+    policy.data.tags && policy.data.tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-5">
+        {policy.data.tags.map((tag: string) => (
+          <span class="tag px-2.5 py-1 bg-stroke/60 backdrop-blur-sm rounded-lg text-xs text-white/70 transition-all hover:bg-primary-100/20 hover:text-primary-100 border border-stroke/50">
+            #{tag}
+          </span>
+        ))}
       </div>
-    )}
-    {policy.data.version && (
-      <div class="flex items-center gap-2">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-primary-100/60">
-          <path d="M8 2v12M2 8h12" />
-        </svg>
-        <span class="font-medium">v{policy.data.version}+</span>
-      </div>
-    )}
+    )
+  }
+  <div
+    class="flex flex-wrap gap-4 pt-5 border-t border-stroke/50 text-sm text-white/50 mb-5"
+  >
+    {
+      policy.data.subjects && policy.data.subjects.length > 0 && (
+        <div class="flex items-center gap-2">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="text-primary-100/60"
+          >
+            <rect x="2" y="2" width="12" height="12" rx="1.5" />
+          </svg>
+          <span class="font-medium">
+            {policy.data.subjects.slice(0, 3).join(', ')}
+          </span>
+          {policy.data.subjects.length > 3 && (
+            <span class="text-white/30">...</span>
+          )}
+        </div>
+      )
+    }
+    {
+      policy.data.version && (
+        <div class="flex items-center gap-2">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="text-primary-100/60"
+          >
+            <path d="M8 2v12M2 8h12" />
+          </svg>
+          <span class="font-medium">v{policy.data.version}+</span>
+        </div>
+      )
+    }
   </div>
   <div class="flex gap-2 mt-5">
     <a
@@ -99,11 +135,16 @@ const severity = policy.data.severity || 'medium'
       class="action-btn flex-1 py-3 bg-gradient-to-r from-stroke to-stroke/80 border border-primary-100/20 rounded-lg text-white text-sm font-medium cursor-pointer transition-all flex items-center justify-center gap-2 hover:from-primary-100/20 hover:to-primary-100/10 hover:border-primary-100/50 hover:shadow-lg hover:shadow-primary-100/10"
       data-astro-prefetch
     >
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M9 2v14M2 9h14" />
+      <svg
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <path d="M9 2v14M2 9h14"></path>
       </svg>
       View Details
     </a>
   </div>
 </div>
-

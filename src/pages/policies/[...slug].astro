@@ -1,12 +1,10 @@
 ---
-// Import the `<StarlightPage>` component first to set up cascade layers.
-import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
-
-// Import any other components you want to use in your custom page.
-import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro'
-
 // Import collection
 import { getCollection, render } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { Header } from '../../sections/Header'
+import { YamlCodeBlock } from '../../components/policy/YamlCodeBlock.jsx'
+import { PolicyActionButtons } from '../../components/policy/PolicyActionButtons.jsx'
 
 export async function getStaticPaths() {
   const policies = await getCollection('policies')
@@ -19,125 +17,247 @@ export async function getStaticPaths() {
 const { policy } = Astro.props
 const { Content } = await render(policy)
 
+// Extract YAML content from policy body
+let yamlContent = ''
+const bodyContent = policy.body || ''
+// Match YAML code block - be more specific to get the policy YAML block
+const yamlMatch = bodyContent.match(/```\s*yaml\s*\n([\s\S]*?)\n```/)
+if (yamlMatch && yamlMatch[1]) {
+  yamlContent = yamlMatch[1].trim()
+  // Verify it looks like a Kyverno policy
+  if (!yamlContent.includes('apiVersion:') || !yamlContent.includes('kind:')) {
+    console.warn('Extracted YAML does not appear to be a valid policy')
+    yamlContent = ''
+  }
+}
+
 // Extract metadata
 const { data } = policy
-const severityColors = {
-  low: '#10b981', // green
-  medium: '#f59e0b', // amber
-  high: '#ef4444', // red
+
+const categoryLabels = {
+  verifyImages: 'Verify Images',
+  validate: 'Validate',
+  mutate: 'Mutate',
+  generate: 'Generate',
+  cleanup: 'Cleanup',
 }
+
+const categoryColors = {
+  verifyImages: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+  validate: 'bg-primary-100/15 text-primary-100 border-primary-100/30',
+  mutate: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  generate: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  cleanup: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+}
+
+const severityColors = {
+  high: 'bg-red-500/10 text-red-400 border-red-500/20',
+  medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  low: 'bg-green-500/10 text-green-400 border-green-500/20',
+}
+
+const severityLabels = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+}
+
+const category = data.category || 'validate'
+const severity = data.severity || 'medium'
+const description = data.description || null
+const isNew = data.isNew || false
+
+// Construct GitHub URL from policy ID
+const pathParts = policy.id.split('/')
+const fileName = pathParts[pathParts.length - 1]
+const yamlUrl = `https://github.com/kyverno/policies/raw/main/${policy.id}/${fileName}.yaml`
+const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}/${fileName}.yaml`
 ---
 
-<StarlightPage
-  frontmatter={{ title: data.title }}
-  sidebar={[
-    {
-      label: 'Policies',
-      collapsed: false,
-      autogenerate: {
-        directory: 'policies',
-        collapsed: true,
-        attrs: { style: 'text-transform: capitalize' },
-      },
-    },
-  ]}
->
-  <!-- Policy Metadata -->
-  <div
-    class="policy-metadata"
-    style="margin-bottom: 2rem; padding: 1.5rem; background: var(--sl-color-gray-5); border-radius: 0.5rem; border: 1px solid var(--sl-color-gray-4);"
-  >
-    <dl
-      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 0;"
+<DefaultLayout>
+  <Header client:load />
+  <div class="max-w-[1600px] mx-auto px-6 py-12">
+    <!-- Back Button -->
+    <a
+      href="/policies/"
+      class="inline-flex items-center gap-2 text-white/70 hover:text-primary-100 transition-colors mb-8 group"
     >
-      <div>
-        <dt
-          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
-        >
-          Category
-        </dt>
-        <dd style="margin: 0; font-weight: 500; color: var(--sl-color-text);">
-          {data.category}
-        </dd>
-      </div>
+      <svg
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="group-hover:-translate-x-1 transition-transform"
+      >
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+      <span class="text-sm font-medium">Back to Policies</span>
+    </a>
 
-      <div>
-        <dt
-          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
-        >
-          Severity
-        </dt>
-        <dd style="margin: 0; font-weight: 500;">
-          <span
-            style={`color: ${severityColors[data.severity]}; font-weight: 600; text-transform: capitalize;`}
-          >
-            {data.severity}
-          </span>
-        </dd>
-      </div>
-
-      <div>
-        <dt
-          style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;"
-        >
-          Type
-        </dt>
-        <dd
-          style="margin: 0; font-weight: 500; color: var(--sl-color-text); font-family: var(--sl-font-mono); font-size: 0.9em;"
-        >
-          {data.type}
-        </dd>
-      </div>
-
+    <!-- Hero Section -->
+    <header class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+        {data.title}
+      </h1>
       {
-        data.version && (
-          <div>
-            <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
-              Version
-            </dt>
-            <dd style="margin: 0; font-weight: 500; color: var(--sl-color-text);">
-              {data.version}
-            </dd>
-          </div>
+        description && (
+          <p class="text-white/80 text-lg md:text-xl leading-relaxed max-w-4xl mb-8">
+            {description}
+          </p>
         )
       }
-    </dl>
 
-    {
-      data.subjects && data.subjects.length > 0 && (
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-4);">
-          <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            Subjects
-          </dt>
-          <dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-            {data.subjects.map((subject) => (
-              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--sl-color-accent-low); color: var(--sl-color-accent); border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500;">
-                {subject}
-              </span>
-            ))}
-          </dd>
-        </div>
-      )
-    }
+      <!-- Action Buttons -->
+      <PolicyActionButtons
+        yamlUrl={yamlUrl}
+        yamlContent={yamlContent}
+        client:load
+      />
+    </header>
 
-    {
-      data.tags && data.tags.length > 0 && (
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-4);">
-          <dt style="font-size: 0.875rem; font-weight: 600; color: var(--sl-color-gray-1); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            Tags
-          </dt>
-          <dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-            {data.tags.map((tag) => (
-              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--sl-color-gray-4); color: var(--sl-color-text); border-radius: 0.25rem; font-size: 0.875rem;">
-                {tag}
+    <!-- Main Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+      <!-- Policy Content (Left) -->
+      <div
+        class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-8 shadow-lg min-w-0 max-w-full overflow-hidden"
+      >
+        {
+          yamlContent && (
+            <div class="min-w-0 max-w-full">
+              <h2 class="text-white text-xl font-bold mb-4">
+                Policy Definition
+              </h2>
+              <div class="min-w-0 max-w-full overflow-hidden">
+                <YamlCodeBlock code={yamlContent} client:load />
+              </div>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Metadata Sidebar (Right) -->
+      <aside class="lg:sticky lg:top-8 h-fit">
+        <div
+          class="bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-2xl p-6 shadow-lg space-y-6"
+        >
+          <div>
+            <dt
+              class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3"
+            >
+              Category
+            </dt>
+            <dd>
+              <span
+                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${
+                  categoryColors[category] || categoryColors.validate
+                } shadow-sm`}
+              >
+                {categoryLabels[category] || category}
               </span>
-            ))}
-          </dd>
+            </dd>
+          </div>
+
+          <div>
+            <dt
+              class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3"
+            >
+              Severity
+            </dt>
+            <dd>
+              <span
+                class={`inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm ${
+                  severityColors[severity] || severityColors.medium
+                } shadow-sm`}
+              >
+                {severityLabels[severity] || severity}
+              </span>
+            </dd>
+          </div>
+
+          {
+            isNew && (
+              <div>
+                <dt class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                  Status
+                </dt>
+                <dd>
+                  <span class="inline-block px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border backdrop-blur-sm bg-purple-500/15 text-purple-400 border-purple-500/30 shadow-sm">
+                    New
+                  </span>
+                </dd>
+              </div>
+            )
+          }
+
+          <div>
+            <dt
+              class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2"
+            >
+              Type
+            </dt>
+            <dd class="text-white font-mono text-sm font-medium">
+              {data.type}
+            </dd>
+          </div>
+
+          {
+            data.version && (
+              <div>
+                <dt class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">
+                  Kyverno Min Version
+                </dt>
+                <dd class="text-white text-lg font-bold">v{data.version}+</dd>
+              </div>
+            )
+          }
+
+          {
+            data.subjects && data.subjects.length > 0 && (
+              <div>
+                <dt class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                  Subjects
+                </dt>
+                <dd class="flex flex-wrap gap-2">
+                  {data.subjects.map((subject) => (
+                    <span class="px-3 py-1.5 bg-primary-100/10 text-primary-100 border border-primary-100/30 rounded-lg text-sm font-medium">
+                      {subject}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
+
+          {
+            data.tags && data.tags.length > 0 && (
+              <div>
+                <dt class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                  Tags
+                </dt>
+                <dd class="flex flex-wrap gap-2">
+                  {data.tags.map((tag) => (
+                    <span class="px-3 py-1.5 bg-stroke/40 text-white/80 border border-stroke/60 rounded-lg text-sm">
+                      #{tag}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
         </div>
-      )
-    }
+      </aside>
+    </div>
   </div>
 
-  <!-- Policy Content -->
-  <Content />
-</StarlightPage>
+  <!-- Hidden element to store YAML for copy functionality (fallback) -->
+  {
+    yamlContent && (
+      <div
+        id="yaml-content-data"
+        data-yaml={JSON.stringify(yamlContent)}
+        style="display: none;"
+      />
+    )
+  }
+</DefaultLayout>

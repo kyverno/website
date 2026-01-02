@@ -5,9 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Istio
+  - Pod Security Standards (Restricted)
 description: "This policy is a variation of the Require runAsNonRoot policy that is a part of the Pod Security Standards (Restricted) category. It enforces the same control but with provisions for Istio's initContainer. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/."
-isNew: true
 ---
 
 ## Policy Definition
