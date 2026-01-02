@@ -88,6 +88,7 @@ The development server will start at `http://localhost:4321`. The site will auto
 
 - `npm run format:check` - Check code formatting with Prettier
 - `npm run format:write` - Format code with Prettier
+- `npm run check:links` - Validate all internal and external links in the documentation
 
 ### Code Generation
 
@@ -156,6 +157,29 @@ This website is built with:
 #### Documentation Pages
 
 Documentation pages are written in Markdown (`.md`) or MDX (`.mdx`) and located in `src/content/docs/docs/`. The sidebar is automatically generated from the directory structure as configured in `astro.config.mjs`.
+
+**Link Formatting Guidelines:**
+
+- **Use absolute paths** for internal documentation links (e.g., `/docs/policy-types/cluster-policy/validate`)
+- **Avoid relative links** (e.g., `../validate.md` or `./validate.md`) as they can break when pages are moved or reorganized
+- **Remove file extensions** from links (use `/docs/path/to/page` instead of `/docs/path/to/page.md`)
+- **Use anchor links** for specific sections (e.g., `/docs/policy-types/cluster-policy/validate#anchors`)
+
+**Examples:**
+
+✅ **Good:**
+
+```markdown
+[Validate Policy](/docs/policy-types/cluster-policy/validate)
+[Installation Guide](/docs/installation#methods)
+```
+
+❌ **Bad:**
+
+```markdown
+[Validate Policy](../validate.md)
+[Installation Guide](./installation/methods.md#methods)
+```
 
 #### Blog Posts
 
@@ -297,7 +321,32 @@ Before committing changes, ensure generated content is up to date. You can verif
 1. **Visual Testing**: Use the development server to visually inspect your changes
 2. **Build Testing**: Run `npm run build` to ensure the site builds without errors
 3. **Format Checking**: Run `npm run format:check` to ensure code is properly formatted
-4. **Code Generation**: Run `npm run codegen:policies` and `npm run codegen:cli-docs` to ensure generated content is up to date, then check `git status` for any changes
+4. **Link Checking**: Run `npm run check:links` to validate all links in the documentation (both internal and external)
+5. **Code Generation**: Run `npm run codegen:policies` and `npm run codegen:cli-docs` to ensure generated content is up to date, then check `git status` for any changes
+
+### Link Validation
+
+The `check:links` command validates all links in the documentation to ensure they are correct and accessible. This is especially important when:
+
+- Adding new documentation pages
+- Moving or renaming existing pages
+- Updating links between pages
+- Fixing broken links
+
+**Usage:**
+
+```bash
+npm run check:links
+```
+
+This command will:
+
+- Build the site with link validation enabled
+- Check all internal documentation links
+- Verify external links are accessible
+- Report any broken or invalid links
+
+**Note:** The link checker will fail the build if any broken links are found. Fix any reported issues before committing your changes. The link checker uses the [Starlight Links Validator](https://starlight.astro.build/guides/validation/#link-validation) plugin.
 
 ## Common Tasks
 
