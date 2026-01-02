@@ -27,4 +27,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Verify generated code is up to date
-        run: npm run verify-codegen
+        run: npm run codegen:verify
