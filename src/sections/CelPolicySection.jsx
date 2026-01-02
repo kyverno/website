@@ -15,7 +15,6 @@ export const CelPolicySection = () => {
       className="bg-dark-footer p-20 flex flex-col items-center space-y-5"
       id="policies"
     >
-      <Tag variant="accent">New in v1.16</Tag>
       <HeadingContent
         headingParts={headingText}
         subheading={paragraphText}

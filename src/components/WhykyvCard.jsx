@@ -5,29 +5,30 @@ export const WhykyvCard = ({ card, color }) => {
   return (
     <div
       key={card.title}
-      className="bg-dark-50 p-4 rounded-2xl border border-stroke flex flex-col space-y-4 w-full md:w-1/3 xl:w-1/5 md:h-70 py-8 items-start"
+      className="bg-dark-50 p-4 rounded-2xl border border-stroke flex flex-col space-y-3 w-full md:w-1/3 lg:w-1/3 md:h-56 py-6 items-start"
     >
-      <span
-        className={twMerge(
-          'w-8 h-8 p-2 rounded-md flex justify-center items-center ml-1 mb-2',
-          color.bg,
-        )}
-      >
-        <card.icon className={twMerge('w-4 h-4', color.text)} />
-      </span>
-      <h3
-        className={twMerge(
-          'text-md font-bold rounded-full border my-4 px-3 self-start',
-          color.bg,
-          color.text,
-        )}
-      >
-        {card.title}
-      </h3>
-      <ul className="text-sm leading-relaxed text-white/90 list-[square] list-inside space-y-2 pt-2 max-w-xs">
-        <li>{card.desc1}</li>
-        <li>{card.desc2}</li>
-      </ul>
+      <div className="flex items-center gap-3">
+        <span
+          className={twMerge(
+            'w-10 h-10 p-2 rounded-md flex justify-center items-center',
+            color.bg,
+          )}
+        >
+          <card.icon className={twMerge('w-6 h-6', color.text)} />
+        </span>
+        <h3
+          className={twMerge(
+            'text-lg font-bold rounded-full border px-3',
+            color.bg,
+            color.text,
+          )}
+        >
+          {card.title}
+        </h3>
+      </div>
+      <p className="text-base leading-relaxed text-white/90 pt-1 max-w-xs text-left">
+        {card.desc1} {card.desc2}
+      </p>
     </div>
   )
 }

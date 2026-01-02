@@ -1,6 +1,13 @@
 import React from 'react'
 
-export const Tag = ({ children, Icon, variant, className, ...restProps }) => {
+export const Tag = ({
+  children,
+  Icon,
+  variant,
+  className,
+  href,
+  ...restProps
+}) => {
   const baseStyles =
     'min-w-40 py-2 px-3 flex justify-center items-center space-x-2 rounded-4xl font-bold text-sm'
 
@@ -11,12 +18,26 @@ export const Tag = ({ children, Icon, variant, className, ...restProps }) => {
     tertiary: 'border border-stroke text-sm text-white/70 font-medium',
   }
 
-  const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${className}`
+  const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${href ? 'cursor-pointer hover:opacity-80' : ''} ${className || ''}`
 
-  return (
-    <div className={combinedClassName}>
+  const content = (
+    <>
       {Icon && <Icon className="w-5 h-5" />}
       <span>{children}</span>
+    </>
+  )
+
+  if (href) {
+    return (
+      <a href={href} className={combinedClassName} {...restProps}>
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <div className={combinedClassName} {...restProps}>
+      {content}
     </div>
   )
 }

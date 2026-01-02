@@ -15,7 +15,6 @@ export const WhykyvernoSection = () => {
       className="p-20 flex flex-col items-center space-y-5"
       id="whykyverno"
     >
-      <Tag variant="secondary">Created by Nirmata</Tag>
       <div className="items-center flex flex-col space-y-6 my-5">
         <HeadingContent
           headingParts={headingText}
