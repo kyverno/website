@@ -5,7 +5,7 @@ sidebar:
   order: 15
 ---
 
-A [policy](/docs/policy-types/cluster-policy/policy_rule) contains one or more rules, and the following common settings which apply to all rules in the policy:
+A [policy](/docs/policy-types/cluster-policy) contains one or more rules, and the following common settings which apply to all rules in the policy:
 
 - **admission**: determines whether rules in this policy should be applied during admission control. This is an optional field with a default of `true`. If set to `false` then policies should be applied in background mode only (see further below).
 
@@ -31,6 +31,6 @@ A [policy](/docs/policy-types/cluster-policy/policy_rule) contains one or more r
 
 - **webhookTimeoutSeconds**: specifies the maximum time in seconds allowed to apply this policy. The default timeout is 10s. The value must be between 1 and 30 seconds. This field is deprecated as of 1.13. Scheduled to be removed in a future version. Use `webhookConfiguration.timeoutSeconds` instead.
 
-{% aside title="Tip" type="note" %}
+:::note[Tip]
 Use `kubectl explain policy.spec` for command-line help on the policy schema.
-{% /aside %}
+:::

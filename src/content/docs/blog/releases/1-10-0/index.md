@@ -134,7 +134,7 @@ match:
 
 Policy Exceptions have been enhanced in 1.10 to add support for background scanning, useful when you consume a Policy Report and want to see that fail result to go away, and wildcards in the `ruleNames[]` field. The latter will assist when you might have several rules in a policy which begin with the same prefix.
 
-A number of significant enhancements were made to Policy Reports in Kyverno 1.10 which dramatically improve performance, reduce time to aggregate reports, and lower resource consumption. Another enhancement some users may rejoice in hearing is that background scans will now, by default (but configurable, of course) consider Kyverno's resource filters when producing reports. So if you've excluded a Namespace in the [resource filter](/docs/installation/customization.md#resource-filters), by default you won't see any reports for it either when coming from background scans.
+A number of significant enhancements were made to Policy Reports in Kyverno 1.10 which dramatically improve performance, reduce time to aggregate reports, and lower resource consumption. Another enhancement some users may rejoice in hearing is that background scans will now, by default (but configurable, of course) consider Kyverno's resource filters when producing reports. So if you've excluded a Namespace in the [resource filter](/docs/installation/customization#resource-filters), by default you won't see any reports for it either when coming from background scans.
 
 Context variables are now lazily evaluated (JIT) which means no more failed rules when preconditions don't pass. Variables are often used in conditions and so they will follow the same circuit-breaking mechanisms already in place for those conditions. This should also have the benefit of reducing API calls in rules where they may not always be needed.
 
@@ -158,6 +158,6 @@ For these breaking changes, and others, please carefully read the extensive and 
 
 ## Closing
 
-Kyverno 1.10 is quite the loaded release as you can probably see. After about four months and close to 500 PRs, there were a tremendous number of changes from the Kyverno community. And if you were one of the many, many contributors who pitched in to make this release a reality, a hearty THANK YOU for all your work! Hopefully what you've seen makes you excited to try out 1.10 for yourself. Come engage with us in the Kyverno channel on [Kubernetes Slack](/docs/community/#slack-channel), attend one of our [community meetings](/docs/community/#meetings), or just catch us on [Twitter](https://twitter.com/kyverno).
+Kyverno 1.10 is quite the loaded release as you can probably see. After about four months and close to 500 PRs, there were a tremendous number of changes from the Kyverno community. And if you were one of the many, many contributors who pitched in to make this release a reality, a hearty THANK YOU for all your work! Hopefully what you've seen makes you excited to try out 1.10 for yourself. Come engage with us in the Kyverno channel on [Kubernetes Slack](/community/#slack-channel), attend one of our [community meetings](/community/#meetings), or just catch us on [Twitter](https://twitter.com/kyverno).
 
 And if you're already a Kyverno adopter, sign up to be an official adopter by updating the Adopters form [here](https://github.com/kyverno/kyverno/blob/main/ADOPTERS.md).

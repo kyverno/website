@@ -131,13 +131,13 @@ For other examples of generate rules, see the [policy library](/policies/?policy
 
 When a generate policy should take the source from a resource which already exists in the cluster, a `clone` object is used instead of a `data` object. When triggered, the generate policy will clone from the resource name and location defined in the rule to create the new resource. Use of the `clone` object implies no modification during the path from source to destination and Kyverno is not able to modify its contents (aside from metadata used for processing and tracking).
 
-{% aside title="Tip" type="note" %}
+:::note[Tip]
 In situations where it may be required to slightly modify the cloned resource, for example to add labels or annotations, an additional mutate rule may be added to the policy so that Kyverno modifies the resource in flight.
-{% /aside %}
+:::
 
-{% aside title="Warning" type="caution" %}
+:::caution[Warning]
 For clone-type generate rules, Kyverno must be able to add labels to the clone source in order to track changes. If another operator or controller owns the source, you must ensure it is configured in such a way that these Kyverno labels are not modified/removed.
-{% /aside %}
+:::
 
 The following table shows the behavior of deletion and modification events on components of a generate rule with a clone source declaration. "Downstream" refers to the generated resource(s). "Trigger" refers to the resource responsible for triggering the generate rule as defined in a combination of `match` and `exclude` blocks. "Source" refers to the clone source. Note that when using a clone source with sync enabled, deletion of the rule/policy responsible for a resource's generation or deletion of the clone source will NOT cause deletion of any downstream resources. This behavior differs when compared to [data declarations](#data-source).
 
@@ -473,9 +473,9 @@ When a generate rule has synchronization enabled (`synchronize: true`), deletion
 
 For a `generate.foreach` type of declaration, Kyverno does not prevent modifications to the rule definition. When the `synchronize` option is enabled for such a rule, Kyverno will not synchronize changes to existing target resources when updates are made to the target resource specification. For instance, if a `generate.foreach` declaration initially creates a NetworkPolicy named `staging/networkpolicy-default`, and is subsequently modified to create a new NetworkPolicy named `staging/networkpolicy-new`, any further changes will not be applied to the existing `staging/networkpolicy-default` NetworkPolicy resource.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Synchronization involving changes to trigger resources are confined to the `match` block and do not take into consideration preconditions.
-{% /aside %}
+:::
 
 It is possible to set the `ownerReferences` field in the generated resource which, when pointed to the trigger, will cause deletion of the trigger to instruct Kubernetes to garbage collect the downstream. With the below example, when the generated ConfigMap specifies the `metadata.ownerReferences[]` object and defines the following fields including `uid`, which references the triggering Service resource, an owner-dependent relationship is formed. Later, if the Service is deleted, the ConfigMap will be as well. See the [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/#owner-references-in-object-specifications) for more details including an important caveat around the scoping of these references. Specifically, Namespaced resources cannot be the owners of cluster-scoped resources, and cross-namespace references are also disallowed.
 
@@ -588,9 +588,9 @@ spec:
               matchLabels: '{{request.object.metadata.labels}}'
 ```
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 The field `spec.generateExisting` has been replaced by `spec.rules[*].generate[*].generateExisting`. The former is no longer required, is deprecated, and will be removed in an upcoming version.
-{% /aside %}
+:::
 
 ## How It Works
 

@@ -5,7 +5,7 @@ sidebar:
   order: 40
 ---
 
-:::note[Title]
+:::tip[Tip]
 The [Kyverno Policies](/policies/) repository contains several policies you can immediately apply to your clusters.
 :::
 

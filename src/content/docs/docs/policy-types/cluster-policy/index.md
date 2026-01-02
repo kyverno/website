@@ -21,6 +21,6 @@ Each rule consists of a [`match`](/docs/policy-types/cluster-policy/match-exclud
 
 Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy`) or namespaced resources (using the kind `Policy`). As expected, namespaced policies will only apply to resources within the namespace in which they are defined while cluster-wide policies are applied to matching resources across all namespaces. Otherwise, there is no difference between the two types.
 
-Additional policy types include [Policy Exceptions](/docs/exceptions/) and [Cleanup Policies](/docs/policy-types/cleanup-policy/) which are separate resources and described further in the documentation.
+Additional policy types include [Policy Exceptions](/docs/exceptions/) and [Cleanup Policies](/docs/policy-types/cel-policies/cleanup-policy/) which are separate resources and described further in the documentation.
 
 Learn more about [Applying Policies](/docs/applying-policies/) and [Writing Policies](/docs/policy-types/cluster-policy/) in the upcoming chapters.

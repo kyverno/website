@@ -62,19 +62,19 @@ The following combination may result in cluster inoperability if the Kyverno Nam
 
 If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting#api-server-is-blocked).
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Kubernetes will not send ValidatingWebhookConfiguration or MutatingWebhookConfiguration objects to admission controllers, so therefore it is not possible to use a Kyverno policy to validate or mutate these objects.
-{% /aside %}
+:::
 
 By contrast, these operability concerns can be mitigated by making some security concessions. Specifically, by excluding the Kyverno and other system Namespaces during installation, should the aforementioned failure scenarios occur Kyverno should be able to recover by itself with no manual intervention. This is the default behavior as of the Helm chart version 2.5.0. However, configuring these exclusions means that subsequent policies will not be able to act on resources destined for those Namespaces as the API server has been told not to send AdmissionReview requests for them. Providing controls for those Namespaces, therefore, lies in the hands of the cluster administrator to implement, for example, Kubernetes RBAC to restrict who and what can take place in those excluded Namespaces.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Namespaces and/or objects within Namespaces may be excluded in a variety of ways including namespaceSelectors and objectSelectors. The Helm chart provides options for both, but by default the Kyverno Namespace will be excluded.
-{% /aside %}
+:::
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 When using objectSelector, it may be possible for users to spoof the same label key/value used to configure the webhooks should they discover how it is configured, thereby allowing resources to circumvent policy detection. For this reason, a namespaceSelector using the `kubernetes.io/metadata.name` immutable label is recommended.
-{% /aside %}
+:::
 
 The choices and their implications are therefore:
 
@@ -83,6 +83,6 @@ The choices and their implications are therefore:
 
 You should choose the best option based upon your risk aversion, needs, and operational practices.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 If you choose to _not_ exclude Kyverno or system Namespaces/objects and intend to cover them with policies, you may need to modify the Kyverno [resourceFilters](/docs/installation/customization#resource-filters) entry in the [ConfigMap](/docs/installation/customization#configmap-keys) to remove those items.
-{% /aside %}
+:::

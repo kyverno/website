@@ -70,7 +70,7 @@ $ oc get -o jsonpath='{.status.infrastructureName}{"\n"}' infrastructure cluster
 
 With an understanding how to obtain the required information from the cluster, let’s see how Kyverno can be used to retrieve the Infrastructure ID from the cluster and inject it within the MachineSet as it is created.
 
-Kyverno policies can make use of variables that are retrieved from the results from invoking [Kubernetes API service calls](/docs/policy-types/cluster-policy/external-data-sources.md#variables-from-kubernetes-api-server-calls). Given that the resource and the particular property within the resource is known containing the Infrastructure ID, the following in a context can be used to query the Infrastructure resource from within the cluster and set the variable named infraid based on the JMESPath expression for the obtained resource containing the Infrastructure ID:
+Kyverno policies can make use of variables that are retrieved from the results from invoking [Kubernetes API service calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls). Given that the resource and the particular property within the resource is known containing the Infrastructure ID, the following in a context can be used to query the Infrastructure resource from within the cluster and set the variable named infraid based on the JMESPath expression for the obtained resource containing the Infrastructure ID:
 
 ```yaml
 context:
@@ -84,7 +84,7 @@ context:
 
 Notice how the jmesPath field references the cluster variable which represents the result from the API service call. Traversing through the data structure enables accessing the Infrastructure ID found within the infrastructureName property.
 
-Now that Infrastructure ID has been assigned to a variable, the next step is to take this variable and inject it into the incoming MachineSet resource. Modifications to resources in Kyverno are achieved using one or more [mutation rules](/docs/policy-types/cluster-policy/mutate). Mutations can leverage either a RFC 6902 JSON Patch or a strategic merge patch. While a JSON patch does provide the ability to perform fine-grained modification of resources, as shown in the MachineSet example in a prior section, the Infrastructure ID has the potential to be located at varying locations within the MachineSet definition. To manage a dynamic set of Infrastructure ID parameters regardless of their locations within a MachineSet, the Kyverno-specific [replace_all](/docs/policy-types/cluster-policy/jmespath.md#replace_all) filter can be used to accomplish this task.
+Now that Infrastructure ID has been assigned to a variable, the next step is to take this variable and inject it into the incoming MachineSet resource. Modifications to resources in Kyverno are achieved using one or more [mutation rules](/docs/policy-types/cluster-policy/mutate). Mutations can leverage either a RFC 6902 JSON Patch or a strategic merge patch. While a JSON patch does provide the ability to perform fine-grained modification of resources, as shown in the MachineSet example in a prior section, the Infrastructure ID has the potential to be located at varying locations within the MachineSet definition. To manage a dynamic set of Infrastructure ID parameters regardless of their locations within a MachineSet, the Kyverno-specific [replace_all](/docs/policy-types/cluster-policy/jmespath#replace_all) filter can be used to accomplish this task.
 
 ```yaml
 mutate:

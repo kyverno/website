@@ -5,10 +5,10 @@ sidebar:
   order: 110
 ---
 
-{% aside title="Warning" type="caution" %}
+:::caution[Warning]
 PolicyExceptions are disabled by default. To enable them, set the `enablePolicyException` flag to `true`. When enabling PolicyExceptions, you must also specify which namespaces they can be used in by setting the `exceptionNamespace` flag.
 For more information, see [Container Flags](/docs/installation/customization#container-flags).
-{% /aside %}
+:::
 
 Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/policy-types/cluster-policy/match-exclude#match-statements), [preconditions](/docs/policy-types/cluster-policy/preconditions) at multiple hierarchies, [anchors](/docs/policy-types/cluster-policy/validate#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
 
@@ -59,9 +59,9 @@ spec:
 
 A cluster administrator wishes to grant an exception to a Pod or Deployment named `important-tool` which will be created in the `delta` Namespace. A PolicyException resource is created which specifies the policy name and rule name which should be bypassed as well as the resource kind, Namespace, and name which may bypass it.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Auto-generated rules for Pod controllers must be specified along with the Pod controller requesting exception, if applicable. Since Kyverno's auto-generated rules are additive in nature, when specifying specific resource names of Pod controllers, it may be necessary to use a wildcard (`*`) to allow the Pods emitted from those controllers to be exempted as components of the Pod name include ReplicaSet hash and Pod hash.
-{% /aside %}
+:::
 
 ```yaml
 apiVersion: kyverno.io/v2

@@ -9,9 +9,9 @@ A `mutate` rule can be used to modify matching resources and is written as eithe
 
 By using a patch in the [JSONPatch - RFC 6902](http://jsonpatch.com/) format, you can make precise changes to the resource being created. A strategic merge patch is useful for controlling merge behaviors on elements with lists. Regardless of the method, a `mutate` rule is used when an object needs to be modified in a given way.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Kubernetes disallows changes to certain fields in resources including `name`, `namespace`, `uid`, `kind`, and `apiVersion`, therefore you cannot use Kyverno policy to effect any of these fields either during admission or once a resource has been persisted.
-{% /aside %}
+:::
 
 Resource mutation occurs before validation, so the validation rules should not contradict the changes performed by the mutation section. To mutate existing resources in addition to those subject to AdmissionReview requests, use [mutateExisting](#mutate-existing-resources) policies.
 
@@ -155,9 +155,9 @@ spec:
             - ls
 ```
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 Mutations using `patchesJson6902` which match on Pods are not translated to higher-level Pod controllers as noted above.
-{% /aside %}
+:::
 
 When needing to append an object to an array of objects, for example in `pod.spec.tolerations`, use a dash (`-`) at the end of the path.
 
@@ -415,9 +415,9 @@ spec:
               - <(emptyDir): {}
 ```
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Set `spec.emitWarning` to `true` to enable API response warnings for mutate policies upon resource's admission events.
-{% /aside %}
+:::
 
 ## Mutate Existing resources
 
@@ -430,9 +430,9 @@ To define a "mutate existing" policy, trigger resources need to be specified in 
 
 Because the `match` and `mutate.targets[]` stanzas have two separate scopes, when wishing to match on and mutate the same kind of resources any exclusionary conditions must be placed in the correct scope. Match filter criteria do not implicitly function as the input filter for target selection. For example, wishing to match on and mutate existing Ingress resources which have the annotation `corp.org/facing=internal` should at least have the annotation as a selection criteria in the targets section and may use either anchors or preconditions as described further below. Placing this annotation in the `match` clause will only result in Kyverno triggering upon those resources and not necessarily mutating them.
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 Mutation of existing Pods is limited to mutable fields only. See the Kubernetes [documentation here](https://kubernetes.io/docs/concepts/workloads/pods/#pod-update-and-replacement) for more details.
-{% /aside %}
+:::
 
 This policy, which matches when the trigger resource named `dictionary-1` in the `staging` Namespace changes, writes a label `foo=bar` to the target resource named `secret-1` also in the `staging` Namespace.
 
@@ -496,9 +496,9 @@ spec:
         # ...
 ```
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 Installation of a mutate existing policy affects the `ValidatingWebhookConfiguration` Kyverno manages as opposed to traditional mutate rules affecting the `MutatingWebhookConfiguration`.
-{% /aside %}
+:::
 
 When defining a list of `targets[]`, the fields `name` and `namespace` are not strictly required but encouraged. If omitted, it implies a wildcard (`"*"`) for the omitted field which can have unintended impact on other resources.
 
@@ -577,9 +577,9 @@ spec:
                             <(name): '{{ request.object.metadata.name }}'
 ```
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 The targets matched by a mutate existing rule are not subject to Kyverno's [resource filters](/docs/installation/customization#resource-filters). Always develop and test rules in a sandboxed cluster to ensure the scope is correctly confined.
-{% /aside %}
+:::
 
 Mutate existing rules are force reconciled every hour by default regardless of the `mutateExistingOnPolicyUpdate` value. The reconciliation interval can be customized through use of the environment variable `BACKGROUND_SCAN_INTERVAL` set on the background controller.
 

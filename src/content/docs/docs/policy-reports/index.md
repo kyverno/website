@@ -73,27 +73,27 @@ summary:
 
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/monitoring/policy-results-info) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
-{% /aside %}
+:::
 
 Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization#container-flags) section.
 
-{% aside title="Note" type="caution" %}
+:::caution[Note]
 Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys).
-{% /aside %}
+:::
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 To configure Kyverno to generate reports for Kubernetes ValidatingAdmissionPolicies enable the `--validatingAdmissionPolicyReports` flag in the reports controller.
-{% /aside %}
+:::
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Reporting can be enabled or disabled for rule types by modifying the value of the flag `--enableReporting=validate,mutate,mutateExisting,generate,imageVerify`.
-{% /aside %}
+:::
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Creating reports for a resource require permissions to `get`, `list` and `watch` the resource in Kyverno reports controller.
-{% /aside %}
+:::
 
 ## Report result logic
 
@@ -206,13 +206,13 @@ Similarly, you can view the cluster-wide report using:
 kubectl get clusterpolicyreport
 ```
 
-{% aside title="Tip" type="note" %}
+:::note[Tip]
 Note that the name of the report is mostly random. Add `-o wide` to show additional information that will help identify the resource associated with the report.
-{% /aside %}
+:::
 
-{% aside title="Tip" type="note" %}
+:::note[Tip]
 For a graphical view of Policy Reports, check out [Policy Reporter](https://github.com/kyverno/policy-reporter#readme).
-{% /aside %}
+:::
 
 ## Viewing policy violations
 
@@ -254,9 +254,9 @@ timestamp:
 
 The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of matching resources as determined by Kyverno `Policy` and `ClusterPolicy` objects, however these reports are built of four intermediary resources. For matching resources which were caught during admission mode, `AdmissionReport` and `ClusterAdmissionReport` resources are created. For results of background processing, `BackgroundScanReport` and `ClusterBackgroundScanReport` resources are created. An example of a `ClusterAdmissionReport` is shown below.
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 As of kyverno 1.16, you can add the label `reports.kyverno.io/disabled` with any value to a policy of any type (YAML, CEL or VAP/MAP), which will result in no reports of any kind (ephemeral or permanent) be generated for this policy
-{% /aside %}
+:::
 
 ```yaml
 apiVersion: kyverno.io/v1alpha2

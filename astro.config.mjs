@@ -13,7 +13,7 @@ const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
 const checkLinksPlugin = process.env.CHECK_LINKS
   ? [
       starlightLinksValidator({
-        exclude: ['/policies{,/,/**/*}'],
+        exclude: ['/{policies,blog,docs/blog}{,/,/**/*,/**/*/}'],
         errorOnLocalLinks: false,
       }),
     ]

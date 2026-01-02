@@ -14,9 +14,9 @@ spec:
     - name: default-deny-ingress
 ```
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 Background scans are handled by the reports controller and not the background controller.
-{% /aside %}
+:::
 
 Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to periodically scan existing resources and find if they match any `validate` or `verifyImages` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a rule, even in `Enforce` mode. It has no effect on either `generate` or `mutate` rules for the purposes of reporting.
 
