@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.11.0
+description: 'An Ingress with no rules sends all traffic to a single default backend. The defaultBackend is conventionally a configuration option of the Ingress controller and is not specified in your Ingress resources. If none of the hosts or paths match the HTTP request in the Ingress objects, the traffic is routed to your default backend. In a multi-tenant environment, you want users to use explicit hosts, they should not be able to overwrite the global default backend service. This policy prohibits the use of the defaultBackend field.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,7 +45,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.defaultBackend)"
+            - expression: '!has(object.spec.defaultBackend)'
         message: Setting the defaultBackend field is prohibited.
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -46,5 +48,4 @@ spec:
           expressions:
             - expression: "'ownerReferences' in object.metadata"
               message: Bare Pods are not allowed. They must be created by Pod controllers.
-
 ```

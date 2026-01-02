@@ -5,6 +5,7 @@ severity: medium
 type: MutatingPolicy
 subjects: []
 tags: []
+isNew: true
 ---
 
 ## Policy Definition
@@ -33,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -64,5 +65,4 @@ spec:
               )
             }
           }
-
 ```

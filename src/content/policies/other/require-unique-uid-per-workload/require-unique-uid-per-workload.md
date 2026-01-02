@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Two distinct workloads should not share a UID so that in a multitenant environment, applications  from different projects never run as the same user ID. When using persistent storage,  any files created by applications will also have different ownership in the file system. Running processes for applications as different user IDs means that if a security  vulnerability were ever discovered in the underlying container runtime, and an application  were able to break out of the container to the host, they would not be able to interact  with processes owned by other users, or from other applications, in other projects.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Two distinct workloads should not share a UID so that in a multitenant environment, applications  from different projects never run as the same user ID. When using persistent storage,  any files created by applications will also have different ownership in the file system. Running processes for applications as different user IDs means that if a security  vulnerability were ever discovered in the underlying container runtime, and an application  were able to break out of the container to the host, they would not be able to interact  with processes owned by other users, or from other applications, in other projects.
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.20"
+    kyverno.io/kubernetes-version: '1.20'
 spec:
   background: false
   validationFailureAction: Audit
@@ -49,8 +51,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.containers[].securityContext.to_string(runAsUser) }}"
+              - key: '{{ request.object.spec.containers[].securityContext.to_string(runAsUser) }}'
                 operator: AnyIn
-                value: "{{ uidsAllPodsExceptSameOwnerAsRequestObject }}"
-
+                value: '{{ uidsAllPodsExceptSameOwnerAsRequestObject }}'
 ```

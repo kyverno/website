@@ -7,6 +7,8 @@ subjects:
   - TaskRun
 tags: []
 version: 1.7.0
+description: 'A signed bundle is required and a vulnerability scan made by Grype must return no vulnerabilities greater than 8.0.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/subject: TaskRun
     kyverno.io/kyverno-version: 1.7.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: A signed bundle is required and a vulnerability scan made by Grype must return no vulnerabilities greater than 8.0.
 spec:
   validationFailureAction: Audit
@@ -45,7 +47,7 @@ spec:
             key: name
       verifyImages:
         - imageReferences:
-            - "*"
+            - '*'
           attestations:
             - predicateType: https://grype.anchore.io/scan
               attestors:
@@ -55,14 +57,13 @@ spec:
                           -----BEGIN PUBLIC KEY-----
                           MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
                           gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
-                          -----END PUBLIC KEY-----          
+                          -----END PUBLIC KEY-----
               conditions:
                 - any:
                     - key: "{{ matches[].vulnerability[].cvss[?metrics.impactScore > '8.0'][] | length(@) }}"
                       operator: Equals
                       value: 0
-                    - key: "{{ source.target.userInput }}"
+                    - key: '{{ source.target.userInput }}'
                       operator: Equals
                       value: ghcr.io/tap8stry/git-init:v0.21.0@sha256:322e3502c1e6fba5f1869efb55cfd998a3679e073840d33eb0e3c482b5d5609b
-
 ```

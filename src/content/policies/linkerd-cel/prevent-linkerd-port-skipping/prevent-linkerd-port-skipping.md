@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Linkerd has the ability to skip inbound and outbound ports assigned to Pods, exempting them from mTLS. This can be important in some narrow use cases but generally should be avoided. This policy prevents Pods from setting the annotations `config.linkerd.io/skip-inbound-ports` or `config.linkerd.io/skip-outbound-ports`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: "!has(object.metadata.annotations) ||  (!('config.linkerd.io/skip-inbound-ports' in object.metadata.annotations) && !('config.linkerd.io/skip-outbound-ports' in object.metadata.annotations))"
               message: Pods may not skip ports. The annotations `config.linkerd.io/skip-inbound-ports` or `config.linkerd.io/skip-outbound-ports` must not be set.
-
 ```

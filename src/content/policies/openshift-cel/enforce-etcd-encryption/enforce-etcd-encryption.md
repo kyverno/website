@@ -7,6 +7,8 @@ subjects:
   - APIServer
 tags: []
 version: 1.11.0
+description: 'Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: has(object.spec.encryption)
               message: Encryption should be enabled for etcd
-
 ```

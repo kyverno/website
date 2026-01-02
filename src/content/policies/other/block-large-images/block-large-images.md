@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Pods which run containers of very large image size take longer to pull and require more space to store. A user may either inadvertently or purposefully name an image which is unusually large to disrupt operations. This policy checks the size of every container image and blocks if it is over 2 Gibibytes.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods which run containers of very large image size take longer to pull and require more space to store. A user may either inadvertently or purposefully name an image which is unusually large to disrupt operations. This policy checks the size of every container image and blocks if it is over 2 Gibibytes.
 spec:
@@ -48,13 +50,12 @@ spec:
             context:
               - name: imageSize
                 imageRegistry:
-                  reference: "{{ element.image }}"
+                  reference: '{{ element.image }}'
                   jmesPath: to_string(sum(manifest.layers[*].size))
             deny:
               conditions:
                 all:
                   - key: 2Gi
                     operator: LessThan
-                    value: "{{imageSize}}"
-
+                    value: '{{imageSize}}'
 ```

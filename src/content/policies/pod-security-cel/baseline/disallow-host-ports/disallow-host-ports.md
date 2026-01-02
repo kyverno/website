@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -47,5 +49,4 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container,  container.?ports.orValue([]).all(port, port.?hostPort.orValue(0) == 0))
               message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort, spec.initContainers[*].ports[*].hostPort, and spec.ephemeralContainers[*].ports[*].hostPort must either be unset or set to `0`.
-
 ```

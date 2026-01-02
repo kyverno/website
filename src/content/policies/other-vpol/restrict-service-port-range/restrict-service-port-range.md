@@ -7,6 +7,8 @@ subjects:
   - Service
 tags: []
 version: 1.14.0
+description: 'Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.
 spec:
@@ -33,7 +35,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -44,5 +46,4 @@ spec:
   validations:
     - expression: object.spec.ports.all(p, p.port >= 32000 && p.port <= 33000)
       message: Ports must be between 32000-33000
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.11.0
+description: 'Ingress hosts optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given Ingress resource. This policy enforces that any Ingress host does not contain a wildcard character.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: "!object.spec.?rules.orValue([]).exists(rule, has(rule.host) && rule.host.contains('*'))"
               message: Wildcards are not permitted as hosts.
-
 ```

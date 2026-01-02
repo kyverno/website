@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: ( object.spec.?hostNetwork.orValue(false) == false) && ( object.spec.?hostIPC.orValue(false) == false) && ( object.spec.?hostPID.orValue(false) == false)
               message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.
-
 ```

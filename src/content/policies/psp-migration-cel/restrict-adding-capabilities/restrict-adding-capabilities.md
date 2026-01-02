@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Adding capabilities is a way for containers in a Pod to request higher levels of ability than those with which they may be provisioned. Many capabilities allow system-level control and should be prevented. Pod Security Policies (PSP) allowed a list of "good" capabilities to be added. This policy checks ephemeralContainers, initContainers, and containers to ensure the only capabilities that can be added are either NET_BIND_SERVICE or CAP_CHOWN.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -50,5 +52,4 @@ spec:
           expressions:
             - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?add.orValue([]).all(capability, capability in variables.allowedCapabilities))
               message: Any capabilities added other than NET_BIND_SERVICE or CAP_CHOWN are disallowed.
-
 ```

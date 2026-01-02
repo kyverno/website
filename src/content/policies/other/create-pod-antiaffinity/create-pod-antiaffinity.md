@@ -8,6 +8,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Applications may involve multiple replicas of the same Pod for availability as well as scale purposes, yet Kubernetes does not by default provide a solution for availability. This policy sets a Pod anti-affinity configuration on Deployments which contain an `app` label if it is not already present.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -37,7 +39,7 @@ spec:
         all:
           - key: "{{request.object.spec.template.metadata.labels.app || ''}}"
             operator: NotEquals
-            value: ""
+            value: ''
       mutate:
         patchStrategicMerge:
           spec:
@@ -54,6 +56,5 @@ spec:
                               - key: app
                                 operator: In
                                 values:
-                                  - "{{request.object.spec.template.metadata.labels.app}}"
-
+                                  - '{{request.object.spec.template.metadata.labels.app}}'
 ```

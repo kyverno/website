@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'As application workloads share cluster resources, it is important to limit resources requested and consumed by each Pod. It is recommended to require resource requests and limits per Pod, especially for memory and CPU. If a Namespace level request or limit is specified, defaults will automatically be applied to each Pod based on the LimitRange configuration. This policy validates that all containers have something specified for memory and CPU requests and memory limits.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -42,23 +44,22 @@ spec:
             containers:
               - resources:
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
                   limits:
-                    memory: "?*"
-            "=(initContainers)":
+                    memory: '?*'
+            '=(initContainers)':
               - resources:
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
                   limits:
-                    memory: "?*"
-            "=(ephemeralContainers)":
+                    memory: '?*'
+            '=(ephemeralContainers)':
               - resources:
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
                   limits:
-                    memory: "?*"
-
+                    memory: '?*'
 ```

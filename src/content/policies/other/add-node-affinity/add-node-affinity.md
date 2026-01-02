@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Deployment
 tags: []
+description: 'Node affinity, similar to node selection, is a way to specify which node(s) on which Pods will be scheduled but based on more complex conditions. This policy will add node affinity to a Deployment and if one already exists an expression will be added to it.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/description: Node affinity, similar to node selection, is a way to specify which node(s) on which Pods will be scheduled but based on more complex conditions. This policy will add node affinity to a Deployment and if one already exists an expression will be added to it.
 spec:
   background: false
@@ -43,5 +45,4 @@ spec:
               operator: Lt
               values:
               - "400"
-
 ```

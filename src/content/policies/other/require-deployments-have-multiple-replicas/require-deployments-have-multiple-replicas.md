@@ -7,6 +7,8 @@ subjects:
   - Deployment
 tags: []
 version: 1.6.0
+description: 'Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,6 +41,5 @@ spec:
         message: Deployments should have more than one replica to ensure availability.
         pattern:
           spec:
-            replicas: ">1"
-
+            replicas: '>1'
 ```

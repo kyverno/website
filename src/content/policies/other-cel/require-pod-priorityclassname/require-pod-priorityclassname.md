@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'A Pod may optionally specify a priorityClassName which indicates the scheduling priority relative to others. This requires creation of a PriorityClass object in advance. With this created, a Pod may set this field to that value. In a multi-tenant environment, it is often desired to require this priorityClassName be set to make certain tenant scheduling guarantees. This policy requires that a Pod defines the priorityClassName field with some value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,5 +45,4 @@ spec:
           expressions:
             - expression: object.spec.?priorityClassName.orValue('') != ''
               message: Pods must define the priorityClassName field.
-
 ```

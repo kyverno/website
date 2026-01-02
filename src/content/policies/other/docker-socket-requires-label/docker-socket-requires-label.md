@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: "Accessing a container engine's socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`."
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Accessing a container engine's socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`.
 spec:
@@ -40,10 +42,9 @@ spec:
         pattern:
           metadata:
             labels:
-              allow-docker: "true"
+              allow-docker: 'true'
           (spec):
             (volumes):
               - (hostPath):
                   path: /var/run/docker.sock
-
 ```

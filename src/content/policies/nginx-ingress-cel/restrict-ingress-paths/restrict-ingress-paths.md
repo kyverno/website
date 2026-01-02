@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.11.0
+description: 'This policy mitigates CVE-2021-25745 by restricting `spec.rules[].http.paths[].path` to safe values. Additional paths can be added as required. This issue has been fixed in NGINX Ingress v1.2.0.  Please refer to the CVE for details.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: object.spec.?rules.orValue([]).all(rule,  rule.?http.?paths.orValue([]).all(p,  !p.path.contains('/etc') && !p.path.contains('/var/run/secrets') && !p.path.contains('/root') && !p.path.contains('/var/run/kubernetes/serviceaccount') && !p.path.contains('/etc/kubernetes/admin.conf')))
               message: spec.rules[].http.paths[].path value is not allowed
-
 ```

@@ -5,6 +5,8 @@ severity: medium
 type: MutatingPolicy
 subjects: []
 tags: []
+description: 'An Ingress may specify host names at a variety of locations in the same resource. This policy replaces host names that end with `old.com` with `new.com` in all relevant fields including spec.rules[].host, spec.tls[].hosts[], and spec.tls[].secretName.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -94,5 +96,4 @@ spec:
               value: tlsEntry.secretName.replace('.old.com', '.new.com')
             } : null
           ).filter(patch, patch != null)
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
   - Secret
 tags: []
+description: 'Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use wildcards in resource names. This policy ensures that only Secrets beginning with the name `safe-` can be consumed by Pods. In order to work effectively, this policy needs to be paired with a separate policy or rule to require `automountServiceAccountToken=false` since this would otherwise result in a Secret being mounted.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod, Secret
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/description: Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use wildcards in resource names. This policy ensures that only Secrets beginning with the name `safe-` can be consumed by Pods. In order to work effectively, this policy needs to be paired with a separate policy or rule to require `automountServiceAccountToken=false` since this would otherwise result in a Secret being mounted.
 spec:
   background: false
@@ -46,23 +48,23 @@ spec:
         message: Only Secrets beginning with `safe-` may be consumed in env statements.
         pattern:
           spec:
-            "=(ephemeralContainers)":
-              - "=(name)": "*"
-                "=(env)":
-                  - "=(valueFrom)":
-                      "=(secretKeyRef)":
+            '=(ephemeralContainers)':
+              - '=(name)': '*'
+                '=(env)':
+                  - '=(valueFrom)':
+                      '=(secretKeyRef)':
                         name: safe-*
-            "=(initContainers)":
-              - "=(name)": "*"
-                "=(env)":
-                  - "=(valueFrom)":
-                      "=(secretKeyRef)":
+            '=(initContainers)':
+              - '=(name)': '*'
+                '=(env)':
+                  - '=(valueFrom)':
+                      '=(secretKeyRef)':
                         name: safe-*
             containers:
-              - name: "*"
-                "=(env)":
-                  - "=(valueFrom)":
-                      "=(secretKeyRef)":
+              - name: '*'
+                '=(env)':
+                  - '=(valueFrom)':
+                      '=(secretKeyRef)':
                         name: safe-*
     - name: safe-secrets-from-envfrom
       match:
@@ -81,20 +83,20 @@ spec:
         message: Only Secrets beginning with `safe-` may be consumed in envFrom statements.
         pattern:
           spec:
-            "=(ephemeralContainers)":
-              - "=(name)": "*"
-                "=(envFrom)":
-                  - "=(secretRef)":
+            '=(ephemeralContainers)':
+              - '=(name)': '*'
+                '=(envFrom)':
+                  - '=(secretRef)':
                       name: safe-*
-            "=(initContainers)":
-              - "=(name)": "*"
-                "=(envFrom)":
-                  - "=(secretRef)":
+            '=(initContainers)':
+              - '=(name)': '*'
+                '=(envFrom)':
+                  - '=(secretRef)':
                       name: safe-*
             containers:
-              - name: "*"
-                "=(envFrom)":
-                  - "=(secretRef)":
+              - name: '*'
+                '=(envFrom)':
+                  - '=(secretRef)':
                       name: safe-*
     - name: safe-secrets-from-volumes
       match:
@@ -113,8 +115,7 @@ spec:
         message: Only Secrets beginning with `safe-` may be consumed in volumes.
         pattern:
           spec:
-            "=(volumes)":
-              - "=(secret)":
+            '=(volumes)':
+              - '=(secret)':
                   secretName: safe-*
-
 ```

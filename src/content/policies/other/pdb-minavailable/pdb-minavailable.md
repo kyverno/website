@@ -8,6 +8,8 @@ subjects:
   - Deployment
   - StatefulSet
 tags: []
+description: 'When a Pod controller which can run multiple replicas is subject to an active PodDisruptionBudget, if the replicas field has a value equal to the minAvailable value of the PodDisruptionBudget it may prevent voluntary disruptions including Node drains which may impact routine maintenance tasks and disrupt operations. This policy checks incoming Deployments and StatefulSets which have a matching PodDisruptionBudget to ensure these two values do not match.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Check PodDisruptionBudget minAvailable
     policies.kyverno.io/category: Other
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment, StatefulSet
     policies.kyverno.io/description: When a Pod controller which can run multiple replicas is subject to an active PodDisruptionBudget, if the replicas field has a value equal to the minAvailable value of the PodDisruptionBudget it may prevent voluntary disruptions including Node drains which may impact routine maintenance tasks and disrupt operations. This policy checks incoming Deployments and StatefulSets which have a matching PodDisruptionBudget to ensure these two values do not match.
 spec:
@@ -44,7 +46,7 @@ spec:
             value:
               - CREATE
               - UPDATE
-          - key: "{{ request.object.spec.replicas || `1` }}"
+          - key: '{{ request.object.spec.replicas || `1` }}'
             operator: GreaterThan
             value: 0
       context:
@@ -57,8 +59,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{ request.object.spec.replicas }}"
+              - key: '{{ request.object.spec.replicas }}'
                 operator: Equals
-                value: "{{ minavailable }}"
-
+                value: '{{ minavailable }}'
 ```

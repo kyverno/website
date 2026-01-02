@@ -7,6 +7,8 @@ subjects:
   - Node
 tags: []
 version: 1.10.0
+description: 'There are cases where either an operations or security incident may occur and Nodes should be evacuated and placed in an unused state for further analysis. For example, a Node is found to be running a vulnerable version of a CRI engine or kernel and to minimize chances of a compromise may need to be decommissioned so another can be built. This policy shows how to use Kyverno to both cordon and drain a given Node and uses a hypothetical label being written to it called `testing=drain` to illustrate the point. For production use, the match block should be modified to trigger on the appropriate condition.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/subject: Node
     kyverno.io/kyverno-version: 1.10.1
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/description: There are cases where either an operations or security incident may occur and Nodes should be evacuated and placed in an unused state for further analysis. For example, a Node is found to be running a vulnerable version of a CRI engine or kernel and to minimize chances of a compromise may need to be decommissioned so another can be built. This policy shows how to use Kyverno to both cordon and drain a given Node and uses a hypothetical label being written to it called `testing=drain` to illustrate the point. For production use, the match block should be modified to trigger on the appropriate condition.
 spec:
   rules:
@@ -43,13 +45,12 @@ spec:
         targets:
           - apiVersion: v1
             kind: Node
-            name: "{{request.object.metadata.name}}"
+            name: '{{request.object.metadata.name}}'
         patchStrategicMerge:
           spec:
             unschedulable: true
             taints:
               - effect: NoExecute
                 key: kyverno-evicted
-                timeAdded: "{{ time_now_utc() }}"
-
+                timeAdded: '{{ time_now_utc() }}'
 ```

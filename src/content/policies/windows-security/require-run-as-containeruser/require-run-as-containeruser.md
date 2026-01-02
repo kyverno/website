@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Containers must be required to run as ContainerUser. This policy ensures that the fields  spec.securityContext.windowsOptions.runAsUserName, spec.containers[*].securityContext.windowsOptions.runAsUserName,  spec.initContainers[*].securityContext.windowsOptions.runAsUserName, and  is either unset or set to ContainerUser.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,16 +41,15 @@ spec:
         message: Running the container as ContainerAdministrator,NT AUTHORITY\NETWORK SERVICE, NT AUTHORITY\LOCAL SERVICE is not allowed.
         pattern:
           spec:
-            "=(securityContext)":
-              "=(windowsOptions)":
-                "=(runAsUserName)": ContainerUser
-            "=(initContainers)":
-              - "=(securityContext)":
-                  "=(windowsOptions)":
-                    "=(runAsUserName)": ContainerUser
+            '=(securityContext)':
+              '=(windowsOptions)':
+                '=(runAsUserName)': ContainerUser
+            '=(initContainers)':
+              - '=(securityContext)':
+                  '=(windowsOptions)':
+                    '=(runAsUserName)': ContainerUser
             containers:
-              - "=(securityContext)":
-                  "=(windowsOptions)":
-                    "=(runAsUserName)": ContainerUser
-
+              - '=(securityContext)':
+                  '=(windowsOptions)':
+                    '=(runAsUserName)': ContainerUser
 ```

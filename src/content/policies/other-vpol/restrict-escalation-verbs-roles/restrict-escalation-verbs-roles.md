@@ -9,6 +9,8 @@ subjects:
   - RBAC
 tags: []
 version: 1.14.0
+description: 'The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -27,7 +29,7 @@ metadata:
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.
 spec:
   validationActions:
@@ -57,5 +59,4 @@ spec:
   validations:
     - expression: object.rules == null ||  !object.rules.exists(rule, rule.apiGroups.exists(apiGroup, apiGroup in variables.apiGroups) && rule.resources.exists(resource, resource in variables.resources) && rule.verbs.exists(verb, verb in variables.verbs))
       message: Use of verbs `escalate`, `bind`, and `impersonate` are forbidden.
-
 ```

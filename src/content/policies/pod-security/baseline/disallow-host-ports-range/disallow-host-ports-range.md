@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Access to host ports allows potential snooping of network traffic and should not be allowed by requiring host ports be undefined (recommended) or at minimum restricted to a known list. This policy ensures the `hostPort` field, if defined, is set to either a port in the specified range or to a value of zero. This policy is mutually exclusive of the disallow-host-ports policy. Note that Kubernetes Pod Security Admission does not support the host port range rule.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,7 +41,7 @@ spec:
                 - Pod
       preconditions:
         all:
-          - key: "{{ request.operation }}"
+          - key: '{{ request.operation }}'
             operator: NotEquals
             value: DELETE
       validate:
@@ -47,12 +49,11 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}"
+              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}'
                 operator: AnyNotIn
                 value: 5000-6000
-              - key: "{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}"
+              - key: '{{ request.object.spec.[ephemeralContainers, initContainers, containers][].ports[].hostPort }}'
                 operator: AnyNotIn
                 value:
                   - 0
-
 ```

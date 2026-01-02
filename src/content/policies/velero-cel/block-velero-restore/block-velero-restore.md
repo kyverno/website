@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Restore
 tags: []
+description: 'Velero allows on backup and restore operations and is designed to be run with full cluster admin permissions. It allows on cross namespace restore operations, which means you can restore backup of namespace A to namespace B. This policy protect restore operation into system or any protected namespaces, listed in deny condition section.  It checks the Restore CRD object and its namespaceMapping field. If destination match protected namespace then operation fails and warning message is throw.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -41,9 +43,8 @@ spec:
         cel:
           variables:
             - name: namespaceMappingValues
-              expression: "has(object.spec.namespaceMapping) ? object.spec.namespaceMapping.map(nsmap, object.spec.namespaceMapping[nsmap]) : []"
+              expression: 'has(object.spec.namespaceMapping) ? object.spec.namespaceMapping.map(nsmap, object.spec.namespaceMapping[nsmap]) : []'
           expressions:
             - expression: "!variables.namespaceMappingValues.exists(val, val in ['kube-system', 'kube-node-lease'])"
               messageExpression: "'Warning! Restore to protected namespace: ' + variables.namespaceMappingValues.join(', ') + ' is not allowed!'"
-
 ```

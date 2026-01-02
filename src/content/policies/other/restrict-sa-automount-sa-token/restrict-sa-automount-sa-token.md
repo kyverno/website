@@ -7,6 +7,8 @@ subjects:
   - Secret
   - ServiceAccount
 tags: []
+description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,10 +24,10 @@ metadata:
     policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens in Service Account
     policies.kyverno.io/category: Security
     kyverno.io/kyverno-version: 1.11.1
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret,ServiceAccount
-    policies.kyverno.io/description: "Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      "
+    policies.kyverno.io/description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
 spec:
   validationFailureAction: Audit
   background: true
@@ -40,5 +42,4 @@ spec:
         message: ServiceAccounts must set automountServiceAccountToken to false.
         pattern:
           automountServiceAccountToken: false
-
 ```

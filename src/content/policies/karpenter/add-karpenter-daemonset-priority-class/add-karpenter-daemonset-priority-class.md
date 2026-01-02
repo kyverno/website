@@ -7,6 +7,8 @@ subjects:
   - DaemonSet
 tags: []
 version: 1.6.0
+description: 'When a DaemonSet is added to a cluster every node will get a new pod. There may not be  enough room for this on every node. Karpenter cannot provision extra nodes just for the  DaemonSet because the new pods are not scheduled the way regular pods are. It would require parallel scheduling logic that is not proper to Kubernetes. Therefore, eviction of regular  pods should happen instead. This can be achieved with the priority class system-node-critical.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Karpenter
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.9.3
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: When a DaemonSet is added to a cluster every node will get a new pod. There may not be  enough room for this on every node. Karpenter cannot provision extra nodes just for the  DaemonSet because the new pods are not scheduled the way regular pods are. It would require parallel scheduling logic that is not proper to Kubernetes. Therefore, eviction of regular  pods should happen instead. This can be achieved with the priority class system-node-critical.
 spec:
@@ -41,5 +43,4 @@ spec:
             template:
               spec:
                 priorityClassName: system-node-critical
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: "object.spec.?securityContext.?sysctls.orValue([]).all(sysctl,  !has(sysctl.value) || (!sysctl.value.contains('+') && !sysctl.value.contains('='))) "
               message: characters '+' or '=' are not allowed in sysctls values
-
 ```

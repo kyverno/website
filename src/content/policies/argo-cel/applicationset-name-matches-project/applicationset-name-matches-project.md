@@ -7,6 +7,8 @@ subjects:
   - ApplicationSet
 tags: []
 version: 1.11.0
+description: 'This policy ensures that the name of the ApplicationSet is the same value provided in the project.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: object.spec.template.spec.project == object.metadata.name
               message: The name must match the project.
-
 ```

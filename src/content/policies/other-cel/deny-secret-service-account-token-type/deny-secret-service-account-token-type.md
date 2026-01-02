@@ -7,6 +7,8 @@ subjects:
   - Secret
   - ServiceAccount
 tags: []
+description: 'Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. When creating a Secret, you can specify its type using the  type field of the Secret resource . The type kubernetes.io/service-account-token is used for legacy ServiceAccount tokens . These legacy Tokens can be of security concern and should be audited.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -44,5 +46,4 @@ spec:
           expressions:
             - expression: object.type != 'kubernetes.io/service-account-token'
               message: Secret ServiceAccount token type is not allowed.
-
 ```

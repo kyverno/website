@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.6.0
+description: 'An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,8 +42,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
+              - key: '{{ request.object.spec.rules[].host || `[]` | length(@) }}'
                 operator: NotEquals
-                value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
-
+                value: '{{ request.object.spec.rules[].http || `[]` | length(@) }}'
 ```

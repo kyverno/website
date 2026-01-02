@@ -7,6 +7,8 @@ subjects:
   - ApplicationSet
 tags: []
 version: 1.6.0
+description: 'This policy ensures that the name of the ApplicationSet is the same value provided in the project.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: ApplicationSet
     policies.kyverno.io/description: This policy ensures that the name of the ApplicationSet is the same value provided in the project.
 spec:
@@ -48,6 +50,5 @@ spec:
           spec:
             template:
               spec:
-                project: "{{request.object.metadata.name}}"
-
+                project: '{{request.object.metadata.name}}'
 ```

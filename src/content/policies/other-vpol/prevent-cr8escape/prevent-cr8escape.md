@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: 'A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.
 spec:
@@ -36,7 +38,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -47,5 +49,4 @@ spec:
   validations:
     - expression: "object.spec.?securityContext.?sysctls.orValue([]).all(sysctl,  !has(sysctl.value) || (!sysctl.value.contains('+') && !sysctl.value.contains('='))) "
       message: characters '+' or '=' are not allowed in sysctls values
-
 ```

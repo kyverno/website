@@ -8,6 +8,8 @@ subjects:
   - Annotation
 tags: []
 version: 1.11.0
+description: 'Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. This policy enforces that all Namespaces contain the annotation `linkerd.io/inject` set to `enabled`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: object.metadata.?annotations[?'linkerd.io/inject'].orValue('') == 'enabled'
               message: All Namespaces must set the annotation `linkerd.io/inject` to `enabled`.
-
 ```

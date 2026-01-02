@@ -7,6 +7,8 @@ subjects:
   - Pod
   - Annotation
 tags: []
+description: 'In order for Velero to backup volumes in a Pod using an opt-in approach, it requires an annotation on the Pod called `backup.velero.io/backup-volumes` with the value being a comma-separated list of the volumes mounted to that Pod. This policy automatically annotates Pods (and Pod controllers) which refer to a PVC so that all volumes are listed in the aforementioned annotation if a Namespace with the label `velero-backup-pvc=true`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Annotation
     kyverno.io/kyverno-version: 1.9.2
-    kyverno.io/kubernetes-version: "1.25"
+    kyverno.io/kubernetes-version: '1.25'
     policies.kyverno.io/description: In order for Velero to backup volumes in a Pod using an opt-in approach, it requires an annotation on the Pod called `backup.velero.io/backup-volumes` with the value being a comma-separated list of the volumes mounted to that Pod. This policy automatically annotates Pods (and Pod controllers) which refer to a PVC so that all volumes are listed in the aforementioned annotation if a Namespace with the label `velero-backup-pvc=true`.
 spec:
   rules:
@@ -36,13 +38,13 @@ spec:
                 - Pod
               namespaceSelector:
                 matchLabels:
-                  velero-backup-pvc: "true"
+                  velero-backup-pvc: 'true'
       preconditions:
         all:
           - key: "{{ request.object.spec.volumes[?contains(keys(@), 'persistentVolumeClaim')] | length(@) }}"
             operator: GreaterThanOrEquals
             value: 1
-          - key: "{{request.operation}}"
+          - key: '{{request.operation}}'
             operator: Equals
             value: CREATE
       context:
@@ -53,6 +55,5 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              backup.velero.io/backup-volumes: "{{ volumes }}"
-
+              backup.velero.io/backup-volumes: '{{ volumes }}'
 ```

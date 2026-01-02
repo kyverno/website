@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: "In the earlier Pod Security Policy controller, it was possible to configure a policy to add a Pod's runtimeClassName. This was beneficial in that various container runtimes could be specified according to a policy. This Kyverno policies mutates Pods to add a runtimeClassName of `prodclass`."
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: PSP Migration
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/description: In the earlier Pod Security Policy controller, it was possible to configure a policy to add a Pod's runtimeClassName. This was beneficial in that various container runtimes could be specified according to a policy. This Kyverno policies mutates Pods to add a runtimeClassName of `prodclass`.
 spec:
@@ -44,5 +46,4 @@ spec:
         patchStrategicMerge:
           spec:
             runtimeClassName: prodclass
-
 ```

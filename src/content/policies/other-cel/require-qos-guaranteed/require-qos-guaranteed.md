@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Pod Quality of Service (QoS) is a mechanism to ensure Pods receive certain priority guarantees based upon the resources they define. When Pods define both requests and limits for both memory and CPU, and the requests and limits are equal to each other, Kubernetes grants the QoS class as guaranteed which allows them to run at a higher priority than others. This policy requires that all containers within a Pod run with this definition resulting in a guaranteed QoS. This policy is provided with the intention that users will need to control its scope by using exclusions, preconditions, and other policy language mechanisms.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -43,5 +45,4 @@ spec:
           expressions:
             - expression: object.spec.containers.all(container, has(container.resources) &&  has(container.resources.requests) && has(container.resources.requests.cpu) && has(container.resources.requests.memory) && has(container.resources.limits) &&  has(container.resources.limits.cpu) && has(container.resources.limits.memory) && container.resources.requests.cpu == container.resources.limits.cpu && container.resources.requests.memory == container.resources.limits.memory)
               message: All containers must define memory and CPU requests and limits where they are equal.
-
 ```

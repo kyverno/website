@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Restore
 tags: []
+description: 'Velero allows on backup and restore operations and is designed to be run with full cluster admin permissions. It allows on cross namespace restore operations, which means you can restore backup of namespace A to namespace B. This policy protect restore operation into system or any protected namespaces, listed in deny condition section.  It checks the Restore CRD object and its namespaceMapping field. If destination match protected namespace then operation fails and warning message is throw.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -33,14 +35,13 @@ spec:
               kinds:
                 - velero.io/v1/Restore
       validate:
-        message: "Warning! Restore to protected namespace: {{request.object.spec.namespaceMapping | values(@)}} is not allowed!"
+        message: 'Warning! Restore to protected namespace: {{request.object.spec.namespaceMapping | values(@)}} is not allowed!'
         deny:
           conditions:
             any:
-              - key: "{{request.object.spec.namespaceMapping || `{}` | values(@)}}"
+              - key: '{{request.object.spec.namespaceMapping || `{}` | values(@)}}'
                 operator: AnyIn
                 value:
                   - kube-system
                   - kube-node-lease
-
 ```

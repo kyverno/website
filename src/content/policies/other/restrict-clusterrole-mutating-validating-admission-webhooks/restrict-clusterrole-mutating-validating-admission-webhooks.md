@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - ClusterRole
 tags: []
+description: 'ClusterRoles that grant write permissions over admission webhook should be minimized to reduce powerful identities in the cluster. This policy checks to ensure write permissions are not provided to admission webhooks.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.10.7
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/subject: ClusterRole
     policies.kyverno.io/description: ClusterRoles that grant write permissions over admission webhook should be minimized to reduce powerful identities in the cluster. This policy checks to ensure write permissions are not provided to admission webhooks.
 spec:
@@ -52,7 +54,7 @@ spec:
                       - mutatingwebhookconfigurations
                       - validatingwebhookconfigurations
                 any:
-                  - key: "{{ element.verbs }}"
+                  - key: '{{ element.verbs }}'
                     operator: AnyIn
                     value:
                       - create
@@ -61,5 +63,4 @@ spec:
                   - key: "{{ contains(element.verbs[], '*') }}"
                     operator: Equals
                     value: true
-
 ```

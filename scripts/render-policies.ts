@@ -29,6 +29,8 @@ interface PolicyMetadata {
   tags: string[]
   version?: string
   type: string // Full kind from YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
+  description?: string // Policy description from annotations
+  isNew?: boolean // Flag to mark new policies (based on creation date)
 }
 
 interface PolicyYaml {
@@ -120,6 +122,10 @@ function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
   // Version is optional
   const version = annotations['policies.kyverno.io/minversion'] || undefined
 
+  // Extract description from annotations
+  const description =
+    annotations['policies.kyverno.io/description'] || undefined
+
   // Extract the full kind from the policy YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
   const type = policy.kind
 
@@ -131,6 +137,7 @@ function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
     tags,
     version,
     type,
+    description,
   }
 }
 
@@ -173,6 +180,18 @@ function generateMarkdown(
   // Add version only if present (it's optional in schema)
   if (metadata.version) {
     frontmatterLines.push(`version: ${metadata.version}`)
+  }
+
+  // Add description if present
+  if (metadata.description) {
+    // Escape single quotes in description for YAML
+    const escapedDescription = metadata.description.replace(/'/g, "''")
+    frontmatterLines.push(`description: '${escapedDescription}'`)
+  }
+
+  // Add isNew flag if present
+  if (metadata.isNew) {
+    frontmatterLines.push(`isNew: true`)
   }
 
   frontmatterLines.push('---', '', '## Policy Definition', '')
@@ -249,6 +268,30 @@ async function findPolicyFiles(dir: string): Promise<string[]> {
 }
 
 /**
+ * Gets the creation date of a file from git to determine if it's "new"
+ * Policies created in the last 90 days are considered "new"
+ */
+async function getFileCreationDate(
+  filePath: string,
+  repoDir: string,
+  git: ReturnType<typeof simpleGit>,
+): Promise<Date | null> {
+  try {
+    const relativePath = path.relative(repoDir, filePath).replace(/\\/g, '/')
+    const log = await git.log({
+      file: relativePath,
+      maxCount: 1,
+    })
+    if (log.latest) {
+      return new Date(log.latest.date)
+    }
+  } catch (error) {
+    // If git log fails, return null (file might not be tracked or repo might be shallow)
+  }
+  return null
+}
+
+/**
  * Processes a single policy file and generates markdown
  */
 async function processPolicyFile(
@@ -256,6 +299,7 @@ async function processPolicyFile(
   repoDir: string,
   outputDir: string,
   repoUrl: string,
+  git: ReturnType<typeof simpleGit>,
 ): Promise<void> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
@@ -297,6 +341,20 @@ async function processPolicyFile(
     }
 
     const metadata = extractMetadata(policy, filePath)
+
+    // Check if policy is "new" (created in last 90 days)
+    try {
+      const creationDate = await getFileCreationDate(filePath, repoDir, git)
+      if (creationDate) {
+        const daysSinceCreation =
+          (Date.now() - creationDate.getTime()) / (1000 * 60 * 60 * 24)
+        if (daysSinceCreation <= 90) {
+          metadata.isNew = true
+        }
+      }
+    } catch (error) {
+      // If git log fails, continue without isNew flag
+    }
 
     // Calculate relative path from repo root (for GitHub link)
     const relativePath = path.relative(repoDir, filePath).replace(/\\/g, '/')
@@ -382,6 +440,9 @@ async function main() {
       '1',
     ])
 
+    // Initialize git instance for the cloned repo
+    const repoGit = simpleGit(tempDir)
+
     console.log('Finding policy files...')
     const policyFiles = await findPolicyFiles(tempDir)
 
@@ -411,7 +472,7 @@ async function main() {
 
     // Process each policy file
     for (const filePath of policyFiles) {
-      await processPolicyFile(filePath, tempDir, outputDir, repoUrl)
+      await processPolicyFile(filePath, tempDir, outputDir, repoUrl, repoGit)
     }
 
     console.log('Policy rendering complete!')

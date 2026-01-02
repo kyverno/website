@@ -7,6 +7,8 @@ subjects:
   - Route
 tags: []
 version: 1.11.0
+description: 'HTTP traffic is not encrypted and hence insecure. This policy prevents configuration of OpenShift HTTP routes.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,5 +47,4 @@ spec:
           expressions:
             - expression: has(object.spec.tls)
               message: HTTP routes are not allowed. Configure TLS for secure routes.
-
 ```

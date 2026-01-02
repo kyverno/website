@@ -7,6 +7,8 @@ subjects:
   - Deployment
   - Annotation
 tags: []
+description: 'Kubecost is able to modify container resource requests and limits dynamically based upon observed utilization patterns and recommendations. This provides an easy way to automatically improve allocation of cluster resources by increasing efficiency. This policy will annotate all Deployments which have the label `env=test` with `request.autoscaling.kubecost.com/enabled="true"` if the annotation is not already present. Other annotations may be added according to need and users should see the documentation for a complete list.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment, Annotation
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.25"
+    kyverno.io/kubernetes-version: '1.25'
     policies.kyverno.io/description: Kubecost is able to modify container resource requests and limits dynamically based upon observed utilization patterns and recommendations. This provides an easy way to automatically improve allocation of cluster resources by increasing efficiency. This policy will annotate all Deployments which have the label `env=test` with `request.autoscaling.kubecost.com/enabled="true"` if the annotation is not already present. Other annotations may be added according to need and users should see the documentation for a complete list.
 spec:
   rules:
@@ -41,6 +43,5 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              +(request.autoscaling.kubecost.com/enabled): "true"
-
+              +(request.autoscaling.kubecost.com/enabled): 'true'
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.15.0
+description: "Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container's base, found in an OCI annotation, is in a cluster-wide allow list."
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.15.0
     policies.kyverno.io/minversion: 1.15.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container's base, found in an OCI annotation, is in a cluster-wide allow list.
 spec:
@@ -49,7 +51,7 @@ spec:
           - CREATE
           - UPDATE
         apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
   validations:
@@ -60,5 +62,4 @@ spec:
           'org.opencontainers.image.base.name' in image.GetMetadata(container.image).manifest.annotations && 
           image.GetMetadata(container.image).manifest.annotations['org.opencontainers.image.base.name'] in variables.allowedBaseImages
         )
-
 ```

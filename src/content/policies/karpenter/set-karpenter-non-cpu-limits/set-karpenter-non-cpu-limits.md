@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Karpenter, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.9.3
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.
 spec:
@@ -41,12 +43,12 @@ spec:
             patchStrategicMerge:
               spec:
                 containers:
-                  - (name): "{{element.name}}"
+                  - (name): '{{element.name}}'
                     resources:
                       limits:
-                        +(ephemeral-storage): "{{element.resources.limits.\"ephemeral-storage\" || element.resources.requests.\"ephemeral-storage\"}}"
+                        +(ephemeral-storage): '{{element.resources.limits."ephemeral-storage" || element.resources.requests."ephemeral-storage"}}'
                       requests:
-                        ephemeral-storage: "{{element.resources.limits.\"ephemeral-storage\" || element.resources.requests.\"ephemeral-storage\"}}"
+                        ephemeral-storage: '{{element.resources.limits."ephemeral-storage" || element.resources.requests."ephemeral-storage"}}'
     - name: set-memory
       match:
         any:
@@ -59,11 +61,10 @@ spec:
             patchStrategicMerge:
               spec:
                 containers:
-                  - (name): "{{element.name}}"
+                  - (name): '{{element.name}}'
                     resources:
                       limits:
-                        +(memory): "{{element.resources.limits.memory || element.resources.requests.memory}}"
+                        +(memory): '{{element.resources.limits.memory || element.resources.requests.memory}}'
                       requests:
-                        memory: "{{element.resources.limits.memory || element.resources.requests.memory}}"
-
+                        memory: '{{element.resources.limits.memory || element.resources.requests.memory}}'
 ```

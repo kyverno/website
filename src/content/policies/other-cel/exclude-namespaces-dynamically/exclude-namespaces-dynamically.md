@@ -8,6 +8,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: "It's common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied."
+isNew: true
 ---
 
 ## Policy Definition
@@ -111,5 +113,4 @@ spec:
             - expression: has(object.spec.jobTemplate.spec.template.metadata) && has(object.spec.jobTemplate.spec.template.metadata.labels) && 'foo' in object.spec.jobTemplate.spec.template.metadata.labels
               messageExpression: |
                 'Creating Pods in the ' + request.namespace + ' namespace,' + ' which is not in the excluded list of namespaces ' + params.data.exclude + ',' + ' is forbidden unless it carries the label `foo`.'
-
 ```

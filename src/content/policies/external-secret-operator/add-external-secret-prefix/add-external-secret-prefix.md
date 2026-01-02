@@ -7,6 +7,8 @@ subjects:
   - ExternalSecret
 tags: []
 version: 1.6.0
+description: 'This Policy mutates secretRef key to add a prefix. External Secret Operator proposes to use kyverno to force ExternalSecrets to have namespace prefix so that kubernetes administrators do not need to define permissions and users per namespace. Doing this developers are abstracted by administrators naming convention and will not  be able to access secrets from other namespaces. In this example, in the JSON patch change "prefix-" to your preferred prefix. For example: {{ request.namespace }}'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,8 +27,8 @@ metadata:
     policies.kyverno.io/subject: ExternalSecret
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
-    policies.kyverno.io/description: "This Policy mutates secretRef key to add a prefix. External Secret Operator proposes to use kyverno to force ExternalSecrets to have namespace prefix so that kubernetes administrators do not need to define permissions and users per namespace. Doing this developers are abstracted by administrators naming convention and will not  be able to access secrets from other namespaces. In this example, in the JSON patch change \"prefix-\" to your preferred prefix. For example: {{ request.namespace }}"
+    kyverno.io/kubernetes-version: '1.23'
+    policies.kyverno.io/description: 'This Policy mutates secretRef key to add a prefix. External Secret Operator proposes to use kyverno to force ExternalSecrets to have namespace prefix so that kubernetes administrators do not need to define permissions and users per namespace. Doing this developers are abstracted by administrators naming convention and will not  be able to access secrets from other namespaces. In this example, in the JSON patch change "prefix-" to your preferred prefix. For example: {{ request.namespace }}'
 spec:
   rules:
     - name: add-external-secret-prefix
@@ -46,5 +48,4 @@ spec:
                   property: "{{element.remoteRef.property}}"
                   conversionStrategy: "{{element.remoteRef.conversionStrategy}}"
                   decodingStrategy: "{{element.remoteRef.decodingStrategy}}"
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Containers which request use of an NVIDIA GPU often need to be authored to consume them via a CUDA environment variable called NVIDIA_VISIBLE_DEVICES. This policy checks the containers which request a GPU to ensure they have been authored with this environment variable.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Containers which request use of an NVIDIA GPU often need to be authored to consume them via a CUDA environment variable called NVIDIA_VISIBLE_DEVICES. This policy checks the containers which request a GPU to ensure they have been authored with this environment variable.
 spec:
@@ -48,15 +50,14 @@ spec:
             context:
               - name: imageData
                 imageRegistry:
-                  reference: "{{ element.image }}"
+                  reference: '{{ element.image }}'
             deny:
               conditions:
                 all:
                   - key: NVIDIA_VISIBLE_DEVICES=*?
                     operator: AnyNotIn
                     value: "{{ imageData.configData.config.Env || '' }}"
-                  - key: "{{ element.resources.limits.\"nvidia.com/gpu\" || '' }}"
+                  - key: '{{ element.resources.limits."nvidia.com/gpu" || '''' }}'
                     operator: GreaterThan
                     value: 0
-
 ```

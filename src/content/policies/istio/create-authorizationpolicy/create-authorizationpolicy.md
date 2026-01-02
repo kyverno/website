@@ -7,6 +7,8 @@ subjects:
   - AuthorizationPolicy
 tags: []
 version: 1.6.0
+description: 'An AuthorizationPolicy enables access controls on workloads in the mesh. It supports per-Namespace controls which can be a union of different behaviors. This policy creates a default deny AuthorizationPolicy for all new Namespaces. Further AuthorizationPolicies should be created to more granularly allow traffic as permitted. Use of this policy will likely require granting the Kyverno ServiceAccount additional privileges required to generate AuthorizationPolicy resources.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: AuthorizationPolicy
     policies.kyverno.io/description: An AuthorizationPolicy enables access controls on workloads in the mesh. It supports per-Namespace controls which can be a union of different behaviors. This policy creates a default deny AuthorizationPolicy for all new Namespaces. Further AuthorizationPolicies should be created to more granularly allow traffic as permitted. Use of this policy will likely require granting the Kyverno ServiceAccount additional privileges required to generate AuthorizationPolicy resources.
 spec:
@@ -39,9 +41,8 @@ spec:
         apiVersion: security.istio.io/v1beta1
         kind: AuthorizationPolicy
         name: default-deny
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         data:
           spec: {}
-
 ```

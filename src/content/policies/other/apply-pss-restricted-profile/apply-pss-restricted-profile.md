@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile. Note that it does not attempt to remove non-compliant volumes and volumeMounts. Additional policies may be employed for this purpose.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -21,7 +23,7 @@ metadata:
     policies.kyverno.io/title: Apply PSS Restricted Profile
     policies.kyverno.io/category: Other, PSP Migration
     kyverno.io/kyverno-version: 1.6.2
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile. Note that it does not attempt to remove non-compliant volumes and volumeMounts. Additional policies may be employed for this purpose.
 spec:
@@ -43,12 +45,11 @@ spec:
               runAsGroup: 3000
               fsGroup: 2000
             containers:
-              - (name): "?*"
+              - (name): '?*'
                 securityContext:
                   privileged: false
                   capabilities:
                     drop:
                       - ALL
                   allowPrivilegeEscalation: false
-
 ```

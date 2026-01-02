@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -51,7 +53,7 @@ spec:
                 all:
                   - key: ALL
                     operator: AnyNotIn
-                    value: "{{ element.securityContext.capabilities.drop[] || `[]` }}"
+                    value: '{{ element.securityContext.capabilities.drop[] || `[]` }}'
     - name: adding-capabilities-strict
       match:
         any:
@@ -70,10 +72,9 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                  - key: '{{ element.securityContext.capabilities.add[] || `[]` }}'
                     operator: AnyNotIn
                     value:
                       - NET_BIND_SERVICE
-                      - ""
-
+                      - ''
 ```

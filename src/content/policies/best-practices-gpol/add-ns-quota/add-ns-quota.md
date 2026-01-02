@@ -8,6 +8,8 @@ subjects:
   - LimitRange
 tags: []
 version: 1.15.0
+description: 'To better control the number of resources that can be created in a given Namespace and provide default resource consumption limits for Pods, ResourceQuota and LimitRange resources are recommended. This policy will generate ResourceQuota and LimitRange resources when a new Namespace is created.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -32,7 +34,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -85,5 +87,4 @@ spec:
         ]
   generate:
     - expression: generator.Apply(variables.targetNs, variables.downstream)
-
 ```

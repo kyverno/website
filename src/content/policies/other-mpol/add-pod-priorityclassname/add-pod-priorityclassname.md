@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. This policy adds the priorityClassName of `non-production` to any Pod controller deployed into a Namespace that does not have the label env=production.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -26,7 +28,7 @@ metadata:
     pod-policies.kyverno.io/autogen-controllers: none
     kyverno.io/kyverno-version: 1.7.1
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. This policy adds the priorityClassName of `non-production` to any Pod controller deployed into a Namespace that does not have the label env=production.
 spec:
   evaluation:
@@ -70,18 +72,17 @@ spec:
     - name: kind
       expression: object.kind
     - name: base_path
-      expression: "variables.kind == \"CronJob\" ? \"/spec/jobTemplate/spec/template/spec\" : \"/spec/template/spec\""
+      expression: 'variables.kind == "CronJob" ? "/spec/jobTemplate/spec/template/spec" : "/spec/template/spec"'
     - name: priority_path
       expression: variables.base_path + "/priorityClassName"
     - name: old_priority_path
       expression: variables.base_path + "/priority"
     - name: pod_spec
-      expression: "variables.kind == \"CronJob\" ? object.spec.?jobTemplate.?spec.?template.?spec.orValue({}) : object.spec.?template.?spec.orValue({})"
+      expression: 'variables.kind == "CronJob" ? object.spec.?jobTemplate.?spec.?template.?spec.orValue({}) : object.spec.?template.?spec.orValue({})'
     - name: has_priority
       expression: has(variables.pod_spec.priority)
   mutations:
     - patchType: JSONPatch
       jsonPatch:
-        expression: "variables.has_priority ?  [JSONPatch{op: \"remove\", path: variables.old_priority_path}, JSONPatch{op: \"add\", path: variables.priority_path, value: \"non-production\"}] :  [JSONPatch{op: \"add\", path: variables.priority_path, value: \"non-production\"}]"
-
+        expression: 'variables.has_priority ?  [JSONPatch{op: "remove", path: variables.old_priority_path}, JSONPatch{op: "add", path: variables.priority_path, value: "non-production"}] :  [JSONPatch{op: "add", path: variables.priority_path, value: "non-production"}]'
 ```

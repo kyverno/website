@@ -1,36 +1,24 @@
 ---
-// Import the `<StarlightPage>` component first to set up cascade layers.
-import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
-
 // Import collection
 import { getCollection } from 'astro:content'
+
+// Import components
+import { PolicyBrowser } from '../../components/policy/PolicyBrowser.jsx'
+import { Header } from '../../sections/Header'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
 
 const allPolicy = await getCollection('policies')
 ---
 
-<StarlightPage
-  frontmatter={{ title: 'Kyverno Policies' }}
-  sidebar={[
-    {
-      label: 'Policies',
-      collapsed: false,
-      autogenerate: {
-        directory: 'policies',
-        collapsed: true,
-        attrs: { style: 'text-transform: capitalize' },
-      },
-    },
-  ]}
->
-  <ul>
-    {
-      allPolicy.map((policy) => (
-        <li>
-          <a class="" href={`/policies/${policy.id}/`} data-astro-prefetch>
-            {policy?.data.title}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-</StarlightPage>
+<DefaultLayout>
+  <Header client:load />
+  <div class="max-w-[1600px] mx-auto px-6 py-12">
+    <header class="mb-12">
+      <p class="text-white/70 text-xl mb-6 leading-relaxed">
+        Browse and discover Kyverno policies for Kubernetes security and governance
+      </p>
+    </header>
+
+    <PolicyBrowser policies={allPolicy} client:load />
+  </div>
+</DefaultLayout>

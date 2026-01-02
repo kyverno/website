@@ -6,6 +6,8 @@ type: ValidatingPolicy
 subjects:
   - Job
 tags: []
+description: 'Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Job
     kyverno.io/kyverno-version: 1.12.1
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/description: Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.
 spec:
   validationActions:
@@ -43,7 +45,6 @@ spec:
     - name: not-created-by-cronjob
       expression: "!has(object.metadata.ownerReferences) || object.metadata.ownerReferences[0].kind != 'CronJob'"
   validations:
-    - expression: "false"
+    - expression: 'false'
       message: Jobs are only allowed if spawned from CronJobs.
-
 ```

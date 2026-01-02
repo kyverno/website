@@ -8,6 +8,8 @@ subjects:
   - PipelineRun
 tags: []
 version: 1.11.0
+description: 'PipelineRun and TaskRun resources must be executed from a bundle'
+isNew: true
 ---
 
 ## Policy Definition
@@ -60,5 +62,4 @@ spec:
           expressions:
             - expression: object.spec.?taskRef.?bundle.orValue('') != ''
               message: A bundle is required.
-
 ```

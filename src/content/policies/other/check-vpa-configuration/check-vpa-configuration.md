@@ -10,6 +10,8 @@ subjects:
   - DaemonSet
   - VerticalPodAutoscaler
 tags: []
+description: 'VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods.  It requires defining a specific target resource by kind and name. There are no built-in  validation checks by the VPA controller to ensure that the target resource is associated with it.  This policy ensures that the matching kind has a matching VPA. '
+isNew: true
 ---
 
 ## Policy Definition
@@ -26,9 +28,9 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/subject: Deployment, StatefulSet, ReplicaSet, DaemonSet, VerticalPodAutoscaler
-    policies.kyverno.io/description: "VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods.  It requires defining a specific target resource by kind and name. There are no built-in  validation checks by the VPA controller to ensure that the target resource is associated with it.  This policy ensures that the matching kind has a matching VPA. "
+    policies.kyverno.io/description: 'VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods.  It requires defining a specific target resource by kind and name. There are no built-in  validation checks by the VPA controller to ensure that the target resource is associated with it.  This policy ensures that the matching kind has a matching VPA. '
 spec:
   validationFailureAction: Audit
   background: false
@@ -52,8 +54,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.metadata.name }}"
+              - key: '{{ request.object.metadata.name }}'
                 operator: NotIn
-                value: "{{ vpas }}"
-
+                value: '{{ vpas }}'
 ```

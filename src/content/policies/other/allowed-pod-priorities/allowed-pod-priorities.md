@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. In certain cases where not all users in a cluster are trusted, a malicious user could create Pods at the highest possible priorities, causing other Pods to be evicted/not get scheduled. This policy checks the defined `priorityClassName` in a Pod spec to a dictionary of allowable PriorityClasses for the given Namespace stored in a ConfigMap. If the `priorityClassName` is not among them, the Pod is blocked.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,12 +42,11 @@ spec:
               kinds:
                 - Pod
       validate:
-        message: "The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data.\"{{request.namespace}}\" }}."
+        message: 'The Pod PriorityClass {{ request.object.spec.priorityClassName }} is not in the list of the following PriorityClasses allowed in this Namespace: {{ podprioritydict.data."{{request.namespace}}" }}.'
         deny:
           conditions:
             any:
               - key: "{{ request.object.spec.priorityClassName || '' }}"
                 operator: AnyNotIn
-                value: "{{ podprioritydict.data.\"{{request.namespace}}\" || \"\" }}"
-
+                value: '{{ podprioritydict.data."{{request.namespace}}" || "" }}'
 ```

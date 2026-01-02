@@ -7,6 +7,8 @@ subjects:
   - PodDisruptionBudget
   - Deployment
 tags: []
+description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Introducing a PDB where there are already matching Pod controllers may pose a problem if the author is unaware of the existing replica count. This policy ensures that the minAvailable value is not greater not equal to the replica count of any matching existing Deployment. If other Pod controllers should also be included in this check, additional rules may be added to the policy which match those controllers.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Introducing a PDB where there are already matching Pod controllers may pose a problem if the author is unaware of the existing replica count. This policy ensures that the minAvailable value is not greater not equal to the replica count of any matching existing Deployment. If other Pod controllers should also be included in this check, additional rules may be added to the policy which match those controllers.
 spec:
   validationFailureAction: Audit
@@ -48,7 +50,7 @@ spec:
           - key: "{{ regex_match('^[0-9]+$', '{{ request.object.spec.minAvailable || ''}}') }}"
             operator: Equals
             value: true
-          - key: "{{ length(deploymentreplicas) }}"
+          - key: '{{ length(deploymentreplicas) }}'
             operator: GreaterThan
             value: 0
       validate:
@@ -58,8 +60,7 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: "{{ request.object.spec.minAvailable }}"
+                  - key: '{{ request.object.spec.minAvailable }}'
                     operator: GreaterThanOrEquals
-                    value: "{{ element.spec.replicas }}"
-
+                    value: '{{ element.spec.replicas }}'
 ```

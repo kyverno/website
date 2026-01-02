@@ -7,6 +7,8 @@ subjects:
   - Service
 tags: []
 version: 1.6.0
+description: 'A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,6 +42,5 @@ spec:
         pattern:
           spec:
             (type): ExternalName
-            externalName: "!localhost"
-
+            externalName: '!localhost'
 ```

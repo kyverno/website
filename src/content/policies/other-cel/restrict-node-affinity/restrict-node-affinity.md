@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Pods may use several mechanisms to prefer scheduling on a set of nodes, and nodeAffinity is one of them. nodeAffinity uses expressions to select eligible nodes for scheduling decisions and may override intended placement options by cluster administrators. This policy ensures that nodeAffinity is not used in a Pod spec.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -41,7 +43,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!object.spec.?affinity.?nodeAffinity.hasValue()"
+            - expression: '!object.spec.?affinity.?nodeAffinity.hasValue()'
               message: Node affinity cannot be used.
-
 ```

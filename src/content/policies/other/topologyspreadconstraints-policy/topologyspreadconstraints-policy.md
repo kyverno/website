@@ -8,6 +8,8 @@ subjects:
   - StatefulSet
 tags: []
 version: 1.8.0
+description: 'Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with leass than 3  replicas are skipped.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -42,7 +44,7 @@ spec:
                 - StatefulSet
       preconditions:
         all:
-          - key: "{{ request.object.spec.replicas }}"
+          - key: '{{ request.object.spec.replicas }}'
             operator: GreaterThanOrEquals
             value: 3
       validate:
@@ -53,5 +55,4 @@ spec:
               - key: "{{request.object.spec.template.spec.topologySpreadConstraints[?topologyKey=='kubernetes.io/hostname' || topologyKey=='topology.kubernetes.io/zone'] || `[]` | length(@) }}"
                 operator: NotEquals
                 value: 2
-
 ```

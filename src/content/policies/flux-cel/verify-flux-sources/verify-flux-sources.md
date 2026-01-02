@@ -10,6 +10,8 @@ subjects:
   - ImageRepository
 tags: []
 version: 1.11.0
+description: 'Flux source APIs include a number of different sources such as GitRepository, Bucket, HelmRepository, and ImageRepository resources. Each of these by default can be pointed to any location. In a production environment, it may be desired to restrict these to only known sources to prevent accessing outside sources. This policy verifies that each of the Flux sources comes from a trusted location.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -109,5 +111,4 @@ spec:
           expressions:
             - expression: object.spec.?image.orValue('').startsWith('ghcr.io/myorg/')
               message: .spec.image must be from an image repository within the myorg organization.
-
 ```

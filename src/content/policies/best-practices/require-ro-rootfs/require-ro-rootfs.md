@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.6.0
-    policies.kyverno.io/description: "A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`."
+    policies.kyverno.io/description: 'A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`.'
 spec:
   validationFailureAction: Audit
   background: true
@@ -42,5 +44,4 @@ spec:
             containers:
               - securityContext:
                   readOnlyRootFilesystem: true
-
 ```

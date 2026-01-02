@@ -7,6 +7,8 @@ subjects:
   - PersistentVolumeClaim
   - StatefulSet
 tags: []
+description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -58,5 +60,4 @@ spec:
           expressions:
             - expression: "!has(object.spec.volumeClaimTemplates) ||  object.spec.volumeClaimTemplates.all(volumeClaimTemplate,  volumeClaimTemplate.spec.?storageClassName.orValue('')  != '')"
               message: StatefulSets must define a storageClassName.
-
 ```

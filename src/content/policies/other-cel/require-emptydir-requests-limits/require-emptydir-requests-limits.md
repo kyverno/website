@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -47,9 +49,8 @@ spec:
             - name: containers
               expression: object.spec.containers + object.spec.?initContainers.orValue([])
             - name: emptydirnames
-              expression: "has(object.spec.volumes) ?  object.spec.volumes.filter(volume, has(volume.emptyDir) && !has(volume.emptyDir.sizeLimit)).map(volume, volume.name) : []"
+              expression: 'has(object.spec.volumes) ?  object.spec.volumes.filter(volume, has(volume.emptyDir) && !has(volume.emptyDir.sizeLimit)).map(volume, volume.name) : []'
           expressions:
             - expression: variables.containers.all(container, !container.?volumeMounts.orValue([]).exists(mount, mount.name in variables.emptydirnames) ||  container.resources.?requests[?'ephemeral-storage'].hasValue() && container.resources.?limits[?'ephemeral-storage'].hasValue())
               message: Containers mounting emptyDir volumes must specify requests and limits for ephemeral-storage.
-
 ```

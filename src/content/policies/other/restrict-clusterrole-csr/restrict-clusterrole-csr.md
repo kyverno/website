@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - ClusterRole
 tags: []
+description: 'ClusterRoles that grant permissions to approve CertificateSigningRequests should be minimized to reduce powerful identities in the cluster. Approving CertificateSigningRequests allows one to issue new credentials for any user or group. As such, ClusterRoles that grant permissions to approve CertificateSigningRequests are granting cluster admin privileges. Minimize such ClusterRoles to limit the number of powerful credentials that if compromised could take over the entire cluster. For more information, refer to https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/ensure-clusterroles-that-grant-permissions-to-approve-certificatesigningrequests-are-minimized.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ClusterRole
     kyverno.io/kyverno-version: 1.11.5
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: ClusterRoles that grant permissions to approve CertificateSigningRequests should be minimized to reduce powerful identities in the cluster. Approving CertificateSigningRequests allows one to issue new credentials for any user or group. As such, ClusterRoles that grant permissions to approve CertificateSigningRequests are granting cluster admin privileges. Minimize such ClusterRoles to limit the number of powerful credentials that if compromised could take over the entire cluster. For more information, refer to https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/ensure-clusterroles-that-grant-permissions-to-approve-certificatesigningrequests-are-minimized.
 spec:
   validationFailureAction: Audit
@@ -46,7 +48,7 @@ spec:
                       - update
                       - patch
                     operator: AnyIn
-                    value: "{{ element.verbs[] }}"
+                    value: '{{ element.verbs[] }}'
                   - key: "{{ contains(element.verbs[], '*') }}"
                     operator: Equals
                     value: true
@@ -66,9 +68,8 @@ spec:
                   - key:
                       - approve
                     operator: AnyIn
-                    value: "{{ element.verbs[] }}"
+                    value: '{{ element.verbs[] }}'
                   - key: "{{ contains(element.verbs[], '*') }}"
                     operator: Equals
                     value: true
-
 ```

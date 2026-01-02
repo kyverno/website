@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.11.0
+description: 'Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root). A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -82,5 +84,4 @@ spec:
           expressions:
             - expression: object.spec.?securityContext.?fsGroup.orValue(1) > 0
               message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.fsGroup must be unset or set to a value greater than zero.
-
 ```

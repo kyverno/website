@@ -8,6 +8,8 @@ subjects:
   - Secret
 tags: []
 version: 1.11.0
+description: 'Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -52,5 +54,4 @@ spec:
               message: No Secrets from envFrom.
             - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.secret))
               message: No Secrets from volumes.
-
 ```

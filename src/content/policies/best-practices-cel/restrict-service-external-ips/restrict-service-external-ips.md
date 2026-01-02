@@ -7,6 +7,8 @@ subjects:
   - Service
 tags: []
 version: 1.11.0
+description: 'Service externalIPs can be used for a MITM attack (CVE-2020-8554). Restrict externalIPs or limit to a known set of addresses. See: https://github.com/kyverno/kyverno/issues/1367. This policy validates that the `externalIPs` field is not set on a Service.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     kyverno.io/kubernetes-version: 1.26-1.27
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
-    policies.kyverno.io/description: "Service externalIPs can be used for a MITM attack (CVE-2020-8554). Restrict externalIPs or limit to a known set of addresses. See: https://github.com/kyverno/kyverno/issues/1367. This policy validates that the `externalIPs` field is not set on a Service."
+    policies.kyverno.io/description: 'Service externalIPs can be used for a MITM attack (CVE-2020-8554). Restrict externalIPs or limit to a known set of addresses. See: https://github.com/kyverno/kyverno/issues/1367. This policy validates that the `externalIPs` field is not set on a Service.'
 spec:
   validationFailureAction: Audit
   background: true
@@ -42,7 +44,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.externalIPs)"
+            - expression: '!has(object.spec.externalIPs)'
               message: externalIPs are not allowed.
-
 ```

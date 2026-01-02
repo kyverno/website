@@ -9,6 +9,8 @@ subjects:
   - StatefulSet
   - DaemonSet
 tags: []
+description: 'This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/title: Ensure HPA for Deployments
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Deployment,ReplicaSet,StatefulSet,DaemonSet
     policies.kyverno.io/description: This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.
 spec:
@@ -50,5 +52,4 @@ spec:
   validations:
     - message: Resource is not allowed without a corresponding HPA.
       expression: variables.hpaList.exists(hpa, hpa.spec.scaleTargetRef.name == object.metadata.name)
-
 ```

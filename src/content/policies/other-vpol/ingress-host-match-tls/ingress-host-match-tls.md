@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.14.0
+description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30"
+    kyverno.io/kubernetes-version: '1.30'
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.
 spec:
@@ -50,5 +52,4 @@ spec:
   validations:
     - expression: object.spec.rules.all(rule,  !has(rule.host) ||  variables.tls.exists(tls, tls.?hosts.orValue([]).exists(tlsHost, tlsHost == rule.host)))
       message: The host(s) in spec.rules[].host must match those in spec.tls[].hosts[].
-
 ```

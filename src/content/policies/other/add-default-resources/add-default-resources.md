@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.7.0
+description: "Pods which don't specify at least resource requests are assigned a QoS class of BestEffort which can hog resources for other Pods on Nodes. At a minimum, all Pods should specify resource requests in order to be labeled as the QoS class Burstable. This sample mutates any container in a Pod which doesn't specify memory or cpu requests to apply some sane defaults."
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.10.0-alpha.2
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods which don't specify at least resource requests are assigned a QoS class of BestEffort which can hog resources for other Pods on Nodes. At a minimum, all Pods should specify resource requests in order to be labeled as the QoS class Burstable. This sample mutates any container in a Pod which doesn't specify memory or cpu requests to apply some sane defaults.
 spec:
@@ -49,10 +51,9 @@ spec:
             patchStrategicMerge:
               spec:
                 containers:
-                  - (name): "{{element.name}}"
+                  - (name): '{{element.name}}'
                     resources:
                       requests:
                         +(memory): 100Mi
                         +(cpu): 100m
-
 ```

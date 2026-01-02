@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,14 +41,13 @@ spec:
         message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation, spec.initContainers[*].securityContext.allowPrivilegeEscalation, and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation must be set to `false`.
         pattern:
           spec:
-            "=(ephemeralContainers)":
+            '=(ephemeralContainers)':
               - securityContext:
-                  allowPrivilegeEscalation: "false"
-            "=(initContainers)":
+                  allowPrivilegeEscalation: 'false'
+            '=(initContainers)':
               - securityContext:
-                  allowPrivilegeEscalation: "false"
+                  allowPrivilegeEscalation: 'false'
             containers:
               - securityContext:
-                  allowPrivilegeEscalation: "false"
-
+                  allowPrivilegeEscalation: 'false'
 ```

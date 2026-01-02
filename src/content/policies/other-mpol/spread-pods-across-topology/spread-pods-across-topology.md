@@ -7,6 +7,8 @@ subjects:
   - Deployment
   - Pod
 tags: []
+description: 'Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -64,5 +66,4 @@ spec:
               }
             ])
           }] : []
-
 ```

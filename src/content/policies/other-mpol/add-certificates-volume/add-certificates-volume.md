@@ -8,6 +8,8 @@ subjects:
   - Volume
 tags: []
 version: 1.5.0
+description: 'In some cases you would need to trust custom CA certificates for all the containers of a Pod. It makes sense to be in a ConfigMap so that you can automount them by only setting an annotation. This policy adds a volume to all containers in a Pod containing the certificate if the annotation called `inject-certs` with value `enabled` is found.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod,Volume
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/minversion: 1.5.0
     policies.kyverno.io/description: In some cases you would need to trust custom CA certificates for all the containers of a Pod. It makes sense to be in a ConfigMap so that you can automount them by only setting an annotation. This policy adds a volume to all containers in a Pod containing the certificate if the annotation called `inject-certs` with value `enabled` is found.
 spec:
@@ -41,7 +43,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -81,5 +83,4 @@ spec:
                   ])
             }
           }
-
 ```

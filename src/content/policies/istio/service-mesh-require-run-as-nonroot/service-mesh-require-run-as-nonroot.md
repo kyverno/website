@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: "This policy is a variation of the Require runAsNonRoot policy that is a part of the Pod Security Standards (Restricted) category. It enforces the same control but with provisions for Istio's initContainer. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/."
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Istio, Pod Security Standards (Restricted)
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.12.3
-    kyverno.io/kubernetes-version: "1.28"
+    kyverno.io/kubernetes-version: '1.28'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: This policy is a variation of the Require runAsNonRoot policy that is a part of the Pod Security Standards (Restricted) category. It enforces the same control but with provisions for Istio's initContainer. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/.
 spec:
@@ -36,31 +38,30 @@ spec:
               kinds:
                 - Pod
       validate:
-        message: "Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot must be set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot, spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot must be set to `true`.          "
+        message: 'Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot must be set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot, spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot must be set to `true`.          '
         anyPattern:
           - spec:
               securityContext:
                 runAsNonRoot: true
-              "=(ephemeralContainers)":
-                - "=(securityContext)":
-                    "=(runAsNonRoot)": true
-              "=(initContainers)":
-                - (image): "!*istio/proxyv2*"
-                  "=(securityContext)":
-                    "=(runAsNonRoot)": true
+              '=(ephemeralContainers)':
+                - '=(securityContext)':
+                    '=(runAsNonRoot)': true
+              '=(initContainers)':
+                - (image): '!*istio/proxyv2*'
+                  '=(securityContext)':
+                    '=(runAsNonRoot)': true
               containers:
-                - "=(securityContext)":
-                    "=(runAsNonRoot)": true
+                - '=(securityContext)':
+                    '=(runAsNonRoot)': true
           - spec:
-              "=(ephemeralContainers)":
+              '=(ephemeralContainers)':
                 - securityContext:
                     runAsNonRoot: true
-              "=(initContainers)":
-                - (image): "!*istio/proxyv2*"
+              '=(initContainers)':
+                - (image): '!*istio/proxyv2*'
                   securityContext:
                     runAsNonRoot: true
               containers:
                 - securityContext:
                     runAsNonRoot: true
-
 ```

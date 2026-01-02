@@ -7,6 +7,8 @@ subjects:
   - Ingress
 tags: []
 version: 1.6.0
+description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -49,8 +51,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ (request.object.spec.rules[].host || `[]`) | sort(@) }}"
+              - key: '{{ (request.object.spec.rules[].host || `[]`) | sort(@) }}'
                 operator: AnyNotIn
-                value: "{{ (request.object.spec.tls[].hosts[] || `[]`) | sort(@) }}"
-
+                value: '{{ (request.object.spec.tls[].hosts[] || `[]`) | sort(@) }}'
 ```

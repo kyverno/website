@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,7 +42,6 @@ spec:
       validate:
         cel:
           expressions:
-            - expression: "!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())"
+            - expression: '!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())'
               message: Containers may not define CPU limits.
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used. In addition to or replacement of this policy, preventing users from mounting the parent directories (/var/run and /var) may be necessary to completely prevent socket bind mounts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,9 +41,9 @@ spec:
         message: Use of the Docker Unix socket is not allowed.
         pattern:
           spec:
-            "=(volumes)":
-              - "=(hostPath)":
-                  path: "!/var/run/docker.sock"
+            '=(volumes)':
+              - '=(hostPath)':
+                  path: '!/var/run/docker.sock'
     - name: validate-containerd-sock-mount
       match:
         any:
@@ -52,9 +54,9 @@ spec:
         message: Use of the Containerd Unix socket is not allowed.
         pattern:
           spec:
-            "=(volumes)":
-              - "=(hostPath)":
-                  path: "!/var/run/containerd/containerd.sock"
+            '=(volumes)':
+              - '=(hostPath)':
+                  path: '!/var/run/containerd/containerd.sock'
     - name: validate-crio-sock-mount
       match:
         any:
@@ -65,9 +67,9 @@ spec:
         message: Use of the CRI-O Unix socket is not allowed.
         pattern:
           spec:
-            "=(volumes)":
-              - "=(hostPath)":
-                  path: "!/var/run/crio/crio.sock"
+            '=(volumes)':
+              - '=(hostPath)':
+                  path: '!/var/run/crio/crio.sock'
     - name: validate-dockerd-sock-mount
       match:
         any:
@@ -78,8 +80,7 @@ spec:
         message: Use of the Docker CRI socket is not allowed.
         pattern:
           spec:
-            "=(volumes)":
-              - "=(hostPath)":
-                  path: "!/var/run/cri-dockerd.sock"
-
+            '=(volumes)':
+              - '=(hostPath)':
+                  path: '!/var/run/cri-dockerd.sock'
 ```

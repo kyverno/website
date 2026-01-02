@@ -7,6 +7,8 @@ subjects:
   - Pod
   - Volume
 tags: []
+description: 'Pods which mount hostPath volumes are provided access to the underlying filesystem of the Node on which they run. In most scenarios, this should be forbidden. In others, it may be useful to silently remove those hostPath volumes rather than blocking the Pod. This policy removes all hostPath volumes and their volumeMount references from all containers within a Pod.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -31,7 +33,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -106,5 +108,4 @@ spec:
                   })
               : JSONPatch{op: "test", path: "/", value: null}
             ).filter(p, p.op != "test") : [])
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Policy
 tags: []
 version: 1.12.0
+description: 'Kasten Policy resources can be required to adhere to common Recovery Point Objective (RPO) best practices.  This example policy validates that the Policy is set to run hourly if it explicitly protects any namespaces containing the `appPriority=critical` label. This policy can be adapted to enforce any Kasten Policy requirements based on a namespace label.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -42,7 +44,7 @@ spec:
             jmesPath: items[].metadata.name
       preconditions:
         any:
-          - key: "{{ length(namespacesWithPriorityLabel) }}"
+          - key: '{{ length(namespacesWithPriorityLabel) }}'
             operator: GreaterThan
             value: 0
       validate:
@@ -52,11 +54,10 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: "{{ element }}"
+                  - key: '{{ element }}'
                     operator: AnyIn
-                    value: "{{ namespacesWithPriorityLabel }}"
-                  - key: "{{ request.object.spec.frequency }}"
+                    value: '{{ namespacesWithPriorityLabel }}'
+                  - key: '{{ request.object.spec.frequency }}'
                     operator: NotEquals
-                    value: "@hourly"
-
+                    value: '@hourly'
 ```

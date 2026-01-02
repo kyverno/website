@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'If the `latest` tag is allowed for images, it is a good idea to have the imagePullPolicy field set to `Always` to ensure should that tag be overwritten that future pulls will get the updated image. This policy validates the imagePullPolicy is set to `Always` when the `latest` tag is specified explicitly or where a tag is not defined at all.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,7 +42,6 @@ spec:
         pattern:
           spec:
             containers:
-              - (image): "*:latest | !*:*"
+              - (image): '*:latest | !*:*'
                 imagePullPolicy: Always
-
 ```

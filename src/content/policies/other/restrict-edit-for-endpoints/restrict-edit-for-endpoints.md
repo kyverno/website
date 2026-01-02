@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - ClusterRole
 tags: []
+description: 'Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue defined in CVE-2021-25740 which could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack. This was due to the system:aggregate-to-edit ClusterRole having edit permission of Endpoints. This policy, intended to run in background mode, checks if your cluster is vulnerable to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have the edit permission of Endpoints.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/severity: low
     policies.kyverno.io/subject: ClusterRole
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue defined in CVE-2021-25740 which could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack. This was due to the system:aggregate-to-edit ClusterRole having edit permission of Endpoints. This policy, intended to run in background mode, checks if your cluster is vulnerable to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have the edit permission of Endpoints.
 spec:
   validationFailureAction: Audit
@@ -45,5 +47,4 @@ spec:
               - key: edit
                 operator: AnyIn
                 value: "{{ request.object.rules[?resources[?contains(@,'endpoints')]].verbs[] }}"
-
 ```

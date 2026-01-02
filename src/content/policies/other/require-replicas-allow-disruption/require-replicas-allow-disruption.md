@@ -8,6 +8,8 @@ subjects:
   - Deployment
   - StatefulSet
 tags: []
+description: 'Existing PodDisruptionBudgets can apply to all future matching Pod controllers. If the minAvailable field is defined for such matching PDBs and the replica count of a new Deployment or StatefulSet is lower than that, then availability could be negatively impacted. This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -23,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Require Replicas Allow Disruption
     policies.kyverno.io/category: Other
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment, StatefulSet
     policies.kyverno.io/description: Existing PodDisruptionBudgets can apply to all future matching Pod controllers. If the minAvailable field is defined for such matching PDBs and the replica count of a new Deployment or StatefulSet is lower than that, then availability could be negatively impacted. This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.
 spec:
@@ -47,10 +49,10 @@ spec:
             urlPath: /apis/policy/v1/namespaces/{{request.namespace}}/poddisruptionbudgets
       preconditions:
         all:
-          - key: "{{ request.object.spec.replicas }}"
+          - key: '{{ request.object.spec.replicas }}'
             operator: GreaterThan
             value: 0
-          - key: "{{ length(matchingpdbs) }}"
+          - key: '{{ length(matchingpdbs) }}'
             operator: GreaterThan
             value: 0
       validate:
@@ -65,8 +67,7 @@ spec:
             deny:
               conditions:
                 all:
-                  - key: "{{ request.object.spec.replicas }}"
+                  - key: '{{ request.object.spec.replicas }}'
                     operator: LessThanOrEquals
-                    value: "{{ element.spec.minAvailable }}"
-
+                    value: '{{ element.spec.minAvailable }}'
 ```

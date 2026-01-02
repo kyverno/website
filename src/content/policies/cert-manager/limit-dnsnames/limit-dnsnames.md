@@ -7,6 +7,8 @@ subjects:
   - Certificate
 tags: []
 version: 1.6.0
+description: 'Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,8 +42,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{request.object.spec.dnsNames || `[]` | length(@)}}"
+              - key: '{{request.object.spec.dnsNames || `[]` | length(@)}}'
                 operator: GreaterThan
-                value: "1"
-
+                value: '1'
 ```

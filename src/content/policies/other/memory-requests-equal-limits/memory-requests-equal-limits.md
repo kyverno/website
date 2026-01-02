@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Pods which have memory limits equal to requests could be given a QoS class of Guaranteed if they also set CPU limits equal to requests. Guaranteed is the highest schedulable class.  This policy checks that all containers in a given Pod have memory requests equal to limits.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,8 +42,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}"
+              - key: '{{ request.object.spec.containers[?resources.requests.memory!=resources.limits.memory] | length(@) }}'
                 operator: NotEquals
                 value: 0
-
 ```

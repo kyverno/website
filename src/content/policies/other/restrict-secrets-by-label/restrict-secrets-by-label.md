@@ -8,6 +8,8 @@ subjects:
   - Secret
 tags: []
 version: 1.6.0
+description: 'Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use labels on referenced entities. This policy ensures that only Secrets not labeled with `status=protected` can be consumed by Pods.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -25,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod, Secret
     policies.kyverno.io/description: Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use labels on referenced entities. This policy ensures that only Secrets not labeled with `status=protected` can be consumed by Pods.
 spec:
@@ -58,7 +60,7 @@ spec:
             deny:
               conditions:
                 any:
-                  - key: "{{ status }}"
+                  - key: '{{ status }}'
                     operator: Equals
                     value: protected
     - name: secrets-lookup-from-envfrom
@@ -87,7 +89,7 @@ spec:
             deny:
               conditions:
                 any:
-                  - key: "{{ status }}"
+                  - key: '{{ status }}'
                     operator: AnyIn
                     value: protected
     - name: secrets-lookup-from-volumes
@@ -116,8 +118,7 @@ spec:
             deny:
               conditions:
                 any:
-                  - key: "{{ status }}"
+                  - key: '{{ status }}'
                     operator: Equals
                     value: protected
-
 ```

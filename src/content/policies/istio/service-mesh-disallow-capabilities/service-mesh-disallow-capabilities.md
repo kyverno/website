@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Pod
 tags: []
+description: 'This policy is a variation of the disallow-capabilities policy that is a part of the Pod Security Standards (Baseline) category. It enforces the same control but with provisions for common service mesh initContainers from Istio and Linkerd which need the additional capabilities, NET_ADMIN and NET_RAW. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -22,7 +24,7 @@ metadata:
     policies.kyverno.io/category: Istio, Linkerd, Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.12.3
-    kyverno.io/kubernetes-version: "1.28"
+    kyverno.io/kubernetes-version: '1.28'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: This policy is a variation of the disallow-capabilities policy that is a part of the Pod Security Standards (Baseline) category. It enforces the same control but with provisions for common service mesh initContainers from Istio and Linkerd which need the additional capabilities, NET_ADMIN and NET_RAW. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/.
 spec:
@@ -63,46 +65,45 @@ spec:
           - list: request.object.spec.initContainers[]
             preconditions:
               all:
-                - key: "{{ element.image }}"
+                - key: '{{ element.image }}'
                   operator: AnyIn
                   value:
-                    - "*/istio/proxyv2*"
-                    - "*/linkerd/proxy-init*"
-                - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                    - '*/istio/proxyv2*'
+                    - '*/linkerd/proxy-init*'
+                - key: '{{ element.securityContext.capabilities.add[] || `[]` }}'
                   operator: AnyNotIn
                   value:
                     - NET_ADMIN
                     - NET_RAW
-                    - "{{ capabilities }}"
+                    - '{{ capabilities }}'
             deny:
               conditions:
                 all:
-                  - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                  - key: '{{ element.securityContext.capabilities.add[] || `[]` }}'
                     operator: AnyNotIn
-                    value: "{{ capabilities }}"
+                    value: '{{ capabilities }}'
                     message: The service mesh initContainer {{ element.name }} is attempting to add forbidden capabilities.
           - list: request.object.spec.initContainers[]
             preconditions:
               all:
-                - key: "{{ element.image }}"
+                - key: '{{ element.image }}'
                   operator: AnyNotIn
                   value:
-                    - "*/istio/proxyv2*"
-                    - "*/linkerd/proxy-init*"
+                    - '*/istio/proxyv2*'
+                    - '*/linkerd/proxy-init*'
             deny:
               conditions:
                 all:
-                  - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                  - key: '{{ element.securityContext.capabilities.add[] || `[]` }}'
                     operator: AnyNotIn
-                    value: "{{ capabilities }}"
+                    value: '{{ capabilities }}'
                     message: The initContainer {{ element.name }} is attempting to add forbidden capabilities.
           - list: request.object.spec.[ephemeralContainers, containers][]
             deny:
               conditions:
                 all:
-                  - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                  - key: '{{ element.securityContext.capabilities.add[] || `[]` }}'
                     operator: AnyNotIn
-                    value: "{{ capabilities }}"
+                    value: '{{ capabilities }}'
                     message: The container {{ element.name }} is attempting to add forbidden capabilities.
-
 ```

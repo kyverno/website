@@ -7,6 +7,8 @@ subjects:
   - Namespace
 tags: []
 version: 1.6.0
+description: "In order for Istio to include namespaces in ambient mode, the label `istio.io/dataplane-mode`  must be set to `ambient`. As an alternative to rejecting Namespace definitions which don't already  contain this label, it can be added automatically. This policy adds the label `istio.io/dataplane-mode` set to `ambient` for all new Namespaces."
+isNew: true
 ---
 
 ## Policy Definition
@@ -24,7 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: In order for Istio to include namespaces in ambient mode, the label `istio.io/dataplane-mode`  must be set to `ambient`. As an alternative to rejecting Namespace definitions which don't already  contain this label, it can be added automatically. This policy adds the label `istio.io/dataplane-mode` set to `ambient` for all new Namespaces.
 spec:
@@ -46,5 +48,4 @@ spec:
           metadata:
             labels:
               istio.io/dataplane-mode: ambient
-
 ```

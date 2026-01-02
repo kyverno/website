@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.6.0
+description: 'Kubernetes Namespaces are an optional feature that provide a way to segment and isolate cluster resources across multiple applications and users. As a best practice, workloads should be isolated with Namespaces. Namespaces should be required and the default (empty) Namespace should not be used. This policy validates that Pods specify a Namespace name other than `default`. Rule auto-generation is disabled here due to Pod controllers need to specify the `namespace` field under the top-level `metadata` object and not at the Pod template level.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -40,7 +42,7 @@ spec:
         message: Using 'default' namespace is not allowed.
         pattern:
           metadata:
-            namespace: "!default"
+            namespace: '!default'
     - name: validate-podcontroller-namespace
       match:
         any:
@@ -54,6 +56,5 @@ spec:
         message: Using 'default' namespace is not allowed for pod controllers.
         pattern:
           metadata:
-            namespace: "!default"
-
+            namespace: '!default'
 ```

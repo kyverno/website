@@ -7,6 +7,8 @@ subjects:
   - Service
 tags: []
 version: 1.6.0
+description: 'Especially in cloud provider environments, a Service having type LoadBalancer will cause the provider to respond by creating a load balancer somewhere in the customer account. This adds cost and complexity to a deployment. Without restricting this ability, users may easily overrun established budgets and security practices set by the organization. This policy restricts use of the Service type LoadBalancer.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -39,6 +41,5 @@ spec:
         message: Service of type LoadBalancer is not allowed.
         pattern:
           spec:
-            type: "!LoadBalancer"
-
+            type: '!LoadBalancer'
 ```

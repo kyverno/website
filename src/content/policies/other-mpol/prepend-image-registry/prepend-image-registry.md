@@ -6,6 +6,8 @@ type: MutatingPolicy
 subjects:
   - Pod
 tags: []
+description: "Prepends 'registry.io/' to all container and initContainer images in Pods."
+isNew: true
 ---
 
 ## Policy Definition
@@ -29,7 +31,7 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
         operations:
@@ -58,5 +60,4 @@ spec:
                 ) : []
             }
           }
-
 ```

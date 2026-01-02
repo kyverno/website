@@ -6,6 +6,8 @@ type: ClusterPolicy
 subjects:
   - Service
 tags: []
+description: 'Services select eligible Pods by way of label matches. Having multiple Service apply based on same labels can cause conflicts and have unintended consequences. This policy ensures that within the same Namespace a Service has a unique set of labels as a selector.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -21,7 +23,7 @@ metadata:
     policies.kyverno.io/title: Require Unique Service Selector
     policies.kyverno.io/category: Other
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: Services select eligible Pods by way of label matches. Having multiple Service apply based on same labels can cause conflicts and have unintended consequences. This policy ensures that within the same Namespace a Service has a unique set of labels as a selector.
 spec:
@@ -52,8 +54,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{service_count}}"
+              - key: '{{service_count}}'
                 operator: GreaterThan
                 value: 0
-
 ```

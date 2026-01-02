@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.15.0
+description: 'Pods which run containers of very large image size take longer to pull and require more space to store. A user may either inadvertently or purposefully name an image which is unusually large to disrupt operations. This policy checks the size of every container image and blocks if it is over 2 Gibibytes.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -35,7 +37,7 @@ spec:
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
     - name: maxSizeBytes
-      expression: "2147483648"
+      expression: '2147483648'
   matchConstraints:
     resourceRules:
       - resources:
@@ -44,11 +46,10 @@ spec:
           - CREATE
           - UPDATE
         apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
   validations:
     - message: images with size greater than 2Gi not allowed
       expression: variables.allContainers.all(container, image.GetMetadata(container.image).manifest.layers.map(layer, layer.size).sum() <= variables.maxSizeBytes)
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - ConfigMap
   - ServiceAccount
 tags: []
+description: 'This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.'
+isNew: true
 ---
 
 ## Policy Definition
@@ -45,18 +47,18 @@ spec:
                 namespace: another-namespace
       preconditions:
         all:
-          - key: "{{request.object.metadata.namespace}}"
+          - key: '{{request.object.metadata.namespace}}'
             operator: AnyIn
             value:
               - any-namespace
               - another-namespace
-          - key: "{{request.object.metadata.name}}"
+          - key: '{{request.object.metadata.name}}'
             operator: AnyIn
             value:
               - any-configmap-name-good
               - another-configmap-name
       validate:
-        message: "{{request.object.metadata.namespace}}/{{request.object.kind}}/{{request.object.metadata.name}} resource is protected. Admin or allowed users can change the resource"
+        message: '{{request.object.metadata.namespace}}/{{request.object.kind}}/{{request.object.metadata.name}} resource is protected. Admin or allowed users can change the resource'
         deny:
           conditions:
             all:
@@ -65,5 +67,4 @@ spec:
                 value:
                   - UPDATE
                   - CREATE
-
 ```

@@ -7,6 +7,8 @@ subjects:
   - Pod
 tags: []
 version: 1.14.0
+description: "The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to containers named `nginx` in Pods starting with name `myapp-maintenance`."
+isNew: true
 ---
 
 ## Policy Definition
@@ -37,11 +39,10 @@ spec:
         operations:
           - CONNECT
         apiGroups:
-          - ""
+          - ''
         apiVersions:
           - v1
   validations:
     - message: Nginx containers inside myapp-maintenance Pods may not be exec'd into.
       expression: "!(request.name.startsWith('myapp-maintenance') && has(object.container) && object.container == 'nginx')"
-
 ```
