@@ -136,14 +136,7 @@ export default defineConfig({
         },
         {
           label: 'Support',
-          collapsed: true,
-          items: [
-            { label: 'Nirmata', slug: 'support/nirmata' },
-            { label: 'Blakyaks', slug: 'support/blakyaks' },
-            { label: 'Giantswarm', slug: 'support/giantswarm' },
-            { label: 'Infracloud', slug: 'support/infracloud' },
-            { label: 'Kodekloud', slug: 'support/kodekloud' },
-          ],
+          slug: 'support',
         },
       ],
       plugins: [starlightImageZoom(), starlightAutoSidebar()],

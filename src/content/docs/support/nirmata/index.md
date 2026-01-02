@@ -18,9 +18,15 @@ description: Kubernetes Policy and Governance from the creators of Kyverno
 - Quarterly trainings, assessments, and upgrade assist
 - Custom policy authoring support & workshops
 
-{{% videos %}}
-{{< youtube id="LvZ66a9UUNM" start="0" class="video" >}}
-{{% /videos %}}
+<iframe
+  width="100%"
+  height="400"
+  src="https://www.youtube.com/embed/LvZ66a9UUNM"
+  title="Nirmata Enterprise for Kyverno"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+/>
 
 ### Nirmata Policy Manager
 
