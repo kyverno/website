@@ -64,30 +64,56 @@ With each release, the following artifacts are uploaded (where CLI binaries incl
 - Source code (zip)
 - Source code (tar.gz)
 
-## Verifying Kyverno Container Images
+## Verifying Kyverno Container Images, Install Manifest and Helm Chart
 
-Kyverno container images are signed using Cosign and the [keyless signing feature](https://docs.sigstore.dev/cosign/verifying/verify/). The signatures are stored in a separate repository from the container image they reference located at `ghcr.io/kyverno/signatures`. To verify the container image using Cosign v1.x, follow the steps below.
+Kyverno container images and manifests are signed using Cosign and the [keyless signing feature](https://docs.sigstore.dev/cosign/verifying/verify/). The signatures are stored in a separate repository from the container image they reference located at `ghcr.io/kyverno/signatures`. To verify the container image and manifests using Cosign v1.x, follow the steps below.
 
 1. Install [Cosign](https://github.com/sigstore/cosign#installation)
+
 2. Configure the Kyverno signature repository:
 
 ```sh
 export COSIGN_REPOSITORY=ghcr.io/kyverno/signatures
 ```
 
-3. Verify the image:
+3. Verify the image (we are using `jq` to format the JSON output):
+
+<Tabs>
+<TabItem label="Cosign v1.x">
 
 ```sh
+# Verify an image
 COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/kyverno:<release_tag> | jq
+
+# Verify the kubernetes install manifest
+COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/manifests/kyverno:<release_tag> | jq
+
+# Verify the kyverno helm chart
+COSIGN_EXPERIMENTAL=1 cosign verify ghcr.io/kyverno/charts/kyverno:<release_tag> | jq
 ```
 
-For Cosign v2.x, use the following command instead.
+</TabItem>
+<TabItem label="Cosign v2.x">
 
 ```sh
-COSIGN_REPOSITORY=ghcr.io/kyverno/signatures cosign verify ghcr.io/kyverno/kyverno:<release_tag> \
+# Verify an image
+cosign verify ghcr.io/kyverno/kyverno:<release_tag> \
   --certificate-identity-regexp="https://github.com/kyverno/kyverno/.github/workflows/release.yaml@refs/tags/*" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com" | jq
+
+# Verify the kubernetes install manifest
+cosign verify ghcr.io/kyverno/manifests/kyverno:<release_tag> \
+  --certificate-identity-regexp="https://github.com/kyverno/kyverno/.github/workflows/release.yaml@refs/tags/*" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com" | jq
+
+# Verify the kyverno helm chart
+cosign verify ghcr.io/kyverno/charts/kyverno:<release_tag> \
+  --certificate-identity-regexp="https://github.com/kyverno/kyverno/.github/workflows/helm-release.yaml@refs/tags/*" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com" | jq
 ```
+
+</TabItem>
+</Tabs>
 
 If the container image was properly signed, the output should be similar to:
 
