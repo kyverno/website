@@ -6,10 +6,11 @@ type: ClusterPolicy
 subjects:
   - Deployment
   - PodDisruptionBudget
-tags: []
+tags:
+  - Sample
+  - EKS Best Practices
 version: 1.6.0
 description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. This policy checks all incoming Deployments and StatefulSets to ensure they have a matching, preexisting PodDisruptionBudget. Note: This policy must be run in `enforce` mode to ensure accuracy.'
-isNew: true
 ---
 
 ## Policy Definition

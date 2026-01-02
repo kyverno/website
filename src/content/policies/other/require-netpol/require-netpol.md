@@ -6,10 +6,10 @@ type: ClusterPolicy
 subjects:
   - Deployment
   - NetworkPolicy
-tags: []
+tags:
+  - Sample
 version: 1.6.0
 description: 'NetworkPolicy is used to control Pod-to-Pod communication and is a good practice to ensure only authorized Pods can send/receive traffic. This policy checks incoming Deployments to ensure they have a matching, preexisting NetworkPolicy.'
-isNew: true
 ---
 
 ## Policy Definition

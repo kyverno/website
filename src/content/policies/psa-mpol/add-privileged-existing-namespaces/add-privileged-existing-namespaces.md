@@ -1,11 +1,12 @@
 ---
 title: 'Add Privileged Label to Existing Namespaces'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Pod Security Admission
 version: 1.7.0
 description: 'When Pod Security Admission is configured with a cluster-wide AdmissionConfiguration file which sets either baseline or restricted, for example in many PaaS CIS profiles, it may be necessary to relax this to privileged on a per-Namespace basis so that more granular control can be provided. This policy labels new and existing Namespaces, except that of kube-system, with the `pod-security.kubernetes.io/enforce: privileged` label.'
 isNew: true

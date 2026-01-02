@@ -1,11 +1,12 @@
 ---
 title: 'Log4Shell Mitigation'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample
 description: 'In response to CVE-2021-44228 referred to as Log4Shell, this policy automatically adds LOG4J_FORMAT_MSG_NO_LOOKUPS=true to all containers and initContainers in Pods and pod controllers as a partial mitigation measure.'
 isNew: true
 ---

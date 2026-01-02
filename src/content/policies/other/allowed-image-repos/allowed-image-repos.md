@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 description: 'In addition to restricting the image registry from which images are pulled, in some cases and environments it may be required to also restrict which image repositories are used,  for example in some restricted Namespaces. This policy ensures that the only allowed image repositories present in a given Pod, across any container type, come from the designated list.'
-isNew: true
 ---
 
 ## Policy Definition

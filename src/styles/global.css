@@ -26,3 +26,14 @@
   --color-accent-25: #f9dfd6;
   --color-stroke: #28353c;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -6,10 +6,10 @@ type: ClusterPolicy
 subjects:
   - Namespace
   - Annotation
-tags: []
+tags:
+  - Linkerd in CEL
 version: 1.11.0
 description: 'Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. This policy enforces that all Namespaces contain the annotation `linkerd.io/inject` set to `enabled`.'
-isNew: true
 ---
 
 ## Policy Definition

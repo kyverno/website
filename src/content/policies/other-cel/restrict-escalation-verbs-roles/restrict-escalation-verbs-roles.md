@@ -7,10 +7,10 @@ subjects:
   - Role
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Security in CEL
 version: 1.11.0
 description: 'The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.'
-isNew: true
 ---
 
 ## Policy Definition

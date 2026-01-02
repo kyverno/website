@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Policy
-tags: []
+tags:
+  - Veeam Kasten
 version: 1.12.0
 description: 'Generates a Kasten policy for a namespace that includes any Deployment or StatefulSet with a "dataprotection=kasten-example" label, if the policy does not already exist. This Kyverno policy can be used in combination with the "kasten-data-protection-by-label" policy to require "dataprotection" labeling on workloads.'
-isNew: true
 ---
 
 ## Policy Definition

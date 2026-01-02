@@ -1,11 +1,12 @@
 ---
 title: 'Add runtimeClassName'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - PSP Migration
 description: "In the earlier Pod Security Policy controller, it was possible to configure a policy to add a Pod's runtimeClassName. This was beneficial in that various container runtimes could be specified according to a policy. This Kyverno policy mutates Pods to add a runtimeClassName of `prodclass`."
 isNew: true
 ---

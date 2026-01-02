@@ -6,9 +6,9 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Secret
-tags: []
+tags:
+  - Other in Vpol
 description: 'Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use wildcards in resource names. This policy ensures that only Secrets beginning with the name `safe-` can be consumed by Pods. In order to work effectively, this policy needs to be paired with a separate policy or rule to require `automountServiceAccountToken=false` since this would otherwise result in a Secret being mounted.'
-isNew: true
 ---
 
 ## Policy Definition

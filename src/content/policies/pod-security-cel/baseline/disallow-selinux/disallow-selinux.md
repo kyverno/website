@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in CEL
 version: 1.11.0
 description: 'SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.'
-isNew: true
 ---
 
 ## Policy Definition

@@ -1,7 +1,8 @@
 ---
-title: "kyverno create values"
+title: 'kyverno create values'
 weight: 35
 ---
+
 ## kyverno create values
 
 Create a Kyverno values file.
@@ -10,7 +11,7 @@ Create a Kyverno values file.
 
 Create a Kyverno values file.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#create
+For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create values [flags]
@@ -55,5 +56,4 @@ kyverno create values [flags]
 
 ### SEE ALSO
 
-* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
-
+- [kyverno create](/docs/kyverno-cli/reference/kyverno_create) - Helps with the creation of various Kyverno resources.

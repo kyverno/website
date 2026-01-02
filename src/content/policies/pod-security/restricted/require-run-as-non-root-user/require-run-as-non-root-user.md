@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Restricted)
 description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.'
-isNew: true
 ---
 
 ## Policy Definition

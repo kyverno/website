@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Deployment
-tags: []
+tags:
+  - Other
 version: 1.6.0
 description: 'It is common to have two separate Namespaces such as staging and production in order to test and promote app deployments in a controlled manner. In order to ensure that level of control, certain guardrails must be present so as to minimize regressions or unintended behavior. This policy has a set of three rules to try and provide some sane defaults for app promotion across these two environments (Namespaces) called staging and production. First, it makes sure that every Deployment in production has a corresponding Deployment in staging. Second, that a production Deployment uses same image name as its staging counterpart. Third, that a production Deployment uses an older or equal image version as its staging counterpart.'
-isNew: true
 ---
 
 ## Policy Definition

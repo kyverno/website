@@ -1,14 +1,14 @@
 ---
 title: 'Verify CycloneDX SBOM (Keyless)'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Software Supply Chain Security
 version: 1.8.3
 description: "Software Bill of Materials (SBOM) provide details on the composition of a given container image and may be represented in a couple different standards. Having an SBOM can be important to ensuring images are built using verified processes. This policy verifies that an image has an SBOM in CycloneDX format and was signed by the expected subject and issuer when produced through GitHub Actions and using Cosign's keyless signing. It requires configuration based upon your own values."
-isNew: true
 ---
 
 ## Policy Definition

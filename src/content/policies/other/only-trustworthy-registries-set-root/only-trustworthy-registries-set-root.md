@@ -5,10 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+  - EKS Best Practices
 version: 1.6.0
 description: 'Some containers must be built to run as root in order to function properly, but use of those images should be carefully restricted to prevent unneeded privileges. This policy blocks any image that runs as root if it does not come from a trustworthy registry, `ghcr.io` in this case.'
-isNew: true
 ---
 
 ## Policy Definition

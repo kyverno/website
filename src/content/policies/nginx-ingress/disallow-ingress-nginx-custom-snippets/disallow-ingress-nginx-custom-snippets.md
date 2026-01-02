@@ -6,10 +6,11 @@ type: ClusterPolicy
 subjects:
   - ConfigMap
   - Ingress
-tags: []
+tags:
+  - Security
+  - NGINX Ingress
 version: 1.6.0
 description: 'Users that can create or update ingress objects can use the custom snippets  feature to obtain all secrets in the cluster (CVE-2021-25742). This policy  disables allow-snippet-annotations in the ingress-nginx configuration and  blocks *-snippet annotations on an Ingress. See: https://github.com/kubernetes/ingress-nginx/issues/7837'
-isNew: true
 ---
 
 ## Policy Definition

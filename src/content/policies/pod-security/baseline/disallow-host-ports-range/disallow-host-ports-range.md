@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline)
 version: 1.6.0
 description: 'Access to host ports allows potential snooping of network traffic and should not be allowed by requiring host ports be undefined (recommended) or at minimum restricted to a known list. This policy ensures the `hostPort` field, if defined, is set to either a port in the specified range or to a value of zero. This policy is mutually exclusive of the disallow-host-ports policy. Note that Kubernetes Pod Security Admission does not support the host port range rule.'
-isNew: true
 ---
 
 ## Policy Definition

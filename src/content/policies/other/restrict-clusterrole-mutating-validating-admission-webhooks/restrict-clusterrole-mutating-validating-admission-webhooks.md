@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - ClusterRole
-tags: []
+tags:
+  - Other
 description: 'ClusterRoles that grant write permissions over admission webhook should be minimized to reduce powerful identities in the cluster. This policy checks to ensure write permissions are not provided to admission webhooks.'
-isNew: true
 ---
 
 ## Policy Definition

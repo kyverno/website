@@ -5,9 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Istio
+  - Linkerd
+  - Pod Security Standards (Baseline)
 description: 'This policy is a variation of the disallow-capabilities policy that is a part of the Pod Security Standards (Baseline) category. It enforces the same control but with provisions for common service mesh initContainers from Istio and Linkerd which need the additional capabilities, NET_ADMIN and NET_RAW. For more information and context, see the Kyverno blog post at https://kyverno.io/blog/2024/02/04/securing-services-meshes-easier-with-kyverno/.'
-isNew: true
 ---
 
 ## Policy Definition

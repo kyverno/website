@@ -5,9 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 description: 'Setting CPU limits on containers ensures fair distribution of resources, preventing any single container from monopolizing CPU and impacting the performance of other containers. This practice enhances stability, predictability, and cost control, while also mitigating the noisy neighbor problem and facilitating efficient scaling in Kubernetes clusters. This policy ensures that cpu limits are set on every container.'
-isNew: true
 ---
 
 ## Policy Definition

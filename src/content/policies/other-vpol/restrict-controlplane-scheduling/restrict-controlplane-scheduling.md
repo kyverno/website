@@ -5,10 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample in Vpol
 version: 1.14.0
 description: 'Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable because it takes away resources from the control plane components and can represent a possible security threat vector. This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key `node-role.kubernetes.io/master`.'
-isNew: true
 ---
 
 ## Policy Definition

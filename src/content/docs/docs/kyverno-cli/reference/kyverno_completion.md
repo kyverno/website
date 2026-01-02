@@ -1,7 +1,8 @@
 ---
-title: "kyverno completion"
+title: 'kyverno completion'
 weight: 35
 ---
+
 ## kyverno completion
 
 Generate the autocompletion script for kyverno for the specified shell.
@@ -9,17 +10,17 @@ Generate the autocompletion script for kyverno for the specified shell.
 ### Synopsis
 
 Generate the autocompletion script for kyverno for the specified shell.
-  
-  Shell autocompletion enables tab completion for kyverno commands, subcommands, flags, and arguments.
-  This significantly improves CLI usability by providing command suggestions and reducing typing.
-  
-  The generated script contains shell-specific functions that integrate with your shell's
-  completion system to provide intelligent command completion when you press the Tab key.
-  
-  To enable autocompletion, source the generated script in your shell profile or save it
-  to your shell's completion directory. See the examples below for shell-specific instructions.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#shell-autocompletion
+Shell autocompletion enables tab completion for kyverno commands, subcommands, flags, and arguments.
+This significantly improves CLI usability by providing command suggestions and reducing typing.
+
+The generated script contains shell-specific functions that integrate with your shell's
+completion system to provide intelligent command completion when you press the Tab key.
+
+To enable autocompletion, source the generated script in your shell profile or save it
+to your shell's completion directory. See the examples below for shell-specific instructions.
+
+For more information visit https://kyverno.io/docs/kyverno-cli/#shell-autocompletion
 
 ```
 kyverno completion [bash|zsh|fish|powershell]
@@ -77,5 +78,4 @@ kyverno completion [bash|zsh|fish|powershell]
 
 ### SEE ALSO
 
-* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
-
+- [kyverno](/docs/kyverno-cli/reference/kyverno) - Kubernetes Native Policy Management.

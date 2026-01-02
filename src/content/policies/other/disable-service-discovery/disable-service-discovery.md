@@ -5,10 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+  - EKS Best Practices
 version: 1.6.0
 description: 'Not all Pods require communicating with other Pods or resolving in-cluster Services. For those, disabling service discovery can increase security as the Pods are limited to what they can see. This policy mutates Pods to set dnsPolicy to `Default` and enableServiceLinks to `false`.'
-isNew: true
 ---
 
 ## Policy Definition

@@ -5,10 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - VirtualService
-tags: []
+tags:
+  - Istio
 version: 1.6.0
 description: 'Virtual Services optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given resource. This policy enforces that any Virtual Service host does not contain a wildcard character and allows for more governance when a single mesh deployment  model is used.'
-isNew: true
 ---
 
 ## Policy Definition
