@@ -14,12 +14,13 @@ Kyverno allows platform engineers to automate security, compliance, and best pra
 
 Some of its many features include:
 
-- policies as YAML-based declarative Kubernetes resources with no new language to learn!
+- use YAML and CEL (Common Expressions Language) to author policies, with no new language to learn!
+- manage policies as declarative Kubernetes resources
 - enforce policies as a Kubernetes admission controller, CLI-based scanner, and at runtime
 - validate, mutate, generate, or cleanup (remove) any Kubernetes resource
 - verify container images and metadata for software supply chain security
 - policies for any JSON payload including Terraform resources, cloud resources, and service authorization
-- policy reporting using the open reporting format from the CNCF Policy WG
+- policy reporting using the [OpenReport](OpenReports.io) format
 - flexible policy exception management
 - tooling for comprehensive unit and e2e testing of policies
 - management of policies as code resources using familiar tools like `git` and `kustomize`

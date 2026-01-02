@@ -2,7 +2,7 @@
 title: Verify Images Rules
 description: Check container image signatures and attestations for software supply chain security.
 sidebar:
-  order: -10
+  order: 60
 ---
 
 The logical structure of an verifyImages rule is shown below:
