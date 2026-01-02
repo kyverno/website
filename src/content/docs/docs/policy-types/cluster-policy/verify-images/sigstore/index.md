@@ -280,7 +280,7 @@ spec:
                       value: ['ana@example.com', 'bob@example.com']
 ```
 
-The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](../../preconditions.md#any-and-all-statements) to the predicate.
+The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/policy-types/cluster-policy/preconditions#any-and-all-statements) to the predicate.
 
 Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
 
@@ -1112,7 +1112,7 @@ spec:
         storage: 5Gi
 ```
 
-The value of the field contains a prefix of `docker://` which must be removed first. Applying a JMESPath expression in an extractor along with a Kyverno custom filter such as [`trim_prefix()`](../../jmespath.md#trim_prefix) can be used to provide the container image for Kyverno to verify.
+The value of the field contains a prefix of `docker://` which must be removed first. Applying a JMESPath expression in an extractor along with a Kyverno custom filter such as [`trim_prefix()`](/docs/policy-types/cluster-policy/jmespath#trim_prefix) can be used to provide the container image for Kyverno to verify.
 
 ```yaml
 imageExtractors:

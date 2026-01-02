@@ -6,7 +6,9 @@ sidebar:
   order: 15
 ---
 
-{% feature-state state="beta" version="v1.16" /%}
+import FeatureState from '../../../../../components/FeatureState.astro'
+
+<FeatureState state="beta" version="v1.16" />
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations.
 
@@ -368,9 +370,9 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 `extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
-{% /aside %}
+:::
 
 #### Cosign Keyless Signature and Attestation Verification
 
@@ -418,7 +420,7 @@ spec:
       message: 'Failed to verify vulnerability scan attestation with Cosign keyless'
 ```
 
-{% aside title="Note" type="note" %}
+:::note[Note]
 If your attestation names include special characters like `-`, access them using bracket syntax:
 
 ```cel
@@ -426,7 +428,7 @@ attestations["cosign-attes"]
 ```
 
 Alternatively, prefer using camelCase or snake_case to avoid parsing issues in CEL expressions.
-{% /aside %}
+:::
 
 #### Cosign Public Key Signature Verification
 

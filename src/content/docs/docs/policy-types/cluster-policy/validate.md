@@ -213,7 +213,7 @@ spec:
                   app: '?*'
 ```
 
-In order to treat special characters like wildcards as literals, see [this section](jmespath.md#matching-special-characters) in the JMESPath page.
+In order to treat special characters like wildcards as literals, see [this section](/docs/policy-types/cluster-policy/jmespath#matching-special-characters) in the JMESPath page.
 
 ### Operators
 
@@ -506,14 +506,14 @@ Due to a bug in Kubernetes v1.23 which was fixed in v1.23.3, use of `anyPattern`
 
 ## Deny rules
 
-In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/policy-types/cluster-policy/preconditions.md#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
+In addition to applying patterns to check resources, a validate rule can deny a request based on a set of conditions written as expressions. A `deny` condition is an expression constructed of key, [operator](/docs/policy-types/cluster-policy/preconditions#operators), value, and an optional message field. Unlike a pattern, when a `deny` condition evaluates to `true` it blocks a resource. Pattern expressions by contrast, when true, allow a resource.
 
 Deny rules are more powerful and expressive than simple patterns but are also more complex to write. Use deny rules when:
 
 - You need advanced selection logic with multiple "if" conditions.
-- You need access to the full contents of the [AdmissionReview](jmespath.md#admissionreview).
-- You need access to more built-in [variables](variables.md).
-- You need access to the complete [JMESPath filtering system](jmespath.md).
+- You need access to the full contents of the [AdmissionReview](/docs/policy-types/cluster-policy/jmespath#admissionreview).
+- You need access to more built-in [variables](/docs/policy-types/cluster-policy/variables).
+- You need access to the complete [JMESPath filtering system](/docs/policy-types/cluster-policy/jmespath).
 
 An example of a deny rule is shown below. In deny rules, you write expressions similar to those in Kubernetes resources such as selectors. Deny rules, or "conditions", must be nested under an `any`, `all`, or potentially both in order to control the decision-making logic. In this snippet, a resource will be denied if ANY of the following expressions are true.
 
@@ -542,7 +542,7 @@ Kyverno performs [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_
 
 If the optional `message` field is included, it will be printed for a condition which evaluates to `false` keeping in mind how short-circuiting works.
 
-See also [Preconditions](/docs/policy-types/cluster-policy/preconditions.md).
+See also [Preconditions](/docs/policy-types/cluster-policy/preconditions).
 
 ### Deny DELETE requests based on labels
 
@@ -658,14 +658,14 @@ A variable `element` is added to the processing context on each iteration. This 
 
 The following child declarations are permitted in a `foreach`:
 
-- [Patterns](/docs/policy-types/cluster-policy/validate.md#patterns)
-- [AnyPatterns](/docs/policy-types/cluster-policy/validate.md#anypattern)
-- [Deny](/docs/policy-types/cluster-policy/validate.md#deny-rules)
+- [Patterns](/docs/policy-types/cluster-policy/validate#patterns)
+- [AnyPatterns](/docs/policy-types/cluster-policy/validate#anypattern)
+- [Deny](/docs/policy-types/cluster-policy/validate#deny-rules)
 
 In addition, each `foreach` declaration can contain the following declarations:
 
-- [Context](external-data-sources.md): to add additional external data only available per loop iteration.
-- [Preconditions](/docs/policy-types/cluster-policy/preconditions.md): to control when a loop iteration is skipped.
+- [Context](/docs/policy-types/cluster-policy/external-data-sources): to add additional external data only available per loop iteration.
+- [Preconditions](/docs/policy-types/cluster-policy/preconditions): to control when a loop iteration is skipped.
 - `elementScope`: controls whether to use the current list element as the scope for validation. Defaults to "true" if not specified.
 
 Here is a complete example to enforce that all container images are from a trusted registry:
@@ -779,11 +779,11 @@ spec:
       secretName: hr.old.com
 ```
 
-Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/policy-types/cluster-policy/mutate.md#nested-foreach) for further details.
+Nested foreach statements are also supported in mutate rules. See the documentation [here](/docs/policy-types/cluster-policy/mutate#nested-foreach) for further details.
 
 ## Manifest Validation
 
-Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
+Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/policy-types/cluster-policy/verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
 
 Generate a key pair used to sign a manifest by using the [`cosign`](https://github.com/sigstore/cosign#installation) command-line tool.
 
@@ -924,7 +924,7 @@ validate:
       namespace: my-dryrun-ns
 ```
 
-The manifest validation feature shares many of the same abilities as the [verify images](verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
+The manifest validation feature shares many of the same abilities as the [verify images](/docs/policy-types/cluster-policy/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
 
 ## Pod Security
 
@@ -936,7 +936,7 @@ The podSecurity feature has the following advantages over the Kubernetes built-i
 2. Namespace application of Pod Security Standards does not require assignment of a label.
 3. Specific controls may be exempted from a given profile.
 4. Container images may be exempted along with a control exemption.
-5. Enforcement of Pod controllers is [automatic](autogen.md).
+5. Enforcement of Pod controllers is [automatic](/docs/policy-types/cluster-policy/autogen).
 6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/policy-reports/) Custom Resource.
 7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
 
@@ -1481,7 +1481,7 @@ CEL expressions have access to the contents of the Admission request/response, o
 
 Read [Supported evaluation on CEL](https://github.com/google/cel-spec/blob/v0.6.0/doc/langdef.md#evaluation) for more information about CEL rules.
 
-`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](autogen.md) section for more information.
+`validate.cel` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](/docs/policy-types/cluster-policy/autogen) section for more information.
 
 ```yaml
 status:
@@ -1718,15 +1718,15 @@ The Kyverno Command Line Interface (CLI) enables the validation and testing of V
 
 Check the below sections for more information:
 
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply.md#applying-validatingadmissionpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test.md#testing-validatingadmissionpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply#applying-validatingadmissionpolicies).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test#testing-validatingadmissionpolicies)
    {% /aside %}
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
 
 To unify the policy management, Kyverno policies can be used to generate and manage the lifecycle of Kubernetes ValidatingAdmissionPolicies. This allows the process of resource validation to take place directly in the API server, whenever possible, and extends Kyverno's reporting and testing capabilities for ValidatingAdmissionPolicy resources.
 
-When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller’s ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization.md#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
+When Kyverno manages ValidatingAdmissionPolicies and their bindings it is necessary to grant the Kyverno admission controller's ServiceAccount additional permissions. To enable Kyverno to generate these types, see the section on [customizing permissions](/docs/installation/customization#customizing-permissions). Kyverno will assist you in these situations by validating and informing you if the admission controller does not have the level of permissions required at the time the policy is installed.
 
 To generate ValidatingAdmissionPolicies, make sure to:
 
@@ -2095,7 +2095,7 @@ assertions have access to the contents of the Admission request/response, organi
 - `namespaceLabels` - Map of labels of the target namespace, not available for cluster scoped objects.
 - `admissionOperation` - Bool value which indicates if the policy was triggered from an admission request.
 
-`validate.assert` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](autogen.md) section for more information.
+`validate.assert` subrules also supports autogen rules for higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources. Check the [autogen](/docs/policy-types/cluster-policy/autogen) section for more information.
 
 ```yaml
 status:

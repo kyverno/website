@@ -66,5 +66,5 @@ kyverno jp query [-i input] [-q query|query]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](kyverno_jp.md)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 

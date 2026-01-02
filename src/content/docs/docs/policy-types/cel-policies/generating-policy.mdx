@@ -6,9 +6,11 @@ sidebar:
   order: 30
 ---
 
-{% feature-state state="beta" version="v1.16" /%}
+import FeatureState from '../../../../../components/FeatureState.astro'
 
-The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate.md), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
+<FeatureState state="beta" version="v1.16" />
+
+The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
 
 By leveraging CEL, GeneratingPolicy aligns with native Kubernetes constructs like ValidatingAdmissionPolicy and MutatingAdmissionPolicy, providing a consistent and powerful experience.
 
@@ -417,15 +419,15 @@ When synchronize is enabled for a data source, the lifecycle of the downstream r
 
 The following table shows the behavior of deletion and modification events on the components of a GeneratingPolicy with a data source declaration.
 
-| Action             | Sync Effect                                                            | NoSync Effect         |
-| ------------------ | ---------------------------------------------------------------------- | --------------------- |
-| Delete Downstream  | Downstream recreated                                                   | Downstream deleted    |
-| Delete Rule/Policy | Downstream retained <br>`orphanDownstreamOnPolicyDelete.enabled: true` | Downstream retained   |
-| Delete Rule/Policy | Downstream deleted <br>`orphanDownstreamOnPolicyDelete.enabled: false` | Downstream retained   |
-| Delete Trigger     | Downstream deleted                                                     | None                  |
-| Modify Downstream  | Downstream reverted                                                    | Downstream modified   |
-| Modify Rule/Policy | Downstream synced                                                      | Downstream unmodified |
-| Modify Trigger     | Downstream deleted                                                     | None                  |
+| Action             | Sync Effect                                                             | NoSync Effect         |
+| ------------------ | ----------------------------------------------------------------------- | --------------------- |
+| Delete Downstream  | Downstream recreated                                                    | Downstream deleted    |
+| Delete Rule/Policy | Downstream retained <br/>`orphanDownstreamOnPolicyDelete.enabled: true` | Downstream retained   |
+| Delete Rule/Policy | Downstream deleted <br/>`orphanDownstreamOnPolicyDelete.enabled: false` | Downstream retained   |
+| Delete Trigger     | Downstream deleted                                                      | None                  |
+| Modify Downstream  | Downstream reverted                                                     | Downstream modified   |
+| Modify Rule/Policy | Downstream synced                                                       | Downstream unmodified |
+| Modify Trigger     | Downstream deleted                                                      | None                  |
 
 The `evaluation.orphanDownstreamOnPolicyDelete` property can be used to preserve generated resources on policy deletion when synchronization is enabled. The default is false. When set to true, the generated resources will be retained (orphaned) in the cluster after the policy that created them is deleted.
 
@@ -531,4 +533,4 @@ Kyverno provides specialized functions for resource generation:
 
 ## Exceptions
 
-Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions/_index.md#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
+Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/exceptions#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.

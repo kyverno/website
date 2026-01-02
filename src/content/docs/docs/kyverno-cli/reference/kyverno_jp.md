@@ -56,8 +56,8 @@ kyverno jp [flags]
 
 ### SEE ALSO
 
-* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
-* [kyverno jp function](kyverno_jp_function.md)	 - Provides function informations.
-* [kyverno jp parse](kyverno_jp_parse.md)	 - Parses jmespath expression and shows corresponding AST.
-* [kyverno jp query](kyverno_jp_query.md)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno jp function](/docs/kyverno-cli/reference/kyverno_jp_function)	 - Provides function informations.
+* [kyverno jp parse](/docs/kyverno-cli/reference/kyverno_jp_parse)	 - Parses jmespath expression and shows corresponding AST.
+* [kyverno jp query](/docs/kyverno-cli/reference/kyverno_jp_query)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 

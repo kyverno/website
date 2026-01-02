@@ -11,15 +11,15 @@ When deploying Pod controllers with multiple replicas to a single cluster which 
 
 Having the Node's zone information available to the Pods running on it can be important, for example so Pods only respond to requests from that same zone and avoid making cross-region calls which can result in potentially expensive egress charges. And zone information aside, there can be a whole host of other information about the Node that a Pod would like to receive such as governance labels you apply, custom annotations, etc. The challenge is how to get this information because you don't know on what Node a Pod will be scheduled.
 
-[Mutation](/docs/policy-types/cluster-policy/mutate.md) of Pods is no great feat and Kyverno was one of the first admission controllers to offer it. Making calls to the Kubernetes API server is also well known and [Kyverno does that too](/docs/policy-types/cluster-policy/external-data-sources.md). But, as those who have tried this before and failed, you don't know _what_ to ask for when you make that call. This is because the Kubernetes scheduler is the one to make the decision on which Node will receive the Pod. And understanding how and where the scheduler fits into the Pod lifecycle is both nuanced and not well documented, even in the official docs. So, without further ado, we'd like to present the complete(r) guide to how Pod scheduling actually works because this will be critical in understanding both why this is problematic and how you can do it with Kyverno. Pay attention to the step numbers on the sequence diagram as we'll reference these in the further discussion.
+[Mutation](/docs/policy-types/cluster-policy/mutate) of Pods is no great feat and Kyverno was one of the first admission controllers to offer it. Making calls to the Kubernetes API server is also well known and [Kyverno does that too](/docs/policy-types/cluster-policy/external-data-sources). But, as those who have tried this before and failed, you don't know _what_ to ask for when you make that call. This is because the Kubernetes scheduler is the one to make the decision on which Node will receive the Pod. And understanding how and where the scheduler fits into the Pod lifecycle is both nuanced and not well documented, even in the official docs. So, without further ado, we'd like to present the complete(r) guide to how Pod scheduling actually works because this will be critical in understanding both why this is problematic and how you can do it with Kyverno. Pay attention to the step numbers on the sequence diagram as we'll reference these in the further discussion.
 
 ## Pod Scheduling in Kubernetes
 
 Thanks to the magic of [Mermaid](https://mermaid.js.org/) for enabling a diagram like this written out of pure Markdown!
 
-{% aside title="Note" %}
+:::note[Note]
 This diagram shows connections to etcd from multiple components for ease of explanation when referring to persisting of fetching something. In actuality, etcd only has a single client: the API server.
-{% /aside %}
+:::
 
 ```mermaid
 sequenceDiagram
@@ -220,9 +220,9 @@ spec:
               topology.kubernetes.io/zone: '{{ zone }}'
 ```
 
-{% aside title="Important!" type="caution" %}
-Kyverno by default ignores requests for Pod/binding because these can create much noise and are generally not useful except in corner cases like this one. You will need to remove the two resource filters `[Binding,*,*]` and `[Pod/binding,*,*]` in Kyverno's ConfigMap to be able to mutate Pod bindings. Because this will involve more processing by Kyverno, you really should try and scope the match down as far as possible. See the docs [here](../../../docs/installation/customization.md#resource-filters) for more.
-{% /aside %}
+:::caution[Important!]
+Kyverno by default ignores requests for Pod/binding because these can create much noise and are generally not useful except in corner cases like this one. You will need to remove the two resource filters `[Binding,*,*]` and `[Pod/binding,*,*]` in Kyverno's ConfigMap to be able to mutate Pod bindings. Because this will involve more processing by Kyverno, you really should try and scope the match down as far as possible. See the docs [here](/docs/installation/customization.md#resource-filters) for more.
+:::
 
 #### Demo
 
@@ -277,7 +277,7 @@ spec:
                     operator: Exists
 ```
 
-Once this is created, we expect Kyverno to mutate the Pod/binding resource to add the `topology.kubernetes.io/zone` annotation to each Pod (not to the parent Deployment since we disabled [rule auto-gen](/docs/policy-types/cluster-policy/autogen.md)). We're running the `env` program to simply write out all the environment variables. So we expect the Pods to be in a "Completed" state where we can inspect the logs and hopefully see the `ZONE` environment variable has been set with the value equaling the value of the `topology.kubernetes.io/zone` label on the parent Node.
+Once this is created, we expect Kyverno to mutate the Pod/binding resource to add the `topology.kubernetes.io/zone` annotation to each Pod (not to the parent Deployment since we disabled [rule auto-gen](/docs/policy-types/cluster-policy/autogen)). We're running the `env` program to simply write out all the environment variables. So we expect the Pods to be in a "Completed" state where we can inspect the logs and hopefully see the `ZONE` environment variable has been set with the value equaling the value of the `topology.kubernetes.io/zone` label on the parent Node.
 
 Create the Deployment and let's check the Pods. You can see two got scheduled on each worker.
 

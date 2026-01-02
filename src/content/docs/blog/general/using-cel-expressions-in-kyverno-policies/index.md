@@ -22,7 +22,7 @@ A policy consists of different clauses, such as:
 - Generate: It creates additional resources.
 - Verify Images: It verifies container image signatures using Cosign and Notary.
 
-Refer to [Selecting Resources](/docs/policy-types/cluster-policy/match-exclude.md) for more information.
+Refer to [Selecting Resources](/docs/policy-types/cluster-policy/match-exclude) for more information.
 
 > Each rule can contain only a single validate, mutate, generate, or verifyImages child declaration.
 
@@ -553,7 +553,7 @@ deployment.apps/deployment-pass created
 
 Since Kubernetes has many higher-level controllers that directly or indirectly manage Pods: Deployment, DaemonSet, StatefulSet, Job, and CronJob resources, it’d be inefficient to write a policy that targets Pods and every higher-level controller. Kyverno solves this issue by supporting the automatic generation of policy rules for higher-level controllers from a rule written exclusively for a Pod.
 
-Check the [autogen rules](/docs/policy-types/cluster-policy/autogen.md) for more information.
+Check the [autogen rules](/docs/policy-types/cluster-policy/autogen) for more information.
 
 For example, when creating a validation policy like below, which disallows latest image tags, the policy applies to all resources capable of generating Pods.
 

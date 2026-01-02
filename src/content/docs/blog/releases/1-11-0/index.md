@@ -206,7 +206,7 @@ Another sub-project launched was Kyverno Chainsaw, an end-to-end declarative tes
 
 ## Security Hardening
 
-In addition to the mentioned features, enhancements, and fixes, the Kyverno project completed a [fuzzing security audit](../../general/2023-security-audit/index.md) and is undergoing a thorough third-party security review. The security review is being conducted in collaboration with the [CNCF](https://www.cncf.io/), [Ada Logics](https://adalogics.com/) and [OSTIF](https://ostif.org/).
+In addition to the mentioned features, enhancements, and fixes, the Kyverno project completed a [fuzzing security audit](/docs/blog/general/2023-security-audit/) and is undergoing a thorough third-party security review. The security review is being conducted in collaboration with the [CNCF](https://www.cncf.io/), [Ada Logics](https://adalogics.com/) and [OSTIF](https://ostif.org/).
 
 The review exposed a high severity vulnerability [CVE-2023-47630](https://nvd.nist.gov/vuln/detail/CVE-2023-47630) involving the possibility of users consuming insecure images pulled from a compromised registry. In addition four CVEs [CVE-2023-42813](https://nvd.nist.gov/vuln/detail/CVE-2023-42813), [CVE-2023-42814](https://nvd.nist.gov/vuln/detail/CVE-2023-42814), [CVE-2023-42815](https://nvd.nist.gov/vuln/detail/CVE-2023-42815), [CVE-2023-42816](https://nvd.nist.gov/vuln/detail/CVE-2023-42816) were identified in unreleased code (i.e. on the main branch), which could potentially allow an attacker to cause a denial of service of Kyverno by exploiting the Notary verifier.
 

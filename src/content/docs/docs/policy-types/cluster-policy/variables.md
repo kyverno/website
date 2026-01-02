@@ -19,7 +19,7 @@ For example:
 
 Here, no double curly brackets are needed in `request.object.metadata.annotations.optional` but for nested variables like `/custom/string/{{request.object.metadata.annotations.mandatory"}}`, you need wrap variable with `{{}}`. For variables in policy declarations the `$( ... )` syntax is used instead.
 
-Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](jmespath.md). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
+Variables are stored as JSON and Kyverno supports using [JMESPath](http://jmespath.org/) (pronounced "James path") to select and transform JSON data. With JMESPath, values from data sources are referenced in the format of `{{key1.key2.key3}}`. For example, to reference the name of an new/incoming resource during a `kubectl apply` action such as a Namespace, you would write this as a variable reference: `{{request.object.metadata.name}}`. The policy engine will substitute any values with the format `{{ <JMESPath> }}` with the variable value before processing the rule. For a page dedicated to exploring JMESPath's use in Kyverno see [here](/docs/policy-types/cluster-policy/jmespath). Variables may be used in most places in a Kyverno rule or policy with one exception being in `match` or `exclude` statements.
 
 ## Pre-defined Variables
 
@@ -82,7 +82,7 @@ Operators also work on manifest lookup variables as well so the previous snippet
 
 In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
 
-For more information on operators see the [Operators](/docs/policy-types/cluster-policy/validate.md#operators) section.
+For more information on operators see the [Operators](/docs/policy-types/cluster-policy/validate#operators) section.
 
 ## Escaping Variables
 
@@ -194,7 +194,7 @@ Because Helm executes its templating routine prior to Kyverno, a Kyverno policy 
 {{`{{ request.userInfo.username }}`}}
 ```
 
-For Kyverno variables which use more complex JMESPath expressions including [existence checks](jmespath.md#non-existence-checks), elements such as empty objects or arrays may also need to be escaped even within the overall expression. For example, the value of the below `value` field
+For Kyverno variables which use more complex JMESPath expressions including [existence checks](/docs/policy-types/cluster-policy/jmespath#non-existence-checks), elements such as empty objects or arrays may also need to be escaped even within the overall expression. For example, the value of the below `value` field
 
 ```
 value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
@@ -391,10 +391,10 @@ For initContainer `vault`, `referenceWithTag` corresponds to `https://ghcr.io/va
 
 This same pattern and image variable arrangement also works for ephemeral containers.
 
-Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization.md#configmap-keys).
+Kyverno by default sets an empty registry to `docker.io` and an empty tag to `latest`. The default registry and whether it should be substituted are configurable options defined in [Kyverno's ConfigMap](/docs/installation/customization#configmap-keys).
 
 {% aside title="Note" type="note" %}
-Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](jmespath.md#formatting).
+Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](/docs/policy-types/cluster-policy/jmespath#formatting).
 {% /aside %}
 
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
@@ -460,7 +460,7 @@ Some policy decisions require access to cluster resources and data managed by ot
 
 Data fetched from external sources is stored in a per-rule processing context that is used to evaluate variables by the policy engine. Once the data from external sources is stored in the context, it can be referenced like any other variable data.
 
-Learn more about ConfigMap lookups and API Server calls in the [External Data Sources](external-data-sources.md) section.
+Learn more about ConfigMap lookups and API Server calls in the [External Data Sources](/docs/policy-types/cluster-policy/external-data-sources) section.
 
 ## Nested Lookups
 
@@ -596,4 +596,4 @@ The JMESPath arithmetic functions work for scalars (ex., 10), resource quantitie
 
 The special variable `{{ @ }}` may be used to refer to the current value in a given field, useful for source values.
 
-To find examples of some of these functions in action, see the [Kyverno policies library](/policies/). And for more complete information along with samples for each custom filter, see the JMESPath page [here](jmespath.md).
+To find examples of some of these functions in action, see the [Kyverno policies library](/policies/). And for more complete information along with samples for each custom filter, see the JMESPath page [here](/docs/policy-types/cluster-policy/jmespath).

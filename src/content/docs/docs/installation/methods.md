@@ -48,7 +48,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
 --set reportsController.replicas=2
 ```
 
-Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](../high-availability/_index.md) for more complete details.
+Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability) for more complete details.
 
 The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
 
@@ -71,11 +71,11 @@ All Kyverno installations require the admission controller be among the controll
 
 By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
 
-See also the [Namespace selectors](customization.md#namespace-selectors) section and especially the [Security vs Operability](_index.md#security-vs-operability) section.
+See also the [Namespace selectors](/docs/installation/customization#namespace-selectors) section and especially the [Security vs Operability](/docs/installation#security-vs-operability) section.
 
 ## Platform Specific Settings
 
-When deploying Kyverno to certain Kubernetes platforms such as EKS, AKS, or OpenShift; or when using certain GitOps tools such as ArgoCD, additional configuration options may be needed or recommended. See the [Platform-Specific Notes](platform-notes.md) section for additional details.
+When deploying Kyverno to certain Kubernetes platforms such as EKS, AKS, or OpenShift; or when using certain GitOps tools such as ArgoCD, additional configuration options may be needed or recommended. See the [Platform-Specific Notes](/docs/installation/platform-notes) section for additional details.
 
 ### Pre-Release Installations (RC)
 
@@ -87,7 +87,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 ## Install Pod Security Policies via Helm
 
-After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](../../pod-security.md), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
+After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](/docs/pod-security), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
 
 ```sh
 helm install kyverno-policies kyverno/kyverno-policies -n kyverno

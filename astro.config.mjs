@@ -6,9 +6,18 @@ import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
 import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
+import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
 
 const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
+const checkLinksPlugin = process.env.CHECK_LINKS
+  ? [
+      starlightLinksValidator({
+        exclude: ['/policies{,/,/**/*}'],
+        errorOnLocalLinks: false,
+      }),
+    ]
+  : []
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,6 +25,9 @@ export default defineConfig({
     starlight({
       title: 'Kyverno',
       customCss: ['./src/styles/global.css'],
+      editLink: {
+        baseUrl: 'https://github.com/kyverno/website/edit/astro/',
+      },
       social: [
         {
           icon: 'github',
@@ -107,6 +119,16 @@ export default defineConfig({
                 directory: 'docs/subprojects/kyverno-policy-reporter',
               },
             },
+            {
+              label: 'Backstage Plugin',
+              collapsed: true,
+              autogenerate: { directory: 'docs/subprojects/backstage-plugin' },
+            },
+            {
+              label: 'Kyverno Authz',
+              collapsed: true,
+              autogenerate: { directory: 'docs/subprojects/kyverno-authz' },
+            },
           ],
           collapsed: true,
         },
@@ -139,7 +161,11 @@ export default defineConfig({
           slug: 'support',
         },
       ],
-      plugins: [starlightImageZoom(), starlightAutoSidebar()],
+      plugins: [
+        starlightImageZoom(),
+        starlightAutoSidebar(),
+        ...checkLinksPlugin,
+      ],
     }),
     react(),
     markdoc(),
