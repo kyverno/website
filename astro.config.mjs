@@ -66,9 +66,9 @@ export default defineConfig({
               collapsed: true,
               autogenerate: { directory: 'docs/policy-reports' },
             },
-            'docs/working-with-policies/applying-policies',
-            'docs/working-with-policies/testing-policies',
-            'docs/working-with-policies/exceptions',
+            'docs/applying-policies',
+            'docs/testing-policies',
+            'docs/exceptions',
           ],
           collapsed: true,
         },
@@ -127,19 +127,23 @@ export default defineConfig({
           slug: 'docs/troubleshooting',
         },
         {
-          label: 'Policy Library',
-          collapsed: true,
-          autogenerate: {
-            directory: 'docs/policies',
-          },
-        },
-        {
           label: 'Security',
           slug: 'docs/security',
         },
         {
           label: 'Community',
           slug: 'community',
+        },
+        {
+          label: 'Support',
+          collapsed: true,
+          items: [
+            { label: 'Nirmata', slug: 'support/nirmata' },
+            { label: 'Blakyaks', slug: 'support/blakyaks' },
+            { label: 'Giantswarm', slug: 'support/giantswarm' },
+            { label: 'Infracloud', slug: 'support/infracloud' },
+            { label: 'Kodekloud', slug: 'support/kodekloud' },
+          ],
         },
       ],
       plugins: [starlightImageZoom(), starlightAutoSidebar()],
