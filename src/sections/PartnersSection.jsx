@@ -57,7 +57,7 @@ export const PartnersSection = () => {
           Join 1000+ organizations using Kyverno in production environments
         </p>
         <Button href="community/#join-kyverno-adopters" variant="accent">
-          Join us
+          Join the Policy as Code Revolution!
         </Button>
       </section>
     </>

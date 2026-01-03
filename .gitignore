@@ -56,4 +56,6 @@ pnpm-debug.log*
 .netlify
 
 # website build output
-public/
+# Ignore all folders in public except assets
+public/*
+!public/assets/

@@ -48,38 +48,6 @@ export const PolicyTabPanel = ({ tabs }) => {
         <div className="flex-1 min-w-0">
           {/* Code Display */}
           <div className="bg-dark-50 rounded-2xl border border-stroke overflow-hidden">
-            {/* Header with Copy and Learn More buttons */}
-            <div className="flex items-center justify-between p-4 border-b border-stroke bg-dark-100">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-dark-50 hover:bg-dark-200 text-white/80 hover:text-white text-sm font-medium transition-all border border-stroke"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      <span>Copy YAML</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              {activeTabData?.learnMore && (
-                <Button
-                  href={activeTabData.learnMore}
-                  variant="secondary"
-                  size="small"
-                  className="text-sm min-w-0 px-3"
-                >
-                  Learn More
-                </Button>
-              )}
-            </div>
-
             {/* Code Content */}
             <div className="p-4 sm:p-6 overflow-x-auto max-h-[600px] overflow-y-auto">
               <Highlight
@@ -114,6 +82,48 @@ export const PolicyTabPanel = ({ tabs }) => {
                   </pre>
                 )}
               </Highlight>
+            </div>
+
+            {/* Footer with Copy and Learn More buttons */}
+            <div className="flex items-center justify-between p-4 border-t border-stroke bg-dark-100">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-dark-50 hover:bg-dark-200 text-white/80 hover:text-white text-sm font-medium transition-all border border-stroke"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copy YAML</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  href="/policies"
+                  variant="secondary"
+                  size="small"
+                  className="text-sm min-w-0 px-3"
+                >
+                  Explore More Policies
+                </Button>
+                {activeTabData?.learnMore && (
+                  <Button
+                    href={activeTabData.learnMore}
+                    variant="primary"
+                    size="small"
+                    className="text-sm min-w-0 px-3"
+                  >
+                    Learn More
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

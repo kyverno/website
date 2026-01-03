@@ -434,7 +434,7 @@ export const codingThemes = {
 export const policyShowcaseHeadingContent = {
   headingText: [
     { text: 'Kyverno', color: 'text-white' },
-    { text: 'Policy Examples', color: 'text-primary-100' },
+    { text: 'Policy Showcase', color: 'text-primary-100' },
   ],
   paragraphText: `Explore sample policies showcasing Kyverno's versatility across different use cases and policy types.`,
 }

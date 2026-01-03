@@ -1,7 +1,6 @@
 import { policyShowcaseHeadingContent, policyShowcaseTabs } from '../constants'
 import { HeadingContent } from '../components/HeadingContent'
 import { PolicyTabPanel } from '../components/PolicyTabPanel'
-import { Button } from '../components/Button'
 
 export const PolicyShowcaseSection = () => {
   const { headingText, paragraphText } = policyShowcaseHeadingContent
@@ -11,7 +10,7 @@ export const PolicyShowcaseSection = () => {
       className="bg-dark-footer p-12 sm:p-20 flex flex-col items-center space-y-8"
       id="policy-showcase"
     >
-      <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-6">
+      <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-4">
         <HeadingContent
           headingParts={headingText}
           subheading={paragraphText}
@@ -20,12 +19,6 @@ export const PolicyShowcaseSection = () => {
         />
 
         <PolicyTabPanel tabs={policyShowcaseTabs} />
-
-        <div className="mt-6">
-          <Button href="/policies" variant="primary" size="large">
-            Explore More Policies
-          </Button>
-        </div>
       </div>
     </section>
   )

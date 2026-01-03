@@ -36,7 +36,7 @@ export const HeroSection = () => {
 
       <div
         className="container py-10 sm:py-0 sm:px-10 flex flex-col justify-center 
-            items-center text-center space-y-6"
+            items-center text-center space-y-2"
       >
         <HeadingContent
           headingParts={headingText}
@@ -46,7 +46,7 @@ export const HeroSection = () => {
         />
         <div
           className="w-full max-w-7xl mx-auto flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
-            md:space-x-4 md:mt-8 lg:flex-nowrap"
+            md:space-x-4 md:mt-2 lg:flex-nowrap"
         >
           {whyKyvernoCards.map((card, index) => (
             <WhykyvCard card={card} color={cardColors1[index]} key={index} />
@@ -64,13 +64,15 @@ export const HeroSection = () => {
             Explore Kyverno
           </Button>
         </div>
-        <div className="flex items-center gap-4 flex-wrap justify-center mb-8 sm:mb-12">
+        <div className="flex items-center gap-4 flex-wrap justify-center mt-6 mb-8 sm:mb-12">
           <Tag
             variant="secondary"
             href="https://nirmata.com/"
             className="bg-white text-dark-100 text-xl"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            Created with ❤️ by Nirmata
+            Created with ❤️ at Nirmata
           </Tag>
         </div>
       </div>
