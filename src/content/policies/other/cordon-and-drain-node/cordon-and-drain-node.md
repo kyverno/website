@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Node
-tags: []
+tags:
+  - Other
 version: 1.10.0
+description: 'There are cases where either an operations or security incident may occur and Nodes should be evacuated and placed in an unused state for further analysis. For example, a Node is found to be running a vulnerable version of a CRI engine or kernel and to minimize chances of a compromise may need to be decommissioned so another can be built. This policy shows how to use Kyverno to both cordon and drain a given Node and uses a hypothetical label being written to it called `testing=drain` to illustrate the point. For production use, the match block should be modified to trigger on the appropriate condition.'
 ---
 
 ## Policy Definition

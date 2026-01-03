@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Policy
-tags: []
+tags:
+  - Veeam Kasten
 version: 1.6.2
+description: 'Example Kyverno policy to enforce common compliance retention standards by modifying Kasten Policy backup retention settings. Based on regulation/compliance standard requirements, uncomment (1) of the desired GFS retention schedules to mutate existing and future Kasten Policies. Alternatively, this policy can be used to reduce retention lengths to enforce cost optimization. NOTE: This example only applies to Kasten Policies with an ''@hourly'' frequency. Refer to Kasten documentation for Policy API specification if modifications are necessary: https://docs.kasten.io/latest/api/policies.html#policy-api-type'
 ---
 
 ## Policy Definition

@@ -1,11 +1,14 @@
 ---
 title: 'Add Image as Environment Variable'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+description: 'The Kubernetes downward API only has the ability to express so many options as environment variables. The image consumed in a Pod is commonly needed to make the application aware of some logic it must take. This policy takes the value of the `image` field and adds it as an environment variable to Pods.'
+isNew: true
 ---
 
 ## Policy Definition

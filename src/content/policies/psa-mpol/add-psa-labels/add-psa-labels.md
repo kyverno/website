@@ -1,12 +1,16 @@
 ---
 title: 'Add PSA Labels'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Pod Security Admission
+  - EKS Best Practices
 version: 1.6.0
+description: 'Pod Security Admission (PSA) can be controlled via the assignment of labels at the Namespace level which define the Pod Security Standard (PSS) profile in use and the action to take. If not using a cluster-wide configuration via an AdmissionConfiguration file, Namespaces must be explicitly labeled. This policy assigns the labels `pod-security.kubernetes.io/enforce=baseline` and `pod-security.kubernetes.io/warn=restricted` to all new Namespaces if those labels are not included.'
+isNew: true
 ---
 
 ## Policy Definition

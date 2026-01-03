@@ -22,12 +22,9 @@ export const versions = [
   { label: 'v1.14', href: '#' },
 ]
 
-export const navItemsOnsite = [
-  { label: 'Why Kyverno', targetId: 'whykyverno' },
-  { label: 'Features', targetId: 'features' },
-]
-
 export const navItemsExternal = [
+  { label: 'Why Kyverno', href: '/#whykyverno' },
+  { label: 'Features', href: '/#features' },
   { label: 'Policies', href: '/policies' },
   { label: 'Docs', href: '/docs/introduction' },
   { label: 'Blog', href: '#' },

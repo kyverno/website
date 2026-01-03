@@ -5,7 +5,9 @@ severity: low
 type: ClusterPolicy
 subjects:
   - ClusterRole
-tags: []
+tags:
+  - Security
+description: 'Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue defined in CVE-2021-25740 which could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack. This was due to the system:aggregate-to-edit ClusterRole having edit permission of Endpoints. This policy, intended to run in background mode, checks if your cluster is vulnerable to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have the edit permission of Endpoints.'
 ---
 
 ## Policy Definition

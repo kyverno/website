@@ -6,8 +6,10 @@ type: ClusterPolicy
 subjects:
   - Deployment
   - StatefulSet
-tags: []
+tags:
+  - Kasten K10 by Veeam in CEL
 version: 1.11.0
+description: 'Check the ''dataprotection'' label that production Deployments and StatefulSet have a named K10 Policy. Use in combination with ''generate'' ClusterPolicy to ''generate'' a specific K10 Policy by name.'
 ---
 
 ## Policy Definition

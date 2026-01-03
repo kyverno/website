@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - DaemonSet
-tags: []
+tags:
+  - Karpenter
 version: 1.6.0
+description: 'When a DaemonSet is added to a cluster every node will get a new pod. There may not be  enough room for this on every node. Karpenter cannot provision extra nodes just for the  DaemonSet because the new pods are not scheduled the way regular pods are. It would require parallel scheduling logic that is not proper to Kubernetes. Therefore, eviction of regular  pods should happen instead. This can be achieved with the priority class system-node-critical.'
 ---
 
 ## Policy Definition

@@ -1,11 +1,14 @@
 ---
 title: 'Prepend Image Registry'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+description: 'Prepends ''registry.io/'' to all container and initContainer images in Pods.'
+isNew: true
 ---
 
 ## Policy Definition

@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - DestinationRule
-tags: []
+tags:
+  - Istio
 version: 1.6.0
+description: 'Once a routing decision has been made, a DestinationRule can be used to define how traffic should be sent to another service. The trafficPolicy object can control how TLS is handled to the destination host. This policy enforces that the TLS mode cannot be set to a value of `DISABLE`.'
 ---
 
 ## Policy Definition

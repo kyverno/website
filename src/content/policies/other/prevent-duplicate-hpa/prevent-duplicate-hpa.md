@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - HorizontalPodAutoscaler
-tags: []
+tags:
+  - Other
+description: 'HorizontalPodAutoscaler (HPA) is useful to automatically adjust the number of pods in a deployment or replication controller. It requires defining a specific target resource by kind and name. There are no built-in validation checks by the HPA controller to prevent the creation of multiple HPAs which target the same resource. This policy has two rules, the first of which ensures that the only targetRef kinds accepted are one of either Deployment, StatefulSet, ReplicaSet, or DaemonSet. The second prevents the creation of duplicate HPAs by validating that any new HPA targets a unique resource.'
 ---
 
 ## Policy Definition

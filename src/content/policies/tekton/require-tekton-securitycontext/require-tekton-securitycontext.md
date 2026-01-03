@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - TaskRun
-tags: []
+tags:
+  - Tekton
 version: 1.7.0
+description: 'A securityContext is required for each TaskRun step.'
 ---
 
 ## Policy Definition

@@ -1,12 +1,15 @@
 ---
 title: 'Add Environment Variables from ConfigMap'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 version: 1.15.0
+description: 'Instead of defining a common set of environment variables multiple times either in manifests or separate policies, Pods can reference entire collections stored in a ConfigMap. This policy mutates all initContainers (if present) and containers in a Pod with environment variables defined in a ConfigMap named `nsenvvars` that must exist in the destination Namespace.'
+isNew: true
 ---
 
 ## Policy Definition

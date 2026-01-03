@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
 version: 1.7.0
+description: 'Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container''s base, found in an OCI annotation, is in a cluster-wide allow list.'
 ---
 
 ## Policy Definition

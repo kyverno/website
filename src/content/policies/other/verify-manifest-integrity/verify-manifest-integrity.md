@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Deployment
-tags: []
+tags:
+  - Other
 version: 1.8.0
+description: 'Verifying the integrity of resources is important to ensure no tampering has occurred, and in some cases this may need to be extended to certain YAML manifests deployed to Kubernetes. Starting in Kyverno 1.8, these manifests may be signed with Sigstore and the signature(s) validated to prevent this tampering while still allowing some exceptions on a per-field basis. This policy verifies Deployments are signed with the expected key but ignores the `spec.replicas` field allowing other teams to change just this value.'
 ---
 
 ## Policy Definition

@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Pod Security Admission
+  - EKS Best Practices
 version: 1.6.0
+description: 'This policy is valuable as it ensures that all namespaces within a Kubernetes  cluster are labeled with Pod Security Admission (PSA) labels, which are crucial for defining security levels and ensuring that pods within a namespace operate  under the defined Pod Security Standard (PSS). By enforcing namespace labeling, This policy audits namespaces to verify the presence of PSA labels.  If a namespace is found without the required labels, it generates and maintain  and ClusterPolicy Report in default namespace.  This helps administrators identify namespaces that do not comply with the  organization''s security practices and take appropriate action to rectify the  situation.'
 ---
 
 ## Policy Definition

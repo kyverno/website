@@ -5,8 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample in Vpol
 version: 1.14.0
+description: 'Pods can have many different containers which are tightly coupled. It may be desirable to limit the amount of containers that can be in a single Pod to control best practice application or so policy can be applied consistently. This policy checks all Pods to ensure they have no more than four containers.'
 ---
 
 ## Policy Definition

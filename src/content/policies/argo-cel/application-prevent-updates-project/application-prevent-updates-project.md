@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Application
-tags: []
+tags:
+  - Argo in CEL
+description: 'This policy prevents updates to the project field after an Application is created.'
 ---
 
 ## Policy Definition

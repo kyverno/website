@@ -6,8 +6,10 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Label
-tags: []
+tags:
+  - Best Practices
 version: 1.6.0
+description: 'Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended labels describe applications in a way that can be queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.'
 ---
 
 ## Policy Definition

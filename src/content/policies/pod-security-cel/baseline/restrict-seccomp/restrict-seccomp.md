@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in CEL
 version: 1.11.0
+description: 'The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.'
 ---
 
 ## Policy Definition

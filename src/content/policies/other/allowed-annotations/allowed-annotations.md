@@ -6,8 +6,10 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'Rather than creating a deny list of annotations, it may be more useful to invert that list and create an allow list which then denies any others. This policy demonstrates how to allow two annotations with a specific key name of fluxcd.io/ while denying others that do not meet the pattern.'
 ---
 
 ## Policy Definition

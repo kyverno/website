@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Secret
-tags: []
+tags:
+  - Other
 version: 1.8.0
+description: 'It is often needed to make decisions for resources based upon the version of the Kubernetes API server in the cluster. This policy serves as an example for how to retrieve the minor version of the Kubernetes API server and subsequently use in a policy behavior. It will mutate a Secret upon its creation with a label called `apiminorversion` the value of which is the minor version of the API server.'
 ---
 
 ## Policy Definition

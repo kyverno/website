@@ -6,8 +6,10 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Volume
-tags: []
+tags:
+  - Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
+description: 'In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes. This policy blocks any other type of volume other than those in the allow list.'
 ---
 
 ## Policy Definition

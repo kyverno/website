@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Best Practices
+  - EKS Best Practices
 version: 1.6.0
+description: 'Images from unknown, public registries can be of dubious quality and may not be scanned and secured, representing a high degree of risk. Requiring use of known, approved registries helps reduce threat exposure by ensuring image pulls only come from them. This policy validates that container images only originate from the registry `eu.foo.io` or `bar.io`. Use of this policy requires customization to define your allowable registries.'
 ---
 
 ## Policy Definition

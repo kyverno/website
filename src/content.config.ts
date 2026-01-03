@@ -7,7 +7,7 @@ import { docsSchema } from '@astrojs/starlight/schema'
 import { glob } from 'astro/loaders'
 
 const policiesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/policies' }),
   schema: z.object({
     title: z.string(),
     category: z.enum([
@@ -22,6 +22,8 @@ const policiesCollection = defineCollection({
     subjects: z.array(z.string()), // Pod, Deployment, ...
     tags: z.array(z.string()),
     version: z.string().optional(),
+    description: z.string().optional(), // Policy description from annotations
+    isNew: z.boolean().optional(), // Flag to mark new policies
   }),
 })
 

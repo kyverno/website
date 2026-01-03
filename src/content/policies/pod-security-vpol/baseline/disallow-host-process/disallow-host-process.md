@@ -5,8 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
+description: 'Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.'
 ---
 
 ## Policy Definition
