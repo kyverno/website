@@ -45,7 +45,7 @@ export const TopNav = () => {
             >
               Playground
             </Button>
-            <Button href="/support" variant="primary" size="large">
+            <Button href="/support" variant="accent" size="large">
               Support
             </Button>
           </div>
@@ -71,7 +71,7 @@ export const TopNav = () => {
                 Playground
               </Button>
               // Mobile
-              <Button href="/support" variant="primary" size="medium">
+              <Button href="/support" variant="accent" size="medium">
                 Support
               </Button>
             </div>

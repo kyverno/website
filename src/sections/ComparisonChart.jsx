@@ -9,18 +9,18 @@ export const ComparisonChart = () => {
       feature: 'Policy Language',
       kyverno: 'YAML & CEL',
       kyvernoStatus: null,
-      opa: 'Rego',
+      opa: 'Rego, Constraint Templates',
       opaStatus: null,
       kubernetesNative: 'YAML & CEL',
       kubernetesNativeStatus: null,
     },
     {
       feature: 'Ease of Adoption',
-      kyverno: 'Intuitive, easy to use',
+      kyverno: 'Intuitive, extends Kubernetes types',
       kyvernoStatus: null,
       opa: 'Steeper learning curve',
       opaStatus: null,
-      kubernetesNative: 'Best, native types',
+      kubernetesNative: 'Built-in types',
       kubernetesNativeStatus: null,
     },
     {
@@ -131,7 +131,7 @@ export const ComparisonChart = () => {
           Kyverno <span className="lowercase">vs</span>
           <span className="text-primary-100"> Other policy engines</span>
         </h2>
-        <p className="text-base sm:text-lg max-w-150 text-center text-white/90">
+        <p className="text-base sm:text-lg max-w-150 md:max-w-[850px] text-center text-white/90">
           As the industry's leading policy engine, here's how Kyverno compares
           with other policy engines.
         </p>

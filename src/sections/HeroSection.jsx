@@ -101,7 +101,7 @@ export const HeroSection = () => {
           <Button href="/docs/introduction" variant="primary" size="large">
             Get Started
           </Button>
-          <Button href="/policies" variant="secondary" size="large">
+          <Button href="#policy-showcase" variant="secondary" size="large">
             Explore Policies
           </Button>
         </motion.div>

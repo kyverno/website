@@ -2,7 +2,7 @@ import { Github, Slack, Twitter, Mail } from 'lucide-react'
 import {
   communityLinks,
   policies,
-  productsLinks,
+  supportLinks,
   ResourcesLinks,
 } from '../constants'
 import { SiteLogo } from '../components/SiteLogo'
@@ -18,8 +18,8 @@ export const Footer = () => {
         <div className="1/4 flex flex-col items-start space-y-4">
           <SiteLogo />
           <p className="max-w-80 text-white/80">
-            Unified Policy as Code for Platform Engineers. Secure, automate, and
-            govern your infrastructure with next-generation CEL-based policies.
+            Unified Policy as Code. Secure, automate, and govern your all
+            infrastructure and applications with modern CEL-based policies.
           </p>
           <span className="flex justify-center items-center space-x-2 cursor-pointer">
             <a href="https://github.com/kyverno">
@@ -36,9 +36,9 @@ export const Footer = () => {
             </a>
           </span>
         </div>
-        <BottomLinkLists links={productsLinks} title="Products" />
         <BottomLinkLists links={ResourcesLinks} title="Resources" />
         <BottomLinkLists links={communityLinks} title="Community" />
+        <BottomLinkLists links={supportLinks} title="Support" />
       </div>
       <div
         className="w-full space-y-4 flex flex-col p-12 justify-between items-start md:items-center 

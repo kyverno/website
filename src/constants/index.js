@@ -322,12 +322,12 @@ export const partners = [
   { image: 'assets/product-icons/yahoo-icon.svg', name: 'Yahoo' },
 ]
 
-export const productsLinks = [
-  { href: 'https://kyverno.io/support/blakyaks/', text: 'BlakYaks' },
+export const supportLinks = [
   { href: 'https://kyverno.io/support/giantswarm/', text: 'Giant Swarm' },
+  { href: 'https://kyverno.io/support/nirmata/', text: 'Nirmata' },
+  { href: 'https://kyverno.io/support/blakyaks/', text: 'BlakYaks' },
   { href: 'https://kyverno.io/support/infracloud/', text: 'Infra Cloud' },
   { href: 'https://kyverno.io/support/kodekloud/', text: 'Kodekloud' },
-  { href: 'https://kyverno.io/support/nirmata/', text: 'Nirmata' },
 ]
 
 export const ResourcesLinks = [
@@ -438,191 +438,263 @@ export const policyShowcaseTabs = [
     id: 'validate-k8s',
     label: 'Validate Kubernetes Resources',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: Enforce
-  rules:
-    - name: check-labels
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        cel:
-          expressions:
-            - expression: |
-                has(object.metadata.labels.app) &&
-                has(object.metadata.labels.version)
-              message: "Pod must have 'app' and 'version' labels"`,
+  matchConstraints:
+    resourceRules:
+      - apiGroups:   [""]
+        apiVersions: ["v1"]
+        operations:  ["CREATE", "UPDATE"]
+        resources:   ["pods"]
+  variables:
+    - name: labels
+      expression: object.metadata.?labels.orValue([])
+  validations:
+    - expression: has(variables.labels.app) && 
+        has(variables.labels.version)
+      message: "Pod must have 'app' and 'version' labels"`,
   },
   {
     id: 'validate-terraform',
     label: 'Validate Terraform Plans',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: json.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: require-encryption
+  name: check-awsvpc-network-mode
 spec:
-  match:
-    any:
-      - resources:
-          kinds:
-            - terraform.aws_s3_bucket
-  validate:
-    cel:
-      expressions:
-        - expression: |
-            object.server_side_encryption_configuration != null
-          message: "S3 buckets must have encryption enabled"`,
+  evaluation:
+    mode: JSON
+  matchConditions:
+    - name: isTerraformPlan
+      expression: has(object.terraform_version) &&
+          has(object.planned_values) 
+  variables:
+    - name: ecsTasks
+      expression: object.?planned_values.root_module.resources.exists(r, 
+        r.type == 'aws_ecs_task_definition').orValue([])
+  validations:
+    - message: "ECS tasks must use awsvpc network mode."
+      expression: |
+        variables.ecsTasks.all(task_def,
+            has(task_def.values.network_mode) &&
+            task_def.values.network_mode == 'awsvpc'
+        )
+    `,
   },
   {
     id: 'validate-dockerfile',
     label: 'Validate Dockerfiles',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: json.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: require-non-root
+  name: check-label-maintainer
 spec:
-  match:
-    any:
-      - resources:
-          kinds:
-            - Dockerfile
-  validate:
-    cel:
-      expressions:
-        - expression: |
-            !contains(object.content, "USER root")
-          message: "Dockerfiles must not run as root user"`,
+  evaluation:
+    mode: JSON
+  matchConditions:
+    - name: isDockerfile
+      expression: "has(object.Stages)"
+  validations:
+    - message: "MAINTAINER is deprecated, use LABELS instead"
+      expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && 
+            stage.Commands.exists(cmd, cmd.Name == 'MAINTAINER')
+        )
+    - message: "Use the LABELS instruction to set the MAINTAINER name"
+      expression: |
+        object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            has(cmd.Labels) && cmd.Labels.exists(label,
+              label.Key == 'maintainer' || 
+              label.Key == 'owner' || 
+              label.Key == 'author'
+            )
+          )
+        )`,
   },
   {
     id: 'validate-http',
     label: 'Authorize HTTP Requests',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: json.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: require-auth-header
+  name: authorize-jwt
 spec:
-  match:
-    any:
-      - resources:
-          kinds:
-            - HTTPRequest
-  validate:
-    cel:
-      expressions:
-        - expression: |
-            has(object.headers.authorization)
-          message: "HTTP requests must include authorization header"`,
+  evaluation:
+    mode: HTTP 
+  failurePolicy: Fail 
+  variables: 
+  - name: authorizationlist
+    expression: object.attributes.Header("authorization")
+  - name: authorization
+    expression: >
+      size(variables.authorizationlist) == 1
+        ? variables.authorizationlist[0].split(" ")
+        : []
+  - name: token
+    expression: >
+      size(variables.authorization) == 2 && 
+        variables.authorization[0].lowerAscii() == "bearer"
+          ? jwt.Decode(variables.authorization[1], "secret")
+          : null
+  validations: 
+    # request not authenticated -> 401
+  - expression: >
+      variables.token == null || !variables.token.Valid
+        ? http.Denied("Unauthorized").Response()
+        : null
+    # request authenticated but not admin role -> 403
+  - expression: >
+      variables.token.Claims.?role.orValue("") != "admin"
+        ? http.Denied("Forbidden").Response()
+        : null
+    # request authenticated and admin role -> 200
+  - expression: >
+      http.Allowed().Response()`,
   },
   {
     id: 'mutate-k8s',
     label: 'Mutate Kubernetes Resources',
     learnMore: '/docs/policy-types/mutating-policy',
-    policy: `apiVersion: kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
 metadata:
-  name: add-default-labels
+  name: add-safe-to-evict
 spec:
-  rules:
-    - name: add-labels
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              managed-by: kyverno
-              +(app): "{{request.object.metadata.name}}"`,
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: has-emptydir-or-hostpath
+      expression: |
+        has(object.spec.volumes) && 
+        object.spec.volumes.exists(v, has(v.emptyDir) || has(v.hostPath))
+    - name: annotation-not-present
+      expression: |
+        !has(object.metadata.annotations) || 
+        !object.metadata.annotations.exists(k, k == 'cluster-autoscaler.kubernetes.io/safe-to-evict')
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              annotations: {
+                "cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
+              }
+            }
+          }`,
   },
   {
     id: 'generate-k8s',
     label: 'Generate Kubernetes Resources',
     learnMore: '/docs/policy-types/generating-policy',
-    policy: `apiVersion: kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: GeneratingPolicy
 metadata:
-  name: generate-network-policy
+  name: add-networkpolicy
 spec:
-  rules:
-    - name: generate-netpol
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-      generate:
-        apiVersion: networking.k8s.io/v1
-        kind: NetworkPolicy
-        name: default-deny
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        data:
-          spec:
-            podSelector: {}
-            policyTypes:
-              - Ingress
-              - Egress`,
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["namespaces"]
+  variables:
+    - name: targetNamespace
+      expression: "object.metadata.name"
+    - name: downstream
+      expression: >-
+        [
+          {
+            "kind": dyn("NetworkPolicy"),
+            "apiVersion": dyn("networking.k8s.io/v1"),
+            "metadata": dyn({
+              "name": "default-deny",
+            }),
+            "spec": dyn({
+              "podSelector": dyn({}),
+              "policyTypes": dyn(["Ingress", "Egress"])
+            })
+          }
+        ]
+  generate:
+    - expression: generator.Apply(variables.targetNamespace, variables.downstream)`,
   },
   {
     id: 'cleanup-k8s',
     label: 'Cleanup Kubernetes Resources',
     learnMore: '/docs/policy-types/cleanup-policy',
-    policy: `apiVersion: kyverno.io/v2alpha1
-kind: CleanupPolicy
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
+kind: DeletingPolicy
 metadata:
-  name: cleanup-old-pods
+  name: cleanup-empty-replicasets
 spec:
-  match:
-    any:
-      - resources:
-          kinds:
-            - Pod
-          namespaces:
-            - default
-  schedule: "0 0 * * *"
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["replicasets"]
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
   conditions:
-    any:
-      - key: "{{request.object.metadata.creationTimestamp}}"
-        operator: GreaterThanOrEquals
-        value: "{{time_ago('24h')}}"`,
+    - name: is-empty
+      expression: "object.spec.replicas == 0"
+  schedule: "* * * * *"`,
   },
   {
     id: 'validate-images',
     label: 'Validate Container Images',
     learnMore: '/docs/policy-types/image-validating-policy',
-    policy: `apiVersion: kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ImageValidatingPolicy
 metadata:
-  name: verify-image-signatures
+  name: verify-image-ivpol
 spec:
-  rules:
-    - name: verify-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - "*"
-          attestors:
-            - count: 1
-              entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0CAQcDQgAE...
-                      -----END PUBLIC KEY-----`,
+  webhookConfiguration:
+    timeoutSeconds: 30
+  evaluation:
+   background:
+    enabled: true
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  matchImageReferences:
+        - glob : "docker.io/*"
+  attestors:
+  - name: cosign
+    cosign:
+     key:
+      data: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6QsNef3SKYhJVYSVj+ZfbPwJd0pv
+        DLYNHXITZkhIzfE+apcxDjCCkDPcJ3A3zvhPATYOIsCxYPch7Q2JdJLsDQ==
+        -----END PUBLIC KEY-----
+  validations:
+    - message: image is not authorized
+      expression: >-
+       images.containers.map(image, 
+         verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)`,
   },
 ]

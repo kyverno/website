@@ -92,7 +92,7 @@ export const Table = ({ data = [] }) => {
     <table className="w-full">
       <thead className="w-full hidden sm:table-header-group">
         <tr className="w-full flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-dark-50 rounded-t-2xl gap-4 sm:gap-8 min-h-[80px] py-4">
-          <th className="font-bold w-full sm:w-1/4 px-4 sm:px-0 sm:pl-6 text-left flex items-center">
+          <th className="font-bold w-full sm:w-[30%] px-4 sm:px-0 sm:pl-6 text-left flex items-center">
             Feature
           </th>
           <th className="flex items-center space-x-4 px-4 sm:px-0 sm:w-[37.5%]">
@@ -160,7 +160,7 @@ export const Table = ({ data = [] }) => {
                   index % 2 === 0 ? 'bg-stroke' : 'bg-dark-50'
                 }`}
             >
-              <td className="font-bold w-full sm:w-1/4 px-4 sm:px-0 sm:pl-6 flex items-center">
+              <td className="font-bold w-full sm:w-[30%] px-4 sm:px-0 sm:pl-6 flex items-center">
                 {feature}
               </td>
 

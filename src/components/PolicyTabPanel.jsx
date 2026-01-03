@@ -25,14 +25,14 @@ export const PolicyTabPanel = ({ tabs }) => {
     <div className="w-full max-w-6xl mx-auto">
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Sidebar - Tabs */}
-        <div className="w-full lg:w-64 flex-shrink-0">
+        <div className="w-full lg:w-80 flex-shrink-0">
           <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={twMerge(
-                  'px-4 py-2 rounded-lg font-medium text-sm transition-all whitespace-nowrap text-left',
+                  'px-4 py-2 rounded-lg font-medium text-base transition-all whitespace-nowrap text-left',
                   activeTab === tab.id
                     ? 'bg-primary-100 text-white shadow-lg'
                     : 'bg-dark-50 text-white/70 hover:text-white hover:bg-dark-100 border border-stroke',
@@ -49,7 +49,7 @@ export const PolicyTabPanel = ({ tabs }) => {
           {/* Code Display */}
           <div className="bg-dark-50 rounded-2xl border border-stroke overflow-hidden">
             {/* Code Content */}
-            <div className="p-4 sm:p-6 overflow-x-auto h-[600px] overflow-y-auto thin-scrollbar">
+            <div className="p-4 sm:p-6 overflow-x-auto h-[531px] overflow-y-auto thin-scrollbar">
               <Highlight
                 language="yaml"
                 theme={codingThemes.dark}
