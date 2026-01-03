@@ -7,10 +7,10 @@ export const PolicyShowcaseSection = () => {
 
   return (
     <section
-      className="bg-dark-footer p-12 sm:p-20 flex flex-col items-center space-y-8"
+      className="w-full bg-dark-footer p-12 sm:p-16 md:p-20 flex flex-col items-center space-y-8"
       id="policy-showcase"
     >
-      <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-4">
+      <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-8">
         <HeadingContent
           headingParts={headingText}
           subheading={paragraphText}

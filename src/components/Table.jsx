@@ -98,16 +98,18 @@ export const Table = ({ data = [] }) => {
           <th className="flex items-center space-x-4 px-4 sm:px-0 sm:w-[37.5%]">
             <img
               src="assets/images/kyverno-square.svg"
-              alt="kyverno logo"
+              alt="Kyverno logo"
               className="h-6 w-6 sm:h-10 sm:w-10 flex-shrink-0"
+              loading="lazy"
             />
             <span>Kyverno</span>
           </th>
           <th className="flex items-center space-x-4 px-4 sm:px-0 sm:w-[37.5%]">
             <img
               src="assets/images/opa.svg"
-              alt="opa logo"
+              alt="Open Policy Agent logo"
               className="h-6 w-6 sm:h-10 sm:w-10 flex-shrink-0"
+              loading="lazy"
             />
             <span className="hidden sm:inline">Open Policy Agent</span>
             <span className="sm:hidden">OPA</span>

@@ -24,8 +24,8 @@ export const PartnersSection = () => {
           animation-play-state: paused;
         }
       `}</style>
-      <section className="w-full flex flex-col items-center text-center space-y-12 p-12 my-6">
-        <div className="space-y-3 text-lg">
+      <section className="w-full flex flex-col items-center text-center space-y-8 p-12 sm:p-16 md:p-20">
+        <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-4">
           <HeadingContent
             headingParts={headingText}
             subheading={paragraphText}
@@ -53,7 +53,7 @@ export const PartnersSection = () => {
             ))}
           </div>
         </div>
-        <p className="text-white/80">
+        <p className="text-white/90 text-base sm:text-lg">
           Join 1000+ organizations using Kyverno in production environments
         </p>
         <Button href="community/#join-kyverno-adopters" variant="accent">

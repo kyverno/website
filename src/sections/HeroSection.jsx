@@ -1,6 +1,5 @@
 import {
   heroSectionHeadingContent,
-  heroTags,
   whyKyvernoCards,
   cardColors1,
 } from '../constants'
@@ -9,73 +8,118 @@ import { Button } from '../components/Button'
 import { HeadingContent } from '../components/HeadingContent'
 import { Tag } from '../components/Tag'
 import { WhykyvCard } from '../components/WhykyvCard'
-import { Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 
-export const HeroSection = () => {
-  const zapIcon = Zap
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+}
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: 'easeOut',
+    },
+  },
+}
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: 'easeOut',
+    },
+  },
+}
+
+export const HeroSection = () => {
   const { headingText, paragraphText } = heroSectionHeadingContent
 
   return (
-    <section className="w-full bg-linear-to-br from-dark-50 to-dark-100 relative pt-10 pb-12 sm:pt-20 sm:px-20 sm:pb-20 place-items-center">
+    <section className="w-full bg-gradient-to-br from-dark-50 to-dark-100 relative pt-12 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 md:px-20">
       <img
         src="assets/images/lg-hero-ball.svg"
-        alt="lg-hero-ball"
-        className="
-            hidden sm:inline-block absolute sm:top-20 sm:left-8 lg:top-20 
-            lg:left-20"
+        alt=""
+        className="hidden sm:inline-block absolute sm:top-20 sm:left-8 lg:top-20 lg:left-20 z-0"
+        loading="eager"
+        aria-hidden="true"
       />
       <img
         src="assets/images/sm-hero-ball.svg"
-        alt="sm-hero-ball"
-        className="hidden
-            sm:inline-block absolute sm:right-15 sm:top-50 md:right-25
-            lg:top-50 lg:right-50 xl:right-90 "
+        alt=""
+        className="hidden sm:inline-block absolute sm:right-15 sm:top-50 md:right-25 lg:top-50 lg:right-50 xl:right-90 z-0"
+        loading="eager"
+        aria-hidden="true"
       />
 
-      <div
-        className="container py-10 sm:py-0 sm:px-10 flex flex-col justify-center 
-            items-center text-center space-y-2"
+      <motion.div
+        className="container max-w-7xl mx-auto py-10 sm:py-0 flex flex-col justify-center items-center text-center space-y-8 relative z-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <HeadingContent
-          headingParts={headingText}
-          subheading={paragraphText}
-          variant="level1"
-          headerLevel="h1"
-        />
-        <div
-          className="w-full max-w-7xl mx-auto flex flex-col space-y-4 justify-center md:flex-row md:flex-wrap md:content-baseline
-            md:space-x-4 md:mt-2 lg:flex-nowrap"
+        <motion.div variants={fadeInUp}>
+          <HeadingContent
+            headingParts={headingText}
+            subheading={paragraphText}
+            variant="level1"
+            headerLevel="h1"
+          />
+        </motion.div>
+        <motion.div
+          className="w-full max-w-7xl mx-auto grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-4"
+          variants={fadeInUp}
         >
           {whyKyvernoCards.map((card, index) => (
-            <WhykyvCard card={card} color={cardColors1[index]} key={index} />
+            <motion.div
+              key={index}
+              className="flex h-full"
+              variants={fadeInUp}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <WhykyvCard card={card} color={cardColors1[index]} />
+            </motion.div>
           ))}
-        </div>
-        <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+        </motion.div>
+        <motion.div
+          className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0 mt-4"
+          variants={fadeInUp}
+        >
           <Button href="/docs/introduction" variant="primary" size="large">
             Get Started
           </Button>
-          <Button
-            href="https://playground.kyverno.io/"
-            variant="secondary"
-            size="large"
-          >
-            Explore Kyverno
+          <Button href="/policies" variant="secondary" size="large">
+            Explore Policies
           </Button>
-        </div>
-        <div className="flex items-center gap-4 flex-wrap justify-center mt-6 mb-8 sm:mb-12">
+        </motion.div>
+        <motion.div
+          className="flex items-center gap-4 flex-wrap justify-center mt-2 mb-4"
+          variants={fadeIn}
+        >
           <Tag
-            variant="secondary"
+            variant="tertiary"
             href="https://nirmata.com/"
-            className="bg-white text-dark-100 text-xl"
+            className="bg-dark-50 border border-stroke text-white hover:text-white hover:border-primary-100 text-base sm:text-lg px-4 py-2 rounded-md transition-colors duration-200"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Created with ❤️ at Nirmata
+            Created with ❤️ by Nirmata
           </Tag>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   )
 }

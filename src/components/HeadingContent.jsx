@@ -16,17 +16,17 @@ export const HeadingContent = ({
           ? `w-full inline-flex flex-wrap justify-center items-center gap-x-2
                         text-5xl px-2 sm:text-[52px] md:text-6xl font-bold tracking-wide text-primary-100 
                         capitalize leading-12 sm:leading-16`
-          : 'text-[1.4rem] sm:text-xl md:text-2xl max-w-[90%] sm:max-w-[600px] md:max-w-[700px] leading-8 sm:leading-9 md:leading-10 text-white/80'
+          : 'text-[1.4rem] sm:text-xl md:text-2xl max-w-[90%] sm:max-w-[600px] md:max-w-[700px] leading-8 sm:leading-9 md:leading-10 text-white/90'
 
       case 'level2':
         return type === 'header'
           ? 'text-4xl font-bold tracking-wide capitalize text-center'
-          : 'max-w-150 text-[1.2rem] sm:text-xl md:text-xl md:max-w-250 text-center text-white/80'
+          : 'max-w-150 text-[1.2rem] sm:text-xl md:text-xl md:max-w-250 text-center text-white/90'
 
       case 'level3':
         return type === 'header'
           ? 'text-3xl sm:text-3xl font-bold tracking-wide capitalize text-center'
-          : 'text-[1rem] sm:text-lg md:text-xl max-w-80 sm:max-w-150 leading-6 text-white/80'
+          : 'text-[1rem] sm:text-lg md:text-xl max-w-80 sm:max-w-150 leading-6 text-white/90'
     }
   }
 
@@ -49,7 +49,7 @@ export const HeadingContent = ({
         {processHeading(headingParts)}
       </HeaderTag>
       <p
-        className={`w-full text-[1rem] text-white/80 sm:text-lg md:w-150 lg:w-220 text-center ${getVariantClasses('paragraph')}`}
+        className={`w-full text-base text-white/90 sm:text-lg md:w-150 lg:w-220 text-center ${getVariantClasses('paragraph')}`}
       >
         {subheading}
       </p>

@@ -35,43 +35,37 @@ export const whyKyvernoCards = [
   {
     icon: Zap,
     title: 'Easy to Adopt',
-    desc1: 'Use familiar YAML and CEL - no new languages to learn.',
+    desc1: 'Use familiar languages and tools.',
     desc2:
-      'Kubernetes-native design with declarative policies that integrate seamlessly into your workflow.',
-    color: 'orange',
+      'Kubernetes-native types that integrate seamlessly into your workflow.',
   },
   {
     icon: Shield,
     title: 'Flexible & Powerful',
     desc1:
-      'Validate, mutate, generate, and cleanup resources with comprehensive policy capabilities.',
-    desc2:
-      'Works across admission control, CLI scanning, and runtime enforcement.',
-    color: 'green',
+      'From basic validation to complex automation, Kyverno has you covered.',
+    desc2: 'Built for Kubernetes, now works everywhere.',
   },
   {
     icon: Globe,
     title: 'Trusted & Proven',
-    desc1:
-      'CNCF incubating project with an active community and strong ecosystem support.',
-    desc2:
-      'Production-ready at scale for enterprises worldwide, trusted by industry leaders.',
-    color: 'purple',
+    desc1: 'Production-ready at scale for enterprises worldwide.',
+    desc2: 'Top CNCF project with a vibrant community and ecosystem.',
   },
 ]
 
 export const cardColors1 = [
   {
-    bg: 'bg-orange-900/70',
-    text: 'text-orange-300',
+    bg: 'bg-primary-100/20',
+    text: 'text-primary-100',
   },
   {
-    bg: 'bg-green-900/70',
-    text: 'text-green-300',
+    bg: 'bg-primary-75/20',
+    text: 'text-primary-75',
   },
   {
-    bg: 'bg-purple-900/70',
-    text: 'text-purple-300',
+    bg: 'bg-primary-50/20',
+    text: 'text-primary-50',
   },
 ]
 
