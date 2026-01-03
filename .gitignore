@@ -59,3 +59,4 @@ pnpm-debug.log*
 # Ignore all folders in public except assets
 public/*
 !public/assets/
+resources/
