@@ -12,7 +12,7 @@ Kyverno supports the Common Expression Language (CEL) for writing powerful, expr
 
 ## Documentation
 
-- [Variables Reference](variables-reference/) - Complete list of available CEL variables
+- [Variables Reference](/docs/cel/variables-reference) - Complete list of available CEL variables
 
 ## Resources
 

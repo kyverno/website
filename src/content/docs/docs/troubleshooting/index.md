@@ -9,8 +9,8 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 ## Troubleshooting Guides
 
-- **[CEL Expressions](cel-expressions/)** - Debug and troubleshoot CEL expressions in policies
-- **[General Kyverno Issues](#api-server-is-blocked)** - Common Kyverno operational issues
+- **[CEL Expressions](/docs/troubleshooting/cel-expressions/)** - Debug and troubleshoot CEL expressions in policies
+- **[General Kyverno Issues](/docs/troubleshooting#api-server-is-blocked)** - Common Kyverno operational issues
 
 ## API server is blocked
 
