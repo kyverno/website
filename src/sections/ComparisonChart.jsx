@@ -61,7 +61,7 @@ export const ComparisonChart = () => {
     },
     {
       feature: 'Image Verification',
-      kyverno: 'Integrated',
+      kyverno: 'Sigstore Cosign & Notary',
       kyvernoStatus: 'yes',
       opa: 'Add-On',
       opaStatus: 'limited',
@@ -96,8 +96,8 @@ export const ComparisonChart = () => {
       kubernetesNativeStatus: 'no',
     },
     {
-      feature: 'Integrated Reporting',
-      kyverno: 'Yes',
+      feature: 'Reporting',
+      kyverno: 'OpenReports',
       kyvernoStatus: 'yes',
       opa: 'No',
       opaStatus: 'no',
@@ -105,7 +105,7 @@ export const ComparisonChart = () => {
       kubernetesNativeStatus: 'no',
     },
     {
-      feature: 'Exceptions',
+      feature: 'Policy Exceptions',
       kyverno: 'Yes',
       kyvernoStatus: 'yes',
       opa: 'No',
