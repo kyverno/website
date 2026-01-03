@@ -324,11 +324,17 @@ export const partners = [
 ]
 
 export const supportLinks = [
-  { href: 'https://kyverno.io/support/giantswarm/', text: 'Giant Swarm' },
-  { href: 'https://kyverno.io/support/nirmata/', text: 'Nirmata' },
-  { href: 'https://kyverno.io/support/blakyaks/', text: 'BlakYaks' },
-  { href: 'https://kyverno.io/support/infracloud/', text: 'Infra Cloud' },
-  { href: 'https://kyverno.io/support/kodekloud/', text: 'Kodekloud' },
+  { href: 'https://github.com/giantswarm/security-pack', text: 'Giant Swarm' },
+  { href: 'https://nirmata.com/', text: 'Nirmata' },
+  { href: 'https://www.blakyaks.com/partners', text: 'BlakYaks' },
+  {
+    href: 'https://www.infracloud.io/kyverno-consulting-support/',
+    text: 'InfraCloud',
+  },
+  {
+    href: 'https://learn.kodekloud.com/courses?search=kyverno',
+    text: 'Kodekloud',
+  },
 ]
 
 export const ResourcesLinks = [

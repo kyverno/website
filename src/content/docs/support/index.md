@@ -29,7 +29,7 @@ toc: false
 ## Services
 
 <div class="support-cards-grid grid grid-cols-1 md:grid-cols-3 gap-6 my-8"  target="_blank">
-  <a href="https://www.blakyaks.com/partners" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300">
+  <a href="https://www.blakyaks.com/partners" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank>
     <div class="flex flex-col space-y-4">
       <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">Blakyaks</h3>
       <p class="text-base text-black/90 leading-relaxed">
