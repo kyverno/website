@@ -42,6 +42,8 @@ export const TopNav = () => {
               href="https://playground.kyverno.io/"
               variant="secondary"
               size="large"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Playground
             </Button>
@@ -67,6 +69,8 @@ export const TopNav = () => {
                 href="https://playground.kyverno.io/"
                 variant="secondary"
                 size="medium"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Playground
               </Button>
