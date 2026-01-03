@@ -28,7 +28,8 @@ export const navItemsExternal = [
   { label: 'Documentation', href: '/docs/introduction' },
   { label: 'Sample Policies', href: '/policies' },
   { label: 'Community', href: '/community' },
-  { label: 'Blog', href: '#' },
+  { label: 'Support', href: '/support' },
+  { label: 'Blog', href: '/blog' },
 ]
 
 export const whyKyvernoCards = [

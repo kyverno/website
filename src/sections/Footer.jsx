@@ -1,4 +1,4 @@
-import { Github, Slack, Twitter, Mail } from 'lucide-react'
+import { Github, Slack, Twitter, Mail, LifeBuoy } from 'lucide-react'
 import {
   communityLinks,
   policies,
@@ -33,6 +33,9 @@ export const Footer = () => {
             </a>
             <a href="https://groups.google.com/g/kyverno">
               <Mail />
+            </a>
+            <a href="/support">
+              <LifeBuoy />
             </a>
           </span>
         </div>
