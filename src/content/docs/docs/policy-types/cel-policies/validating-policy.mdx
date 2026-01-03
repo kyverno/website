@@ -211,3 +211,81 @@ To write a policy for JSON payloads:
 To evaluate JSON policies, use the [Kyverno CLI](/docs/kyverno-cli).
 
 A Kyverno Engine SDK is planned for a subsequent release.
+
+## Reporting Details in ValidatingPolicy
+
+When a ValidatingPolicy is evaluated, the results are recorded in PolicyReports. PolicyReports are standard Kubernetes custom resources that summarize the outcomes of policy evaluations, including whether resources passed or failed validation.
+
+Kyverno provides additional fields in ValidatingPolicy rules to make PolicyReports more informative and contextual. Two important features are:
+
+### Using auditAnnotations to add custom data
+
+The auditAnnotations field allows attaching custom key-value data to the results stored in PolicyReports. These values can be static strings or dynamic expressions using [CEL (Common Expression Language)](/docs/policy-types/cel-libraries/).
+
+This is useful for adding metadata such as severity, team ownership, or any resource-specific values that help consumers of the PolicyReport better understand and act on violations.
+
+**Example Policy:**
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-labels
+spec:
+  auditAnnotations:
+    - key: team
+      valueExpression: 'platform'
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
+  variables:
+    - name: environment
+      expression: >-
+        has(object.metadata.labels) && 'env' in object.metadata.labels && object.metadata.labels['env'] == 'prod'
+  validations:
+    - expression: >-
+        variables.environment == true
+      message: >-
+        Deployment labels must be env=prod
+```
+
+### Using messageExpression to generate dynamic messages
+
+While the message field provides a static failure message, messageExpression allows you to dynamically build messages using CEL expressions. This produces more contextual and precise failure descriptions.
+
+If both message and messageExpression are defined, the messageExpression takes precedence.
+
+The expression must evaluate to a string.
+
+If the expression fails or produces an invalid string (empty, whitespace-only, or multi-line), Kyverno falls back to the static message.
+
+**Example Policy:**
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deployment-labels
+  annotations:
+    policies.kyverno.io/title: Check Deployment Labels
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/severity: medium
+spec:
+  validationActions:
+    - Audit
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
+  validations:
+    - expression: >-
+        'environment' in object.metadata.labels
+      messageExpression: >-
+        "Deployment " + object.metadata.name + " is missing required label 'environment'"
+      message: Deployment is missing required label
+```

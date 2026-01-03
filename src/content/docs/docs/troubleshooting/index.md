@@ -7,6 +7,11 @@ sidebar:
 
 Although Kyverno's goal is to make policy simple, sometimes trouble still strikes. The following sections can be used to help troubleshoot and recover when things go wrong.
 
+## Troubleshooting Guides
+
+- **[CEL Expressions](/docs/troubleshooting/cel-expressions/)** - Debug and troubleshoot CEL expressions in policies
+- **[General Kyverno Issues](/docs/troubleshooting#api-server-is-blocked)** - Common Kyverno operational issues
+
 ## API server is blocked
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
