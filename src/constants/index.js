@@ -57,12 +57,12 @@ export const whyKyvernoCards = [
 
 export const cardColors1 = [
   {
-    bg: 'bg-primary-100/20',
-    text: 'text-primary-100',
+    bg: 'bg-primary-50/20',
+    text: 'text-primary-50',
   },
   {
-    bg: 'bg-primary-75/20',
-    text: 'text-primary-75',
+    bg: 'bg-primary-50/20',
+    text: 'text-primary-50',
   },
   {
     bg: 'bg-primary-50/20',
