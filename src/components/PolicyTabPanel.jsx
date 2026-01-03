@@ -49,7 +49,7 @@ export const PolicyTabPanel = ({ tabs }) => {
           {/* Code Display */}
           <div className="bg-dark-50 rounded-2xl border border-stroke overflow-hidden">
             {/* Code Content */}
-            <div className="p-4 sm:p-6 overflow-x-auto max-h-[600px] overflow-y-auto">
+            <div className="p-4 sm:p-6 overflow-x-auto h-[600px] overflow-y-auto thin-scrollbar">
               <Highlight
                 language="yaml"
                 theme={codingThemes.dark}

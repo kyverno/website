@@ -21,7 +21,7 @@ export const HeadingContent = ({
       case 'level2':
         return type === 'header'
           ? 'text-4xl font-bold tracking-wide capitalize text-center'
-          : 'max-w-150 text-[1.2rem] sm:text-xl md:text-xl md:max-w-250 text-center text-white/90'
+          : 'max-w-150 text-[1.2rem] sm:text-xl md:text-xl md:max-w-700 text-center text-white/90'
 
       case 'level3':
         return type === 'header'
@@ -49,7 +49,7 @@ export const HeadingContent = ({
         {processHeading(headingParts)}
       </HeaderTag>
       <p
-        className={`w-full text-base text-white/90 sm:text-lg md:w-150 lg:w-220 text-center ${getVariantClasses('paragraph')}`}
+        className={`text-base text-white/90 sm:text-lg text-center ${getVariantClasses('paragraph')}`}
       >
         {subheading}
       </p>

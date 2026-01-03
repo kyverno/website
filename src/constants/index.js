@@ -364,7 +364,7 @@ export const policies = [
 export const heroSectionHeadingContent = {
   headingText: [
     { text: 'Unified', color: 'text-primary-100' },
-    { text: 'Policy as Code', color: 'text-primary-100' },
+    { text: 'Policy as Code,', color: 'text-primary-100' },
     { text: 'Simplified!', color: 'text-accent-100' },
   ],
 
@@ -379,7 +379,7 @@ export const whykyvernoHeadingContent = {
 
 export const comparisonChartHeadingContent = {
   headingText: [
-    { text: 'Kyverno vs', color: 'text-white' },
+    { text: 'Kyverno vs', color: 'text-primary-100' },
     { text: 'Other policy engines', color: 'text-primary-100' },
   ],
 
@@ -417,7 +417,7 @@ export const ctaSectionHeadingContent = {
 export const partnersSectionHeadingContent = {
   headingText: [{ text: 'Trusted By Industry Leaders', color: 'text-white' }],
 
-  paragraphText: 'Powering policy management for organizations worldwide',
+  paragraphText: 'Powering Policy-Based Security & Operations Worldwide',
 }
 
 export const codingThemes = {
@@ -427,7 +427,7 @@ export const codingThemes = {
 
 export const policyShowcaseHeadingContent = {
   headingText: [
-    { text: 'Kyverno', color: 'text-white' },
+    { text: 'Kyverno', color: 'text-primary-100' },
     { text: 'Policy Showcase', color: 'text-primary-100' },
   ],
   paragraphText: `Explore sample policies showcasing Kyverno's versatility across different use cases and policy types.`,
@@ -436,7 +436,7 @@ export const policyShowcaseHeadingContent = {
 export const policyShowcaseTabs = [
   {
     id: 'validate-k8s',
-    label: 'Validate K8s Resources',
+    label: 'Validate Kubernetes Resources',
     learnMore: '/docs/policy-types/validating-policy',
     policy: `apiVersion: kyverno.io/v1
 kind: ValidatingPolicy
@@ -461,7 +461,7 @@ spec:
   },
   {
     id: 'validate-terraform',
-    label: 'Validate Terraform',
+    label: 'Validate Terraform Plans',
     learnMore: '/docs/policy-types/validating-policy',
     policy: `apiVersion: json.kyverno.io/v1alpha1
 kind: ValidatingPolicy
@@ -482,7 +482,7 @@ spec:
   },
   {
     id: 'validate-dockerfile',
-    label: 'Validate Dockerfile',
+    label: 'Validate Dockerfiles',
     learnMore: '/docs/policy-types/validating-policy',
     policy: `apiVersion: json.kyverno.io/v1alpha1
 kind: ValidatingPolicy
@@ -503,7 +503,7 @@ spec:
   },
   {
     id: 'validate-http',
-    label: 'HTTP Authorization',
+    label: 'Authorize HTTP Requests',
     learnMore: '/docs/policy-types/validating-policy',
     policy: `apiVersion: json.kyverno.io/v1alpha1
 kind: ValidatingPolicy
@@ -524,7 +524,7 @@ spec:
   },
   {
     id: 'mutate-k8s',
-    label: 'Mutate K8s Resources',
+    label: 'Mutate Kubernetes Resources',
     learnMore: '/docs/policy-types/mutating-policy',
     policy: `apiVersion: kyverno.io/v1
 kind: MutatingPolicy
@@ -547,7 +547,7 @@ spec:
   },
   {
     id: 'generate-k8s',
-    label: 'Generate K8s Resources',
+    label: 'Generate Kubernetes Resources',
     learnMore: '/docs/policy-types/generating-policy',
     policy: `apiVersion: kyverno.io/v1
 kind: GeneratingPolicy
@@ -576,7 +576,7 @@ spec:
   },
   {
     id: 'cleanup-k8s',
-    label: 'Cleanup K8s Resources',
+    label: 'Cleanup Kubernetes Resources',
     learnMore: '/docs/policy-types/cleanup-policy',
     policy: `apiVersion: kyverno.io/v2alpha1
 kind: CleanupPolicy
@@ -599,7 +599,7 @@ spec:
   },
   {
     id: 'validate-images',
-    label: 'Validate Images',
+    label: 'Validate Container Images',
     learnMore: '/docs/policy-types/image-validating-policy',
     policy: `apiVersion: kyverno.io/v1
 kind: ImageValidatingPolicy
