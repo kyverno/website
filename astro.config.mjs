@@ -9,7 +9,6 @@ import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
 
-const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
 const checkLinksPlugin = process.env.CHECK_LINKS
   ? [
       starlightLinksValidator({
@@ -170,8 +169,6 @@ export default defineConfig({
     react(),
     markdoc(),
   ],
-
-  adapter: isDev ? undefined : netlify(),
   vite: {
     plugins: [tailwindcss()],
   },
