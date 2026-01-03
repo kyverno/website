@@ -34,7 +34,7 @@
   publish = "dist"
 
   [context.branch-deploy.environment]
-    NODE_ENV = "development"
+    NODE_ENV = "production"
     ASTRO_ENV = "branch"
     SITE_URL = "$DEPLOY_PRIME_URL"
 
