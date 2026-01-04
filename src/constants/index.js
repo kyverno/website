@@ -265,12 +265,12 @@ spec:
         operations:  ["CREATE", "UPDATE"]
         resources:   ["pods"]
   variables:
-    - name: labels
-      expression: object.metadata.?labels.orValue([])
+    - name: "labels"
+      expression: "object.metadata.?labels.orValue([])"
   validations:
-    - expression: has(variables.labels.app) && 
-        has(variables.labels.version)
-      message: "Pod must have 'app' and 'version' labels"`,
+    -  message: "Pods must have 'app' and 'version' labels"
+       expression: "has(variables.labels.app) && has(variables.labels.version)"
+     `,
   },
   {
     id: 'validate-terraform',
