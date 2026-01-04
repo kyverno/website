@@ -286,13 +286,15 @@ spec:
   evaluation:
     mode: "JSON"
   matchConditions:
-    - name: isTerraformPlan
-      expression: has(object.terraform_version) &&
-          has(object.planned_values) 
+    - name: "isTerraformPlan"
+      expression: |
+        has(object.terraform_version) &&
+          has(object.planned_values)
   variables:
     - name: ecsTasks
-      expression: object.?planned_values.root_module.resources.exists(r, 
-        r.type == 'aws_ecs_task_definition').orValue([])
+      expression: |
+        object.?planned_values.root_module.resources.exists(r, 
+          r.type == 'aws_ecs_task_definition').orValue([])
   validations:
     - message: "ECS tasks must use awsvpc network mode."
       expression: |
