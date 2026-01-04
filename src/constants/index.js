@@ -284,7 +284,7 @@ metadata:
   name: check-awsvpc-network-mode
 spec:
   evaluation:
-    mode: JSON
+    mode: "JSON"
   matchConditions:
     - name: isTerraformPlan
       expression: has(object.terraform_version) &&
