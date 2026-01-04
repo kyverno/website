@@ -269,7 +269,9 @@ spec:
       expression: "object.metadata.?labels.orValue([])"
   validations:
     -  message: "Pods must have 'app' and 'version' labels"
-       expression: "has(variables.labels.app) && has(variables.labels.version)"
+       expression: |
+         has(variables.labels.app) && 
+         has(variables.labels.version)
      `,
   },
   {
@@ -508,7 +510,7 @@ spec:
         -----END PUBLIC KEY-----
   validations:
     - message: image is not authorized
-      expression: >-
+      expression: |
        images.containers.map(image, 
          verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)`,
   },
