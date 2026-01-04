@@ -31,6 +31,7 @@ node_modules
 # Hugo related files
 # build output
 dist/
+
 # generated types
 .astro/
 
@@ -53,3 +54,9 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# website build output
+# Ignore all folders in public except assets
+public/*
+!public/assets/
+resources/

@@ -42,10 +42,12 @@ export const TopNav = () => {
               href="https://playground.kyverno.io/"
               variant="secondary"
               size="large"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Playground
             </Button>
-            <Button href="/support" variant="primary" size="large">
+            <Button href="/support" variant="accent" size="large">
               Support
             </Button>
           </div>
@@ -67,11 +69,13 @@ export const TopNav = () => {
                 href="https://playground.kyverno.io/"
                 variant="secondary"
                 size="medium"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Playground
               </Button>
               // Mobile
-              <Button href="/support" variant="primary" size="medium">
+              <Button href="/support" variant="accent" size="medium">
                 Support
               </Button>
             </div>
