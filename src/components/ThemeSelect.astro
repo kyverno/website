@@ -5,58 +5,30 @@ import { Icon } from '@astrojs/starlight/components'
 import Default from '@astrojs/starlight/components/ThemeSelect.astro'
 
 import { documentationVersions } from '../constants'
+import { createVersionOptions } from '../utils/versions'
 
-// Detect current version based on URL hostname
-const getCurrentVersion = (versions, hostname) => {
-  for (const version of versions) {
-    try {
-      const versionUrl = new URL(version.href)
-      const versionHostname = versionUrl.hostname
-      
-      // Exact match
-      if (hostname === versionHostname) {
-        return version
-      }
-      
-      // Check if hostname contains the subdomain (e.g., release-1-15-0.kyverno.io)
-      const versionSubdomain = versionHostname.split('.')[0]
-      if (hostname.includes(versionSubdomain) && versionSubdomain !== 'kyverno') {
-        return version
-      }
-    } catch (e) {
-      continue
-    }
-  }
-  
-  // Default to "main" version if no match found
-  return versions.find(v => v.href.includes('main.kyverno.io')) || versions[0]
-}
-
+// Generate version options with preserved paths
 const currentHostname = Astro.url.hostname
-const currentVersion = getCurrentVersion(documentationVersions, currentHostname)
-
-// Preserve current path when switching versions
 const currentPath = Astro.url.pathname
-const versionOptions = documentationVersions.map((version) => {
-  const versionUrl = new URL(version.href)
-  const targetUrl = new URL(currentPath, versionUrl.origin)
-  return {
-    label: version.label,
-    href: targetUrl.toString(),
-    isCurrent: version.href === currentVersion.href,
-  }
-})
+const versionOptions = createVersionOptions(
+  documentationVersions,
+  currentPath,
+  currentHostname,
+)
 ---
-
 
 <starlight-version-select>
   <label class="version-label">
     <span class="sr-only">Select version</span>
     <Icon name="seti:clock" class="icon label-icon" />
     <select class="version-select" autocomplete="off">
-      {versionOptions.map((version) => (
-        <option value={version.href} selected={version.isCurrent}>{version.label}</option>
-      ))}
+      {
+        versionOptions.map((version) => (
+          <option value={version.href} selected={version.isCurrent}>
+            {version.label}
+          </option>
+        ))
+      }
     </select>
     <Icon name="down-caret" class="icon caret-icon" />
   </label>

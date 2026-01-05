@@ -1,47 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { createVersionOptions, getCurrentVersion } from '../utils/versions'
 
 import { ChevronDown } from 'lucide-react'
 import { documentationVersions } from '../constants/index.js'
-
-const getCurrentVersion = (versions) => {
-  if (typeof window === 'undefined') {
-    // Find "main" version or default to first
-    return (
-      versions.find((v) => v.href.includes('main.kyverno.io')) || versions[0]
-    )
-  }
-
-  const hostname = window.location.hostname
-
-  // Match version based on hostname from href
-  for (const version of versions) {
-    try {
-      const versionUrl = new URL(version.href)
-      const versionHostname = versionUrl.hostname
-
-      // Exact match
-      if (hostname === versionHostname) {
-        return version
-      }
-
-      // Check if hostname contains the subdomain (e.g., release-1-15-0.kyverno.io)
-      const versionSubdomain = versionHostname.split('.')[0]
-      if (
-        hostname.includes(versionSubdomain) &&
-        versionSubdomain !== 'kyverno'
-      ) {
-        return version
-      }
-    } catch (e) {
-      // If URL parsing fails, skip this version
-      continue
-    }
-  }
-
-  // Default to "main" version if no match found
-  const mainVersion = versions.find((v) => v.href.includes('main.kyverno.io'))
-  return mainVersion || versions[0]
-}
 
 export const VersionDropdown = ({ className = '' }) => {
   // Initialize with "main" version as default
@@ -53,8 +14,11 @@ export const VersionDropdown = ({ className = '' }) => {
   const dropdownRef = useRef(null)
 
   useEffect(() => {
-    // Detect current version based on URL
-    setCurrentVersion(getCurrentVersion(documentationVersions))
+    // Detect current version based on URL (client-side only)
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname
+      setCurrentVersion(getCurrentVersion(documentationVersions, hostname))
+    }
   }, [])
 
   useEffect(() => {
@@ -89,32 +53,42 @@ export const VersionDropdown = ({ className = '' }) => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-dark-50 border border-stroke rounded-md shadow-lg z-50">
           <div className="py-1">
-            {documentationVersions.map((version, index) => {
-              // Preserve current path when switching versions
-              const getVersionUrl = () => {
-                if (typeof window === 'undefined') return version.href
-                const currentPath = window.location.pathname
-                const versionUrl = new URL(version.href)
-                const targetUrl = new URL(currentPath, versionUrl.origin)
-                return targetUrl.toString()
+            {(() => {
+              // Generate version options with preserved paths (client-side only)
+              if (typeof window === 'undefined') {
+                return documentationVersions.map((version, index) => (
+                  <a
+                    key={index}
+                    href={version.href}
+                    className="block px-4 py-2 text-sm text-white hover:bg-primary-100/20 hover:text-accent-100 transition-colors"
+                  >
+                    {version.label}
+                  </a>
+                ))
               }
 
-              const isCurrentVersion = currentVersion.href === version.href
+              const hostname = window.location.hostname
+              const currentPath = window.location.pathname
+              const versionOptions = createVersionOptions(
+                documentationVersions,
+                currentPath,
+                hostname,
+              )
 
-              return (
+              return versionOptions.map((version, index) => (
                 <a
                   key={index}
-                  href={getVersionUrl()}
+                  href={version.href}
                   className={`block px-4 py-2 text-sm transition-colors ${
-                    isCurrentVersion
+                    version.isCurrent
                       ? 'bg-primary-100/30 text-accent-100 font-medium'
                       : 'text-white hover:bg-primary-100/20 hover:text-accent-100'
                   }`}
                 >
                   {version.label}
                 </a>
-              )
-            })}
+              ))
+            })()}
           </div>
         </div>
       )}
