@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - BuildConfig
-tags: []
+tags:
+  - OpenShift in CEL
 version: 1.11.0
+description: 'The Jenkins Pipeline Build Strategy has been deprecated. This policy prevents its use. Use OpenShift Pipelines instead.'
 ---
 
 ## Policy Definition

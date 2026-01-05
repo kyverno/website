@@ -22,8 +22,6 @@ export const versions = [
   { label: 'v1.14', href: '#' },
 ]
 
-export const navItemsOnsite = []
-
 export const navItemsExternal = [
   { label: 'Documentation', href: '/docs/introduction' },
   { label: 'Sample Policies', href: '/policies' },

@@ -1,11 +1,14 @@
 ---
 title: 'Add Karpenter Do Not Evict'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Karpenter
+  - EKS Best Practices
+isNew: true
 ---
 
 ## Policy Definition

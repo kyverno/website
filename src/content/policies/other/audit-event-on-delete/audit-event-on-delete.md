@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Secret
-tags: []
+tags:
+  - Other
 version: 1.10.0
+description: 'Kubernetes Events are limited in that the circumstances under which they are created cannot be changed and with what they are associated is fixed. It may be advantageous in many cases to augment these out-of-the-box Events with custom Events which can be custom designed to your needs. This policy generates an Event when a Secret has been deleted. It lists the userInfo of the actor performing the deletion.'
 ---
 
 ## Policy Definition

@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - ApplicationSet
-tags: []
+tags:
+  - Argo
 version: 1.6.0
+description: 'This policy ensures that the name of the ApplicationSet is the same value provided in the project.'
 ---
 
 ## Policy Definition

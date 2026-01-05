@@ -6,16 +6,14 @@ export const TopNavLinks = ({ links, handleScroll }) => {
     >
       {links.map((item, index) => (
         <li key={index} className="hover:text-accent-100 active:text-accent-50">
-          {handleScroll ? (
-            <a
-              href={`#${item.targetId}`}
-              onClick={(e) => handleScroll(e, item.targetId)}
-            >
-              {item.label}
-            </a>
-          ) : (
-            <a href={item.href}>{item.label}</a>
-          )}
+          <a
+            href={item.href}
+            onClick={
+              handleScroll ? (e) => handleScroll(e, item.href) : undefined
+            }
+          >
+            {item.label}
+          </a>
         </li>
       ))}
     </ul>

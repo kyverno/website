@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - PeerAuthentication
-tags: []
+tags:
+  - Istio in CEL
 version: 1.11.0
+description: 'Strict mTLS requires that mutual TLS be enabled across the entire service mesh, which can be set using a PeerAuthentication resource on a per-Namespace basis and, if set on the `istio-system` Namespace could disable it across the entire mesh. Disabling mTLS can reduce the security for traffic within that portion of the mesh and should be controlled. This policy prevents disabling strict mTLS in a PeerAuthentication resource by requiring the `mode` be set to either `UNSET` or `STRICT`.'
 ---
 
 ## Policy Definition

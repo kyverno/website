@@ -6,8 +6,10 @@ type: ClusterPolicy
 subjects:
   - ClusterRoleBinding
   - RBAC
-tags: []
+tags:
+  - OpenShift
 version: 1.6.0
+description: 'This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.'
 ---
 
 ## Policy Definition

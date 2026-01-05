@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - MachineSet
-tags: []
+tags:
+  - OpenShift
 version: 1.10.0
+description: 'A required component of a MachineSet is the infrastructure name which is a random string created in a separate resource. It can be tedious or impossible to know this for each MachineSet created. This policy fetches the value of the infrastructure name from the Cluster resource and replaces all instances of TEMPLATE in a MachineSet with that name.'
 ---
 
 ## Policy Definition

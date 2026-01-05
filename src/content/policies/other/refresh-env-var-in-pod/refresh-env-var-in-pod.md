@@ -7,8 +7,10 @@ subjects:
   - Pod
   - Deployment
   - Secret
-tags: []
+tags:
+  - Other
 version: 1.9.0
+description: 'When Pods consume Secrets or ConfigMaps through environment variables, should the contents of those source resources change, the downstream Pods are normally not aware of them. In order for the changes to be reflected, Pods must either restart or be respawned. This policy watches for changes to Secrets which have been marked for this refreshing process which contain the label `kyverno.io/watch=true` and will write an annotation to any Deployment Pod template which consume them as env vars. This will result in a new rollout of Pods which will pick up the changed values. See the related policy entitled "Refresh Volumes in Pods" for a similar reloading process when ConfigMaps and Secrets are consumed as volumes instead. Use of this policy may require providing the Kyverno ServiceAccount with permission to update Deployments.'
 ---
 
 ## Policy Definition

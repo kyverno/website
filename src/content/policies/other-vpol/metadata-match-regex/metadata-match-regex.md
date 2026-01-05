@@ -6,8 +6,10 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Label
-tags: []
+tags:
+  - Other in Vpol
 version: 1.14.0
+description: 'Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.'
 ---
 
 ## Policy Definition

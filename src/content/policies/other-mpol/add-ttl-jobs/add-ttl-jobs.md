@@ -1,12 +1,15 @@
 ---
 title: 'Add TTL to Jobs'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Job
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'Jobs which are user created can often pile up and consume excess space in the cluster. In Kubernetes 1.23, the TTL-after-finished controller is stable and will automatically clean up these Jobs if the ttlSecondsAfterFinished is specified. This policy adds the ttlSecondsAfterFinished field to an Job that does not have an ownerReference set if not already specified.'
+isNew: true
 ---
 
 ## Policy Definition

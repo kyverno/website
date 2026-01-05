@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - VirtualMachine
-tags: []
+tags:
+  - KubeVirt
+description: 'Check VirtualMachines and validate that they are using an instance type and preference.'
 ---
 
 ## Policy Definition

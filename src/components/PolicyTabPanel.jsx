@@ -1,9 +1,9 @@
+import { Check, Copy } from 'lucide-react'
 import React, { useState } from 'react'
-import { Highlight } from 'prism-react-renderer'
-import { Copy, Check } from 'lucide-react'
-import { codingThemes } from '../constants'
-import { twMerge } from 'tailwind-merge'
+
 import { Button } from './Button'
+import { YamlCodeBlock } from './YamlCodeBlock'
+import { twMerge } from 'tailwind-merge'
 
 export const PolicyTabPanel = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || '')
@@ -49,39 +49,13 @@ export const PolicyTabPanel = ({ tabs }) => {
           {/* Code Display */}
           <div className="bg-dark-50 rounded-2xl border border-stroke overflow-hidden">
             {/* Code Content */}
-            <div className="p-4 sm:p-6 overflow-x-auto h-[531px] overflow-y-auto thin-scrollbar">
-              <Highlight
-                language="yaml"
-                theme={codingThemes.dark}
+            <div className="h-[531px] overflow-hidden">
+              <YamlCodeBlock
                 code={activeTabData?.policy || ''}
-              >
-                {({
-                  className,
-                  style,
-                  tokens,
-                  getLineProps,
-                  getTokenProps,
-                }) => (
-                  <pre
-                    className={twMerge(
-                      className,
-                      'text-xs sm:text-sm leading-relaxed m-0',
-                    )}
-                    style={{
-                      ...style,
-                      tabSize: 2,
-                    }}
-                  >
-                    {tokens.map((line, i) => (
-                      <div key={i} {...getLineProps({ line, key: i })}>
-                        {line.map((token, key) => (
-                          <span key={key} {...getTokenProps({ token, key })} />
-                        ))}
-                      </div>
-                    ))}
-                  </pre>
-                )}
-              </Highlight>
+                showCopyButton={false}
+                className="h-full"
+                preClassName="h-full overflow-y-auto thin-scrollbar text-xs sm:text-sm"
+              />
             </div>
 
             {/* Footer with Copy and Learn More buttons */}

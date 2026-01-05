@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+description: 'This policy generates a job which gathers troubleshooting data (including logs, kubectl describe output and events from the namespace) from pods that are in CrashLoopBackOff and have 3 restarts. This data can further be used to automatically create a Jira issue using some kind of automation or another Kyverno policy. For more information on the image used in this policy in addition to the necessary RBAC resources required in order for this policy to operate, see the documentation at https://github.com/nirmata/SRE-Operational-Usecases/tree/main/get-troubleshooting-data/get-debug-data. '
 ---
 
 ## Policy Definition
