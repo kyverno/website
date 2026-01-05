@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Button } from '../components/Button.jsx'
 import { SiteLogo } from '../components/SiteLogo.jsx'
 import { TopNavLinks } from '../components/TopNavLinks.jsx'
+import { VersionDropdown } from '../components/VersionDropdown.jsx'
 import { navItemsExternal } from '../constants/index.js'
 
 // navItemsOnsite is the same as navItemsExternal for now
@@ -71,6 +72,7 @@ export const TopNav = () => {
             <Button href="/support" variant="accent" size="large">
               Support
             </Button>
+            <VersionDropdown />
           </div>
           <div className="xl:hidden flex flex-col justify-end">
             <button onClick={toggleMobileNav}>
@@ -85,20 +87,22 @@ export const TopNav = () => {
           >
             <TopNavLinks links={navItemsOnsite} handleScroll={handleScroll} />
             <TopNavLinks links={navItemsExternal} />
-            <div className="xl:hidden flex space-x-2">
-              <Button
-                href="https://playground.kyverno.io/"
-                variant="secondary"
-                size="medium"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Playground
-              </Button>
-              // Mobile
-              <Button href="/support" variant="accent" size="medium">
-                Support
-              </Button>
+            <div className="xl:hidden flex flex-col space-y-4 items-center">
+              <VersionDropdown />
+              <div className="flex space-x-2">
+                <Button
+                  href="https://playground.kyverno.io/"
+                  variant="secondary"
+                  size="medium"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Playground
+                </Button>
+                <Button href="/support" variant="accent" size="medium">
+                  Support
+                </Button>
+              </div>
             </div>
           </div>
         )}

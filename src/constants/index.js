@@ -16,6 +16,13 @@ import {
 
 import { themes } from 'prism-react-renderer'
 
+export const documentationVersions = [
+  { label: 'v1.16.0', href: 'https://kyverno.io' },
+  { label: 'v1.15.0', href: 'https://release-1-15-0.kyverno.io' },
+  { label: 'v1.14.0', href: 'https://release-1-14-0.kyverno.io' },
+  { label: 'main', href: 'https://main.kyverno.io' },
+]
+
 export const versions = [
   { label: 'v1alpha1', href: '#' },
   { label: 'v1.15', href: '#' },
