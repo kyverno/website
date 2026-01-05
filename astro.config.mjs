@@ -176,7 +176,4 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  redirects: {
-    '/policy-types/[...slug]': '/policy-types/cel-policies/[...slug]',
-  },
 })
