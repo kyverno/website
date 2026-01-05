@@ -34,7 +34,7 @@ In this post, I will show you how to write CEL expressions in Kyverno policies f
 
 The below policy ensures no hostPath volumes are in use for Deployments.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -62,7 +62,7 @@ EOF
 
 Now, let’s try deploying an app that uses a hostPath:
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -107,7 +107,7 @@ disallow-host-path:
 
 The below policy ensures that any StatefulSet is created in the `production` Namespace
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -133,7 +133,7 @@ EOF
 
 Let’s try creating a StatefulSet in the `default` Namespace.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: StatefulSet
@@ -168,7 +168,7 @@ check-statefulset-namespace:
 
 Let's create a Statefulset in the `production` Namespace.
 
-```yaml
+```sh
 kubectl apply -f - << EOF
 apiVersion: apps/v1
 kind: StatefulSet
@@ -209,7 +209,7 @@ Some other useful variables that we can use in CEL expressions are
 
 The below policy ensures the hostPort field is set to a value between 5000 and 6000 for pods whose `metadata.name` set to `nginx`
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -240,7 +240,7 @@ EOF
 
 Let’s try deploying an Apache server with hostPort set to 80.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -264,7 +264,7 @@ Pod/apache created
 
 Let’s try deploying an Nginx server with hostPort set to 80.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -295,7 +295,7 @@ disallow-host-port-range:
 
 The below policy ensures the deployment replicas are less than a specific value. This value is defined in a parameter resource.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -329,7 +329,7 @@ The `cel.paramKind` and `cel.paramRef` specify the resource used to parameterize
 
 The ReplicaLimit could be as follows:
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: rules.example.com/v1
 kind: ReplicaLimit
@@ -341,7 +341,7 @@ EOF
 
 Here’s the corresponding custom resource definition:
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -374,7 +374,7 @@ EOF
 
 Now, let’s try deploying an app with five replicas.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -409,7 +409,7 @@ check-deployment-replicas:
 
 Let’s try deploying an app with two replicas.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -445,7 +445,7 @@ The order of variables is important because a variable can refer to other variab
 
 The below policy enforces that image repo names match the environment defined in its Namespace. It enforces that all containers of deployment have the image repo match the environment label of its Namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the Namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/\* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -480,7 +480,7 @@ EOF
 
 Let’s start with creating a Namespace that has a label of environment: staging
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Namespace
@@ -493,7 +493,7 @@ EOF
 
 And then create a deployment whose image is example.com/nginx in the `staging-ns` Namespace.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -520,7 +520,7 @@ As expected, the deployment creation will be blocked since its image must be sta
 
 Let's try setting the deployment image to staging.example.com/nginx instead
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -557,7 +557,7 @@ Check the [autogen rules](/docs/policy-types/cluster-policy/autogen) for more in
 
 For example, when creating a validation policy like below, which disallows latest image tags, the policy applies to all resources capable of generating Pods.
 
-```yaml
+```sh
 kubectl apply -f - <<EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -633,7 +633,7 @@ status:
 
 Let's try creating an nginx deployment with the latest tag.
 
-```yaml
+```sh
 kubectl apply -f - << EOF
 apiVersion: apps/v1
 kind: Deployment

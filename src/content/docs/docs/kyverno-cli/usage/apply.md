@@ -862,7 +862,7 @@ kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception
 
 The following output will be generated:
 
-```yaml
+```sh
 Applying 3 policy rule(s) to 1 resource(s) with 1 exception(s)...
 
 pass: 0, fail: 0, warn: 0, error: 0, skip: 1

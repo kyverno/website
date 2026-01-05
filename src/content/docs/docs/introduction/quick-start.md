@@ -24,7 +24,7 @@ In the validation guide, you will see how simple an example Kyverno policy can b
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
-```yaml
+```sh
 kubectl create -f- << EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -132,7 +132,7 @@ Mutation is the ability to change or "mutate" a resource in some way prior to it
 
 Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno has the ability to perform basic "if-then" logical decisions in a very easy way making policies trivial to write and read. The `+(team)` notation uses a Kyverno anchor to define the behavior Kyverno should take if the label key is not found.
 
-```yaml
+```sh
 kubectl create -f- << EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -212,7 +212,7 @@ kubectl -n default create secret docker-registry regcred \
 
 By default, Kyverno is [configured with minimal permissions](/docs/installation/customization#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
-```yaml
+```sh
 kubectl apply -f- << EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -252,7 +252,7 @@ EOF
 
 Next, create the following Kyverno policy. The `sync-secrets` policy will match on any newly-created Namespace and will clone the Secret we just created earlier into that new Namespace.
 
-```yaml
+```sh
 kubectl create -f- << EOF
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy

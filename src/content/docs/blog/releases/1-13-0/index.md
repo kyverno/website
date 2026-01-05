@@ -332,26 +332,26 @@ metadata:
   name: foreach-clone
 spec:
   rules:
-  - match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-	   namespaces:
-          - default
-    name: k-kafka-address
-    generate:
-      generateExisting: false
-      synchronize: true
-      foreach:
-        - list: request.object.data.namespaces | split(@, ',')
-          apiVersion: v1
-          kind: Secret
-          name: cloned-secret-{{ elementIndex }}-{{ element }}
-          namespace: '{{ element }}'
-          clone:
-            namespace: default
-            name: source-secret
+    - name: k-kafka-address
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+              namespaces:
+                - default
+      generate:
+        generateExisting: false
+        synchronize: true
+        foreach:
+          - list: request.object.data.namespaces | split(@, ',')
+            apiVersion: v1
+            kind: Secret
+            name: cloned-secret-{{ elementIndex }}-{{ element }}
+            namespace: '{{ element }}'
+            clone:
+              namespace: default
+              name: source-secret
 ```
 
 In addition, each `foreach` declaration supports the following declarations: Context and Preconditions. For more information please see [Kyverno documentation](/docs/policy-types/cluster-policy/generate#foreach).
@@ -578,7 +578,7 @@ metadata:
 To only substitute the rule data with the HCL, and not perform nested substitutions, the following policy uses the declaration `{{- hcl }}` for shallow substitution.
 
 ```yaml
-apiVersion: cli.kyverno.io/v1alphaapiVersion: kyverno.io/v1
+apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: vault-auth-backend
@@ -587,30 +587,29 @@ spec:
   background: true
   mutateExistingOnPolicyUpdate: true
   rules:
-  - name: vault-injector-config-blue-to-green-auth-backend
-    context:
-    - name: hcl
-      variable:
-        jmesPath: replace_all( ‘{{ request.object.data.config }}’, ‘from_string’,‘to_string’)
-    match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-          names:
-          - test-*
-          namespaces:
-          - corp-tech-ap-team-ping-ep
-    mutate:
-      patchStrategicMerge:
-        data:
-          config: ‘{{- hcl }}’
-      targets:
-      - apiVersion: v1
-        kind: ConfigMap
-        name: ‘{{ request.object.metadata.name }}’
-        namespace: ‘{{ request.object.metadata.namespace }}’
-    name: vault-injector-config-blue-to-green-auth-backend
+    - name: vault-injector-config-blue-to-green-auth-backend
+      context:
+        - name: hcl
+          variable:
+            jmesPath: replace_all( ‘{{ request.object.data.config }}’, ‘from_string’,‘to_string’)
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+              names:
+                - test-*
+              namespaces:
+                - corp-tech-ap-team-ping-ep
+      mutate:
+        patchStrategicMerge:
+          data:
+            config: ‘{{- hcl }}’
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: ‘{{ request.object.metadata.name }}’
+            namespace: ‘{{ request.object.metadata.namespace }}’
 ```
 
 ### Improved ArgoCD Integration

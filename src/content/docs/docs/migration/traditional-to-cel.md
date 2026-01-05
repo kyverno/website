@@ -431,9 +431,11 @@ expression: "size(object.spec.containers) > 0 && object.spec.containers[0].image
 
 ```yaml
 # Instead of {{ request.object.metadata.name }}
-expression: "object.metadata.name"
+expression: 'object.metadata.name'
+```
 
-# For external data, use resource library
+```yaml
+# For API data, use resource library
 expression: "resource.get('v1', 'ConfigMap', 'default', 'my-config') != null"
 ```
 
