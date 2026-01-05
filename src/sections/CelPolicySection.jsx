@@ -1,14 +1,15 @@
 import {
   celPolicies,
-  yamlCEL,
   celPoliciesCardColors,
-  yamlCelCardColors,
   celPoliciesHeadingContent,
+  yamlCEL,
+  yamlCelCardColors,
 } from '../constants'
+
 import { Button } from '../components/Button'
 import { CelPolicyCards } from '../components/CelPolicyCards'
-import { YamlVsCelCard } from '../components/YamlVsCelCard'
 import { HeadingContent } from '../components/HeadingContent'
+import { YamlCodeBlock } from '../components/YamlCodeBlock'
 
 export const CelPolicySection = () => {
   const { headingText, paragraphText } = celPoliciesHeadingContent
@@ -46,10 +47,15 @@ export const CelPolicySection = () => {
                        sm:flex-row sm:items-baseline sm:justify-center sm:space-x-6"
           >
             {yamlCEL.map((card, index) => (
-              <YamlVsCelCard
-                card={card}
-                color={yamlCelCardColors[index]}
+              <YamlCodeBlock
                 key={index}
+                code={card.content}
+                showCopyButton={true}
+                header={{
+                  icon: card.icon,
+                  title: card.title,
+                }}
+                headerColor={yamlCelCardColors[index]?.bg}
               />
             ))}
           </div>

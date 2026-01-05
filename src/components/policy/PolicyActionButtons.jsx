@@ -108,33 +108,26 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-3 mt-8">
+    <div className="flex flex-wrap gap-3">
       {yamlUrl && (
         <a
           href={yamlUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-primary-100/20 hover:bg-primary-100/30 border border-primary-100/50 rounded-lg text-white font-medium transition-all hover:border-primary-100 hover:shadow-lg hover:shadow-primary-100/20"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-primary-100 hover:bg-primary-100/90 border border-primary-100 rounded-lg text-white font-medium transition-all"
         >
           <ExternalLink size={18} />
           View on GitHub
         </a>
       )}
       <button
-        onClick={handleOpenInPlayground}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 rounded-lg text-white font-medium transition-all hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20"
-      >
-        <Play size={18} />
-        Open in Playground
-      </button>
-      <button
         onClick={handleCopy}
-        className={`inline-flex items-center gap-2 px-6 py-3 border rounded-lg text-white font-medium transition-all ${
+        className={`inline-flex items-center gap-2 px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg text-white font-medium transition-all bg-gray-800 hover:bg-gray-750 ${
           copyState === 'success'
             ? 'bg-green-500/20 border-green-500/50'
             : copyState === 'error'
               ? 'bg-red-500/20 border-red-500/50'
-              : 'bg-stroke/60 hover:bg-stroke/80 border-stroke/80 hover:border-primary-100/50'
+              : ''
         }`}
       >
         {copyState === 'success' ? (
@@ -153,6 +146,13 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
             Copy YAML
           </>
         )}
+      </button>
+      <button
+        onClick={handleOpenInPlayground}
+        className="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg text-white font-medium transition-all bg-gray-800 hover:bg-gray-750"
+      >
+        <Play size={18} />
+        Open in Playground
       </button>
     </div>
   )

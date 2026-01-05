@@ -62,9 +62,13 @@ export const PolicyCard = ({ policy }) => {
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-semibold mb-2 text-white leading-tight group-hover:text-primary-100 transition-colors">
+          <a
+            href={`/policies/${policy.id}/`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xl font-semibold mb-2 text-white leading-tight group-hover:text-primary-100 transition-colors block hover:underline cursor-pointer"
+          >
             {policy.data.title}
-          </h3>
+          </a>
 
           {/* Description */}
           {description && (
