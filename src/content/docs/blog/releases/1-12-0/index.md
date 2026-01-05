@@ -87,8 +87,8 @@ Example:
 ```yaml
 context:
   - name: deploymentCount
-     globalReference:
-       name: deployments
+    globalReference:
+      name: deployments
 ```
 
 _Note_: Depending on whether the data is sourced from Kubernetes resources or API calls, the JMESPath expression used to manipulate the data may vary. For Kubernetes resources, utilize `length(@)` to obtain the length of the array, while for API calls returning a list, use `items | length(@)`.
@@ -132,21 +132,21 @@ metadata:
   name: container-exception
 spec:
   exceptions:
-  - policyName: max-containers
-     ruleNames:
-     - max-two-containers
-     - autogen-max-two-containers
+    - policyName: max-containers
+      ruleNames:
+        - max-two-containers
+        - autogen-max-two-containers
   match:
     any:
-    - resources:
-        kinds:
-        - Pod
-        - Deployment
+      - resources:
+          kinds:
+            - Pod
+            - Deployment
   conditions:
     any:
-    - key: "{{ request.object.metadata.labels.color || '' }}"
-       operator: Equals
-       value: blue
+      - key: "{{ request.object.metadata.labels.color || '' }}"
+        operator: Equals
+        value: blue
 ```
 
 In addition, PolicyException can be used to define an exemption for the Pod through the `podSecurity{}` block. It can be used to define controls that are exempted from the policy.
@@ -191,34 +191,34 @@ In 1.12, Kyverno CLI now supports applying the ValidatingAdmissionPolicyBinding 
 Here is a report snippet that is generated for ValidatingAdmissionPolicy with its binding:
 
 ```yaml
- apiVersion: wgpolicyk8s.io/v1alpha2
-  kind: PolicyReport
-  metadata:
-    labels:
-      app.kubernetes.io/managed-by: kyverno
-    namespace: staging-ns
-    ownerReferences:
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: PolicyReport
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  namespace: staging-ns
+  ownerReferences:
     - apiVersion: apps/v1
       kind: Deployment
       name: deployment-3
-  results:
+results:
   - message: 'failed expression: object.spec.replicas <= 5'
     policy: check-deployment-replicas
     properties:
       binding: check-deployment-replicas-binding
     result: fail
     source: ValidatingAdmissionPolicy
-  scope:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: deployment-3
-    namespace: staging-ns
-  summary:
-    error: 0
-    fail: 1
-    pass: 0
-    skip: 0
-    warn: 0
+scope:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: deployment-3
+  namespace: staging-ns
+summary:
+  error: 0
+  fail: 1
+  pass: 0
+  skip: 0
+  warn: 0
 ```
 
 ### Fine-grained PodSecurity Validations

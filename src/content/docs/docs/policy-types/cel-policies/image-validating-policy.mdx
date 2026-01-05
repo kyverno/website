@@ -32,8 +32,8 @@ spec:
     mode: JSON
   images:
     - name: imagerefs
-      expression: "[object.imageReference]"
-  ...
+      expression: '[object.imageReference]'
+  # ...
 ```
 
 ### matchImageReferences
@@ -46,10 +46,10 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  matchImageReferences:  # At least one sub-field is required
-    - glob: "ghcr.io/kyverno/*"        # Match images using glob pattern
-    - expression: "image.registry == 'ghcr.io'"  # Match using CEL expression
-  ...
+  matchImageReferences: # At least one sub-field is required
+    - glob: 'ghcr.io/kyverno/*' # Match images using glob pattern
+    - expression: "image.registry == 'ghcr.io'" # Match using CEL expression
+  # ...
 ```
 
 ### attestors
@@ -66,83 +66,85 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   variables:
     - name: cm
       expression: >-
         resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
   attestors:
-  - name: cosign                      # A unique name to identify this attestor
-    cosign:
-      key:                            # Public key-based verification and At least one sub-field is required
-        expression: variables.cm.data.pubKey    # CEL expression that resolves to the public key
-        kms: "gcpkms://..."           # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
-        hashAlgorithm: "sha256"       # Optional hash algorithm used with the key
-        data: |                       # Direct inline public key data (optional if secretRef or kms is used)
-          -----BEGIN PUBLIC KEY-----
-          ...
-          -----END PUBLIC KEY-----
+    - name: cosign # A unique name to identify this attestor
+      cosign:
+        key: # Public key-based verification and At least one sub-field is required
+          expression: variables.cm.data.pubKey # CEL expression that resolves to the public key
+          kms: 'gcpkms://...' # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
+          hashAlgorithm: 'sha256' # Optional hash algorithm used with the key
+          data:
+            | # Direct inline public key data (optional if secretRef or kms is used)
+            -----BEGIN PUBLIC KEY-----
+            ...
+            -----END PUBLIC KEY-----
 
-      keyless:                        # Keyless signing verification (OIDC-based)
-        identities:                   # List of accepted signing identities
-          - subject: "https://github.com/myorg/myrepo/.github/workflows/deploy.yaml@refs/heads/main"
-            issuer: "https://token.actions.githubusercontent.com"
-            subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*"  # Optional regex for subject matching
-            issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com"  # Optional regex for issuer matching
-        roots: |                       # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+        keyless: # Keyless signing verification (OIDC-based)
+          identities: # List of accepted signing identities
+            - subject: 'https://github.com/myorg/myrepo/.github/workflows/deploy.yaml@refs/heads/main'
+              issuer: 'https://token.actions.githubusercontent.com'
+              subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*" # Optional regex for subject matching
+              issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com" # Optional regex for issuer matching
+          roots:
+            | # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
 
-      ctlog:                          # Transparency log settings (e.g., Rekor)
-        url: "https://rekor.sigstore.dev"
-        rekorPubKey: |                # Public key for verifying Rekor entries
-          -----BEGIN PUBLIC KEY-----
-          ...
-          -----END PUBLIC KEY-----
-        ctLogPubKey: |                # Public key for verifying CT log entries (optional)
-          -----BEGIN PUBLIC KEY-----
-          ...
-          -----END PUBLIC KEY-----
-        tsaCertChain: |              # Certificate chain for Time Stamp Authority (optional)
-          -----BEGIN CERTIFICATE-----
-          ...
-          -----END CERTIFICATE-----
-        insecureIgnoreTlog: false     # Skip TLog verification (for testing only)
-        insecureIgnoreSCT: false      # Skip Signed Certificate Timestamp (for testing only)
-
-      certificate:                    # Certificate-based verification and At least one sub-field is required
-        cert:
-          value: |                       # Inline signing certificate
+        ctlog: # Transparency log settings (e.g., Rekor)
+          url: 'https://rekor.sigstore.dev'
+          rekorPubKey: | # Public key for verifying Rekor entries
+            -----BEGIN PUBLIC KEY-----
+            ...
+            -----END PUBLIC KEY-----
+          ctLogPubKey: | # Public key for verifying CT log entries (optional)
+            -----BEGIN PUBLIC KEY-----
+            ...
+            -----END PUBLIC KEY-----
+          tsaCertChain:
+            | # Certificate chain for Time Stamp Authority (optional)
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
-          expression: variables.cm.data.cert   # CEL expression resolving to certificate
-        certChain:        # At least one sub-field is required
-          value: |                 # Certificate chain associated with the signer o
-            -----BEGIN CERTIFICATE-----
-            ...
-            -----END CERTIFICATE-----
-          expression: variables.cm.data.certChain   # CEL expression resolving to certificate
+          insecureIgnoreTlog: false # Skip TLog verification (for testing only)
+          insecureIgnoreSCT: false # Skip Signed Certificate Timestamp (for testing only)
 
-      source:                         # Optional metadata to constrain image source (optional)
-        repository: "ghcr.io/myorg/myimage"   # Limit to specific image repo
-        pullSecrets:                  # Kubernetes secrets used to access the registry
-          - name: my-registry-secret
-        tagPrefix: "v1."              # Restrict verification to images starting with this tag
+        certificate: # Certificate-based verification and At least one sub-field is required
+          cert:
+            value: | # Inline signing certificate
+              -----BEGIN CERTIFICATE-----
+              ...
+              -----END CERTIFICATE-----
+            expression: variables.cm.data.cert # CEL expression resolving to certificate
+          certChain: # At least one sub-field is required
+            value: | # Certificate chain associated with the signer o
+              -----BEGIN CERTIFICATE-----
+              ...
+              -----END CERTIFICATE-----
+            expression: variables.cm.data.certChain # CEL expression resolving to certificate
 
-      tuf:
-        root:
-          path: "/var/run/tuf/root.json"  # Local path to TUF root metadata (optional)
-          data: |                         # Optional base64-encoded TUF root metadata (optional)
-            eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
-        mirror: "https://tuf.example.org" # Sigstore TUF mirror URL (optional)
+        source: # Optional metadata to constrain image source (optional)
+          repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
+          pullSecrets: # Kubernetes secrets used to access the registry
+            - name: my-registry-secret
+          tagPrefix: 'v1.' # Restrict verification to images starting with this tag
 
-  ...
+        tuf:
+          root:
+            path: '/var/run/tuf/root.json' # Local path to TUF root metadata (optional)
+            data: | # Optional base64-encoded TUF root metadata (optional)
+              eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
+          mirror: 'https://tuf.example.org' # Sigstore TUF mirror URL (optional)
 
+  # ...
 ```
 
 **Notary attestors:** These use certificates and optional Time Stamp Authority (TSA) certificates for image signature verification.
@@ -155,38 +157,34 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+        resources:
+          - pods
   variables:
     - name: cm
-      expression: >-
-        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
-     expression:
-   - name:
-     expression:
+      expression: 'resource.Get("v1", "configmaps", object.metadata.namespace, "keys")'
   matchImageReferences:
     - glob: ghcr.io/*
   attestors:
-        - name: notary                        # Unique identifier for this attestor
-          notary:
-            certs:      # At least one sub-field is required
-              value: |                          # Certificate(s) used to verify the signature or CEL expression resolving to  certificate(s)
-                -----BEGIN CERTIFICATE-----
-                MIIBjTCCATOgAwIBAgIUdMiN3gC...
-                -----END CERTIFICATE-----
-
-              expression: variables.cm.data.cert  # CEL expression resolving to  certificate(s)
-
-            tsaCerts:   # At least one sub-field is required
-               value: |                       # Optional: Time Stamp Authority (TSA) certificates
-                -----BEGIN CERTIFICATE-----
-                MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
-                -----END CERTIFICATE-----
-
-               expression: variables.cm.data.tsaCert #  Optional: CEL expression resolving to TSA certificate(s)
-
+    - name: notary
+      notary:
+        certs:
+          value: |
+            -----BEGIN CERTIFICATE-----
+            MIIBjTCCATOgAwIBAgIUdMiN3gC...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.cert
+        tsaCerts:
+          value: |
+            -----BEGIN CERTIFICATE-----
+            MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
+            -----END CERTIFICATE-----
+          expression: variables.cm.data.tsaCert
 ```
 
 ### attestations

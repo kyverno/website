@@ -49,13 +49,15 @@ Creating configmaps in namespace '{{namespace}}' is not allowed
 validate:
   cel:
     expressions:
-    - expression: "namespaceObject.metadata.name == '{{namespace}}'"
+      - expression: "namespaceObject.metadata.name == '{{namespace}}'"
+```
 
+```yaml
 # Correct - working pattern
 validate:
   cel:
     expressions:
-    - expression: "namespaceObject.metadata.name == request.namespace"
+      - expression: 'namespaceObject.metadata.name == request.namespace'
 ```
 
 ### 2. CustomResource Matching Errors
@@ -74,10 +76,12 @@ no unique match for kind MyCustomResource
 # Wrong - causes the error above
 match:
   any:
-  - resources:
-      kinds:
-      - MyCustomResource
+    - resources:
+        kinds:
+          - MyCustomResource
+```
 
+```
 # Correct - from issue resolution
 match:
   any:
@@ -128,13 +132,17 @@ Start with simple expressions and build complexity:
 
 ```yaml
 # Step 1: Basic existence check
-expression: "has(object.spec)"
+expression: 'has(object.spec)'
+```
 
+```yaml
 # Step 2: Add specific field
-expression: "has(object.spec.containers)"
+expression: 'has(object.spec.containers)'
+```
 
+```yaml
 # Step 3: Add validation logic
-expression: "has(object.spec.containers) && object.spec.containers.size() > 0"
+expression: 'has(object.spec.containers) && object.spec.containers.size() > 0'
 ```
 
 ## Known Limitations (From Codebase)

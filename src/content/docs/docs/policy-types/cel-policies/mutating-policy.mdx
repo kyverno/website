@@ -76,7 +76,7 @@ spec:
       enabled: true
     mutateExisting:
       enabled: false
-  ...
+  # ...
 ```
 
 - **`admission.enabled`**: When set to `true`, the policy is applied during admission requests (CREATE, UPDATE operations). This is the primary use case for mutating resources as they are being created or updated.
@@ -96,8 +96,8 @@ metadata:
   name: add-labels
 spec:
   webhookConfiguration:
-   timeoutSeconds: 15
-  ...
+    timeoutSeconds: 15
+  # ...
 ```
 
 In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10` seconds, and the allowed range is `1` to `30` seconds. After this timeout, the request will fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `MutatingWebhookConfiguration`.
@@ -249,31 +249,35 @@ kind: MutatingPolicy
 metadata:
   name: add-labels-jsonpatch
 spec:
-    matchConstraints:
-        resourceRules:
-      - apiGroups: [""]
-            apiVersions: ["v1"]
-        resources: ["pods"]
-            operations: ["CREATE"]
-    mutations:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        resources:
+          - pods
+        operations:
+          - CREATE
+  mutations:
     - patchType: JSONPatch
-        jsonPatch:
-            expression: |
-                has(object.metadata.labels) ?
-                [
-                    JSONPatch{
-                        op: "add",
-                        path: "/metadata/labels/managed",
-                        value: "true"
-                    }
-                ] :
-                [
-                    JSONPatch{
-                        op: "add",
-                        path: "/metadata/labels",
-                        value: {"managed": "true"}
-                    }
-                ]
+      jsonPatch:
+        expression: |
+          has(object.metadata.labels) ?
+          [
+              JSONPatch{
+                  op: "add",
+                  path: "/metadata/labels/managed",
+                  value: "true"
+              }
+          ] :
+          [
+              JSONPatch{
+                  op: "add",
+                  path: "/metadata/labels",
+                  value: {"managed": "true"}
+              }
+          ]
 ```
 
 ### Multiple JSONPatch Operations
@@ -321,23 +325,27 @@ kind: MutatingPolicy
 metadata:
   name: escape-jsonpatch
 spec:
-    matchConstraints:
-        resourceRules:
-      - apiGroups: [""]
-                apiVersions: ["v1"]
-                resources: ["pods"]
-                operations: ["CREATE"]
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        resources:
+          - pods
+        operations:
+          - CREATE
     mutations:
-    - patchType: JSONPatch
-      jsonPatch:
-        expression: |
-          [
-            JSONPatch{
-              op: "add",
-              path: "/metadata/labels/" + jsonpatch.escapeKey("app.kubernetes.io/name"),
-              value: "my-app"
-            }
-          ]
+      - patchType: JSONPatch
+        jsonPatch:
+          expression: |
+            [
+              JSONPatch{
+                op: "add",
+                path: "/metadata/labels/" + jsonpatch.escapeKey("app.kubernetes.io/name"),
+                value: "my-app"
+              }
+            ]
 ```
 
 ## Looping with CEL Functions
@@ -353,25 +361,25 @@ metadata:
   name: foreach
 spec:
   matchConstraints:
-    resourceRules:
-    - apiGroups: [ "" ]
-      apiVersions: [ "v1" ]
-      operations: [ "CREATE" ]
-      resources: [ "pods" ]
+  resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['v1']
+      operations: ['CREATE']
+      resources: ['pods']
   mutations:
-  - patchType: ApplyConfiguration
-            applyConfiguration:
-      expression: >
-        Object{
-          spec: Object.spec{
-            containers: object.spec.containers.map(container, Object.spec.containers{
-              name: container.name,
-              securityContext: Object.spec.containers.securityContext{
-                allowPrivilegeEscalation: false
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            spec: Object.spec{
+              containers: object.spec.containers.map(container, Object.spec.containers{
+                name: container.name,
+                securityContext: Object.spec.containers.securityContext{
+                  allowPrivilegeEscalation: false
+                }
               }
             }
           }
-        }
 ```
 
 This example uses CEL's `map()` function to iterate through all containers in a pod and add a `securityContext` with `allowPrivilegeEscalation: false` to each container.
@@ -386,10 +394,10 @@ metadata:
 spec:
 matchConstraints:
   resourceRules:
-      - apiGroups: [""]
-      apiVersions: ["v1"]
-        resources: ["pods"]
-      operations: ["CREATE", "UPDATE"]
+    - apiGroups: ['']
+      apiVersions: ['v1']
+      resources: ['pods']
+      operations: ['CREATE', 'UPDATE']
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -572,19 +580,19 @@ spec:
   reinvocationPolicy: IfNeeded
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE']
 mutations:
-    - patchType: ApplyConfiguration
-        applyConfiguration:
-        expression: |
-            Object{
-                metadata: Object.metadata{
-              labels: {"stage": "initial"}
-                }
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: |
+        Object{
+            metadata: Object.metadata{
+          labels: {"stage": "initial"}
             }
+        }
 ```
 
 **Reinvocation Policy Options:**

@@ -314,8 +314,11 @@ spec:
 
 Verify that the `permissive` PSP was the one evaluated by inspecting the annotations on the `badpod` Pod. Here we can see the annotation `kubernetes.io/psp` as assigned the value `permissive` indicating our more permissive PSP was the one evaluated by this Pod's creation request.
 
-```yaml
+```sh
 $ kubectl -n qa get po badpod -o yaml
+```
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -327,7 +330,7 @@ metadata:
 
 After creating the "bad" Pod, wait a few seconds and then once again get the Kyverno Policy Report to confirm that Kyverno caught it instead. We should now see that there is one result in the `FAIL` column which indicates Kyverno saw our "bad" Pod violated the policy we created earlier.
 
-```yaml
+```sh
 $ kubectl -n qa get policyreport
 NAME                            PASS   FAIL   WARN   ERROR   SKIP   AGE
 cpol-disallow-host-namespaces   1      1      0      0       0      3m3s
@@ -335,8 +338,11 @@ cpol-disallow-host-namespaces   1      1      0      0       0      3m3s
 
 Let's inspect the contents of that policy report just to be sure. The following command assumes you have [yq](https://github.com/mikefarah/yq) installed.
 
-```yaml
+```sh
 $ kubectl -n qa get policyreport cpol-disallow-host-namespaces -o jsonpath='{.results[?(@.result=="fail")]}' | yq -p json -
+```
+
+```yaml
 category: Pod Security Standards (Baseline)
 message: 'validation error: Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.          . rule host-namespaces failed at path /spec/hostIPC/'
 policy: disallow-host-namespaces

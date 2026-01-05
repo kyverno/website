@@ -607,17 +607,17 @@ The policy rule fragment checks for the `subject` and `issuer` from the certific
 
 ```yaml
 attestors:
-- entries:
-  - keyless:
-      subject: "https://github.com/{{ORGANIZATION}}/{{REPOSITORY}}/.github/workflows/{{WORKFLOW}}@refs/tags/*"
-      issuer: "https://token.actions.githubusercontent.com"
-      additionalExtensions:
-        githubWorkflowTrigger: push
-        githubWorkflowSha: {{WORKFLOW_COMMIT_SHA}}
-        githubWorkflowName: {{WORKFLOW_NAME}}
-        githubWorkflowRepository: {{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}
-      rekor:
-        url: https://rekor.sigstore.dev
+  - entries:
+      - keyless:
+          subject: 'https://github.com/{{ORGANIZATION}}/{{REPOSITORY}}/.github/workflows/{{WORKFLOW}}@refs/tags/*'
+          issuer: 'https://token.actions.githubusercontent.com'
+          additionalExtensions:
+            githubWorkflowTrigger: push
+            githubWorkflowSha: '{{WORKFLOW_COMMIT_SHA}}'
+            githubWorkflowName: '{{WORKFLOW_NAME}}'
+            githubWorkflowRepository: '{{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}'
+          rekor:
+            url: https://rekor.sigstore.dev
 ```
 
 ## Using a Key Management Service (KMS)
@@ -741,7 +741,7 @@ kubectl create secret docker-registry regcred \
 
 2. Update the Kyverno Deployment to add the `--imagePullSecrets=regcred` argument:
 
-```yaml
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -810,8 +810,6 @@ global:
 To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
 
 ```yaml
-
-...
 verifyImages:
   - imageReferences:
       - ghcr.io/kyverno/test-verify-image*
@@ -819,12 +817,11 @@ verifyImages:
     attestors:
       - entries:
           - keys:
-              publicKeys: |-
+              publicKeys: >-
                 -----BEGIN PUBLIC KEY-----
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
                 5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
                 -----END PUBLIC KEY-----
-...
 ```
 
 ## Using a different signature algorithm
@@ -832,8 +829,6 @@ verifyImages:
 By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
 
 ```yaml
-
-...
 verifyImages:
   - imageReferences:
       - ghcr.io/kyverno/test-verify-image*
@@ -846,7 +841,6 @@ verifyImages:
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
                 5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
                 -----END PUBLIC KEY-----
-...
 ```
 
 Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
@@ -876,31 +870,31 @@ Cosign also does SCT verification, a proof of inclusion in a certificate transpa
 
 ```yaml
 verifyImages:
-- imageReferences:
-  - '*'
-  attestors:
-  - entries:
-    - keys:
-        publicKeys: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-        rekor:
-          ignoreTlog: true
-          url: https://rekor.sigstore.dev
-          pubkey: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-        ctlog:
-          ignoreSCT: true
-          pubkey: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
+  - imageReferences:
+      - '*'
+    attestors:
+      - entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+              rekor:
+                ignoreTlog: true
+                url: https://rekor.sigstore.dev
+                pubkey: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                  5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                  -----END PUBLIC KEY-----
+              ctlog:
+                ignoreSCT: true
+                pubkey: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                  5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                  -----END PUBLIC KEY-----
 ```
 
 ## Using custom Rekor public key and CTLogs public key
@@ -909,28 +903,28 @@ You can also provide the Rekor public key and ctlog public key instead of Rekor 
 
 ```yaml
 verifyImages:
-- imageReferences:
-  - '*'
-  attestors:
-  - entries:
-    - keys:
-        publicKeys: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-          -----END PUBLIC KEY-----
-        rekor:
-          pubkey: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
-          BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
-          -----END PUBLIC KEY-----
-        ctlog:
-          pubkey: |-
-          -----BEGIN PUBLIC KEY-----
-          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
-          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
-          -----END PUBLIC KEY-----
+  - imageReferences:
+      - '*'
+    attestors:
+      - entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                -----END PUBLIC KEY-----
+              rekor:
+                pubkey: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
+                  BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
+                  -----END PUBLIC KEY-----
+              ctlog:
+                pubkey: |-
+                  -----BEGIN PUBLIC KEY-----
+                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+                  FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
+                  -----END PUBLIC KEY-----
 ```
 
 ## Using a Custom TSA cert chain

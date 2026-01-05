@@ -24,6 +24,9 @@ export default defineConfig({
     starlight({
       title: 'Kyverno',
       customCss: ['./src/styles/global.css'],
+      components: {
+        PageSidebar: './src/components/PageSidebar.astro',
+      },
       editLink: {
         baseUrl: 'https://github.com/kyverno/website/edit/astro/',
       },
@@ -47,6 +50,11 @@ export default defineConfig({
           icon: 'email',
           label: 'Google groups',
           href: 'https://groups.google.com/g/kyverno',
+        },
+        {
+          icon: 'laptop',
+          label: 'Support',
+          href: '/support',
         },
       ],
       sidebar: [
