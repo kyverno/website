@@ -26,6 +26,7 @@ export default defineConfig({
       customCss: ['./src/styles/global.css'],
       components: {
         PageSidebar: './src/components/PageSidebar.astro',
+        ThemeSelect: './src/components/ThemeSelect.astro',
       },
       editLink: {
         baseUrl: 'https://github.com/kyverno/website/edit/main/',
