@@ -45,8 +45,8 @@
   status = 200
 
 [[redirects]]
-  from = "/policy-types/*"
-  to = "/policy-types/cel-policies/:splat"
+  from = "/docs/policy-types/*"
+  to = "/docs/policy-types/cel-policies/:splat"
   status = 301
 
 # --- Headers ---
