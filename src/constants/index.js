@@ -347,7 +347,7 @@ metadata:
   name: authorize-jwt
 spec:
   evaluation:
-    mode: HTTP 
+    mode: "HTTP"
   failurePolicy: Fail 
   variables: 
   - name: authorizationlist
@@ -377,6 +377,29 @@ spec:
     # request authenticated and admin role -> 200
   - expression: >
       http.Allowed().Response()`,
+  },
+  {
+    id: 'validate-envoy',
+    label: 'Authorize Envoy Requests',
+    learnMore: '/docs/policy-types/validating-policy',
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-envoy-request
+spec:
+  failurePolicy: Fail
+  evaluation:
+    mode: "Envoy"
+  variables:
+  - name: force_authorized
+    expression: object.attributes.request.http.headers[?"x-force-authorized"].orValue("")
+  - name: allowed
+    expression: variables.force_authorized in ["enabled", "true"]
+  validations:
+  - expression: >
+      !variables.allowed
+        ? envoy.Denied(403).Response()
+        : envoy.Allowed().Response()`,
   },
   {
     id: 'mutate-k8s',
