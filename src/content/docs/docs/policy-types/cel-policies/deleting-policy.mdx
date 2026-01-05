@@ -80,7 +80,7 @@ Both policy types have identical functionality and field structure. The only dif
 ### Example NamespacedDeletingPolicy
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1beta1
 kind: NamespacedDeletingPolicy
 metadata:
   name: cleanup-jobs
@@ -94,7 +94,7 @@ spec:
         resources: ['jobs']
   conditions:
     - name: 'completed-jobs'
-      expression: "object.status.conditions[?type=='Complete'].status == 'True'"
+      expression: "object.status.conditions.exists(c, c.type == 'Complete' && c.status == 'True')"
 ```
 
 As the name suggests, the `NamespacedDeletingPolicy` allows namespace owners to manage deletion policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
