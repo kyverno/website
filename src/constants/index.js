@@ -28,7 +28,6 @@ export const navItemsExternal = [
   { label: 'Documentation', href: '/docs/introduction' },
   { label: 'Sample Policies', href: '/policies' },
   { label: 'Community', href: '/community' },
-  { label: 'Support', href: '/support' },
   { label: 'Blog', href: '/blog' },
 ]
 
@@ -38,19 +37,19 @@ export const whyKyvernoCards = [
     title: 'Easy to Adopt',
     desc1: 'Use familiar languages and tools.',
     desc2:
-      'Kubernetes-native types that integrate seamlessly into your workflow.',
+      'Kubernetes-native types that integrate seamlessly into your existing workflows.',
   },
   {
     icon: Shield,
     title: 'Flexible & Powerful',
     desc1:
       'From basic validation to complex automation, Kyverno has you covered.',
-    desc2: 'Built for Kubernetes, now works everywhere.',
+    desc2: 'Initially built for K8s, Kyverno now works everywhere.',
   },
   {
     icon: Globe,
     title: 'Trusted & Proven',
-    desc1: 'Production-ready at scale for enterprises worldwide.',
+    desc1: 'Production-ready at scale in enterprises worldwide.',
     desc2: 'Top CNCF project with a vibrant community and ecosystem.',
   },
 ]
