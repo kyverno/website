@@ -46,8 +46,9 @@
 
 [[redirects]]
   from = "/docs/policy-types/*"
-  to = "/docs/policy-types/cel-policies/*"
-  status = 301
+  to = "/docs/policy-types/cel-policies/:splat"
+  status = 301!
+  force = true # COMMENT: ensure that we always redirect
 
 # --- Headers ---
 [[headers]]
