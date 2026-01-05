@@ -28,7 +28,7 @@ export default defineConfig({
         PageSidebar: './src/components/PageSidebar.astro',
       },
       editLink: {
-        baseUrl: 'https://github.com/kyverno/website/edit/astro/',
+        baseUrl: 'https://github.com/kyverno/website/edit/main/',
       },
       social: [
         {
