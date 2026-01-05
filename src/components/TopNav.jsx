@@ -60,6 +60,7 @@ export const TopNav = () => {
             className="hidden xl:flex xl:text-lg justify-center space-x-6 
                     items-center"
           >
+            <VersionDropdown />
             <Button
               href="https://playground.kyverno.io/"
               variant="secondary"
@@ -72,7 +73,6 @@ export const TopNav = () => {
             <Button href="/support" variant="accent" size="large">
               Support
             </Button>
-            <VersionDropdown />
           </div>
           <div className="xl:hidden flex flex-col justify-end">
             <button onClick={toggleMobileNav}>

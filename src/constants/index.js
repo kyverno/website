@@ -262,6 +262,8 @@ kind: ValidatingPolicy
 metadata:
   name: require-labels
 spec:
+  evaluation:
+    mode: "Kubernetes"
   matchConstraints:
     resourceRules:
       - apiGroups:   [""]
@@ -318,7 +320,7 @@ metadata:
   name: check-label-maintainer
 spec:
   evaluation:
-    mode: JSON
+    mode: "JSON"
   matchConditions:
     - name: isDockerfile
       expression: "has(object.Stages)"
