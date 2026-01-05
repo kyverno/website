@@ -50,17 +50,17 @@ export const formatSeverityLabel = (severity: string): string => {
  */
 export const getCategoryColor = (category: string): string => {
   const knownColors: Record<string, string> = {
-    verifyImages: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-    validate: 'bg-primary-100/15 text-primary-100 border-primary-100/30',
-    mutate: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-    generate: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    cleanup: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+    verifyImages: 'text-cyan-400 bg-cyan-950/50 border-cyan-900/50',
+    validate: 'text-blue-400 bg-blue-950/50 border-blue-900/50',
+    mutate: 'text-purple-400 bg-purple-950/50 border-purple-900/50',
+    generate: 'text-emerald-400 bg-emerald-950/50 border-emerald-900/50',
+    cleanup: 'text-orange-400 bg-orange-950/50 border-orange-900/50',
   }
 
   if (category && knownColors[category]) {
     return knownColors[category]
   }
-  return 'bg-stroke/15 text-white/80 border-stroke/30'
+  return 'text-gray-400 bg-gray-950/50 border-gray-900/50'
 }
 
 /**
@@ -68,15 +68,15 @@ export const getCategoryColor = (category: string): string => {
  */
 export const getSeverityColor = (severity: string): string => {
   const knownColors: Record<string, string> = {
-    high: 'bg-red-500/10 text-red-400 border-red-500/20',
-    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    low: 'bg-green-500/10 text-green-400 border-green-500/20',
+    high: 'text-red-400 bg-red-950/50 border-red-900/50',
+    medium: 'text-yellow-400 bg-yellow-950/50 border-yellow-900/50',
+    low: 'text-green-400 bg-green-950/50 border-green-900/50',
   }
 
   if (severity && knownColors[severity]) {
     return knownColors[severity]
   }
-  return 'bg-stroke/10 text-white/60 border-stroke/20'
+  return 'text-gray-400 bg-gray-950/50 border-gray-900/50'
 }
 
 /**
