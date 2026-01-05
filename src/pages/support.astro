@@ -7,16 +7,21 @@ import { Footer } from '../sections/Footer'
 
 <DefaultLayout>
   <Header client:load />
-  
-  <!-- Hero Section -->
-  <section class="w-full bg-gradient-to-br from-dark-50 to-dark-100 relative pt-16 pb-8 sm:pt-20 sm:pb-12 px-4 sm:px-8 md:px-12">
 
-    <div class="container max-w-7xl mx-auto py-4 sm:py-3 flex flex-col justify-center items-center text-center relative z-10">
-      <p class="text-lg sm:text-xl md:text-2xl text-gray-300 w-[90%] leading-relaxed">
-        Commercial products and services to help you succeed with Kyverno. 
-        Get peace of mind and save hundreds of engineering hours with 
-        enterprise-ready solutions built to scale from day one, ensuring 
-        you get the maximum return on your open-source investment.
+  <!-- Hero Section -->
+  <section
+    class="w-full bg-gradient-to-br from-dark-50 to-dark-100 relative pt-16 pb-8 sm:pt-20 sm:pb-12 px-4 sm:px-8 md:px-12"
+  >
+    <div
+      class="container max-w-7xl mx-auto py-4 sm:py-3 flex flex-col justify-center items-center text-center relative z-10"
+    >
+      <p
+        class="text-lg sm:text-xl md:text-2xl text-gray-300 w-[90%] leading-relaxed"
+      >
+        Commercial products and services to help you succeed with Kyverno. Get
+        peace of mind and save hundreds of engineering hours with
+        enterprise-ready solutions built to scale from day one, ensuring you get
+        the maximum return on your open-source investment.
       </p>
     </div>
   </section>
@@ -29,21 +34,43 @@ import { Footer } from '../sections/Footer'
         <div class="text-center mb-8">
           <h2 class="text-4xl font-bold mb-2">Products</h2>
         </div>
-        
-        <div class="support-cards-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <a href="https://github.com/giantswarm/security-pack" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank">
+
+        <div
+          class="support-cards-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+        >
+          <a
+            href="https://github.com/giantswarm/security-pack"
+            class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300"
+            target="_blank"
+          >
             <div class="flex flex-col space-y-3">
-              <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">Giant Swarm</h3>
+              <h3
+                class="text-2xl font-bold text-black group-hover:text-black transition-colors"
+              >
+                Giant Swarm
+              </h3>
               <p class="text-base text-black/90 leading-relaxed">
-                Managed Kubernetes platform. Kyverno is part of the Giant Swarm Security Pack.
+                Managed Kubernetes platform. Kyverno is part of the Giant Swarm
+                Security Pack.
               </p>
             </div>
           </a>
-          
-          <a href="https://nirmata.com/" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank">
+
+          <a
+            href="https://nirmata.com/"
+            class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300"
+            target="_blank"
+          >
             <div class="flex flex-col space-y-3">
-              <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">Nirmata</h3>
-              <p class="text-base text-black/90 leading-relaxed">Enterprise-grade policy and governance from the creators of Kyverno.</p>
+              <h3
+                class="text-2xl font-bold text-black group-hover:text-black transition-colors"
+              >
+                Nirmata
+              </h3>
+              <p class="text-base text-black/90 leading-relaxed">
+                Enterprise-grade policy and governance from the creators of
+                Kyverno.
+              </p>
             </div>
           </a>
         </div>
@@ -54,35 +81,65 @@ import { Footer } from '../sections/Footer'
         <div class="text-center mb-8">
           <h2 class="text-4xl font-bold mb-2">Services</h2>
         </div>
-        
-        <div class="support-cards-grid grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          <a href="https://www.blakyaks.com/partners" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank">
+
+        <div
+          class="support-cards-grid grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6"
+        >
+          <a
+            href="https://www.blakyaks.com/partners"
+            class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300"
+            target="_blank"
+          >
             <div class="flex flex-col space-y-3">
-              <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">Blakyaks</h3>
+              <h3
+                class="text-2xl font-bold text-black group-hover:text-black transition-colors"
+              >
+                Blakyaks
+              </h3>
               <p class="text-base text-black/90 leading-relaxed">
                 Consulting services to design and deploy Kyverno policies.
               </p>
             </div>
           </a>
-          
-          <a href="https://www.infracloud.io/kyverno-consulting-support/" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank">
+
+          <a
+            href="https://www.infracloud.io/kyverno-consulting-support/"
+            class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300"
+            target="_blank"
+          >
             <div class="flex flex-col space-y-3">
-              <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">Infracloud</h3>
-              <p class="text-base text-black/90 leading-relaxed">Kyverno Consulting and Implementation Partner.</p>
+              <h3
+                class="text-2xl font-bold text-black group-hover:text-black transition-colors"
+              >
+                Infracloud
+              </h3>
+              <p class="text-base text-black/90 leading-relaxed">
+                Kyverno Consulting and Implementation Partner.
+              </p>
             </div>
           </a>
-          
-          <a href="https://learn.kodekloud.com/courses?search=kyverno" class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300" target="_blank">
+
+          <a
+            href="https://learn.kodekloud.com/courses?search=kyverno"
+            class="support-card group block rounded-2xl border-2 p-6 transition-all duration-300"
+            target="_blank"
+          >
             <div class="flex flex-col space-y-3">
-              <h3 class="text-2xl font-bold text-black group-hover:text-black transition-colors">KodeKloud</h3>
-              <p class="text-base text-black/90 leading-relaxed">Hands-on Kubernetes and DevOps Training.</p>
+              <h3
+                class="text-2xl font-bold text-black group-hover:text-black transition-colors"
+              >
+                KodeKloud
+              </h3>
+              <p class="text-base text-black/90 leading-relaxed">
+                Hands-on Kubernetes and DevOps Training.
+              </p>
             </div>
           </a>
         </div>
       </section>
     </div>
   </main>
-  
+
   <Footer />
 </DefaultLayout>
 
@@ -101,7 +158,11 @@ import { Footer } from '../sections/Footer'
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(231, 126, 91, 0.1) 0%, rgba(231, 126, 91, 0) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(231, 126, 91, 0.1) 0%,
+      rgba(231, 126, 91, 0) 100%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -110,7 +171,9 @@ import { Footer } from '../sections/Footer'
   }
   .support-card:hover {
     border-color: #e77e5b;
-    box-shadow: 0 20px 40px -10px rgba(231, 126, 91, 0.4), 0 0 0 2px rgba(231, 126, 91, 0.2);
+    box-shadow:
+      0 20px 40px -10px rgba(231, 126, 91, 0.4),
+      0 0 0 2px rgba(231, 126, 91, 0.2);
     transform: scale(1.02) translateY(-4px);
   }
   .support-card:active {
@@ -123,4 +186,3 @@ import { Footer } from '../sections/Footer'
     container-type: inline-size;
   }
 </style>
-
