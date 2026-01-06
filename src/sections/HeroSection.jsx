@@ -1,7 +1,7 @@
 import {
+  cardColors1,
   heroSectionHeadingContent,
   whyKyvernoCards,
-  cardColors1,
 } from '../constants'
 
 import { Button } from '../components/Button'
@@ -49,21 +49,6 @@ export const HeroSection = () => {
 
   return (
     <section className="w-full bg-gradient-to-br from-dark-50 to-dark-100 relative pt-12 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 md:px-20">
-      <img
-        src="assets/images/lg-hero-ball.svg"
-        alt=""
-        className="hidden sm:inline-block absolute sm:top-20 sm:left-8 lg:top-20 lg:left-20 z-0"
-        loading="eager"
-        aria-hidden="true"
-      />
-      <img
-        src="assets/images/sm-hero-ball.svg"
-        alt=""
-        className="hidden sm:inline-block absolute sm:right-15 sm:top-50 md:right-25 lg:top-50 lg:right-50 xl:right-90 z-0"
-        loading="eager"
-        aria-hidden="true"
-      />
-
       <motion.div
         className="container max-w-7xl mx-auto py-10 sm:py-0 flex flex-col justify-center items-center text-center space-y-8 relative z-10"
         variants={containerVariants}
