@@ -8,6 +8,7 @@ import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
+import starlightBlog from 'starlight-blog'
 
 const checkLinksPlugin = process.env.CHECK_LINKS
   ? [
@@ -168,6 +169,13 @@ export default defineConfig({
       plugins: [
         starlightImageZoom(),
         starlightAutoSidebar(),
+        starlightBlog({
+          metrics: {
+            readingTime: true,
+            words: 'total',
+          },
+          navigation: 'header-end',
+        }),
         ...checkLinksPlugin,
       ],
     }),
