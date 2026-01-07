@@ -1,6 +1,7 @@
 ---
 date: 2023-10-04
 title: Applying Validating Admission Policies using Kyverno CLI
+slug: blog/applying-validating-admission-policies-using-kyverno-cli
 tags:
   - General
 authors:

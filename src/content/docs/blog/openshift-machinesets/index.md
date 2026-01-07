@@ -1,6 +1,7 @@
 ---
 date: 2023-07-28
 title: Simplifying OpenShift MachineSet Management Using Kyverno
+slug: blog/simplifying-openshift-machineset-management-using-kyverno
 tags:
   - General
 authors:

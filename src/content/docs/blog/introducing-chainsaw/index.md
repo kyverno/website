@@ -1,6 +1,7 @@
 ---
 date: 2023-12-12
 title: Kyverno Chainsaw - The ultimate end to end testing tool!
+slug: blog/kyverno-chainsaw-the-ultimate-end-to-end-testing-tool
 tags:
   - General
 authors:
