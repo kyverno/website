@@ -5,6 +5,7 @@ import { autoSidebarSchema } from 'starlight-auto-sidebar/schema'
 import { docsLoader } from '@astrojs/starlight/loaders'
 import { docsSchema } from '@astrojs/starlight/schema'
 import { glob } from 'astro/loaders'
+import { blogSchema } from 'starlight-blog/schema'
 
 const policiesCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/policies' }),
@@ -28,7 +29,13 @@ const policiesCollection = defineCollection({
 })
 
 export const collections = {
-  docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
+      extend: (context) => blogSchema(context),
+    }),
+  }),
+
   policies: policiesCollection,
   autoSidebar: defineCollection({
     loader: autoSidebarLoader(),
