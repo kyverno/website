@@ -46,7 +46,7 @@
   force = true # COMMENT: ensure that we always redirect
 
 [[redirects]]
-  from = "/blog/:year/:month/:date/:slug "
+  from = "/blog/:year/:month/:date/*"
   to = "/blog/:splat"
   status = 301
   force = true # COMMENT: ensure that we always redirect
