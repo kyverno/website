@@ -3,7 +3,7 @@ date: 2023-06-12
 title: Using Kyverno with Pod Security Admission
 tags:
   - General
-description: Using Pod Security Admission with Kyverno for the best of both worlds.
+excerpt: Using Pod Security Admission with Kyverno for the best of both worlds.
 draft: false
 ---
 

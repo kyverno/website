@@ -3,8 +3,9 @@ date: 2023-12-13
 title: Kyverno Chainsaw - Exploring the Power of Assertion Trees!
 tags:
   - General
-author: Charles-Edouard Brétéché
-description: The Chainsaw Secret Sauce!
+authors:
+  - name: Charles-Edouard Brétéché
+excerpt: The Chainsaw Secret Sauce!
 ---
 
 ![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)

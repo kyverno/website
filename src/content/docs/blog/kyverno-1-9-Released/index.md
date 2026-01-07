@@ -3,7 +3,7 @@ date: 2023-02-01
 title: Kyverno 1.9 Released
 tags:
   - Releases
-description: Kyverno 1.9 released with new policy exceptions, cleanup policies, and more.
+excerpt: Kyverno 1.9 released with new policy exceptions, cleanup policies, and more.
 draft: false
 ---
 

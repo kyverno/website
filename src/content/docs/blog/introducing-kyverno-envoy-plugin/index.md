@@ -3,8 +3,9 @@ date: 2024-06-04
 title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
 tags:
   - General
-author: Sanskar Gurdasani
-description: Make external authorization easy with Kyverno-Envoy-Plugin.
+authors:
+  - name: Sanskar Gurdasani
+excerpt: Make external authorization easy with Kyverno-Envoy-Plugin.
 ---
 
 ![Kyverno-Envoy-Plugin](logo.png)

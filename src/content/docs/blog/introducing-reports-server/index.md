@@ -3,8 +3,9 @@ date: 2024-05-29
 title: Kyverno Reports Server - The ultimate solution to scale reporting
 tags:
   - General
-author: Vishal Choudhary
-description: Security or Scalability? Why not both!
+authors:
+  - name: Vishal Choudhary
+excerpt: Security or Scalability? Why not both!
 ---
 
 ## Introduction

@@ -3,8 +3,9 @@ date: 2023-07-28
 title: Simplifying OpenShift MachineSet Management Using Kyverno
 tags:
   - General
-author: Andrew Block
-description: Using Kyverno to mutate OpenShift MachineSet resources for easier automation.
+authors:
+  - name: Andrew Block
+excerpt: Using Kyverno to mutate OpenShift MachineSet resources for easier automation.
 ---
 
 _(Guest post from Red Hat Distinguished Architect, [Andrew Block](https://twitter.com/sabre1041))_

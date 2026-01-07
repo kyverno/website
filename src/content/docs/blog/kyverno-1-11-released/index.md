@@ -3,7 +3,7 @@ date: 2023-11-16
 title: Kyverno 1.11 Released
 tags:
   - Releases
-description: Kyverno 1.10 released with enhanced ValidatingAdmissionPolicy and Cleanup support, Cosign and Notary updates, and tons more!
+excerpt: Kyverno 1.10 released with enhanced ValidatingAdmissionPolicy and Cleanup support, Cosign and Notary updates, and tons more!
 draft: false
 ---
 

@@ -3,7 +3,7 @@ date: 2022-07-08
 title: New Kyverno Blog
 tags:
   - General
-description: Announcing the new Kyverno blog.
+excerpt: Announcing the new Kyverno blog.
 ---
 
 ![kyverno](kyverno.png)

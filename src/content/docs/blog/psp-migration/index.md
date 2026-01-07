@@ -3,7 +3,7 @@ date: 2023-05-24
 title: PodSecurityPolicy migration with Kyverno
 tags:
   - General
-description: Migrating from PodSecurityPolicy to Kyverno
+excerpt: Migrating from PodSecurityPolicy to Kyverno
 draft: false
 ---
 

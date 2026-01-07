@@ -3,8 +3,9 @@ date: 2023-08-18
 title: Verifying images in a private Amazon ECR with Kyverno and IAM Roles for Service Accounts (IRSA)
 tags:
   - General
-author: Shuting Zhao
-description: Using Kyverno to verify images with IRSA
+authors:
+  - name: Shuting Zhao
+excerpt: Using Kyverno to verify images with IRSA
 ---
 
 When running workloads in Amazon Elastic Kubernetes Service (EKS), it is essential to ensure supply chain security by verifying container image signatures and other metadata. To achieve this, you can configure Kyverno, a CNCF policy engine designed for Kubernetes, to pull from ECR private registries for image verification. It's possible to [pass in the credentials via secrets](/docs/policy-types/cluster-policy/verify-images/sigstore/#using-private-registries), but that can get difficult to manage and automate across multiple clusters. In this blog post, we will explore an alternative method that simplifies the authentication process by leveraging Kyverno and IRSA (IAM Roles for Service Accounts) in EKS for image verification.

@@ -3,7 +3,7 @@ date: 2023-02-19
 title: New time related JMESPath filters in Kyverno!
 tags:
   - General
-description: Use time in your filters now!.
+excerpt: Use time in your filters now!.
 draft: false
 ---
 

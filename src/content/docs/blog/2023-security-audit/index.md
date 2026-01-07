@@ -3,7 +3,7 @@ date: 2023-11-28
 title: Kyverno Completes Third-Party Security Audit
 tags:
   - General
-description: Presenting the results from the Kyverno security audit
+excerpt: Presenting the results from the Kyverno security audit
 ---
 
 The Kyverno project is pleased to announce the completion of its third-party security audit. The audit was conducted by [Ada Logics](https://adalogics.com) in collaboration with the Kyverno maintainers, the [Open Source Technology Improvement Fund](https://ostif.org) and was funded by the [Cloud Native Computing Foundation](https://www.cncf.io).

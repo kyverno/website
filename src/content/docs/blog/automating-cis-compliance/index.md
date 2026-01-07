@@ -3,8 +3,10 @@ date: 2025-06-11
 title: Automating EKS CIS Compliance with Kyverno and KubeBench
 tags:
   - General
-author: Yugandhar Suthari
-description: A practical approach to implementing CIS security controls using CNCF cloud native tools.
+authors:
+  - name: Yugandhar Suthari
+excerpt: A practical approach to implementing CIS security controls using CNCF cloud native tools.
+featured: true
 ---
 
 ## Introduction: The Challenge of EKS Compliance at Scale

@@ -3,7 +3,7 @@ date: 2024-02-04
 title: Securing Services Meshes Easier with Kyverno
 tags:
   - General
-description: Providing better Pod security for service meshes with Kyverno.
+excerpt: Providing better Pod security for service meshes with Kyverno.
 draft: false
 ---
 

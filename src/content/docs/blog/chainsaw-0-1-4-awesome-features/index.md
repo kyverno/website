@@ -3,8 +3,9 @@ date: 2024-02-15
 title: Kyverno Chainsaw 0.1.4 - Awesome new features!
 tags:
   - General
-author: Charles-Edouard Brétéché
-description: What's new in chainsaw v0.1.4!
+authors:
+  - name: Charles-Edouard Brétéché
+excerpt: What's new in chainsaw v0.1.4!
 ---
 
 ![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)

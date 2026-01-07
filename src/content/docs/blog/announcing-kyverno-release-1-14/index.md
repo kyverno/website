@@ -3,7 +3,7 @@ date: 2025-04-25
 title: Announcing Kyverno Release 1.14!
 tags:
   - Releases
-description: Kyverno 1.14 makes policy management more modular, streamlined, and powerful.
+excerpt: Kyverno 1.14 makes policy management more modular, streamlined, and powerful.
 draft: false
 ---
 

@@ -3,8 +3,9 @@ date: 2024-02-26
 title: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies
 tags:
   - General
-author: Mariam Fahmy
-description: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies
+authors:
+  - name: Mariam Fahmy
+excerpt: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies
 ---
 
 In the [previous blog post](/docs/blog/general/using-cel-expressions-in-kyverno-policies/), we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.

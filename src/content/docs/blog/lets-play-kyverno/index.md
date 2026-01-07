@@ -3,7 +3,7 @@ date: 2023-06-04
 title: Let's Play Kyverno
 tags:
   - General
-description: Away with the hurdles. How to get started with a Kubernetes Native Tool without an actual Kubernetes cluster?
+excerpt: Away with the hurdles. How to get started with a Kubernetes Native Tool without an actual Kubernetes cluster?
 ---
 
 ## Foreword

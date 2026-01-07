@@ -3,7 +3,7 @@ date: 2024-02-19
 title: Assigning Node Metadata to Pods
 tags:
   - General
-description: How to assign Node metadata like labels and annotations to Pods.
+excerpt: How to assign Node metadata like labels and annotations to Pods.
 ---
 
 If you're running Kubernetes in production, especially in a public cloud, where a single cluster may span multiple availability zones, chances are you're configuring workloads with some awareness of your topology. Kubernetes has a few mechanisms to support zone awareness, but one common use case is how to propagate certain Node metadata, such as labels or annotations, to Pods to assist with this awareness. In this blog, we'll go into specifics of how Pod scheduling **really** works and share some tips for how Kyverno can mutate Pods to add Node metadata like labels. Even if you're not a Kyverno user, you'll most likely learn something you didn't know about Kubernetes.

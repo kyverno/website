@@ -3,8 +3,9 @@ date: 2023-12-12
 title: Kyverno Chainsaw - The ultimate end to end testing tool!
 tags:
   - General
-author: Charles-Edouard Brétéché
-description: Have fun testing Kubernetes operators!
+authors:
+  - name: Charles-Edouard Brétéché
+excerpt: Have fun testing Kubernetes operators!
 ---
 
 ![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
