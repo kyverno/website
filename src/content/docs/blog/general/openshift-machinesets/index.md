@@ -74,10 +74,10 @@ Kyverno policies can make use of variables that are retrieved from the results f
 
 ```yaml
 context:
-- name: cluster
+  - name: cluster
     apiCall:
     urlPath: /apis/config.openshift.io/v1/infrastructures/cluster
-- name: infraid
+  - name: infraid
     variable:
     jmesPath: cluster.status.infrastructureName
 ```

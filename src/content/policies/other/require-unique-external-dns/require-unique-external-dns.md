@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with internal DNS, duplicates must be avoided. This policy requires every such Service have a cluster-unique hostname present in the value of the annotation.'
 ---
 
 ## Policy Definition

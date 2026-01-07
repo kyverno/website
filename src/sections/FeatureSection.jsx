@@ -11,10 +11,10 @@ export const FeatureSection = () => {
 
   return (
     <section
-      className="p-20 flex flex-col items-center space-y-5"
+      className="w-full p-12 sm:p-16 md:p-20 flex flex-col items-center space-y-8"
       id="features"
     >
-      <div className="items-center flex flex-col space-y-6 my-5">
+      <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-8">
         <HeadingContent
           headingParts={headingText}
           subheading={paragraphText}
@@ -22,8 +22,8 @@ export const FeatureSection = () => {
           headerLevel="h2"
         />
         <div
-          className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center space-y-4 sm:flex-row sm:flex-wrap 
-                    md:items-baseline sm:justify-center sm:space-x-4 px-10 mt-8"
+          className="w-full flex flex-col items-center justify-center space-y-4 sm:flex-row sm:flex-wrap 
+                    md:items-baseline sm:justify-center sm:space-x-4"
         >
           {features.map((card, index) => (
             <KyvernoFeatureCard

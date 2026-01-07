@@ -52,30 +52,30 @@ With the introduction of Kyverno 1.11, a PolicyReport is now created for each in
 apiVersion: wgpolicyk8s.io/v1alpha2
 kind: PolicyReport
 metadata:
- name: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
- namespace: default
- ownerReferences:
- - apiVersion: v1
-   kind: Service
-   name: kubernetes
-   uid: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
+  name: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
+  namespace: default
+  ownerReferences:
+    - apiVersion: v1
+      kind: Service
+      name: kubernetes
+      uid: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
 results:
-- category: Networking
- message: validation rule 'disallow-LoadBalancer' passed.
- policy: disallow-loadbalancer-service
- result: pass
- rule: disallow-LoadBalancer
- source: kyverno
-...
+  - category: Networking
+    message: validation rule 'disallow-LoadBalancer' passed
+    policy: disallow-loadbalancer-service
+    result: pass
+    rule: disallow-LoadBalancer
+    source: kyverno
+# ...
 scope:
- apiVersion: v1
- kind: Service
- name: kubernetes
- namespace: default
- uid: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
+  apiVersion: v1
+  kind: Service
+  name: kubernetes
+  namespace: default
+  uid: 0f8f65db-3bfa-4178-af8d-d66fc765b17e
 summary:
- pass: 1
-...
+  pass: 1
+# ...
 ```
 
 ### Notary Updates

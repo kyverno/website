@@ -439,45 +439,45 @@ This will return a `NamespaceList` object with a property `items` that contains 
 
 ```json
 {
-    "kind": "NamespaceList",
-    "apiVersion": "v1",
-    "metadata": {
-      "selfLink": "/api/v1/namespaces",
-      "resourceVersion": "2009258"
-    },
-    "items": [
-      {
-        "metadata": {
-          "name": "default",
-          "selfLink": "/api/v1/namespaces/default",
-          "uid": "5011b5d5-abb7-4fef-93f9-8b5fa4b2eba9",
-          "resourceVersion": "155",
-          "creationTimestamp": "2021-01-19T20:20:37Z",
-          "managedFields": [
-            {
-              "manager": "kube-apiserver",
-              "operation": "Update",
-              "apiVersion": "v1",
-              "time": "2021-01-19T20:20:37Z",
-              "fieldsType": "FieldsV1",
-              "fieldsV1": {
-                "f:status": {
-                  "f:phase": {}
-                }
+  "kind": "NamespaceList",
+  "apiVersion": "v1",
+  "metadata": {
+    "selfLink": "/api/v1/namespaces",
+    "resourceVersion": "2009258"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "default",
+        "selfLink": "/api/v1/namespaces/default",
+        "uid": "5011b5d5-abb7-4fef-93f9-8b5fa4b2eba9",
+        "resourceVersion": "155",
+        "creationTimestamp": "2021-01-19T20:20:37Z",
+        "managedFields": [
+          {
+            "manager": "kube-apiserver",
+            "operation": "Update",
+            "apiVersion": "v1",
+            "time": "2021-01-19T20:20:37Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:status": {
+                "f:phase": {}
               }
             }
-          ]
-        },
-        "spec": {
-          "finalizers": [
-            "kubernetes"
-          ]
-        },
-        "status": {
-          "phase": "Active"
-        }
+          }
+        ]
       },
-      ...
+      "spec": {
+        "finalizers": ["kubernetes"]
+      },
+      "status": {
+        "phase": "Active"
+      }
+    }
+    // ...
+  ]
+}
 ```
 
 To process this data in JMESPath, reference the `items`. Here is an example which extracts a few metadata fields across all Namespace resources:
@@ -497,8 +497,9 @@ This produces a new JSON list of objects with properties `name` and `creationTim
   {
     "creationTimestamp": "2021-01-19T20:20:36Z",
     "name": "kube-node-lease"
-  },
-  ...
+  }
+  //...
+]
 ```
 
 To find an item in the list you can use JMESPath filters. For example, this command will match a Namespace by its name:
@@ -639,9 +640,9 @@ In the case of a Kubernetes resource type of GlobalContextEntry, the value will 
     "metadata": {
       "annotations": {
         "deployment.kubernetes.io/revision": "1"
-      },
+      }
     }
-  ...
+    //...
   },
   {
     "apiVersion": "apps/v1",
@@ -649,9 +650,9 @@ In the case of a Kubernetes resource type of GlobalContextEntry, the value will 
     "metadata": {
       "annotations": {
         "deployment.kubernetes.io/revision": "1"
-      },
+      }
     }
-  ...
+    //...
   }
 ]
 ```
@@ -723,15 +724,12 @@ GlobalContextEntries must be in a healthy state (i.e., there is a response recei
 In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries:
 
 ```yaml
-
-...
 context:
   - name: currentnamespace
     apiCall:
       urlPath: '/api/v1/namespaces/{{ request.namespace }}'
       jmesPath: metadata.name
       default: default
-...
 ```
 
 ## Variables from Image Registries
@@ -751,14 +749,20 @@ the output `imageData` variable will have a structure which looks like the follo
 
 ```json
 {
-    "image":         "ghcr.io/kyverno/kyverno",
-    "resolvedImage": "ghcr.io/kyverno/kyverno@sha256:17bfcdf276ce2cec0236e069f0ad6b3536c653c73dbeba59405334c0d3b51ecb",
-    "registry":      "ghcr.io",
-    "repository":    "kyverno/kyverno",
-    "identifier":    "latest",
-    "manifestList":  manifestList,
-    "manifest":      manifest,
-    "configData":    config,
+  "image": "ghcr.io/kyverno/kyverno",
+  "resolvedImage": "ghcr.io/kyverno/kyverno@sha256:17bfcdf276ce2cec0236e069f0ad6b3536c653c73dbeba59405334c0d3b51ecb",
+  "registry": "ghcr.io",
+  "repository": "kyverno/kyverno",
+  "identifier": "latest",
+  "manifestList": [
+    /* manifestList */
+  ],
+  "manifest": {
+    /* manifest */
+  },
+  "configData": {
+    /* config */
+  }
 }
 ```
 
@@ -781,8 +785,11 @@ The `manifestList`, `manifest` and `config` keys contain the output from `crane 
 
 For example, one could inspect the labels, entrypoint, volumes, history, layers, etc of a given image. Using the [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool, show the config of the `ghcr.io/kyverno/kyverno:latest` image:
 
-```json
+```sh
 $ crane config ghcr.io/kyverno/kyverno:latest | jq
+```
+
+```json
 {
   "architecture": "amd64",
   "author": "github.com/ko-build/ko",
@@ -817,9 +824,7 @@ $ crane config ghcr.io/kyverno/kyverno:latest | jq
     ]
   },
   "config": {
-    "Entrypoint": [
-      "/ko-app/kyverno"
-    ],
+    "Entrypoint": ["/ko-app/kyverno"],
     "Env": [
       "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/ko-app",
       "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",

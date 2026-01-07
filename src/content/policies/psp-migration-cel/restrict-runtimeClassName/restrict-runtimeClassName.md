@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - PSP Migration in CEL
+description: 'The runtimeClass field of a Pod spec defines which container engine runtime should be used. In the previous Pod Security Policy controller, defining restrictions on which classes were allowed was permitted. Limiting runtime classes to only those which have been defined can prevent unintended running states or Pods which may not come online. This policy restricts the runtimeClass field to the values `prodclass` or `expclass`.'
 ---
 
 ## Policy Definition

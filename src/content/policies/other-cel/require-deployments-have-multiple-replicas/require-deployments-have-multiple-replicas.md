@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Deployment
-tags: []
+tags:
+  - Sample in CEL
 version: 1.11.0
+description: 'Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.'
 ---
 
 ## Policy Definition

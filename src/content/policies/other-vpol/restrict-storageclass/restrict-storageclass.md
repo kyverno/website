@@ -5,7 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - StorageClass
-tags: []
+tags:
+  - Other
+  - Multi-Tenancy in vpol
+description: 'StorageClasses allow description of custom "classes" of storage offered by the cluster, based on quality-of-service levels, backup policies, or custom policies determined by the cluster administrators. For shared StorageClasses in a multi-tenancy environment, a reclaimPolicy of `Delete` should be used to ensure a PersistentVolume cannot be reused across Namespaces. This policy requires StorageClasses set a reclaimPolicy of `Delete`.'
 ---
 
 ## Policy Definition

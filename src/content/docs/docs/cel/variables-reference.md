@@ -25,26 +25,29 @@ This page documents all CEL variables with their data types, usage examples, and
 **Type:** `Object`  
 **Description:** The incoming Kubernetes resource being processed
 
-```yaml
+```sh
 # Access resource metadata
 object.metadata.name
 object.metadata.namespace
 object.metadata.labels['app']
+```
 
+````sh
 # Access spec fields
 object.spec.replicas
 object.spec.template.spec.containers[0].image
 
+```sh
 # Check if field exists
 has(object.metadata.labels.app)
-```
+````
 
 ### `oldObject`
 
 **Type:** `Object` (update operations only)  
 **Description:** The existing Kubernetes resource before modification
 
-```yaml
+```sh
 # Compare old and new values
 object.spec.replicas != oldObject.spec.replicas
 
@@ -57,7 +60,7 @@ object.metadata.labels != oldObject.metadata.labels
 **Type:** `Object`  
 **Description:** Information about the admission request
 
-```yaml
+```sh
 # Basic request info
 request.operation  # "CREATE", "UPDATE", "DELETE"
 request.kind.kind  # "Pod", "Deployment", etc.
@@ -79,7 +82,7 @@ request.userInfo.username.startsWith("system:serviceaccount:")
 **Type:** `String`  
 **Description:** Name of the service account associated with the request
 
-```yaml
+```sh
 # Validate service account naming
 serviceAccountName.startsWith('allowed-prefix-')
 
@@ -92,7 +95,7 @@ serviceAccountName in ['default', 'kyverno', 'system']
 **Type:** `String`  
 **Description:** Namespace of the service account
 
-```yaml
+```sh
 # Ensure service account is in same namespace
 serviceAccountNamespace == object.metadata.namespace
 
@@ -105,7 +108,7 @@ serviceAccountNamespace == 'system-namespace'
 **Type:** `List<Object>`  
 **Description:** List of container images from the resource (Pods, Deployments, etc.)
 
-```yaml
+```sh
 # Check all images come from allowed registry
 images.all(image, image.registry == 'allowed-registry.com')
 
@@ -121,7 +124,7 @@ images.all(image, image.name.matches('^[a-z0-9-]+$'))
 **Type:** `List<String>`  
 **Description:** List of Role names the user has access to
 
-```yaml
+```sh
 # Check if user has specific role
 'pod-reader' in request.roles
 
@@ -134,7 +137,7 @@ images.all(image, image.name.matches('^[a-z0-9-]+$'))
 **Type:** `List<String>`  
 **Description:** List of ClusterRole names the user has access to
 
-```yaml
+```sh
 # Check cluster-level permissions
 'cluster-admin' in request.clusterRoles
 
@@ -149,7 +152,7 @@ request.clusterRoles.exists(role, role.startsWith('system:'))
 **Type:** `Object`  
 **Description:** Policy parameters passed from PolicyBinding or ClusterPolicyBinding
 
-```yaml
+```sh
 # Access policy parameters
 params.allowedRegistries.exists(registry,
   images.all(img, img.registry == registry))
@@ -163,7 +166,7 @@ has(params.maxReplicas) ? params.maxReplicas : 10
 **Type:** `Object`  
 **Description:** The Namespace object (when applicable)
 
-```yaml
+```sh
 # Check namespace labels
 namespaceObject.metadata.labels['environment'] == 'production'
 
@@ -176,7 +179,7 @@ has(namespaceObject.metadata.annotations['policy.kyverno.io/exclude'])
 **Type:** `Object`  
 **Description:** Authorization interface for checking permissions
 
-```yaml
+```sh
 # Check if user can perform action
 authorizer.check({
   'group': 'apps',
@@ -199,7 +202,7 @@ authorizer.check({
 
 When using the `images` variable, each image object contains:
 
-```yaml
+```sh
 # Image object fields
 image.registry    # "docker.io"
 image.name        # "library/nginx"
@@ -212,7 +215,7 @@ image.reference   # Full image reference
 
 ### Checking Field Existence
 
-```yaml
+```sh
 # Always check if optional fields exist
 has(object.metadata.labels) &&
 has(object.metadata.labels.app)
@@ -224,7 +227,7 @@ has(object.spec.template) ?
 
 ### Handling Lists
 
-```yaml
+```sh
 # Check if list exists and has items
 has(object.spec.containers) &&
 size(object.spec.containers) > 0
@@ -235,7 +238,7 @@ object.spec.containers.exists(c, c.name == 'main')
 
 ### Null Safety
 
-```yaml
+```sh
 # Handle potentially null values
 object.metadata.labels.orValue({})['app'] == 'myapp'
 
@@ -248,7 +251,7 @@ has(object.metadata.annotations.priority) ?
 
 ### Resource Validation
 
-```yaml
+```sh
 # Require specific labels
 ['app', 'version'].all(label,
   has(object.metadata.labels) &&
@@ -260,7 +263,7 @@ object.metadata.name.matches('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
 
 ### Image Security
 
-```yaml
+```sh
 # Block privileged containers
 object.spec.containers.all(container,
   !has(container.securityContext) ||
@@ -275,7 +278,7 @@ images.all(image,
 
 ### RBAC Integration
 
-```yaml
+```sh
 # Combine authorization checks
 authorizer.check({
   'resource': 'pods',

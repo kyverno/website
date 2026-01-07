@@ -5,8 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Ingress
-tags: []
+tags:
+  - Other in Vpol
 version: 1.14.0
+description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
 ---
 
 ## Policy Definition

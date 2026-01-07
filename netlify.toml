@@ -40,6 +40,12 @@
 
 # --- Redirects ---
 [[redirects]]
+  from = "/docs/policy-types/*"
+  to = "/docs/policy-types/cel-policies/:splat"
+  status = 301
+  force = true # COMMENT: ensure that we always redirect
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

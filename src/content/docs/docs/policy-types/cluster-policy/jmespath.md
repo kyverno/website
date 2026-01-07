@@ -725,18 +725,18 @@ spec:
     - name: validate-external-url
       match:
         any:
-        - resources:
-            kinds:
-              - ConfigMap
+          - resources:
+              kinds:
+                - ConfigMap
       validate:
         failureAction: Enforce
-        message: "ConfigMap contains an external URL."
+        message: 'ConfigMap contains an external URL.'
         deny:
           conditions:
             all:
-             - key: "{{ request.object.data.test | is_external_url(@) }}"
-              operator: Equals
-              value: true
+              - key: '{{ request.object.data.test | is_external_url(@) }}'
+                operator: Equals
+                value: true
 ```
 
 </p>

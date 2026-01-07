@@ -6,8 +6,10 @@ type: ClusterPolicy
 subjects:
   - ServiceAccount
   - RoleBinding
-tags: []
+tags:
+  - Flux
 version: 1.6.0
+description: 'As part of the tenant provisioning process, Flux needs to generate RBAC resources. This policy will create a ServiceAccount and RoleBinding when a new or existing Namespace is labeled with `toolkit.fluxcd.io/tenant`. Use of this rule may require an additional binding for the Kyverno ServiceAccount so it has permissions to properly create the RoleBinding.'
 ---
 
 ## Policy Definition

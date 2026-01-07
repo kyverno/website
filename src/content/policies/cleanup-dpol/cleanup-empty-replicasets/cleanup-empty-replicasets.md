@@ -1,12 +1,15 @@
 ---
 title: 'Cleanup Empty ReplicaSets'
-category: validate
+category: cleanup
 severity: medium
 type: DeletingPolicy
 subjects:
   - ReplicaSet
-tags: []
+tags:
+  - Other
 version: 1.15.0
+description: 'ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster. Note: This simplified version cleans up all empty ReplicaSets without a time delay. The schedule runs every minute, so very recent ReplicaSets should survive at least one cycle before deletion.'
+isNew: true
 ---
 
 ## Policy Definition

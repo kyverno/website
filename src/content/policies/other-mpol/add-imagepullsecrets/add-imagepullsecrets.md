@@ -1,11 +1,14 @@
 ---
 title: 'Add imagePullSecrets'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample
+description: 'Images coming from certain registries require authentication in order to pull them, and the kubelet uses this information in the form of an imagePullSecret to pull those images on behalf of your Pod. This policy searches for images coming from a registry called `corp.reg.com` and, if found, will mutate the Pod to add an imagePullSecret called `my-secret`.'
+isNew: true
 ---
 
 ## Policy Definition

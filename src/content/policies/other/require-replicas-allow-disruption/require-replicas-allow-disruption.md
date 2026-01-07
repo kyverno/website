@@ -7,7 +7,9 @@ subjects:
   - PodDisruptionBudget
   - Deployment
   - StatefulSet
-tags: []
+tags:
+  - Other
+description: 'Existing PodDisruptionBudgets can apply to all future matching Pod controllers. If the minAvailable field is defined for such matching PDBs and the replica count of a new Deployment or StatefulSet is lower than that, then availability could be negatively impacted. This policy specifies that Deployment/StatefulSet replicas exceed the minAvailable value of all matching PodDisruptionBudgets which specify minAvailable as a number and not percentage.'
 ---
 
 ## Policy Definition

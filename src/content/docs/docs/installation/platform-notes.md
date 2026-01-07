@@ -26,7 +26,7 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
    metadata:
      annotations:
        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
-       ...
+       #...
    ```
 
 2. **RBAC and CRD Management**

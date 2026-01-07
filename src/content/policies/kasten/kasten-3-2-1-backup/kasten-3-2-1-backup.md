@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Policy
-tags: []
+tags:
+  - Veeam Kasten
 version: 1.12.0
+description: 'The 3-2-1 rule of data protection recommends that you have at least 3 copies of data, on 2 different storage targets, with 1 being offsite. This approach ensures a health mix of redundancy options for data recovery of the application for localized & multi-region cloud failures or compromise. In Kubernetes, this translates to the original running resources, a local snapshot, and a copy of all application resources and volume data exported to an external repository. This policy accomplishes 3-2-1 validation by ensuring each policy contains both ''action: backup'' and ''action: export''.'
 ---
 
 ## Policy Definition

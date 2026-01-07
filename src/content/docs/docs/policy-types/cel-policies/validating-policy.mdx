@@ -69,8 +69,8 @@ spec:
       enabled: false
     background:
       enabled: true
-    mode : Kubernetes
-  ...
+    mode: Kubernetes
+  # ...
 ```
 
 The `mode` can be set to `JSON` for non-Kubernetes payloads.
@@ -88,8 +88,8 @@ metadata:
   name: check-deployment-labels
 spec:
   webhookConfiguration:
-   timeoutSeconds: 15
-  ...
+    timeoutSeconds: 15
+  # ...
 ```
 
 In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10` seconds, and the allowed range is `1` to `30` seconds. After this timeout, the request may fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `ValidatingWebhookConfiguration`.
