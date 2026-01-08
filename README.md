@@ -36,7 +36,7 @@ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 
 ```sh
 cd kyverno-website
-yarn dev
+npm run dev
 ```
 
 ## 🚀 Project Structure
