@@ -36,6 +36,7 @@ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 
 ```sh
 cd kyverno-website
+npm install
 npm run dev
 ```
 
