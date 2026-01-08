@@ -6,7 +6,7 @@ sidebar:
 description: An introduction to Kyverno policy and rule types
 ---
 
-This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
+This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, generation, cleanup, and image verification allowing you to select the one (or all) which is most relevant to your use case.
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/) for more complete information on how to install Kyverno in production.
 
@@ -299,3 +299,138 @@ kubectl delete clusterpolicy sync-secrets
 ```
 
 Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate).
+
+## Cleanup Resources
+
+Kyverno can automatically cleanup (delete) resources based on conditions and a schedule. This is useful for removing temporary resources, orphaned Pods, or maintaining cluster hygiene. A `ClusterCleanupPolicy` uses a cron schedule to periodically evaluate and remove matching resources.
+
+Let's create a policy that removes bare Pods (Pods not owned by any controller) every 5 minutes.
+
+First, create a test bare Pod:
+
+```sh
+kubectl run test-cleanup --image=nginx
+```
+
+Now add this ClusterCleanupPolicy:
+
+```yaml
+kubectl create -f- << EOF
+apiVersion: kyverno.io/v2
+kind: ClusterCleanupPolicy
+metadata:
+  name: cleanup-bare-pods
+spec:
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+  conditions:
+    all:
+      - key: "{{ target.metadata.ownerReferences[] || \`[]\` }}"
+        operator: Equals
+        value: []
+  schedule: "*/5 * * * *"
+EOF
+```
+
+:::note[Note]
+Kyverno requires appropriate RBAC permissions to delete resources. You may need to grant additional permissions to the cleanup controller.
+:::
+
+The policy will automatically delete the bare Pod within 5 minutes. You can also use the TTL label for immediate cleanup:
+
+```sh
+kubectl run temp-pod --image=nginx --labels="cleanup.kyverno.io/ttl=2m"
+```
+
+Clean up the policy:
+
+```sh
+kubectl delete clustercleanuppolicy cleanup-bare-pods
+```
+
+Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [cleanup section](/docs/policy-types/cel-policies/cleanup-policy).
+
+## Verify Images
+
+Image verification ensures only signed and trusted container images run in your cluster. Kyverno verifies signatures created by tools like Cosign, preventing deployment of unsigned or tampered images.
+
+Add this policy to verify image signatures:
+
+```yaml
+kubectl create -f- << EOF
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image
+spec:
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
+  background: false
+  rules:
+    - name: verify-signature
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      verifyImages:
+        - imageReferences:
+            - 'ghcr.io/kyverno/test-verify-image*'
+          failureAction: Enforce
+          attestors:
+            - count: 1
+              entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+                      5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+                      -----END PUBLIC KEY-----
+                    rekor:
+                      ignoreTlog: true
+                      url: https://rekor.sigstore.dev
+EOF
+```
+
+:::note[Note]
+Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Create Pods in a user-defined Namespace or the `default` Namespace for testing.
+:::
+
+Try running a signed image:
+
+```sh
+kubectl run signed --image=ghcr.io/kyverno/test-verify-image:signed
+```
+
+This Pod is created successfully. Kyverno also mutates it to add the image digest.
+
+Now try an unsigned image:
+
+```sh
+kubectl run unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
+```
+
+You should see an error:
+
+```sh
+Error from server: admission webhook "mutate.kyverno.svc" denied the request:
+
+resource Pod/default/unsigned was blocked due to the following policies
+
+verify-image:
+  verify-signature: 'image verification failed for ghcr.io/kyverno/test-verify-image:unsigned:
+    signature not found'
+```
+
+Clean up:
+
+```sh
+kubectl delete clusterpolicy verify-image
+kubectl delete pod signed
+```
+
+Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [verify images section](/docs/policy-types/cluster-policy/verify-images).
