@@ -1,6 +1,7 @@
 ---
 date: 2025-06-11
 title: Automating EKS CIS Compliance with Kyverno and KubeBench
+slug: blog/automating-eks-cis-compliance-with-kyverno-and-kubeBench
 tags:
   - General
 authors:

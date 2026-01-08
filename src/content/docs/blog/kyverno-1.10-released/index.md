@@ -1,6 +1,7 @@
 ---
 date: 2023-05-30
 title: Kyverno 1.10 Released
+slug: blog/kyverno-1.10-released
 tags:
   - Releases
 excerpt: Kyverno 1.10 released with featuring separate controllers, external service calls, Notary support, and tons more!

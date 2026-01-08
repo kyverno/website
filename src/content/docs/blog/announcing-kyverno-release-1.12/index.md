@@ -1,6 +1,7 @@
 ---
 date: 2024-04-26
 title: Kyverno 1.12 Released
+slug: blog/Kyverno-1.12-released
 tags:
   - Releases
 excerpt: Kyverno 1.12 released with new alternative report server, Global Context Entry, Kyverno JSON in CLI, performance optimizations, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!

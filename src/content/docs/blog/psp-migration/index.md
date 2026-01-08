@@ -1,6 +1,7 @@
 ---
 date: 2023-05-24
 title: PodSecurityPolicy migration with Kyverno
+slug: blog/podsecuritypolicy-migration-with-kyverno
 tags:
   - General
 excerpt: Migrating from PodSecurityPolicy to Kyverno

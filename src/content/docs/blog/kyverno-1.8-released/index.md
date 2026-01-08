@@ -1,6 +1,7 @@
 ---
 date: 2022-10-24
 title: Kyverno 1.8 Released
+slug: blog/kyverno-1.8-released
 tags:
   - Releases
 excerpt: Kyverno 1.8 is here.

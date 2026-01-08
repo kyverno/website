@@ -1,6 +1,7 @@
 ---
 date: 2023-08-18
 title: Verifying images in a private Amazon ECR with Kyverno and IAM Roles for Service Accounts (IRSA)
+slug: blog/verifying-images-in-a-private-amazon-ecr-with-kyverno-and-iam-roles-for-service-accounts-irsa
 tags:
   - General
 authors:
