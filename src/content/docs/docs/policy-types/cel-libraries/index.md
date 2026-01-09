@@ -14,15 +14,15 @@ Kyverno enhances Kubernetes' CEL environment with libraries enabling complex pol
 
 The **Resource library** provides functions like `resource.Get()` and `resource.List()` to retrieve Kubernetes resources from the cluster, either individually or as a list. These are useful for writing policies that depend on the state of other resources, such as checking existing ConfigMaps, Services, or Deployments before validating or mutating a new object.
 
-| CEL Expression                                                                                                              | Purpose                                                                                                     |
-| --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]`                                       | Fetch a ConfigMap value from a specific namespace                                                           |
-| `resource.List("apps/v1", "deployments", "").items.size() > 0`                                                              | Check if there are any Deployments across all namespaces                                                    |
-| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})`                                                     | Perform a live SubjectAccessReview (authz check) against the Kubernetes API                                 |
+| CEL Expression                                                                                                                  | Purpose                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `resource.Get("v1", "configmaps", "default", "clusterregistries").data["registries"]`                                           | Fetch a ConfigMap value from a specific namespace                                                           |
+| `resource.List("apps/v1", "deployments", "").items.size() > 0`                                                                  | Check if there are any Deployments across all namespaces                                                    |
+| `resource.Post("authorization.k8s.io/v1", "subjectaccessreviews", {…})`                                                         | Perform a live SubjectAccessReview (authz check) against the Kubernetes API                                 |
 | `resource.List("apps/v1", "deployments", namespaceObject.metadata.name).items.exists(d, d.spec.replicas > 3)`                   | Ensure at least one Deployment in the same namespace has more than 3 replicas                               |
 | `resource.List("apps/v1", "deployments", namespaceObject.metadata.name, { "env": "pod" }).items.exists(d, d.spec.replicas > 3)` | Ensure at least one Deployment in the same namespace with an label pair `env:prod` has more than 3 replicas |
-| `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()`                                       | Verify that Service names in the `default` namespace are sorted alphabetically                              |
-| `resource.List("v1", "services", namespaceObject.metadata.name).items.map(s, s.metadata.name).isSorted()`                       | Use `namespaceObject.metadata.name` to dynamically target the current resource's namespace                      |
+| `resource.List("v1", "services", "default").items.map(s, s.metadata.name).isSorted()`                                           | Verify that Service names in the `default` namespace are sorted alphabetically                              |
+| `resource.List("v1", "services", namespaceObject.metadata.name).items.map(s, s.metadata.name).isSorted()`                       | Use `namespaceObject.metadata.name` to dynamically target the current resource's namespace                  |
 
 In the sample policy below, `resource.Get()` retrieves a ConfigMap which is then used in the policy evaluation logic:
 
