@@ -57,5 +57,6 @@ pnpm-debug.log*
 
 # website build output
 # Ignore all folders in public except assets
+public/*
 !public/assets/
 resources/
