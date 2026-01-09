@@ -73,7 +73,7 @@ spec:
   variables:
     - name: cm
       expression: >-
-        resource.Get("v1", "configmaps", object.metadata.namespace, "keys")
+        resource.Get("v1", "configmaps", namespaceObject.metadata.name, "keys")
   attestors:
     - name: cosign # A unique name to identify this attestor
       cosign:
@@ -167,7 +167,7 @@ spec:
           - pods
   variables:
     - name: cm
-      expression: 'resource.Get("v1", "configmaps", object.metadata.namespace, "keys")'
+      expression: 'resource.Get("v1", "configmaps", namespaceObject.metadata.name, "keys")'
   matchImageReferences:
     - glob: ghcr.io/*
   attestors:
