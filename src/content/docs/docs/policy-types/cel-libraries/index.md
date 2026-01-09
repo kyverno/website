@@ -162,7 +162,7 @@ The **HTTP library** allows interaction with external HTTP/S endpoints using `ht
 
 | **CEL Expression**                                                                                               | **Purpose**                                                      |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `http.Get("https://internal.api/health").status == "ok"  `                                                       | Validate external service health before proceeding                 |
+| `http.Get("https://internal.api/health").status == "ok"  `                                                       | Validate external service health before proceeding               |
 | `http.Get("https://service/data").metadata.team == object.metadata.labels.team `                                 | Enforce label matching from remote service metadata              |
 | `http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true` | Confirm logging of the resource to an external system            |
 | `http.Get("https://certs.api/rootCA").cert == object.spec.cert`                                                  | Validate a certificate field in the object against external data |
