@@ -474,7 +474,7 @@ spec:
         resources: ['pods']
   variables:
     - name: nsName
-      expression: 'object.metadata.namespace'
+      expression: 'namespaceObject.metadata.name'
     - name: source
       expression: resource.Get("v1", "secrets", "production", "regcred")
   generate:
