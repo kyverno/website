@@ -1,0 +1,41 @@
+---
+title: 'block-ephemeral-containers'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects: []
+tags: []
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml" target="-blank">/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: block-ephemeral-containers
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+          - pods/ephemeralcontainers
+  validations:
+    - expression: object.spec.?ephemeralContainers.orValue([]).size() == 0
+      message: Ephemeral (debug) containers are not permitted.
+
+```

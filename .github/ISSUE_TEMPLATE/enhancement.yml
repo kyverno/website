@@ -1,7 +1,7 @@
-name: "Enhancement: Documentation"
+name: 'Enhancement: Documentation'
 description: Recommend an enhancement to the Kyverno documentation.
-title: "[Enhancement] "
-labels: ["enhancement"]
+title: '[Enhancement] '
+labels: ['enhancement']
 body:
   - type: markdown
     attributes:

@@ -1,0 +1,67 @@
+{
+  "name": "website",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format:check": "prettier --check .",
+    "format:write": "lint-staged",
+    "prepare": "husky || true",
+    "codegen:policies": "tsx scripts/render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/",
+    "codegen:cli-docs": "scripts/codegen-cli-docs.sh",
+    "codegen": "npm run codegen:policies && npm run codegen:cli-docs",
+    "codegen:verify": "npm run codegen && git diff --exit-code && git diff --cached --exit-code",
+    "check:links": "CHECK_LINKS=true astro build"
+  },
+  "dependencies": {
+    "@astrojs/markdoc": "^0.15.10",
+    "@astrojs/netlify": "^6.6.0",
+    "@astrojs/prism": "^3.3.0",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/starlight": "^0.36.1",
+    "@astrojs/starlight-markdoc": "^0.5.1",
+    "@astrojs/starlight-tailwind": "^4.0.2",
+    "@lorenzo_lewis/starlight-utils": "^0.3.2",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.6.1",
+    "lucide-react": "^0.552.0",
+    "lz-string": "^1.5.0",
+    "motion": "^12.23.24",
+    "prism-react-renderer": "^2.4.1",
+    "prop-types": "^15.8.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.2",
+    "starlight-auto-sidebar": "^0.1.3",
+    "starlight-blog": "^0.25.2",
+    "starlight-image-zoom": "^0.13.2",
+    "starlight-links-validator": "^0.19.2",
+    "starlight-theme-rapide": "^0.5.2",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/lz-string": "^1.3.34",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.27.2",
+    "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "simple-git": "^3.25.0",
+    "tsx": "^4.19.2"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
+  }
+}

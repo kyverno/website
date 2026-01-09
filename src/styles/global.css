@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+:root {
+  font-family: 'Inter', sans-serif;
+  background-color: #12171b;
+  color: #eee;
+}
+
+@theme {
+  --color-dark-100: #12171b;
+  --color-dark-50: #171e22;
+  --color-dark-footer: #0d1012;
+  --color-primary-100: #3783c4;
+  --color-primary-75: #69a2d3;
+  --color-primary-50: #9bc1e1;
+  --color-primary-25: #cde0f0;
+  --color-accent-100: #e77e5b;
+  --color-accent-75: #ed9e84;
+  --color-accent-50: #f3bfad;
+  --color-accent-25: #f9dfd6;
+  --color-stroke: #28353c;
+}
+
+/* Style for Support link in header */
+.support-header-link {
+  color: var(--sl-color-text);
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-left: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: color 0.2s;
+}
+
+.support-header-link:hover {
+  color: var(--sl-color-accent);
+}
+
+/* Hide right sidebar container and panel on Support page */
+:global(body[data-slug='/support/'] .right-sidebar-container),
+:global(body[data-slug='/support'] .right-sidebar-container),
+:global(body[data-slug='/support/'] .right-sidebar),
+:global(body[data-slug='/support'] .right-sidebar),
+:global(body[data-slug='/support/'] .right-sidebar-panel),
+:global(body[data-slug='/support'] .right-sidebar-panel),
+:global(body[data-slug='/support/'] aside.right-sidebar-container),
+:global(body[data-slug='/support'] aside.right-sidebar-container) {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: 0 0 0 !important;
+}
+
+/* Adjust main content to use more width when sidebar is hidden */
+:global(body[data-slug='/support/'] .main-pane),
+:global(body[data-slug='/support'] .main-pane) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Remove the margin that's applied when TOC is present */
+:global(
+  body[data-slug='/support/'] [data-has-sidebar][data-has-toc] .main-pane
+),
+:global(
+  body[data-slug='/support'] [data-has-sidebar][data-has-toc] .main-pane
+) {
+  --sl-content-margin-inline: auto !important;
+  width: 100% !important;
+}
+
+/* Increase content width and reduce padding on Support page */
+:global(body[data-slug='/support/'] .content-panel),
+:global(body[data-slug='/support'] .content-panel) {
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
+:global(body[data-slug='/support/'] .sl-container),
+:global(body[data-slug='/support'] .sl-container) {
+  max-width: 90rem !important; /* Much wider than default 45rem */
+  margin-inline: auto !important;
+}
+
+@media (min-width: 72rem) {
+  :global(body[data-slug='/support/'] .sl-container),
+  :global(body[data-slug='/support'] .sl-container) {
+    max-width: 90rem !important;
+    margin-inline: auto !important;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Collapsible filter sections */
+details[open] summary svg {
+  transform: rotate(-90deg);
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::marker {
+  display: none;
+}
+
+/* Hide scrollbar for horizontal scrolling on mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

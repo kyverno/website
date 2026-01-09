@@ -1,47 +1,62 @@
 [build]
-publish = "public"
-command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify --baseURL https://kyverno.io/"
+  command = "npm ci && npm run build"
+  publish = "dist"
 
-[context.production.environment]
-HUGO_VERSION = "0.145.0"
-HUGO_ENV = "production"
-HUGO_ENABLEGITINFO = "true"
-GO_VERSION = "1.24.1"
-NODE_VERSION = "23.6.0"
+  [build.environment]
+    NODE_VERSION = "24.11.1"
+    GO_VERSION = "1.24.1"
+    ASTRO_TELEMETRY_DISABLED = "1"
+    SITE_URL = "https://kyverno.io/"
 
-[context.split1]
-command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify --enableGitInfo"
+# --- Production (main branch) ---
+[context.production]
+  command = "npm ci && npm run build"
+  publish = "dist"
 
-[context.split1.environment]
-HUGO_VERSION = "0.145.0"
-HUGO_ENV = "production"
-GO_VERSION = "1.24.1"
-NODE_VERSION = "23.6.0"
+  [context.production.environment]
+    NODE_ENV = "production"
+    SITE_URL = "https://kyverno.io/"
+    ASTRO_ENV = "production"
 
+# --- Deploy Previews (PRs) ---
 [context.deploy-preview]
-command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"
+  command = "npm ci && npm run build"
+  publish = "dist"
 
-[context.deploy-preview.environment]
-HUGO_VERSION = "0.145.0"
-GO_VERSION = "1.24.1"
-NODE_VERSION = "23.6.0"
+  [context.deploy-preview.environment]
+    NODE_ENV = "production"
+    ASTRO_ENV = "preview"
+    SITE_URL = "$DEPLOY_PRIME_URL"
 
+# --- Branch Deploys (non-main branches) ---
 [context.branch-deploy]
-command = "npm install --save-dev autoprefixer && npm install --save-dev postcss-cli && npm install -D postcss && hugo --gc --minify -b $DEPLOY_PRIME_URL"
+  command = "npm ci && npm run build"
+  publish = "dist"
 
-[context.branch-deploy.environment]
-HUGO_VERSION = "0.145.0"
-GO_VERSION = "1.24.2"
-NODE_VERSION = "23.6.0"
+  [context.branch-deploy.environment]
+    NODE_ENV = "production"
+    ASTRO_ENV = "branch"
+    SITE_URL = "$DEPLOY_PRIME_URL"
 
-[context.next.environment]
-HUGO_ENABLEGITINFO = "true"
+# --- Redirects ---
+[[redirects]]
+  from = "/docs/policy-types/*"
+  to = "/docs/policy-types/cel-policies/:splat"
+  status = 301
+  force = true # COMMENT: ensure that we always redirect
 
 [[redirects]]
-from = "/npmjs/*"
-to = "/npmjs/"
-status = 200
+  from = "/blog/:year/:month/:date/*"
+  to = "/blog/:splat"
+  status = 301
+  force = true # COMMENT: ensure that we always redirect
 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# --- Headers ---
 [[headers]]
   for = "/*"
   [headers.values]

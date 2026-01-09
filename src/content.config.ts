@@ -1,0 +1,44 @@
+import { defineCollection, z } from 'astro:content'
+
+import { autoSidebarLoader } from 'starlight-auto-sidebar/loader'
+import { autoSidebarSchema } from 'starlight-auto-sidebar/schema'
+import { docsLoader } from '@astrojs/starlight/loaders'
+import { docsSchema } from '@astrojs/starlight/schema'
+import { glob } from 'astro/loaders'
+import { blogSchema } from 'starlight-blog/schema'
+
+const policiesCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/policies' }),
+  schema: z.object({
+    title: z.string(),
+    category: z.enum([
+      'verifyImages',
+      'validate',
+      'mutate',
+      'generate',
+      'cleanup',
+    ]),
+    severity: z.enum(['low', 'medium', 'high']),
+    type: z.string(), // Full kind from YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
+    subjects: z.array(z.string()), // Pod, Deployment, ...
+    tags: z.array(z.string()),
+    version: z.string().optional(),
+    description: z.string().optional(), // Policy description from annotations
+    isNew: z.boolean().optional(), // Flag to mark new policies
+  }),
+})
+
+export const collections = {
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
+      extend: (context) => blogSchema(context),
+    }),
+  }),
+
+  policies: policiesCollection,
+  autoSidebar: defineCollection({
+    loader: autoSidebarLoader(),
+    schema: autoSidebarSchema(),
+  }),
+}

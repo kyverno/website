@@ -18,7 +18,9 @@ Made with [contributors-img](https://contrib.rocks).
 
 ## Contributing
 
-This site makes use of the [Docsy](https://docsy.dev) theme and [Hugo Extended](https://gohugo.io/getting-started/installing#fetch-from-github) is required to render it.
+This site makes use of the [Starlight](https://starlight.astro.build/getting-started/) theme and [Node v22+](https://nodejs.org/en/blog/announcements/v22-release-announce) is required to render it.
+
+For detailed development setup and workflow instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 To contribute changes, use the [fork & pull](https://movi.hashnode.dev/how-to-successfully-fork-clone-signoff-and-make-a-pull-request-ckdyt03sy06utjas18lx1cjer) approach.
 
@@ -34,33 +36,45 @@ git clone https://github.com/{YOUR-GITHUB-ID}/website kyverno-website/
 
 ```sh
 cd kyverno-website
-hugo server
+npm install
+npm run dev
 ```
 
-**Note For Windows Users:** When running the `hugo server` command, make sure to execute it with administrator privileges in your terminal. You can do this by either:
-- Right-clicking on your terminal application (PowerShell/Command Prompt) and selecting "Run as administrator"
-- Or by pressing Windows key + X and selecting "Windows PowerShell (Admin)" or "Command Prompt (Admin)"
+## 🚀 Project Structure
 
-Then navigate to your project directory and run the `hugo server` command.
+Inside of your Astro + Starlight project, you'll see the following folders and files:
 
-By default, Hugo runs the website at: http://localhost:1313 and will re-build the site on changes.
-
-**Note for Github Codespaces User:** You will be required to install the hugo extended version. To do so download the extended version from [hugo release](https://github.com/gohugoio/hugo/releases) based on your operation system (mostly it is Ubuntu for Codespaces). Use the below commands to install and then move the hugo directory to `usr/local/hugo/bin/hugo`
 ```
-wget https://github.com/gohugoio/hugo/releases/download/v0.145.0/hugo_extended_0.145.0_linux-amd64.deb
-sudo dpkg -i hugo_extended_0.145.0_linux-amd64.deb
-rm hugo_extended_0.145.0_linux-amd64.deb
-sudo mv /usr/local/bin/hugo /usr/local/hugo/bin/hugo
+.
+├── public/
+├── src/
+│   ├── assets/
+│   ├── content/
+│   │   └── docs/
+│   └── content.config.ts
+├── astro.config.mjs
+├── package.json
+└── tsconfig.json
 ```
-Finally, Check the hugo version by running: `hugo version`
 
-## Update Docsy theme
+Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
 
-The project uses [Hugo Modules](https://gohugo.io/hugo-modules/) to manage the theme:
+Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
-Run `hugo mod get -u ./...` from project root.
+Static assets, like favicons, can be placed in the `public/` directory.
 
-To clean the module cache use `hugo mod clean`.
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
 ## Rendering Policies to Markdown
 
@@ -76,13 +90,13 @@ Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mut
 
 ### Code styling
 
-* Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
-* Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
-* Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
+- Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
+- Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
+- Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
 
 ### Grammar
 
-* We standardize on use of the Oxford comma.
+- We standardize on use of the Oxford comma.
 
 ### Links
 
@@ -168,9 +182,3 @@ There are several ways to create multiple PRs, but here is one easy flow:
 1. Create a PR for the `main` branch, as usual.
 2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
 3. Submit PRs for each release branch.
-
-## Customize other settings
-
-Edit the `.toml` files inside the `config/_default` directory.
-
-If needing to create a new page under the `Policies` heading that adopts the same CSS styling, assign `type = "policies"` to the page.

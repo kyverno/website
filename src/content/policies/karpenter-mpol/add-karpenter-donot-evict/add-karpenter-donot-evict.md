@@ -1,0 +1,61 @@
+---
+title: 'Add Karpenter Do Not Evict'
+category: mutate
+severity: medium
+type: MutatingPolicy
+subjects:
+  - Pod
+tags:
+  - Karpenter
+  - EKS Best Practices
+isNew: true
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml" target="-blank">/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-karpenter-donot-evict
+  annotations:
+    policies.kyverno.io/title: Add Karpenter Do Not Evict
+    policies.kyverno.io/category: Karpenter, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          object.kind == "Job" ?
+            (has(object.spec.template.metadata) ?
+              (has(object.spec.template.metadata.annotations) ?
+                [JSONPatch{op: "add", path: "/spec/template/metadata/annotations/" + jsonpatch.escapeKey("karpenter.sh/do-not-evict"), value: "true"}] : 
+                [JSONPatch{op: "add", path: "/spec/template/metadata/annotations", value: {"karpenter.sh/do-not-evict": "true"}}]
+              ) :
+              [JSONPatch{op: "add", path: "/spec/template/metadata", value: {"annotations": {"karpenter.sh/do-not-evict": "true"}}}]
+            ) :
+            (has(object.spec.jobTemplate.spec.template.metadata) ?
+              (has(object.spec.jobTemplate.spec.template.metadata.annotations) ?
+                [JSONPatch{op: "add", path: "/spec/jobTemplate/spec/template/metadata/annotations/" + jsonpatch.escapeKey("karpenter.sh/do-not-evict"), value: "true"}] : 
+                [JSONPatch{op: "add", path: "/spec/jobTemplate/spec/template/metadata/annotations", value: {"karpenter.sh/do-not-evict": "true"}}]
+              ) :
+              [JSONPatch{op: "add", path: "/spec/jobTemplate/spec/template/metadata", value: {"annotations": {"karpenter.sh/do-not-evict": "true"}}}]
+            )
+
+```

@@ -1,0 +1,92 @@
+---
+title: 'Add Karpenter nodeSelector'
+category: mutate
+severity: medium
+type: MutatingPolicy
+subjects:
+  - Pod
+tags:
+  - Karpenter
+  - EKS Best Practices
+version: 1.6.0
+description: 'Selecting the correct Node(s) provisioned by Karpenter is a way to specify the appropriate resource landing zone for a workload. This policy injects a nodeSelector map into the Pod based on the Namespace type where it is deployed.'
+isNew: true
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml" target="-blank">/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-karpenter-nodeselector
+  annotations:
+    policies.kyverno.io/title: Add Karpenter nodeSelector
+    policies.kyverno.io/category: Karpenter, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: Selecting the correct Node(s) provisioned by Karpenter is a way to specify the appropriate resource landing zone for a workload. This policy injects a nodeSelector map into the Pod based on the Namespace type where it is deployed.
+spec:
+  evaluation:
+    admission:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+    namespaceSelector:
+      matchExpressions:
+        - key: type
+          operator: In
+          values:
+            - medium
+            - large
+  variables:
+    - name: namespaceLabels
+      expression: resource.Get('v1', 'namespaces', '', object.metadata.namespace).metadata.labels
+    - name: capacityType
+      expression: "variables.namespaceLabels.type == 'large' ? 'on-demand' : 'spot'"
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          !has(object.spec.nodeSelector) ?
+          [
+            JSONPatch{
+              op: "add",
+              path: "/spec/nodeSelector",
+              value: {}
+            }
+          ] : []
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          [
+            JSONPatch{
+              op: "add",
+              path: "/spec/nodeSelector/" + jsonpatch.escapeKey("karpenter.sh/capacity-type"),
+              value: variables.capacityType
+            }
+          ]
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          [
+            JSONPatch{
+              op: "add",
+              path: "/spec/nodeSelector/" + jsonpatch.escapeKey("kubernetes.io/arch"),
+              value: "amd64"
+            }
+          ]
+
+```
