@@ -1,6 +1,7 @@
 ---
 date: 2023-11-28
 title: Kyverno Completes Third-Party Security Audit
+slug: blog/kyverno-completes-third-party-security-audit
 tags:
   - General
 excerpt: Presenting the results from the Kyverno security audit
