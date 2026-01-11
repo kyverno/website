@@ -69,42 +69,117 @@ export default defineConfig({
         {
           label: 'Introduction',
           autogenerate: { directory: 'docs/introduction' },
+          collapsed: true,
         },
         {
-          label: 'Installation',
+          label: 'Setup',
           autogenerate: { directory: 'docs/installation' },
+          collapsed: true,
         },
         {
-          label: 'Working With Policies',
+          label: 'Policy Types',
+          items: [
+            'docs/policy-types/overview',
+            'docs/policy-types/validating-policy',
+            'docs/policy-types/mutating-policy',
+            'docs/policy-types/generating-policy',
+            'docs/policy-types/deleting-policy',
+            'docs/policy-types/image-validating-policy',
+            'docs/policy-types/cel-libraries',
+            {
+              label: 'ClusterPolicy',
+              items: [
+                'docs/policy-types/cluster-policy/overview',
+                'docs/policy-types/cluster-policy/policy-settings',
+                'docs/policy-types/cluster-policy/match-exclude',
+                'docs/policy-types/cluster-policy/validate',
+                'docs/policy-types/cluster-policy/mutate',
+                'docs/policy-types/cluster-policy/generate',
+                {
+                  label: 'Verify Image Rules',
+                  collapsed: true,
+                  autogenerate: {
+                    directory: 'docs/policy-types/cluster-policy/verify-images',
+                  },
+                },
+                'docs/policy-types/cluster-policy/autogen',
+                'docs/policy-types/cluster-policy/variables',
+                'docs/policy-types/cluster-policy/jmespath',
+                'docs/policy-types/cluster-policy/preconditions',
+                'docs/policy-types/cluster-policy/external-data-sources',
+              ],
+              collapsed: true,
+              badge: {
+                text: 'Deprecated',
+                variant: 'caution',
+              },
+            },
+            'docs/policy-types/cleanup-policy',
+          ],
+          collapsed: false,
+        },
+        {
+          label: 'Guides',
+          collapsed: true,
           items: [
             {
-              label: 'Policy Types',
+              label: 'Working With Policies',
+              items: [
+                'docs/applying-policies',
+                'docs/testing-policies',
+                'docs/exceptions',
+              ],
               collapsed: true,
-              autogenerate: { directory: 'docs/policy-types' },
+            },
+            {
+              label: 'Migrating to CEL Policies',
+              link: 'docs/migration/traditional-to-cel',
             },
             {
               label: 'Reporting',
               collapsed: true,
               autogenerate: { directory: 'docs/policy-reports' },
             },
-            'docs/applying-policies',
-            'docs/testing-policies',
-            'docs/exceptions',
+            {
+              label: 'Monitoring',
+              collapsed: true,
+              autogenerate: { directory: 'docs/monitoring' },
+            },
+            {
+              label: 'Tracing',
+              collapsed: true,
+              autogenerate: { directory: 'docs/tracing' },
+            },
+            {
+              label: 'High Availability',
+              slug: 'docs/high-availability',
+            },
+            {
+              label: 'Security',
+              slug: 'docs/security',
+            },
+            {
+              label: 'Troubleshooting',
+              slug: 'docs/troubleshooting',
+            },
           ],
-          collapsed: true,
         },
         {
-          label: 'Monitoring',
-          collapsed: true,
-          autogenerate: { directory: 'docs/monitoring' },
+          label: 'Reference',
+          items: [
+            {
+              label: 'Resource Definitions',
+              slug: 'docs/crds',
+            },
+            {
+              label: 'Kyverno CLI',
+              collapsed: true,
+              autogenerate: { directory: 'docs/kyverno-cli' },
+            },
+          ],
         },
         {
-          label: 'Tracing',
-          collapsed: true,
-          autogenerate: { directory: 'docs/tracing' },
-        },
-        {
-          label: 'Tools',
+          label: 'Sub-Projects',
           items: [
             {
               label: 'Kyverno CLI',
@@ -142,33 +217,13 @@ export default defineConfig({
           collapsed: true,
         },
         {
-          label: 'Resource Definitions',
-          slug: 'docs/crds',
-        },
-        {
-          label: 'High Availability',
-          slug: 'docs/high-availability',
-        },
-        {
-          label: 'Releases',
-          slug: 'docs/releases',
-        },
-        {
-          label: 'Troubleshooting',
-          slug: 'docs/troubleshooting',
-        },
-        {
-          label: 'Security',
-          slug: 'docs/security',
-        },
-        {
           label: 'Community',
           slug: 'community',
         },
       ],
       plugins: [
         starlightImageZoom(),
-        starlightAutoSidebar(),
+        // starlightAutoSidebar(),
         starlightBlog({
           metrics: {
             readingTime: true,
@@ -183,6 +238,7 @@ export default defineConfig({
     markdoc(),
   ],
   vite: {
+    // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
     plugins: [tailwindcss()],
   },
 })

@@ -2,7 +2,7 @@
 title: Notary
 description: Verify CNCF Notary format signatures using X.509 certificates.
 sidebar:
-  order: 10
+  order: 3
 ---
 
 [Notary](https://notaryproject.dev/) is a CNCF project that provides a specification and tooling for securing software supply chains.

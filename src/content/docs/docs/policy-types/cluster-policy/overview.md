@@ -1,7 +1,8 @@
 ---
-title: Policies and Rules
+title: Overview
 description: Get an overview of how Kyverno policies and rules work.
-weight: 10
+sidebar:
+  order: 1
 ---
 
 A Kyverno ClusterPolicy contains a list of rules.

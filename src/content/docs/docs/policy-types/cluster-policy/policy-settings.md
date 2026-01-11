@@ -2,7 +2,7 @@
 title: Policy Settings
 description: Common configuration for all rules in a policy.
 sidebar:
-  order: 15
+  order: 2
 ---
 
 A [policy](/docs/policy-types/cluster-policy) contains one or more rules, and the following common settings which apply to all rules in the policy:

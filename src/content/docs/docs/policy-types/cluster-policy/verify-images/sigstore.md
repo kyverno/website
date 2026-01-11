@@ -2,7 +2,7 @@
 title: Sigstore
 description: Verify Sigstore Cosign format signatures and attestations using keys, certificates, or keyless attestors.
 sidebar:
-  order: 20
+  order: 2
 ---
 
 [Sigstore](https://sigstore.dev/) is a [Linux Foundation project](https://linuxfoundation.org/) focused on software signing and transparency log technologies to improve software supply chain security. [Cosign](https://github.com/sigstore/cosign) is a sub-project that provides image signing, verification, and storage in an OCI registry.

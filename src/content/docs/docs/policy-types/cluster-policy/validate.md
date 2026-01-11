@@ -2,7 +2,7 @@
 title: Validate Rules
 description: Check resources configurations for policy compliance.
 sidebar:
-  order: 30
+  order: 3
 ---
 
 Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.

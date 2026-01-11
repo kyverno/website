@@ -2,7 +2,7 @@
 title: Generate Rules
 description: Create new Kubernetes resources based on a policy and optionally keep them in sync.
 sidebar:
-  order: 50
+  order: 5
 ---
 
 A generate rule can be used to create new Kubernetes resources in response to some other event including things like resource creation, update, or delete, or even by creating or updating a policy itself. This is useful to create supporting resources, such as new RoleBindings or NetworkPolicies for a Namespace or perform other automation tasks that may either require other tools or be scripted.
@@ -245,6 +245,10 @@ The following child declarations are permitted in a `foreach`:
 - [Generate for Existing resources](#generate-for-existing-resources)
   - [Generate Existing Examples](#generate-existing-examples)
 - [How It Works](#how-it-works)
+- [UpdateRequest Cleanup](#updaterequest-cleanup)
+  - [Configuring UpdateRequest Cleanup](#configuring-updaterequest-cleanup)
+  - [Helm Configuration](#helm-configuration)
+  - [Example](#example)
 - [Troubleshooting](#troubleshooting)
 
 In addition, each `foreach` declaration can contain the following declarations:
