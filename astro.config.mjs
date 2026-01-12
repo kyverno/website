@@ -60,12 +60,6 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        // Autogenerate sidebar from the root: '/docs/docs'
-        // {
-        // 	label: 'Docs',
-        // 	collapsed: false,
-        // 	autogenerate: { directory: 'docs', collapsed: true, attrs: { style: 'text-transform: capitalize' }},
-        // },
         {
           label: 'Introduction',
           autogenerate: { directory: 'docs/introduction' },
