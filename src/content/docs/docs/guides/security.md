@@ -440,7 +440,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/subprojects/kyverno-cli) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 11 - Attacker deploys workloads to namespaces that are exempt from admission control
 
@@ -462,7 +462,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/subprojects/kyverno-cli) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 13 - Attacker exploits bad string matching on a blocklist to bypass rules
 
@@ -472,7 +472,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/subprojects/kyverno-cli) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 14 - Attacker uses new/old features of the Kubernetes API which have no rules
 
@@ -482,7 +482,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 6 - All rules are reviewed and tested](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#Mitigation-id-6---all-rules-are-reviewed-and-tested)
 
-  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/kyverno-cli/) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
+  Kyverno rules are Kubernetes resources written in YAML and managed by an OpenAPIv3 schema. This approach makes it easy to understand policy definitions and to apply policy-as-code best practices, like code reviews, to Kyverno policies. The [Kyverno CLI](/docs/subprojects/kyverno-cli) provides a `test` command for executing unit tests as part of a continuous delivery pipeline.
 
 ### Threat ID 15 - Attacker deploys privileged container to node running Webhook controller
 

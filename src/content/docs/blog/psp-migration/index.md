@@ -66,7 +66,7 @@ We've put together a comparison table below which allows you to see how the thre
 
 When migrating from PSP to Kyverno, this is the high-level approach that we recommend. Links are provided for the Kyverno concepts which are applicable to this migration, however it is still recommended that before diving into a migration yourself you spend some more time with the documentation and, of course, experimentation in a lab or non-production environment.
 
-0. Before getting started, we recommend using the [Kyverno CLI](/docs/kyverno-cli) to scan your cluster against the Pod Security Standards baseline profile which Kyverno conveniently implements in as simple as just a simple rule. Starting with baseline is a good way to identify the lowest hanging fruit and what to target. You can do this with just a simple one-liner:
+0. Before getting started, we recommend using the [Kyverno CLI](/docs/subprojects/kyverno-cli) to scan your cluster against the Pod Security Standards baseline profile which Kyverno conveniently implements in as simple as just a simple rule. Starting with baseline is a good way to identify the lowest hanging fruit and what to target. You can do this with just a simple one-liner:
 
 ```sh
 curl -s https://raw.githubusercontent.com/kyverno/policies/main/pod-security/subrule/podsecurity-subrule-baseline/podsecurity-subrule-base

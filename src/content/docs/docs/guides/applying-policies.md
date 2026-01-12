@@ -19,9 +19,9 @@ Exceptions to policies may be defined in the rules themselves or with a separate
 
 ## In Pipelines
 
-You can use the [Kyverno CLI](/docs/kyverno-cli/) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
+You can use the [Kyverno CLI](/docs/subprojects/kyverno-cli) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
 
-Refer to the [Kyverno apply command section](/docs/kyverno-cli/usage/apply) for details on the CLI. And refer to the [Continuous Integration section](/docs/guides/testing-policies#continuous-integration) for an example of how to incorporate the CLI to apply and test policies in your pipeline.
+Refer to the [Kyverno apply command section](/docs/kyverno-cli/reference/kyverno_apply) for details on the CLI. And refer to the [Continuous Integration section](/docs/guides/testing-policies#continuous-integration) for an example of how to incorporate the CLI to apply and test policies in your pipeline.
 
 ## Via APIs
 

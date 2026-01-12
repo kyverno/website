@@ -938,7 +938,7 @@ The podSecurity feature has the following advantages over the Kubernetes built-i
 4. Container images may be exempted along with a control exemption.
 5. Enforcement of Pod controllers is [automatic](/docs/policy-types/cluster-policy/autogen).
 6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/guides/reports) Custom Resource.
-7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
+7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/subprojects/kyverno-cli).
 
 For example, this policy enforces the latest version of the Pod Security Standards [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) in a single rule across the entire cluster.
 
@@ -1718,8 +1718,8 @@ The Kyverno Command Line Interface (CLI) enables the validation and testing of V
 
 Check the below sections for more information:
 
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply#applying-validatingpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test/#testing-validatingpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/reference/kyverno_test)
    :::
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.

@@ -453,7 +453,7 @@ After successfully migrating to ValidatingPolicy:
 - [CEL Language Specification](https://github.com/google/cel-spec)
 - [Kyverno CEL Functions Reference](/docs/policy-types/cel-libraries/)
 - [ValidatingPolicy API Reference](/docs/policy-types/validating-policy)
-- [Kyverno CLI Testing Guide](/docs/kyverno-cli/usage/test/)
+- [Kyverno CLI Testing Guide](/docs/kyverno-cli/reference/kyverno_test)
 
 ---
 
