@@ -3,7 +3,7 @@ title: Releases
 linkTitle: Releases
 description: Understand how and when Kyverno releases software.
 sidebar:
-  order: 150
+  order: 20
 ---
 
 ## Release Notes and Assets

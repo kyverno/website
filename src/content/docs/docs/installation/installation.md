@@ -50,6 +50,116 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 
 **NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/nirmata).
 
+## Helm Chart
+
+The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs including platform-specific controls.
+
+Kyverno can be deployed via a Helm chart--the recommended and preferred method for a production install--which is accessible either through the Kyverno repository or on [Artifact Hub](https://artifacthub.io/). Both generally available and pre-releases are available with Helm.
+
+Choose one of the installation configuration options based upon your environment type and availability needs.
+
+- For a production installation, see below [High Availability](#high-availability-installation) section.
+- For a non-production installation, see below [Standalone Installation](#standalone-installation) section..
+
+### Non-Production Installation
+
+To install Kyverno using Helm in a non-production environment use:
+
+```sh
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
+```
+
+### High Availability Installation
+
+Use Helm to create a Namespace and install Kyverno in a highly-available configuration.
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
+--set admissionController.replicas=3 \
+--set backgroundController.replicas=2 \
+--set cleanupController.replicas=2 \
+--set reportsController.replicas=2
+```
+
+Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability) for more complete details.
+
+The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
+
+```yaml
+admissionController:
+  replicas: 3
+backgroundController:
+  replicas: 3
+cleanupController:
+  replicas: 3
+reportsController:
+  replicas: 3
+```
+
+For all of the available values and their defaults, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/release-1.13/charts/kyverno). You should carefully inspect all available chart values and their defaults to determine what overrides, if any, are necessary to meet the particular needs of your production environment.
+
+:::caution[Note]
+All Kyverno installations require the admission controller be among the controllers deployed. For a highly-available installation, at least 2 or more replicas are required. Based on scalability requirements, and cluster topology, additional replicas can be configured for each controller.
+:::
+
+By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
+
+See also the [Namespace selectors](/docs/installation/customization#namespace-selectors) section and especially the [Security vs Operability](/docs/installation#security-vs-operability) section.
+
+### Reports Server (Optional)
+
+You can optionally enable the Reports Server as a subchart during installation. This deploys the Reports Server alongside Kyverno, configures Kyverno to use it for policy reports, and includes readiness checks (via `reportsServer.waitForReady` and `reportsServer.readinessTimeout`) to ensure Kyverno waits for the Reports Server to be operational before starting.
+
+To enable it with default settings:
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --set reportsServer.enabled=true
+```
+
+### Platform Specific Settings
+
+When deploying Kyverno to certain Kubernetes platforms such as EKS, AKS, or OpenShift; or when using certain GitOps tools such as ArgoCD, additional configuration options may be needed or recommended. See the [Platform-Specific Notes](/docs/installation/platform-notes) section for additional details.
+
+### Pre-Release (RC) Installations
+
+To install pre-release versions, such as `alpha`, `beta`, and `rc` (release candidates) versions, add the `--devel` switch to Helm:
+
+```sh
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
+```
+
+### Pod Security Policies (Optional)
+
+After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](/docs/pod-security), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
+
+```sh
+helm install kyverno-policies kyverno/kyverno-policies -n kyverno
+```
+
+## Install Kyverno using YAMLs
+
+Kyverno can also be installed using a single installation manifest, however for production installations the Helm chart is the preferred and recommended method.
+
+Although Kyverno uses release branches, only YAML manifests from a tagged release are supported. Pull from a tagged release to install Kyverno using the YAML manifest.
+
+```sh
+kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.16.2/install.yaml
+```
+
+## Install main (latest)
+
+In some cases, you may wish to trial yet unreleased Kyverno code in a quick way. Kyverno provides an experimental installation manifest for these purposes which reflects the current state of the codebase as it is known on the `main` development branch.
+
+:::caution[Warning]
+DO NOT use this manifest for anything other than testing or experimental purposes!
+:::
+
+```sh
+kubectl create -f https://github.com/kyverno/kyverno/raw/main/config/install-latest-testing.yaml
+```
+
 ## Security vs Operability
 
 For a production installation, Kyverno should be installed in [high availability mode](/docs/installation/methods#high-availability-installation). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/policy-types/cluster-policy/policy-settings)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.

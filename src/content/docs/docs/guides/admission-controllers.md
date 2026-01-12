@@ -1,5 +1,5 @@
 ---
-title: Admission Controllers 101
+title: Kubernetes Admission Controllers
 description: An introduction to admission controllers in Kubernetes.
 sidebar:
   order: 35

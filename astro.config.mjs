@@ -122,46 +122,22 @@ export default defineConfig({
           label: 'Guides',
           collapsed: true,
           items: [
-            {
-              label: 'Working With Policies',
-              items: [
-                'docs/applying-policies',
-                'docs/testing-policies',
-                'docs/exceptions',
-              ],
-              collapsed: true,
-            },
+            'docs/guides/applying-policies',
+            'docs/guides/testing-policies',
+            'docs/guides/exceptions',
+            'docs/guides/reports',
+            'docs/guides/monitoring',
+            'docs/guides/tracing',
+            'docs/guides/high-availability',
+            'docs/guides/security',
+            'docs/guides/troubleshooting',
             {
               label: 'Migrating to CEL Policies',
               link: 'docs/migration/traditional-to-cel',
             },
-            {
-              label: 'Reporting',
-              collapsed: true,
-              autogenerate: { directory: 'docs/policy-reports' },
-            },
-            {
-              label: 'Monitoring',
-              collapsed: true,
-              autogenerate: { directory: 'docs/monitoring' },
-            },
-            {
-              label: 'Tracing',
-              collapsed: true,
-              autogenerate: { directory: 'docs/tracing' },
-            },
-            {
-              label: 'High Availability',
-              slug: 'docs/high-availability',
-            },
-            {
-              label: 'Security',
-              slug: 'docs/security',
-            },
-            {
-              label: 'Troubleshooting',
-              slug: 'docs/troubleshooting',
-            },
+            'docs/guides/admission-controllers',
+            'docs/guides/pod-security',
+            'docs/guides/gatekeeper',
           ],
         },
         {
@@ -171,6 +147,7 @@ export default defineConfig({
               label: 'Resource Definitions',
               slug: 'docs/crds',
             },
+            'docs/reference/metrics',
             {
               label: 'Kyverno CLI',
               collapsed: true,

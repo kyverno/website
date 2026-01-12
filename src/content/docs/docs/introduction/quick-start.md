@@ -1,5 +1,5 @@
 ---
-title: Quick Start Guides
+title: Kubernetes Quick Start
 linkTitle: Quick Start Guides
 sidebar:
   order: 20
@@ -10,10 +10,12 @@ This section is intended to provide you with some quick guides on how to get Kyv
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/) for more complete information on how to install Kyverno in production.
 
-First, install Kyverno from the latest release manifest.
+First, install the latest Kyverno release using Helm:
 
 ```sh
-kubectl create -f https://github.com/kyverno/kyverno/releases/latest/download/install.yaml
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.

@@ -1,6 +1,6 @@
 ---
 description: Pod Security Standards implemented as Kyverno policies.
-title: Pod Security
+title: Pod Security Standards
 type: policies
 url: /policies/pod-security/
 ---

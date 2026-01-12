@@ -1,8 +1,8 @@
 ---
-title: Reporting
+title: Policy Reports
 description: View and audit Kyverno policy results with reports.
 sidebar:
-  order: 60
+  order: 1
 ---
 
 Policy reports are Kubernetes Custom Resources, generated and managed automatically by Kyverno, which contain the results of applying matching Kubernetes resources to Kyverno ClusterPolicy or Policy resources. They are created for `validate`, `mutate`, `generate` and `verifyImages` rules when a resource is matched by one or more rules according to the policy definition. If resources violate multiple rules, there will be multiple entries. When resources are deleted, their entry will be removed from the report. Reports, therefore, always represent the current state of the cluster and do not record historical information.
@@ -107,9 +107,9 @@ Entries in a policy report contain a `result` field which can be either `pass`, 
 | warn   | The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`.               |
 | error  | Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).                                           |
 
-### Scenarios for skipped evaluations
+### Scenarios for Skip results
 
-A `skip` result signifies that Kyverno decided not to fully evaluate the resource against a specific rule. This is different from a pass where the resource was evaluated and deemed compliant. A `skip` means the rule was essentially bypassed.
+A `skip` result signifies that Kyverno decided not to evaluate the resource against a specific rule. This is different from a pass where the resource was evaluated and deemed compliant. A `skip` means the rule was essentially bypassed.
 
 Here's a breakdown of common scenarios resulting in a `skip`:
 
@@ -167,7 +167,7 @@ That's because for the `initContainers` block the condition isn't met so it's a 
 - Understanding the distinction between pass and skip is crucial for accurately interpreting policy report data.
 - When troubleshooting a skip, carefully examine preconditions, exceptions, and the logic within your anchors to pinpoint the reason for the bypass.
 
-## Viewing policy report summaries
+## Viewing report summaries
 
 You can view a summary of the Namespaced policy reports using the following command:
 
@@ -301,3 +301,433 @@ spec:
 These intermediary resources have the same basic contents as a policy report and are used internally by Kyverno to build the final policy report. Kyverno will merge these results automatically into the appropriate policy report and there is no manual interaction typically required.
 
 For more details on the internal reporting processes, see the developer docs [here](https://github.com/kyverno/kyverno/tree/main/docs/dev/reports).
+
+## Background Scans
+
+Kyverno can validate existing resources in the cluster that may have been created before a policy was created. This can be useful when evaluating the potential effects some new policies will have on a cluster prior to changing them to `Enforce` mode. The application of policies to existing resources is referred to as **background scanning** and is enabled by default unless `spec.background` is set to `false` in a policy like shown below in the snippet.
+
+```yaml
+spec:
+  background: false
+  rules:
+    - name: default-deny-ingress
+```
+
+:::note[Note]
+Background scans are handled by the reports controller and not the background controller.
+:::
+
+Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to periodically scan existing resources and find if they match any `validate` or `verifyImages` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a rule, even in `Enforce` mode. It has no effect on either `generate` or `mutate` rules for the purposes of reporting.
+
+Background scanning occurs on a periodic basis (one hour by default) and offers some configuration options via [container flags](/docs/installation/customization#container-flags).
+
+When background scanning is enabled, regardless of whether the policy's `failureAction` is set to `Enforce` or `Audit`, the results will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
+
+**Reporting behavior when `background: true`**
+
+|                          | New Resource | Existing Resource |
+| ------------------------ | ------------ | ----------------- |
+| `failureAction: Enforce` | Pass only    | Report            |
+| `failureAction: Audit`   | Report       | Report            |
+
+**Reporting behavior when `background: false`**
+
+|                          | New Resource | Existing Resource |
+| ------------------------ | ------------ | ----------------- |
+| `failureAction: Enforce` | Pass only    | None              |
+| `failureAction: Audit`   | Report       | None              |
+
+Also, policy rules that are written using either certain variables from [AdmissionReview](/docs/policy-types/cluster-policy/variables#variables-from-admission-review-requests) request information (e.g. `request.userInfo`), or fields like Roles, ClusterRoles, and Subjects in `match` and `exclude` statements, cannot be applied to existing resources in the background scanning mode since that information must come from an AdmissionReview request and is not available if the resource exists. Hence, these rules must set `background` to `false` to disable background scanning. The exceptions to this are `request.object` and `request.namespace` variables as these will be translated from the current state of the resource.
+
+## Example: Trigger a PolicyReport
+
+A `PolicyReport` object (Namespaced) is created in the same Namespace where resources apply to one or more Kyverno policies. Cluster wide resources will generate `ClusterPolicyReport` resources at the cluster level.
+
+A single Kyverno ClusterPolicy exists with a single rule which ensures Pods cannot mount Secrets as environment variables.
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: secrets-not-from-env-vars
+spec:
+  background: true
+  rules:
+    - name: secrets-not-from-env-vars
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        failureAction: Audit
+        message: 'Secrets must be mounted as volumes, not as environment variables.'
+        pattern:
+          spec:
+            containers:
+              - name: '*'
+                =(env):
+                  - =(valueFrom):
+                      X(secretKeyRef): 'null'
+```
+
+Creating a Pod in this Namespace which does not use any Secrets (and thereby does not violate the `secrets-not-from-env-vars` rule in the ClusterPolicy) will generate the first entry in the PolicyReport, but listed as a `PASS`.
+
+```sh
+$ kubectl run busybox --image busybox:1.28 -- sleep 9999
+pod/busybox created
+
+$ kubectl get po
+NAME      READY   STATUS    RESTARTS   AGE
+busybox   1/1     Running   0          66s
+
+$ kubectl get polr -o wide
+NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
+89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          busybox                                      1      0      0      0       0      15s
+```
+
+Inspect the PolicyReport in the `default` Namespace to view its contents. Notice that the rule `secrets-not-from-env-vars` is listed as having passed.
+
+```sh
+$ kubectl get polr 89044d72-8a1e-4af0-877b-9be727dc3ec4 -o yaml
+
+<snipped>
+results:
+- message: validation rule 'secrets-not-from-env-vars' passed.
+  policy: secrets-not-from-env-vars
+  result: pass
+  rule: secrets-not-from-env-vars
+  scored: true
+  source: kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1666097147
+summary:
+  error: 0
+  fail: 0
+  pass: 1
+  skip: 0
+  warn: 0
+```
+
+Create another Pod which violates the rule in the sample policy. Because the rule is written with `failureAction: Audit`, resources are allowed to be created which violate the rule. If this occurs, another entry will be created in the PolicyReport which denotes this condition as a FAIL. By contrast, if `failureAction: Enforce` and an offending resource was attempted creation, it would be immediately blocked and therefore would not generate another entry in the report. However, if the resource passed then a PASS result would be created in the report.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.28
+      env:
+        - name: SECRET_STUFF
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: mysecretname
+```
+
+Since the above Pod spec was allowed and it violated the rule, there should now be a failure entry in the PolicyReport in the `default` Namespace.
+
+```sh
+$ kubectl get polr -o wide
+NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
+9eb8c5c0-fe5c-4c7d-96c3-3ff65c361f4f   Pod          secret-pod                                   0      1      0      0       0      15s
+
+$ kubectl get polr 9eb8c5c0-fe5c-4c7d-96c3-3ff65c361f4f -o yaml
+
+<snipped>
+- message: 'validation error: Secrets must be mounted as volumes, not as environment
+    variables. rule secrets-not-from-env-vars failed at path /spec/containers/0/env/0/valueFrom/secretKeyRef/'
+  policy: secrets-not-from-env-vars
+  result: fail
+  rule: secrets-not-from-env-vars
+  scored: true
+  source: kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1666098438
+summary:
+  error: 0
+  fail: 1
+  pass: 1
+  skip: 0
+  warn: 0
+```
+
+Lastly, delete the Pod called `secret-pod` and check that the PolicyReport object was also deleted.
+
+```sh
+$ kubectl delete po secret-pod
+pod "secret-pod" deleted
+
+$ kubectl get polr -o wide
+NAME                                   KIND         NAME                                         PASS   FAIL   WARN   ERROR   SKIP   AGE
+```
+
+:::note[Note]
+Note that a namespaced `Policy` applies only to namespaced resources and only in the Namespace in which they are created. This example would have been exactly the same if we had used a `Policy` instead of `ClusterPolicy`.
+
+For a cluster level resource, a `ClusterPolicyReport` would have been created at cluster level instead of a namespaced `PolicyReport`.
+:::
+
+## OpenReports
+
+> **Note:** OpenReports integration is available as of Kyverno 1.15. The feature is in ALPHA status
+
+Kyverno supports reporting policy results using the `openreports.io/v1alpha1` API as an alternative to the default wgpolicyk8s reporting. This can be enabled using the `--openreportsEnabled` flag in the Kyverno controller.
+
+This is an initial step to eventually deprecate `wgpolicyk8s` and fully depend on `openreports.io` as the API group for permanent reports
+
+### Enabling OpenReports
+
+To enable OpenReports integration, add the `--openreportsEnabled` flag to the Kyverno reports controller.
+
+If you are deploying Kyverno using Helm, setting the chart value `openreports.enabled=true` will automatically add the `--openreportsEnabled` flag to the reports controller deployment.
+
+### Example: Enforcing an 'app' Label
+
+Below is an example Kyverno policy that enforces the presence of an `app` label on all Pods. When this policy is applied and OpenReports integration is enabled, Kyverno will generate reports in the `openreports.io/v1alpha1` API group.
+
+#### Policy Example
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: require-app-label
+  namespace: default
+spec:
+  admission: true
+  background: true
+  rules:
+    - match:
+        resources:
+          kinds:
+            - Pod
+      name: check-app-label
+      skipBackgroundRequests: true
+      validate:
+        message: Pods must have an 'app' label.
+        pattern:
+          metadata:
+            labels:
+              app: ?*
+  validationFailureAction: enforce
+```
+
+#### Example OpenReports Output
+
+You can view the reports as follows:
+
+```sh
+$ kubectl get reports -A -o yaml
+```
+
+```yaml
+apiVersion: v1
+items:
+  - apiVersion: openreports.io/v1alpha1
+    kind: Report
+    metadata:
+      labels:
+        app.kubernetes.io/managed-by: kyverno
+      name: 7d23ea02-1526-4a4f-ba14-49665adf55e
+    results:
+      - message: "validation error: Pods must have an 'app' label. rule check-app-label failed at path /metadata/labels/app/"
+        policy: default/require-app-label
+        properties:
+          process: background scan
+        result: fail
+        rule: check-app-label
+        scored: true
+        source: kyverno
+        timestamp:
+          nanos: 0
+          seconds: 1849050397
+    scope:
+      apiVersion: v1
+      kind: Pod
+      name: example-deployment-c94dc9f47-dfq6l
+      namespace: default
+      uid: dcd32da4-8539-4636-bba5-fd2cc3a6aaff
+    summary:
+      error: 0
+      fail: 1
+      pass: 0
+      skip: 0
+      warn: 0
+kind: List
+metadata: {}
+```
+
+## ValidatingAdmissionPolicy Reports
+
+Kyverno can generate reports for ValidatingAdmissionPolicies and their bindings. These reports provide information about the resources that are validated by the policies and the results of the validation. They can be used to monitor the health of the cluster and to ensure that the policies are being enforced as expected.
+
+To configure Kyverno to generate reports for ValidatingAdmissionPolicies, set the `--validatingAdmissionPolicyReports` flag to `true` in the reports controller. This flag is set to `false` by default.
+
+### Example: Trigger a PolicyReport
+
+Create a ValidatingAdmissionPolicy that checks the Deployment replicas and a ValidatingAdmissionPolicyBinding that binds the policy to a namespace whose labels set to `environment: staging`.
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: 'check-deployment-replicas'
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+  validations:
+    - expression: object.spec.replicas <= 5
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: 'check-deployment-replicas-binding'
+spec:
+  policyName: 'check-deployment-replicas'
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: staging
+```
+
+Create a Namespace with the label `environment: staging`:
+
+```sh
+kubectl create ns staging
+kubectl label ns staging environment=staging
+```
+
+Create the following Deployments:
+
+1. A Deployment with 7 replicas in the `default` namespace.
+
+```sh
+kubectl create deployment deployment-1 --image=nginx --replicas=7
+```
+
+2. A Deployment with 3 replicas in the `default` namespace.
+
+```sh
+kubectl create deployment deployment-2 --image=nginx --replicas=3
+```
+
+3. A Deployment with 7 replicas in the `staging` namespace.
+
+```sh
+kubectl create deployment deployment-3 --image=nginx --replicas=7 -n staging
+```
+
+4. A Deployment with 3 replicas in the `staging` namespace.
+
+```sh
+kubectl create deployment deployment-4 --image=nginx --replicas=3 -n staging
+```
+
+PolicyReports are generated in the same namespace as the resources that are validated. The PolicyReports for the above example are generated in the `default` and `staging` namespaces.
+
+```sh
+kubectl get polr -n default
+
+No resources found in default namespace.
+```
+
+```sh
+kubectl get polr -n staging -o yaml
+
+apiVersion: v1
+items:
+- apiVersion: wgpolicyk8s.io/v1alpha2
+  kind: PolicyReport
+  metadata:
+    creationTimestamp: "2024-01-25T11:55:33Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/managed-by: kyverno
+    name: 0b2d730e-cbc3-4eab-8f3b-ad106ea5d559
+    namespace: staging-ns
+    ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: deployment-3
+      uid: 0b2d730e-cbc3-4eab-8f3b-ad106ea5d559
+    resourceVersion: "83693"
+    uid: 90ab79b4-fc0b-41bc-b8d0-da021c02ee9d
+  results:
+  - message: 'failed expression: object.spec.replicas <= 5'
+    policy: check-deployment-replicas
+    properties:
+      binding: check-deployment-replicas-binding
+    result: fail
+    source: ValidatingAdmissionPolicy
+    timestamp:
+      nanos: 0
+      seconds: 1706183723
+  scope:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deployment-3
+    namespace: staging-ns
+    uid: 0b2d730e-cbc3-4eab-8f3b-ad106ea5d559
+  summary:
+    error: 0
+    fail: 1
+    pass: 0
+    skip: 0
+    warn: 0
+- apiVersion: wgpolicyk8s.io/v1alpha2
+  kind: PolicyReport
+  metadata:
+    creationTimestamp: "2024-01-25T11:55:33Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/managed-by: kyverno
+    name: c1e28ad7-b5c9-4f5c-9b77-8d4278df9fc4
+    namespace: staging-ns
+    ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: deployment-4
+      uid: c1e28ad7-b5c9-4f5c-9b77-8d4278df9fc4
+    resourceVersion: "83694"
+    uid: 8e19960d-969d-4e4c-a7d7-480fff15df6d
+  results:
+  - policy: check-deployment-replicas
+    properties:
+      binding: check-deployment-replicas-binding
+    result: pass
+    source: ValidatingAdmissionPolicy
+    timestamp:
+      nanos: 0
+      seconds: 1706183723
+  scope:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deployment-4
+    namespace: staging-ns
+    uid: c1e28ad7-b5c9-4f5c-9b77-8d4278df9fc4
+  summary:
+    error: 0
+    fail: 0
+    pass: 1
+    skip: 0
+    warn: 0
+kind: List
+metadata:
+  resourceVersion: ""
+```
