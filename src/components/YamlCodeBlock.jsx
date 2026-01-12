@@ -129,7 +129,6 @@ export const YamlCodeBlock = ({
                       const tokenProps = getTokenProps({ token, key: tokenKey })
                       const { key: tokenKeyProp, ...restTokenProps } =
                         tokenProps
-                      console.log({ tokenKey, restTokenProps, tokenProps })
                       return <span key={tokenKeyProp} {...restTokenProps} />
                     })}
                   </div>
