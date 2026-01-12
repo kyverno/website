@@ -145,46 +145,13 @@ export default defineConfig({
             {
               label: 'Kyverno CLI',
               collapsed: true,
-              autogenerate: { directory: 'docs/kyverno-cli' },
+              autogenerate: { directory: 'docs/kyverno-cli/reference' },
             },
           ],
         },
         {
           label: 'Sub-Projects',
-          items: [
-            {
-              label: 'Kyverno CLI',
-              collapsed: true,
-              autogenerate: { directory: 'docs/kyverno-cli' },
-            },
-            {
-              label: 'Kyverno JSON',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-json' },
-            },
-            {
-              label: 'Kyverno Chainsaw',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-chainsaw' },
-            },
-            {
-              label: 'Policy Reporter',
-              collapsed: true,
-              autogenerate: {
-                directory: 'docs/subprojects/kyverno-policy-reporter',
-              },
-            },
-            {
-              label: 'Backstage Plugin',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/backstage-plugin' },
-            },
-            {
-              label: 'Kyverno Authz',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-authz' },
-            },
-          ],
+          autogenerate: { directory: 'docs/subprojects' },
           collapsed: true,
         },
         {
