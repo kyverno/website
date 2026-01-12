@@ -16,7 +16,7 @@ Run tests from a local filesystem or a remote git repository.
   Users provide the path to the folder containing a kyverno-test.yaml file where the location could be
   on a local filesystem or a remote git repository.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/reference/kyverno_test
+  For more information visit https://kyverno.io/docs/kyverno-cli/usage/test/
 
 ```
 kyverno test [local folder or git repository]... [flags]
@@ -71,5 +71,5 @@ kyverno test [local folder or git repository]... [flags]
 
 ### SEE ALSO
 
-* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
 

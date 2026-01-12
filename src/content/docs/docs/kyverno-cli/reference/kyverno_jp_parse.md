@@ -10,7 +10,7 @@ Parses jmespath expression and shows corresponding AST.
 
 Parses jmespath expression and shows corresponding AST.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/reference/kyverno_jp
+  For more information visit https://kyverno.io/docs/kyverno-cli/usage/jp/
 
 ```
 kyverno jp parse [-f file|expression]... [flags]
@@ -63,5 +63,5 @@ kyverno jp parse [-f file|expression]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno jp](kyverno_jp.md)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 

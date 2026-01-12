@@ -50,5 +50,5 @@ kyverno json scan [flags]
 
 ### SEE ALSO
 
-* [kyverno json](/docs/kyverno-cli/reference/kyverno_json)	 - Runs tests against any json compatible payloads/policies.
+* [kyverno json](kyverno_json.md)	 - Runs tests against any json compatible payloads/policies.
 
