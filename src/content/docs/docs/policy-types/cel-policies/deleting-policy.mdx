@@ -105,9 +105,9 @@ This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically
 
 - Located in namespaces labeled environment: test
 
-- Are older than 72 hours
+- Labeled with old: "true"
 
-The policy uses a cron schedule to run periodically and applies conditions using CEL expressions to ensure only stale pods are cleaned up. Additionally, it defines a variable (isEphemeral) that could be used to further refine deletion logic, such as deleting only temporary or ephemeral pods.
+The policy uses a cron schedule to run periodically and applies conditions using CEL expressions to ensure only marked pods are cleaned up. Additionally, it defines a variable (isEphemeral) that could be used to further refine deletion logic, such as deleting only temporary or ephemeral pods.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
@@ -128,10 +128,10 @@ spec:
         environment: test
   conditions:
     - name: isOld
-      expression: "now() - object.metadata.creationTimestamp > duration('72h')"
+      expression: "expression: "has(object.metadata.labels.old) && object.metadata.labels.old == 'true'""
   variables:
     - name: isEphemeral
-      expression: "has(object.metadata.labels.ephermal) && object.metadata.labels.ephemeral == 'true'"
+      expression: "has(object.metadata.labels.ephemeral) && object.metadata.labels.ephemeral == 'true'"
 ```
 
 ## Kyverno CEL Libraries
@@ -224,13 +224,13 @@ rules:
     verbs: ['get', 'list', 'watch', 'delete']
 ```
 
-> Kyverno cleanup-controller always requires RBAC permissions for deleting resources (even pods). But In some testing clusters like `Minikube` and `Kind` often already includes permissions to manage core resources like:
+> Kyverno cleanup-controller always requires RBAC permissions for deleting resources (even pods). However, RBAC permissions vary by Kyverno installation method. In some testing clusters like `Minikube` and `Kind`, default permissions may or may not be included for core resources like:
 
 - `pods`, `configmaps`, `secrets`, etc.
-  > So you may notice RBAC issues when deleting pods, because:
-  - Kyverno already has access to them
-  - There are no extra CRDs or cluster-scoped permissions needed
-    > But for other resources like `deployments`, `networkpolicies` etc, they are not always included in kyverno's default permissions. You must explicitly grants `delete` RBAC for those resources.
+
+> If you encounter errors like `pods is forbidden: cannot list resource "pods"`, you must create a ClusterRole and ClusterRoleBinding granting access to those resources.
+
+> But for other resources like `deployments`, `networkpolicies` etc, they are not always included in kyverno's default permissions and explicit RBAC permissions are required regardless of installation method
 
 ## Tips & Best Practices
 
