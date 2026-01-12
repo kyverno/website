@@ -29,7 +29,7 @@ The four major components of Kyverno and their primary functions are as follows:
 - **Background Controller**: Not to be confused with background scans, the Background Controller handles all the generate rules and mutate rules when they impact existing resources (which all happen in the background).
 - **Cleanup Controller**: Takes care of all the cleanup tasks according to cleanup policies.
 
-Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](/docs/high-availability/) for more details on the internals of these controllers and how scale and availability are handled per controller.
+Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](/docs/guides/high-availability) for more details on the internals of these controllers and how scale and availability are handled per controller.
 
 ### Extensibility via External Service Calls
 

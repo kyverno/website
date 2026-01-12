@@ -77,4 +77,4 @@ Multiple replicas configured for the cleanup controller can be used for both ava
 
 ## Installing Kyverno in HA mode
 
-The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs. For more information on installation of Kyverno in high availability, see the corresponding [installation section](/docs/installation/methods#high-availability-installation).
+The Helm chart is the recommended method of installing Kyverno in a production-grade, highly-available fashion as it provides all the necessary Kubernetes resources and configuration options to meet most production needs. For more information on installation of Kyverno in high availability, see the corresponding [installation section](/docs/installation/installation#high-availability-installation).

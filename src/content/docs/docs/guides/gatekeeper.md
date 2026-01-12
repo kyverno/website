@@ -9,7 +9,7 @@ url: /policies/gatekeeper/
 
 ### Migration Strategy
 
-A strategy for migration from Gatekeeper is to run both policy engines for some period of time, and incrementally migrate policies over to Kyverno. The Kyverno policies can be initially introduced in [`Audit` mode](/docs/applying-policies) to assess results. Once ready, the Kyverno policies can be set to `Enforce` mode and the corresponding Gatekeeper policies can be removed.
+A strategy for migration from Gatekeeper is to run both policy engines for some period of time, and incrementally migrate policies over to Kyverno. The Kyverno policies can be initially introduced in [`Audit` mode](/docs/guides/applying-policies) to assess results. Once ready, the Kyverno policies can be set to `Enforce` mode and the corresponding Gatekeeper policies can be removed.
 
 Mutation policies may require additional consideration and testing, as running both engines may result in overwrites. For these, and for custom or complex policies, it is recommended that the Kyverno policies first be tested using the [Kyverno CLI test command](/docs/kyverno-cli/usage/test) and then deployed into a cluster.
 

@@ -292,7 +292,7 @@ Kyverno requires the following network communications to be allowed:
 - ingress traffic to port 9443 from the host for health checks
 - ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors
 - egress traffic to the API server if the [API Call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) feature is used
-- egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries) are used
+- egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/overview) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries) are used
 - egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) feature is used
 
 ### Webhooks
@@ -328,7 +328,7 @@ By default, Kyverno automatically generates and manages TLS certificates used fo
 
 The Kyverno community manages a set of [sample policies](/policies/).
 
-At a minimum, the [Pod Security Standards](/docs/pod-security) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
+At a minimum, the [Pod Security Standards](/docs/guides/pod-security) and [best practices](/policies/?policytypes=Best%2520Practices) policy sets are recommended for use.
 
 ### Securing policies
 
@@ -520,4 +520,4 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 9 - Strictly control external system access](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-9---strictly-control-external-system-access)
 
-  See [Networking](/docs/security#networking) for details on securing networking communications for Kyverno.
+  See [Networking](#networking) for details on securing networking communications for Kyverno.

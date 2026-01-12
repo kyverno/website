@@ -16,10 +16,10 @@ The diagram below shows a typical Kyverno installation featuring all available c
 A standard Kyverno installation consists of a number of different components, some of which are optional.
 
 - **Deployments**
-  - Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, [Policy Exceptions](/docs/exceptions/), and the processing engine.
+  - Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, [Policy Exceptions](/docs/guides/exceptions), and the processing engine.
   - Background controller (optional): The component responsible for processing of generate and mutate-existing rules.
-  - Reports controller (optional): The component responsible for handling of [Policy Reports](/docs/policy-reports/).
-  - Cleanup controller (optional): The component responsible for processing of [Cleanup Policies](/docs/policy-types/cel-policies/cleanup-policy).
+  - Reports controller (optional): The component responsible for handling of [Policy Reports](/docs/guides/reports).
+  - Cleanup controller (optional): The component responsible for processing of [Cleanup Policies](/docs/policy-types/cleanup-policy).
 - **Services**
   - Services needed to receive webhook requests.
   - Services needed for monitoring of metrics.
@@ -59,7 +59,7 @@ Kyverno can be deployed via a Helm chart--the recommended and preferred method f
 Choose one of the installation configuration options based upon your environment type and availability needs.
 
 - For a production installation, see below [High Availability](#high-availability-installation) section.
-- For a non-production installation, see below [Standalone Installation](#standalone-installation) section..
+- For a non-production installation, see below [Non-Production Installation](#non-production-installation) section..
 
 ### Non-Production Installation
 
@@ -83,7 +83,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace \
 --set reportsController.replicas=2
 ```
 
-Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/high-availability) for more complete details.
+Since Kyverno is comprised of different controllers where each is contained in separate Kubernetes Deployments, high availability is achieved on a per-controller basis. A default installation of Kyverno provides four separate Deployments each with a single replica. Configure high availability on the controllers where you need the additional availability. Be aware that multiple replicas do not necessarily equate to higher scale or performance across all controllers. Please see the [high availability page](/docs/guides/high-availability) for more complete details.
 
 The Helm chart offers parameters to configure multiple replicas for each controller. For example, a highly-available, complete deployment of Kyverno would consist of the following values.
 
@@ -106,7 +106,7 @@ All Kyverno installations require the admission controller be among the controll
 
 By default, the Kyverno Namespace will be excluded using a namespaceSelector configured with the [immutable label](https://kubernetes.io/docs/concepts/overview/working-with-objects/_print/#automatic-labelling) `kubernetes.io/metadata.name`. Additional Namespaces may be excluded by configuring chart values. Both namespaceSelector and objectSelector may be used for exclusions.
 
-See also the [Namespace selectors](/docs/installation/customization#namespace-selectors) section and especially the [Security vs Operability](/docs/installation#security-vs-operability) section.
+See also the [Namespace selectors](/docs/installation/customization#namespace-selectors) section and especially the [Security vs Operability](/docs/installation/installation#security-vs-operability) section.
 
 ### Reports Server (Optional)
 
@@ -132,7 +132,7 @@ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --devel
 
 ### Pod Security Policies (Optional)
 
-After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](/docs/pod-security), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
+After Kyverno is installed, you may choose to also install the Kyverno [Pod Security Standard policies](/docs/guides/pod-security), an optional chart containing the full set of Kyverno policies which implement the Kubernetes [Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
 
 ```sh
 helm install kyverno-policies kyverno/kyverno-policies -n kyverno
@@ -162,7 +162,7 @@ kubectl create -f https://github.com/kyverno/kyverno/raw/main/config/install-lat
 
 ## Security vs Operability
 
-For a production installation, Kyverno should be installed in [high availability mode](/docs/installation/methods#high-availability-installation). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/policy-types/cluster-policy/policy-settings)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
+For a production installation, Kyverno should be installed in [high availability mode](/docs/installation/installation#high-availability-installation). Regardless of the installation method used for Kyverno, it is important to understand the risks associated with any webhook and how it may impact cluster operations and security especially in production environments. Kyverno configures its resource webhooks by default (but [configurable](/docs/policy-types/cluster-policy/policy-settings)) in [fail closed mode](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#failure-policy). This means if the API server cannot reach Kyverno in its attempt to send an AdmissionReview request for a resource that matches a policy, the request will fail. For example, a validation policy exists which checks that all Pods must run as non-root. A new Pod creation request is submitted to the API server and the API server cannot reach Kyverno. Because the policy cannot be evaluated, the request to create the Pod will fail. Care must therefore be taken to ensure that Kyverno is always available or else configured appropriately to exclude certain key Namespaces, specifically that of Kyverno's, to ensure it can receive those API requests. There is a tradeoff between security by default and operability regardless of which option is chosen.
 
 The following combination may result in cluster inoperability if the Kyverno Namespace is not excluded:
 
@@ -170,7 +170,7 @@ The following combination may result in cluster inoperability if the Kyverno Nam
 2. No Namespace exclusions have been configured for at least the Kyverno Namespace, possibly other key system Namespaces (ex., `kube-system`). This is not the default as of Helm chart version 2.5.0.
 3. All Kyverno Pods become unavailable due to a full cluster outage or improper scaling in of Nodes (for example, a cloud PaaS destroying too many Nodes in a node group as part of an auto-scaling operation without first cordoning and draining Pods).
 
-If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/troubleshooting#api-server-is-blocked).
+If this combination of events occurs, the only way to recover is to manually delete the ValidatingWebhookConfigurations thereby allowing new Kyverno Pods to start up. Recovery steps are provided in the [troubleshooting section](/docs/guides/troubleshooting#api-server-is-blocked).
 
 :::note[Note]
 Kubernetes will not send ValidatingWebhookConfiguration or MutatingWebhookConfiguration objects to admission controllers, so therefore it is not possible to use a Kyverno policy to validate or mutate these objects.

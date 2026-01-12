@@ -613,7 +613,7 @@ A `UpdateRequest` status can have one of four values:
 
 Note that Kyverno will retry up to three times to reconcile an `UpdateRequest` in a `Failed` status. The `UpdateRequest` will be garbage collected if it exceeds the retry threshold.
 
-Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/high-availability/) page.
+Kyverno processes generate rules in a combination of the admission controller and the background controller. For further details of the internals of how these work and how high availability and scale are handled, refer to the [High Availability](/docs/guides/high-availability) page.
 
 ## UpdateRequest Cleanup
 

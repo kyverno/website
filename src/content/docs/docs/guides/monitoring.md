@@ -139,23 +139,23 @@ metricsConfig:
     [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 15, 20, 25, 30]
 
   # Per Metric configuration, allows disabling metrics, dropping labels and change the bucket boundaries.
-  # For detailed information about these metrics, see the [Metrics Reference](/docs/metrics)
+  # For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics)
   metricsExposure:
     # Counter disabled
-    # See [Policies and Rules Count](/docs/metrics#policies-and-rules-count) for details
+    # See [Policies and Rules Count](/docs/reference/metrics#policies-and-rules-count) for details
     kyverno_policy_rule_info_total:
       enabled: false
     # Histogram disabled
-    # See [Admission Review Latency](/docs/metrics#admission-review-latency) for details
+    # See [Admission Review Latency](/docs/reference/metrics#admission-review-latency) for details
     kyverno_admission_review_duration_seconds:
       enabled: false
     # Counter with customized dimensions
-    # See [Admission Requests Count](/docs/metrics#admission-requests-count) for details
+    # See [Admission Requests Count](/docs/reference/metrics#admission-requests-count) for details
     kyverno_admission_requests:
       disabledLabelDimensions:
         ['resource_namespace', 'resource_kind', 'resource_request_operation']
     # Histogram with custom boundaries and dimensions
-    # See [Policy Rule Execution Latency](/docs/metrics#policy-rule-execution-latency) for details
+    # See [Policy Rule Execution Latency](/docs/reference/metrics#policy-rule-execution-latency) for details
     kyverno_policy_execution_duration_seconds:
       disabledLabelDimensions:
         ['resource_kind', 'resource_namespace', 'resource_request_operation']
@@ -175,12 +175,12 @@ As described [above](#configuring-the-metrics), Kyverno allows disabling metrics
 
 Disabling select metrics with [DataDog OpenMetrics](https://docs.datadoghq.com/integrations/openmetrics/) can be done by annotating the Kyverno Pod(s) as shown below.
 
-**Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/metrics):
+**Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics):
 
-- [`kyverno_policy_rule_info_total`](/docs/metrics#policies-and-rules-count) - Policies and Rules Count
-- [`kyverno_admission_requests`](/docs/metrics#admission-requests-count) - Admission Requests Count
-- [`kyverno_policy_changes`](/docs/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
+- [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
+- [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
+- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
 
 ```yaml
 apiVersion: v1
@@ -218,12 +218,12 @@ metadata:
 
 The Kyverno Helm chart supports including additional Pod annotations in the values file as shown in the below example.
 
-**Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/metrics):
+**Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics):
 
-- [`kyverno_policy_rule_info_total`](/docs/metrics#policies-and-rules-count) - Policies and Rules Count
-- [`kyverno_admission_requests`](/docs/metrics#admission-requests-count) - Admission Requests Count
-- [`kyverno_policy_changes`](/docs/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
+- [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
+- [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
+- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
 
 ```yaml
 podAnnotations:
@@ -382,7 +382,7 @@ This defines a Service for the discovery of the collector Deployment.
 
 ### Setting up Kyverno and passing required flags
 
-See the [installation instructions](/docs/installation/) for Kyverno. Depending on the method used, the following flags must be passed.
+See the [installation instructions](/docs/installation/installation) for Kyverno. Depending on the method used, the following flags must be passed.
 
 - Pass the flag `metricsPort` to defined the OpenTelemetry Collector endpoint for collecting metrics.
 - Pass the flag `otelConfig=grpc` to export the metrics and traces to an OpenTelemetry collector on the metrics port endpoint
