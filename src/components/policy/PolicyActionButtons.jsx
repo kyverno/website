@@ -95,12 +95,6 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
 
       const playgroundUrl = `https://playground.kyverno.io/#/?content=${compressed}`
 
-      // Debug: verify the policy name in the content
-      const policyNameMatch = content.match(/name:\s*(.+)/)
-      if (policyNameMatch) {
-        console.log('Opening playground with policy:', policyNameMatch[1])
-      }
-
       window.open(playgroundUrl, '_blank', 'noopener,noreferrer')
     } catch (error) {
       console.error('Failed to open in playground:', error)
