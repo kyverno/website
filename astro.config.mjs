@@ -125,10 +125,10 @@ export default defineConfig({
             'docs/guides/high-availability',
             'docs/guides/security',
             'docs/guides/troubleshooting',
-            {
-              label: 'Migrating to CEL Policies',
-              link: 'docs/migration/traditional-to-cel',
-            },
+            // {
+            //   label: 'Migrating to CEL Policies',
+            //   link: 'docs/migration/traditional-to-cel',
+            // },
             'docs/guides/admission-controllers',
             'docs/guides/pod-security',
             'docs/guides/gatekeeper',
