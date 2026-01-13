@@ -19,7 +19,6 @@ Generate the autocompletion script for kyverno for the specified shell.
   To enable autocompletion, source the generated script in your shell profile or save it
   to your shell's completion directory. See the examples below for shell-specific instructions.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#shell-autocompletion
 
 ```
 kyverno completion [bash|zsh|fish|powershell]
@@ -77,5 +76,5 @@ kyverno completion [bash|zsh|fish|powershell]
 
 ### SEE ALSO
 
-* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
 

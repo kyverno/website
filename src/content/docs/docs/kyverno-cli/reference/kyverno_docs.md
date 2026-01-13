@@ -14,7 +14,6 @@ Generates reference documentation.
   
   It can be used to generate simple markdown files or markdown to be used for the website.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#docs
 
 ```
 kyverno docs [flags]
@@ -62,5 +61,5 @@ kyverno docs [flags]
 
 ### SEE ALSO
 
-* [kyverno](kyverno.md)	 - Kubernetes Native Policy Management.
+* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
 
