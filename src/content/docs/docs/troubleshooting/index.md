@@ -44,57 +44,95 @@ Use [Namespace selectors](/docs/installation/customization#namespace-selectors) 
 
 ## Policies are not applied
 
-**Symptom**: My policies are created but nothing seems to happen when I create a resource that should trigger them.
+**Symptom**:  
+Policies are created successfully, but resources that should be validated, mutated, or blocked remain unaffected.
 
-**Solution**: There are a few moving parts that need to be checked to ensure Kyverno is receiving information from Kubernetes and is in good health.
+---
 
-1. Check and ensure the Kyverno Pod(s) are running. Assuming Kyverno was installed into the default Namespace of `kyverno`, use the command `kubectl -n kyverno get po` to check their status. The status should be `Running` at all times.
-2. Check all the policies installed in the cluster to ensure they are all reporting `true` under the `READY` column.
+**Most common causes**:
 
-   ```sh
-   $ kubectl get cpol,pol -A
-   NAME                BACKGROUND   VALIDATE ACTION   READY   AGE   MESSAGE
-   inject-entrypoint   true         Audit             True    15s   Ready
-   ```
+- **Pod Health**: Kyverno pods are not running or are in a "Not Ready" state.
+- **Policy Mode**: Policies are set to `Audit` mode instead of `Enforce`.
+- **Webhook Issues**: Kyverno webhooks are not registered correctly with the Kubernetes API server.
+- **Exclusions**: Resources or namespaces are excluded via global Kyverno configurations.
 
-3. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
+---
 
-   ```sh
-   $ kubectl get validatingwebhookconfigurations,mutatingwebhookconfigurations
-    NAME                                                                                                        WEBHOOKS       AGE
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-cleanup-validating-webhook-cfg             1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-validating-webhook-cfg              1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-exception-validating-webhook-cfg           1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-validating-webhook-cfg            1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-global-context-validating-webhook-cfg      1          5d21h
-    validatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-ttl-validating-webhook-cfg                 1          5d21h
+**Step-by-step diagnosis**:
 
-    NAME                                                                                              WEBHOOKS   AGE
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-policy-mutating-webhook-cfg     1          5d21h
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-verify-mutating-webhook-cfg     1          5d21h
-    mutatingwebhookconfiguration.admissionregistration.k8s.io/kyverno-resource-mutating-webhook-cfg   1          5d21h
-   ```
+**1. Ensure Kyverno Pods are Running**
 
-   The age should be consistent with the age of the currently running Kyverno Pod(s). If the age of these webhooks shows, for example, a few seconds old, Kyverno may be having trouble registering with Kubernetes.
+Assuming Kyverno is installed in the `kyverno` namespace, verify the status of the controllers:
 
-4. Test that name resolution and connectivity to the Kyverno service works inside your cluster by starting a simple `busybox` Pod and trying to connect to Kyverno. Enter the `wget` command as shown below. If the response is not "remote file exists" then there is a network connectivity or DNS issue within your cluster. If your cluster was provisioned with [kubespray](https://github.com/kubernetes-sigs/kubespray), see if [this comment](https://github.com/jetstack/cert-manager/issues/2640#issuecomment-601872165) helps you.
+```sh
+kubectl -n kyverno get pods
+```
 
-   ```sh
-   $ kubectl run busybox --rm -ti --image=busybox -- /bin/sh
-   If you don't see a command prompt, try pressing enter.
-   / # wget --no-check-certificate --spider --timeout=1 https://kyverno-svc.kyverno.svc:443/health/liveness
-   Connecting to kyverno-svc.kyverno.svc:443 (100.67.141.176:443)
-   remote file exists
-   / # exit
-   Session ended, resume using 'kubectl attach busybox -c busybox -i -t' command when the pod is running
-   pod "busybox" deleted
-   ```
+> **Note**: All pods must be in the **Running** state before policies can be processed.
 
-5. For `validate` policies, ensure that `failureAction` is set to `Enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `Audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
+**2. Verify Policies are Ready**
 
-6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/customization#resource-filters).
+Check the status of ClusterPolicies (`cpol`) and Policies (`pol`) across all namespaces:
 
-7. Check the same ConfigMap and ensure that the user/principal or group responsible for submission of your resource is not being excluded. Check the `excludeGroups` and `excludeUsernames` and others if they exist.
+```sh
+kubectl get cpol,pol -A
+```
+
+**Example Output:**
+| NAME | BACKGROUND | VALIDATE ACTION | READY | AGE | MESSAGE |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| inject-entrypoint | true | Audit | **True** | 15s | Ready |
+
+> **Important**: Policies must show `READY=True` to be active.
+
+**3. Check Webhook Registration**
+
+Kyverno registers validating and mutating webhooks with the API server. Check their status:
+
+```sh
+kubectl get validatingwebhookconfigurations,mutatingwebhookconfigurations
+```
+
+- The webhook **age** should be consistent with the Kyverno pod uptime.
+- If webhooks were created very recently or are missing, Kyverno may not be registering correctly due to RBAC issues.
+
+**4. Validate In-Cluster Connectivity**
+
+Test if the API server can reach the Kyverno service using a temporary pod:
+
+```sh
+kubectl run busybox --rm -ti --image=busybox -- /bin/sh
+```
+
+Inside the pod, run:
+
+```sh
+wget --no-check-certificate --spider --timeout=1 https://kyverno-svc.kyverno.svc:443/health/liveness
+```
+
+**Success Criteria**: A successful response should contain: `remote file exists`.
+
+**5. Check Policy Enforcement Mode**
+
+For `validate` rules, ensure `validationFailureAction` is set to `Enforce`. Many sample policies use `Audit` mode by default to avoid blocking resources unintentionally.
+
+**6. Confirm Resource and Namespace Exclusions**
+
+Kyverno excludes certain resources and namespaces by default using the `kyverno` ConfigMap. Review the following in your configuration:
+
+- `resourceFilters`
+- `excludeGroups`
+- `excludeUsernames`
+
+---
+
+**Tip**
+
+You can use `kubectl apply --dry-run=server` to confirm whether Kyverno policies are evaluated by the API server before actually creating resources:
+
+```sh
+kubectl apply -f resource.yaml --dry-run=server
+```
 
 ## Kyverno consumes a lot of resources or I see OOMKills
 
