@@ -18,7 +18,7 @@ With the ringing in of the new year the Kyverno team is proud to announce the re
 
 Something we've heard for a while now from the community was that they love the ease with which Kyverno can [select resources](/docs/policy-types/cluster-policy/match-exclude) (and, really, just ease of use in general) for action by policies but that this was limiting in certain ways. It may not be scalable to modify every policy with the same exclusions, and, secondarily, in real-world ops scenarios everyone has special exceptions that need careful handling. So we're excited to show off our new PolicyExceptions in 1.9!
 
-A [PolicyException](/docs/exceptions) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
+A [PolicyException](/docs/guides/exceptions) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
 
 Here's what it would look like to allow a special exception to one of the [Pod Security Standard](/policies/pod-security/) [policies](</policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)>) but only for a very specific resource named `important-tool`.
 
@@ -52,7 +52,7 @@ Once a PolicyException is created, a resource which is selected by the exception
 
 With Kyverno's unique [generation rule](/docs/policy-types/cluster-policy/generate), which remains one of its most popular abilities and is beloved by ops teams everywhere, it has proven that Kyverno is far more capable than a simple admission controller which can only deliver "yes" or "no" responses. Generation, especially when combined with validation and mutation, unlocks tremendous power and turns Kyverno into a true tool of automation. That was a great first step, but we knew we could do more. We heard there was a piece missing from the story and that piece was the ability to delete as well as create. Well, we're really happy to say that as of Kyverno 1.9, our second new policy type will allow you to do just that: cleanup resources on a scheduled basis.
 
-A Kyverno [CleanupPolicy](/docs/policy-types/cel-policies/cleanup-policy) brings the all-familiar `match` and `exclude` capabilities with the powerful expressions and [JMESPath](/docs/policy-types/cluster-policy/jmespath) filtering system together with a scheduler which allows you to very granularly select and filter resources you want removed in your cluster based on a recurring schedule. Just take a look at the below sample.
+A Kyverno [CleanupPolicy](/docs/policy-types/cleanup-policy) brings the all-familiar `match` and `exclude` capabilities with the powerful expressions and [JMESPath](/docs/policy-types/cluster-policy/jmespath) filtering system together with a scheduler which allows you to very granularly select and filter resources you want removed in your cluster based on a recurring schedule. Just take a look at the below sample.
 
 ```yaml
 apiVersion: kyverno.io/v2alpha1
@@ -130,15 +130,15 @@ The Kyverno CLI now has experimental support for uploading and downloading Kyver
 
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
-Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
+Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/installation#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
 
-We have long been a champion of software supply chain security and insist on enacting these practices ourselves. With the 1.9 release, Kyverno now generates and attests to [SLSA provenance](https://slsa.dev/spec/v0.1/index) which anyone on their end can publicly [verify](/docs/security/#verifying-provenance). We believe this and other policies by which we abide makes us adherent to SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) and will be working with the [Open Source Security Foundation](https://openssf.org/) to ensure this is the case.
+We have long been a champion of software supply chain security and insist on enacting these practices ourselves. With the 1.9 release, Kyverno now generates and attests to [SLSA provenance](https://slsa.dev/spec/v0.1/index) which anyone on their end can publicly [verify](/docs/guides/security#verifying-provenance). We believe this and other policies by which we abide makes us adherent to SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) and will be working with the [Open Source Security Foundation](https://openssf.org/) to ensure this is the case.
 
-And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark. Included in this library update is a new [table](/docs/gatekeeper) which maps Gatekeeper policies to Kyverno policies, helpful for users of both tools to see how to accomplish some common use cases in these engines.
+And last but not least, the [Kyverno policy library](/policies/), the largest community-driven library of any policy engine for Kubernetes, has received another large bump putting it well over the 250 mark. Included in this library update is a new [table](/docs/guides/gatekeeper) which maps Gatekeeper policies to Kyverno policies, helpful for users of both tools to see how to accomplish some common use cases in these engines.
 
 ## Potentially Breaking Changes
 
-One change we do want to make you aware of, which actually came in 1.8.3, which could be breaking is a schema modification for verifying a container image attestation. Due to some upstream changes in Sigstore's [cosign](https://github.com/sigstore/cosign), we had to move the attestors under the attestation being verified. This necessitated a schema change which you can find in the [documentation](/docs/policy-types/cluster-policy/verify-images/sigstore/#verifying-image-attestations). So if you have Kyverno policies which verified image attestations, please update them to the new schema so they continue to work in 1.9.
+One change we do want to make you aware of, which actually came in 1.8.3, which could be breaking is a schema modification for verifying a container image attestation. Due to some upstream changes in Sigstore's [cosign](https://github.com/sigstore/cosign), we had to move the attestors under the attestation being verified. This necessitated a schema change which you can find in the [documentation](/docs/policy-types/cluster-policy/verify-images/sigstore#verifying-image-attestations). So if you have Kyverno policies which verified image attestations, please update them to the new schema so they continue to work in 1.9.
 
 ## Closing
 
