@@ -54,7 +54,7 @@ export const Footer = () => {
             </li>
           ))}
         </ul>
-        <p>&copy; {currentYear} Kyverno created by Nirmata.</p>
+        <p>&copy; {currentYear} The Kyverno Authors All Rights Reserved.</p>
       </div>
     </footer>
   )
