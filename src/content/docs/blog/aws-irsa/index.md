@@ -40,7 +40,7 @@ aws ec2 modify-instance-metadata-options --instance-id <instance-id> --http-toke
 
 ## Installing Kyverno
 
-Once you have the cluster set up, you can use Helm to [install Kyverno into the cluster](/docs/installation/methods):
+Once you have the cluster set up, you can use Helm to [install Kyverno into the cluster](/docs/installation/installation):
 
 ```sh
 helm upgrade --install kyverno kyverno/kyverno --namespace kyverno --create-namespace

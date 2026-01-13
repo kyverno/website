@@ -10,7 +10,6 @@ Migrate one or more resources to the stored version.
 
 Migrate one or more resources to the stored version.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#migrate
 
 ```
 kyverno migrate [flags]

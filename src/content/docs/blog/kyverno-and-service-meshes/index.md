@@ -200,7 +200,7 @@ spec:
 
 The `exclude[]` block here names the "Capabilities" control that we've been covering thus far, and the `images[]` field names the two specific service mesh images which should be excluded. With this ability you get PSA-like behavior but with granularity that is simply not possible.
 
-These two options give you plenty of choice, but they all involve modifying the policy directly. Another option exists which allows decoupling the exceptions from the policies themselves, and these are [Policy Exceptions](/docs/exceptions/). For example, you can write a PolicyException resource which exempts a given Pod from a specific rule in a specific policy. This is great especially for developer self-service as it allows other users to request exceptions without having to so much as look at a Kyverno policy. However, this as it stands in 1.11 isn't quite granular enough for cases like service mesh initContainers and so is receiving some nice upgrades in Kyverno 1.12. More on that next.
+These two options give you plenty of choice, but they all involve modifying the policy directly. Another option exists which allows decoupling the exceptions from the policies themselves, and these are [Policy Exceptions](/docs/guides/exceptions). For example, you can write a PolicyException resource which exempts a given Pod from a specific rule in a specific policy. This is great especially for developer self-service as it allows other users to request exceptions without having to so much as look at a Kyverno policy. However, this as it stands in 1.11 isn't quite granular enough for cases like service mesh initContainers and so is receiving some nice upgrades in Kyverno 1.12. More on that next.
 
 ## Enhancements in 1.12
 

@@ -60,106 +60,99 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        // Autogenerate sidebar from the root: '/docs/docs'
-        // {
-        // 	label: 'Docs',
-        // 	collapsed: false,
-        // 	autogenerate: { directory: 'docs', collapsed: true, attrs: { style: 'text-transform: capitalize' }},
-        // },
         {
           label: 'Introduction',
           autogenerate: { directory: 'docs/introduction' },
+          collapsed: true,
         },
         {
-          label: 'Installation',
+          label: 'Setup',
           autogenerate: { directory: 'docs/installation' },
+          collapsed: true,
         },
         {
-          label: 'Working With Policies',
+          label: 'Policy Types',
           items: [
+            'docs/policy-types/overview',
+            'docs/policy-types/validating-policy',
+            'docs/policy-types/mutating-policy',
+            'docs/policy-types/generating-policy',
+            'docs/policy-types/deleting-policy',
+            'docs/policy-types/image-validating-policy',
+            'docs/policy-types/cel-libraries',
             {
-              label: 'Policy Types',
+              label: 'ClusterPolicy',
+              items: [
+                'docs/policy-types/cluster-policy/overview',
+                'docs/policy-types/cluster-policy/policy-settings',
+                'docs/policy-types/cluster-policy/match-exclude',
+                'docs/policy-types/cluster-policy/validate',
+                'docs/policy-types/cluster-policy/mutate',
+                'docs/policy-types/cluster-policy/generate',
+                {
+                  label: 'Verify Image Rules',
+                  collapsed: true,
+                  autogenerate: {
+                    directory: 'docs/policy-types/cluster-policy/verify-images',
+                  },
+                },
+                'docs/policy-types/cluster-policy/autogen',
+                'docs/policy-types/cluster-policy/variables',
+                'docs/policy-types/cluster-policy/jmespath',
+                'docs/policy-types/cluster-policy/preconditions',
+                'docs/policy-types/cluster-policy/external-data-sources',
+              ],
               collapsed: true,
-              autogenerate: { directory: 'docs/policy-types' },
+              badge: {
+                text: 'Deprecated',
+                variant: 'caution',
+              },
             },
-            {
-              label: 'Reporting',
-              collapsed: true,
-              autogenerate: { directory: 'docs/policy-reports' },
-            },
-            'docs/applying-policies',
-            'docs/testing-policies',
-            'docs/exceptions',
+            'docs/policy-types/cleanup-policy',
           ],
-          collapsed: true,
+          collapsed: false,
         },
         {
-          label: 'Monitoring',
+          label: 'Guides',
           collapsed: true,
-          autogenerate: { directory: 'docs/monitoring' },
-        },
-        {
-          label: 'Tracing',
-          collapsed: true,
-          autogenerate: { directory: 'docs/tracing' },
-        },
-        {
-          label: 'Tools',
           items: [
+            'docs/guides/applying-policies',
+            'docs/guides/testing-policies',
+            'docs/guides/exceptions',
+            'docs/guides/reports',
+            'docs/guides/monitoring',
+            'docs/guides/tracing',
+            'docs/guides/high-availability',
+            'docs/guides/security',
+            'docs/guides/troubleshooting',
+            // {
+            //   label: 'Migrating to CEL Policies',
+            //   link: 'docs/migration/traditional-to-cel',
+            // },
+            'docs/guides/admission-controllers',
+            'docs/guides/pod-security',
+            'docs/guides/gatekeeper',
+          ],
+        },
+        {
+          label: 'Reference',
+          items: [
+            {
+              label: 'Resource Definitions',
+              slug: 'docs/crds',
+            },
+            'docs/reference/metrics',
             {
               label: 'Kyverno CLI',
               collapsed: true,
-              autogenerate: { directory: 'docs/kyverno-cli' },
-            },
-            {
-              label: 'Kyverno JSON',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-json' },
-            },
-            {
-              label: 'Kyverno Chainsaw',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-chainsaw' },
-            },
-            {
-              label: 'Policy Reporter',
-              collapsed: true,
-              autogenerate: {
-                directory: 'docs/subprojects/kyverno-policy-reporter',
-              },
-            },
-            {
-              label: 'Backstage Plugin',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/backstage-plugin' },
-            },
-            {
-              label: 'Kyverno Authz',
-              collapsed: true,
-              autogenerate: { directory: 'docs/subprojects/kyverno-authz' },
+              autogenerate: { directory: 'docs/kyverno-cli/reference' },
             },
           ],
+        },
+        {
+          label: 'Sub-Projects',
+          autogenerate: { directory: 'docs/subprojects' },
           collapsed: true,
-        },
-        {
-          label: 'Resource Definitions',
-          slug: 'docs/crds',
-        },
-        {
-          label: 'High Availability',
-          slug: 'docs/high-availability',
-        },
-        {
-          label: 'Releases',
-          slug: 'docs/releases',
-        },
-        {
-          label: 'Troubleshooting',
-          slug: 'docs/troubleshooting',
-        },
-        {
-          label: 'Security',
-          slug: 'docs/security',
         },
         {
           label: 'Community',
@@ -168,7 +161,7 @@ export default defineConfig({
       ],
       plugins: [
         starlightImageZoom(),
-        starlightAutoSidebar(),
+        // starlightAutoSidebar(),
         starlightBlog({
           metrics: {
             readingTime: true,
@@ -183,6 +176,7 @@ export default defineConfig({
     markdoc(),
   ],
   vite: {
+    // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
     plugins: [tailwindcss()],
   },
 })

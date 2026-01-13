@@ -642,6 +642,6 @@ Note that the deprecated fields will be removed in a future release, so migratio
 
 ## Conclusion
 
-Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](https://kyverno.io/docs/installation/methods/) section of the docs.
+Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](/docs/installation/installation) section of the docs.
 
 To get the most value out of Kyverno, and check out the [available enterprise solutions](https://kyverno.io/support)!
