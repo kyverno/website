@@ -1,0 +1,226 @@
+---
+// Import collection
+import { getCollection } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { Header } from '../../sections/Header'
+import { Footer } from '../../sections/Footer'
+
+// Get all blog posts from the blog collection
+const blogPosts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => {
+    // Sort by date, newest first
+    const dateA = a.data.date ? new Date(a.data.date) : new Date(0)
+    const dateB = b.data.date ? new Date(b.data.date) : new Date(0)
+    return dateB.getTime() - dateA.getTime()
+  })
+
+// Get featured post (most recent)
+const featuredPost = blogPosts.length > 0 ? blogPosts[0] : null
+const regularPosts = blogPosts.slice(1)
+
+// Format date helper - compact format like "Dec 18, 2025"
+function formatDate(date: Date | string | undefined): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+// Format date for featured post - just year like "2025"
+function formatYear(date: Date | string | undefined): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.getFullYear().toString()
+}
+
+// Helper function to extract image from blog post
+function getBlogImage(post: typeof blogPosts[0]): string | null {
+  // Check if there's an image in frontmatter (if blogSchema supports it)
+  // For now, extract first image from markdown content
+  const body = post.body || ''
+  const imageMatch = body.match(/!\[.*?\]\((\.\/)?([^)]+)\)/)
+  if (imageMatch && imageMatch[2]) {
+    const imagePath = imageMatch[2]
+    // Skip if it's already an absolute URL
+    if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+      return imagePath
+    }
+    // Resolve relative path - remove ./ or ../ prefix if present
+    const cleanPath = imagePath.replace(/^\.\.?\//, '')
+    // Get the blog post directory from the slug/id
+    const slug = post.data.slug || post.id
+    const blogDir = slug
+    return `/blog/${blogDir}/${cleanPath}`
+  }
+  return null
+}
+
+// Extract featured post data
+const featuredSlug = featuredPost ? (featuredPost.data.slug || featuredPost.id) : ''
+const featuredUrl = featuredPost ? `/blog/${featuredSlug}` : ''
+const featuredTitle = featuredPost?.data.title || 'Untitled'
+const featuredExcerpt = featuredPost?.data.excerpt || ''
+const featuredDate = featuredPost?.data.date
+const featuredTags = featuredPost?.data.tags || []
+const featuredImage = featuredPost ? getBlogImage(featuredPost) : null
+---
+
+<DefaultLayout>
+  <Header client:load />
+
+  <!-- Main Content -->
+  <main class="min-h-screen bg-[#12171b] text-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
+      <!-- Featured Post Section -->
+      {featuredPost && (
+        <article class="mb-16">
+          <a href={featuredUrl} class="block group">
+            <div class="bg-gray-800/30 rounded-2xl overflow-hidden border border-gray-700/50 hover:border-primary-100/50 transition-all duration-300">
+              {featuredImage && (
+                <div class="w-full h-64 md:h-80 lg:h-96 overflow-hidden bg-gray-700/30">
+                  <img
+                    src={featuredImage}
+                    alt={featuredTitle}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
+              <div class="p-8 md:p-12">
+                {featuredDate && (
+                  <div class="mb-4">
+                    <span class="text-primary-100 font-semibold text-lg">
+                      {formatYear(featuredDate)}
+                    </span>
+                  </div>
+                )}
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-colors">
+                  {featuredTitle}
+                </h1>
+                {featuredExcerpt && (
+                  <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed max-w-3xl">
+                    {featuredExcerpt}
+                  </p>
+                )}
+                {featuredTags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {featuredTags.map((tag) => (
+                      <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </a>
+        </article>
+      )}
+
+      <!-- Blog Posts Grid -->
+      {regularPosts.length > 0 && (
+        <section>
+          <div class="mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
+              Latest Posts
+            </h2>
+            <div class="w-16 h-1 bg-primary-100"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {regularPosts.map((post) => {
+              const slug = post.data.slug || post.id
+              const url = `/blog/${slug}`
+              const title = post.data.title || 'Untitled'
+              const excerpt = post.data.excerpt || ''
+              const date = post.data.date
+              const tags = post.data.tags || []
+              const image = getBlogImage(post)
+
+              return (
+                <article class="group">
+                  <a href={url} class="block h-full">
+                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300">
+                      {image && (
+                        <div class="w-full h-48 overflow-hidden bg-gray-700/30">
+                          <img
+                            src={image}
+                            alt={title}
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <div class="flex flex-col flex-grow p-6">
+                        {date && (
+                          <time
+                            class="text-sm text-gray-400 mb-3 block"
+                            datetime={typeof date === 'string' ? date : date.toISOString()}
+                          >
+                            {formatDate(date)}
+                          </time>
+                        )}
+                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-primary-100 transition-colors line-clamp-2">
+                          {title}
+                        </h3>
+                        {excerpt && (
+                          <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
+                            {excerpt}
+                          </p>
+                        )}
+                        {tags.length > 0 && (
+                          <div class="flex flex-wrap gap-2 mt-auto">
+                            {tags.slice(0, 2).map((tag) => (
+                              <span class="px-2.5 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {blogPosts.length === 0 && (
+        <div class="text-center py-16">
+          <p class="text-gray-400 text-lg">No blog posts found.</p>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+</DefaultLayout>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Image styles */
+  img {
+    display: block;
+  }
+</style>

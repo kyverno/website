@@ -1,0 +1,374 @@
+---
+// Import collection
+import { getCollection } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { Header } from '../../sections/Header'
+import { Footer } from '../../sections/Footer'
+import { BlogMarkdown } from '../../components/BlogMarkdown.jsx'
+
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
+
+  return blogPosts.map((post) => {
+    const slug = post.data.slug || post.id
+    return {
+      params: { slug },
+      props: { post },
+    }
+  })
+}
+
+// Get the post from props
+const { post } = Astro.props
+
+if (!post) {
+  return Astro.redirect('/404')
+}
+
+const { data, body } = post
+
+// Format date helper - compact format like "Dec 31, 2025"
+function formatDate(date: Date | string | undefined): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+// Helper function to extract and fix image paths in blog post
+function processImagePaths(content: string, postSlug: string): string {
+  if (!content) return content
+  
+  // Replace relative image paths with absolute paths
+  // Matches: ![alt](./image.png) or ![alt](image.png) or ![alt](../image.png)
+  return content.replace(
+    /!\[([^\]]*)\]\((\.\/)?([^)]+)\)/g,
+    (match, alt, relativePrefix, imagePath) => {
+      // Skip if it's already an absolute URL
+      if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+        return match
+      }
+      // Resolve relative paths - remove ./ or ../ and construct absolute path
+      const cleanPath = imagePath.replace(/^\.\.?\//, '')
+      const absolutePath = `/blog/${postSlug}/${cleanPath}`
+      return `![${alt}](${absolutePath})`
+    }
+  )
+}
+
+// Helper function to extract first image for featured image
+function getBlogImage(): string | null {
+  if (!body) return null
+  
+  const imageMatch = body.match(/!\[.*?\]\((\.\/)?([^)]+)\)/)
+  if (imageMatch && imageMatch[2]) {
+    const imagePath = imageMatch[2]
+    // Skip if it's already an absolute URL
+    if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+      return imagePath
+    }
+    // Resolve relative path
+    const cleanPath = imagePath.replace(/^\.\.?\//, '')
+    const postSlug = data.slug || post.id
+    return `/blog/${postSlug}/${cleanPath}`
+  }
+  return null
+}
+
+const title = data.title || 'Untitled'
+const date = data.date
+const tags = data.tags || []
+const excerpt = data.excerpt || ''
+const image = getBlogImage()
+
+// Process body content to fix image paths
+const processedContent = body ? processImagePaths(body, data.slug || post.id) : ''
+---
+
+<DefaultLayout>
+  <Header client:load />
+
+  <!-- Main Content -->
+  <main class="min-h-screen bg-[#12171b] text-white">
+    <article class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl">
+      <!-- Blog Post Header -->
+      <header class="mb-12">
+        {date && (
+          <time
+            class="text-gray-400 text-base font-normal mb-4 block"
+            datetime={typeof date === 'string' ? date : date.toISOString()}
+          >
+            {formatDate(date)}
+          </time>
+        )}
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight">
+          {title}
+        </h1>
+      </header>
+
+      <!-- Featured Image -->
+      {image && (
+        <div class="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 rounded-lg overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            class="w-full h-auto object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Tags (after image) -->
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-12">
+          {tags.map((tag) => (
+            <span class="px-3 py-1.5 text-sm font-medium bg-primary-100/15 text-primary-100 border border-primary-100/30 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <!-- Blog Post Content -->
+      {processedContent && (
+        <BlogMarkdown client:load content={processedContent} />
+      )}
+
+      <!-- Back to Blog Link -->
+      <div class="mt-20 pt-8 border-t border-gray-700/50">
+        <a
+          href="/blog"
+          class="text-primary-100 hover:text-primary-50 inline-flex items-center gap-2 transition-colors text-base font-medium"
+        >
+          <span>←</span>
+          <span>Back to Blog</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</DefaultLayout>
+
+<style is:global>
+  /* Prose styles for blog content - inspired by Cilium blog design */
+  .prose {
+    color: #e5e7eb;
+    line-height: 1.75;
+    font-size: 1.125rem;
+  }
+
+  .prose h1 {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 2.5em;
+    margin-top: 0;
+    margin-bottom: 1em;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .prose h2 {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 2em;
+    margin-top: 2.5em;
+    margin-bottom: 0.875em;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  .prose h3 {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.5em;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .prose h4 {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.25em;
+    margin-top: 1.75em;
+    margin-bottom: 0.75em;
+    line-height: 1.5;
+  }
+
+  .prose h5,
+  .prose h6 {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.125em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+  }
+
+  .prose p {
+    color: #e5e7eb;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
+
+  .prose p:first-child {
+    margin-top: 0;
+  }
+
+  .prose strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .prose em {
+    font-style: italic;
+    color: #d1d5db;
+  }
+
+  .prose code {
+    background-color: rgba(55, 131, 196, 0.15);
+    color: #69a2d3;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    font-weight: 500;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  }
+
+  .prose pre {
+    background-color: #1a1f2e;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 2em 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .prose pre code {
+    background-color: transparent;
+    color: #e5e7eb;
+    padding: 0;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+
+  .prose a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(96, 165, 250, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .prose a:hover {
+    color: #93c5fd;
+    border-bottom-color: rgba(147, 197, 253, 0.6);
+  }
+
+  .prose img {
+    border-radius: 0.5rem;
+    margin: 2.5rem 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid #3783c4;
+    padding-left: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin: 2em 0;
+    font-style: italic;
+    color: #d1d5db;
+    background-color: rgba(55, 131, 196, 0.08);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .prose blockquote p {
+    margin: 0;
+  }
+
+  .prose ul,
+  .prose ol {
+    padding-left: 1.75rem;
+    margin: 1.75em 0;
+  }
+
+  .prose li {
+    margin: 0.625em 0;
+    color: #e5e7eb;
+    line-height: 1.75;
+  }
+
+  .prose ul li {
+    list-style-type: disc;
+  }
+
+  .prose ol li {
+    list-style-type: decimal;
+  }
+
+  .prose li > p {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+  }
+
+  .prose li > :first-child {
+    margin-top: 0;
+  }
+
+  .prose li > :last-child {
+    margin-bottom: 0;
+  }
+
+  .prose li strong {
+    color: #ffffff;
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    text-align: left;
+  }
+
+  .prose th {
+    background-color: rgba(31, 41, 55, 0.8);
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .prose td {
+    background-color: rgba(17, 24, 39, 0.5);
+  }
+
+  .prose hr {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-width: 1px;
+    margin: 3em 0;
+  }
+
+  /* Improve readability for nested lists */
+  .prose ul ul,
+  .prose ol ol,
+  .prose ul ol,
+  .prose ol ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+</style>
