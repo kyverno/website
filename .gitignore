@@ -54,6 +54,7 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+deno.lock
 
 # website build output
 # Ignore all folders in public except assets
