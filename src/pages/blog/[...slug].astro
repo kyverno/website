@@ -130,26 +130,32 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
 
       <!-- Blog Post Header -->
       <header class="mb-12">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-          {date && (
-            <time
-              class="text-gray-400 text-base font-normal"
-              datetime={typeof date === 'string' ? date : date.toISOString()}
-            >
-              {formatDate(date)}
-            </time>
-          )}
-          {authors.length > 0 && (
-            <div class="text-gray-400 text-base font-normal">
-              By{' '}
-              {authors.map((author, index) => (
-                <>
-                  <span class="text-gray-300 font-medium">{author.name}</span>
-                  {index < authors.length - 1 && <span>, </span>}
-                </>
-              ))}
-            </div>
-          )}
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4"
+        >
+          {
+            date && (
+              <time
+                class="text-gray-400 text-base font-normal"
+                datetime={typeof date === 'string' ? date : date.toISOString()}
+              >
+                {formatDate(date)}
+              </time>
+            )
+          }
+          {
+            authors.length > 0 && (
+              <div class="text-gray-400 text-base font-normal">
+                By{' '}
+                {authors.map((author, index) => (
+                  <>
+                    <span class="text-gray-300 font-medium">{author.name}</span>
+                    {index < authors.length - 1 && <span>, </span>}
+                  </>
+                ))}
+              </div>
+            )
+          }
         </div>
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight"

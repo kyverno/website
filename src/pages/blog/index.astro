@@ -112,28 +112,28 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
                     />
                   </div>
                 )}
-              <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
-                <div class="mb-4 flex flex-col gap-1">
-                  {featuredDate && (
-                    <span class="text-gray-400 text-sm">
-                      {formatDate(featuredDate)}
-                    </span>
-                  )}
-                  {featuredAuthors.length > 0 && (
-                    <span class="text-gray-500 text-xs">
-                      By{' '}
-                      {featuredAuthors.map((author, index) => (
-                        <>
-                          {author.name}
-                          {index < featuredAuthors.length - 1 && ', '}
-                        </>
-                      ))}
-                    </span>
-                  )}
-                </div>
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
-                  {featuredTitle}
-                </h1>
+                <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
+                  <div class="mb-4 flex flex-col gap-1">
+                    {featuredDate && (
+                      <span class="text-gray-400 text-sm">
+                        {formatDate(featuredDate)}
+                      </span>
+                    )}
+                    {featuredAuthors.length > 0 && (
+                      <span class="text-gray-500 text-xs">
+                        By{' '}
+                        {featuredAuthors.map((author, index) => (
+                          <>
+                            {author.name}
+                            {index < featuredAuthors.length - 1 && ', '}
+                          </>
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
+                    {featuredTitle}
+                  </h1>
                   {featuredExcerpt && (
                     <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed">
                       {featuredExcerpt}
@@ -167,9 +167,10 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {regularPostsWithUrls.map(({ url, title, excerpt, date, tags, authors, image }) => (
-                <article class="group">
-                  <a href={url} data-astro-reload class="block h-full">
+              {regularPostsWithUrls.map(
+                ({ url, title, excerpt, date, tags, authors, image }) => (
+                  <article class="group">
+                    <a href={url} data-astro-reload class="block h-full">
                       <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                         {image && (
                           <div class="w-full h-48 overflow-hidden bg-gray-700/30">
@@ -227,7 +228,8 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
                       </div>
                     </a>
                   </article>
-              ))}
+                ),
+              )}
             </div>
           </section>
         )

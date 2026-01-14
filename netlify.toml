@@ -38,13 +38,6 @@
     ASTRO_ENV = "branch"
     SITE_URL = "$DEPLOY_PRIME_URL"
 
-# --- Redirects ---
-[[redirects]]
-  from = "/blog/:year/:month/:date/*"
-  to = "/blog/:splat"
-  status = 301
-  force = true # COMMENT: ensure that we always redirect
-
 [[redirects]]
   from = "/*"
   to = "/index.html"
