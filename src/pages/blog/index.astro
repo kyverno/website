@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content'
 import DefaultLayout from '../../layouts/DefaultLayout.astro'
 import { Header } from '../../sections/Header'
 import { Footer } from '../../sections/Footer'
+import '../../styles/blog-index.css'
 
 // Get all blog posts from the blog collection
 const blogPosts = (await getCollection('blog'))
@@ -244,28 +245,3 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
 
   <Footer />
 </DefaultLayout>
-
-<style>
-  a {
-    text-decoration: none;
-  }
-
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Image styles */
-  img {
-    display: block;
-  }
-</style>

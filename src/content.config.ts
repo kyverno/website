@@ -32,8 +32,6 @@ const blogCollection = defineCollection({
     pattern: '**/*.md',
     base: './src/content/blog',
     generateId: (options) => {
-      // Extract full path from date-based structure: e.g., "2025/04/25/announcing-kyverno-release-1.14/index.md" -> "2025/04/25/announcing-kyverno-release-1.14"
-      // Remove /index.md and return the full path including date
       return options.entry.replace(/\/index\.md$/, '')
     },
   }),

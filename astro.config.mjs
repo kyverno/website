@@ -178,12 +178,10 @@ export default defineConfig({
             src: 'src/content/blog/**/assets/*',
             dest: 'blog',
             rename: (name, ext, fullPath) => {
-              // Extract path after 'src/content/blog/'
-              // fullPath example: /path/to/src/content/blog/2025/04/25/post-name/assets/image.png
-              // We want: 2025/04/25/post-name/assets/image.png
+              // Rewrite for images access
               const match = fullPath.match(/src\/content\/blog\/(.+)$/)
               if (match) {
-                return match[1] // Returns: 2025/04/25/post-name/assets/image.png
+                return match[1]
               }
               return name + ext
             },
