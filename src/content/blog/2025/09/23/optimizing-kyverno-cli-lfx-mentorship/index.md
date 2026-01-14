@@ -6,6 +6,8 @@ tags:
   - LFX Mentorship
 excerpt: A deep dive into Kyverno's CLI performance through the lens of my LFX Mentorship Journey, covering optimization strategies that reduced execution time by 99%.
 draft: false
+authors:
+  - name: Abhishek Dhiman
 coverImage: assets/graduated.png
 ---
 

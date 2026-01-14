@@ -44,6 +44,13 @@ const blogCollection = defineCollection({
     excerpt: z.string().optional(),
     draft: z.boolean().optional().default(false),
     coverImage: z.string().optional(),
+    authors: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .optional(),
   }),
 })
 
