@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.8 is here.
 draft: false
+coverImage: assets/kyverno.png
 ---
 
 ![kyverno](./assets/kyverno.png)

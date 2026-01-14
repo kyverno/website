@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.12 released with new alternative report server, Global Context Entry, Kyverno JSON in CLI, performance optimizations, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!
 draft: false
+coverImage: assets/kyverno-horizontal.png
 ---
 
 ![kyverno](./assets/kyverno-horizontal.png)

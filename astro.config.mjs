@@ -5,7 +5,6 @@ import netlify from '@astrojs/netlify'
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
 import starlightAutoSidebar from 'starlight-auto-sidebar'
-// import starlightBlog from 'starlight-blog'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
@@ -163,13 +162,6 @@ export default defineConfig({
       plugins: [
         starlightImageZoom(),
         // starlightAutoSidebar(),
-        // starlightBlog({
-        //   metrics: {
-        //     readingTime: true,
-        //     words: 'total',
-        //   },
-        //   navigation: 'header-end',
-        // }),
         ...checkLinksPlugin,
       ],
     }),

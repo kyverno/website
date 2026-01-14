@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.9 released with new policy exceptions, cleanup policies, and more.
 draft: false
+coverImage: assets/kyverno-horizontal.png
 ---
 
 ![kyverno](assets/kyverno-horizontal.png)

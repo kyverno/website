@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.13 released with Sigstore bundle verification, exceptions for validatingAdmissionPolicies, new assertion trees, generate enhancments, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!
 draft: false
+coverImage: assets/kyverno.png
 ---
 
 Kyverno 1.13 contains [over 700 changes from 39 contributors](https://github.com/kyverno/kyverno/compare/release-1.12...v1.13.0-rc.3)! In this blog, we will highlight some of the major changes and enhancements for the release.

@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.10 released with featuring separate controllers, external service calls, Notary support, and tons more!
 draft: false
+coverImage: assets/kyverno-horizontal.png
 ---
 
 ![kyverno](assets/kyverno-horizontal.png)

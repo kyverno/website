@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.14 makes policy management more modular, streamlined, and powerful.
 draft: false
+coverImage: assets/1-14.png
 ---
 
 We are excited to announce the release of Kyverno 1.14.0, marking a significant milestone in our journey to make policy management more modular, streamlined, and powerful. This release introduces two new policy types - `ValidatingPolicy` and `ImageValidatingPolicy` - that represent our vision for the future of policy management in Kubernetes environments and beyond.
