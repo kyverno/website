@@ -5,6 +5,7 @@ tags:
   - Releases
 excerpt: Kyverno 1.15 makes policy management more modular, streamlined, and powerful.
 draft: false
+coverImage: assets/cis-arch.png
 ---
 
 # Announcing Kyverno Release 1.15!

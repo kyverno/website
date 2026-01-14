@@ -87,29 +87,29 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
       {featuredPost && (
         <article class="mb-16">
           <a href={featuredUrl} class="block group">
-            <div class="bg-gray-800/30 rounded-2xl overflow-hidden border border-gray-700/50 hover:border-primary-100/50 transition-all duration-300">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-center max-w-6xl">
               {featuredImage && (
-                <div class="w-full h-64 md:h-80 lg:h-96 overflow-hidden bg-gray-700/30">
+                <div class="w-full lg:w-1/2 flex-shrink-0 max-w-md flex items-center">
                   <img
                     src={featuredImage}
                     alt={featuredTitle}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    class="w-full h-auto max-h-64 object-contain rounded-lg"
                   />
                 </div>
               )}
-              <div class="p-8 md:p-12">
+              <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
                 {featuredDate && (
                   <div class="mb-4">
-                    <span class="text-primary-100 font-semibold text-lg">
-                      {formatYear(featuredDate)}
+                    <span class="text-gray-400 text-sm">
+                      {formatDate(featuredDate)}
                     </span>
                   </div>
                 )}
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-colors">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
                   {featuredTitle}
                 </h1>
                 {featuredExcerpt && (
-                  <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed max-w-3xl">
+                  <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed">
                     {featuredExcerpt}
                   </p>
                 )}
@@ -151,7 +151,7 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
               return (
                 <article class="group">
                   <a href={url} class="block h-full">
-                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300">
+                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                       {image && (
                         <div class="w-full h-48 overflow-hidden bg-gray-700/30">
                           <img
