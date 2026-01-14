@@ -44,7 +44,7 @@ function formatDate(date: Date | string | undefined): string {
 // Helper function to extract and fix image paths in blog post
 function processImagePaths(content: string, postStaticPath: string): string {
   if (!content) return content
-  
+
   // Replace relative image paths with absolute paths
   // Matches: ![alt](./image.png) or ![alt](image.png) or ![alt](../image.png)
   return content.replace(
@@ -59,7 +59,7 @@ function processImagePaths(content: string, postStaticPath: string): string {
       const cleanPath = imagePath.replace(/^\.\.?\//, '')
       const absolutePath = `/blog/${postStaticPath}/${cleanPath}`
       return `![${alt}](${absolutePath})`
-    }
+    },
   )
 }
 
@@ -76,12 +76,12 @@ function getPostStaticPath(): string {
 // Helper function to resolve cover image path
 function getCoverImage(coverImage: string | undefined): string | null {
   if (!coverImage) return null
-  
+
   // If it's already an absolute URL or path, return as-is
   if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
     return coverImage
   }
-  
+
   // Resolve relative path - remove ./ or ../ prefix if present
   // Use static path (without date) since that's where files are actually copied
   const cleanPath = coverImage.replace(/^\.\.?\//, '')
@@ -106,7 +106,9 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
 
   <!-- Main Content -->
   <main class="min-h-screen bg-[#12171b] text-white">
-    <article class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl">
+    <article
+      class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl"
+    >
       <!-- Breadcrumbs -->
       <nav class="mb-8" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-sm text-gray-400">
@@ -126,45 +128,51 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
 
       <!-- Blog Post Header -->
       <header class="mb-12">
-        {date && (
-          <time
-            class="text-gray-400 text-base font-normal mb-4 block"
-            datetime={typeof date === 'string' ? date : date.toISOString()}
-          >
-            {formatDate(date)}
-          </time>
-        )}
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight">
+        {
+          date && (
+            <time
+              class="text-gray-400 text-base font-normal mb-4 block"
+              datetime={typeof date === 'string' ? date : date.toISOString()}
+            >
+              {formatDate(date)}
+            </time>
+          )
+        }
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight"
+        >
           {title}
         </h1>
       </header>
 
       <!-- Featured Image -->
-      {image && (
-        <div class="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 rounded-lg overflow-hidden">
-          <img
-            src={image}
-            alt={title}
-            class="w-full h-auto object-cover"
-          />
-        </div>
-      )}
+      {
+        image && (
+          <div class="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 rounded-lg overflow-hidden">
+            <img src={image} alt={title} class="w-full h-auto object-cover" />
+          </div>
+        )
+      }
 
       <!-- Tags (after image) -->
-      {tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mb-12">
-          {tags.map((tag) => (
-            <span class="px-3 py-1.5 text-sm font-medium bg-primary-100/15 text-primary-100 border border-primary-100/30 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      {
+        tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-12">
+            {tags.map((tag) => (
+              <span class="px-3 py-1.5 text-sm font-medium bg-primary-100/15 text-primary-100 border border-primary-100/30 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
 
       <!-- Blog Post Content -->
-      {processedContent && (
-        <BlogMarkdown client:load content={processedContent} />
-      )}
+      {
+        processedContent && (
+          <BlogMarkdown client:load content={processedContent} />
+        )
+      }
 
       <!-- Back to Blog Link -->
       <div class="mt-20 pt-8 border-t border-gray-700/50">
@@ -268,7 +276,8 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
     border-radius: 0.25rem;
     font-size: 0.9em;
     font-weight: 500;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family:
+      'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
   }
 
   .prose pre {

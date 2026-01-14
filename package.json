@@ -48,7 +48,8 @@
     "starlight-links-validator": "^0.19.2",
     "starlight-theme-rapide": "^0.5.2",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "vite-plugin-static-copy": "^3.1.4"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
@@ -62,8 +63,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
     "simple-git": "^3.25.0",
-    "tsx": "^4.19.2",
-    "vite-plugin-static-copy": "^3.1.4"
+    "tsx": "^4.19.2"
   },
   "lint-staged": {
     "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"

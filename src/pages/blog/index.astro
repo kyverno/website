@@ -38,12 +38,12 @@ function formatYear(date: Date | string | undefined): string {
 }
 
 // Helper function to get the blog post URL path (already includes date from folder structure)
-function getPostUrlPath(post: typeof blogPosts[0]): string {
+function getPostUrlPath(post: (typeof blogPosts)[0]): string {
   return post.id
 }
 
 // Helper function to get the blog post static file path (same as URL path now)
-function getPostStaticPath(post: typeof blogPosts[0]): string {
+function getPostStaticPath(post: (typeof blogPosts)[0]): string {
   return post.id
 }
 
@@ -51,15 +51,15 @@ function getPostStaticPath(post: typeof blogPosts[0]): string {
 // No need for separate slug extraction since the folder structure matches the URL structure
 
 // Helper function to resolve cover image path
-function getCoverImage(post: typeof blogPosts[0]): string | null {
+function getCoverImage(post: (typeof blogPosts)[0]): string | null {
   const coverImage = post.data.coverImage
   if (!coverImage) return null
-  
+
   // If it's already an absolute URL or path, return as-is
   if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
     return coverImage
   }
-  
+
   // Resolve relative path - remove ./ or ../ prefix if present
   // Use static path (without date) since that's where files are actually copied
   const cleanPath = coverImage.replace(/^\.\.?\//, '')
@@ -84,124 +84,134 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
   <main class="min-h-screen bg-[#12171b] text-white">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
       <!-- Featured Post Section -->
-      {featuredPost && (
-        <article class="mb-16">
-          <a href={featuredUrl} class="block group">
-            <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-center max-w-6xl">
-              {featuredImage && (
-                <div class="w-full lg:w-1/2 flex-shrink-0 max-w-md flex items-center">
-                  <img
-                    src={featuredImage}
-                    alt={featuredTitle}
-                    class="w-full h-auto max-h-64 object-contain rounded-lg"
-                  />
-                </div>
-              )}
-              <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
-                {featuredDate && (
-                  <div class="mb-4">
-                    <span class="text-gray-400 text-sm">
-                      {formatDate(featuredDate)}
-                    </span>
+      {
+        featuredPost && (
+          <article class="mb-16">
+            <a href={featuredUrl} class="block group">
+              <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-center max-w-6xl">
+                {featuredImage && (
+                  <div class="w-full lg:w-1/2 flex-shrink-0 max-w-md flex items-center">
+                    <img
+                      src={featuredImage}
+                      alt={featuredTitle}
+                      class="w-full h-auto max-h-64 object-contain rounded-lg"
+                    />
                   </div>
                 )}
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
-                  {featuredTitle}
-                </h1>
-                {featuredExcerpt && (
-                  <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed">
-                    {featuredExcerpt}
-                  </p>
-                )}
-                {featuredTags.length > 0 && (
-                  <div class="flex flex-wrap gap-2">
-                    {featuredTags.map((tag) => (
-                      <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
-                        {tag}
+                <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
+                  {featuredDate && (
+                    <div class="mb-4">
+                      <span class="text-gray-400 text-sm">
+                        {formatDate(featuredDate)}
                       </span>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
+                    {featuredTitle}
+                  </h1>
+                  {featuredExcerpt && (
+                    <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed">
+                      {featuredExcerpt}
+                    </p>
+                  )}
+                  {featuredTags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {featuredTags.map((tag) => (
+                        <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </a>
-        </article>
-      )}
+            </a>
+          </article>
+        )
+      }
 
       <!-- Blog Posts Grid -->
-      {regularPosts.length > 0 && (
-        <section>
-          <div class="mb-8">
-            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
-              Latest Posts
-            </h2>
-            <div class="w-16 h-1 bg-primary-100"></div>
-          </div>
+      {
+        regularPosts.length > 0 && (
+          <section>
+            <div class="mb-8">
+              <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                Latest Posts
+              </h2>
+              <div class="w-16 h-1 bg-primary-100" />
+            </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularPosts.map((post) => {
-              const postUrlPath = getPostUrlPath(post)
-              const url = `/blog/${postUrlPath}`
-              const title = post.data.title || 'Untitled'
-              const excerpt = post.data.excerpt || ''
-              const date = post.data.date
-              const tags = post.data.tags || []
-              const image = getCoverImage(post)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {regularPosts.map((post) => {
+                const postUrlPath = getPostUrlPath(post)
+                const url = `/blog/${postUrlPath}`
+                const title = post.data.title || 'Untitled'
+                const excerpt = post.data.excerpt || ''
+                const date = post.data.date
+                const tags = post.data.tags || []
+                const image = getCoverImage(post)
 
-              return (
-                <article class="group">
-                  <a href={url} class="block h-full">
-                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
-                      {image && (
-                        <div class="w-full h-48 overflow-hidden bg-gray-700/30">
-                          <img
-                            src={image}
-                            alt={title}
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
-                      <div class="flex flex-col flex-grow p-6">
-                        {date && (
-                          <time
-                            class="text-sm text-gray-400 mb-3 block"
-                            datetime={typeof date === 'string' ? date : date.toISOString()}
-                          >
-                            {formatDate(date)}
-                          </time>
-                        )}
-                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-primary-100 transition-colors line-clamp-2">
-                          {title}
-                        </h3>
-                        {excerpt && (
-                          <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
-                            {excerpt}
-                          </p>
-                        )}
-                        {tags.length > 0 && (
-                          <div class="flex flex-wrap gap-2 mt-auto">
-                            {tags.slice(0, 2).map((tag) => (
-                              <span class="px-2.5 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
-                                {tag}
-                              </span>
-                            ))}
+                return (
+                  <article class="group">
+                    <a href={url} class="block h-full">
+                      <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
+                        {image && (
+                          <div class="w-full h-48 overflow-hidden bg-gray-700/30">
+                            <img
+                              src={image}
+                              alt={title}
+                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
                           </div>
                         )}
+                        <div class="flex flex-col flex-grow p-6">
+                          {date && (
+                            <time
+                              class="text-sm text-gray-400 mb-3 block"
+                              datetime={
+                                typeof date === 'string'
+                                  ? date
+                                  : date.toISOString()
+                              }
+                            >
+                              {formatDate(date)}
+                            </time>
+                          )}
+                          <h3 class="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-primary-100 transition-colors line-clamp-2">
+                            {title}
+                          </h3>
+                          {excerpt && (
+                            <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
+                              {excerpt}
+                            </p>
+                          )}
+                          {tags.length > 0 && (
+                            <div class="flex flex-wrap gap-2 mt-auto">
+                              {tags.slice(0, 2).map((tag) => (
+                                <span class="px-2.5 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </a>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-      )}
+                    </a>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+        )
+      }
 
-      {blogPosts.length === 0 && (
-        <div class="text-center py-16">
-          <p class="text-gray-400 text-lg">No blog posts found.</p>
-        </div>
-      )}
+      {
+        blogPosts.length === 0 && (
+          <div class="text-center py-16">
+            <p class="text-gray-400 text-lg">No blog posts found.</p>
+          </div>
+        )
+      }
     </div>
   </main>
 
@@ -212,21 +222,21 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
   a {
     text-decoration: none;
   }
-  
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   /* Image styles */
   img {
     display: block;
