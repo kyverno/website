@@ -1,7 +1,6 @@
 ---
 date: 2023-02-01
 title: Kyverno and SLSA 3
-slug: kyverno-and-slsa-3
 tags:
   - General
 excerpt: How the Kyverno project believes it is meeting SLSA Level 3 requirements.
@@ -16,7 +15,7 @@ Supply Chain Levels for Software Artifacts, or SLSA (pronounced "salsa"), is a s
 
 The following diagram depicts the several known points of attacks. For extensive documentation, refer to https://slsa.dev.
 
-![slsa](SupplyChainDiagram.svg)
+![slsa](assets/SupplyChainDiagram.svg)
 
 (_Graphic source: slsa.dev_)
 

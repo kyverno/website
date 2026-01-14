@@ -28,14 +28,26 @@ const policiesCollection = defineCollection({
 })
 
 const blogCollection = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/blog',
+    generateId: (options) => {
+      // Extract folder name from path: e.g., "announcing-kyverno-release-1.14/index.md" -> "announcing-kyverno-release-1.14"
+      const match = options.entry.match(/([^/]+)\/index\.md$/)
+      if (match) {
+        return match[1] // Return the folder name, preserving dots and other characters
+      }
+      // Fallback: remove .md extension and return the path
+      return options.entry.replace(/\.md$/, '')
+    },
+  }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
     tags: z.array(z.string()).optional(),
     excerpt: z.string().optional(),
     draft: z.boolean().optional().default(false),
-    slug: z.string().optional(),
+    coverImage: z.string().optional(),
   }),
 })
 

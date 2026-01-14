@@ -1,7 +1,6 @@
 ---
 date: 2024-02-15
 title: Kyverno Chainsaw 0.1.4 - Awesome new features!
-slug: kyverno-chainsaw-0.1.4-awesome-new-features
 tags:
   - General
 authors:
@@ -9,7 +8,7 @@ authors:
 excerpt: What's new in chainsaw v0.1.4!
 ---
 
-![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
+![Kyverno Chainsaw](assets/kyverno-chainsaw-horizontal.png)
 
 The [latest release of Kyverno Chainsaw](https://github.com/kyverno/chainsaw/releases/tag/v0.1.4) came out yesterday. Let's look at the new features included in this release.
 

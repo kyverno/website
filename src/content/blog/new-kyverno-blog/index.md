@@ -6,7 +6,7 @@ tags:
 excerpt: Announcing the new Kyverno blog.
 ---
 
-![kyverno](kyverno.png)
+![kyverno](assets/kyverno.png)
 
 Welcome to the new Kyverno blog!
 

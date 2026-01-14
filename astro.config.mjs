@@ -9,6 +9,7 @@ import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const checkLinksPlugin = process.env.CHECK_LINKS
   ? [
@@ -177,6 +178,26 @@ export default defineConfig({
   ],
   vite: {
     // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      viteStaticCopy({
+        targets: [
+          {
+            src: 'src/content/blog/**/assets/*',
+            dest: 'blog',
+            rename: (name, ext, fullPath) => {
+              // Extract path after 'src/content/blog/'
+              // fullPath example: /path/to/src/content/blog/post-name/assets/image.png
+              // We want: post-name/assets/image.png
+              const match = fullPath.match(/src\/content\/blog\/(.+)$/)
+              if (match) {
+                return match[1] // Returns: post-name/assets/image.png
+              }
+              return name + ext
+            },
+          },
+        ],
+      }),
+    ],
   },
 })

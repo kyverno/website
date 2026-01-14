@@ -1,14 +1,13 @@
 ---
 date: 2024-04-26
 title: Kyverno 1.12 Released
-slug: Kyverno-1.12-released
 tags:
   - Releases
 excerpt: Kyverno 1.12 released with new alternative report server, Global Context Entry, Kyverno JSON in CLI, performance optimizations, enhanced ValidatingAdmissionPolicy and PolicyException support, and tons more!
 draft: false
 ---
 
-![kyverno](./kyverno-horizontal.png)
+![kyverno](./assets/kyverno-horizontal.png)
 
 The Kyverno team is thrilled to announce the launch of version 1.12 hot on the heels of KubeCon EU 2024. Our interactions with Kyverno users during the conference have been incredibly insightful, with many expressing eager anticipation for the features introduced in this latest release. With over 330 pull requests merged, and 32 new contributors onboarded, we extend our heartfelt thanks to the Kyverno community for its invaluable contributions. Join us as we delve into the exciting new features of the 1.12 release.
 
@@ -22,7 +21,7 @@ Policy reports are vital for tools like Kyverno, yet in large clusters, etcd's s
 
 Reports Server offers a straightforward solution. It leverages the Extension API server with a database to seamlessly integrate with Kubernetes, providing a dedicated space for storing and retrieving policy reports.
 
-![report-server](report-server.png)
+![report-server](assets/report-server.png)
 
 Advantages of Reports Server:
 
@@ -286,7 +285,7 @@ These optimizations yielded remarkable results:
 - 8x improvement in average and p95 latency.
 - Stable performance even with high iteration counts.
 
-![perfomance-comparison](perfomance-comparison.png)
+![perfomance-comparison](assets/perfomance-comparison.png)
 
 #### Continuous Improvement through Automation
 

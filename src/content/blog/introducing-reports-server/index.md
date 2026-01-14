@@ -1,7 +1,6 @@
 ---
 date: 2024-05-29
 title: Kyverno Reports Server - The ultimate solution to scale reporting
-slug: kyverno-reports-server-the-ultimate-solution-to-scale-reporting
 tags:
   - General
 authors:
@@ -32,7 +31,7 @@ Reports server solves the problem of scalability of policy reports by storing po
 Reports server achieves this by using [Kubernetes API aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/), where it creates an API service that takes all the requests from the local API server and processes them. Reports server has access to a relational database which it uses to store and query for policy reports and ephemeral reports.
 
 A high-level overview of the architecture is shown below.
-![Architecture](./architecture.svg)
+![Architecture](./assets/architecture.svg)
 
 ## Performance
 

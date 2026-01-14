@@ -1,7 +1,6 @@
 ---
 date: 2023-12-13
 title: Kyverno Chainsaw - Exploring the Power of Assertion Trees!
-slug: kyverno-chainsaw-exploring-the-power-of-assertion-trees
 tags:
   - General
 authors:
@@ -9,7 +8,7 @@ authors:
 excerpt: The Chainsaw Secret Sauce!
 ---
 
-![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
+![Kyverno Chainsaw](assets/kyverno-chainsaw-horizontal.png)
 
 While the [Chainsaw documentation](https://kyverno.github.io/chainsaw) is nice and comprehensive, I feel like the most powerful feature of Chainsaw deserves its own blog post for a couple of reasons:
 

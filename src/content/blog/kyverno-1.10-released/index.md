@@ -1,14 +1,13 @@
 ---
 date: 2023-05-30
 title: Kyverno 1.10 Released
-slug: kyverno-1.10-released
 tags:
   - Releases
 excerpt: Kyverno 1.10 released with featuring separate controllers, external service calls, Notary support, and tons more!
 draft: false
 ---
 
-![kyverno](kyverno-horizontal.png)
+![kyverno](assets/kyverno-horizontal.png)
 
 The Kyverno team are proud to announce the release of Kyverno 1.10, a minor release in terms of version number but a major release in every other regard. With around four months in the making and after four pre-releases and nearly 500 pull requests merged, Kyverno 1.10 is one of the largest releases in the history of the project and features a ton of new and highly-requested features and a staggering number of fixes and improvements. It also brings with it some breaking changes so please read thoroughly. We can't wait for you to see what's inside so let's get started!
 
@@ -20,7 +19,7 @@ Kyverno 1.10 contains several new and significant features including decomposing
 
 In previous versions of Kyverno, everything except the cleanup controller (introduced in 1.9) was packaged in a single container. This made sense in the early days, but as Kyverno began to grow in capability and complexity, the single-deployment model just wasn't going to cut it. Users also wanted a way to only install what they needed and not get everything else that came along with it. Beginning in Kyverno 1.10, the major capabilities of Kyverno have been broken out into separate deployments allowing you to switch on or off the ones you want. What this looks like is shown below.
 
-![kyverno](kyverno-installation.png)
+![kyverno](assets/kyverno-installation.png)
 
 The four major components of Kyverno and their primary functions are as follows:
 

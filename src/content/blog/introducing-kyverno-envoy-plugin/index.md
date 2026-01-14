@@ -1,7 +1,6 @@
 ---
 date: 2024-06-04
 title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
-slug: kyverno-envoy-plugin-kyverno-policies-based-authorization-plugin-for-envoy
 tags:
   - General
 authors:
@@ -9,7 +8,7 @@ authors:
 excerpt: Make external authorization easy with Kyverno-Envoy-Plugin.
 ---
 
-![Kyverno-Envoy-Plugin](logo.png)
+![Kyverno-Envoy-Plugin](assets/logo.png)
 
 Microservices enhance the productivity of individual development teams by dividing applications into smaller, independent components. However, microservices alone do not address longstanding challenges in distributed systems such as authentication and authorization. These problems can become even harder to manage due to the diverse and short-lived nature of the microservice environments.
 
@@ -31,11 +30,11 @@ In addition to the Envoy sidecar, your application pods will include a Kyverno-E
 
 Here is the architecture when Kyverno-Envoy-Plugin deployed as a sidecar to your application:
 
-![architecture-sidecar](./arch-pod.png)
+![architecture-sidecar](./assets/arch-pod.png)
 
 Here is the architecture when Kyverno-Envoy-Plugin deployed as a separate pod to your application:
 
-![architecture-pod](./arch-seprate-pod.png)
+![architecture-pod](./assets/arch-seprate-pod.png)
 
 Performing policy evaluations locally with Envoy is advantageous, as it eliminates the need for an additional network hop for authorization checks, thus enhancing both performance and availability.
 

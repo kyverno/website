@@ -37,36 +37,36 @@ function formatYear(date: Date | string | undefined): string {
   return d.getFullYear().toString()
 }
 
-// Helper function to extract image from blog post
-function getBlogImage(post: typeof blogPosts[0]): string | null {
-  // Check if there's an image in frontmatter (if blogSchema supports it)
-  // For now, extract first image from markdown content
-  const body = post.body || ''
-  const imageMatch = body.match(/!\[.*?\]\((\.\/)?([^)]+)\)/)
-  if (imageMatch && imageMatch[2]) {
-    const imagePath = imageMatch[2]
-    // Skip if it's already an absolute URL
-    if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
-      return imagePath
-    }
-    // Resolve relative path - remove ./ or ../ prefix if present
-    const cleanPath = imagePath.replace(/^\.\.?\//, '')
-    // Get the blog post directory from the slug/id
-    const slug = post.data.slug || post.id
-    const blogDir = slug
-    return `/blog/${blogDir}/${cleanPath}`
+// Helper function to extract directory name from post.id
+// post.id now contains the folder name directly (preserving dots) thanks to generateId
+function getPostSlug(postId: string): string {
+  return postId
+}
+
+// Helper function to resolve cover image path
+function getCoverImage(post: typeof blogPosts[0]): string | null {
+  const coverImage = post.data.coverImage
+  if (!coverImage) return null
+  
+  // If it's already an absolute URL or path, return as-is
+  if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
+    return coverImage
   }
-  return null
+  
+  // Resolve relative path - remove ./ or ../ prefix if present
+  const cleanPath = coverImage.replace(/^\.\.?\//, '')
+  const postSlug = getPostSlug(post.id)
+  return `/blog/${postSlug}/${cleanPath}`
 }
 
 // Extract featured post data
-const featuredSlug = featuredPost ? (featuredPost.data.slug || featuredPost.id) : ''
+const featuredSlug = featuredPost ? getPostSlug(featuredPost.id) : ''
 const featuredUrl = featuredPost ? `/blog/${featuredSlug}` : ''
 const featuredTitle = featuredPost?.data.title || 'Untitled'
 const featuredExcerpt = featuredPost?.data.excerpt || ''
 const featuredDate = featuredPost?.data.date
 const featuredTags = featuredPost?.data.tags || []
-const featuredImage = featuredPost ? getBlogImage(featuredPost) : null
+const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
 ---
 
 <DefaultLayout>
@@ -132,13 +132,13 @@ const featuredImage = featuredPost ? getBlogImage(featuredPost) : null
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {regularPosts.map((post) => {
-              const slug = post.data.slug || post.id
-              const url = `/blog/${slug}`
+              const postSlug = getPostSlug(post.id)
+              const url = `/blog/${postSlug}`
               const title = post.data.title || 'Untitled'
               const excerpt = post.data.excerpt || ''
               const date = post.data.date
               const tags = post.data.tags || []
-              const image = getBlogImage(post)
+              const image = getCoverImage(post)
 
               return (
                 <article class="group">

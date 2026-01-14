@@ -1,14 +1,13 @@
 ---
 date: 2022-10-24
 title: Kyverno 1.8 Released
-slug: kyverno-1.8-released
 tags:
   - Releases
 excerpt: Kyverno 1.8 is here.
 draft: false
 ---
 
-![kyverno](./kyverno.png)
+![kyverno](./assets/kyverno.png)
 
 Following on the heels of the 1.7 release of Kyverno, the Kyverno team is proud to present version 1.8 which is another huge leap forward not just in terms of features and functionality but of optimizations, performance, and other improvements required in strict or high-scale environments. And in addition to those, a tremendous amount of work went into refactoring and other housekeeping items that make Kyverno cleaner and more efficient making future development (and contributions) easier, quicker, and ultimately more maintainable. We'll walk through the largest of these features in this article.
 

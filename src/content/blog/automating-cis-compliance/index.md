@@ -1,7 +1,6 @@
 ---
 date: 2025-06-11
 title: Automating EKS CIS Compliance with Kyverno and KubeBench
-slug: automating-eks-cis-compliance-with-kyverno-and-kubeBench
 tags:
   - General
 authors:
@@ -51,7 +50,7 @@ The cloud native opportunity: Modern CNCF ecosystem tooling offers the potential
 
 Modern cloud native compliance requires acknowledging that no single tool can validate all CIS controls due to the diverse nature of the requirements. This implementation combines the strengths of multiple CNCF and cloud native security tools:
 
-![Architecture Diagram](./cis-exec.png)
+![Architecture Diagram](./assets/cis-exec.png)
 
 - **Kyverno**: Kubernetes-native policy engine for IaC pipeline and runtime validation
 - **OpenTofu**: Open-source infrastructure-as-code tool for generating plan files
@@ -65,7 +64,7 @@ Modern cloud native compliance requires acknowledging that no single tool can va
 
 The framework implements a multi-layered approach combining the strengths of different CNCF and cloud native security tools:
 
-![Architecture Diagram](./cis-arch.png)
+![Architecture Diagram](./assets/cis-arch.png)
 
 ### 1. Plan-Time Validation (Shift-Left Security):
 

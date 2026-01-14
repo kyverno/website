@@ -1,14 +1,13 @@
 ---
 date: 2023-02-01
 title: Kyverno 1.9 Released
-slug: kyverno-1.9-released
 tags:
   - Releases
 excerpt: Kyverno 1.9 released with new policy exceptions, cleanup policies, and more.
 draft: false
 ---
 
-![kyverno](kyverno-horizontal.png)
+![kyverno](assets/kyverno-horizontal.png)
 
 With the ringing in of the new year the Kyverno team is proud to announce the release of Kyverno 1.9.0, a release that we've been working hard on over the past several months and which is full of massive new features include TWO brand new rule types, several community-requested enhancements, and loads of fixes and improvements. Without any further ado, let's dive right in and show you what's in the bag.
 
@@ -83,7 +82,7 @@ A policy-based approach is only the first step, and in the second phase we inten
 
 In the 1.8 release, we added OpenTelemetry support, but in this release we wanted to one-up ourselves and add in more observability to provide insights on _exactly_ what Kyverno is doing to your resources. So in 1.9, we've added full support for distributed tracing. With distributed tracing instrumented in Kyverno, you can see every rule and even every external call (in the case of OCI registry lookups) Kyverno is making and how long each span took. This is super helpful not just from a visibility but also a troubleshooting and even auditability standpoint. With traces in hand sent to your collector, you can see the rules which matched the resource and were processed so you know everything is working properly.
 
-![tracing](kyverno-tracing.png)
+![tracing](assets/kyverno-tracing.png)
 
 ### Extended Support for Subresources
 

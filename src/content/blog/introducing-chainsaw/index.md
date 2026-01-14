@@ -1,7 +1,6 @@
 ---
 date: 2023-12-12
 title: Kyverno Chainsaw - The ultimate end to end testing tool!
-slug: kyverno-chainsaw-the-ultimate-end-to-end-testing-tool
 tags:
   - General
 authors:
@@ -9,7 +8,7 @@ authors:
 excerpt: Have fun testing Kubernetes operators!
 ---
 
-![Kyverno Chainsaw](kyverno-chainsaw-horizontal.png)
+![Kyverno Chainsaw](assets/kyverno-chainsaw-horizontal.png)
 
 Creating Kubernetes operators is hard, testing Kubernetes operators is also hard. Of course creating, maintaining and testing a Kubernetes operator is even harder.
 

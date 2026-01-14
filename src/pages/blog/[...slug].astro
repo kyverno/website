@@ -10,9 +10,9 @@ export async function getStaticPaths() {
   const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
 
   return blogPosts.map((post) => {
-    const slug = post.data.slug || post.id
+    // post.id now contains the folder name directly (preserving dots) thanks to generateId
     return {
-      params: { slug },
+      params: { slug: post.id },
       props: { post },
     }
   })
@@ -38,6 +38,12 @@ function formatDate(date: Date | string | undefined): string {
   })
 }
 
+// Helper function to extract directory name from post.id
+// post.id now contains the folder name directly (preserving dots) thanks to generateId
+function getPostSlugFromId(postId: string): string {
+  return postId
+}
+
 // Helper function to extract and fix image paths in blog post
 function processImagePaths(content: string, postSlug: string): string {
   if (!content) return content
@@ -59,33 +65,30 @@ function processImagePaths(content: string, postSlug: string): string {
   )
 }
 
-// Helper function to extract first image for featured image
-function getBlogImage(): string | null {
-  if (!body) return null
+// Helper function to resolve cover image path
+function getCoverImage(coverImage: string | undefined): string | null {
+  if (!coverImage) return null
   
-  const imageMatch = body.match(/!\[.*?\]\((\.\/)?([^)]+)\)/)
-  if (imageMatch && imageMatch[2]) {
-    const imagePath = imageMatch[2]
-    // Skip if it's already an absolute URL
-    if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
-      return imagePath
-    }
-    // Resolve relative path
-    const cleanPath = imagePath.replace(/^\.\.?\//, '')
-    const postSlug = data.slug || post.id
-    return `/blog/${postSlug}/${cleanPath}`
+  // If it's already an absolute URL or path, return as-is
+  if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
+    return coverImage
   }
-  return null
+  
+  // Resolve relative path - remove ./ or ../ prefix if present
+  const cleanPath = coverImage.replace(/^\.\.?\//, '')
+  const postSlug = getPostSlugFromId(post.id)
+  return `/blog/${postSlug}/${cleanPath}`
 }
 
 const title = data.title || 'Untitled'
 const date = data.date
 const tags = data.tags || []
 const excerpt = data.excerpt || ''
-const image = getBlogImage()
+const image = getCoverImage(data.coverImage)
 
 // Process body content to fix image paths
-const processedContent = body ? processImagePaths(body, data.slug || post.id) : ''
+const postSlug = getPostSlugFromId(post.id)
+const processedContent = body ? processImagePaths(body, postSlug) : ''
 ---
 
 <DefaultLayout>

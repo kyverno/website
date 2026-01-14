@@ -1,7 +1,6 @@
 ---
 date: 2023-06-12
 title: Using Kyverno with Pod Security Admission
-slug: using-kyverno-with-pod-security-admission
 tags:
   - General
 excerpt: Using Pod Security Admission with Kyverno for the best of both worlds.
