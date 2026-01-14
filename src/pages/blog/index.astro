@@ -37,11 +37,18 @@ function formatYear(date: Date | string | undefined): string {
   return d.getFullYear().toString()
 }
 
-// Helper function to extract directory name from post.id
-// post.id now contains the folder name directly (preserving dots) thanks to generateId
-function getPostSlug(postId: string): string {
-  return postId
+// Helper function to get the blog post URL path (already includes date from folder structure)
+function getPostUrlPath(post: typeof blogPosts[0]): string {
+  return post.id
 }
+
+// Helper function to get the blog post static file path (same as URL path now)
+function getPostStaticPath(post: typeof blogPosts[0]): string {
+  return post.id
+}
+
+// Note: post.id now contains the full path including date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
+// No need for separate slug extraction since the folder structure matches the URL structure
 
 // Helper function to resolve cover image path
 function getCoverImage(post: typeof blogPosts[0]): string | null {
@@ -54,14 +61,15 @@ function getCoverImage(post: typeof blogPosts[0]): string | null {
   }
   
   // Resolve relative path - remove ./ or ../ prefix if present
+  // Use static path (without date) since that's where files are actually copied
   const cleanPath = coverImage.replace(/^\.\.?\//, '')
-  const postSlug = getPostSlug(post.id)
-  return `/blog/${postSlug}/${cleanPath}`
+  const postStaticPath = getPostStaticPath(post)
+  return `/blog/${postStaticPath}/${cleanPath}`
 }
 
 // Extract featured post data
-const featuredSlug = featuredPost ? getPostSlug(featuredPost.id) : ''
-const featuredUrl = featuredPost ? `/blog/${featuredSlug}` : ''
+const featuredUrlPath = featuredPost ? getPostUrlPath(featuredPost) : ''
+const featuredUrl = featuredPost ? `/blog/${featuredUrlPath}` : ''
 const featuredTitle = featuredPost?.data.title || 'Untitled'
 const featuredExcerpt = featuredPost?.data.excerpt || ''
 const featuredDate = featuredPost?.data.date
@@ -132,8 +140,8 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {regularPosts.map((post) => {
-              const postSlug = getPostSlug(post.id)
-              const url = `/blog/${postSlug}`
+              const postUrlPath = getPostUrlPath(post)
+              const url = `/blog/${postUrlPath}`
               const title = post.data.title || 'Untitled'
               const excerpt = post.data.excerpt || ''
               const date = post.data.date

@@ -10,7 +10,7 @@ export async function getStaticPaths() {
   const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
 
   return blogPosts.map((post) => {
-    // post.id now contains the folder name directly (preserving dots) thanks to generateId
+    // post.id now contains the full path including date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
     return {
       params: { slug: post.id },
       props: { post },
@@ -38,14 +38,11 @@ function formatDate(date: Date | string | undefined): string {
   })
 }
 
-// Helper function to extract directory name from post.id
-// post.id now contains the folder name directly (preserving dots) thanks to generateId
-function getPostSlugFromId(postId: string): string {
-  return postId
-}
+// Note: post.id now contains the full path including date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
+// No need for separate slug extraction since the folder structure matches the URL structure
 
 // Helper function to extract and fix image paths in blog post
-function processImagePaths(content: string, postSlug: string): string {
+function processImagePaths(content: string, postStaticPath: string): string {
   if (!content) return content
   
   // Replace relative image paths with absolute paths
@@ -58,11 +55,22 @@ function processImagePaths(content: string, postSlug: string): string {
         return match
       }
       // Resolve relative paths - remove ./ or ../ and construct absolute path
+      // Use static path (without date) since that's where files are actually copied
       const cleanPath = imagePath.replace(/^\.\.?\//, '')
-      const absolutePath = `/blog/${postSlug}/${cleanPath}`
+      const absolutePath = `/blog/${postStaticPath}/${cleanPath}`
       return `![${alt}](${absolutePath})`
     }
   )
+}
+
+// Helper function to get the blog post URL path (already includes date from folder structure)
+function getPostUrlPath(): string {
+  return post.id
+}
+
+// Helper function to get the blog post static file path (same as URL path now)
+function getPostStaticPath(): string {
+  return post.id
 }
 
 // Helper function to resolve cover image path
@@ -75,9 +83,10 @@ function getCoverImage(coverImage: string | undefined): string | null {
   }
   
   // Resolve relative path - remove ./ or ../ prefix if present
+  // Use static path (without date) since that's where files are actually copied
   const cleanPath = coverImage.replace(/^\.\.?\//, '')
-  const postSlug = getPostSlugFromId(post.id)
-  return `/blog/${postSlug}/${cleanPath}`
+  const postStaticPath = getPostStaticPath()
+  return `/blog/${postStaticPath}/${cleanPath}`
 }
 
 const title = data.title || 'Untitled'
@@ -87,8 +96,9 @@ const excerpt = data.excerpt || ''
 const image = getCoverImage(data.coverImage)
 
 // Process body content to fix image paths
-const postSlug = getPostSlugFromId(post.id)
-const processedContent = body ? processImagePaths(body, postSlug) : ''
+// Use static path (without date) for images since that's where files are actually copied
+const postStaticPath = getPostStaticPath()
+const processedContent = body ? processImagePaths(body, postStaticPath) : ''
 ---
 
 <DefaultLayout>
@@ -97,6 +107,23 @@ const processedContent = body ? processImagePaths(body, postSlug) : ''
   <!-- Main Content -->
   <main class="min-h-screen bg-[#12171b] text-white">
     <article class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl">
+      <!-- Breadcrumbs -->
+      <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-gray-400">
+          <li>
+            <a href="/blog" class="hover:text-primary-100 transition-colors">
+              Blog
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="mx-2">/</span>
+          </li>
+          <li class="text-gray-300" aria-current="page">
+            {title}
+          </li>
+        </ol>
+      </nav>
+
       <!-- Blog Post Header -->
       <header class="mb-12">
         {date && (
