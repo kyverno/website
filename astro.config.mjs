@@ -178,10 +178,26 @@ export default defineConfig({
             src: 'src/content/blog/**/assets/*',
             dest: 'blog',
             rename: (name, ext, fullPath) => {
-              // Rewrite for images access
-              const match = fullPath.match(/src\/content\/blog\/(.+)$/)
+              // Extract the post name from the path
+              // Handles both old structure (2025/04/25/post-name/assets/image.png)
+              // and new structure (post-name/assets/image.png)
+              // We want: post-name/assets/image.png
+              const match = fullPath.match(
+                /src\/content\/blog\/(?:[\d/]+\/)?([^/]+)\/assets\/(.+)$/,
+              )
               if (match) {
-                return match[1]
+                const postName = match[1]
+                const assetPath = match[2]
+                return `${postName}/assets/${assetPath}`
+              }
+              // Fallback: try to extract just the post name
+              const fallbackMatch = fullPath.match(
+                /src\/content\/blog\/(.+)\/assets\/(.+)$/,
+              )
+              if (fallbackMatch) {
+                const pathParts = fallbackMatch[1].split('/')
+                const postName = pathParts[pathParts.length - 1]
+                return `${postName}/assets/${fallbackMatch[2]}`
               }
               return name + ext
             },

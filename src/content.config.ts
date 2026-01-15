@@ -32,7 +32,13 @@ const blogCollection = defineCollection({
     pattern: '**/*.md',
     base: './src/content/blog',
     generateId: (options) => {
-      return options.entry.replace(/\/index\.md$/, '')
+      // Extract just the post name (folder or file name)
+      // e.g., "post-name/index.md" -> "post-name"
+      // or "post-name.md" -> "post-name"
+      const pathWithoutIndex = options.entry.replace(/\/index\.md$/, '')
+      const pathWithoutExt = pathWithoutIndex.replace(/\.md$/, '')
+      // Get the last part of the path (handles any nested structure)
+      return pathWithoutExt.split('/').pop() || pathWithoutExt
     },
   }),
   schema: z.object({

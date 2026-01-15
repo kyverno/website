@@ -36,7 +36,7 @@
   [context.branch-deploy.environment]
     NODE_ENV = "production"
     ASTRO_ENV = "branch"
-    SITE_URL = "$DEPLOY_PRIME_URL"
+    SITE_URL = "$DEPLOY_PRIME_URL" 
 
 # --- Documentation reorganization redirects (commit f4503dcc) ---
 # Applying policies - deleted, moved to guides

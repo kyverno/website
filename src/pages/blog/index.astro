@@ -5,6 +5,7 @@ import DefaultLayout from '../../layouts/DefaultLayout.astro'
 import { Header } from '../../sections/Header'
 import { Footer } from '../../sections/Footer'
 import '../../styles/blog-index.css'
+import { formatDatePath } from '../../utils/blog'
 
 // Get all blog posts from the blog collection
 const blogPosts = (await getCollection('blog'))
@@ -19,18 +20,6 @@ const blogPosts = (await getCollection('blog'))
 // Get featured post (most recent)
 const featuredPost = blogPosts.length > 0 ? blogPosts[0] : null
 const regularPosts = blogPosts.slice(1)
-
-// Pre-compute URLs for all posts to ensure they're static
-const regularPostsWithUrls = regularPosts.map((post) => ({
-  post,
-  url: `/blog/${post.id}`,
-  title: post.data.title || 'Untitled',
-  excerpt: post.data.excerpt || '',
-  date: post.data.date,
-  tags: post.data.tags || [],
-  authors: post.data.authors || [],
-  image: getCoverImage(post),
-}))
 
 // Format date helper - compact format like "Dec 18, 2025"
 function formatDate(date: Date | string | undefined): string {
@@ -50,23 +39,26 @@ function formatYear(date: Date | string | undefined): string {
   return d.getFullYear().toString()
 }
 
-// Helper function to get the blog post URL path (already includes date from folder structure)
+// Helper function to get the blog post URL path (includes date from post.data.date)
 function getPostUrlPath(post: (typeof blogPosts)[0]): string {
-  return post.id
+  const datePath = formatDatePath(post.data.date)
+  return `${datePath}/${post.id}`
 }
 
-// Helper function to get the blog post static file path (same as URL path now)
+// Helper function to get the blog post static file path (just post name, no date)
 function getPostStaticPath(post: (typeof blogPosts)[0]): string {
   return post.id
 }
 
-// Note: post.id now contains the full path including date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
-// No need for separate slug extraction since the folder structure matches the URL structure
+
+// NOTE: URLs are generated with dates from post.data.date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
+// Static files (images) are stored without date prefix, so we use post.id for image paths
 
 // Helper function to resolve cover image path
 function getCoverImage(post: (typeof blogPosts)[0]): string | null {
   const coverImage = post.data.coverImage
-  if (!coverImage) return null
+  // Defaults image to the logo in the public folder when the posts doesn't have a cover
+  if (!coverImage) return '/kyverno.svg'
 
   // If it's already an absolute URL or path, return as-is
   if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
@@ -74,11 +66,23 @@ function getCoverImage(post: (typeof blogPosts)[0]): string | null {
   }
 
   // Resolve relative path - remove ./ or ../ prefix if present
-  // Use static path (without date) since that's where files are actually copied
+  // Use static path (post name only, without date) since that's where files are actually copied
   const cleanPath = coverImage.replace(/^\.\.?\//, '')
   const postStaticPath = getPostStaticPath(post)
   return `/blog/${postStaticPath}/${cleanPath}`
 }
+
+// Pre-compute URLs for all posts to ensure they're static
+const regularPostsWithUrls = regularPosts.map((post) => ({
+  post,
+  url: `/blog/${getPostUrlPath(post)}`,
+  title: post.data.title || 'Untitled',
+  excerpt: post.data.excerpt || '',
+  date: post.data.date,
+  tags: post.data.tags || [],
+  authors: post.data.authors || [],
+  image: getCoverImage(post),
+}))
 
 // Extract featured post data
 const featuredUrlPath = featuredPost ? getPostUrlPath(featuredPost) : ''
