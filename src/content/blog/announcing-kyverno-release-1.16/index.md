@@ -4,6 +4,7 @@ title: Announcing Kyverno Release 1.16!
 linkTitle: Kyverno 1.16
 description: Kyverno 1.16 marks a pivotal step toward a unified, CEL‑powered policy platform.
 draft: false
+featured: true
 ---
 
 # Announcing Kyverno Release 1.16!

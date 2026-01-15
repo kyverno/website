@@ -18,9 +18,13 @@ const blogPosts = (await getCollection('blog'))
     return dateB.getTime() - dateA.getTime()
   })
 
+const featuredPosts = blogPosts.filter((b) => b.data.featured)
+
 // Get featured post (most recent)
-const featuredPost = blogPosts.length > 0 ? blogPosts[0] : null
-const regularPosts = blogPosts.slice(1)
+const featuredPost = featuredPosts.length > 0 ? featuredPosts[0] : null
+
+// Remove featured post from regular posts
+const regularPosts = blogPosts.filter((post) => post.id !== featuredPost?.id)
 
 // Format date helper - compact format like "Dec 18, 2025"
 function formatDate(date: Date | string | undefined): string {
@@ -33,13 +37,6 @@ function formatDate(date: Date | string | undefined): string {
   })
 }
 
-// Format date for featured post - just year like "2025"
-function formatYear(date: Date | string | undefined): string {
-  if (!date) return ''
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d.getFullYear().toString()
-}
-
 // Helper function to get the blog post URL path (includes date from post.data.date)
 function getPostUrlPath(post: (typeof blogPosts)[0]): string {
   const datePath = formatDatePath(post.data.date)
@@ -50,7 +47,6 @@ function getPostUrlPath(post: (typeof blogPosts)[0]): string {
 function getPostStaticPath(post: (typeof blogPosts)[0]): string {
   return post.id
 }
-
 
 // NOTE: URLs are generated with dates from post.data.date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
 // Static files (images) are stored without date prefix, so we use post.id for image paths
@@ -76,13 +72,14 @@ function getCoverImage(post: (typeof blogPosts)[0]): string | null {
 // Pre-compute URLs for regular posts (excluding featured post)
 const regularPostsWithUrls = regularPosts.map((post) => ({
   post,
-  url: `/blog/${getPostUrlPath(post)}`,
+  url: post.data.externalURL || `/blog/${getPostUrlPath(post)}`,
   title: post.data.title || 'Untitled',
   excerpt: post.data.excerpt || '',
   date: post.data.date,
   tags: post.data.tags || [],
   authors: post.data.authors || [],
   image: getCoverImage(post),
+  externalURL: post.data.externalURL,
 }))
 
 // Extract featured post data
@@ -171,10 +168,13 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
               <div class="w-16 h-1 bg-primary-100" />
             </div>
 
-            <BlogBrowser posts={regularPostsWithUrls.map((post) => ({
-              ...post,
-              formattedDate: formatDate(post.date),
-            }))} client:load />
+            <BlogBrowser
+              posts={regularPostsWithUrls.map((post) => ({
+                ...post,
+                formattedDate: formatDate(post.date),
+              }))}
+              client:load
+            />
           </section>
         )
       }

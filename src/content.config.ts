@@ -48,6 +48,8 @@ const blogCollection = defineCollection({
     excerpt: z.string().optional(),
     draft: z.boolean().optional().default(false),
     coverImage: z.string().optional(),
+    featured: z.boolean().optional(),
+    externalURL: z.string().url().optional(),
     authors: z
       .array(
         z.object({
