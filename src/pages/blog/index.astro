@@ -55,7 +55,7 @@ function getPostStaticPath(post: (typeof blogPosts)[0]): string {
 function getCoverImage(post: (typeof blogPosts)[0]): string | null {
   const coverImage = post.data.coverImage
   // Defaults image to the logo in the public folder when the posts doesn't have a cover
-  if (!coverImage) return '/kyverno.svg'
+  if (!coverImage) return '/assets/images/kyverno.svg'
 
   // If it's already an absolute URL or path, return as-is
   if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
