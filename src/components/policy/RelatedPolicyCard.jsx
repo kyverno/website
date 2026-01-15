@@ -15,7 +15,7 @@ export const RelatedPolicyCard = ({ policy }) => {
   return (
     <a
       href={`/policies/${policy.id}/`}
-      className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-700 hover:bg-gray-900/50 transition-all group cursor-pointer h-full flex flex-col"
+      className="bg-dark-50 border border-stroke rounded-xl p-5 hover:border-primary-100/50 hover:bg-dark-50/80 transition-all group cursor-pointer h-full flex flex-col"
     >
       <div className="flex flex-col space-y-3 flex-1">
         {/* Badges */}
@@ -33,21 +33,21 @@ export const RelatedPolicyCard = ({ policy }) => {
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-semibold text-white leading-tight line-clamp-2 group-hover:text-primary-100 transition-colors min-h-[3rem]">
+        <h3 className="text-base font-semibold text-theme-primary leading-tight line-clamp-2 group-hover:text-primary-100 transition-colors min-h-[3rem]">
           {policy.data.title}
         </h3>
 
         {/* Description */}
         {description && (
-          <p className="text-gray-400 text-sm leading-relaxed line-clamp-1">
+          <p className="text-theme-secondary text-sm leading-relaxed line-clamp-1">
             {description}
           </p>
         )}
 
         {/* Resource Type */}
         {policy.data.subjects && policy.data.subjects.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-gray-300 mt-auto">
-            <FileText size={14} className="text-gray-300 flex-shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-theme-tertiary mt-auto">
+            <FileText size={14} className="text-theme-tertiary flex-shrink-0" />
             <span className="font-medium truncate">
               {policy.data.subjects.slice(0, 1).join(', ')}
             </span>

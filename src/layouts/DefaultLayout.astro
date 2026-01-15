@@ -7,6 +7,25 @@ import '../styles/global.css'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Prevent theme flash by applying theme before page renders -->
+    <script is:inline>
+      (function() {
+        try {
+          const stored = localStorage.getItem('starlight-theme');
+          let theme;
+          if (!stored || stored === '') {
+            // Auto mode: use system preference
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          } else {
+            theme = stored;
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          // Fallback to dark if localStorage is not available
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Simplify cloud-native governance with Kyverno. Automate Kubernetes security, ensure resource compliance, and empower Platform Engineers to manage infrastructure and applications using native YAML-based declarative policy-as-code."

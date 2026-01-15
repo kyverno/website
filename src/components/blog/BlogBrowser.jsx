@@ -70,7 +70,7 @@ export const BlogBrowser = ({ posts }) => {
 
       {/* Results count */}
       {filteredPosts.length !== posts.length && (
-        <div class="mb-6 text-gray-400 text-sm">
+        <div class="mb-6 text-theme-tertiary text-sm">
           Showing {filteredPosts.length} of {posts.length} posts
         </div>
       )}
@@ -90,9 +90,9 @@ export const BlogBrowser = ({ posts }) => {
                     rel="noopener noreferrer"
                     class="block h-full"
                   >
-                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
+                    <div class="h-full flex flex-col bg-dark-50 rounded-xl overflow-hidden border border-stroke hover:border-primary-100/50 hover:bg-dark-50/80 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                       {post.image && (
-                        <div class="w-full h-48 overflow-hidden bg-gray-700/30">
+                        <div class="w-full h-48 overflow-hidden bg-stroke/30">
                           <img
                             src={post.image}
                             alt={post.title}
@@ -104,7 +104,7 @@ export const BlogBrowser = ({ posts }) => {
                         <div class="flex flex-col gap-1 mb-3">
                           {post.date && (
                             <time
-                              class="text-sm text-gray-400"
+                              class="text-sm text-theme-tertiary"
                               datetime={
                                 typeof post.date === 'string'
                                   ? post.date
@@ -115,7 +115,7 @@ export const BlogBrowser = ({ posts }) => {
                             </time>
                           )}
                           {post.authors && post.authors.length > 0 && (
-                            <div class="text-xs text-gray-500">
+                            <div class="text-xs text-theme-tertiary">
                               By{' '}
                               {post.authors.map((author, idx) => (
                                 <>
@@ -126,11 +126,11 @@ export const BlogBrowser = ({ posts }) => {
                             </div>
                           )}
                         </div>
-                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-primary-100 transition-colors line-clamp-2">
+                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-theme-primary group-hover:text-primary-100 transition-colors line-clamp-2">
                           {post.title}
                         </h3>
                         {post.excerpt && (
-                          <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
+                          <p class="text-theme-secondary text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
                             {post.excerpt}
                           </p>
                         )}
@@ -166,9 +166,9 @@ export const BlogBrowser = ({ posts }) => {
                   </a>
                 ) : (
                   <a href={post.url} data-astro-reload class="block h-full">
-                    <div class="h-full flex flex-col bg-gray-800/20 rounded-xl overflow-hidden border border-gray-700/30 hover:border-primary-100/50 hover:bg-gray-800/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
+                    <div class="h-full flex flex-col bg-dark-50 rounded-xl overflow-hidden border border-stroke hover:border-primary-100/50 hover:bg-dark-50/80 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                       {post.image && (
-                        <div class="w-full h-48 overflow-hidden bg-gray-700/30">
+                        <div class="w-full h-48 overflow-hidden bg-stroke/30">
                           <img
                             src={post.image}
                             alt={post.title}
@@ -180,7 +180,7 @@ export const BlogBrowser = ({ posts }) => {
                         <div class="flex flex-col gap-1 mb-3">
                           {post.date && (
                             <time
-                              class="text-sm text-gray-400"
+                              class="text-sm text-theme-tertiary"
                               datetime={
                                 typeof post.date === 'string'
                                   ? post.date
@@ -191,7 +191,7 @@ export const BlogBrowser = ({ posts }) => {
                             </time>
                           )}
                           {post.authors && post.authors.length > 0 && (
-                            <div class="text-xs text-gray-500">
+                            <div class="text-xs text-theme-tertiary">
                               By{' '}
                               {post.authors.map((author, idx) => (
                                 <>
@@ -202,11 +202,11 @@ export const BlogBrowser = ({ posts }) => {
                             </div>
                           )}
                         </div>
-                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-primary-100 transition-colors line-clamp-2">
+                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-theme-primary group-hover:text-primary-100 transition-colors line-clamp-2">
                           {post.title}
                         </h3>
                         {post.excerpt && (
-                          <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
+                          <p class="text-theme-secondary text-sm md:text-base leading-relaxed mb-4 flex-grow line-clamp-3">
                             {post.excerpt}
                           </p>
                         )}
@@ -229,7 +229,7 @@ export const BlogBrowser = ({ posts }) => {
         </div>
       ) : (
         <div class="text-center py-16">
-          <p class="text-gray-400 text-lg">
+          <p class="text-theme-tertiary text-lg">
             No posts found matching your filters.
           </p>
         </div>

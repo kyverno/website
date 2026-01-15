@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { Button } from '../components/Button.jsx'
 import { SiteLogo } from '../components/SiteLogo.jsx'
+import { ThemeToggle } from '../components/ThemeToggle.jsx'
 import { TopNavLinks } from '../components/TopNavLinks.jsx'
 import { VersionDropdown } from '../components/VersionDropdown.jsx'
 import { navItemsExternal } from '../constants/index.js'
@@ -49,7 +50,7 @@ export const TopNav = () => {
   }
 
   return (
-    <nav className="w-full top-10 py-3 backdrop-blur-lg border-b border-neutral-700/80">
+    <nav className="w-full top-10 py-3 backdrop-blur-lg border-b border-stroke">
       <div className="container px-4 md:w-full md:px-0 lg:px-4 mx-auto relative text-sm">
         <div className="flex justify-between items-center">
           <SiteLogo />
@@ -73,6 +74,7 @@ export const TopNav = () => {
             <Button href="/support" variant="accent" size="large">
               Support
             </Button>
+            <ThemeToggle />
           </div>
           <div className="xl:hidden flex flex-col justify-end">
             <button onClick={toggleMobileNav}>
@@ -103,6 +105,7 @@ export const TopNav = () => {
                   Support
                 </Button>
               </div>
+              <ThemeToggle />
             </div>
           </div>
         )}

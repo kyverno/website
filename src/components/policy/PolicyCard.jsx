@@ -38,7 +38,7 @@ export const PolicyCard = ({ policy }) => {
   }
 
   return (
-    <div className="policy-card group bg-gray-900 border border-gray-800 rounded-2xl p-6 relative overflow-hidden flex flex-col h-full min-h-[320px] max-h-[450px] transition-all duration-300 hover:border-gray-700 hover:bg-gray-900/50 hover:-translate-y-1">
+    <div className="policy-card group bg-dark-50 border border-stroke rounded-2xl p-6 relative overflow-hidden flex flex-col h-full min-h-[320px] max-h-[450px] transition-all duration-300 hover:border-primary-100/50 hover:bg-dark-50/80 hover:-translate-y-1">
       <div className="flex flex-col h-full">
         {/* Top content (badges, title, description) */}
         <div>
@@ -65,14 +65,14 @@ export const PolicyCard = ({ policy }) => {
           <a
             href={`/policies/${policy.id}/`}
             onClick={(e) => e.stopPropagation()}
-            className="text-xl font-semibold mb-2 text-white leading-tight group-hover:text-primary-100 transition-colors block hover:underline cursor-pointer"
+            className="text-xl font-semibold mb-2 text-theme-primary leading-tight group-hover:text-primary-100 transition-colors block hover:underline cursor-pointer"
           >
             {policy.data.title}
           </a>
 
           {/* Description */}
           {description && (
-            <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">
+            <p className="text-theme-secondary text-sm mb-4 leading-relaxed line-clamp-2">
               {description}
             </p>
           )}
@@ -89,7 +89,7 @@ export const PolicyCard = ({ policy }) => {
               {policy.data.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 text-xs text-gray-500 bg-gray-800/50 rounded"
+                  className="px-2 py-0.5 text-xs text-theme-tertiary bg-stroke/50 rounded"
                 >
                   #{tag}
                 </span>
@@ -98,10 +98,13 @@ export const PolicyCard = ({ policy }) => {
           )}
 
           {/* Resource and Version */}
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+          <div className="flex items-center gap-2 text-sm text-theme-tertiary mb-4">
             {policy.data.subjects && policy.data.subjects.length > 0 && (
               <>
-                <FileText size={16} className="text-gray-400 flex-shrink-0" />
+                <FileText
+                  size={16}
+                  className="text-theme-tertiary flex-shrink-0"
+                />
                 <span className="font-medium">
                   {policy.data.subjects.slice(0, 1).join(', ')}
                 </span>
@@ -109,7 +112,7 @@ export const PolicyCard = ({ policy }) => {
             )}
             {policy.data.version && (
               <>
-                <span className="text-gray-500">•</span>
+                <span className="text-theme-tertiary">•</span>
                 <span className="font-medium">v{policy.data.version}+</span>
               </>
             )}
@@ -127,7 +130,7 @@ export const PolicyCard = ({ policy }) => {
             </a>
             <button
               onClick={handleCopyYAML}
-              className={`p-2.5 border border-gray-700 hover:border-gray-600 rounded-lg text-white text-sm font-medium cursor-pointer transition-all flex items-center justify-center bg-gray-800 hover:bg-gray-750 ${
+              className={`p-2.5 border border-stroke hover:border-primary-100/50 rounded-lg text-theme-primary text-sm font-medium cursor-pointer transition-all flex items-center justify-center bg-dark-50 hover:bg-dark-50/80 ${
                 copyState === 'success'
                   ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30'
                   : copyState === 'error'

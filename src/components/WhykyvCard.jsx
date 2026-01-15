@@ -1,7 +1,15 @@
 import React from 'react'
 import { twMerge } from 'tailwind-merge'
+import { useTheme } from '../hooks/useTheme'
 
 export const WhykyvCard = ({ card, color }) => {
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
+
+  // Use darker blue shades in light mode for better contrast
+  const bubbleBg = isLight ? 'bg-primary-100/40' : color.bg
+  const bubbleText = isLight ? 'text-primary-100' : color.text
+
   return (
     <div
       key={card.title}
@@ -11,22 +19,22 @@ export const WhykyvCard = ({ card, color }) => {
         <span
           className={twMerge(
             'w-10 h-10 p-2 rounded-md flex justify-center items-center flex-shrink-0',
-            color.bg,
+            bubbleBg,
           )}
         >
-          <card.icon className={twMerge('w-6 h-6', color.text)} />
+          <card.icon className={twMerge('w-6 h-6', bubbleText)} />
         </span>
         <h3
           className={twMerge(
             'text-lg font-bold rounded-full border px-3 py-1 whitespace-nowrap',
-            color.bg,
-            color.text,
+            bubbleBg,
+            bubbleText,
           )}
         >
           {card.title}
         </h3>
       </div>
-      <p className="text-base leading-relaxed text-white/90 text-left transition-colors duration-200 flex-grow">
+      <p className="text-base leading-relaxed text-theme-secondary text-left transition-colors duration-200 flex-grow">
         {card.desc1} {card.desc2}
       </p>
     </div>

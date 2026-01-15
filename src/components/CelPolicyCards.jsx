@@ -15,8 +15,8 @@ export const CelPolicyCards = ({ card, color }) => {
       >
         <card.icon className="w-4 text-white" />
       </span>
-      <h3 className="font-bold">{card.title}</h3>
-      <p className="text-white/80">{card.description}</p>
+      <h3 className="font-bold text-theme-primary">{card.title}</h3>
+      <p className="text-theme-tertiary">{card.description}</p>
     </div>
   )
 }

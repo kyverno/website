@@ -131,7 +131,7 @@ export const ComparisonChart = () => {
           Kyverno <span className="lowercase">vs</span>
           <span className="text-primary-100"> Other policy engines</span>
         </h2>
-        <p className="text-base sm:text-lg max-w-150 md:max-w-[850px] text-center text-white/90">
+        <p className="text-base sm:text-lg max-w-150 md:max-w-[850px] text-center text-theme-secondary">
           As the industry's leading policy engine, here's how Kyverno compares
           with other policy engines.
         </p>
