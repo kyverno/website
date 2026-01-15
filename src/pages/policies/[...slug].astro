@@ -118,7 +118,9 @@ const relatedPolicies = allPolicies
 
     <!-- Hero Section -->
     <header class="mb-12">
-      <h1 class="text-4xl md:text-5xl font-bold text-theme-primary mb-6 leading-tight">
+      <h1
+        class="text-4xl md:text-5xl font-bold text-theme-primary mb-6 leading-tight"
+      >
         {data.title}
       </h1>
       {
@@ -232,7 +234,9 @@ const relatedPolicies = allPolicies
                   <dt class="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-2">
                     Kyverno Min Version
                   </dt>
-                  <dd class="text-theme-primary text-lg font-bold">v{data.version}+</dd>
+                  <dd class="text-theme-primary text-lg font-bold">
+                    v{data.version}+
+                  </dd>
                 </div>
               )
             }
@@ -292,7 +296,9 @@ const relatedPolicies = allPolicies
       {
         relatedPolicies.length > 0 && (
           <div className="bg-dark-50 border border-stroke rounded-2xl p-6 shadow-lg">
-            <h2 class="text-theme-primary text-xl font-bold mb-6">Related Policies</h2>
+            <h2 class="text-theme-primary text-xl font-bold mb-6">
+              Related Policies
+            </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
               {relatedPolicies.map((relatedPolicy) => (
                 <RelatedPolicyCard policy={relatedPolicy} client:load />

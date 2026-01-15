@@ -9,22 +9,24 @@ import '../styles/global.css'
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Prevent theme flash by applying theme before page renders -->
     <script is:inline>
-      (function() {
+      ;(function () {
         try {
-          const stored = localStorage.getItem('starlight-theme');
-          let theme;
+          const stored = localStorage.getItem('starlight-theme')
+          let theme
           if (!stored || stored === '') {
             // Auto mode: use system preference
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
           } else {
-            theme = stored;
+            theme = stored
           }
-          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute('data-theme', theme)
         } catch (e) {
           // Fallback to dark if localStorage is not available
-          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.setAttribute('data-theme', 'dark')
         }
-      })();
+      })()
     </script>
     <meta
       name="description"
