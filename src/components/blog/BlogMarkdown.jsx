@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm'
 
 export const BlogMarkdown = ({ content }) => {
   return (
-    <div className="prose prose-invert prose-lg max-w-none blog-content">
+    <div className="prose prose-lg max-w-none blog-content">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

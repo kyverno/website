@@ -97,7 +97,7 @@ export const HeroSection = () => {
           <Tag
             variant="tertiary"
             href="https://nirmata.com/"
-            className="bg-dark-50 border border-stroke text-white hover:text-white hover:border-primary-100 text-base sm:text-lg px-4 py-2 rounded-md transition-colors duration-200"
+            className="bg-dark-50 border border-stroke text-theme-primary hover:text-theme-primary hover:border-primary-100 text-base sm:text-lg px-4 py-2 rounded-md transition-colors duration-200"
             target="_blank"
             rel="noopener noreferrer"
           >

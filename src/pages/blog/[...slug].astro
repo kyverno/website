@@ -112,13 +112,13 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
   <Header client:load />
 
   <!-- Main Content -->
-  <main class="min-h-screen bg-[#12171b] text-white">
+  <main class="min-h-screen bg-dark-100 text-theme-primary">
     <article
       class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl"
     >
       <!-- Breadcrumbs -->
       <nav class="mb-8" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray-400">
+        <ol class="flex items-center space-x-2 text-sm text-theme-tertiary">
           <li>
             <a href="/blog" class="hover:text-primary-100 transition-colors">
               Blog
@@ -127,7 +127,7 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
           <li class="flex items-center">
             <span class="mx-2">/</span>
           </li>
-          <li class="text-gray-300" aria-current="page">
+          <li class="text-theme-secondary" aria-current="page">
             {title}
           </li>
         </ol>
@@ -141,7 +141,7 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
           {
             date && (
               <time
-                class="text-gray-400 text-base font-normal"
+                class="text-theme-tertiary text-base font-normal"
                 datetime={typeof date === 'string' ? date : date.toISOString()}
               >
                 {formatDate(date)}
@@ -150,11 +150,13 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
           }
           {
             authors.length > 0 && (
-              <div class="text-gray-400 text-base font-normal">
+              <div class="text-theme-tertiary text-base font-normal">
                 By{' '}
                 {authors.map((author, index) => (
                   <>
-                    <span class="text-gray-300 font-medium">{author.name}</span>
+                    <span class="text-theme-secondary font-medium">
+                      {author.name}
+                    </span>
                     {index < authors.length - 1 && <span>, </span>}
                   </>
                 ))}
@@ -163,7 +165,7 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
           }
         </div>
         <h1
-          class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight"
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-theme-primary leading-[1.1] tracking-tight"
         >
           {title}
         </h1>
@@ -199,7 +201,7 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
       }
 
       <!-- Back to Blog Link -->
-      <div class="mt-20 pt-8 border-t border-gray-700/50">
+      <div class="mt-20 pt-8 border-t border-stroke">
         <a
           href="/blog"
           class="text-primary-100 hover:text-primary-50 inline-flex items-center gap-2 transition-colors text-base font-medium"

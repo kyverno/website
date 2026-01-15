@@ -35,7 +35,7 @@ export const PolicyTabPanel = ({ tabs }) => {
                   'px-4 py-2 rounded-lg font-medium text-base transition-all whitespace-nowrap text-left',
                   activeTab === tab.id
                     ? 'bg-primary-100 text-white shadow-lg'
-                    : 'bg-dark-50 text-white/70 hover:text-white hover:bg-dark-100 border border-stroke',
+                    : 'bg-dark-50 text-theme-secondary hover:text-theme-primary hover:bg-dark-100 border border-stroke',
                 )}
               >
                 {tab.label}
@@ -63,7 +63,7 @@ export const PolicyTabPanel = ({ tabs }) => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-dark-50 hover:bg-dark-200 text-white/80 hover:text-white text-sm font-medium transition-all border border-stroke"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-dark-50 hover:bg-dark-200 text-theme-secondary hover:text-theme-primary text-sm font-medium transition-all border border-stroke"
                 >
                   {copied ? (
                     <>

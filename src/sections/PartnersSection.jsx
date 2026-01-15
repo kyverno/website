@@ -53,7 +53,7 @@ export const PartnersSection = () => {
             ))}
           </div>
         </div>
-        <p className="text-white/90 text-base sm:text-lg">
+        <p className="text-theme-secondary text-base sm:text-lg">
           Join 1000+ organizations using Kyverno in production environments
         </p>
         <Button href="community/#join-kyverno-adopters" variant="accent">

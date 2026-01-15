@@ -41,7 +41,10 @@ export const verticalSpacing = {
 }
 
 // Color Tokens (matching theme.css)
+// Note: These are dark mode defaults. Light mode colors are defined in global.css
+// and automatically applied via CSS custom properties when data-theme='light'
 export const colors = {
+  // Dark mode colors (default) - for backward compatibility
   primary: {
     100: '#3783c4', // primary-100
     75: '#69a2d3', // primary-75
@@ -64,6 +67,33 @@ export const colors = {
     primary: 'text-white',
     secondary: 'text-white/90', // Better contrast than /80
     tertiary: 'text-white/80',
+  },
+  // Light mode colors (reference only - actual colors come from CSS variables)
+  // Note: Uses the same blue and orange as dark mode for brand consistency
+  light: {
+    primary: {
+      100: '#3783c4', // primary-100 (same as dark mode)
+      75: '#69a2d3', // primary-75 (same as dark mode)
+      50: '#9bc1e1', // primary-50 (same as dark mode)
+      25: '#cde0f0', // primary-25 (same as dark mode)
+    },
+    accent: {
+      100: '#e77e5b', // accent-100 (same as dark mode)
+      75: '#ed9e84', // accent-75 (same as dark mode)
+      50: '#f3bfad', // accent-50 (same as dark mode)
+      25: '#f9dfd6', // accent-25 (same as dark mode)
+    },
+    background: {
+      100: '#ffffff', // light-100 (main background)
+      50: '#f5f7fa', // light-50 (cards/sections)
+      footer: '#f0f2f5', // light-footer
+    },
+    stroke: '#e5e7eb', // border color
+    text: {
+      primary: 'text-gray-900',
+      secondary: 'text-gray-800', // Better contrast
+      tertiary: 'text-gray-700',
+    },
   },
 }
 

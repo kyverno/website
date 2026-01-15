@@ -16,7 +16,7 @@ export const Tag = ({
     secondary: 'bg-primary-50 text-dark-100 hover:bg-primary-25',
     accent: 'bg-accent-25 text-accent-100 hover:bg-accent-50',
     tertiary:
-      'border border-stroke text-sm text-white/90 font-medium hover:border-primary-100',
+      'border border-stroke text-sm text-theme-secondary font-medium hover:border-primary-100',
   }
 
   const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${href ? 'cursor-pointer hover:scale-105 active:scale-95' : ''} ${className || ''}`

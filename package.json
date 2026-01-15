@@ -63,6 +63,6 @@
     "tsx": "^4.19.2"
   },
   "lint-staged": {
-    "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml}": "prettier --write"
+    "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml,astro}": "prettier --write"
   }
 }

@@ -97,7 +97,7 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
   <Header client:load />
 
   <!-- Main Content -->
-  <main class="min-h-screen bg-[#12171b] text-white">
+  <main class="min-h-screen bg-dark-100 text-theme-primary">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
       <!-- Featured Post Section -->
       {
@@ -117,12 +117,12 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
                 <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
                   <div class="mb-4 flex flex-col gap-1">
                     {featuredDate && (
-                      <span class="text-gray-400 text-sm">
+                      <span class="text-theme-tertiary text-sm">
                         {formatDate(featuredDate)}
                       </span>
                     )}
                     {featuredAuthors.length > 0 && (
-                      <span class="text-gray-500 text-xs">
+                      <span class="text-theme-tertiary text-xs">
                         By{' '}
                         {featuredAuthors.map((author, index) => (
                           <>
@@ -133,11 +133,11 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
                       </span>
                     )}
                   </div>
-                  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
+                  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-theme-primary group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
                     {featuredTitle}
                   </h1>
                   {featuredExcerpt && (
-                    <p class="text-gray-300 text-lg md:text-xl mb-6 leading-relaxed">
+                    <p class="text-theme-secondary text-lg md:text-xl mb-6 leading-relaxed">
                       {featuredExcerpt}
                     </p>
                   )}
@@ -162,7 +162,7 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
         regularPosts.length > 0 && (
           <section>
             <div class="mb-8">
-              <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
+              <h2 class="text-2xl md:text-3xl font-bold text-theme-primary mb-2">
                 All Posts
               </h2>
               <div class="w-16 h-1 bg-primary-100" />
@@ -182,7 +182,7 @@ const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
       {
         blogPosts.length === 0 && (
           <div class="text-center py-16">
-            <p class="text-gray-400 text-lg">No blog posts found.</p>
+            <p class="text-theme-tertiary text-lg">No blog posts found.</p>
           </div>
         )
       }

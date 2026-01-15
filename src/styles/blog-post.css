@@ -1,12 +1,12 @@
 /* Prose styles for blog content - inspired by Cilium blog design */
 .prose {
-  color: #e5e7eb;
+  color: var(--color-text-secondary);
   line-height: 1.75;
   font-size: 1.125rem;
 }
 
 .prose h1 {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 800;
   font-size: 2.5em;
   margin-top: 0;
@@ -16,7 +16,7 @@
 }
 
 .prose h2 {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 700;
   font-size: 2em;
   margin-top: 2.5em;
@@ -26,7 +26,7 @@
 }
 
 .prose h3 {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 700;
   font-size: 1.5em;
   margin-top: 2em;
@@ -36,7 +36,7 @@
 }
 
 .prose h4 {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 600;
   font-size: 1.25em;
   margin-top: 1.75em;
@@ -46,7 +46,7 @@
 
 .prose h5,
 .prose h6 {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 600;
   font-size: 1.125em;
   margin-top: 1.5em;
@@ -55,7 +55,7 @@
 }
 
 .prose p {
-  color: #e5e7eb;
+  color: var(--color-text-secondary);
   margin-top: 1.5em;
   margin-bottom: 1.5em;
   font-size: 1.125rem;
@@ -67,18 +67,18 @@
 }
 
 .prose strong {
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
 .prose em {
   font-style: italic;
-  color: #d1d5db;
+  color: var(--color-text-secondary);
 }
 
 .prose code {
   background-color: rgba(55, 131, 196, 0.15);
-  color: #69a2d3;
+  color: var(--color-primary-75);
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
   font-size: 0.9em;
@@ -88,24 +88,24 @@
 }
 
 .prose pre {
-  background-color: #1a1f2e;
+  background-color: var(--color-dark-50);
   padding: 1.5rem;
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 2em 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-stroke);
 }
 
 .prose pre code {
   background-color: transparent;
-  color: #e5e7eb;
+  color: var(--color-text-secondary);
   padding: 0;
   font-size: 0.9em;
   font-weight: 400;
 }
 
 .prose a {
-  color: #60a5fa;
+  color: var(--color-primary-50);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid rgba(96, 165, 250, 0.3);
@@ -113,7 +113,7 @@
 }
 
 .prose a:hover {
-  color: #93c5fd;
+  color: var(--color-primary-25);
   border-bottom-color: rgba(147, 197, 253, 0.6);
 }
 
@@ -125,13 +125,13 @@
 }
 
 .prose blockquote {
-  border-left: 4px solid #3783c4;
+  border-left: 4px solid var(--color-primary-100);
   padding-left: 1.5rem;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   margin: 2em 0;
   font-style: italic;
-  color: #d1d5db;
+  color: var(--color-text-secondary);
   background-color: rgba(55, 131, 196, 0.08);
   border-radius: 0 0.5rem 0.5rem 0;
 }
@@ -148,7 +148,7 @@
 
 .prose li {
   margin: 0.625em 0;
-  color: #e5e7eb;
+  color: var(--color-text-secondary);
   line-height: 1.75;
 }
 
@@ -174,37 +174,37 @@
 }
 
 .prose li strong {
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
   margin: 2rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-stroke);
   border-radius: 0.5rem;
   overflow: hidden;
 }
 
 .prose th,
 .prose td {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-stroke);
   padding: 1rem;
   text-align: left;
 }
 
 .prose th {
-  background-color: rgba(31, 41, 55, 0.8);
+  background-color: var(--color-dark-50);
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .prose td {
-  background-color: rgba(17, 24, 39, 0.5);
+  background-color: var(--color-dark-100);
 }
 
 .prose hr {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-stroke);
   border-top-width: 1px;
   margin: 3em 0;
 }

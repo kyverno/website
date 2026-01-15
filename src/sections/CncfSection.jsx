@@ -11,7 +11,7 @@ export const CncfSection = () => {
           className="w-120"
           loading="lazy"
         />
-        <p className="text-base sm:text-lg text-white/90 max-w-100">
+        <p className="text-base sm:text-lg text-theme-secondary max-w-100">
           The Linux Foundation® (TLF) has registered trademarks and uses
           trademarks. For a list of TLF trademarks, see Trademark Usage.
         </p>

@@ -16,7 +16,7 @@ export const PolicySearch = ({
     <div class="flex gap-4 mb-8 flex-wrap">
       <div class="flex-1 min-w-[300px] relative">
         <svg
-          class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-theme-tertiary"
           width="20"
           height="20"
           fill="none"
@@ -31,7 +31,7 @@ export const PolicySearch = ({
           placeholder="Search policies by name, description, or tag..."
           value={searchQuery}
           oninput={(e) => onSearchChange?.(e.target.value)}
-          class="w-full py-3.5 pl-12 pr-4 bg-dark-50 border border-stroke rounded-lg text-white text-base transition-all focus:outline-none focus:border-primary-100 focus:ring-4 focus:ring-primary-100/10"
+          class="w-full py-3.5 pl-12 pr-4 bg-dark-50 border border-stroke rounded-lg text-theme-primary text-base transition-all focus:outline-none focus:border-primary-100 focus:ring-4 focus:ring-primary-100/10"
         />
       </div>
       <div class="flex gap-2">
@@ -42,7 +42,7 @@ export const PolicySearch = ({
             class={`px-5 py-3.5 rounded-lg text-sm cursor-pointer transition-all whitespace-nowrap ${
               category.value === 'all'
                 ? 'bg-primary-100 border border-primary-100 text-white font-semibold'
-                : 'bg-dark-50 border border-stroke text-white hover:border-primary-100 hover:bg-dark-50/80'
+                : 'bg-dark-50 border border-stroke text-theme-primary hover:border-primary-100 hover:bg-dark-50/80'
             }`}
           >
             {category.label}

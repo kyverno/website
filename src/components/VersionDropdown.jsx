@@ -40,7 +40,7 @@ export const VersionDropdown = ({ className = '' }) => {
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
-        className="flex items-center space-x-1 text-white hover:text-accent-100 transition-colors px-3 py-2 rounded-md hover:bg-dark-50 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2 focus:ring-offset-dark-100"
+        className="flex items-center space-x-1 text-theme-primary hover:text-accent-100 transition-colors px-3 py-2 rounded-md hover:bg-dark-50 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2 focus:ring-offset-dark-100"
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -60,7 +60,7 @@ export const VersionDropdown = ({ className = '' }) => {
                   <a
                     key={index}
                     href={version.href}
-                    className="block px-4 py-2 text-sm text-white hover:bg-primary-100/20 hover:text-accent-100 transition-colors"
+                    className="block px-4 py-2 text-sm text-theme-primary hover:bg-primary-100/20 hover:text-accent-100 transition-colors"
                   >
                     {version.label}
                   </a>
@@ -82,7 +82,7 @@ export const VersionDropdown = ({ className = '' }) => {
                   className={`block px-4 py-2 text-sm transition-colors ${
                     version.isCurrent
                       ? 'bg-primary-100/30 text-accent-100 font-medium'
-                      : 'text-white hover:bg-primary-100/20 hover:text-accent-100'
+                      : 'text-theme-primary hover:bg-primary-100/20 hover:text-accent-100'
                   }`}
                 >
                   {version.label}

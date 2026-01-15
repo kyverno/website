@@ -169,9 +169,10 @@ export default defineConfig({
     markdoc(),
   ],
   vite: {
-    // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
     plugins: [
+      // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
       tailwindcss(),
+      // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
       viteStaticCopy({
         targets: [
           {

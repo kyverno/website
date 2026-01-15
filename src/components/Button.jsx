@@ -13,11 +13,11 @@ export const Button = ({
     primary:
       'bg-primary-100 text-white hover:bg-primary-75 hover:scale-105 active:scale-95',
     secondary:
-      'border border-primary-100 text-white hover:border-white hover:bg-primary-100/10 hover:scale-105 active:scale-95',
+      'border border-primary-100 text-theme-primary hover:border-primary-100 hover:bg-primary-100/10 hover:scale-105 active:scale-95',
     accent:
       'bg-accent-100 text-white hover:bg-accent-75 hover:scale-105 active:scale-95',
     accentSecondary:
-      'border border-primary-100 text-white hover:border-accent-100 hover:bg-accent-100/10 hover:scale-105 active:scale-95',
+      'border border-primary-100 text-theme-primary hover:border-accent-100 hover:bg-accent-100/10 hover:scale-105 active:scale-95',
   }
 
   const sizeStyles = {
