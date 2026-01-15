@@ -1,0 +1,215 @@
+---
+// Import collection
+import { getCollection } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { Header } from '../../sections/Header'
+import { Footer } from '../../sections/Footer'
+import { BlogMarkdown } from '../../components/blog/BlogMarkdown.jsx'
+import '../../styles/blog-post.css'
+import { formatDatePath } from '../../utils/blog'
+
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
+
+  return blogPosts.map((post) => {
+    // Generate date-based URL from post.data.date
+    // post.id is now just the post name (e.g., "announcing-kyverno-release-1.14")
+    const datePath = formatDatePath(post.data.date)
+    const slug = `${datePath}/${post.id}`
+    return {
+      params: { slug },
+      props: { post },
+    }
+  })
+}
+
+// Get the post from props
+const { post } = Astro.props
+
+if (!post) {
+  return Astro.redirect('/404')
+}
+
+const { data, body } = post
+
+// Format date helper - compact format like "Dec 31, 2025"
+function formatDate(date: Date | string | undefined): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+// URLs are generated with dates from post.data.date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
+// Static files (images) are stored without date prefix, so we use post.id for image paths
+
+// Helper function to extract and fix image paths in blog post
+function processImagePaths(content: string, postStaticPath: string): string {
+  if (!content) return content
+
+  // Replace relative image paths with absolute paths
+  // Matches: ![alt](./image.png) or ![alt](image.png) or ![alt](../image.png)
+  return content.replace(
+    /!\[([^\]]*)\]\((\.\/)?([^)]+)\)/g,
+    (match, alt, relativePrefix, imagePath) => {
+      // Skip if it's already an absolute URL
+      if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+        return match
+      }
+      // Resolve relative paths - remove ./ or ../ and construct absolute path
+      // Use static path (post name only, without date) since that's where files are actually copied
+      const cleanPath = imagePath.replace(/^\.\.?\//, '')
+      const absolutePath = `/blog/${postStaticPath}/${cleanPath}`
+      return `![${alt}](${absolutePath})`
+    },
+  )
+}
+
+// Helper function to get the blog post URL path (includes date from post.data.date)
+function getPostUrlPath(): string {
+  const datePath = formatDatePath(data.date)
+  return `${datePath}/${post.id}`
+}
+
+// Helper function to get the blog post static file path (just post name, no date)
+function getPostStaticPath(): string {
+  return post.id
+}
+
+// Helper function to resolve cover image path
+function getCoverImage(coverImage: string | undefined): string | null {
+  if (!coverImage) return null
+
+  // If it's already an absolute URL or path, return as-is
+  if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
+    return coverImage
+  }
+
+  // Resolve relative path - remove ./ or ../ prefix if present
+  // Use static path (without date) since that's where files are actually copied
+  const cleanPath = coverImage.replace(/^\.\.?\//, '')
+  const postStaticPath = getPostStaticPath()
+  return `/blog/${postStaticPath}/${cleanPath}`
+}
+
+const title = data.title || 'Untitled'
+const date = data.date
+const tags = data.tags || []
+const excerpt = data.excerpt || ''
+const authors = data.authors || []
+const image = getCoverImage(data.coverImage)
+
+// Process body content to fix image paths
+// Use static path (without date) for images since that's where files are actually copied
+const postStaticPath = getPostStaticPath()
+const processedContent = body ? processImagePaths(body, postStaticPath) : ''
+---
+
+<DefaultLayout>
+  <Header client:load />
+
+  <!-- Main Content -->
+  <main class="min-h-screen bg-[#12171b] text-white">
+    <article
+      class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 max-w-4xl"
+    >
+      <!-- Breadcrumbs -->
+      <nav class="mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-gray-400">
+          <li>
+            <a href="/blog" class="hover:text-primary-100 transition-colors">
+              Blog
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="mx-2">/</span>
+          </li>
+          <li class="text-gray-300" aria-current="page">
+            {title}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Blog Post Header -->
+      <header class="mb-12">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4"
+        >
+          {
+            date && (
+              <time
+                class="text-gray-400 text-base font-normal"
+                datetime={typeof date === 'string' ? date : date.toISOString()}
+              >
+                {formatDate(date)}
+              </time>
+            )
+          }
+          {
+            authors.length > 0 && (
+              <div class="text-gray-400 text-base font-normal">
+                By{' '}
+                {authors.map((author, index) => (
+                  <>
+                    <span class="text-gray-300 font-medium">{author.name}</span>
+                    {index < authors.length - 1 && <span>, </span>}
+                  </>
+                ))}
+              </div>
+            )
+          }
+        </div>
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-[1.1] tracking-tight"
+        >
+          {title}
+        </h1>
+      </header>
+
+      <!-- Featured Image -->
+      {
+        image && (
+          <div class="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 rounded-lg overflow-hidden">
+            <img src={image} alt={title} class="w-full h-auto object-cover" />
+          </div>
+        )
+      }
+
+      <!-- Tags (after image) -->
+      {
+        tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-12">
+            {tags.map((tag) => (
+              <span class="px-3 py-1.5 text-sm font-medium bg-primary-100/15 text-primary-100 border border-primary-100/30 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
+
+      <!-- Blog Post Content -->
+      {
+        processedContent && (
+          <BlogMarkdown client:load content={processedContent} />
+        )
+      }
+
+      <!-- Back to Blog Link -->
+      <div class="mt-20 pt-8 border-t border-gray-700/50">
+        <a
+          href="/blog"
+          class="text-primary-100 hover:text-primary-50 inline-flex items-center gap-2 transition-colors text-base font-medium"
+        >
+          <span>←</span>
+          <span>Back to Blog</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</DefaultLayout>

@@ -8,7 +8,7 @@ import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
-import starlightBlog from 'starlight-blog'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const checkLinksPlugin = process.env.CHECK_LINKS
   ? [
@@ -162,13 +162,6 @@ export default defineConfig({
       plugins: [
         starlightImageZoom(),
         // starlightAutoSidebar(),
-        starlightBlog({
-          metrics: {
-            readingTime: true,
-            words: 'total',
-          },
-          navigation: 'header-end',
-        }),
         ...checkLinksPlugin,
       ],
     }),
@@ -177,6 +170,40 @@ export default defineConfig({
   ],
   vite: {
     // @ts-expect-error - Vite plugin type mismatch between Astro's Vite and root Vite versions
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      viteStaticCopy({
+        targets: [
+          {
+            src: 'src/content/blog/**/assets/*',
+            dest: 'blog',
+            rename: (name, ext, fullPath) => {
+              // Extract the post name from the path
+              // Handles both old structure (2025/04/25/post-name/assets/image.png)
+              // and new structure (post-name/assets/image.png)
+              // We want: post-name/assets/image.png
+              const match = fullPath.match(
+                /src\/content\/blog\/(?:[\d/]+\/)?([^/]+)\/assets\/(.+)$/,
+              )
+              if (match) {
+                const postName = match[1]
+                const assetPath = match[2]
+                return `${postName}/assets/${assetPath}`
+              }
+              // Fallback: try to extract just the post name
+              const fallbackMatch = fullPath.match(
+                /src\/content\/blog\/(.+)\/assets\/(.+)$/,
+              )
+              if (fallbackMatch) {
+                const pathParts = fallbackMatch[1].split('/')
+                const postName = pathParts[pathParts.length - 1]
+                return `${postName}/assets/${fallbackMatch[2]}`
+              }
+              return name + ext
+            },
+          },
+        ],
+      }),
+    ],
   },
 })

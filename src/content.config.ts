@@ -5,7 +5,6 @@ import { autoSidebarSchema } from 'starlight-auto-sidebar/schema'
 import { docsLoader } from '@astrojs/starlight/loaders'
 import { docsSchema } from '@astrojs/starlight/schema'
 import { glob } from 'astro/loaders'
-import { blogSchema } from 'starlight-blog/schema'
 
 const policiesCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/policies' }),
@@ -28,14 +27,46 @@ const policiesCollection = defineCollection({
   }),
 })
 
+const blogCollection = defineCollection({
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/blog',
+    generateId: (options) => {
+      // Extract just the post name (folder or file name)
+      // e.g., "post-name/index.md" -> "post-name"
+      // or "post-name.md" -> "post-name"
+      const pathWithoutIndex = options.entry.replace(/\/index\.md$/, '')
+      const pathWithoutExt = pathWithoutIndex.replace(/\.md$/, '')
+      // Get the last part of the path (handles any nested structure)
+      return pathWithoutExt.split('/').pop() || pathWithoutExt
+    },
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    tags: z.array(z.string()).optional(),
+    excerpt: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+    coverImage: z.string().optional(),
+    featured: z.boolean().optional(),
+    externalURL: z.string().url().optional(),
+    authors: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .optional(),
+  }),
+})
+
 export const collections = {
   docs: defineCollection({
     loader: docsLoader(),
-    schema: docsSchema({
-      extend: (context) => blogSchema(context),
-    }),
+    schema: docsSchema(),
   }),
 
+  blog: blogCollection,
   policies: policiesCollection,
   autoSidebar: defineCollection({
     loader: autoSidebarLoader(),
