@@ -6,9 +6,9 @@ export const WhykyvCard = ({ card, color }) => {
   const { theme } = useTheme()
   const isLight = theme === 'light'
 
-  // Use darker blue shades in light mode for better contrast
-  const bubbleBg = isLight ? 'bg-primary-100/40' : color.bg
-  const bubbleText = isLight ? 'text-primary-100' : color.text
+  // Use darker blue shades in light mode
+  const bubbleBg = isLight ? 'bg-primary-75/30' : color.bg
+  const bubbleText = isLight ? 'text-primary-75' : color.text
 
   return (
     <div
