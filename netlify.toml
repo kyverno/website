@@ -219,29 +219,6 @@
   status = 301
   force = true
 
-[[redirects]]
-  from = "/docs/policy-types/cluster-policy/verify-images/notary"
-  to = "/docs/policy-types/cluster-policy/verify-images/notary"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/docs/policy-types/cluster-policy/verify-images/notary/*"
-  to = "/docs/policy-types/cluster-policy/verify-images/notary"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/docs/policy-types/cluster-policy/verify-images/sigstore"
-  to = "/docs/policy-types/cluster-policy/verify-images/sigstore"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/docs/policy-types/cluster-policy/verify-images/sigstore/*"
-  to = "/docs/policy-types/cluster-policy/verify-images/sigstore"
-  status = 301
-  force = true
 
 [[redirects]]
   from = "/docs/policy-types/cel-policies/deleting-policy"
