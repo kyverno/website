@@ -6,12 +6,18 @@ tags:
   - General
 authors:
   - name: Shuting Zhao
-excerpt: Using Kyverno to verify images with IRSA
+excerpt: Using Kyverno to verify private container images with EKS Pod Identity and IRSA
 ---
 
-When running workloads in Amazon Elastic Kubernetes Service (EKS), it is essential to ensure supply chain security by verifying container image signatures and other metadata. To achieve this, you can configure Kyverno, a CNCF policy engine designed for Kubernetes, to pull from ECR private registries for image verification. It's possible to [pass in the credentials via secrets](/docs/policy-types/cluster-policy/verify-images/sigstore/#using-private-registries), but that can get difficult to manage and automate across multiple clusters. In this blog post, we will explore an alternative method that simplifies the authentication process by leveraging Kyverno and IRSA (IAM Roles for Service Accounts) in EKS for image verification.
+When running workloads in Amazon EKS, it is crucial to ensure supply chain security by verifying container image signatures before deployment. Kyverno, a CNCF policy engine for Kubernetes, can be configured to verify images stored in private Amazon ECR repositories. You can still [pass credentials via secrets](/docs/policy-types/cluster-policy/verify-images/sigstore/#using-private-registries) for custom setups, but AWS now recommends using **EKS Pod Identity** for simpler and more secure authentication.
 
-Applications, such as Kyverno, running within a Pod's containers can utilize the AWS SDK to make API requests to AWS services by leveraging AWS Identity and Access Management (IAM) permissions. IAM roles for service accounts enable the management of credentials for these applications. Instead of manually creating and distributing AWS credentials to the containers, you can associate an IAM role with a Kubernetes service account and configure your Pods to utilize this service account. The detailed steps for this process can be found in the [documentation](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html). In this blog, we will guide you through the complete process of enabling IAM roles for the Kyverno service account and demonstrate how to verify this using the Kyverno `verifyImages` rule.
+Previously, this was commonly done using **IAM Roles for Service Accounts (IRSA)**, which requires managing OIDC providers and complex trust relationships between Kubernetes and AWS IAM. While IRSA is still supported, AWS now recommends **EKS Pod Identity**, a simpler and more secure mechanism that removes the need to manually manage OIDC providers.
+
+This guide demonstrates how to:
+
+- Configure **EKS Pod Identity (recommended)** for Kyverno.
+- Use **IRSA (legacy method)** for older clusters.
+- Verify private container image signatures with Kyverno policies.
 
 ## Setting up the EKS Cluster
 
@@ -46,7 +52,84 @@ Once you have the cluster set up, you can use Helm to [install Kyverno into the 
 helm upgrade --install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
-## Enabling IAM roles for service accounts
+## Enabling EKS Pod Identity for Kyverno (Recommended)
+
+EKS Pod Identity is the modern approach for providing AWS credentials to Kubernetes workloads. It simplifies IAM role association and eliminates the need for OIDC providers.
+
+---
+
+### Step 1 – Install Pod Identity Agent
+
+```sh
+eksctl create addon --name eks-pod-identity-agent --cluster kyverno-irsa
+```
+
+---
+
+### Step 2 – Create IAM Role
+
+Create a trust policy (`trust-policy.json`):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "pods.eks.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+Create the IAM role:
+
+```sh
+aws iam create-role \
+  --role-name kyverno-pod-identity \
+  --assume-role-policy-document file://trust-policy.json
+```
+
+Attach permissions:
+
+```sh
+aws iam attach-role-policy \
+  --role-name kyverno-pod-identity \
+  --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+```
+
+---
+
+### Step 3 – Associate Role with Kyverno
+
+```sh
+aws eks create-pod-identity-association \
+  --cluster-name kyverno-irsa \
+  --namespace kyverno \
+  --service-account kyverno-admission-controller \
+  --role-arn arn:aws:iam::<ACCOUNT_ID>:role/kyverno-pod-identity
+```
+
+---
+
+### Step 4 – Restart Kyverno
+
+```sh
+kubectl rollout restart deployment kyverno -n kyverno
+```
+
+---
+
+### Step 5 – Verify
+
+```sh
+kubectl get pod -n kyverno -o yaml | grep AWS_ROLE_ARN -A2
+```
+
+## Enabling IAM Roles for Service Accounts (IRSA – Legacy Method)
+
+IRSA allows Kubernetes workloads to assume IAM roles securely. This method is still supported for older clusters.
 
 ### Creating an IAM OIDC Provider for the Cluster
 
@@ -186,16 +269,33 @@ $ kubectl get pod -n kyverno -l app.kubernetes.io/component=admission-controller
 
 If you do not see these environment variables, try restarting the pod to inject variables. If you still do not see these variables, follow this instruction to [verify that your pod identity webhook configuration exists and is valid](https://repost.aws/knowledge-center/eks-troubleshoot-irsa-errors).
 
-## Verifying ECR private images using IRSA and Kyverno
+## Pod Identity vs IRSA – Key Differences
 
-To test IRSA works with Kyverno, you can create pods with signed and unsigned images respectively and verify container images signatures using the Kyverno policy. If the IAM role assumption is configured correctly, the pod should be deployed successfully. Otherwise, Kyverno will deny the request.
+| Feature                 | IRSA (Legacy) | EKS Pod Identity (Recommended) |
+| ----------------------- | ------------- | ------------------------------ |
+| OIDC provider required  | Yes           | No                             |
+| Trust policy complexity | High          | Very low                       |
+| Setup steps             | Many          | Few                            |
+| Risk of metadata misuse | Possible      | Eliminated                     |
+| AWS recommendation      | Legacy        | Official replacement           |
 
-The test image used in this blog is signed by Notary. If you don't have a signed images for testing, you can follow this guidance to [sign a private ECR image using Notation](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-signing.html).
+New EKS clusters should always use Pod Identity.
 
-You can inspect all signatures with Notation. The following is an inspection result of all signatures and signed artifacts for the test image `xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1`:
+## Verifying ECR Private Images Using IRSA and Kyverno
+
+To test IRSA works with Kyverno, you can create pods with signed and unsigned images respectively and verify container image signatures using the Kyverno policy. If the IAM role assumption is configured correctly, the pod should be deployed successfully. Otherwise, Kyverno will deny the request.
+
+The test image used in this blog is signed by Notary. If you don’t have a signed image for testing, you can follow this guidance to sign a private ECR image using Notation.
+
+You can inspect all signatures with Notation. The following is an inspection result of all signatures and signed artifacts for the test image:
 
 ```sh
-✗ notation inspect xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1
+notation inspect xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1
+```
+
+Example output:
+
+```txt
 Inspecting all signatures for signed artifact
 xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation@sha256:b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105
 └── application/vnd.cncf.notary.signature
@@ -220,7 +320,11 @@ xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation@sha256:b31bfb
             └── size: 938
 ```
 
-The following policy verifies the image signature for pods in `test-shuting` namespace, you can tune the policy to verify different images:
+---
+
+### Kyverno Policy Example
+
+The following policy verifies the image signature for pods in the `test-shuting` namespace. You can tune the policy to verify different images:
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -260,18 +364,35 @@ spec:
   webhookTimeoutSeconds: 30
 ```
 
-Once the policy is installed in the cluster, you can create the pod using the signed image and check the creation passes through:
+---
+
+### Test With Signed Image
 
 ```sh
-$ kubectl -n test-shuting run test --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1 --dry-run=server
+kubectl -n test-shuting run test \
+  --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1 \
+  --dry-run=server
+```
+
+Expected result:
+
+```txt
 pod/test created (server dry run)
 ```
 
-Then if you create the pod using an unsigned image, the pod creation is blocked by Kyverno as it does not have any signatures associated with it:
+---
+
+### Test With Unsigned Image
 
 ```sh
-$ kubectl -n test-shuting run test --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1-unsigned --dry-run=server
+kubectl -n test-shuting run test \
+  --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1-unsigned \
+  --dry-run=server
+```
 
+Expected response from Kyverno:
+
+```txt
 Error from server: admission webhook "mutate.kyverno.svc-fail" denied the request:
 
 resource Pod/test-shuting/test was blocked due to the following policies
@@ -281,9 +402,12 @@ test-irsa:
     .attestors[0].entries[0]: failed to verify xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation@sha256:74a98f0e4d750c9052f092a7f7a72de7b20f94f176a490088f7a744c76c53ea5:
     no signature is associated with "xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation@sha256:74a98f0e4d750c9052f092a7f7a72de7b20f94f176a490088f7a744c76c53ea5",
     make sure the artifact was signed successfully'
-
 ```
 
-### Conclusion
+---
 
-By leveraging Kyverno and IRSA, you can simplify the configuration of IAM role assumptions for Kubernetes service accounts in EKS. This approach enhances the security of the cluster by ensuring fine-grained access control to AWS resources. With the steps outlined in this blog post, you can easily set up and test IRSA in your EKS cluster.
+## Conclusion
+
+Using EKS Pod Identity, Kyverno can securely authenticate to AWS and verify private ECR images without managing OIDC providers or complex trust policies. IRSA remains available as a legacy option for older clusters, but new clusters should adopt Pod Identity.
+
+With these steps, you can enforce supply chain security by verifying signed container images in your EKS workloads.
