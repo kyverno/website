@@ -9,4 +9,4 @@ This section provides comprehensive guides for migrating your Kyverno policies t
 
 ## Available Migration Guides
 
-- **[Traditional to CEL Policies](/docs/migration/traditional-to-cel/)** - Migrate from pattern/deny-based policies to CEL-based ValidatingPolicy
+- **[Traditional to CEL Policies](/docs/migration/traditional-to-cel/** - Migrate from pattern/deny-based policies to CEL-based ValidatingPolicy

@@ -192,7 +192,7 @@ For more details of `ImageValidatingPolicy`, check the official document [here](
 
 ### PolicyExceptions in CEL
 
-Kyverno 1.14.0 extends the powerful [PolicyException](/docs/guides/exceptions#policyexceptions-with-cel-expressions) feature to work seamlessly with the new policy types. This enhancement provides granular control over policy enforcement, allowing administrators to define specific exemptions from policy rules when needed.
+Kyverno 1.14.0 extends the powerful [PolicyException](/docs/guides/exceptions/#policyexceptions-with-cel-expressions feature to work seamlessly with the new policy types. This enhancement provides granular control over policy enforcement, allowing administrators to define specific exemptions from policy rules when needed.
 
 Policy exceptions enable teams to:
 

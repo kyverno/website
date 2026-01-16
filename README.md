@@ -102,16 +102,24 @@ Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mut
 
 In order to ensure that broken link detection works optimally as well as providing a way for users to find linked content when viewing the raw Markdown files on GitHub, links should be made using **relative paths to files** and not relative rendered paths. Following this method ensures not only pages can be found but anchor links are still valid.
 
+**Important:** When using absolute paths (which are also acceptable), **always include trailing slashes** (e.g., `/docs/path/` not `/docs/path`). This is required because Netlify's Pretty URLs feature automatically adds trailing slashes, which causes slow redirects if links don't match. The site is configured with `trailingSlash: 'always'` in production to align with Netlify's behavior.
+
 This is a good link:
 
 ```
 [some link text](foo.md#my-anchor)
 ```
 
-This is a bad link:
+This is also a good link (absolute path with trailing slash):
 
 ```
 [some link text](/docs/foo/#my-anchor)
+```
+
+This is a bad link (absolute path without trailing slash):
+
+```
+[some link text](/docs/foo#my-anchor)
 ```
 
 ## Documentation Versioning

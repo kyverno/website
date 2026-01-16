@@ -54,5 +54,5 @@ kyverno create values [flags]
 
 ### SEE ALSO
 
-* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
+* [kyverno create](/docs/kyverno-cli/reference/kyverno_create/	 - Helps with the creation of various Kyverno resources.
 

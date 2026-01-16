@@ -40,4 +40,4 @@ Security researchers interested in contributing to Kyverno can find information 
 
 ## Links
 
-- [Audit report (PDF)](/blog/2023-security-audit/assets/kyverno-2023-security-audit-report.pdf)
+- [Audit report (PDF)](/blog/2023-security-audit/assets/kyverno-2023-security-audit-report.pdf/

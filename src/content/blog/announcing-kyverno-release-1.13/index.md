@@ -356,7 +356,7 @@ spec:
               name: source-secret
 ```
 
-In addition, each `foreach` declaration supports the following declarations: Context and Preconditions. For more information please see [Kyverno documentation](/docs/policy-types/cluster-policy/generate#foreach).
+In addition, each `foreach` declaration supports the following declarations: Context and Preconditions. For more information please see [Kyverno documentation](/docs/policy-types/cluster-policy/generate/#foreach.
 
 This release also allows updates to the generate rule pattern. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause the removal of the downstream resource.
 
@@ -642,6 +642,6 @@ Note that the deprecated fields will be removed in a future release, so migratio
 
 ## Conclusion
 
-Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](/docs/installation/installation) section of the docs.
+Kyverno 1.13 promises to be a great release, with many new features, enhancements, and fixes. To get started with Kyverno try the [quick start guides](https://kyverno.io/docs/introduction/quick-start/) or head to the [installation](/docs/installation/installation/ section of the docs.
 
 To get the most value out of Kyverno, and check out the [available enterprise solutions](https://kyverno.io/support)!

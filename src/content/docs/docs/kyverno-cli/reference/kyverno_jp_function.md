@@ -52,5 +52,5 @@ kyverno jp function [function_name]... [flags]
 
 ### SEE ALSO
 
-* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp)	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
+* [kyverno jp](/docs/kyverno-cli/reference/kyverno_jp/	 - Provides a command-line interface to JMESPath, enhanced with Kyverno specific custom functions.
 

@@ -173,7 +173,7 @@ As the name suggests, the `NamespacedMutatingPolicy` allows namespace owners to 
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex mutation logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/.
 
 ## Patches with ApplyConfiguration
 
@@ -422,7 +422,7 @@ MutatingPolicy supports background processing to mutate existing resources in th
 
 1. **Asynchronous Processing**: Mutation for existing resources is an asynchronous process. There will be a variable amount of delay between when the trigger is observed and when the existing resource is mutated.
 
-2. **Custom Permissions**: Custom permissions are almost always required. Because these mutations occur on existing resources and not during an AdmissionReview, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization#customizing-permissions) for how to grant additional permissions to the Kyverno background controller's ServiceAccount. Kyverno will perform these permissions checks when a mutate existing policy is installed.
+2. **Custom Permissions**: Custom permissions are almost always required. Because these mutations occur on existing resources and not during an AdmissionReview, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization/#customizing-permissions for how to grant additional permissions to the Kyverno background controller's ServiceAccount. Kyverno will perform these permissions checks when a mutate existing policy is installed.
 
 ### Same Trigger and Target
 
@@ -606,4 +606,4 @@ While GitOps is great at managing configurations, some changes such as label pro
 
 Kyverno's MutatingPolicies are designed to interoperate nicely with GitOps solutions.
 
-For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate#gitops-considerations) in the ClusterPolicy mutate documentation.
+For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate/#gitops-considerations in the ClusterPolicy mutate documentation.

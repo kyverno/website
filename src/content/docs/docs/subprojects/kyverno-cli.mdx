@@ -15,7 +15,7 @@ The CLI can be used in CI/CD pipelines to assist with the resource authoring pro
 
 The CLI, although composed of the same Kyverno codebase, is a purpose-built binary available via multiple installation methods but is distinct from the Kyverno container image which runs as a Pod in a target Kubernetes cluster.
 
-This page covers the main Kyverno CLI commands, for other commands please refer to the [Reference documentation](/docs/kyverno-cli/reference/kyverno)
+This page covers the main Kyverno CLI commands, for other commands please refer to the [Reference documentation](/docs/kyverno-cli/reference/kyverno/
 
 :::note[Working with kustomize]
 When using the Kyverno CLI with [kustomize](https://kustomize.io/), it is recommended to use the "[standalone](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/)" version as opposed to the version embedded inside `kubectl`.
@@ -198,7 +198,7 @@ Use `-f` or `--values-file` for applying multiple policies to multiple resources
 Use `-u` or `--userinfo` for applying policies while passing an optional user_info.yaml file which contains necessary admission request data made during the request.
 
 :::note[Note]
-When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources#handling-configmap-array-values).
+When passing ConfigMap array data into the values file, the data must be formatted as JSON outlined [here](/docs/policy-types/cluster-policy/external-data-sources/#handling-configmap-array-values.
 :::
 
 ```sh
@@ -448,7 +448,7 @@ The Pod `test-global-dev` passes the validation, and `test-global-prod` fails.
 
 Apply a policy with the Namespace selector:
 
-Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude#match-deployments-in-namespaces-using-labels) to know more about Namespace selectors.
+Use `--values-file` or `-f` for passing a file containing Namespace details. Check [here](/docs/policy-types/cluster-policy/match-exclude/#match-deployments-in-namespaces-using-labels to know more about Namespace selectors.
 
 ```sh
 kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
@@ -821,7 +821,7 @@ summary:
 
 ### Applying Policy Exceptions
 
-[Policy Exceptions](/docs/guides/exceptions) can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
+[Policy Exceptions](/docs/guides/exceptions/ can be applied alongside policies by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
@@ -1468,7 +1468,7 @@ For example, to test the `check-deployment-replicas` policy against all Deployme
 kyverno apply /path/to/check-deployment-replicas.yaml --cluster --policy-report
 ```
 
-Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](/docs/policy-types/validating-policy#kyverno-cel-libraries) like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag.
+Many advanced policies need to look up the state of other resources in the cluster using [Kyverno's custom CEL functions](/docs/policy-types/validating-policy/#kyverno-cel-libraries like `resource.Get()`. When testing such policies locally with the `kyverno apply` command, the CLI cannot connect to the cluster to retrieve the required resources so you have to provide these resources as input via the `--context-path` flag.
 
 This flag allows you to specify the resources that the policy will reference. The CLI will then use these resources to evaluate the policy.
 
@@ -1723,7 +1723,7 @@ The output confirms that the PolicyException worked as intended:
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
 
-`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/policy-types/cluster-policy/autogen) making it possible to test, for example, Deployment resources against a Pod policy.
+`test` works by scanning a given location, which can be either a Git repository or local folder, and executing the tests defined within. The rule types `validate`, `mutate`, and `generate` are currently supported. The command recursively looks for YAML files with policy test declarations (described below) with a specified file name and then executes those tests. All files applicable to the same test must be co-located. Directory recursion is supported. `test` supports the [auto-gen feature](/docs/policy-types/cluster-policy/autogen/ making it possible to test, for example, Deployment resources against a Pod policy.
 
 `test` will search for a file named `kyverno-test.yaml` and, if found, will execute the tests within.
 
@@ -1796,7 +1796,7 @@ The test declaration consists of the following parts:
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
 7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](#working-with-assertion-trees)).
 
-If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
+If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources/ like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources/#variables-from-kubernetes-api-server-calls or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
 ```yaml
 apiVersion: cli.kyverno.io/v1alpha1
@@ -2562,7 +2562,7 @@ Loading test  ( .kyverno-test/kyverno-test.yaml ) ...
 Test Summary: 2 tests passed and 0 tests failed
 ```
 
-For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](/policies/).
+For many more examples of test cases, please see the [kyverno/policies](https://github.com/kyverno/policies) repository which strives to have test cases for all the sample policies which appear on the [website](/policies).
 
 ### Kubernetes Native Policies
 
@@ -3684,7 +3684,7 @@ The Kyverno CLI has a `jp` subcommand which makes it possible to test not only t
 
 Examples:
 
-List available Kyverno custom JMESPath filters. Please refer to the JMESPath documentation page [here](/docs/policy-types/cluster-policy/jmespath) for extensive details on each custom filter. Note this does not show the built-in JMESPath filters available upstream, only the custom Kyverno filters.
+List available Kyverno custom JMESPath filters. Please refer to the JMESPath documentation page [here](/docs/policy-types/cluster-policy/jmespath/ for extensive details on each custom filter. Note this does not show the built-in JMESPath filters available upstream, only the custom Kyverno filters.
 
 ```sh
 $ kyverno jp function
@@ -3820,7 +3820,7 @@ ASTPipe {
 }
 ```
 
-For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/policy-types/cluster-policy/jmespath).
+For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/policy-types/cluster-policy/jmespath/.
 
 ## Working with assertion trees
 

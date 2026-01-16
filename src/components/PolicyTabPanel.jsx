@@ -80,7 +80,7 @@ export const PolicyTabPanel = ({ tabs }) => {
               </div>
               <div className="flex items-center gap-3">
                 <Button
-                  href="/policies"
+                  href="/policies/"
                   variant="secondary"
                   size="small"
                   className="text-sm min-w-0 px-3"

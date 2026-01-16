@@ -9,14 +9,14 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 ## Troubleshooting Guides
 
-- **[CEL Expressions](/docs/troubleshooting/cel-expressions/)** - Debug and troubleshoot CEL expressions in policies
+- **[CEL Expressions](/docs/troubleshooting/cel-expressions/** - Debug and troubleshoot CEL expressions in policies
 - **[General Kyverno Issues](#api-server-is-blocked)** - Common Kyverno operational issues
 
 ## API server is blocked
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
 
-**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy-types/cluster-policy/policy-settings) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
+**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy-types/cluster-policy/policy-settings/ while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
 
 **Solution**: Delete the Kyverno validating and mutating webhook configurations. When Kyverno recovers, check your Namespace exclusions. Follow the steps below. Also consider running the admission controller component with 3 replicas.
 
@@ -40,7 +40,7 @@ kubectl scale deploy kyverno-admission-controller -n kyverno --replicas 3
 
 3. Consider excluding namespaces
 
-Use [Namespace selectors](/docs/installation/customization#namespace-selectors) to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is your responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/installation#security-vs-operability) section. The Kyverno Namespace is excluded by default. And if running Kyverno on certain PaaS platforms, additional Namespaces may need to be excluded as well, for example `kube-system`.
+Use [Namespace selectors](/docs/installation/customization/#namespace-selectors to filter requests to system Namespaces. Note that this configuration bypasses all policy checks on select Namespaces and may violate security best practices. When excluding Namespaces, it is your responsibility to ensure other controls such as Kubernetes RBAC are configured since Kyverno cannot apply any policies to objects therein. For more information, see the [Security vs Operability](/docs/installation/installation/#security-vs-operability section. The Kyverno Namespace is excluded by default. And if running Kyverno on certain PaaS platforms, additional Namespaces may need to be excluded as well, for example `kube-system`.
 
 ## Policies are not applied
 
@@ -92,7 +92,7 @@ Use [Namespace selectors](/docs/installation/customization#namespace-selectors) 
 
 5. For `validate` policies, ensure that `failureAction` is set to `Enforce` if your expectation is that applicable resources should be blocked. Most policies in the samples library are purposefully set to `Audit` mode so they don't have any unintended consequences for new users. It could be that, if the prior steps check out, Kyverno is working fine only that your policy is configured to not immediately block resources.
 
-6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/customization#resource-filters).
+6. Check and ensure you aren't creating a resource that is either excluded from Kyverno's processing by default, or that it hasn't been created in an excluded Namespace. Kyverno uses a ConfigMap by default called `kyverno` in the Kyverno Namespace to filter out some of these things. The key name is `resourceFilters` and more details can be found [here](/docs/installation/customization/#resource-filters.
 
 7. Check the same ConfigMap and ensure that the user/principal or group responsible for submission of your resource is not being excluded. Check the `excludeGroups` and `excludeUsernames` and others if they exist.
 
@@ -103,9 +103,9 @@ Use [Namespace selectors](/docs/installation/customization#namespace-selectors) 
 **Solution**: It is important to understand how Kyverno experiences and processes work to determine if what you deem as "too much" is, in fact, too much. Kyverno dynamically configures its webhooks (by default but configurable) according the policies which are loaded and on what resources they match. There is no straightforward formula where resource requirements are directly proportional to, for example, number of Pods or Nodes in a cluster. The following questions need to be asked and answered to build a full picture of the resources consumed by Kyverno.
 
 1. What policies are in the cluster and on what types of resources do they match? Policies which match on wildcards (`"*"`) cause a tremendous load on Kyverno and should be avoided if possible as they instruct the Kubernetes API server to send to Kyverno _every action on every resource_ in the cluster. Even if Kyverno does not have matching policies for most of these resources, it is _required_ to respond to every single one. If even one policy matches on a wildcard, expect the resources needed by Kyverno to easily double, triple, or more.
-2. Which controller is experiencing the load? Each Kyverno controller has different responsibilities. See the [controller guide](/docs/guides/high-availability#controllers-in-kyverno) for more details. Each controller can be independently scaled, but before immediately scaling in any direction take the time to study the load.
+2. Which controller is experiencing the load? Each Kyverno controller has different responsibilities. See the [controller guide](/docs/guides/high-availability/#controllers-in-kyverno for more details. Each controller can be independently scaled, but before immediately scaling in any direction take the time to study the load.
 3. Are the default requests and limits still in effect? It is possible the amount of load Kyverno (any of its controllers) is experiencing is beyond the capabilities of the default requests and limits. These defaults have been selected based on a good mix of real-world usage and feedback but **may not suit everyone**. In extremely large and active clusters, from Kyverno's perspective, you may need to increase these.
-4. What do your monitoring metrics say? Kyverno is a critical piece of cluster infrastructure and must be monitored effectively just like other pieces. There are several metrics which give a sense of how active Kyverno is, the most important being [admission request count](/docs/guides/monitoring). Others include consumed memory and CPU utilization. Sizing should always be done based on peak consumption and not averages.
+4. What do your monitoring metrics say? Kyverno is a critical piece of cluster infrastructure and must be monitored effectively just like other pieces. There are several metrics which give a sense of how active Kyverno is, the most important being [admission request count](/docs/guides/monitoring/. Others include consumed memory and CPU utilization. Sizing should always be done based on peak consumption and not averages.
 5. Have you checked the number of pending update requests when using generate or mutate existing rules? In addition to the admission request count metric, you can use `kubectl -n kyverno get updaterequests` to get a sense of the request count. If there are many requests in a `Pending` status this could be a sign of a permissions issue or, for clone-type generate rules with synchronization enabled, excessive updates to the source resource. Ensure you grant the background controller the required permissions to the resources and operations it needs, and ensure Kyverno is able to label clone sources.
 
 You can also follow the steps on the [Kyverno wiki](https://github.com/kyverno/kyverno/wiki/Profiling-Kyverno-on-Kubernetes) for enabling memory and CPU profiling.
@@ -120,7 +120,7 @@ You can also follow the steps on the [Kyverno wiki](https://github.com/kyverno/k
 
 **Symptom**: Kyverno's operation seems slow in either mutating resources or validating them, causing additional time to create resources in the Kubernetes cluster.
 
-**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/customization#container-flags), `--clientRateLimitQPS` and `--clientRateLimitBurst`. While these flags have very sensible values after much field trials, in some cases they may need to be increased.
+**Solution**: Check the Kyverno logs for messages about throttling. If many are found, this indicates Kyverno is making too many API calls in too rapid a succession which the Kubernetes API server will throttle. Increase the values, or set the [flags](/docs/installation/customization/#container-flags, `--clientRateLimitQPS` and `--clientRateLimitBurst`. While these flags have very sensible values after much field trials, in some cases they may need to be increased.
 
 ## Policies are partially applied
 
@@ -162,13 +162,13 @@ If the EKS cluster uses your own security group, some of the network traffic fro
 
 **Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side throttling`; the creation of mutated resources may be delayed.
 
-**Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS` (documented [here](/docs/installation/customization#container-flags)). If that doesn't resolve the problem, you can experiment with slowly increasing these values. Just bear in mind that higher values place more pressure on the Kubernetes API (the client-side throttling was implemented for a reason), which could result in cluster-wide latency, so proceed with caution.
+**Solution**: Try increasing `clientRateLimitBurst` and `clientRateLimitQPS` (documented [here](/docs/installation/customization/#container-flags). If that doesn't resolve the problem, you can experiment with slowly increasing these values. Just bear in mind that higher values place more pressure on the Kubernetes API (the client-side throttling was implemented for a reason), which could result in cluster-wide latency, so proceed with caution.
 
 ## Policy definition not working
 
 **Symptom**: My policy _seems_ like it should work based on how I have authored it but it doesn't.
 
-**Solution**: There can be many reasons why a policy may fail to work as intended, assuming other policies work. One of the most common reasons is that the API server is sending different contents than what you have accounted for in your policy. To see the full contents of the AdmissionReview request the Kubernetes API server sends to Kyverno, add the `dumpPayload` [container flag](/docs/installation/customization#container-flags) set to `true` and check the logs. This has performance impact so it should be removed or set back to `false` when complete.
+**Solution**: There can be many reasons why a policy may fail to work as intended, assuming other policies work. One of the most common reasons is that the API server is sending different contents than what you have accounted for in your policy. To see the full contents of the AdmissionReview request the Kubernetes API server sends to Kyverno, add the `dumpPayload` [container flag](/docs/installation/customization/#container-flags set to `true` and check the logs. This has performance impact so it should be removed or set back to `false` when complete.
 
 The second most common reason policies may fail to operate per design is due to variables. To see the values Kyverno is substituting for variables, increase logging to level `4` by setting the container flag `-v=4`. You can `grep` for the string `variable` (or use tools such as [stern](https://github.com/stern/stern)) and only see the values being substituted for those variables.
 
@@ -183,7 +183,7 @@ Note that starting with Kyverno 1.10, two cron jobs are responsible for deleting
 
 ## Kyverno says it does not have permissions when creating a policy
 
-**Symptom**: Attempting to create a [mutate existing](/docs/policy-types/cluster-policy/mutate#mutate-existing-resources) or [generate](/docs/policy-types/cluster-policy/generate) policy and Kyverno throws an error similar to the one below:
+**Symptom**: Attempting to create a [mutate existing](/docs/policy-types/cluster-policy/mutate/#mutate-existing-resources or [generate](/docs/policy-types/cluster-policy/generate/ policy and Kyverno throws an error similar to the one below:
 
 ```
 Error from server: error when creating "my_cluster_policy.yaml": admission webhook "validate-policy.kyverno.svc" denied the request: path: spec.rules[0].generate..: system:serviceaccount:kyverno:kyverno-background-controller does not have permissions to 'create' resource source.toolkit.fluxcd.io/v1beta2/helmrepository//{{request.object.metadata.name}}. Grant proper permissions to the background controller
@@ -191,4 +191,4 @@ Error from server: error when creating "my_cluster_policy.yaml": admission webho
 
 **Diagnose**: Use `kubectl` to assess whether the Kyverno background controller has the necessary permissions: `kubectl auth can-i create helmrepositories --as system:serviceaccount:kyverno:kyverno-background-controller`. If the response you get from this command is "no" then Kyverno will also receive the same.
 
-**Solution**: The background controller processes all mutations on existing resources and generations. It ships with only a minimal set of permissions. Any additional permissions are up to the user to add. Kyverno performs permissions checks upon creation/update of policies processed by the background controller. If the required permissions are not found, the operation is prevented. This is to ensure a good user experience is maintained. See the page on customizing permissions [here](/docs/installation/customization#customizing-permissions) for instructions on how to easily add the permissions you require. If you have done this and still cannot proceed, likely causes include you targeting the wrong controller, one or more labels is wrong causing aggregation to not occur, or the permissions you have defined in the (Cluster)Role are incorrect (ex., specifying the resource name(s) using their singular form rather than plural). Fix the issues and re-run the `kubectl auth` command. Until it returns with a "yes" the permissions are not correct.
+**Solution**: The background controller processes all mutations on existing resources and generations. It ships with only a minimal set of permissions. Any additional permissions are up to the user to add. Kyverno performs permissions checks upon creation/update of policies processed by the background controller. If the required permissions are not found, the operation is prevented. This is to ensure a good user experience is maintained. See the page on customizing permissions [here](/docs/installation/customization/#customizing-permissions for instructions on how to easily add the permissions you require. If you have done this and still cannot proceed, likely causes include you targeting the wrong controller, one or more labels is wrong causing aggregation to not occur, or the permissions you have defined in the (Cluster)Role are incorrect (ex., specifying the resource name(s) using their singular form rather than plural). Fix the issues and re-run the `kubectl auth` command. Until it returns with a "yes" the permissions are not correct.

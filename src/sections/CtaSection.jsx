@@ -34,7 +34,7 @@ export const CtaSection = () => {
           <Button href="docs/introduction" variant="primary">
             Get Started
           </Button>
-          <Button href="docs/applying-policies/" variant="secondary">
+          <Button href="docs/guides/applying-policies" variant="secondary">
             Explore Policies
           </Button>
         </div>
