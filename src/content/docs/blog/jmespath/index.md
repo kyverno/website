@@ -1,6 +1,7 @@
 ---
 date: 2023-02-19
 title: New time related JMESPath filters in Kyverno!
+slug: blog/new-time-related-jmespath-filters-in-kyverno
 tags:
   - General
 excerpt: Use time in your filters now!.

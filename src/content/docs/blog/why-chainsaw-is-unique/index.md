@@ -1,6 +1,7 @@
 ---
 date: 2023-12-13
 title: Kyverno Chainsaw - Exploring the Power of Assertion Trees!
+slug: blog/kyverno-chainsaw-exploring-the-power-of-assertion-trees
 tags:
   - General
 authors:

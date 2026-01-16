@@ -1,6 +1,7 @@
 ---
 date: 2024-06-04
 title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
+slug: blog/kyverno-envoy-plugin-kyverno-policies-based-authorization-plugin-for-envoy
 tags:
   - General
 authors:

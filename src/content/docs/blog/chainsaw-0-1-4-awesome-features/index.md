@@ -1,6 +1,7 @@
 ---
 date: 2024-02-15
 title: Kyverno Chainsaw 0.1.4 - Awesome new features!
+slug: blog/kyverno-chainsaw-0.1.4-awesome-new-features
 tags:
   - General
 authors:

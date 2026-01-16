@@ -1,6 +1,7 @@
 ---
 date: 2024-02-26
 title: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies
+slug: blog/generating-kubernetes-validatingadmissionpolicies-from-kyverno-policies
 tags:
   - General
 authors:

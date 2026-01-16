@@ -1,6 +1,7 @@
 ---
 date: 2025-07-31
 title: Announcing Kyverno Release 1.15!
+slug: blog/announcing-kyverno-release-1.15
 tags:
   - Releases
 excerpt: Kyverno 1.15 makes policy management more modular, streamlined, and powerful.

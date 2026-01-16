@@ -1,6 +1,7 @@
 ---
 date: 2023-02-01
 title: Kyverno and SLSA 3
+slug: blog/kyverno-and-slsa-3
 tags:
   - General
 excerpt: How the Kyverno project believes it is meeting SLSA Level 3 requirements.

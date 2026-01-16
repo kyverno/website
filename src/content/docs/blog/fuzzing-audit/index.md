@@ -1,6 +1,7 @@
 ---
 date: 2023-09-06
 title: Kyverno Completes Fuzzing Security Audit
+slug: blog/kyverno-completes-fuzzing-security-audit
 tag: General
 authors:
   - name: Adam Korczynski
