@@ -160,23 +160,29 @@ Documentation pages are written in Markdown (`.md`) or MDX (`.mdx`) and located 
 
 **Link Formatting Guidelines:**
 
-- **Use absolute paths** for internal documentation links (e.g., `/docs/policy-types/cluster-policy/validate`)
+- **Use absolute paths** for internal documentation links (e.g., `/docs/policy-types/cluster-policy/validate/`)
+- **Always include trailing slashes** in internal links (e.g., `/docs/path/` not `/docs/path`)
+  - This is required because Netlify's Pretty URLs feature automatically adds trailing slashes, which causes slow redirects if links don't match
+  - The site is configured with `trailingSlash: 'always'` in production to align with Netlify's behavior
 - **Avoid relative links** (e.g., `../validate.md` or `./validate.md`) as they can break when pages are moved or reorganized
-- **Remove file extensions** from links (use `/docs/path/to/page` instead of `/docs/path/to/page.md`)
-- **Use anchor links** for specific sections (e.g., `/docs/policy-types/cluster-policy/validate#anchors`)
+- **Remove file extensions** from links (use `/docs/path/to/page/` instead of `/docs/path/to/page.md`)
+- **Use anchor links** for specific sections (e.g., `/docs/policy-types/cluster-policy/validate/#anchors`)
 
 **Examples:**
 
 ✅ **Good:**
 
 ```markdown
-[Validate Policy](/docs/policy-types/cluster-policy/validate)
-[Installation Guide](/docs/installation#methods)
+[Validate Policy](/docs/policy-types/cluster-policy/validate/)
+[Installation Guide](/docs/installation/#methods)
+[Community Page](/community/)
 ```
 
 ❌ **Bad:**
 
 ```markdown
+[Validate Policy](/docs/policy-types/cluster-policy/validate)
+[Installation Guide](/docs/installation#methods)
 [Validate Policy](../validate.md)
 [Installation Guide](./installation/methods.md#methods)
 ```

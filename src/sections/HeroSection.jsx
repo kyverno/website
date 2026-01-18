@@ -83,7 +83,7 @@ export const HeroSection = () => {
           className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0 mt-4"
           variants={fadeInUp}
         >
-          <Button href="/docs/introduction" variant="primary" size="large">
+          <Button href="/docs/introduction/" variant="primary" size="large">
             Get Started
           </Button>
           <Button href="#policy-showcase" variant="secondary" size="large">

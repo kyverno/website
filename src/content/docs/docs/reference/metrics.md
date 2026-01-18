@@ -7,7 +7,7 @@ sidebar:
 
 This document provides a comprehensive reference for all metrics exposed by Kyverno. Metrics are organized by category to help you find the information you need quickly.
 
-For information on how to set up and configure monitoring with these metrics, see the [Monitoring Guide](/docs/guides/monitoring).
+For information on how to set up and configure monitoring with these metrics, see the [Monitoring Guide](/docs/guides/monitoring/.
 
 ---
 

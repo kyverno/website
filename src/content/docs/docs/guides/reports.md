@@ -74,13 +74,13 @@ summary:
 The report's contents can be found under the `results[]` object in which it displays a number of fields including the resource that was matched against the rule in the parent policy.
 
 :::note[Note]
-Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/guides/monitoring) or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
+Policy reports show policy results for current resources in the cluster only. For information on resources that were blocked during admission controls, use the [policy rule execution metric](/docs/guides/monitoring/ or inspect Kubernetes Events on the corresponding Kyverno policy. A `Pod/exec` subresource is not capable of producing an entry in a policy report due to API limitations.
 :::
 
-Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization#container-flags) section.
+Policy reports have a few configuration options available. For details, see the [container flags](/docs/installation/customization/#container-flags section.
 
 :::caution[Note]
-Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization#namespace-selectors) defined in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys).
+Policy reports created from background scans are not subject to the configuration of a [Namespace selector](/docs/installation/customization/#namespace-selectors defined in the [Kyverno ConfigMap](/docs/installation/customization/#configmap-keys.
 :::
 
 :::note[Note]
@@ -131,7 +131,7 @@ Similar to conditional anchors, if the condition inside a global anchor is FALSE
 
 5. **Anchor Logic Resulting in Skip:**
 
-As explained in the [validate documentation](/docs/policy-types/cluster-policy/validate), a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
+As explained in the [validate documentation](/docs/policy-types/cluster-policy/validate/, a combination of anchors and their evaluation results can lead to a skip. Specifically, a conditional anchor might be skipped, but if it's a sibling to another condition that results in a pass or fail, the overall result will reflect that of the sibling, potentially masking the skip.
 
 _Example:_ If we have the following policy:
 
@@ -319,7 +319,7 @@ Background scans are handled by the reports controller and not the background co
 
 Background scanning, enabled by default in a `Policy` or `ClusterPolicy` object with the `spec.background` field, allows Kyverno to periodically scan existing resources and find if they match any `validate` or `verifyImages` rules. If existing resources are found which would violate an existing policy, the background scan notes them in a `ClusterPolicyReport` or a `PolicyReport` object, depending on if the resource is namespaced or not. It does not block any existing resources that match a rule, even in `Enforce` mode. It has no effect on either `generate` or `mutate` rules for the purposes of reporting.
 
-Background scanning occurs on a periodic basis (one hour by default) and offers some configuration options via [container flags](/docs/installation/customization#container-flags).
+Background scanning occurs on a periodic basis (one hour by default) and offers some configuration options via [container flags](/docs/installation/customization/#container-flags.
 
 When background scanning is enabled, regardless of whether the policy's `failureAction` is set to `Enforce` or `Audit`, the results will be recorded in a report. To see the specifics of how reporting works with background scans, refer to the tables below.
 
@@ -337,7 +337,7 @@ When background scanning is enabled, regardless of whether the policy's `failure
 | `failureAction: Enforce` | Pass only    | None              |
 | `failureAction: Audit`   | Report       | None              |
 
-Also, policy rules that are written using either certain variables from [AdmissionReview](/docs/policy-types/cluster-policy/variables#variables-from-admission-review-requests) request information (e.g. `request.userInfo`), or fields like Roles, ClusterRoles, and Subjects in `match` and `exclude` statements, cannot be applied to existing resources in the background scanning mode since that information must come from an AdmissionReview request and is not available if the resource exists. Hence, these rules must set `background` to `false` to disable background scanning. The exceptions to this are `request.object` and `request.namespace` variables as these will be translated from the current state of the resource.
+Also, policy rules that are written using either certain variables from [AdmissionReview](/docs/policy-types/cluster-policy/variables/#variables-from-admission-review-requests request information (e.g. `request.userInfo`), or fields like Roles, ClusterRoles, and Subjects in `match` and `exclude` statements, cannot be applied to existing resources in the background scanning mode since that information must come from an AdmissionReview request and is not available if the resource exists. Hence, these rules must set `background` to `false` to disable background scanning. The exceptions to this are `request.object` and `request.namespace` variables as these will be translated from the current state of the resource.
 
 ## Example: Trigger a PolicyReport
 

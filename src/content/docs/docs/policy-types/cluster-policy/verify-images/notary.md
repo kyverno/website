@@ -150,7 +150,7 @@ check-image-notary:
 ```
 
 :::note[Tip]
-You can manage public keys and certificates as external data in a ConfigMap. See [Variables from ConfigMaps](/docs/policy-types/cluster-policy/external-data-sources#variables-from-configmaps) for details.
+You can manage public keys and certificates as external data in a ConfigMap. See [Variables from ConfigMaps](/docs/policy-types/cluster-policy/external-data-sources/#variables-from-configmaps for details.
 :::
 
 ## Verifying Image Attestations

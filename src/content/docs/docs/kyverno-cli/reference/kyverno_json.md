@@ -44,6 +44,6 @@ kyverno json [flags]
 
 ### SEE ALSO
 
-* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
-* [kyverno json scan](/docs/kyverno-cli/reference/kyverno_json_scan)	 - Runs tests against any json compatible payloads/policies.
+* [kyverno](/docs/kyverno-cli/reference/kyverno/	 - Kubernetes Native Policy Management.
+* [kyverno json scan](/docs/kyverno-cli/reference/kyverno_json_scan/	 - Runs tests against any json compatible payloads/policies.
 

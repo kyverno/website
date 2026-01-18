@@ -102,5 +102,5 @@ kyverno apply [flags]
 
 ### SEE ALSO
 
-* [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
+* [kyverno](/docs/kyverno-cli/reference/kyverno/	 - Kubernetes Native Policy Management.
 

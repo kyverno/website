@@ -71,7 +71,7 @@ export const TopNav = () => {
             >
               Playground
             </Button>
-            <Button href="/support" variant="accent" size="large">
+            <Button href="/support/" variant="accent" size="large">
               Support
             </Button>
             <ThemeToggle />

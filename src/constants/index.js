@@ -30,10 +30,10 @@ export const versions = [
 ]
 
 export const navItemsExternal = [
-  { label: 'Documentation', href: '/docs/introduction' },
-  { label: 'Sample Policies', href: '/policies' },
-  { label: 'Community', href: '/community' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Documentation', href: '/docs/introduction/' },
+  { label: 'Sample Policies', href: '/policies/' },
+  { label: 'Community', href: '/community/' },
+  { label: 'Blog', href: '/blog/' },
 ]
 
 export const whyKyvernoCards = [
@@ -152,7 +152,7 @@ export const supportLinks = [
 export const ResourcesLinks = [
   { href: 'docs/introduction', text: 'Documentation' },
   {
-    href: 'https://kyverno.io/docs/kyverno-cli/reference/',
+    href: 'docs/kyverno-cli/reference',
     text: 'API Reference',
   },
   { href: 'policies', text: 'Policy Samples' },

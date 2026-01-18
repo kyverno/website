@@ -157,11 +157,11 @@ As the name suggests, the `NamespacedValidatingPolicy` allows namespace owners t
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/).
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. For comprehensive documentation of all available CEL libraries, see the [CEL Libraries documentation](/docs/policy-types/cel-libraries/.
 
 ## Exceptions
 
-Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/guides/exceptions#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
+Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/guides/exceptions/#policyexceptions-with-cel-expressions can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
 
 ## JSON Payloads
 
@@ -207,7 +207,7 @@ To write a policy for JSON payloads:
 2. Next, define a `spec.matchConditions` with CEL expressions to tell the engine which payloads should be matched.
 3. Finally, define your validation rules in `spec.validations`.
 
-To evaluate JSON policies, use the [Kyverno CLI](/docs/subprojects/kyverno-cli).
+To evaluate JSON policies, use the [Kyverno CLI](/docs/subprojects/kyverno-cli/.
 
 A Kyverno Engine SDK is planned for a subsequent release.
 
@@ -219,7 +219,7 @@ Kyverno provides additional fields in ValidatingPolicy rules to make PolicyRepor
 
 ### Using auditAnnotations to add custom data
 
-The auditAnnotations field allows attaching custom key-value data to the results stored in PolicyReports. These values can be static strings or dynamic expressions using [CEL (Common Expression Language)](/docs/policy-types/cel-libraries/).
+The auditAnnotations field allows attaching custom key-value data to the results stored in PolicyReports. These values can be static strings or dynamic expressions using [CEL (Common Expression Language)](/docs/policy-types/cel-libraries/.
 
 This is useful for adding metadata such as severity, team ownership, or any resource-specific values that help consumers of the PolicyReport better understand and act on violations.
 

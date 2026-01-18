@@ -19,8 +19,14 @@ const checkLinksPlugin = process.env.CHECK_LINKS
     ]
   : []
 
+const trailingSlash =
+  process.env.MODE === 'production' || process.env.CHECK_LINKS
+    ? 'always'
+    : 'ignore'
+
 // https://astro.build/config
 export default defineConfig({
+  trailingSlash,
   integrations: [
     starlight({
       title: 'Kyverno',

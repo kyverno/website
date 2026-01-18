@@ -11,7 +11,7 @@ description: >
 When writing CEL expressions in Kyverno v1alpha1 policy types (ValidatingPolicy, ImageValidatingPolicy, etc.), you have access to several built-in variables that provide context about the Kubernetes resource, request, and environment.
 
 :::warning[Important]
-This documentation is specifically for **CEL expressions** in **v1alpha1 policy types**. For traditional ClusterPolicy/Policy with JMESPath variables using `{{ ... }}` syntax, see the [Variables documentation](/docs/policy-types/cluster-policy/variables).
+This documentation is specifically for **CEL expressions** in **v1alpha1 policy types**. For traditional ClusterPolicy/Policy with JMESPath variables using `{{ ... }}` syntax, see the [Variables documentation](/docs/policy-types/cluster-policy/variables/.
 
 The variable syntax and availability differs between traditional policies and CEL-based policies.
 :::
@@ -305,10 +305,10 @@ authorizer.check({
 
 ## Next Steps
 
-- [CEL Expression Cookbook](/docs/cel/variables-reference) - Common patterns and examples
-- [Policy Types Overview](/docs/policy-types/overview) - Learn about different policy types
-- [Writing CEL Expressions](/docs/cel/variables-reference) - Best practices guide
-- [Traditional Variables Documentation](/docs/policy-types/cluster-policy/variables) - For JMESPath-based ClusterPolicy/Policy
+- [CEL Expression Cookbook](/docs/cel/variables-reference/ - Common patterns and examples
+- [Policy Types Overview](/docs/policy-types/overview/ - Learn about different policy types
+- [Writing CEL Expressions](/docs/cel/variables-reference/ - Best practices guide
+- [Traditional Variables Documentation](/docs/policy-types/cluster-policy/variables/ - For JMESPath-based ClusterPolicy/Policy
 
 ## CEL vs Traditional Variables
 

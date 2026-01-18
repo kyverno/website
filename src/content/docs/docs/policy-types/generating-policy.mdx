@@ -10,7 +10,7 @@ import FeatureState from '../../../../components/FeatureState.astro'
 
 <FeatureState state="beta" version="v1.16" />
 
-The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
+The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate/, but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
 
 By leveraging CEL, GeneratingPolicy aligns with native Kubernetes constructs like ValidatingAdmissionPolicy and MutatingAdmissionPolicy, providing a consistent and powerful experience.
 
@@ -521,7 +521,7 @@ When you apply this policy to a cluster with, for example, 10 existing namespace
 
 ## Kyverno CEL Libraries
 
-Kyverno enhances Kubernetes' CEL environment with custom functions that enable powerful resource generation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/), the `GeneratingPolicy` type includes a specialized library for creating and managing resources.
+Kyverno enhances Kubernetes' CEL environment with custom functions that enable powerful resource generation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/, the `GeneratingPolicy` type includes a specialized library for creating and managing resources.
 
 ### Generator Library
 
@@ -533,4 +533,4 @@ Kyverno provides specialized functions for resource generation:
 
 ## Exceptions
 
-Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/guides/exceptions#policyexceptions-with-cel-expressions) can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.
+Policies are applied cluster-wide by default. However, there may be times when an exception is required. In such cases, the [PolicyException](/docs/guides/exceptions/#policyexceptions-with-cel-expressions can be used to allow select resources to bypass the policy, without modifying the policies themselves. This ensures that your policies remain secure while providing the flexibility to grant exceptions as needed.

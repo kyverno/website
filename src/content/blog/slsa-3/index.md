@@ -139,7 +139,7 @@ Kyverno relies on the official [SLSA GitHub generator framework](https://github.
 The consumer can verify the authenticity and integrity of the provenance.
 
 **Kyverno Processes:**
-The provenance is signed by OIDC identity and the public key to verify the provenance is stored in the public [Rekor transparency log](https://docs.sigstore.dev/rekor/overview/). If someone tampers with the file then the signature will fail to verify. Anyone can verify the provenance for Kyverno artifacts with the process documented [here](/docs/guides/security#verifying-provenance).
+The provenance is signed by OIDC identity and the public key to verify the provenance is stored in the public [Rekor transparency log](https://docs.sigstore.dev/rekor/overview/). If someone tampers with the file then the signature will fail to verify. Anyone can verify the provenance for Kyverno artifacts with the process documented [here](/docs/guides/security/#verifying-provenance.
 
 #### Service Generated
 
@@ -218,7 +218,7 @@ The main GitHub Action workflow file does not accept any parameters. The `workfl
 
 ### Provenance Example
 
-The following is an example of the generated provenance for Kyverno which will be returned from the process documented [here](/docs/guides/security#verifying-provenance).
+The following is an example of the generated provenance for Kyverno which will be returned from the process documented [here](/docs/guides/security/#verifying-provenance.
 
 ```json
 {

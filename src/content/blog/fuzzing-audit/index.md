@@ -9,7 +9,7 @@ excerpt: Presenting the results from the fuzzing security audit
 
 Kyverno, a CNCF policy engine for Kubernetes, is happy to announce the completion of its fuzzing security audit. The audit was carried out by [Ada Logics](https://adalogics.com/) and is part of an initiative by the CNCF to bring fuzzing to the CNCF landscape; Fuzzing is an important part in keeping CNCF projects secure and robust, and it has found security vulnerabilities and reliability issues [in several other CNCF-hosted projects](https://www.cncf.io/blog/2023/04/18/cncf-fuzzing-open-source-projects-for-security-and-reliability/). The audit spanned July and August of 2023 and resulted in 15 fuzzers written for the Kyverno project. The fuzzers found three bugs during the audit itself and OSS-Fuzz will continue to run them after the audit has concluded to test Kyverno for bugs and vulnerabilities.
 
-Read the full report for the audit here: [Kyverno Fuzzing Security Audit Report](/blog/fuzzing-audit/assets/kyverno-2023-fuzzing-security-audit.pdf).
+Read the full report for the audit here: [Kyverno Fuzzing Security Audit Report](/blog/fuzzing-audit/assets/kyverno-2023-fuzzing-security-audit.pdf/.
 
 ## Fuzzing
 

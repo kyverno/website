@@ -5,7 +5,7 @@ sidebar:
   order: 100
 ---
 
-The [Variables](/docs/policy-types/cluster-policy/variables) section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [context](/docs/policy-types/cluster-policy/variables#variables-from-external-data-sources) that stores all variables.
+The [Variables](/docs/policy-types/cluster-policy/variables/ section discusses how variables can help create smarter and reusable policy definitions and introduced the concept of a rule [context](/docs/policy-types/cluster-policy/variables/#variables-from-external-data-sources that stores all variables.
 
 This section provides details on using ConfigMaps, API calls, service calls, and image registries to reference external data as variables in policies.
 
@@ -91,10 +91,10 @@ ConfigMap names and keys can contain characters that are not supported by [JMESP
 {{ "<name>".data."<key>" }}
 ```
 
-See the [JMESPath page](/docs/policy-types/cluster-policy/jmespath#formatting) for more information on formatting.
+See the [JMESPath page](/docs/policy-types/cluster-policy/jmespath/#formatting for more information on formatting.
 :::
 
-Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](/docs/installation/customization#container-flags) if desired.
+Kyverno also has the ability to cache ConfigMaps commonly used by policies to reduce the number of API calls made. This both decreases the load on the API server and increases the speed of policy evaluation. Assign the label `cache.kyverno.io/enabled: "true"` to any ConfigMap and Kyverno will automatically cache it. Policy decisions will fetch the data from cache rather than querying the API server. This feature may be disabled through an optional [container flag](/docs/installation/customization/#container-flags if desired.
 
 ### Handling ConfigMap Array Values
 
@@ -102,7 +102,7 @@ In addition to simple string values, Kyverno has the ability to consume array va
 
 For example, let's say you wanted to define a list of allowed roles in a ConfigMap. A Kyverno policy can refer to this list to deny a request where the role, defined as an annotation, does not match one of the values in the list.
 
-Consider a ConfigMap with the following content written as a JSON array. You may also store array values in a YAML block scalar (in which case the [`parse_yaml()` filter](/docs/policy-types/cluster-policy/jmespath#parse_yaml) will be necessary in a policy definition).
+Consider a ConfigMap with the following content written as a JSON array. You may also store array values in a YAML block scalar (in which case the [`parse_yaml()` filter](/docs/policy-types/cluster-policy/jmespath/#parse_yaml will be necessary in a policy definition).
 
 ```yaml
 apiVersion: v1
@@ -114,7 +114,7 @@ data:
   allowed-roles: '["cluster-admin", "cluster-operator", "tenant-admin"]'
 ```
 
-Now that the array data is saved in the `allowed-roles` key, here is a sample policy which blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/policy-types/cluster-policy/jmespath#parse_json) is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
+Now that the array data is saved in the `allowed-roles` key, here is a sample policy which blocks a Deployment if the value of the annotation named `role` is not in the allowed list. Notice how the [`parse_json()` JMESPath filter](/docs/policy-types/cluster-policy/jmespath/#parse_json is used to interpret the value of the ConfigMap's `allowed-roles` key into an array of strings.
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -209,7 +209,7 @@ kubectl get --raw /api/v1/namespaces/kyverno/pods | kyverno jp query "items | le
 ```
 
 :::note[Tip]
-Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/reference/kyverno_jp) command to test API calls and parse results.
+Use `kubectl get --raw` and the [`kyverno jp`](/docs/kyverno-cli/reference/kyverno_jp/ command to test API calls and parse results.
 :::
 
 The corresponding API call in Kyverno is defined as below. It uses a variable `{{request.namespace}}` to use the Namespace of the object being operated on, and then applies the same JMESPath to store the count of Pods in the Namespace in the context as the variable `podCount`. Variables may be used in both fields. This new resulting variable `podCount` can then be used in the policy rule.
@@ -508,7 +508,7 @@ To find an item in the list you can use JMESPath filters. For example, this comm
 kubectl get --raw /api/v1/namespaces | kyverno jp query "items[?metadata.name == 'default'].{uid: metadata.uid, creationTimestamp: metadata.creationTimestamp}"
 ```
 
-In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno [JMESPath page](/docs/policy-types/cluster-policy/jmespath).
+In addition to wildcards and filters, JMESPath has many additional powerful features including several useful functions. Be sure to go through the [JMESPath tutorial](https://jmespath.org/tutorial.html) and try the interactive examples in addition to the Kyverno [JMESPath page](/docs/policy-types/cluster-policy/jmespath/.
 
 ### Examples
 
@@ -713,7 +713,7 @@ context:
 
 The data returned by GlobalContextEntries may vary depending on whether it is a Kubernetes resource or an API call. Consequently, the JMESPath expression used to manipulate the data may differ as well. Ensure you use the appropriate JMESPath expression based on the type of data being accessed to ensure accurate processing within policies.
 
-To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](/docs/kyverno-cli/reference/kyverno_apply).
+To use Global Contexts with the Kyverno CLI, you can use the Values file to inject these global context entries into your policy evaluation. This allows you to simulate different scenarios and test your policies with various global context values without modifying the actual `GlobalContextEntry` resources in your cluster. Refer to it here: [kyverno apply](/docs/kyverno-cli/reference/kyverno_apply/.
 
 :::caution[Warning]
 GlobalContextEntries must be in a healthy state (i.e., there is a response received from the remote endpoint) in order for the policies which reference them to be considered healthy. A GlobalContextEntry which is in a `not ready` state will cause any/all referenced policies to also be in a similar state and therefore will not be processed. Creation of a policy referencing a GlobalContextEntry which either does not exist or is not ready will print a warning notifying users.
@@ -925,9 +925,9 @@ context:
       jmesPath: 'to_string(sum(manifest.layers[*].size))'
 ```
 
-To access images stored on private registries, see [using private registries](/docs/policy-types/cluster-policy/verify-images/sigstore#using-private-registries)
+To access images stored on private registries, see [using private registries](/docs/policy-types/cluster-policy/verify-images/sigstore/#using-private-registries
 
-For more examples of using an imageRegistry context, see the [samples page](/policies/).
+For more examples of using an imageRegistry context, see the [samples page](/policies).
 
 The policy-level setting `failurePolicy` when set to `Ignore` additionally means that failing calls to image registries will be ignored. This allows for Pods to not be blocked if the registry is offline, useful in situations where images already exist on the nodes.
 
