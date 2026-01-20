@@ -10,7 +10,6 @@ Create a Kyverno test file.
 
 Create a Kyverno test file.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create test [flags]

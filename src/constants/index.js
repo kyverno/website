@@ -208,7 +208,7 @@ export const comparisonChartHeadingContent = {
 
 export const featureSectionHeadingContent = {
   headingText: [
-    { text: 'Complete Platform Engineering', color: 'text-white' },
+    { text: 'Complete Platform Engineering', color: 'text-theme-primary' },
     { text: 'Policy As Code Solution', color: 'text-primary-100' },
   ],
 
@@ -218,7 +218,7 @@ export const featureSectionHeadingContent = {
 
 export const celPoliciesHeadingContent = {
   headingText: [
-    { text: 'Introducing', color: 'text-white' },
+    { text: 'Introducing', color: 'text-theme-primary' },
     { text: 'CEL Polices', color: 'text-primary-100' },
   ],
   paragraphText: `CEL (Common Expression Language) policies bring powerful, 
@@ -227,21 +227,25 @@ export const celPoliciesHeadingContent = {
 }
 
 export const ctaSectionHeadingContent = {
-  headingText: [{ text: 'Get started with Kyverno', color: 'text-white' }],
+  headingText: [
+    { text: 'Get started with Kyverno', color: 'text-theme-primary' },
+  ],
 
   paragraphText: `Deploy Kyverno in your Kubernetes cluster within minutes and start writing 
                   policies using simple, familiar YAML.`,
 }
 
 export const partnersSectionHeadingContent = {
-  headingText: [{ text: 'Trusted By Industry Leaders', color: 'text-white' }],
+  headingText: [
+    { text: 'Trusted By Industry Leaders', color: 'text-theme-primary' },
+  ],
 
   paragraphText: 'Powering Policy-Based Security & Operations Worldwide',
 }
 
 export const codingThemes = {
-  dark: themes.materialDark,
-  light: themes.materialLight,
+  dark: themes.vsDark,
+  light: themes.github,
 }
 
 export const policyShowcaseHeadingContent = {

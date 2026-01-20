@@ -3,6 +3,7 @@ import { Check, Copy } from 'lucide-react'
 import { Highlight } from 'prism-react-renderer'
 import { codingThemes } from '../constants'
 import { useState } from 'react'
+import { useTheme } from '../hooks/useTheme'
 
 export const YamlCodeBlock = ({
   code,
@@ -13,6 +14,7 @@ export const YamlCodeBlock = ({
   preClassName = '',
 }) => {
   const [copyState, setCopyState] = useState('idle')
+  const { theme: currentTheme } = useTheme()
 
   if (!code) return null
 
@@ -45,11 +47,16 @@ export const YamlCodeBlock = ({
         </div>
         {/* Code Block */}
         <div className="flex-1 w-full overflow-hidden rounded-bl-2xl rounded-br-2xl">
-          <Highlight language="yaml" theme={codingThemes.dark} code={code}>
+          <Highlight
+            key={currentTheme}
+            language="yaml"
+            theme={codingThemes[currentTheme] || codingThemes.dark}
+            code={code}
+          >
             {({ className, style, tokens, getLineProps, getTokenProps }) => {
               // Ensure we use the theme's background color consistently
               const themeBg =
-                codingThemes.dark.plain?.backgroundColor ||
+                codingThemes[currentTheme].plain?.backgroundColor ||
                 style?.backgroundColor
               return (
                 <pre
@@ -101,7 +108,9 @@ export const YamlCodeBlock = ({
               ? 'bg-green-500/20 border-green-500/50 text-green-400'
               : copyState === 'error'
                 ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                : 'bg-gray-800/80 border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white backdrop-blur-sm'
+                : currentTheme === 'light'
+                  ? 'bg-white/90 border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-900 backdrop-blur-sm shadow-sm'
+                  : 'bg-gray-800/80 border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white backdrop-blur-sm'
           }`}
           title="Copy YAML"
         >
@@ -109,7 +118,12 @@ export const YamlCodeBlock = ({
         </button>
       )}
 
-      <Highlight language="yaml" theme={codingThemes.dark} code={code}>
+      <Highlight
+        key={currentTheme}
+        language="yaml"
+        theme={codingThemes[currentTheme] || codingThemes.dark}
+        code={code}
+      >
         {({ className, style, tokens, getLineProps, getTokenProps }) => {
           return (
             <pre
@@ -129,7 +143,6 @@ export const YamlCodeBlock = ({
                       const tokenProps = getTokenProps({ token, key: tokenKey })
                       const { key: tokenKeyProp, ...restTokenProps } =
                         tokenProps
-                      console.log({ tokenKey, restTokenProps, tokenProps })
                       return <span key={tokenKeyProp} {...restTokenProps} />
                     })}
                   </div>

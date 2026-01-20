@@ -1,6 +1,6 @@
 export const BottomNavLinks = ({ links }) => {
   return (
-    <ul className="text-white/80 py-3 space-y-2">
+    <ul className="text-theme-secondary py-3 space-y-2">
       {links.map(({ text, href, target }) => {
         // Default to _blank for external links (http/https) if target is not specified
         const linkTarget =

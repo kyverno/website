@@ -1,13 +1,14 @@
-import { Github, Slack, Twitter, Mail, LifeBuoy } from 'lucide-react'
+import { Github, LifeBuoy, Mail, Slack, Twitter } from 'lucide-react'
 import {
+  ResourcesLinks,
   communityLinks,
   policies,
   supportLinks,
-  ResourcesLinks,
 } from '../constants'
-import { SiteLogo } from '../components/SiteLogo'
-import { BottomNavLinks } from '../components/BottomNavLinks'
+
 import { BottomLinkLists } from '../components/BottomLinkLists'
+import { BottomNavLinks } from '../components/BottomNavLinks'
+import { SiteLogo } from '../components/SiteLogo'
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -17,7 +18,7 @@ export const Footer = () => {
       <div className="w-full flex flex-col  p-12 space-y-6 md:space-y-0 md:flex-row md:justify-evenly text-[16px]">
         <div className="1/4 flex flex-col items-start space-y-4">
           <SiteLogo />
-          <p className="max-w-80 text-white/80">
+          <p className="max-w-80 text-theme-secondary">
             Unified Policy as Code. Secure, automate, and govern your all
             infrastructure and applications with modern CEL-based policies.
           </p>
@@ -45,7 +46,7 @@ export const Footer = () => {
       </div>
       <div
         className="w-full space-y-4 flex flex-col p-12 justify-between items-start md:items-center 
-        border-t border-stroke text-white/80"
+        border-t border-stroke text-theme-secondary"
       >
         <ul className="flex items-center justify-between space-x-3">
           {policies.map(({ text, href }) => (
@@ -54,7 +55,7 @@ export const Footer = () => {
             </li>
           ))}
         </ul>
-        <p>&copy; {currentYear} Kyverno created by Nirmata.</p>
+        <p>&copy; {currentYear} The Kyverno Authors All Rights Reserved.</p>
       </div>
     </footer>
   )

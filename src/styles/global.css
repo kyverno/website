@@ -8,11 +8,11 @@
 
 :root {
   font-family: 'Inter', sans-serif;
+  /* Dark mode (default) */
   background-color: #12171b;
   color: #eee;
-}
 
-@theme {
+  /* Dark mode color variables */
   --color-dark-100: #12171b;
   --color-dark-50: #171e22;
   --color-dark-footer: #0d1012;
@@ -25,6 +25,93 @@
   --color-accent-50: #f3bfad;
   --color-accent-25: #f9dfd6;
   --color-stroke: #28353c;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.9);
+  --color-text-tertiary: rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme='light'] {
+  /* Light mode */
+  background-color: #ffffff;
+  color: #1a1a1a;
+
+  /* Light mode color variables */
+  --color-dark-100: #ffffff;
+  --color-dark-50: #f5f7fa;
+  --color-dark-footer: #f0f2f5;
+  --color-primary-100: #3783c4;
+  --color-primary-75: #69a2d3;
+  --color-primary-50: #9bc1e1;
+  --color-primary-25: #cde0f0;
+  --color-accent-100: #e77e5b;
+  --color-accent-75: #ed9e84;
+  --color-accent-50: #f3bfad;
+  --color-accent-25: #f9dfd6;
+  --color-stroke: #e5e7eb;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: rgba(26, 26, 26, 0.9);
+  --color-text-tertiary: rgba(26, 26, 26, 0.8);
+}
+
+@theme {
+  /* Tailwind theme variables - these reference the CSS custom properties */
+  --color-dark-100: var(--color-dark-100);
+  --color-dark-50: var(--color-dark-50);
+  --color-dark-footer: var(--color-dark-footer);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-75: var(--color-primary-75);
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-25: var(--color-primary-25);
+  --color-accent-100: var(--color-accent-100);
+  --color-accent-75: var(--color-accent-75);
+  --color-accent-50: var(--color-accent-50);
+  --color-accent-25: var(--color-accent-25);
+  --color-stroke: var(--color-stroke);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+}
+
+/* Theme-aware utility classes */
+@layer utilities {
+  .text-theme-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-theme-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-theme-tertiary {
+    color: var(--color-text-tertiary);
+  }
+}
+
+@layer starlight {
+  /* 
+   * Restore browser default styles for markdown content that were removed by Tailwind's preflight.
+   */
+
+  /* Lists - restore default bullets, numbers, and padding */
+  .sl-markdown-content :is(ul, ol):not(:where(.not-content *)) {
+    list-style: revert;
+    padding-inline-start: revert;
+  }
+
+  /* Text emphasis - restore bold and italic */
+  .sl-markdown-content :is(strong, b):not(:where(.not-content *)) {
+    font-weight: revert;
+  }
+
+  .sl-markdown-content :is(em, i):not(:where(.not-content *)) {
+    font-style: revert;
+  }
+
+  /* Restore browser defaults for other semantic HTML elements */
+  .sl-markdown-content
+    :is(abbr, sub, sup, small, mark):not(:where(.not-content *)) {
+    all: revert;
+  }
 }
 
 /* Style for Support link in header */
@@ -40,6 +127,17 @@
 
 .support-header-link:hover {
   color: var(--sl-color-accent);
+}
+
+/* Position theme selector on the right side of the header */
+:global(.sl-header-actions) {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:global(.theme-select-wrapper) {
+  margin-left: auto;
 }
 
 /* Hide right sidebar container and panel on Support page */

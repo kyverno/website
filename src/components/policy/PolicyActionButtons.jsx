@@ -95,12 +95,6 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
 
       const playgroundUrl = `https://playground.kyverno.io/#/?content=${compressed}`
 
-      // Debug: verify the policy name in the content
-      const policyNameMatch = content.match(/name:\s*(.+)/)
-      if (policyNameMatch) {
-        console.log('Opening playground with policy:', policyNameMatch[1])
-      }
-
       window.open(playgroundUrl, '_blank', 'noopener,noreferrer')
     } catch (error) {
       console.error('Failed to open in playground:', error)
@@ -122,7 +116,7 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
       )}
       <button
         onClick={handleCopy}
-        className={`inline-flex items-center gap-2 px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg text-white font-medium transition-all bg-gray-800 hover:bg-gray-750 ${
+        className={`inline-flex items-center gap-2 px-6 py-3 border border-stroke hover:border-primary-100/50 rounded-lg text-theme-primary font-medium transition-all bg-dark-50 hover:bg-dark-50/80 ${
           copyState === 'success'
             ? 'bg-green-500/20 border-green-500/50'
             : copyState === 'error'
@@ -149,7 +143,7 @@ export const PolicyActionButtons = ({ yamlUrl, yamlContent }) => {
       </button>
       <button
         onClick={handleOpenInPlayground}
-        className="inline-flex items-center gap-2 px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg text-white font-medium transition-all bg-gray-800 hover:bg-gray-750"
+        className="inline-flex items-center gap-2 px-6 py-3 border border-stroke hover:border-primary-100/50 rounded-lg text-theme-primary font-medium transition-all bg-dark-50 hover:bg-dark-50/80"
       >
         <Play size={18} />
         Open in Playground

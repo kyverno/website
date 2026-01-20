@@ -10,7 +10,6 @@ Create a Kyverno user-info file.
 
 Create a Kyverno user-info file.
 
-  For more information visit https://kyverno.io/docs/kyverno-cli/#create
 
 ```
 kyverno create user-info [flags]

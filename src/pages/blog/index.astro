@@ -1,0 +1,193 @@
+---
+// Import collection
+import { getCollection } from 'astro:content'
+import DefaultLayout from '../../layouts/DefaultLayout.astro'
+import { Header } from '../../sections/Header'
+import { Footer } from '../../sections/Footer'
+import '../../styles/blog-index.css'
+import { formatDatePath } from '../../utils/blog'
+import { BlogBrowser } from '../../components/blog/BlogBrowser.jsx'
+
+// Get all blog posts from the blog collection
+const blogPosts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => {
+    // Sort by date, newest first
+    const dateA = a.data.date ? new Date(a.data.date) : new Date(0)
+    const dateB = b.data.date ? new Date(b.data.date) : new Date(0)
+    return dateB.getTime() - dateA.getTime()
+  })
+
+const featuredPosts = blogPosts.filter((b) => b.data.featured)
+
+// Get featured post (most recent)
+const featuredPost = featuredPosts.length > 0 ? featuredPosts[0] : null
+
+// Remove featured post from regular posts
+const regularPosts = blogPosts.filter((post) => post.id !== featuredPost?.id)
+
+// Format date helper - compact format like "Dec 18, 2025"
+function formatDate(date: Date | string | undefined): string {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+// Helper function to get the blog post URL path (includes date from post.data.date)
+function getPostUrlPath(post: (typeof blogPosts)[0]): string {
+  const datePath = formatDatePath(post.data.date)
+  return `${datePath}/${post.id}`
+}
+
+// Helper function to get the blog post static file path (just post name, no date)
+function getPostStaticPath(post: (typeof blogPosts)[0]): string {
+  return post.id
+}
+
+// NOTE: URLs are generated with dates from post.data.date (e.g., "2025/04/25/announcing-kyverno-release-1.14")
+// Static files (images) are stored without date prefix, so we use post.id for image paths
+
+// Helper function to resolve cover image path
+function getCoverImage(post: (typeof blogPosts)[0]): string | null {
+  const coverImage = post.data.coverImage
+  // Defaults image to the logo in the public folder when the posts doesn't have a cover
+  if (!coverImage) return '/assets/images/kyverno.svg'
+
+  // If it's already an absolute URL or path, return as-is
+  if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
+    return coverImage
+  }
+
+  // Resolve relative path - remove ./ or ../ prefix if present
+  // Use static path (post name only, without date) since that's where files are actually copied
+  const cleanPath = coverImage.replace(/^\.\.?\//, '')
+  const postStaticPath = getPostStaticPath(post)
+  return `/blog/${postStaticPath}/${cleanPath}`
+}
+
+// Pre-compute URLs for regular posts (excluding featured post)
+const regularPostsWithUrls = regularPosts.map((post) => ({
+  post,
+  url: post.data.externalURL || `/blog/${getPostUrlPath(post)}`,
+  title: post.data.title || 'Untitled',
+  excerpt: post.data.excerpt || '',
+  date: post.data.date,
+  tags: post.data.tags || [],
+  authors: post.data.authors || [],
+  image: getCoverImage(post),
+  externalURL: post.data.externalURL,
+}))
+
+// Extract featured post data
+const featuredUrlPath = featuredPost ? getPostUrlPath(featuredPost) : ''
+const featuredUrl = featuredPost ? `/blog/${featuredUrlPath}` : ''
+const featuredTitle = featuredPost?.data.title || 'Untitled'
+const featuredExcerpt = featuredPost?.data.excerpt || ''
+const featuredDate = featuredPost?.data.date
+const featuredTags = featuredPost?.data.tags || []
+const featuredAuthors = featuredPost?.data.authors || []
+const featuredImage = featuredPost ? getCoverImage(featuredPost) : null
+---
+
+<DefaultLayout>
+  <Header client:load />
+
+  <!-- Main Content -->
+  <main class="min-h-screen bg-dark-100 text-theme-primary">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
+      <!-- Featured Post Section -->
+      {
+        featuredPost && (
+          <article class="mb-16">
+            <a href={featuredUrl} data-astro-reload class="block group">
+              <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-center max-w-6xl">
+                {featuredImage && (
+                  <div class="w-full lg:w-1/2 flex-shrink-0 max-w-md flex items-center">
+                    <img
+                      src={featuredImage}
+                      alt={featuredTitle}
+                      class="w-full h-auto max-h-64 object-contain rounded-lg"
+                    />
+                  </div>
+                )}
+                <div class={`flex-1 ${featuredImage ? 'lg:w-1/2' : 'w-full'}`}>
+                  <div class="mb-4 flex flex-col gap-1">
+                    {featuredDate && (
+                      <span class="text-theme-tertiary text-sm">
+                        {formatDate(featuredDate)}
+                      </span>
+                    )}
+                    {featuredAuthors.length > 0 && (
+                      <span class="text-theme-tertiary text-xs">
+                        By{' '}
+                        {featuredAuthors.map((author, index) => (
+                          <>
+                            {author.name}
+                            {index < featuredAuthors.length - 1 && ', '}
+                          </>
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-theme-primary group-hover:text-primary-100 transition-all duration-300 leading-tight group-hover:translate-y-[-2px]">
+                    {featuredTitle}
+                  </h1>
+                  {featuredExcerpt && (
+                    <p class="text-theme-secondary text-lg md:text-xl mb-6 leading-relaxed">
+                      {featuredExcerpt}
+                    </p>
+                  )}
+                  {featuredTags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {featuredTags.map((tag) => (
+                        <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary-100/10 text-primary-100 border border-primary-100/20 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </a>
+          </article>
+        )
+      }
+
+      <!-- Blog Posts Grid with Search and Filter -->
+      {
+        regularPosts.length > 0 && (
+          <section>
+            <div class="mb-8">
+              <h2 class="text-2xl md:text-3xl font-bold text-theme-primary mb-2">
+                All Posts
+              </h2>
+              <div class="w-16 h-1 bg-primary-100" />
+            </div>
+
+            <BlogBrowser
+              posts={regularPostsWithUrls.map((post) => ({
+                ...post,
+                formattedDate: formatDate(post.date),
+              }))}
+              client:load
+            />
+          </section>
+        )
+      }
+
+      {
+        blogPosts.length === 0 && (
+          <div class="text-center py-16">
+            <p class="text-theme-tertiary text-lg">No blog posts found.</p>
+          </div>
+        )
+      }
+    </div>
+  </main>
+
+  <Footer />
+</DefaultLayout>

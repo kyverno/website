@@ -314,12 +314,12 @@ export const PolicyBrowser = ({ policies }) => {
         open={defaultOpen}
       >
         <summary className="px-4 sm:px-6 py-4 cursor-pointer list-none flex items-center justify-between hover:bg-dark-50/50 transition-colors">
-          <h3 className="text-xs uppercase tracking-widest text-white/50 font-bold">
+          <h3 className="text-xs uppercase tracking-widest text-theme-tertiary font-bold">
             {title}
           </h3>
           <ChevronLeft
             size={16}
-            className="text-white/50 transition-transform duration-200 group-open:rotate-[-90deg]"
+            className="text-theme-tertiary transition-transform duration-200 group-open:rotate-[-90deg]"
           />
         </summary>
         <div className="px-4 sm:px-6 pb-6 pt-2 space-y-2 max-h-[400px] overflow-y-auto pr-2">
@@ -328,11 +328,11 @@ export const PolicyBrowser = ({ policies }) => {
               key={value}
               className={`flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer transition-all hover:bg-primary-100/10 filter-option group ${itemClassName}`}
             >
-              <span className="text-sm font-medium text-white/80 truncate min-w-0 flex-1">
+              <span className="text-sm font-medium text-theme-secondary truncate min-w-0 flex-1">
                 {formatLabel ? formatLabel(value) : value}
               </span>
               {showCount && (
-                <span className="text-white/40 text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md flex-shrink-0">
+                <span className="text-theme-tertiary text-xs font-semibold ml-auto mr-3 bg-stroke/50 px-2 py-0.5 rounded-md flex-shrink-0">
                   {count}
                 </span>
               )}
@@ -428,7 +428,7 @@ export const PolicyBrowser = ({ policies }) => {
         <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center mb-4">
           <div className="flex-1 relative">
             <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none z-10"
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-theme-tertiary pointer-events-none z-10"
               size={20}
               strokeWidth={2.5}
             />
@@ -437,14 +437,14 @@ export const PolicyBrowser = ({ policies }) => {
               placeholder={`Search by ${getSearchableFields.map((f) => (f === 'subjects' ? 'resources' : f)).join(', ')}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-4 pl-14 pr-5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-white text-base transition-all focus:outline-none focus:border-primary-100 focus:ring-4 focus:ring-primary-100/20 focus:bg-dark-50 placeholder:text-white/40 shadow-lg relative z-0"
+              className="w-full py-4 pl-14 pr-5 bg-dark-50/80 backdrop-blur-sm border border-stroke/50 rounded-xl text-theme-primary text-base transition-all focus:outline-none focus:border-primary-100 focus:ring-4 focus:ring-primary-100/20 focus:bg-dark-50 placeholder:text-theme-tertiary shadow-lg relative z-0"
             />
           </div>
-          <div className="text-white/70 text-sm font-medium whitespace-nowrap text-center sm:text-left">
+          <div className="text-theme-secondary text-sm font-medium whitespace-nowrap text-center sm:text-left">
             {filteredPolicies.length}{' '}
             {filteredPolicies.length === 1 ? 'policy' : 'policies'} found
             {totalPages > 1 && (
-              <span className="text-white/50 ml-2">
+              <span className="text-theme-tertiary ml-2">
                 (Page {currentPage} of {totalPages})
               </span>
             )}
@@ -464,7 +464,7 @@ export const PolicyBrowser = ({ policies }) => {
             ))}
             <button
               onClick={clearAllFilters}
-              className="px-3 py-1.5 text-white/60 hover:text-white/80 text-sm font-medium underline transition-colors"
+              className="px-3 py-1.5 text-theme-tertiary hover:text-theme-secondary text-sm font-medium underline transition-colors"
             >
               Clear all
             </button>
@@ -478,7 +478,7 @@ export const PolicyBrowser = ({ policies }) => {
             className={`px-5 py-3 text-sm font-medium cursor-pointer transition-all whitespace-nowrap relative flex-shrink-0 ${
               activeCategoryButton === 'all'
                 ? 'text-primary-100 border-b-2 border-primary-100'
-                : 'text-white/60 hover:text-white/80'
+                : 'text-theme-tertiary hover:text-theme-secondary'
             }`}
           >
             All
@@ -491,7 +491,7 @@ export const PolicyBrowser = ({ policies }) => {
               className={`px-5 py-3 text-sm font-medium cursor-pointer transition-all whitespace-nowrap relative flex-shrink-0 ${
                 activeCategoryButton === category
                   ? 'text-primary-100 border-b-2 border-primary-100'
-                  : 'text-white/60 hover:text-white/80'
+                  : 'text-theme-tertiary hover:text-theme-secondary'
               }`}
             >
               {formatCategoryLabel(category)}
@@ -551,7 +551,7 @@ export const PolicyBrowser = ({ policies }) => {
           ) : (
             <div className="text-center py-20">
               <svg
-                className="w-20 h-20 mx-auto mb-4 text-white/20"
+                className="w-20 h-20 mx-auto mb-4 text-theme-tertiary opacity-30"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
@@ -563,10 +563,10 @@ export const PolicyBrowser = ({ policies }) => {
                   d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
                 />
               </svg>
-              <p className="text-white/60 text-lg font-medium">
+              <p className="text-theme-secondary text-lg font-medium">
                 No policies found matching your filters
               </p>
-              <p className="text-white/40 text-sm mt-2">
+              <p className="text-theme-tertiary text-sm mt-2">
                 Try adjusting your search or filter criteria
               </p>
             </div>
@@ -578,15 +578,17 @@ export const PolicyBrowser = ({ policies }) => {
           <div className="lg:col-span-2 mt-8 pt-6 border-t border-stroke/50">
             <div className="flex flex-col gap-4">
               {/* Results info */}
-              <div className="text-white/60 text-sm text-center">
+              <div className="text-theme-secondary text-sm text-center">
                 Showing{' '}
-                <span className="text-white font-medium">{startIndex + 1}</span>{' '}
+                <span className="text-theme-primary font-medium">
+                  {startIndex + 1}
+                </span>{' '}
                 to{' '}
-                <span className="text-white font-medium">
+                <span className="text-theme-primary font-medium">
                   {Math.min(endIndex, filteredPolicies.length)}
                 </span>{' '}
                 of{' '}
-                <span className="text-white font-medium">
+                <span className="text-theme-primary font-medium">
                   {filteredPolicies.length}
                 </span>{' '}
                 policies
@@ -599,7 +601,7 @@ export const PolicyBrowser = ({ policies }) => {
                   <button
                     onClick={() => goToPage(1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-white/60 hover:text-white hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
+                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-theme-tertiary hover:text-theme-primary hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
                     aria-label="First page"
                     title="First page"
                   >
@@ -608,7 +610,7 @@ export const PolicyBrowser = ({ policies }) => {
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-white/60 hover:text-white hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
+                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-theme-tertiary hover:text-theme-primary hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
                     aria-label="Previous page"
                     title="Previous page"
                   >
@@ -632,7 +634,7 @@ export const PolicyBrowser = ({ policies }) => {
                       return (
                         <div key={page} className="flex items-center gap-1">
                           {showEllipsisBefore && (
-                            <span className="px-1 sm:px-2 text-white/40 text-xs sm:text-sm flex-shrink-0">
+                            <span className="px-1 sm:px-2 text-theme-tertiary text-xs sm:text-sm flex-shrink-0">
                               ...
                             </span>
                           )}
@@ -641,7 +643,7 @@ export const PolicyBrowser = ({ policies }) => {
                             className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
                               currentPage === page
                                 ? 'bg-primary-100 text-white shadow-lg shadow-primary-100/20'
-                                : 'border border-stroke/50 bg-dark-50/50 text-white/70 hover:text-white hover:border-primary-100/50 hover:bg-primary-100/10'
+                                : 'border border-stroke/50 bg-dark-50/50 text-theme-secondary hover:text-theme-primary hover:border-primary-100/50 hover:bg-primary-100/10'
                             }`}
                             aria-label={`Go to page ${page}`}
                             aria-current={
@@ -657,7 +659,7 @@ export const PolicyBrowser = ({ policies }) => {
                   <button
                     onClick={() => goToPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-white/60 hover:text-white hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
+                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-theme-tertiary hover:text-theme-primary hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
                     aria-label="Next page"
                     title="Next page"
                   >
@@ -666,7 +668,7 @@ export const PolicyBrowser = ({ policies }) => {
                   <button
                     onClick={() => goToPage(totalPages)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-white/60 hover:text-white hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
+                    className="p-2 rounded-lg border border-stroke/50 bg-dark-50/50 text-theme-tertiary hover:text-theme-primary hover:border-primary-100/50 hover:bg-primary-100/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-dark-50/50 disabled:hover:border-stroke/50 transition-all flex-shrink-0"
                     aria-label="Last page"
                     title="Last page"
                   >

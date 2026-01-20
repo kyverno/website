@@ -16,8 +16,8 @@ export const KyvernoFeatureCard = ({ card, color }) => {
       >
         <card.icon className={twMerge('w-4', color.text)} />
       </span>
-      <h3 className="font-bold text-white">{card.title}</h3>
-      <p className="text-sm text-white/90">{card.details}</p>
+      <h3 className="font-bold text-theme-primary">{card.title}</h3>
+      <p className="text-sm text-theme-secondary">{card.details}</p>
     </div>
   )
 }

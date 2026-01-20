@@ -33,11 +33,34 @@ const versionOptions = createVersionOptions(
     <Icon name="down-caret" class="icon caret-icon" />
   </label>
 </starlight-version-select>
-<Default><slot /></Default>
+<div class="theme-select-wrapper">
+  <Default><slot /></Default>
+</div>
 
 <style>
   starlight-version-select {
     display: inline-block;
+  }
+
+  .theme-select-wrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Ensure parent container uses flexbox for proper positioning */
+  :global(.sl-header-actions),
+  :global([data-theme-select]) {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Ensure parent container uses flexbox */
+  :global(.sl-header-actions) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .version-label {

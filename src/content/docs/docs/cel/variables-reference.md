@@ -306,7 +306,7 @@ authorizer.check({
 ## Next Steps
 
 - [CEL Expression Cookbook](/docs/cel/variables-reference) - Common patterns and examples
-- [Policy Types Overview](/docs/policy-types/) - Learn about different policy types
+- [Policy Types Overview](/docs/policy-types/overview) - Learn about different policy types
 - [Writing CEL Expressions](/docs/cel/variables-reference) - Best practices guide
 - [Traditional Variables Documentation](/docs/policy-types/cluster-policy/variables) - For JMESPath-based ClusterPolicy/Policy
 
