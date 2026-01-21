@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - PipelineRun
-tags: []
+tags:
+  - Tekton
 version: 1.7.0
+description: 'A Namespace is required for a PipelineRun and may not be set to `default`.'
 ---
 
 ## Policy Definition

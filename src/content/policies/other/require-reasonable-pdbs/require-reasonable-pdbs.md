@@ -5,7 +5,9 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - PodDisruptionBudget
-tags: []
+tags:
+  - Other
+description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Achieving a balance between availability and maintainability is important. This policy validates that a PodDisruptionBudget, specified as percentages, allows 50% of the replicas to be out of service in that minAvailable should be no higher than 50% and maxUnavailable should be no lower than 50%.'
 ---
 
 ## Policy Definition

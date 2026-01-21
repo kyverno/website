@@ -431,9 +431,11 @@ expression: "size(object.spec.containers) > 0 && object.spec.containers[0].image
 
 ```yaml
 # Instead of {{ request.object.metadata.name }}
-expression: "object.metadata.name"
+expression: 'object.metadata.name'
+```
 
-# For external data, use resource library
+```yaml
+# For API data, use resource library
 expression: "resource.get('v1', 'ConfigMap', 'default', 'my-config') != null"
 ```
 
@@ -450,8 +452,8 @@ After successfully migrating to ValidatingPolicy:
 
 - [CEL Language Specification](https://github.com/google/cel-spec)
 - [Kyverno CEL Functions Reference](/docs/policy-types/cel-libraries/)
-- [ValidatingPolicy API Reference](/docs/policy-types/cel-policies/validating-policy)
-- [Kyverno CLI Testing Guide](/docs/kyverno-cli/usage/test/)
+- [ValidatingPolicy API Reference](/docs/policy-types/validating-policy)
+- [Kyverno CLI Testing Guide](/docs/kyverno-cli/reference/kyverno_test)
 
 ---
 

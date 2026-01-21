@@ -2,10 +2,10 @@
 title: Validate Rules
 description: Check resources configurations for policy compliance.
 sidebar:
-  order: 30
+  order: 3
 ---
 
-Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/policy-reports/) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
+Validation rules are probably the most common and practical types of rules you will be working with, and the main use case for admission controllers such as Kyverno. In a typical validation rule, one defines the mandatory properties with which a given resource should be created. When a new resource is created by a user or process, the properties of that resource are checked by Kyverno against the validate rule. If those properties are validated, meaning there is agreement, the resource is allowed to be created. If those properties are different, the creation is blocked. The behavior of how Kyverno responds to a failed validation check is determined by the `failureAction` field. It can either be blocked (`Enforce`) or allowed yet recorded in a [policy report](/docs/guides/reports) (`Audit`). Validation rules in `Audit` mode can also be used to get a report on matching resources which violate the rule(s), both upon initial creation and when Kyverno initiates periodic scans of Kubernetes resources. Resources in violation of an existing rule placed in `Audit` mode will also surface in an event on the resource in question.
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
@@ -783,7 +783,7 @@ Nested foreach statements are also supported in mutate rules. See the documentat
 
 ## Manifest Validation
 
-Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/policy-types/cluster-policy/verify-images/), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
+Kyverno has the ability to verify signed Kubernetes YAML manifests created with the Sigstore [k8s-manifest-sigstore project](https://github.com/sigstore/k8s-manifest-sigstore). Using this capability, a Kubernetes YAML manifest is signed using one or multiple methods, which includes support for both keyed and keyless signing like in [image verification](/docs/policy-types/cluster-policy/verify-images/overview), and through a policy definition Kyverno can validate these signatures prior to creation. This capability also includes support for field exclusions, multiple signatures, and dry-run mode.
 
 Generate a key pair used to sign a manifest by using the [`cosign`](https://github.com/sigstore/cosign#installation) command-line tool.
 
@@ -924,7 +924,7 @@ validate:
       namespace: my-dryrun-ns
 ```
 
-The manifest validation feature shares many of the same abilities as the [verify images](/docs/policy-types/cluster-policy/verify-images/) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
+The manifest validation feature shares many of the same abilities as the [verify images](/docs/policy-types/cluster-policy/verify-images/overview) rule type. For a more thorough explanation of the available fields, use the `kubectl explain clusterpolicy.spec.rules.validate.manifests` command.
 
 ## Pod Security
 
@@ -937,8 +937,8 @@ The podSecurity feature has the following advantages over the Kubernetes built-i
 3. Specific controls may be exempted from a given profile.
 4. Container images may be exempted along with a control exemption.
 5. Enforcement of Pod controllers is [automatic](/docs/policy-types/cluster-policy/autogen).
-6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/policy-reports/) Custom Resource.
-7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/kyverno-cli/).
+6. Auditing of Pods in violation may be viewed in-cluster by examining a [Policy Report](/docs/guides/reports) Custom Resource.
+7. Testing of Pods and Pod controller manifests in a CI/CD pipeline is enabled via the [Kyverno CLI](/docs/subprojects/kyverno-cli).
 
 For example, this policy enforces the latest version of the Pod Security Standards [baseline profile](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline) in a single rule across the entire cluster.
 
@@ -1718,8 +1718,8 @@ The Kyverno Command Line Interface (CLI) enables the validation and testing of V
 
 Check the below sections for more information:
 
-1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/usage/apply#applying-validatingpolicies).
-2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/usage/test/#testing-validatingpolicies)
+1. [Apply ValidatingAdmissionPolicies to resources using `kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply).
+2. [Test ValidatingAdmissionPolicies aganist resources using `kyverno test`](/docs/kyverno-cli/reference/kyverno_test)
    :::
 
 The ValidatingAdmissionPolicy is designed to perform basic validation checks for an admission request. In contrast, Kyverno is capable of performing complex validation checks, validation across resources with API lookups, mutation, generation, image verification, exception management, reporting, and off-cluster validation.
@@ -1910,7 +1910,7 @@ When a Kyverno policy matches solely on Pods, the generated ValidatingAdmissionP
 
 The generated ValidatingAdmissionPolicy with its binding are totally managed by the Kyverno admission controller which means deleting/modifying these generated resources will be reverted. Any updates to Kyverno policy triggers synchronization in the corresponding ValidatingAdmissionPolicy.
 
-In case there is a [PolicyException](/docs/exceptions/) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
+In case there is a [PolicyException](/docs/guides/exceptions) defined for the Kyverno policy, the corresponding ValidatingAdmissionPolicy will make use of the `matchConstraints.excludeResourceRules` field.
 
 Below is an example of a Kyverno policy and a PolicyException that matches it. Both the policy and the exception will be used to generate a ValidatingAdmissionPolicy and its corresponding binding.
 

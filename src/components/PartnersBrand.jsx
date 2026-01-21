@@ -1,17 +1,15 @@
 export const PartnersBrand = ({ name, image }) => {
   return (
-    <span
-      key={name}
-      className="flex flex-col justify-baseline items-center space-y-3"
-    >
+    <div className="flex flex-col justify-center items-center space-y-3 flex-shrink-0 min-w-[100px] md:min-w-[140px]">
       <img
         src={image}
-        alt="product icons"
-        className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
+        alt={`${name} logo`}
+        className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain opacity-80 hover:opacity-100 transition-opacity duration-200"
+        loading="lazy"
       />
-      <span className="text-sm text-white/80 hidden sm:inline-block">
+      <span className="text-sm text-theme-secondary hidden md:inline-block">
         {name}
       </span>
-    </span>
+    </div>
   )
 }

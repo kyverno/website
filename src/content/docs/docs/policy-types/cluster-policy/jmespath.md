@@ -220,7 +220,7 @@ spec:
       image: nginx
 ```
 
-Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/usage/jp).
+Assume this Pod is saved as `pod.yaml` locally, its `containers[]` may be queried using a simple JMESPath expression with help from the [Kyverno CLI](/docs/kyverno-cli/reference/kyverno_jp).
 
 ```sh
 $ kyverno jp query -i pod.yaml "spec.containers[]"
@@ -344,7 +344,7 @@ spec:
 
 In addition to the filters available in the upstream JMESPath library which Kyverno uses, there are also many new and custom filters developed for Kyverno's use found nowhere else. These filters augment the already robust capabilities of JMESPath to bring new functionality and capabilities which help solve common use cases in running Kubernetes. The filters endemic to Kyverno can be used in addition to any of those found in the upstream JMESPath library used by Kyverno and do not represent replaced or removed functionality.
 
-For instructions on how to test these filters in a standalone method (i.e., outside of Kyverno policy), see the [documentation](/docs/kyverno-cli/usage/jp) on the `kyverno jp` subcommand.
+For instructions on how to test these filters in a standalone method (i.e., outside of Kyverno policy), see the [documentation](/docs/kyverno-cli/reference/kyverno_jp) on the `kyverno jp` subcommand.
 
 Information on each subcommand, its inputs and output, and specific usage instructions can be found below along with helpful and common use cases that have been identified.
 
@@ -725,18 +725,18 @@ spec:
     - name: validate-external-url
       match:
         any:
-        - resources:
-            kinds:
-              - ConfigMap
+          - resources:
+              kinds:
+                - ConfigMap
       validate:
         failureAction: Enforce
-        message: "ConfigMap contains an external URL."
+        message: 'ConfigMap contains an external URL.'
         deny:
           conditions:
             all:
-             - key: "{{ request.object.data.test | is_external_url(@) }}"
-              operator: Equals
-              value: true
+              - key: '{{ request.object.data.test | is_external_url(@) }}'
+                operator: Equals
+                value: true
 ```
 
 </p>

@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Application
-tags: []
+tags:
+  - Argo
 version: 1.6.0
+description: 'This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.'
 ---
 
 ## Policy Definition

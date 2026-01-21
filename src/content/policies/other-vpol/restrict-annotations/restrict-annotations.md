@@ -6,8 +6,10 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Sample in Vpol
 version: 1.14.0
+description: 'Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don''t set reserved annotations or to force them to use a newer version of an annotation.'
 ---
 
 ## Policy Definition

@@ -5,8 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Certificate
-tags: []
+tags:
+  - Cert-Manager
 version: 1.6.0
+description: 'Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.'
 ---
 
 ## Policy Definition

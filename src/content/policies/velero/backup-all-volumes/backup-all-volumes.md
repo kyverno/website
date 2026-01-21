@@ -6,7 +6,9 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Velero
+description: 'In order for Velero to backup volumes in a Pod using an opt-in approach, it requires an annotation on the Pod called `backup.velero.io/backup-volumes` with the value being a comma-separated list of the volumes mounted to that Pod. This policy automatically annotates Pods (and Pod controllers) which refer to a PVC so that all volumes are listed in the aforementioned annotation if a Namespace with the label `velero-backup-pvc=true`.'
 ---
 
 ## Policy Definition
