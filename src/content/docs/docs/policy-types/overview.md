@@ -1,36 +1,76 @@
 ---
 title: Overview
-excerpt: >-
-  Kyverno Policy Types
+description: >-
+  Kyverno Policy Types - CEL-based and Traditional
 sidebar:
   order: 1
 ---
 
-Kyverno offers multiple policy types decribed below. Kyverno's mission is to be the best policy engine for Kubernetes, and allow applying Kubernetes style policies everywhere incuding outside of Kubernetes.
+Kyverno offers multiple policy types to secure, automate, and operate your Kubernetes infrastructure.
 
-As Kubernetes has evolved, Kyverno has also evolved its APIs. Kyverno initially supported JMESPath as a fast and effecient JSON processing language. Since 2022, Kubernetes has added [extensive support for Common Expression Language (CEL)](https://kubernetes.io/docs/reference/using-api/cel/). Hence, Kyverno has also evolved to fully support CEL. This shift allows Kyverno to maintain native compatibility and reduces the cognitive load for platform teams as there is one less thing to learn!
+## CEL-based Policies (Recommended)
 
-The new CEL based Kyverno [ValidatingPolicy](/docs/policy-types/validating-policy) and [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) types were introduced in v1.14 (April 2025), and [MutatingPolicy](/docs/policy-types/mutating-policy), [GeneratingPolicy](/docs/policy-types/generating-policy), and [DeletingPolicy](/docs/policy-types/deleting-policy) were added in v1.15 (July 2025).
+**CEL-based policies** (v1beta1) use the Common Expression Language (CEL) and are aligned with Kubernetes' native ValidatingAdmissionPolicy.
 
-## Policy Types
+### Advantages
 
-| Policy Type                                                         | Description                                                                | API Version              | Status             |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------ | ------------------ |
-| [ValidatingPolicy](/docs/policy-types/validating-policy)            | Validate Kubernetes resources or JSON payloads                             | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [MutatingPolicy](/docs/policy-types/mutating-policy)                | Mutate new or existing resources                                           | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [GeneratingPolicy](/docs/policy-types/generating-policy)            | Create or clone resources based on flexible triggers                       | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [DeletingPolicy](/docs/policy-types/deleting-policy)                | Deletes matching resources based on a schedule                             | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures and attestations                         | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [ClusterPolicy](/docs/policy-types/cluster-policy/overview)         | Legacy policy type with validate, mutate, generate, and verifyImages rules | `kyverno.io/v1`          | Deprecated (v1.17) |
-| [CleanupPolicy](/docs/policy-types/cleanup-policy)                  | Legacy policy type that deletes matching resources based on a schedule     | `kyverno.io/v2`          | Deprecated (v1.17) |
+- **Performance**: Faster latency and reduced CPU usage.
+- **K8s Native**: Generates native ValidatingAdmissionPolicy and MutatingAdmissionPolicy.
+- **Expressiveness**: Flexible logic using CEL.
 
-## Deprecation Schedule for Legacy Types
+### Policy Types
 
-The `ClusterPolicy` and `CleanupPolicy` will be suported for multiple releases, as detailed below:
+| Type | Purpose |
+|------|---------|
+| [ValidatingPolicy](/docs/policy-types/validating-policy) | Validate resources or JSON payloads |
+| [MutatingPolicy](/docs/policy-types/mutating-policy) | Mutate new or existing resources |
+| [GeneratingPolicy](/docs/policy-types/generating-policy) | Create or clone resources |
+| [DeletingPolicy](/docs/policy-types/deleting-policy) | Delete resources on a schedule |
+| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures |
 
-| Release | Date (estimated) | Status                 |
-| ------- | ---------------- | ---------------------- |
-| v1.17   | Jan 2026         | Marked for deprecation |
-| v1.18   | Apr 2026         | Critical fixes only    |
-| v1.19   | Jul 2026         | Critical fixes only    |
-| v1.20   | Oct 2026         | Planned for removal    |
+All types support both cluster-scoped (e.g., `ValidatingPolicy`) and namespace-scoped (e.g., `NamespacedValidatingPolicy`) variants.
+
+### Roadmap
+
+- **v1.14**: Initial alpha (Validating/ImageValidating)
+- **v1.15**: Alpha extension (Mutating/Generating/Deleting)
+- **v1.16**: Beta promotion (v1beta1)
+- **v1.17**: v1 API (Planned)
+
+## Traditional Policies (Legacy)
+
+**ClusterPolicy/Policy** resources use YAML patterns and JMESPath. They remain fully supported but are recommended primarily for existing deployments or simple pattern matching.
+
+:::note[Migration]
+Existing policies do not need immediate migration. For new policies, we recommend the CEL-based format. See the [Migration Guide](/docs/migration/traditional-to-cel).
+:::
+
+| Task | Traditional Policy Field |
+|------|--------------------------|
+| Validate | `validate` rule |
+| Mutate | `mutate` rule |
+| Generate | `generate` rule |
+| Verify Image | `verifyImages` rule |
+| Cleanup | `cleanup` policy |
+
+Reference: [ClusterPolicy Overview](/docs/policy-types/cluster-policy/overview).
+
+## Selection Guide
+
+### Use CEL-based Policies for:
+- New deployments
+- Performance-sensitive environments
+- Complex validation logic
+- Native Kubernetes policy generation
+- Non-Kubernetes payloads (Terraform, JSON)
+
+### Use Traditional Policies for:
+- Existing stable policies
+- Simple pattern matching
+- Teams preferring YAML-only syntax
+
+## Quick Start
+
+1. **[Getting Started with CEL Policies](/docs/cel/getting-started)** - Basics of using CEL in Kyverno
+2. **[CEL vs Traditional Policies](/docs/cel/cel-vs-traditional)** - Comparison guide
+3. **[Sample Policies](/policies)** - Browse policy examples

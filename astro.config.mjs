@@ -104,7 +104,7 @@ export default defineConfig({
               ],
               collapsed: true,
               badge: {
-                text: 'Deprecated',
+                text: 'Legacy',
                 variant: 'caution',
               },
             },
@@ -116,6 +116,8 @@ export default defineConfig({
           label: 'Guides',
           collapsed: true,
           items: [
+            'docs/guides/cel-getting-started',
+            'docs/guides/cel-vs-traditional',
             'docs/guides/migration-to-cel',
             'docs/guides/applying-policies',
             'docs/guides/testing-policies',
