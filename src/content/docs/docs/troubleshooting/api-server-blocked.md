@@ -1,6 +1,5 @@
 ---
 title: 'API Server Blocked'
-linkTitle: 'Blocked API Server'
 weight: 10
 description: >
   Learn how to resolve API server blockages due to Kyverno webhook timeouts and misconfigurations

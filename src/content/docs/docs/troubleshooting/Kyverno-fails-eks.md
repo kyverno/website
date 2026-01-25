@@ -1,6 +1,5 @@
 ---
 title: 'Kyverno Issues on EKS'
-linkTitle: 'Kyverno Issues EKS'
 weight: 90
 description: >
   Troubleshoot Kyverno webhook failures and resource validation issues on EKS clusters

@@ -1,6 +1,5 @@
 ---
 title: 'Kyverno Slow Response'
-linkTitle: 'Resolved slow response'
 weight: 50
 description: >
   Resolve slow Kyverno operations caused by API throttling.

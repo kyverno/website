@@ -1,6 +1,5 @@
 ---
 title: 'Kyverno OOMKills'
-linkTitle: 'OOMKills by Kyverno'
 weight: 30
 description: >
   Troubleshoot high resource usage or OOMKills caused by Kyverno policies.

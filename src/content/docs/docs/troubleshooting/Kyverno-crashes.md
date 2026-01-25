@@ -1,6 +1,5 @@
 ---
 title: 'Kyverno Crashes'
-linkTitle: 'Resolve Kyverno Crashes'
 weight: 70
 description: >
   Resolve Kyverno crashes caused by insufficient memory in large clusters.

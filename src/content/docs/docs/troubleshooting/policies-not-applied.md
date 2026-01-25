@@ -1,6 +1,5 @@
 ---
 title: 'Policies Not Applied'
-linkTitle: 'Policies Not Applied'
 weight: 20
 description: >
   Troubleshoot and fix issues where Kyverno policies are not applied.

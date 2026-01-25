@@ -1,6 +1,5 @@
 ---
 title: 'Partial Policy Application'
-linkTitle: 'Partial Policy Application'
 weight: 60
 description: >
   Resolve issues where only some Kyverno policies are applied.

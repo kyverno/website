@@ -1,5 +1,5 @@
 ---
-title: Admission Reports Overloaded
+title: 'Admission Reports Overloaded'
 weight: 130
 description: >
   Resolve accumulating admission reports affecting etcd and cluster performance.

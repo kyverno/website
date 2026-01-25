@@ -1,5 +1,6 @@
 ---
-title: Client-Side Throttling
+title: 'Client-Side Throttling'
+linkTitle: 'Throttling Done at Client-End'
 weight: 110
 description: >
   Resolve delays in resource creation caused by Kyverno's client-side throttling.

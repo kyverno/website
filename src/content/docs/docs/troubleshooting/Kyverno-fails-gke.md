@@ -1,6 +1,5 @@
 ---
 title: 'Kyverno Issues on GKE'
-linkTitle: 'Kyverno Issues GKE'
 weigth: 80
 description: >
   Troubleshoot Kyverno webhook failures on GKE private clusters with firewall rule adjustments.
