@@ -1,9 +1,9 @@
 ---
 title: 'Policies Not Applied'
 linkTitle: 'Policies Not Applied'
+weight: 20
 description: >
   Troubleshoot and fix issues where Kyverno policies are not applied.
-weight: 20
 ---
 
 **Symptom**: My policies are created but nothing seems to happen when I create a resource that should trigger them.

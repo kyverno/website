@@ -1,9 +1,9 @@
 ---
 title: 'Kyverno OOMKills'
 linkTitle: 'OOMKills by Kyverno'
+weight: 30
 description: >
   Troubleshoot high resource usage or OOMKills caused by Kyverno policies.
-weight: 30
 ---
 
 **Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?

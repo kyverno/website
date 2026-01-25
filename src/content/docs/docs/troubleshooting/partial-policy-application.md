@@ -1,9 +1,9 @@
 ---
 title: 'Partial Policy Application'
 linkTitle: 'Partial Policy Application'
+weight: 60
 description: >
   Resolve issues where only some Kyverno policies are applied.
-weight: 60
 ---
 
 **Symptom**: Kyverno is working for some policies but not others. How can I see what's going on?

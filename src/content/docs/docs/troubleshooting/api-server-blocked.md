@@ -1,9 +1,9 @@
 ---
 title: 'API Server Blocked'
 linkTitle: 'Blocked API Server'
+weight: 10
 description: >
   Learn how to resolve API server blockages due to Kyverno webhook timeouts and misconfigurations
-weight: 10
 ---
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".

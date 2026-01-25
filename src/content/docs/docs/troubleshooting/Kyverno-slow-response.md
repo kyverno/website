@@ -1,9 +1,9 @@
 ---
 title: 'Kyverno Slow Response'
 linkTitle: 'Resolved slow response'
+weight: 50
 description: >
   Resolve slow Kyverno operations caused by API throttling.
-weight: 50
 ---
 
 **Symptom**: Kyverno's operation seems slow in either mutating resources or validating them, causing additional time to create resources in the Kubernetes cluster.

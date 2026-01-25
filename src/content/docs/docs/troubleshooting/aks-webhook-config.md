@@ -1,9 +1,9 @@
 ---
 title: 'AKS Webhook Configuration and Performance Issues'
 linkTItle: 'Webhook config'
+weight: 40
 description: >
   Kyverno on AKS is consuming excessive CPU or memory, or generating a high volume of audit logs, due to policy configuration, workload scale, or cluster-specific behavior.
-weight: 40
 ---
 
 **Symptom**: I'm using AKS and Kyverno is using too much memory or CPU or produces many audit logs
