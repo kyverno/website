@@ -1,9 +1,9 @@
 ---
 title: 'Kyverno Issues on EKS'
 linkTitle: 'Kyverno Issues EKS'
+weight: 90
 description: >
   Troubleshoot Kyverno webhook failures and resource validation issues on EKS clusters
-weight: 90
 ---
 
 **Symptom**: I'm an EKS user and I'm finding that resources that should be blocked by a Kyverno policy are not. My cluster does not use the VPC CNI.

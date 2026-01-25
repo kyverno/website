@@ -1,8 +1,8 @@
 ---
 title: Client-Side Throttling
+weight: 110
 description: >
   Resolve delays in resource creation caused by Kyverno's client-side throttling.
-weight: 110
 ---
 
 **Symptom**: Kyverno pods emit logs stating `Waited for <n>s due to client-side throttling`; the creation of mutated resources may be delayed.
