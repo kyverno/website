@@ -64,5 +64,8 @@
   },
   "lint-staged": {
     "*.{js,mjs,ts,css,scss,jsx,tsx,md,mdx,yml,yaml,astro}": "prettier --write"
+  },
+  "overrides": {
+    "shiki": "3.20.0"
   }
 }

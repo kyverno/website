@@ -2,7 +2,7 @@
 title: 'Kyverno Lacks Permissions'
 weight: 140
 description: >
-  Troubleshoot and fix Kyverno's permission issues during policy creation
+  Troubleshoot and fix Kyverno's permission issues during policy creation.
 ---
 
 **Symptom**: Attempting to create a [mutate existing](/docs/policy-types/cluster-policy/mutate#mutate-existing-resources) or [generate](/docs/policy-types/cluster-policy/generate) policy and Kyverno throws an error similar to the one below:
