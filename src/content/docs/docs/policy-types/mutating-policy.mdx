@@ -8,12 +8,12 @@ sidebar:
 
 import FeatureState from '../../../../components/FeatureState.astro'
 
-<FeatureState state="beta" version="v1.16" />
+<FeatureState state="stable" version="v1.17" />
 
 The Kyverno `MutatingPolicy` type extends the Kubernetes `MutatingAdmissionPolicy` type for complex mutation operations and other features required for Policy-as-Code. A `MutatingPolicy` is a superset of a `MutatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-label
@@ -66,7 +66,7 @@ The `MutatingPolicy` extends the [Kubernetes MutatingAdmissionPolicy](https://ku
 The `spec.evaluation` field defines how the policy is applied and how the payload is processed. It can be used to enable, or disable, admission request processing and existing resource mutation for a policy.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: sample
@@ -90,7 +90,7 @@ Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/k
 The `spec.webhookConfiguration` field defines properties used to manage the Kyverno admission controller webhook settings.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels
@@ -111,7 +111,7 @@ The `spec.autogen` field defines policy auto-generation behaviors, to automatica
 Here is an example of generating policies for deployments, jobs, cronjobs, and statefulsets and also generating a `MutatingAdmissionPolicy` from the `MutatingPolicy` declaration:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-default-labels
@@ -143,7 +143,7 @@ Both policy types have identical functionality and field structure. The only dif
 ### Example NamespacedMutatingPolicy
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: NamespacedMutatingPolicy
 metadata:
   name: add-labels
@@ -182,7 +182,7 @@ ApplyConfiguration patches use a merge-style approach, written as CEL expression
 ### Basic ApplyConfiguration
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-service-account
@@ -209,7 +209,7 @@ spec:
 ### Conditional ApplyConfiguration
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: conditional-labels
@@ -244,7 +244,7 @@ JSONPatch provides fine-grained control over mutations using RFC 6902 JSON Patch
 ### Basic JSONPatch
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels-jsonpatch
@@ -283,7 +283,7 @@ spec:
 ### Multiple JSONPatch Operations
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: complex-jsonpatch
@@ -320,7 +320,7 @@ spec:
 ### Conditional JSONPatch with Escape
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: escape-jsonpatch
@@ -355,7 +355,7 @@ Kyverno supports looping through elements within resources using CEL functions l
 ### Iterating Through Containers
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: foreach
@@ -387,7 +387,7 @@ This example uses CEL's `map()` function to iterate through all containers in a 
 ### Conditional Iteration with Filter
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: foreach-conditional
@@ -429,7 +429,7 @@ MutatingPolicy supports background processing to mutate existing resources in th
 When the trigger and target are the same resource type, the policy will mutate ALL existing resources of that type when a trigger occurs:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: same-trigger-target
@@ -468,7 +468,7 @@ This means if you have 10 existing namespaces and create a new one, all 11 names
 You can specify different trigger and target resources using `targetMatchConstraints`. When a trigger occurs, Kyverno will mutate ALL existing resources that match the target criteria:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: different-trigger-target
@@ -521,7 +521,7 @@ The order of mutations is important when multiple mutations are applied. Kyverno
 When multiple mutations are defined within the same policy, they are processed in order. This allows you to create mutations that depend on the results of previous mutations:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: simple-database-policy
@@ -572,7 +572,7 @@ The mutations must be ordered from top to bottom in the order of their dependenc
 The `reinvocationPolicy` controls whether mutations are reapplied when earlier mutations modify the object:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: reinvocation-example

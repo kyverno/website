@@ -8,7 +8,7 @@ sidebar:
 
 import FeatureState from '../../../../components/FeatureState.astro'
 
-<FeatureState state="beta" version="v1.16" />
+<FeatureState state="stable" version="v1.17" />
 
 The GeneratingPolicy enables the creation of Kubernetes resources using Common Expression Language (CEL) expressions. It provides the same core functionality as Kyverno's [generate rules](/docs/policy-types/cluster-policy/generate), but is designed with a CEL-first approach for improved flexibility, expressiveness, and alignment with Kubernetes' evolving policy standards.
 
@@ -29,7 +29,7 @@ Key Benefits:
 For example, the following policy automatically clones an image pull secret from the default namespace into any newly created Namespace:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: clone-image-pull-secret
@@ -80,7 +80,7 @@ The Data Source mode allows users to define the downstream resources directly wi
 The below policy demonstrates how to generate a ConfigMap in response to a Namespace creation:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: zk-kafka-address
@@ -132,7 +132,7 @@ To clone a single resource, you can use `resource.Get()` to fetch the source res
 The following example demonstrates how to clone a Secret from the `default` namespace to the target namespace:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-secret
@@ -159,7 +159,7 @@ This policy is triggered whenever a Namespace is created. It captures the trigge
 To clone multiple resources, you can use `resource.List()` to fetch a list of resources and then apply them in the target namespace. The following example demonstrates how to clone all Secrets from the `default` namespace:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-secrets
@@ -192,7 +192,7 @@ GeneratingPolicy supports forEach-style logic using CEL's list processing capabi
 The below policy creates a NetworkPolicy into a list of existing namespaces which is stored as a comma-separated string in a ConfigMap.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-network-policy
@@ -233,7 +233,7 @@ Sometimes, you need to create uniquely named resources during a loop. By creatin
 The policy below creates a uniquely named NetworkPolicy (e.g., np-0, np-1) in each namespace defined in the ConfigMap.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-network-policy
@@ -290,7 +290,7 @@ There might be cases where you want to apply a filter to the list before generat
 The following policy combines filtering and indexing to generate resources for specific, pre-approved namespaces while maintaining their original index for naming consistency.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-network-policy
@@ -355,7 +355,7 @@ When cloning resources, you can also use looping to generate multiple resources 
 The following policy demonstrates how to clone a Secret for each namespace defined in a ConfigMap:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-secrets
@@ -381,7 +381,7 @@ This policy is triggered whenever a ConfigMap is created. It captures the list o
 You can also clone multiple resources for each item in the list. The following example demonstrates how to clone all Secrets from the `default` namespace into each namespace defined in the ConfigMap:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: foreach-clone-list-sync-create
@@ -460,7 +460,7 @@ Both policy types have identical functionality and field structure. The only dif
 ### Example NamespacedGeneratingPolicy
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: NamespacedGeneratingPolicy
 metadata:
   name: clone-secret
@@ -494,7 +494,7 @@ To address this, you can set `evaluation.generateExisting.enabled` to true. This
 The following policy clones a secret to all new **and** existing namespaces:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-secrets

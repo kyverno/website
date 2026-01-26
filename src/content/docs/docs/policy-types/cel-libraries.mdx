@@ -25,7 +25,7 @@ The **Resource library** provides functions like `resource.Get()` and `resource.
 In the sample policy below, `resource.Get()` retrieves a ConfigMap which is then used in the policy evaluation logic:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-image-registries
@@ -60,7 +60,7 @@ spec:
 This sample policy demonstrates how to use `resource.Post()` to perform a live access check using Kubernetes' `SubjectAccessReview` API:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-subjectaccessreview
@@ -102,7 +102,7 @@ spec:
 This sample policy uses `resource.List()` to retrieve all existing Ingress resources and ensures that the current Ingress does not introduce duplicate HTTP paths across the cluster:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: unique-ingress-path
@@ -168,7 +168,7 @@ The **HTTP library** allows interaction with external HTTP/S endpoints using `ht
 The following policy fetches data from an external or internal HTTP(S) endpoint and makes it accessible within the policy:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: vpol-http-get
@@ -194,7 +194,7 @@ spec:
 The following sample sends a `POST` request with a payload to an external service:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: vpol-http-post
@@ -235,7 +235,7 @@ The **User library** includes functions like `parseServiceAccount()` to extract 
 This sample policy ensures that only service accounts in the `kube-system` namespace with names like `replicaset-controller`, `deployment-controller`, or `daemonset-controller` are allowed to create pods:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-pod-creation
@@ -259,7 +259,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-service-account-labels
@@ -307,7 +307,7 @@ The **Image library** offers functions to parse and analyze image references. It
 The following sample ensures that all images use a digest:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-images
@@ -359,7 +359,7 @@ The `image.GetMetadata()` function extracts key metadata from OCI images, allowi
 This sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-image-details
@@ -419,7 +419,7 @@ spec:
 The following policy ensures that a specific deployment exists before allowing Pod creation.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: cpol-apicall-correct

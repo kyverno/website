@@ -116,6 +116,7 @@ export default defineConfig({
           label: 'Guides',
           collapsed: true,
           items: [
+            'docs/guides/evaluating-policy-engines',
             'docs/guides/applying-policies',
             'docs/guides/testing-policies',
             'docs/guides/exceptions',
