@@ -202,8 +202,7 @@ export const comparisonChartHeadingContent = {
     { text: 'Other policy engines', color: 'text-primary-100' },
   ],
 
-  paragraphText: `As the industry's leading policy engine, here's how Kyverno 
-                    compares with other policy engines.`,
+  paragraphText: `As the industry's leading policy engine, here's how Kyverno compares with other popular solutions.`,
 }
 
 export const featureSectionHeadingContent = {
@@ -261,7 +260,7 @@ export const policyShowcaseTabs = [
     id: 'validate-k8s',
     label: 'Validate Kubernetes Resources',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1beta1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-labels
@@ -288,7 +287,7 @@ spec:
     id: 'validate-terraform',
     label: 'Validate Terraform Plans',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-awsvpc-network-mode
@@ -318,7 +317,7 @@ spec:
     id: 'validate-dockerfile',
     label: 'Validate Dockerfiles',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-label-maintainer
@@ -351,7 +350,7 @@ spec:
     id: 'validate-http',
     label: 'Authorize HTTP Requests',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: authorize-jwt
@@ -392,7 +391,7 @@ spec:
     id: 'validate-envoy',
     label: 'Authorize Envoy Requests',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-envoy-request
@@ -415,7 +414,7 @@ spec:
     id: 'mutate-k8s',
     label: 'Mutate Kubernetes Resources',
     learnMore: '/docs/policy-types/mutating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-safe-to-evict
@@ -451,7 +450,7 @@ spec:
     id: 'generate-k8s',
     label: 'Generate Kubernetes Resources',
     learnMore: '/docs/policy-types/generating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-networkpolicy
@@ -490,7 +489,7 @@ spec:
     id: 'cleanup-k8s',
     label: 'Cleanup Kubernetes Resources',
     learnMore: '/docs/policy-types/cleanup-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: cleanup-empty-replicasets
@@ -515,7 +514,7 @@ spec:
     id: 'validate-images',
     label: 'Validate Container Images',
     learnMore: '/docs/policy-types/image-validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1alpha1
+    policy: `apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol

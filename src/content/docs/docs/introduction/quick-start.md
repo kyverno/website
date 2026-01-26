@@ -24,29 +24,26 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/guides/reports) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
+Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different policy types to validate, mutate, generate, cleanup, and verify image configurations. The `validationActions` field is set to `Deny` to block Pods that are non-compliant.
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
 metadata:
   name: require-labels
 spec:
-  rules:
-  - name: check-team
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      failureAction: Enforce
-      message: "label 'team' is required"
-      pattern:
-        metadata:
-          labels:
-            team: "?*"
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - message: "label 'team' is required"
+      expression: "has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''"
 EOF
 ```
 
@@ -123,36 +120,44 @@ Policy reports are helpful in that they are both user- and tool-friendly, based 
 Now that you've experienced validate policies and seen a bit about policy reports, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete clusterpolicy require-labels
+kubectl delete validatingpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [ValidatingPolicy section](/docs/policy-types/validating-policy).
 
 ## Mutate Resources
 
 Mutation is the ability to change or "mutate" a resource in some way prior to it being admitted into the cluster. A mutate rule is similar to a validate rule in that it selects some type of resource (like Pods or ConfigMaps) and defines what the desired state should look like.
 
-Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno has the ability to perform basic "if-then" logical decisions in a very easy way making policies trivial to write and read. The `+(team)` notation uses a Kyverno anchor to define the behavior Kyverno should take if the label key is not found.
+Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno uses CEL expressions to perform conditional logic, making policies easy to write and read.
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
 metadata:
   name: add-labels
 spec:
-  rules:
-  - name: add-team
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          labels:
-            +(team): bravo
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchConditions:
+    - name: team-label-missing
+      expression: '!has(object.metadata.labels) || !has(object.metadata.labels.team)'
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                team: "bravo"
+              }
+            }
+          }
 EOF
 ```
 
@@ -191,10 +196,10 @@ This time, you should see Kyverno did not add the `team` label with the value de
 Now that you've experienced mutate policies and seen how logic can be written easily, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete clusterpolicy add-labels
+kubectl delete mutatingpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [MutatingPolicy section](/docs/policy-types/mutating-policy).
 
 ## Generate Resources
 
@@ -256,27 +261,27 @@ Next, create the following Kyverno policy. The `sync-secrets` policy will match 
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
 metadata:
   name: sync-secrets
 spec:
-  rules:
-  - name: sync-image-pull-secret
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    generate:
-      apiVersion: v1
-      kind: Secret
-      name: regcred
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: true
-      clone:
-        namespace: default
-        name: regcred
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: targetNs
+      expression: 'object.metadata.name'
+    - name: sourceSecret
+      expression: 'resource.Get("v1", "secrets", "default", "regcred")'
+  generate:
+    - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
 EOF
 ```
 
@@ -297,7 +302,7 @@ You should see that Kyverno has generated the `regcred` Secret using the source 
 With a basic understanding of generate policies, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete clusterpolicy sync-secrets
+kubectl delete generatingpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [GeneratingPolicy section](/docs/policy-types/generating-policy).
