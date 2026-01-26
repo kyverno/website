@@ -202,7 +202,7 @@ Several organizations in the Kyverno community have shared their experiences mig
 - [US DoD](https://docs-bigbang.dso.mil/latest/packages/kyverno/docs/gatekeeper/)
 - [PwC](https://medium.com/@glen.yu/why-i-prefer-kyverno-over-gatekeeper-for-native-kubernetes-policy-management-35a05bb94964)
 
-The [Gatekeeper Migration Guide](docs/guides/gatekeeper/) provides more information to plan your own migration.
+The [Gatekeeper Migration Guide](/docs/guides/gatekeeper/) provides more information to plan your own migration.
 
 ## Conclusion
 
