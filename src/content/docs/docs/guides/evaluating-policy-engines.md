@@ -12,7 +12,7 @@ When evaluating policy engines for Kubernetes, it's important to understand the 
 
 ## Project Philosopy
 
-Kyverno was created to make policy management easy for Kubernetes administrators and users. While security will alwats major use case, Kyverno uniquely addresses `Policy-Based Automation` across security, operations, and optimization use cases by providing policy types that map to each phase of resource configuration lifecycle. Using Kyverno, platform engineers can easily address a large number of automation use cases, including but not limited to security. This eliminates the need for complex custom controllers, which are difficult to mantain, secure, and scale.
+Kyverno was created to make policy management easy for Kubernetes administrators and users. While validation checks for security and best practices are a major use case, Kyverno uniquely addresses `Policy-Based Automation` across security, operations, and optimization concerns by providing policy types that map to each phase of resource configuration lifecycle. Using Kyverno, platform engineers can easily address a large number of automation use cases, including but not limited to security. This eliminates the need for complex custom controllers, which are difficult to mantain, secure, and scale.
 
 ## Policy Language
 
