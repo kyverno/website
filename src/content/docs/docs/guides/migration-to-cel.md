@@ -242,7 +242,7 @@ kyverno apply validating-policy.yaml --resource test-pod.yaml
 
 Alternatively, you can use the [Kyverno Playground](https://playground.kyverno.io/).
 
-If you have existing [Kyverno CLI tests](docs/subprojects/kyverno-cli/#test-command), you can use them with the new policy with no changes, and validate it works as expected.
+If you have existing [Kyverno CLI tests](/docs/kyverno-cli/reference/kyverno_test), you can use them with the new policy with no changes, and validate it works as expected.
 
 If you have existing [Kyverno Chainsaw](/docs/subprojects/chainsaw/) tests, any policy type and status checks will need to be converted. The rest of the test logic can be reused.
 
