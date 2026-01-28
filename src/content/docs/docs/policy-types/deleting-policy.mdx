@@ -8,7 +8,7 @@ sidebar:
 
 import FeatureState from '../../../../components/FeatureState.astro'
 
-<FeatureState state="beta" version="v1.16" />
+<FeatureState state="stable" version="v1.17" />
 
 ## Introduction
 
@@ -80,7 +80,7 @@ Both policy types have identical functionality and field structure. The only dif
 ### Example NamespacedDeletingPolicy
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: NamespacedDeletingPolicy
 metadata:
   name: cleanup-jobs
@@ -110,7 +110,7 @@ This `DeletingPolicy` named cleanup-old-test-pods is configured to automatically
 The policy uses a cron schedule to run periodically and applies conditions using CEL expressions to ensure only marked pods are cleaned up. Additionally, it defines a variable (isEphemeral) that could be used to further refine deletion logic, such as deleting only temporary or ephemeral pods.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: cleanup-old-test-pods
@@ -128,7 +128,7 @@ spec:
         environment: test
   conditions:
     - name: isOld
-      expression: "expression: "has(object.metadata.labels.old) && object.metadata.labels.old == 'true'""
+      expression: "has(object.metadata.labels.old) && object.metadata.labels.old == 'true'"
   variables:
     - name: isEphemeral
       expression: "has(object.metadata.labels.ephemeral) && object.metadata.labels.ephemeral == 'true'"
@@ -180,7 +180,7 @@ action: Resource Cleaned Up
 reason: PolicyApplied
 message: successfully deleted the target resource Pod/default/example
 involvedObject:
-  apiVersion: policies.kyverno.io/v1alpha1
+  apiVersion: policies.kyverno.io/v1
   kind: DeletingPolicy
   name: deleting-pod
   uid: cc44fb71-9413-4bbf-bc37-036a10f02c7c
