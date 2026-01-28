@@ -5,7 +5,6 @@ severity: medium
 type: MutatingPolicy
 subjects: []
 tags: []
-isNew: true
 ---
 
 ## Policy Definition

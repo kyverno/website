@@ -9,7 +9,6 @@ tags:
   - Sample
 version: 1.6.0
 description: 'Labels are used as an important source of metadata describing objects in various ways or triggering other functionality. Labels are also a very basic concept and should be used throughout Kubernetes. This policy performs a simple mutation which adds a label `foo=bar` to Pods, Services, ConfigMaps, and Secrets.'
-isNew: true
 ---
 
 ## Policy Definition
