@@ -184,7 +184,7 @@ Refer to the [ValidatingPolicy documentation](/docs/policy-types/validating-poli
 | **spec.rules.mutate.mutateExisting**      | `spec.evaluation.mutateExisting.enabled`                                            |
 | **spec.rules.mutate.patchStrategicMerge** | not supported; convert to `patchType: ApplyConfiguration` or `patchType: JSONPatch` |
 | **spec.rules.mutate.patchesJson6902**     | `patchType: JSONPatch`                                                              |
-| **spec.rules.mutate.targets**             | CEL expressions                                                                     |
+| **spec.rules.mutate.targets**             | `spec.matchConstraints` or `spec.targetMatchConstraints`                            |
 
 Refer to the [MutatingPolicy documentation](/docs/policy-types/mutating-policy/) for details and examples.
 
