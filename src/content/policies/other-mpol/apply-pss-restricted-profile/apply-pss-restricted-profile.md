@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/apply-pss-restricted-profile/apply-pss-restricted-profile.yaml" target="-blank">/other-mpol/apply-pss-restricted-profile/apply-pss-restricted-profile.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: apply-pss-restricted-profile

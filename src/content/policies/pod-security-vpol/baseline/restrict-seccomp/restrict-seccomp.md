@@ -16,7 +16,7 @@ description: 'The seccomp profile must not be explicitly set to Unconfined. This
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml" target="-blank">/pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-seccomp

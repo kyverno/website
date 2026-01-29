@@ -16,7 +16,7 @@ description: 'Node labels are critical pieces of metadata upon which many other 
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-node-label-creation/restrict-node-label-creation.yaml" target="-blank">/other-vpol/restrict-node-label-creation/restrict-node-label-creation.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-node-label-creation

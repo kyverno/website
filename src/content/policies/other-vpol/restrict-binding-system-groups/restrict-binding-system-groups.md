@@ -19,7 +19,7 @@ description: 'Certain system groups exist in Kubernetes which grant permissions 
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml" target="-blank">/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-binding-system-groups

@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-pod-name/block-pod-exec-by-pod-name.yaml" target="-blank">/other-vpol/block-pod-exec-by-pod-name/block-pod-exec-by-pod-name.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-exec-by-pod-name

@@ -16,7 +16,7 @@ description: 'Privilege escalation, such as via set-user-ID or set-group-ID file
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml" target="-blank">/pod-security-vpol/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-privilege-escalation

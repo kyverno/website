@@ -16,7 +16,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/kubevirt-gpol/add-services/add-services.yaml" target="-blank">/kubevirt-gpol/add-services/add-services.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: k6t-add-services

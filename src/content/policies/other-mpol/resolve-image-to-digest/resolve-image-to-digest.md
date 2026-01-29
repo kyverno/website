@@ -15,7 +15,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml" target="-blank">/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: resolve-image-to-digest

@@ -17,7 +17,7 @@ description: 'By default, all pods in a Kubernetes cluster are allowed to commun
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-networkpolicy-empty-podselector/restrict-networkpolicy-empty-podselector.yaml" target="-blank">/other-vpol/restrict-networkpolicy-empty-podselector/restrict-networkpolicy-empty-podselector.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-networkpolicy-empty-podselector

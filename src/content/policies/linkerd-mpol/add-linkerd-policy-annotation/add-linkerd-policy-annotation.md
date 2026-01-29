@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml" target="-blank">/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-linkerd-policy-annotation

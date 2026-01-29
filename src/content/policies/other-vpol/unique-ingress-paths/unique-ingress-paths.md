@@ -16,7 +16,7 @@ description: 'Just like the need to ensure uniqueness among Ingress hosts, there
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml" target="-blank">/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: unique-ingress-path

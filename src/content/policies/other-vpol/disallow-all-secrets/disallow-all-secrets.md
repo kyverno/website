@@ -17,7 +17,7 @@ description: 'Secrets often contain sensitive information which not all Pods nee
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/disallow-all-secrets/disallow-all-secrets.yaml" target="-blank">/other-vpol/disallow-all-secrets/disallow-all-secrets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: no-secrets

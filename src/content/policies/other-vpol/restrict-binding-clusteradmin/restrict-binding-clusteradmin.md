@@ -18,7 +18,7 @@ description: 'The cluster-admin ClusterRole allows any action to be performed on
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml" target="-blank">/other-vpol/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-binding-clusteradmin

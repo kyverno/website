@@ -15,7 +15,7 @@ description: 'Accessing a container engine''s socket is for highly specialized u
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml" target="-blank">/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: docker-socket-check

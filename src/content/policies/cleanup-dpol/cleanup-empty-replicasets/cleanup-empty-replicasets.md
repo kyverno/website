@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml" target="-blank">/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: cleanup-empty-replicasets

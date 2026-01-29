@@ -12,7 +12,7 @@ tags: []
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml" target="-blank">/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-ephemeral-containers

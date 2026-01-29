@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/mutate-large-termination-gps/mutate-large-termination-gps.yaml" target="-blank">/other-mpol/mutate-large-termination-gps/mutate-large-termination-gps.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: mutate-termination-grace-period-seconds

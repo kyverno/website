@@ -17,7 +17,7 @@ description: 'Using the Cosign project, OCI images may be signed to ensure suppl
 <a href="https://github.com/kyverno/policies/raw/main/other/verify-image-ivpol/verify-image-ivpol.yaml" target="-blank">/other/verify-image-ivpol/verify-image-ivpol.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol

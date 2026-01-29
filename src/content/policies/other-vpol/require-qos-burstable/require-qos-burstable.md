@@ -16,7 +16,7 @@ description: 'Pod Quality of Service (QoS) is a mechanism to ensure Pods receive
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-qos-burstable/require-qos-burstable.yaml" target="-blank">/other-vpol/require-qos-burstable/require-qos-burstable.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-qos-burstable

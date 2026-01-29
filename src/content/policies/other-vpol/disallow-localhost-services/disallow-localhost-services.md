@@ -16,7 +16,7 @@ description: 'A Service of type ExternalName which points back to localhost can 
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/disallow-localhost-services/disallow-localhost-services.yaml" target="-blank">/other-vpol/disallow-localhost-services/disallow-localhost-services.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: no-localhost-service

@@ -17,7 +17,7 @@ description: 'Deployments to a Kubernetes cluster with multiple availability zon
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/topologyspreadconstraints-policy/topologyspreadconstraints-policy.yaml" target="-blank">/other-vpol/topologyspreadconstraints-policy/topologyspreadconstraints-policy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: topologyspreadconstraints-policy

@@ -15,7 +15,7 @@ description: 'Environment variables control many aspects of a container''s execu
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-env-vars/check-env-vars.yaml" target="-blank">/other-vpol/check-env-vars/check-env-vars.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-env-vars

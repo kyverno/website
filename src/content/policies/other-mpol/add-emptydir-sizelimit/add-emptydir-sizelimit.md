@@ -16,7 +16,7 @@ description: 'When a Pod requests an emptyDir, by default it does not have a siz
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-emptydir-sizelimit/add-emptydir-sizelimit.yaml" target="-blank">/other-mpol/add-emptydir-sizelimit/add-emptydir-sizelimit.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-emptydir-sizelimit

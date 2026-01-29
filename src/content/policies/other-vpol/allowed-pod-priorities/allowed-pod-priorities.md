@@ -16,7 +16,7 @@ description: 'A Pod PriorityClass is used to provide a guarantee on the scheduli
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-pod-priorities/allowed-pod-priorities.yaml" target="-blank">/other-vpol/allowed-pod-priorities/allowed-pod-priorities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: allowed-podpriorities

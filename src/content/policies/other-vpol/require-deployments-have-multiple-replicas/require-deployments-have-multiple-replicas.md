@@ -16,7 +16,7 @@ description: 'Deployments with a single replica cannot be highly available and t
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml" target="-blank">/other-vpol/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deployment-has-multiple-replicas

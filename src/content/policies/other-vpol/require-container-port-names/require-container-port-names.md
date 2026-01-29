@@ -15,7 +15,7 @@ description: 'Containers may define ports on which they listen. In addition to a
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-container-port-names/require-container-port-names.yaml" target="-blank">/other-vpol/require-container-port-names/require-container-port-names.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-container-port-names

@@ -16,7 +16,7 @@ description: 'Labels are used as an important source of metadata describing obje
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-labels/add-labels.yaml" target="-blank">/other-mpol/add-labels/add-labels.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels

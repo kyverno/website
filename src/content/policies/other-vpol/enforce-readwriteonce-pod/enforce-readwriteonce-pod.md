@@ -16,7 +16,7 @@ description: 'Some stateful workloads with multiple replicas only allow a single
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml" target="-blank">/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: readwriteonce-pod

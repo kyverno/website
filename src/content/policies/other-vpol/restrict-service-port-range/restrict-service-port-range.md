@@ -16,7 +16,7 @@ description: 'Services which are allowed to expose any port number may be able t
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-service-port-range/restrict-service-port-range.yaml" target="-blank">/other-vpol/restrict-service-port-range/restrict-service-port-range.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-service-port-range

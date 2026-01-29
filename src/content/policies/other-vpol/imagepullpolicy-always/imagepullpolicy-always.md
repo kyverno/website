@@ -16,7 +16,7 @@ description: 'If the `latest` tag is allowed for images, it is a good idea to ha
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/imagepullpolicy-always/imagepullpolicy-always.yaml" target="-blank">/other-vpol/imagepullpolicy-always/imagepullpolicy-always.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: imagepullpolicy-always

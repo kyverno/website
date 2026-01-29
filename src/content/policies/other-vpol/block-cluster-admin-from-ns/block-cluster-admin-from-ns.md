@@ -19,7 +19,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml" target="-blank">/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-cluster-admin-from-ns

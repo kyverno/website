@@ -17,7 +17,7 @@ description: 'In addition to restricting HostPath volumes, the restricted pod se
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml" target="-blank">/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-volume-types

@@ -16,7 +16,7 @@ description: 'Especially in cloud provider environments, a Service having type L
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml" target="-blank">/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: no-loadbalancer-service

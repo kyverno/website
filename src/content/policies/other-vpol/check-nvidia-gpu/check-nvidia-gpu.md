@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-nvidia-gpu/check-nvidia-gpu.yaml" target="-blank">/other-vpol/check-nvidia-gpu/check-nvidia-gpu.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-nvidia-gpus

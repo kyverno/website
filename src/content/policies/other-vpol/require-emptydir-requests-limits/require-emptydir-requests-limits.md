@@ -15,7 +15,7 @@ description: 'Pods which mount emptyDir volumes may be allowed to potentially ov
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml" target="-blank">/other-vpol/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-emptydir-requests-and-limits

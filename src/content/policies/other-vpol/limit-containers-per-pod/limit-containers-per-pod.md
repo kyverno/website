@@ -16,7 +16,7 @@ description: 'Pods can have many different containers which are tightly coupled.
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-containers-per-pod/limit-containers-per-pod.yaml" target="-blank">/other-vpol/limit-containers-per-pod/limit-containers-per-pod.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-containers-per-pod

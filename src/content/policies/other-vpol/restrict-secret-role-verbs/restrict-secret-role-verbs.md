@@ -18,7 +18,7 @@ description: 'The verbs `get`, `list`, and `watch` in a Role or ClusterRole, whe
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml" target="-blank">/other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-secret-role-verbs

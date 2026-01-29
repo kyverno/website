@@ -16,7 +16,7 @@ description: 'Use of a SHA checksum when pulling an image is often preferable be
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-image-checksum/require-image-checksum.yaml" target="-blank">/other-vpol/require-image-checksum/require-image-checksum.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-image-checksum

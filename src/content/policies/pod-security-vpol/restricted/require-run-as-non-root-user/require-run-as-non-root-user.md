@@ -16,7 +16,7 @@ description: 'Containers must be required to run as non-root users. This policy 
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-run-as-non-root-user

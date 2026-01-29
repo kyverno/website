@@ -16,7 +16,7 @@ description: 'Developers may feel compelled to use simple shell commands as a wo
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml" target="-blank">/other-vpol/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-commands-in-exec-probe

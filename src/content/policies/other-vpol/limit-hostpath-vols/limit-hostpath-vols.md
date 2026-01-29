@@ -16,7 +16,7 @@ description: 'hostPath volumes consume the underlying node''s file system. If ho
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml" target="-blank">/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-hostpath-vols

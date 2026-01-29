@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml" target="-blank">/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: enable-kubecost-continuous-rightsizing

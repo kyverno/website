@@ -63,7 +63,7 @@ spec:
 New `MutatingPolicy` approach:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-default-labels
@@ -124,7 +124,7 @@ The new GeneratingPolicy type provides enhanced integration through CEL expressi
 For example, the following policy automatically clones an image pull secret from the default namespace into any newly created Namespace:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: clone-image-pull-secret
@@ -161,7 +161,7 @@ Unlike admission policies that react to API requests, DeletingPolicy:
 Here's an example that automatically deletes old test pods:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: cleanup-old-test-pods

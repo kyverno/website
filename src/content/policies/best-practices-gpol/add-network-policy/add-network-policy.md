@@ -18,7 +18,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-gpol/add-network-policy/add-network-policy.yaml" target="-blank">/best-practices-gpol/add-network-policy/add-network-policy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-networkpolicy

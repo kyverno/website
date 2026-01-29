@@ -16,7 +16,7 @@ description: 'Sysctls can disable security mechanisms or affect all containers o
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-sysctls/restrict-sysctls.yaml" target="-blank">/pod-security-vpol/baseline/restrict-sysctls/restrict-sysctls.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-sysctls

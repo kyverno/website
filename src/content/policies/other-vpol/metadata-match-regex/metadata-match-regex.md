@@ -17,7 +17,7 @@ description: 'Rather than a simple check to see if given metadata such as labels
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/metadata-match-regex/metadata-match-regex.yaml" target="-blank">/other-vpol/metadata-match-regex/metadata-match-regex.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: metadata-match-regex

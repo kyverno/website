@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-gpol/create-default-pdb/create-default-pdb.yaml" target="-blank">/other-gpol/create-default-pdb/create-default-pdb.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: create-default-pdb

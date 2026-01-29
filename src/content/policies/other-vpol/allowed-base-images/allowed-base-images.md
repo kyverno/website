@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-base-images/allowed-base-images.yaml" target="-blank">/other-vpol/allowed-base-images/allowed-base-images.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: allowed-base-images

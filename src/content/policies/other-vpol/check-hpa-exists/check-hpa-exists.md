@@ -19,7 +19,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-hpa-exists/check-hpa-exists.yaml" target="-blank">/other-vpol/check-hpa-exists/check-hpa-exists.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-hpa-exists

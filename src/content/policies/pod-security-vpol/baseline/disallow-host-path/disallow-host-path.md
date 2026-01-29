@@ -17,7 +17,7 @@ description: 'HostPath volumes let Pods use host directories and volumes in cont
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-path

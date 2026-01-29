@@ -17,7 +17,7 @@ description: 'Containers should be forbidden from running with a root primary or
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-non-root-groups/require-non-root-groups.yaml" target="-blank">/other-vpol/require-non-root-groups/require-non-root-groups.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-non-root-groups

@@ -17,7 +17,7 @@ description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally defi
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-storageclass/require-storageclass.yaml" target="-blank">/other-vpol/require-storageclass/require-storageclass.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-storageclass

@@ -18,7 +18,7 @@ description: 'The verbs `impersonate`, `bind`, and `escalate` may all potentiall
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml" target="-blank">/other-vpol/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-escalation-verbs-roles

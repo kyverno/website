@@ -16,7 +16,7 @@ description: 'hostPath persistentvolumes consume the underlying node''s file sys
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-type-pv/limit-hostpath-type-pv.yaml" target="-blank">/other-vpol/limit-hostpath-type-pv/limit-hostpath-type-pv.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-hostpath-type-pv

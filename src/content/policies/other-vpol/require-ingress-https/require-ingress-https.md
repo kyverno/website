@@ -15,7 +15,7 @@ description: 'Ingress resources should only allow secure traffic by disabling HT
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-ingress-https/require-ingress-https.yaml" target="-blank">/other-vpol/require-ingress-https/require-ingress-https.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-ingress-https

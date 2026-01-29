@@ -17,7 +17,7 @@ description: 'A ClusterRole with nodes/proxy resource access allows a user to pe
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml" target="-blank">/other-vpol/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-clusterrole-nodesproxy

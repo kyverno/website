@@ -16,7 +16,7 @@ description: 'Secrets often contain sensitive information and their access shoul
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-secrets-by-name/restrict-secrets-by-name.yaml" target="-blank">/other-vpol/restrict-secrets-by-name/restrict-secrets-by-name.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-secrets-by-name

@@ -17,7 +17,7 @@ description: 'In some cases you would need to trust custom CA certificates for a
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-certificates-volume/add-certificates-volume.yaml" target="-blank">/other-mpol/add-certificates-volume/add-certificates-volume.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-certificates-volume

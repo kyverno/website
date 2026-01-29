@@ -16,7 +16,7 @@ description: 'Access to host ports allows potential snooping of network traffic 
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-ports

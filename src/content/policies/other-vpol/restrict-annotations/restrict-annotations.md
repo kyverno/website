@@ -17,7 +17,7 @@ description: 'Some annotations control functionality driven by other cluster-wid
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-annotations/restrict-annotations.yaml" target="-blank">/other-vpol/restrict-annotations/restrict-annotations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-annotations

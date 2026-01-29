@@ -19,7 +19,7 @@ description: 'Wildcards (''*'') in verbs grants all access to the resources refe
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml" target="-blank">/other-vpol/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-wildcard-verbs

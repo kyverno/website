@@ -23,7 +23,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/set-karpenter-non-cpu-limits/set-karpenter-non-cpu-limits.yaml" target="-blank">/karpenter-mpol/set-karpenter-non-cpu-limits/set-karpenter-non-cpu-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: set-karpenter-non-cpu-limits

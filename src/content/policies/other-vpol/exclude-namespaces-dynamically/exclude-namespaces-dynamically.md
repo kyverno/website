@@ -17,7 +17,7 @@ description: 'It''s common where policy lookups need to consider a mapping to ma
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml" target="-blank">/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: exclude-namespaces-example

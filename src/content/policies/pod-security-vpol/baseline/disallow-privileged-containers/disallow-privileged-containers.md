@@ -16,7 +16,7 @@ description: 'Privileged mode disables most security mechanisms and must not be 
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml" target="-blank">/pod-security-vpol/baseline/disallow-privileged-containers/disallow-privileged-containers.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-privileged-containers

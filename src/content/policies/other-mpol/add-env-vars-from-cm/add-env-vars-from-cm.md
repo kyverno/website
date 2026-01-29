@@ -16,7 +16,7 @@ description: 'Instead of defining a common set of environment variables multiple
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-env-vars-from-cm/add-env-vars-from-cm.yaml" target="-blank">/other-mpol/add-env-vars-from-cm/add-env-vars-from-cm.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-env-vars-from-cm

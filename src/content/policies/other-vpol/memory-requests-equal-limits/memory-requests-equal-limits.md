@@ -16,7 +16,7 @@ description: 'Pods which have memory limits equal to requests could be given a Q
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml" target="-blank">/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: memory-requests-equal-limits

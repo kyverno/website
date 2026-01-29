@@ -18,7 +18,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-volume-deployment/add-volume-deployment.yaml" target="-blank">/other-mpol/add-volume-deployment/add-volume-deployment.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-volume

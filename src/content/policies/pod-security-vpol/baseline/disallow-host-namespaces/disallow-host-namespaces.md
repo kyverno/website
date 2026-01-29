@@ -16,7 +16,7 @@ description: 'Host namespaces (Process ID namespace, Inter-Process Communication
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-namespaces

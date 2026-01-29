@@ -17,7 +17,7 @@ description: 'Pods not created by workload controllers such as Deployments have 
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/prevent-bare-pods/prevent-bare-pods.yaml" target="-blank">/other-vpol/prevent-bare-pods/prevent-bare-pods.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: prevent-bare-pods

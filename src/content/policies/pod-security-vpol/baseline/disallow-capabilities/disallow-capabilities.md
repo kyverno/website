@@ -16,7 +16,7 @@ description: 'Adding capabilities beyond those listed in the policy must be disa
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-capabilities/disallow-capabilities.yaml" target="-blank">/pod-security-vpol/baseline/disallow-capabilities/disallow-capabilities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-capabilities

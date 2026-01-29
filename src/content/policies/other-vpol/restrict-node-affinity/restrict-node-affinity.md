@@ -15,7 +15,7 @@ description: 'Pods may use several mechanisms to prefer scheduling on a set of n
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml" target="-blank">/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-node-affinity

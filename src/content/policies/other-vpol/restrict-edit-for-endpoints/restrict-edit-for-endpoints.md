@@ -15,7 +15,7 @@ description: 'Clusters not initially installed with Kubernetes 1.22 may be vulne
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-edit-for-endpoints/restrict-edit-for-endpoints.yaml" target="-blank">/other-vpol/restrict-edit-for-endpoints/restrict-edit-for-endpoints.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-edit-for-endpoints

@@ -16,7 +16,7 @@ description: 'This policy restricts Pod images to approved registries defined gl
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml" target="-blank">/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: advanced-restrict-image-registries

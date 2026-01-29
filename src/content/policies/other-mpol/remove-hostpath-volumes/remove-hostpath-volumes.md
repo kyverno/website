@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/remove-hostpath-volumes/remove-hostpath-volumes.yaml" target="-blank">/other-mpol/remove-hostpath-volumes/remove-hostpath-volumes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: remove-hostpath-volumes

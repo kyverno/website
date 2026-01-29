@@ -16,7 +16,7 @@ description: 'A Pod securityContext entry defines fields such as the user and gr
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-default-securitycontext/add-default-securitycontext.yaml" target="-blank">/other-mpol/add-default-securitycontext/add-default-securitycontext.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-default-securitycontext

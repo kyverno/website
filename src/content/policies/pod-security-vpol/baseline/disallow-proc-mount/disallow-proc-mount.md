@@ -16,7 +16,7 @@ description: 'The default /proc masks are set up to reduce attack surface and sh
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml" target="-blank">/pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-proc-mount

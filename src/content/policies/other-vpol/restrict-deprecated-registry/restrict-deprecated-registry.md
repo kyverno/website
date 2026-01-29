@@ -17,7 +17,7 @@ description: 'Legacy k8s.gcr.io container image registry will be frozen in early
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-deprecated-registry/restrict-deprecated-registry.yaml" target="-blank">/other-vpol/restrict-deprecated-registry/restrict-deprecated-registry.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-deprecated-registry

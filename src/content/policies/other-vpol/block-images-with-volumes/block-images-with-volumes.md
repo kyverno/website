@@ -17,7 +17,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-images-with-volumes/block-images-with-volumes.yaml" target="-blank">/other-vpol/block-images-with-volumes/block-images-with-volumes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-images-with-volumes

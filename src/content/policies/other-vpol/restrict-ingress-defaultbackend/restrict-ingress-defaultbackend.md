@@ -16,7 +16,7 @@ description: 'An Ingress with no rules sends all traffic to a single default bac
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-ingress-defaultbackend/restrict-ingress-defaultbackend.yaml" target="-blank">/other-vpol/restrict-ingress-defaultbackend/restrict-ingress-defaultbackend.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-ingress-defaultbackend

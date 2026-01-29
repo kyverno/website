@@ -17,7 +17,7 @@ description: 'Rather than creating a deny list of annotations, it may be more us
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-annotations/allowed-annotations.yaml" target="-blank">/other-vpol/allowed-annotations/allowed-annotations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: allowed-annotations

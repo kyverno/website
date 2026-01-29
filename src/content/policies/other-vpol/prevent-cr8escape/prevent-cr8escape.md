@@ -16,7 +16,7 @@ description: 'A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/prevent-cr8escape/prevent-cr8escape.yaml" target="-blank">/other-vpol/prevent-cr8escape/prevent-cr8escape.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: prevent-cr8escape

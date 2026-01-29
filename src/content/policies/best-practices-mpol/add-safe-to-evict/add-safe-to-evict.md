@@ -18,7 +18,7 @@ isNew: true
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml" target="-blank">/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-safe-to-evict

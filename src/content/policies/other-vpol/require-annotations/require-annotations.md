@@ -16,7 +16,7 @@ description: 'Define and use annotations that identify semantic attributes of yo
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-annotations/require-annotations.yaml" target="-blank">/other-vpol/require-annotations/require-annotations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-annotations

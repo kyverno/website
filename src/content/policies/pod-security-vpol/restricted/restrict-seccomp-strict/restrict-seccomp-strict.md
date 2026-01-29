@@ -16,7 +16,7 @@ description: 'The seccomp profile in the Restricted group must not be explicitly
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml" target="-blank">/pod-security-vpol/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-seccomp-strict

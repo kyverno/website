@@ -67,7 +67,7 @@ spec:
 New `ValidatingPolicy` approach:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas
@@ -118,7 +118,7 @@ Key features include:
 The following `ImageValidatingPolicy` verifies that all container images from ghcr.io meet strict supply chain security requirements before pods are created, ensuring all images are properly signed.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: ivpol-sample
@@ -158,7 +158,7 @@ spec:
 The following policy enhances security posture by dynamically fetching Notary certificates from a ConfigMap:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -204,7 +204,7 @@ Policy exceptions enable teams to:
 For example, you can create an exception that excludes a specific deployment from an `ImageValidatingPolicy`:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exclude-skipped-deployment

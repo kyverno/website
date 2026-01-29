@@ -16,7 +16,7 @@ description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. I
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml" target="-blank">/pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-capabilities-strict

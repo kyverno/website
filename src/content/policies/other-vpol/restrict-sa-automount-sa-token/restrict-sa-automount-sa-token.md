@@ -16,7 +16,7 @@ description: 'Kubernetes automatically mounts ServiceAccount credentials in each
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml" target="-blank">/other-vpol/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-sa-automount-sa-token

@@ -15,7 +15,7 @@ description: 'The Kubernetes downward API only has the ability to express so man
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-image-as-env-var/add-image-as-env-var.yaml" target="-blank">/other-mpol/add-image-as-env-var/add-image-as-env-var.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-image-as-env-var
