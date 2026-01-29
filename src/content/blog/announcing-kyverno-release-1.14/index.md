@@ -67,7 +67,7 @@ spec:
 New `ValidatingPolicy` approach:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas

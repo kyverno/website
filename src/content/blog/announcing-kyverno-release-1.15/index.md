@@ -63,7 +63,7 @@ spec:
 New `MutatingPolicy` approach:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
 metadata:
   name: add-default-labels
