@@ -116,6 +116,7 @@ export default defineConfig({
           label: 'Guides',
           collapsed: true,
           items: [
+            'docs/guides/migration-to-cel',
             'docs/guides/applying-policies',
             'docs/guides/testing-policies',
             'docs/guides/exceptions',
@@ -125,12 +126,9 @@ export default defineConfig({
             'docs/guides/high-availability',
             'docs/guides/security',
             'docs/guides/troubleshooting',
-            // {
-            //   label: 'Migrating to CEL Policies',
-            //   link: 'docs/migration/traditional-to-cel',
-            // },
             'docs/guides/admission-controllers',
             'docs/guides/pod-security',
+            'docs/guides/evaluating-policy-engines',
             'docs/guides/gatekeeper',
           ],
         },

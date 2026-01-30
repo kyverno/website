@@ -5,9 +5,13 @@ type: policies
 url: /policies/pod-security/
 ---
 
-<br/>
+Kubernetes Pod Security Standards provide guidelines and best practices to ensure that pods are deployed securely and follow the principle of least privilege. These standards are categorized into different levels—**Privileged**, **Baseline**, and **Restricted**—to help administrators choose the appropriate level of security for their workloads. You can learn more about these standards in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
 
-These Kyverno policies are based on the [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/) definitions. To apply all Pod Security Standard policies (recommended) [install Kyverno](/docs/installation/installation) and [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/), then run:
+Kyverno supports policies for all controls defined in the Kubernetes Pod Security Standards.
+
+## Installation
+
+To apply all Pod Security Standard policies (recommended) [install Kyverno](/docs/installation/installation) and [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/), then run:
 
 ```sh
 kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply -f -
@@ -17,12 +21,32 @@ kustomize build https://github.com/kyverno/policies/pod-security | kubectl apply
 The upstream `kustomize` should be used to apply customizations in these policies, available [here](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/). In many cases the version of `kustomize` built-in to `kubectl` will not work.
 :::
 
-Installation is also available via [Helm](/docs/installation/installation#high-availability-installation) by using the chart `kyverno-policies`.
+Installation is also available via [Helm](/docs/installation/installation#high-availability-installation) by using the chart `kyverno-policies`:
 
-Pod Security Standard policies are organized in two groups, **Baseline** and **Restricted**. Use the filters on the left sidebar to select and view the policies currently covered in each group by selecting the appropriate Policy Category.
+To install the Kyverno Pod Security Standards (PSS) policies via [Helm](https://helm.sh/), you can use the `kyverno/kyverno-policies` chart:
 
-## PodSecurityPolicy Migration
+First, add the Kyverno Helm repository:
 
-Kyverno has a number of policies which replicate the same PodSecurityPolicy functionality designed to assist in migrating from PSP to Kyverno. See the PSP Migration policy category for these policies.
+```sh
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
+```
+
+Then install the PSS policies chart:
+
+```sh
+helm install kyverno-pss kyverno/kyverno-policies \
+  --namespace kyverno-policies --create-namespace \
+  --set policyGroups=pod-security
+```
+
+This command will install all Pod Security policies into the `kyverno-policies` namespace.  
+_You can adjust the namespace as needed for your environment._
+
+For more options and advanced configuration, refer to the [Kyverno Policy Helm chart documentation](https://kyverno.github.io/kyverno/policy-repository/).
+
+## PSP Migration
+
+Kyverno has a number of policies which replicate the same PodSecurityPolicy (PSP) functionality designed to assist in migrating from PSP to Kyverno. See the PSP Migration policy category for these policies.
 
 For a blog post covering a comparison of PodSecurityPolicy to Pod Security Admission and how to migrate from PSP to Kyverno, see [here](/blog/general/psp-migration/index.md).

@@ -132,8 +132,7 @@ export const ComparisonChart = () => {
           <span className="text-primary-100"> Other policy engines</span>
         </h2>
         <p className="text-base sm:text-lg max-w-150 md:max-w-[850px] text-center text-theme-secondary">
-          As the industry's leading policy engine, here's how Kyverno compares
-          with other policy engines.
+          {paragraphText}
         </p>
       </div>
       <div
@@ -141,6 +140,23 @@ export const ComparisonChart = () => {
         bg-dark-50 border border-stroke p-6 rounded-2xl sm:overflow-x-auto text-base mt-8"
       >
         <Table data={comparisonData} />
+      </div>
+      <div className="w-full max-w-7xl mx-auto mt-6 text-center">
+        <p className="text-base sm:text-lg text-theme-secondary">
+          This comparison is provided as a guide and starting point for users to
+          evaluate solutions. It is based on publicly available information and
+          community feedback. Please feel free to create an issue or pull
+          request, if you find any inaccuracies or outdated information.
+        </p>
+        <br />
+      </div>
+      <div className="w-full max-w-7xl mx-auto mt-6 text-center">
+        <a
+          href="/docs/guides/evaluating-policy-engines/"
+          className="text-primary-100 hover:text-accent-100 underline transition-colors text-base sm:text-lg"
+        >
+          Learn more about evaluating policy engines →
+        </a>
       </div>
     </section>
   )
