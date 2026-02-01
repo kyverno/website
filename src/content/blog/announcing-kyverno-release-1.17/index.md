@@ -79,19 +79,38 @@ With this graduation, platform teams can confidently migrate from JMESPath-based
 
 To ensure CEL policies are as powerful as the original Kyverno engine, 1.17 introduces several new function libraries:
 
-- **Cryptographic Functions**
+- **Hash Functions**
 
-  Built-in support for SHA-1, SHA-256, and MD5 hashing.
+  Built-in support for `md5(value)`, `sha1(value)`, and `sha256(value)` hashing.
 
-- **x509 Decoding**
+- **Math Functions**
 
-  Policies can now inspect and validate the contents of x509 certificates directly within a CEL expression.
+  Use `math.round(value, precision)` to round numbers to a specific decimal or integer precision.
+
+- **X509 Decoding**
+
+  Policies can now inspect and validate the contents of x509 certificates directly within a CEL expression using `x509.decode(pem)`.
+
+- **Random String Generation**
+
+  Generate random strings with `random()` (default pattern) or `random(pattern)` for custom regex-based patterns.
+
+- **Transform Utilities**
+
+  Use `listObjToMap(list1, list2, keyField, valueField)` to merge two object lists into a map.
+
+- **JSON Parsing**
+
+  Parse JSON strings into structured data with `json.unmarshal(jsonString)`.
+
+- **YAML Parsing**
+
+  Parse YAML strings into structured data with `yaml.parse(yamlString)`.
 
 - **Time-based Logic**
 
-  New `time.now()` and duration evaluation functions allow for time-since or "maintenance window" style policies.
+  New `time.now()`, `time.truncate(timestamp, duration)`, and `time.toCron(timestamp)` functions allow for time-since or "maintenance window" style policies.
 
-TODO add full JP to CEL table here and links to migration guide
 
 ## The Deprecation of Legacy APIs
 
