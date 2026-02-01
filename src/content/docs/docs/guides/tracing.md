@@ -1,6 +1,6 @@
 ---
 title: Tracing
-description: Using distributed tracing to introspect the internal operations of Kyverno.
+excerpt: Using distributed tracing to introspect the internal operations of Kyverno.
 sidebar:
   order: 80
 ---

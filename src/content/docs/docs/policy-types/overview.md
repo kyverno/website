@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: >-
+excerpt: >-
   Kyverno Policy Types
 sidebar:
   order: 1

@@ -1,6 +1,6 @@
 ---
 title: Evaluating Policy Engines
-description: A comprehensive guide to evaluating policy engines and understanding how Kyverno meets key criteria
+excerpt: A comprehensive guide to evaluating policy engines and understanding how Kyverno meets key criteria
 sidebar:
   order: 50
 ---
