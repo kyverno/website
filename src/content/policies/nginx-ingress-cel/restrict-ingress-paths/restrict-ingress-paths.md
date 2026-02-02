@@ -10,6 +10,7 @@ tags:
   - NGINX Ingress in CEL
 version: 1.11.0
 description: 'This policy mitigates CVE-2021-25745 by restricting `spec.rules[].http.paths[].path` to safe values. Additional paths can be added as required. This issue has been fixed in NGINX Ingress v1.2.0.  Please refer to the CVE for details.'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

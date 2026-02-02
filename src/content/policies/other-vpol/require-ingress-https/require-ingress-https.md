@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other in Vpol
 description: 'Ingress resources should only allow secure traffic by disabling HTTP and therefore only allowing HTTPS. This policy requires that all Ingress resources set the annotation `kubernetes.io/ingress.allow-http` to `"false"` and specify TLS in the spec.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

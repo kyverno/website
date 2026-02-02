@@ -1,6 +1,6 @@
 ---
 title: Notary
-description: Verify CNCF Notary format signatures using X.509 certificates.
+excerpt: Verify CNCF Notary format signatures using X.509 certificates.
 sidebar:
   order: 3
 ---

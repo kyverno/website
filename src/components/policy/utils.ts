@@ -79,6 +79,21 @@ export const getSeverityColor = (severity: string): string => {
   return 'text-gray-400 bg-gray-950/50 border-gray-900/50'
 }
 
+/** Number of days after creation a policy is considered "new" */
+export const NEW_POLICY_DAYS = 90
+
+/**
+ * Returns true if the policy was created within NEW_POLICY_DAYS (e.g. for "New" badge).
+ */
+export const isPolicyNew = (createdAt: Date | string | undefined): boolean => {
+  if (!createdAt) return false
+  const created =
+    typeof createdAt === 'string' ? new Date(createdAt) : createdAt
+  const daysSinceCreation =
+    (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24)
+  return daysSinceCreation <= NEW_POLICY_DAYS
+}
+
 /**
  * Gets severity order for sorting (lower number = higher priority)
  */

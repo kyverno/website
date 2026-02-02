@@ -1,6 +1,6 @@
 ---
 title: Mutate Rules
-description: Modify resource configurations during admission or retroactively against existing resources.
+excerpt: Modify resource configurations during admission or retroactively against existing resources.
 sidebar:
   order: 4
 ---

@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.6.0
 description: 'An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy is a combination of two rules which enforce that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.'
+createdAt: "2022-05-01T20:08:48.000Z"
 ---
 
 ## Policy Definition

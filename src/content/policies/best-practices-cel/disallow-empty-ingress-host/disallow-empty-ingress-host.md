@@ -9,6 +9,7 @@ tags:
   - Best Practices in CEL
 version: 1.11.0
 description: 'An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.'
+createdAt: "2024-06-03T12:31:12.000Z"
 ---
 
 ## Policy Definition

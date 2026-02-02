@@ -10,6 +10,7 @@ tags:
   - Sample
 version: 1.5.0
 description: 'In some cases you would need to trust custom CA certificates for all the containers of a Pod. It makes sense to be in a ConfigMap so that you can automount them by only setting an annotation. This policy adds a volume to all containers in a Pod containing the certificate if the annotation called `inject-certs` with value `enabled` is found.'
+createdAt: "2025-10-29T09:59:30.000Z"
 ---
 
 ## Policy Definition

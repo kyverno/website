@@ -1,6 +1,6 @@
 ---
 title: Security
-description: Security Processes and Guidelines
+excerpt: Security Processes and Guidelines
 sidebar:
   order: 90
 ---

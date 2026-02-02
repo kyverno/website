@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: Check container image signatures and attestations for software supply chain security.
+excerpt: Check container image signatures and attestations for software supply chain security.
 sidebar:
   order: 1
 ---

@@ -4,6 +4,7 @@ import {
   formatSeverityLabel,
   getCategoryColor,
   getSeverityColor,
+  isPolicyNew,
 } from './utils'
 
 import { useState } from 'react'
@@ -12,7 +13,7 @@ export const PolicyCard = ({ policy }) => {
   const category = policy.data.category || 'validate'
   const severity = policy.data.severity || 'N/A'
   const description = policy.data.description || null
-  const isNew = policy.data.isNew || false
+  const isNew = isPolicyNew(policy.data.createdAt)
   const [copyState, setCopyState] = useState('idle') // 'idle', 'success', 'error'
 
   // Get YAML content from prop (extracted in Astro)

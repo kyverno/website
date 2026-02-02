@@ -9,6 +9,7 @@ subjects:
 tags:
   - Other
 description: 'This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

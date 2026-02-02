@@ -1,6 +1,6 @@
 ---
 title: Platform Notes
-description: Special considerations for certain Kubernetes platforms.
+excerpt: Special considerations for certain Kubernetes platforms.
 sidebar:
   order: 25
 ---

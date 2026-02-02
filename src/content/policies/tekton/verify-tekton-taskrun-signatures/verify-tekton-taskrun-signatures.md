@@ -9,6 +9,7 @@ tags:
   - Tekton
 version: 1.7.0
 description: 'A signed bundle is required.'
+createdAt: "2022-09-21T15:42:39.000Z"
 ---
 
 ## Policy Definition

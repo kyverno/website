@@ -1,6 +1,6 @@
 ---
 title: JMESPath
-description: The JSON query language behind Kyverno.
+excerpt: The JSON query language behind Kyverno.
 sidebar:
   order: 130
 ---

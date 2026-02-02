@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 description: 'Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.'
+createdAt: "2022-01-28T14:24:06.000Z"
 ---
 
 ## Policy Definition

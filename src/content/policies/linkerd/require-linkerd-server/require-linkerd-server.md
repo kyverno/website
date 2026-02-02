@@ -9,6 +9,7 @@ subjects:
 tags:
   - Linkerd
 description: 'In Linkerd 2.11, a Server resource selects ports on a set of Pods in the same Namespace and is used to deny traffic which then must be authorized later. Ensuring that Linkerd policy is enforced on Pods in the mesh is important to maintaining a secure environment. This policy, requiring Linkerd 2.11+, has two rules designed to check Deployments (exposing ports) and Services to ensure a corresponding Server resource exists first.'
+createdAt: "2022-10-08T18:55:51.000Z"
 ---
 
 ## Policy Definition

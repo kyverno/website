@@ -1,6 +1,6 @@
 ---
 title: Variables
-description: Defining and using variables in policies from multiple sources.
+excerpt: Defining and using variables in policies from multiple sources.
 sidebar:
   order: 90
 ---

@@ -8,6 +8,7 @@ subjects:
 tags:
   - KubeVirt
 description: 'Check VirtualMachines and validate that they are using an instance type and preference.'
+createdAt: "2022-09-13T12:15:40.000Z"
 ---
 
 ## Policy Definition

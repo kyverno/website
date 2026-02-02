@@ -9,6 +9,7 @@ tags:
   - Cert-Manager
 version: 1.6.0
 description: 'Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.'
+createdAt: "2021-10-07T07:58:43.000Z"
 ---
 
 ## Policy Definition
