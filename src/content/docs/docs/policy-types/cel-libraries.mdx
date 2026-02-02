@@ -443,19 +443,17 @@ spec:
 
 By leveraging **Global Context**, Kyverno eliminates redundant queries and enables efficient, cross-policy data sharing, enhancing validation accuracy and performance.
 
-
 ## Hash library
 
 The **Hash library** introduces the ability to run hash functions on arbitrary values. This can be used for verification as well as mutating objects with hash information.
 
 | **CEL Expression**     | **Purpose**                                         |
-| -----------------------| ----------------------------------------------------|
+| ---------------------- | --------------------------------------------------- |
 | `md5("somestring")`    | Obtain the md5 hash of an arbitrary string value    |
 | `sha1("somestring")    | Obtain the sha1 hash of an arbitrary string value   |
 | `sha256("somestring")` | Obtain the sha256 hash of an arbitrary string value |
 
 The following policy ensures that the hash of the image name in a certain deployment matches the required value which represents `nginx:latest`:
-
 
 ```yaml
 apiVersion: policies.kyverno.io/v1beta1
@@ -465,10 +463,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-    - apiGroups:   [apps]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [deployments]
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
   variables:
     - name: expectedHash
       expression: >-
@@ -486,16 +484,15 @@ spec:
         'Expected MD5 hash ' + variables.expectedHash + ', got: ' + variables.md5sum
 ```
 
-
 ## Math library
 
 The **Math library** provides mathematical operations for numeric computations in policies. It includes functions for rounding numbers to specific precision levels, supporting both positive and negative precision values.
 
-| CEL Expression                | Purpose                                                  |
-| ----------------------------- | -------------------------------------------------------- |
-| `math.round(10.125, 2)`       | Round to 2 decimal places (returns `10.13`)              |
-| `math.round(10.125, 0)`       | Round to nearest integer (returns `10.0`)                |
-| `math.round(12345.6789, -2)`  | Round to nearest hundred (returns `12300.0`)             |
+| CEL Expression               | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| `math.round(10.125, 2)`      | Round to 2 decimal places (returns `10.13`)  |
+| `math.round(10.125, 0)`      | Round to nearest integer (returns `10.0`)    |
+| `math.round(12345.6789, -2)` | Round to nearest hundred (returns `12300.0`) |
 
 This sample policy validates that CPU requests are rounded to reasonable precision and don't exceed 8 cores:
 
@@ -538,18 +535,17 @@ spec:
         ' exceeds maximum of 8.0 cores'
 ```
 
-
 ## Random library
 
 The **Random library** generates random strings based on regex patterns, useful for creating unique identifiers, tokens, or default values in mutating policies. It supports custom patterns or uses a default pattern when no argument is provided.
 
-| CEL Expression                                   | Purpose                                                      |
-| ------------------------------------------------ | ------------------------------------------------------------ |
-| `random()`                                       | Generate random 8-character alphanumeric string `[0-9a-z]{8}` |
-| `random("[A-Z0-9]{8}")`                          | Generate 8-character uppercase alphanumeric string           |
-| `random("[0-9]{4}-[0-9]{4}")`                    | Generate pattern like `1234-5678`                            |
-| `random("[a-f0-9]{32}")`                         | Generate 32-character hex string                             |
-| `random("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}")`  | Generate UUID-like pattern                                   |
+| CEL Expression                                  | Purpose                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| `random()`                                      | Generate random 8-character alphanumeric string `[0-9a-z]{8}` |
+| `random("[A-Z0-9]{8}")`                         | Generate 8-character uppercase alphanumeric string            |
+| `random("[0-9]{4}-[0-9]{4}")`                   | Generate pattern like `1234-5678`                             |
+| `random("[a-f0-9]{32}")`                        | Generate 32-character hex string                              |
+| `random("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}")` | Generate UUID-like pattern                                    |
 
 This sample mutating policy adds a unique tracking ID to deployments:
 
@@ -582,11 +578,11 @@ spec:
 
 The **Transform library** provides data transformation utilities for converting between different data structures. The `listObjToMap()` function merges two lists of objects into a map by extracting specified key and value fields.
 
-| CEL Expression                                                                                                                                     | Purpose                                                                                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `listObjToMap([{"name": "app1"}], [{"version": "v1"}], "name", "version")`                                                                        | Create map `{"app1": "v1"}` from two lists                                             |
-| `listObjToMap([{"id": "x"}, {"id": "y"}], [{"val": 1}, {"val": 2}], "id", "val")`                                                                 | Create map `{"x": 1, "y": 2}`                                                          |
-| `listObjToMap(object.spec.containers.map(c, {"name": c.name}), object.spec.containers.map(c, {"image": c.image}), "name", "image")`               | Map container names to images                                                          |
+| CEL Expression                                                                                                                      | Purpose                                    |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `listObjToMap([{"name": "app1"}], [{"version": "v1"}], "name", "version")`                                                          | Create map `{"app1": "v1"}` from two lists |
+| `listObjToMap([{"id": "x"}, {"id": "y"}], [{"val": 1}, {"val": 2}], "id", "val")`                                                   | Create map `{"x": 1, "y": 2}`              |
+| `listObjToMap(object.spec.containers.map(c, {"name": c.name}), object.spec.containers.map(c, {"image": c.image}), "name", "image")` | Map container names to images              |
 
 This sample policy validates that container environment variables match expected values:
 
@@ -601,10 +597,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     - name: envMap
       expression: >-
@@ -618,7 +614,7 @@ spec:
     - expression: >-
         variables.envMap["KEY"] == "123-456-789"
       message: >-
-        KEY must be 123-456-789. 
+        KEY must be 123-456-789.
 ```
 
 In practice:
@@ -648,12 +644,12 @@ Error from server: error when creating "STDIN": admission webhook "vpol.validate
 
 The **JSON library** provides JSON parsing capabilities through the `json.unmarshal()` function, which converts JSON strings into structured data that can be used in policy expressions.
 
-| CEL Expression                                           | Purpose                                                |
-| -------------------------------------------------------- | ------------------------------------------------------ |
-| `json.unmarshal('{"key": "value"}')`                     | Parse JSON string into map                             |
-| `json.unmarshal('{"count": 5}').count`                   | Parse and access nested field                          |
-| `json.unmarshal('[1, 2, 3]')`                            | Parse JSON array                                       |
-| `json.unmarshal(object.metadata.annotations['config'])`  | Parse JSON from annotation                             |
+| CEL Expression                                          | Purpose                       |
+| ------------------------------------------------------- | ----------------------------- |
+| `json.unmarshal('{"key": "value"}')`                    | Parse JSON string into map    |
+| `json.unmarshal('{"count": 5}').count`                  | Parse and access nested field |
+| `json.unmarshal('[1, 2, 3]')`                           | Parse JSON array              |
+| `json.unmarshal(object.metadata.annotations['config'])` | Parse JSON from annotation    |
 
 This sample policy validates configuration stored as JSON in annotations:
 
@@ -668,10 +664,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-    - apiGroups:   ["apps"]
-      apiVersions: ["v1"]
-      operations:  ["CREATE", "UPDATE"]
-      resources:   ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
   variables:
     - name: approval
       expression: >-
@@ -726,12 +722,12 @@ Error from server: error when creating "STDIN": admission webhook "vpol.validate
 
 The **YAML library** enables parsing of YAML-formatted strings into structured data using the `yaml.parse()` function. This is particularly useful for validating YAML configurations stored in ConfigMaps or annotations.
 
-| CEL Expression                                                  | Purpose                                                |
-| --------------------------------------------------------------- | ------------------------------------------------------ |
-| `yaml.parse('key: value')`                                      | Parse YAML string into map                             |
-| `yaml.parse('items:\n- a\n- b\n- c')`                           | Parse YAML with lists                                  |
-| `yaml.parse(object.data['config.yaml'])`                        | Parse YAML from ConfigMap data                         |
-| `yaml.parse('count: 42').count`                                 | Parse and access nested field                          |
+| CEL Expression                           | Purpose                        |
+| ---------------------------------------- | ------------------------------ |
+| `yaml.parse('key: value')`               | Parse YAML string into map     |
+| `yaml.parse('items:\n- a\n- b\n- c')`    | Parse YAML with lists          |
+| `yaml.parse(object.data['config.yaml'])` | Parse YAML from ConfigMap data |
+| `yaml.parse('count: 42').count`          | Parse and access nested field  |
 
 This sample policy validates YAML value in a deployment annotation:
 
@@ -741,15 +737,15 @@ kind: ValidatingPolicy
 metadata:
   name: check-goodboi
 spec:
-  failurePolicy : Fail
+  failurePolicy: Fail
   validationActions:
     - Deny
   matchConstraints:
     resourceRules:
-    - apiGroups:   [apps]
-      apiVersions: [v1]
-      operations:  [CREATE, UPDATE]
-      resources:   [deployments]
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
   variables:
     - name: pets
       expression: >-
@@ -807,13 +803,13 @@ Error from server: error when creating "STDIN": admission webhook "vpol.validate
 
 The kyverno CEL execution environment comes with a few functions related to time. Which are getting the current time, truncate timestamps, and convert timestamps to cron format.
 
-| CEL Expression                                                     | Purpose                                                        |
-| ------------------------------------------------------------------ | -------------------------------------------------------------- |
-| `time.now()`                                                       | Get current timestamp                                          |
-| `time.now() - duration("24h")`                                     | Get timestamp from 24 hours ago                                |
-| `time.truncate(timestamp("2025-01-02T03:45:27Z"), duration("1h"))` | Truncate to nearest hour (returns `2025-01-02T03:00:00Z`)      |
-| `time.toCron(timestamp("2025-01-02T15:30:00Z"))`                   | Convert timestamp to cron format (returns `"30 15 2 1 4"`)     |
-| `time.now() + duration("7d")`                                      | Get timestamp 7 days in the future                             |
+| CEL Expression                                                     | Purpose                                                    |
+| ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `time.now()`                                                       | Get current timestamp                                      |
+| `time.now() - duration("24h")`                                     | Get timestamp from 24 hours ago                            |
+| `time.truncate(timestamp("2025-01-02T03:45:27Z"), duration("1h"))` | Truncate to nearest hour (returns `2025-01-02T03:00:00Z`)  |
+| `time.toCron(timestamp("2025-01-02T15:30:00Z"))`                   | Convert timestamp to cron format (returns `"30 15 2 1 4"`) |
+| `time.now() + duration("7d")`                                      | Get timestamp 7 days in the future                         |
 
 This deleting policy deletes policy exceptions that were created more than 24 hours ago and is evaluated every 10 minutes:
 
@@ -824,16 +820,16 @@ metadata:
   name: delete-exceptions
 spec:
   conditions:
-  - expression: time.now() - timestamp(object.metadata.creationTimestamp) > duration("24h")
-    name: check-creation-time
+    - expression: time.now() - timestamp(object.metadata.creationTimestamp) > duration("24h")
+      name: check-creation-time
   matchConstraints:
     resourceRules:
-    - apiGroups:
-      - "policies.kyverno.io"
-      apiVersions:
-      - v1
-      resources:
-      - policyexceptions
+      - apiGroups:
+          - 'policies.kyverno.io'
+        apiVersions:
+          - v1
+        resources:
+          - policyexceptions
   schedule: '*/10 * * * *'
 ```
 
@@ -846,16 +842,16 @@ metadata:
   name: delete-exceptions-trunacted
 spec:
   conditions:
-  - expression: time.now() - time.truncate(timestamp(object.metadata.creationTimestamp), duration("1h")) > duration("24h")
-    name: check-creation-time
+    - expression: time.now() - time.truncate(timestamp(object.metadata.creationTimestamp), duration("1h")) > duration("24h")
+      name: check-creation-time
   matchConstraints:
     resourceRules:
-    - apiGroups:
-      - "policies.kyverno.io"
-      apiVersions:
-      - v1
-      resources:
-      - policyexceptions
+      - apiGroups:
+          - 'policies.kyverno.io'
+        apiVersions:
+          - v1
+        resources:
+          - policyexceptions
   schedule: '*/10 * * * *'
 ```
 
@@ -863,16 +859,16 @@ spec:
 
 The **X509 library** enables decoding and validation of X.509 certificates and certificate signing requests (CSRs) in PEM format. It extracts certificate metadata including issuer, subject, validity periods, key usage, extensions, and public key information.
 
-| CEL Expression                                                    | Purpose                                                |
-| ----------------------------------------------------------------- | ------------------------------------------------------ |
-| `x509.decode(cert).IsCA`                                          | Check if certificate is a Certificate Authority        |
-| `x509.decode(cert).NotBefore`                                     | Get certificate validity start date                    |
-| `x509.decode(cert).NotAfter`                                      | Get certificate expiration date                        |
-| `x509.decode(cert).Issuer.CommonName`                             | Extract issuer common name                             |
-| `x509.decode(cert).DNSNames`                                      | Get list of DNS names from Subject Alternative Names  |
-| `x509.decode(cert).KeyUsage`                                      | Get certificate key usage flags                        |
-| `x509.decode(cert).BasicConstraintsValid`                         | Check if basic constraints extension is valid          |
-| `x509.decode(cert).PublicKey.E`                                   | Get RSA public key exponent                            |
+| CEL Expression                            | Purpose                                              |
+| ----------------------------------------- | ---------------------------------------------------- |
+| `x509.decode(cert).IsCA`                  | Check if certificate is a Certificate Authority      |
+| `x509.decode(cert).NotBefore`             | Get certificate validity start date                  |
+| `x509.decode(cert).NotAfter`              | Get certificate expiration date                      |
+| `x509.decode(cert).Issuer.CommonName`     | Extract issuer common name                           |
+| `x509.decode(cert).DNSNames`              | Get list of DNS names from Subject Alternative Names |
+| `x509.decode(cert).KeyUsage`              | Get certificate key usage flags                      |
+| `x509.decode(cert).BasicConstraintsValid` | Check if basic constraints extension is valid        |
+| `x509.decode(cert).PublicKey.E`           | Get RSA public key exponent                          |
 
 This sample policy validates the expiry date of a webhook certificate being more than one week away:
 
@@ -887,12 +883,12 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-    - apiGroups: ["admissionregistration.k8s.io"]
-      apiVersions: ["v1"]
-      operations: ["CREATE", "UPDATE"]
-      resources:
-      - validatingwebhookconfigurations
-      - mutatingwebhookconfigurations
+      - apiGroups: ['admissionregistration.k8s.io']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources:
+          - validatingwebhookconfigurations
+          - mutatingwebhookconfigurations
   validations:
     - expression: >-
         timestamp(x509.decode(string(base64.decode(object.webhooks[0].clientConfig.caBundle))).NotAfter) - time.now() > duration("168h")
@@ -917,32 +913,17 @@ The full certificate JSON object has the following structure:
   "Extensions": [
     {
       "Critical": true,
-      "Id": [
-        2,
-        5,
-        29,
-        15
-      ],
+      "Id": [2, 5, 29, 15],
       "Value": "AwICpA=="
     },
     {
       "Critical": true,
-      "Id": [
-        2,
-        5,
-        29,
-        19
-      ],
+      "Id": [2, 5, 29, 19],
       "Value": "MAMBAf8="
     },
     {
       "Critical": false,
-      "Id": [
-        2,
-        5,
-        29,
-        14
-      ],
+      "Id": [2, 5, 29, 14],
       "Value": "BBSWivt1n53+61ZGAczAi0mleejTKg=="
     }
   ],
@@ -956,12 +937,7 @@ The full certificate JSON object has the following structure:
     "Locality": null,
     "Names": [
       {
-        "Type": [
-          2,
-          5,
-          4,
-          3
-        ],
+        "Type": [2, 5, 4, 3],
         "Value": "*.kyverno.svc"
       }
     ],
@@ -1005,12 +981,7 @@ The full certificate JSON object has the following structure:
     "Locality": null,
     "Names": [
       {
-        "Type": [
-          2,
-          5,
-          4,
-          3
-        ],
+        "Type": [2, 5, 4, 3],
         "Value": "*.kyverno.svc"
       }
     ],
