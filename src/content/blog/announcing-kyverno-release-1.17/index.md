@@ -1,5 +1,5 @@
 ---
-date: 2025-11-10
+date: 2026-02-02
 title: Announcing Kyverno 1.17!
 tags:
   - Releases
