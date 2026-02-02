@@ -8,7 +8,6 @@ subjects:
 tags:
   - Karpenter
   - EKS Best Practices
-isNew: true
 ---
 
 ## Policy Definition

@@ -11,7 +11,7 @@ docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
 # Function to run sed in-place (handles macOS vs Linux differences)
 sed_in_place() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "$@"
+    sed -i'' "$@"
   else
     sed -i "$@"
   fi
