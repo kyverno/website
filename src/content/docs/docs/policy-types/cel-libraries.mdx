@@ -1,6 +1,6 @@
 ---
 title: CEL Libraries
-excerpt: >-
+description: >-
   Extended CEL functions for complex policy logic and advanced features
 sidebar:
   order: 7
@@ -442,3 +442,560 @@ spec:
 ```
 
 By leveraging **Global Context**, Kyverno eliminates redundant queries and enables efficient, cross-policy data sharing, enhancing validation accuracy and performance.
+
+## Hash library
+
+The **Hash library** introduces the ability to run hash functions on arbitrary values. This can be used for verification as well as mutating objects with hash information.
+
+| **CEL Expression**     | **Purpose**                                         |
+| ---------------------- | --------------------------------------------------- |
+| `md5("somestring")`    | Obtain the md5 hash of an arbitrary string value    |
+| `sha1("somestring")    | Obtain the sha1 hash of an arbitrary string value   |
+| `sha256("somestring")` | Obtain the sha256 hash of an arbitrary string value |
+
+The following policy ensures that the hash of the image name in a certain deployment matches the required value which represents `nginx:latest`:
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: check-hash
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
+  variables:
+    - name: expectedHash
+      expression: >-
+        "403554a5dfea78d1ca4a8ff5830ac2ae"
+    - name: md5sum
+      expression: >-
+        md5(object.spec.template.spec.containers[0].image)
+    - name: accept
+      expression: >-
+        variables.md5sum == variables.expectedHash
+  validations:
+    - expression: >-
+        variables.accept
+      messageExpression: >-
+        'Expected MD5 hash ' + variables.expectedHash + ', got: ' + variables.md5sum
+```
+
+## Math library
+
+The **Math library** provides mathematical operations for numeric computations in policies. It includes functions for rounding numbers to specific precision levels, supporting both positive and negative precision values.
+
+| CEL Expression               | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| `math.round(10.125, 2)`      | Round to 2 decimal places (returns `10.13`)  |
+| `math.round(10.125, 0)`      | Round to nearest integer (returns `10.0`)    |
+| `math.round(12345.6789, -2)` | Round to nearest hundred (returns `12300.0`) |
+
+This sample policy validates that CPU requests are rounded to reasonable precision and don't exceed 8 cores:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: validate-cpu-precision
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  variables:
+    - name: containers
+      expression: >-
+        object.spec.containers + object.spec.?initContainers.orValue([])
+    - name: cpuRequests
+      expression: >-
+        variables.containers.map(c, 
+          has(c.resources.requests) && has(c.resources.requests.cpu) ? 
+          double(c.resources.requests.cpu.replace('m', '')) / 1000.0 : 0.0
+        )
+  validations:
+    - expression: >-
+        variables.cpuRequests.all(cpu, 
+          cpu == 0.0 || math.round(cpu, 2) == cpu
+        )
+      message: >-
+        CPU requests must be rounded to at most 2 decimal places
+
+    - expression: >-
+        variables.cpuRequests.all(cpu, cpu <= 8.0)
+      messageExpression: >-
+        'CPU request ' + string(variables.cpuRequests.filter(c, c > 8.0)[0]) + 
+        ' exceeds maximum of 8.0 cores'
+```
+
+## Random library
+
+The **Random library** generates random strings based on regex patterns, useful for creating unique identifiers, tokens, or default values in mutating policies. It supports custom patterns or uses a default pattern when no argument is provided.
+
+| CEL Expression                                  | Purpose                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| `random()`                                      | Generate random 8-character alphanumeric string `[0-9a-z]{8}` |
+| `random("[A-Z0-9]{8}")`                         | Generate 8-character uppercase alphanumeric string            |
+| `random("[0-9]{4}-[0-9]{4}")`                   | Generate pattern like `1234-5678`                             |
+| `random("[a-f0-9]{32}")`                        | Generate 32-character hex string                              |
+| `random("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}")` | Generate UUID-like pattern                                    |
+
+This sample mutating policy adds a unique tracking ID to deployments:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: add-tracking-id
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['apps/v1']
+        operations: ['CREATE']
+        resources: ['deployments']
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "tracking-id": random("[a-z0-9]{8}-[a-z0-9]{4}"),
+              }
+            }
+          }
+```
+
+## Transform library
+
+The **Transform library** provides data transformation utilities for converting between different data structures. The `listObjToMap()` function merges two lists of objects into a map by extracting specified key and value fields.
+
+| CEL Expression                                                                                                                      | Purpose                                    |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `listObjToMap([{"name": "app1"}], [{"version": "v1"}], "name", "version")`                                                          | Create map `{"app1": "v1"}` from two lists |
+| `listObjToMap([{"id": "x"}, {"id": "y"}], [{"val": 1}, {"val": 2}], "id", "val")`                                                   | Create map `{"x": 1, "y": 2}`              |
+| `listObjToMap(object.spec.containers.map(c, {"name": c.name}), object.spec.containers.map(c, {"image": c.image}), "name", "image")` | Map container names to images              |
+
+This sample policy validates that container environment variables match expected values:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-key
+spec:
+  failurePolicy: Fail
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  variables:
+    - name: envMap
+      expression: >-
+        listObjToMap(
+          object.spec.containers[0].env,
+          object.spec.containers[0].env,
+          "name",
+          "value"
+        )
+  validations:
+    - expression: >-
+        variables.envMap["KEY"] == "123-456-789"
+      message: >-
+        KEY must be 123-456-789.
+```
+
+In practice:
+
+```sh
+/ # cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: object-from-list-demo
+  labels:
+    foo: bar
+spec:
+  containers:
+  - name: containername01
+    image: containerimage:01
+    env:
+    - name: KEY
+      value: "89383938"
+    - name: endpoint
+      value: "licensing.corp.org"
+EOF
+Error from server: error when creating "STDIN": admission webhook "vpol.validate.kyverno.svc-fail" denied the request: Policy require-key failed: KEY must be 123-456-789.
+```
+
+## JSON library
+
+The **JSON library** provides JSON parsing capabilities through the `json.unmarshal()` function, which converts JSON strings into structured data that can be used in policy expressions.
+
+| CEL Expression                                          | Purpose                       |
+| ------------------------------------------------------- | ----------------------------- |
+| `json.unmarshal('{"key": "value"}')`                    | Parse JSON string into map    |
+| `json.unmarshal('{"count": 5}').count`                  | Parse and access nested field |
+| `json.unmarshal('[1, 2, 3]')`                           | Parse JSON array              |
+| `json.unmarshal(object.metadata.annotations['config'])` | Parse JSON from annotation    |
+
+This sample policy validates configuration stored as JSON in annotations:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-security-approval
+spec:
+  failurePolicy: Fail
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
+  variables:
+    - name: approval
+      expression: >-
+        json.unmarshal(object.metadata.annotations["security.approval"])
+  validations:
+    - expression: >-
+        variables.approval.approved == true
+      message: >-
+        Deployment is not approved by security policy.
+```
+
+When applied:
+
+```sh
+/ # cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-prod
+  labels:
+    app: nginx
+  annotations:
+    security.approval: |
+      {
+        "approved": false,
+        "reviewedBy": "platform-security",
+        "ticket": "SEC-4821",
+        "reviewedAt": "2026-01-12T09:41:00Z",
+        "notes": "Pending image vulnerability scan"
+      }
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            cpu: "1"
+EOF
+Error from server: error when creating "STDIN": admission webhook "vpol.validate.kyverno.svc-fail" denied the request: Policy require-security-approval failed: Deployment is not approved by security policy.
+```
+
+## YAML library
+
+The **YAML library** enables parsing of YAML-formatted strings into structured data using the `yaml.parse()` function. This is particularly useful for validating YAML configurations stored in ConfigMaps or annotations.
+
+| CEL Expression                           | Purpose                        |
+| ---------------------------------------- | ------------------------------ |
+| `yaml.parse('key: value')`               | Parse YAML string into map     |
+| `yaml.parse('items:\n- a\n- b\n- c')`    | Parse YAML with lists          |
+| `yaml.parse(object.data['config.yaml'])` | Parse YAML from ConfigMap data |
+| `yaml.parse('count: 42').count`          | Parse and access nested field  |
+
+This sample policy validates YAML value in a deployment annotation:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-goodboi
+spec:
+  failurePolicy: Fail
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [apps]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
+  variables:
+    - name: pets
+      expression: >-
+        yaml.parse(object.metadata.annotations.pets)
+  validations:
+    - expression: >-
+        variables.pets.species.isGoodBoi == true
+      message: >-
+        "Only good bois allowed."
+```
+
+Seeing it in action:
+
+```sh
+/ # cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: some-deploy
+  labels:
+    app: nginx
+  annotations:
+    pets: |-
+      species:
+        dog: lab
+        name: dory
+        color: black
+        height: 15
+        isGoodBoi: false
+        snacks:
+        - chimken
+        - fries
+        - pizza
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            cpu: 1
+EOF
+Error from server: error when creating "STDIN": admission webhook "vpol.validate.kyverno.svc-fail" denied the request: Policy check-goodboi failed: "Only good bois allowed."
+```
+
+## Time functions
+
+The kyverno CEL execution environment comes with a few functions related to time. Which are getting the current time, truncate timestamps, and convert timestamps to cron format.
+
+| CEL Expression                                                     | Purpose                                                    |
+| ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `time.now()`                                                       | Get current timestamp                                      |
+| `time.now() - duration("24h")`                                     | Get timestamp from 24 hours ago                            |
+| `time.truncate(timestamp("2025-01-02T03:45:27Z"), duration("1h"))` | Truncate to nearest hour (returns `2025-01-02T03:00:00Z`)  |
+| `time.toCron(timestamp("2025-01-02T15:30:00Z"))`                   | Convert timestamp to cron format (returns `"30 15 2 1 4"`) |
+| `time.now() + duration("7d")`                                      | Get timestamp 7 days in the future                         |
+
+This deleting policy deletes policy exceptions that were created more than 24 hours ago and is evaluated every 10 minutes:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: DeletingPolicy
+metadata:
+  name: delete-exceptions
+spec:
+  conditions:
+    - expression: time.now() - timestamp(object.metadata.creationTimestamp) > duration("24h")
+      name: check-creation-time
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - 'policies.kyverno.io'
+        apiVersions:
+          - v1
+        resources:
+          - policyexceptions
+  schedule: '*/10 * * * *'
+```
+
+This deleting policy deletes policy exceptions whose creation timestamp when truncated to the nearest hour is longer than 24 hours:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: DeletingPolicy
+metadata:
+  name: delete-exceptions-trunacted
+spec:
+  conditions:
+    - expression: time.now() - time.truncate(timestamp(object.metadata.creationTimestamp), duration("1h")) > duration("24h")
+      name: check-creation-time
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - 'policies.kyverno.io'
+        apiVersions:
+          - v1
+        resources:
+          - policyexceptions
+  schedule: '*/10 * * * *'
+```
+
+## X509 library
+
+The **X509 library** enables decoding and validation of X.509 certificates and certificate signing requests (CSRs) in PEM format. It extracts certificate metadata including issuer, subject, validity periods, key usage, extensions, and public key information.
+
+| CEL Expression                            | Purpose                                              |
+| ----------------------------------------- | ---------------------------------------------------- |
+| `x509.decode(cert).IsCA`                  | Check if certificate is a Certificate Authority      |
+| `x509.decode(cert).NotBefore`             | Get certificate validity start date                  |
+| `x509.decode(cert).NotAfter`              | Get certificate expiration date                      |
+| `x509.decode(cert).Issuer.CommonName`     | Extract issuer common name                           |
+| `x509.decode(cert).DNSNames`              | Get list of DNS names from Subject Alternative Names |
+| `x509.decode(cert).KeyUsage`              | Get certificate key usage flags                      |
+| `x509.decode(cert).BasicConstraintsValid` | Check if basic constraints extension is valid        |
+| `x509.decode(cert).PublicKey.E`           | Get RSA public key exponent                          |
+
+This sample policy validates the expiry date of a webhook certificate being more than one week away:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: test-x509-decode
+spec:
+  failurePolicy: Fail
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['admissionregistration.k8s.io']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources:
+          - validatingwebhookconfigurations
+          - mutatingwebhookconfigurations
+  validations:
+    - expression: >-
+        timestamp(x509.decode(string(base64.decode(object.webhooks[0].clientConfig.caBundle))).NotAfter) - time.now() > duration("168h")
+      message: >-
+        Certificate in the webhook will expire in less than a week.
+```
+
+The full certificate JSON object has the following structure:
+
+```json
+{
+  "AuthorityKeyId": null,
+  "BasicConstraintsValid": true,
+  "CRLDistributionPoints": null,
+  "DNSNames": null,
+  "EmailAddresses": null,
+  "ExcludedDNSDomains": null,
+  "ExcludedEmailAddresses": null,
+  "ExcludedIPRanges": null,
+  "ExcludedURIDomains": null,
+  "ExtKeyUsage": null,
+  "Extensions": [
+    {
+      "Critical": true,
+      "Id": [2, 5, 29, 15],
+      "Value": "AwICpA=="
+    },
+    {
+      "Critical": true,
+      "Id": [2, 5, 29, 19],
+      "Value": "MAMBAf8="
+    },
+    {
+      "Critical": false,
+      "Id": [2, 5, 29, 14],
+      "Value": "BBSWivt1n53+61ZGAczAi0mleejTKg=="
+    }
+  ],
+  "ExtraExtensions": null,
+  "IPAddresses": null,
+  "IsCA": true,
+  "Issuer": {
+    "CommonName": "*.kyverno.svc",
+    "Country": null,
+    "ExtraNames": null,
+    "Locality": null,
+    "Names": [
+      {
+        "Type": [2, 5, 4, 3],
+        "Value": "*.kyverno.svc"
+      }
+    ],
+    "Organization": null,
+    "OrganizationalUnit": null,
+    "PostalCode": null,
+    "Province": null,
+    "SerialNumber": "",
+    "StreetAddress": null
+  },
+  "IssuingCertificateURL": null,
+  "KeyUsage": 37,
+  "MaxPathLen": -1,
+  "MaxPathLenZero": false,
+  "NotAfter": "2023-10-10T12:46:32Z",
+  "NotBefore": "2022-10-10T11:46:32Z",
+  "OCSPServer": null,
+  "PermittedDNSDomains": null,
+  "PermittedDNSDomainsCritical": false,
+  "PermittedEmailAddresses": null,
+  "PermittedIPRanges": null,
+  "PermittedURIDomains": null,
+  "PolicyIdentifiers": null,
+  "PublicKey": {
+    "E": 65537,
+    "N": "28595925905962223424520947352207105451744616797088171943239289907331901888529856098458304611629660120574607501039902142361333982065793213267074854658525100799280158707840279479550961169213763526857247298653141711003931642606662052674943191476488665842309583311097351331994267413776792462637192775240062778036062353517979538994974045127175206597906751521558536719043095219698535279694800624795673809356898452438518041024126624051887044932164506019573725987204208750674129677584956156611454245004918943771571492757639432459688931855526941886354880727024912384140238027697348634609952850513122734230521040730560514233467"
+  },
+  "PublicKeyAlgorithm": 1,
+  "Raw": "MIIC7TCCAdWgAwIBAgIBADANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA0qLmt5dmVybm8uc3ZjMB4XDTIyMTAxMDExNDYzMloXDTIzMTAxMDEyNDYzMlowGDEWMBQGA1UEAwwNKi5reXZlcm5vLnN2YzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOKF+2P0Ufp855hpdsGD4lYkd6oU7HZAOWm1XskAMwrdsqWwTNNAinyHRoPQIbNbGDQ+r6Cggc2mlxHJ90PnC2weHj5otaD17Z+ARZpJZ4HMWkEfFt8sxwo9vuQJRWihqNwFheowjswoSB1DHnPufrZHfztkMoRx278ZfHaIMdlSTg50ektkNDoHA3OJsxxw54X3HR1iq6SZwN8xNT0TI6B6BbfAYWMNmKCiZ2iV6kW//XnTEqGd2WcmhuP0SjwO4tCJbj9oV6+Bj/uhFr7J4foErMaodYDBtQs/ul2tcAwSBHfnC2KcLbiZTZsC0Rs0WPJ4YwF/cOsD7Z/RmLs4FHsCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFJaK+3Wfnf7rVkYBzMCLSaV56NMqMA0GCSqGSIb3DQEBCwUAA4IBAQDY7F6b+t9BX7098JyGk6zeT39MoLdSv+8IaKXn+m8GyOKn3CZkruko57ycvPd4taC0gggtmUYynFhwPMQr+boNrrK9rat8Jw3yPPsBq/8D/s6tvwxSNXBfPUI5OvNIB/hA5XpJpdHQaCkYm+FWkcJsolkkbSOfVjUjImW26JHBnnPPtR4Y7dx0SVoPS19IC0T5RmdvgqlXj4XbhTnX3QOujVHn8u+wQ8po7EngHDQs+onfkp8ipe0QpEJL1ZdW2LhyDXGKrZ2y8UPZ9wYNzxHWaj1Thu4B9YFdsPUwWqSxn9e+FygpoktlD8YgT7jwgiVKX7Koz++zyvMIdhvRrtgS",
+  "RawIssuer": "MBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmM=",
+  "RawSubject": "MBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmM=",
+  "RawSubjectPublicKeyInfo": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4oX7Y/RR+nznmGl2wYPiViR3qhTsdkA5abVeyQAzCt2ypbBM00CKfIdGg9Ahs1sYND6voKCBzaaXEcn3Q+cLbB4ePmi1oPXtn4BFmklngcxaQR8W3yzHCj2+5AlFaKGo3AWF6jCOzChIHUMec+5+tkd/O2QyhHHbvxl8dogx2VJODnR6S2Q0OgcDc4mzHHDnhfcdHWKrpJnA3zE1PRMjoHoFt8BhYw2YoKJnaJXqRb/9edMSoZ3ZZyaG4/RKPA7i0IluP2hXr4GP+6EWvsnh+gSsxqh1gMG1Cz+6Xa1wDBIEd+cLYpwtuJlNmwLRGzRY8nhjAX9w6wPtn9GYuzgUewIDAQAB",
+  "RawTBSCertificate": "MIIB1aADAgECAgEAMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNVBAMMDSoua3l2ZXJuby5zdmMwHhcNMjIxMDEwMTE0NjMyWhcNMjMxMDEwMTI0NjMyWjAYMRYwFAYDVQQDDA0qLmt5dmVybm8uc3ZjMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4oX7Y/RR+nznmGl2wYPiViR3qhTsdkA5abVeyQAzCt2ypbBM00CKfIdGg9Ahs1sYND6voKCBzaaXEcn3Q+cLbB4ePmi1oPXtn4BFmklngcxaQR8W3yzHCj2+5AlFaKGo3AWF6jCOzChIHUMec+5+tkd/O2QyhHHbvxl8dogx2VJODnR6S2Q0OgcDc4mzHHDnhfcdHWKrpJnA3zE1PRMjoHoFt8BhYw2YoKJnaJXqRb/9edMSoZ3ZZyaG4/RKPA7i0IluP2hXr4GP+6EWvsnh+gSsxqh1gMG1Cz+6Xa1wDBIEd+cLYpwtuJlNmwLRGzRY8nhjAX9w6wPtn9GYuzgUewIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUlor7dZ+d/utWRgHMwItJpXno0yo=",
+  "SerialNumber": 0,
+  "Signature": "2Oxem/rfQV+9PfCchpOs3k9/TKC3Ur/vCGil5/pvBsjip9wmZK7pKOe8nLz3eLWgtIIILZlGMpxYcDzEK/m6Da6yva2rfCcN8jz7Aav/A/7Orb8MUjVwXz1COTrzSAf4QOV6SaXR0GgpGJvhVpHCbKJZJG0jn1Y1IyJltuiRwZ5zz7UeGO3cdElaD0tfSAtE+UZnb4KpV4+F24U5190Dro1R5/LvsEPKaOxJ4Bw0LPqJ35KfIqXtEKRCS9WXVti4cg1xiq2dsvFD2fcGDc8R1mo9U4buAfWBXbD1MFqksZ/XvhcoKaJLZQ/GIE+48IIlSl+yqM/vs8rzCHYb0a7YEg==",
+  "SignatureAlgorithm": 4,
+  "Subject": {
+    "CommonName": "*.kyverno.svc",
+    "Country": null,
+    "ExtraNames": null,
+    "Locality": null,
+    "Names": [
+      {
+        "Type": [2, 5, 4, 3],
+        "Value": "*.kyverno.svc"
+      }
+    ],
+    "Organization": null,
+    "OrganizationalUnit": null,
+    "PostalCode": null,
+    "Province": null,
+    "SerialNumber": "",
+    "StreetAddress": null
+  },
+  "SubjectKeyId": "lor7dZ+d/utWRgHMwItJpXno0yo=",
+  "URIs": null,
+  "UnhandledCriticalExtensions": null,
+  "UnknownExtKeyUsage": null,
+  "Version": 3
+}
+```
