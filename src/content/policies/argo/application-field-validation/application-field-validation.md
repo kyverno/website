@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.6.0
 description: 'This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.'
+createdAt: "2022-07-07T14:33:53.000Z"
 ---
 
 ## Policy Definition

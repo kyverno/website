@@ -9,6 +9,7 @@ tags:
   - OpenShift
 version: 1.11.0
 description: 'Encryption at rest is a security best practice. This policy ensures encryption is enabled for etcd in OpenShift clusters.'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

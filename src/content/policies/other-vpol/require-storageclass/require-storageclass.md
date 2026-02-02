@@ -10,6 +10,7 @@ tags:
   - Other
   - Multi-Tenancy in vpol
 description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

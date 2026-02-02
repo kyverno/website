@@ -9,6 +9,7 @@ tags:
   - Other in Vpol
 version: 1.14.0
 description: 'Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

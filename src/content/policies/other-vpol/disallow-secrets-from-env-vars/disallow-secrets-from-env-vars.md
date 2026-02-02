@@ -10,6 +10,7 @@ tags:
   - Sample
   - EKS Best Practices in vpol
 description: 'Secrets used as environment variables containing sensitive information may, if not carefully controlled,  be printed in log output which could be visible to unauthorized people and captured in forwarding applications. This policy disallows using Secrets as environment variables.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

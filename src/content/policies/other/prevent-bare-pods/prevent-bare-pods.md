@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.'
+createdAt: "2024-01-02T14:49:38.000Z"
 ---
 
 ## Policy Definition

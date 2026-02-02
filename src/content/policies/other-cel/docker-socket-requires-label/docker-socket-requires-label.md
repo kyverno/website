@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other in CEL
 description: 'Accessing a container engine''s socket is for highly specialized use cases and should generally be disabled. If access must be granted, it should be done on an explicit basis. This policy requires that, for any Pod mounting the Docker socket, it must have the label `allow-docker` set to `true`.'
+createdAt: "2024-03-27T11:46:34.000Z"
 ---
 
 ## Policy Definition

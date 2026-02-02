@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices in vpol
 version: 1.14.0
 description: 'Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root). A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

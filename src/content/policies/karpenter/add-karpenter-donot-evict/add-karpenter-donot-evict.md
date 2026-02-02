@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'If a Pod exists with the annotation `karpenter.sh/do-not-evict: true` on a Node, and a request is made to delete the Node, Karpenter will not drain any Pods from that Node or otherwise try to delete the Node. This is useful for Pods that should run uninterrupted to completion. This policy mutates Jobs and CronJobs so that Pods spawned by them will contain the `karpenter.sh/do-not-evict: true` annotation.'
+createdAt: "2022-07-11T00:07:31.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 description: 'HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.'
+createdAt: "2021-04-18T04:41:22.000Z"
 ---
 
 ## Policy Definition

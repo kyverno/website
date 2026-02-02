@@ -9,6 +9,7 @@ tags:
   - Consul
 version: 1.6.0
 description: 'This policy will check the TLS Min version to ensure that whenever the mesh is set, there is a minimum version of TLS set for all the service mesh proxies and this enforces that service mesh mTLS traffic uses TLS v1.2 or newer.'
+createdAt: "2022-12-15T12:40:47.000Z"
 ---
 
 ## Policy Definition

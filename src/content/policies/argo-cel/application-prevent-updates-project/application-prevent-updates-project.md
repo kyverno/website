@@ -8,6 +8,7 @@ subjects:
 tags:
   - Argo in CEL
 description: 'This policy prevents updates to the project field after an Application is created.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition
