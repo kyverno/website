@@ -133,7 +133,7 @@ While they remain functional in this release, the clock has started on their rem
 
 By standardizing on the Common Expression Language (CEL), Kyverno significantly improves its performance and aligns with the native validation logic used by the Kubernetes API server itself.
 
-For platform teams, this means **one less language to learn** and a more predictable policy-as-code experience.
+For platform teams, this means **one less language to learn** and a more predictable and scalable policy-as-code experience.
 
 ### Note for Authors
 
