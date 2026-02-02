@@ -17,7 +17,8 @@ import {
 import { themes } from 'prism-react-renderer'
 
 export const documentationVersions = [
-  { label: 'v1.16.0', href: 'https://kyverno.io' },
+  { label: 'v1.17.0', href: 'https://kyverno.io' },
+  { label: 'v1.16.0', href: 'https://release-1-16-0.kyverno.io' },
   { label: 'v1.15.0', href: 'https://release-1-15-0.kyverno.io' },
   { label: 'v1.14.0', href: 'https://release-1-14-0.kyverno.io' },
   { label: 'main', href: 'https://main.kyverno.io' },
@@ -220,8 +221,8 @@ export const celPoliciesHeadingContent = {
     { text: 'Introducing', color: 'text-theme-primary' },
     { text: 'CEL Polices', color: 'text-primary-100' },
   ],
-  paragraphText: `CEL (Common Expression Language) policies bring powerful, 
-                    fine-grained control to Kyverno, enabling users to write more 
+  paragraphText: `CEL (Common Expression Language) policies bring powerful,
+                    fine-grained control to Kyverno, enabling users to write more
                     expressive and dynamic policy rules without sacrificing performance. `,
 }
 
@@ -230,7 +231,7 @@ export const ctaSectionHeadingContent = {
     { text: 'Get started with Kyverno', color: 'text-theme-primary' },
   ],
 
-  paragraphText: `Deploy Kyverno in your Kubernetes cluster within minutes and start writing 
+  paragraphText: `Deploy Kyverno in your Kubernetes cluster within minutes and start writing
                   policies using simple, familiar YAML.`,
 }
 
@@ -279,7 +280,7 @@ spec:
   validations:
     -  message: "Pods must have 'app' and 'version' labels"
        expression: |
-         has(variables.labels.app) && 
+         has(variables.labels.app) &&
          has(variables.labels.version)
      `,
   },
@@ -302,7 +303,7 @@ spec:
   variables:
     - name: ecsTasks
       expression: |
-        object.?planned_values.root_module.resources.exists(r, 
+        object.?planned_values.root_module.resources.exists(r,
           r.type == 'aws_ecs_task_definition').orValue([])
   validations:
     - message: "ECS tasks must use awsvpc network mode."
@@ -331,7 +332,7 @@ spec:
     - message: "MAINTAINER is deprecated, use LABELS instead"
       expression: |
         !object.Stages.exists(stage,
-          has(stage.Commands) && 
+          has(stage.Commands) &&
             stage.Commands.exists(cmd, cmd.Name == 'MAINTAINER')
         )
     - message: "Use the LABELS instruction to set the MAINTAINER name"
@@ -339,8 +340,8 @@ spec:
         object.Stages.exists(stage,
           has(stage.Commands) && stage.Commands.exists(cmd,
             has(cmd.Labels) && cmd.Labels.exists(label,
-              label.Key == 'maintainer' || 
-              label.Key == 'owner' || 
+              label.Key == 'maintainer' ||
+              label.Key == 'owner' ||
               label.Key == 'author'
             )
           )
@@ -357,8 +358,8 @@ metadata:
 spec:
   evaluation:
     mode: "HTTP"
-  failurePolicy: Fail 
-  variables: 
+  failurePolicy: Fail
+  variables:
   - name: authorizationlist
     expression: object.attributes.Header("authorization")
   - name: authorization
@@ -368,11 +369,11 @@ spec:
         : []
   - name: token
     expression: >
-      size(variables.authorization) == 2 && 
+      size(variables.authorization) == 2 &&
         variables.authorization[0].lowerAscii() == "bearer"
           ? jwt.Decode(variables.authorization[1], "secret")
           : null
-  validations: 
+  validations:
     # request not authenticated -> 401
   - expression: >
       variables.token == null || !variables.token.Valid
@@ -428,11 +429,11 @@ spec:
   matchConditions:
     - name: has-emptydir-or-hostpath
       expression: |
-        has(object.spec.volumes) && 
+        has(object.spec.volumes) &&
         object.spec.volumes.exists(v, has(v.emptyDir) || has(v.hostPath))
     - name: annotation-not-present
       expression: |
-        !has(object.metadata.annotations) || 
+        !has(object.metadata.annotations) ||
         !object.metadata.annotations.exists(k, k == 'cluster-autoscaler.kubernetes.io/safe-to-evict')
   mutations:
     - patchType: ApplyConfiguration
@@ -545,7 +546,7 @@ spec:
   validations:
     - message: image is not authorized
       expression: |
-       images.containers.map(image, 
+       images.containers.map(image,
          verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)`,
   },
 ]
