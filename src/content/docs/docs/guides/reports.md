@@ -1,6 +1,6 @@
 ---
 title: Policy Reports
-description: View and audit Kyverno policy results with reports.
+excerpt: View and audit Kyverno policy results with reports.
 sidebar:
   order: 1
 ---

@@ -1,6 +1,6 @@
 ---
 title: Configuring Kyverno
-description: Configuration options for a Kyverno installation.
+excerpt: Configuration options for a Kyverno installation.
 sidebar:
   order: 35
 ---

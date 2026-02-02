@@ -3,7 +3,7 @@ title: Kubernetes Quick Start
 linkTitle: Quick Start Guides
 sidebar:
   order: 20
-description: An introduction to Kyverno policy and rule types
+excerpt: An introduction to Kyverno policy and rule types
 ---
 
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.

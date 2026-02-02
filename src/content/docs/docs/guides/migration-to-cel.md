@@ -1,7 +1,7 @@
 ---
 title: Migrating to CEL Policies
 weight: 10
-description: Complete guide for migrating from `ClusterPolicy` to CEL-based policy types
+excerpt: Complete guide for migrating from `ClusterPolicy` to CEL-based policy types
 ---
 
 This guide helps you migrate from `ClusterPolicy` to the new CEL-based [policy types](/docs/policy-types/overview/).

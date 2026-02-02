@@ -2,7 +2,7 @@
 title: Resource Definitions
 sidebar:
   order: 120
-description: Custom Resource Definitions (CRDs) for Kyverno policies and other types.
+excerpt: Custom Resource Definitions (CRDs) for Kyverno policies and other types.
 ---
 
 Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types.

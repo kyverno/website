@@ -3,7 +3,7 @@ title: How Kyverno Works
 linkTitle: How Kyverno Works
 sidebar:
   order: 10
-description: An overview of how Kyverno works
+excerpt: An overview of how Kyverno works
 ---
 
 ## Kubernetes Controllers

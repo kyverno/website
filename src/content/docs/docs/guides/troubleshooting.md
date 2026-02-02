@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Processes for troubleshooting and recovery of Kyverno.
+excerpt: Processes for troubleshooting and recovery of Kyverno.
 sidebar:
   order: 130
 ---
