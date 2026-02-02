@@ -177,6 +177,19 @@ We have refined how Kyverno communicates policy results:
 
   More detailed latency and execution metrics for CEL policies are now included by default to help you monitor the "hidden" cost of policy enforcement.
 
+## For Developers & Integrators
+
+To support the broader ecosystem and make it easier to build integrations, we have decoupled our core components:
+
+- **New API Repository**
+
+  Our CEL-based APIs now live in a dedicated repository: [kyverno/api](https://github.com/kyverno/api).
+  This makes it significantly lighter to import Kyverno types into your own Go projects.
+
+- **Kyverno SDK**
+
+  For developers building custom controllers or tools that interact with Kyverno, the SDK project is now housed at [kyverno/sdk](https://github.com/kyverno/sdk).
+
 ## Getting Started & Backward Compatibility
 
 Upgrading from 1.16 is straightforward. However, since the CEL policy types have moved to `v1`, we recommend updating your manifests to the new API version. Kyverno will continue to support `v1beta1` for a transition period.
