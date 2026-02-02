@@ -25,6 +25,16 @@ export default defineConfig({
     starlight({
       title: 'Kyverno',
       customCss: ['./src/styles/global.css'],
+      expressiveCode: {
+        themes: ['github-dark', 'github-light'],
+        styleOverrides: {
+          borderRadius: '0.5rem',
+          codeFontSize: '0.875rem',
+          codeLineHeight: '1.5',
+        },
+        // Map CEL to YAML for better syntax highlighting (supports # comments)
+        langMappings: { cel: 'yaml' },
+      },
       components: {
         PageSidebar: './src/components/PageSidebar.astro',
         ThemeSelect: './src/components/ThemeSelect.astro',

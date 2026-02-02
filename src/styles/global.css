@@ -87,6 +87,26 @@
   }
 }
 
+/* Reduce gap between page title and first content paragraph */
+.sl-markdown-content {
+  margin-top: 0 !important;
+}
+
+.content-panel > :first-child {
+  margin-top: 0 !important;
+}
+
+/* Target Starlight's header/title area */
+header.sl-markdown-content,
+.sl-markdown-content > :first-child {
+  margin-top: 0 !important;
+}
+
+/* Reduce the content area top margin */
+[data-pagefind-body] {
+  margin-top: 0.5rem !important;
+}
+
 @layer starlight {
   /* 
    * Restore browser default styles for markdown content that were removed by Tailwind's preflight.

@@ -280,8 +280,7 @@ spec:
     -  message: "Pods must have 'app' and 'version' labels"
        expression: |
          has(variables.labels.app) && 
-         has(variables.labels.version)
-     `,
+         has(variables.labels.version)`,
   },
   {
     id: 'validate-terraform',
