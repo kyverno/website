@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'By default, Kubernetes allows communications across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict communications. A default NetworkPolicy should be configured for each Namespace to default deny all ingress and egress traffic to the Pods in the Namespace. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application Pods from select sources. This policy will create a new NetworkPolicy resource named `default-deny` which will deny all traffic anytime a new Namespace is created.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ tags:
   - Sample in Vpol
 version: 1.14.0
 description: 'A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

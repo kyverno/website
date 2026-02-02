@@ -9,6 +9,7 @@ tags:
   - Veeam Kasten
 version: 1.6.0
 description: 'Ensure Kasten Location Profiles have enabled immutability to prevent unintentional or malicious changes to backup data.'
+createdAt: "2024-05-15T17:51:04.000Z"
 ---
 
 ## Policy Definition

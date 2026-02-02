@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.6.0
 description: 'This policy ensures that the name of the ApplicationSet is the same value provided in the project.'
+createdAt: "2022-05-11T19:07:30.000Z"
 ---
 
 ## Policy Definition

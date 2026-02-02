@@ -9,6 +9,7 @@ tags:
   - Sample
 version: 1.15.0
 description: 'A PodDisruptionBudget limits the number of Pods of a replicated application that are down simultaneously from voluntary disruptions. For example, a quorum-based application would like to ensure that the number of replicas running is never brought below the number needed for a quorum. As an application owner, you can create a PodDisruptionBudget (PDB) for each application. This policy will create a PDB resource whenever a new Deployment is created.'
+createdAt: "2025-11-04T10:13:04.000Z"
 ---
 
 ## Policy Definition

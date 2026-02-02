@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices in CEL
 version: 1.11.0
 description: 'Container daemon socket bind mounts allows access to the container engine on the node. This access can be used for privilege escalation and to manage containers outside of Kubernetes, and hence should not be allowed. This policy validates that the sockets used for CRI engines Docker, Containerd, and CRI-O are not used. In addition to or replacement of this policy, preventing users from mounting the parent directories (/var/run and /var) may be necessary to completely prevent socket bind mounts.'
+createdAt: "2024-06-03T12:31:12.000Z"
 ---
 
 ## Policy Definition

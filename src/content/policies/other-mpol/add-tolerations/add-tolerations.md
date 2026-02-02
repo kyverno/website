@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'Pod tolerations are used to schedule on Nodes which have a matching taint. This policy adds the toleration `org.com/role=service:NoSchedule` if existing tolerations do not contain the key `org.com/role`.'
+createdAt: "2025-10-30T07:20:03.000Z"
 ---
 
 ## Policy Definition

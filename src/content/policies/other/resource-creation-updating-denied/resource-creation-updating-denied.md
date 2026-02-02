@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.9.0
 description: 'This policy denies the creation and updating of resources specifically for Deployment  and Pod kinds during a specified time window. The policy is designed to enhance control  over resource modifications during critical periods, ensuring stability and consistency  within the Kubernetes environment.'
+createdAt: "2024-06-09T13:56:23.000Z"
 ---
 
 ## Policy Definition
