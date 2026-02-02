@@ -22,7 +22,7 @@ The first thing you’ll notice with 1.17 is our completely redesigned website.
 We’ve moved beyond a simple documentation site to create a modern, high-performance portal for platform engineers.
 
 Let's be honest: **the Kyverno website redesign was long overdue**.
-As the project evolved into the industry standard for Kubernetes policy management, our documentation needs to reflect that maturity.
+As the project evolved into the industry standard for unified policy as code, our documentation needs to reflect that maturity.
 We are proud to finally unveil the new experience at https://kyverno.io.
 
 ![Old and new websites](./assets/website.png)
