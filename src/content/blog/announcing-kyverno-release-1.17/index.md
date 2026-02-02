@@ -6,6 +6,7 @@ tags:
 excerpt: Moving toward the future With Kyverno 1.17!
 draft: false
 featured: true
+coverImage: assets/cover.png
 ---
 
 # Announcing Kyverno Release 1.17!
