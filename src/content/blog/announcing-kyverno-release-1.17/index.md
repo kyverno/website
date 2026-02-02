@@ -111,7 +111,6 @@ To ensure CEL policies are as powerful as the original Kyverno engine, 1.17 intr
 
   New `time.now()`, `time.truncate(timestamp, duration)`, and `time.toCron(timestamp)` functions allow for time-since or "maintenance window" style policies.
 
-
 ## The Deprecation of Legacy APIs
 
 As Kyverno matures and aligns more closely with upstream Kubernetes standards, we are making the strategic shift to a **CEL-first** architecture.
