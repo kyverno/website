@@ -9,6 +9,7 @@ tags:
   - Best Practices
 version: 1.6.0
 description: 'A Kubernetes Service of type NodePort uses a host port to receive traffic from any source. A NetworkPolicy cannot be used to control traffic to host ports. Although NodePort Services can be useful, their use must be limited to Services with additional upstream security checks. This policy validates that any new Services do not use the `NodePort` type.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

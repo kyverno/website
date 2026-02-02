@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.7.0
 description: 'A base image used to construct a container image is not accessible by any Kubernetes component and not a field in a Pod spec as it must be fetched from a registry. Having this information available in the resource referencing the containers helps to provide a clearer understanding of its contents. This policy adds an annotation to a Pod or its controllers with the base image used for each container if present in an OCI annotation.'
+createdAt: "2022-05-11T15:58:15.000Z"
 ---
 
 ## Policy Definition

@@ -12,6 +12,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'Wildcards (''*'') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.'
+createdAt: "2022-05-06T22:10:04.000Z"
 ---
 
 ## Policy Definition

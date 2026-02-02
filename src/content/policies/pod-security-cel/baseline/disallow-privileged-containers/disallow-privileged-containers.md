@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Baseline) in CEL
 version: 1.11.0
 description: 'Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.'
+createdAt: "2023-11-08T14:57:09.000Z"
 ---
 
 ## Policy Definition

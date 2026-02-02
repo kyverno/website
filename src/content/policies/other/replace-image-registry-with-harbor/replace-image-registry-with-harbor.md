@@ -8,6 +8,7 @@ subjects:
 tags:
   - Sample
 description: 'Some registries like Harbor offer pull-through caches for images from certain registries. Images can be re-written to be pulled from the redirected registry instead of the original and the registry will proxy pull the image, adding it to its internal cache. The imageData context variable in this policy provides a normalized view of the container image, allowing the policy to make decisions based on various  "live" image details. As a result, it requires access to the source registry and the existence of the target image to verify those details.'
+createdAt: "2024-03-03T00:07:21.000Z"
 ---
 
 ## Policy Definition

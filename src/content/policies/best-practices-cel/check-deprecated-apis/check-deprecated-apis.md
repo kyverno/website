@@ -8,6 +8,7 @@ subjects:
 tags:
   - Best Practices in CEL
 description: 'Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters. PodSecurityPolicy is removed in v1.25 so therefore the validate-v1-25-removals rule may not completely work on 1.25+.'
+createdAt: "2024-08-02T12:26:43.000Z"
 ---
 
 ## Policy Definition

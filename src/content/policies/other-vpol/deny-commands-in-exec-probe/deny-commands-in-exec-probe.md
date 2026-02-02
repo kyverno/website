@@ -9,6 +9,7 @@ tags:
   - Other in Vpol
 version: 1.14.0
 description: 'Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod''s liveness exec probe.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

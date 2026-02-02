@@ -9,6 +9,7 @@ subjects:
 tags:
   - Other
 description: 'PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Introducing a PDB where there are already matching Pod controllers may pose a problem if the author is unaware of the existing replica count. This policy ensures that the minAvailable value is not greater not equal to the replica count of any matching existing Deployment. If other Pod controllers should also be included in this check, additional rules may be added to the policy which match those controllers.'
+createdAt: "2024-03-03T15:20:15.000Z"
 ---
 
 ## Policy Definition

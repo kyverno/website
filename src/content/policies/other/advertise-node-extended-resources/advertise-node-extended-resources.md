@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.9.0
 description: 'Kubernetes Nodes, in addition to standard compute resources like CPU and memory, may offer extended resources such as FPGAs and GPUs, both of which can be defined per custom design. These extended resources are advertised in the `status` object of a Node. This policy, functional only starting in Kyverno 1.9, adds the extended resource `example.com/dongle` with a value/capacity of `2` to Kubernetes Nodes.'
+createdAt: "2023-01-01T16:22:41.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ tags:
   - OpenShift
 version: 1.6.0
 description: 'HTTP traffic is not encrypted and hence insecure. This policy prevents configuration of OpenShift HTTP routes.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

@@ -11,6 +11,7 @@ tags:
   - NGINX Ingress in CEL
 version: 1.11.0
 description: 'Users that can create or update ingress objects can use the custom snippets  feature to obtain all secrets in the cluster (CVE-2021-25742). This policy  disables allow-snippet-annotations in the ingress-nginx configuration and  blocks *-snippet annotations on an Ingress. See: https://github.com/kubernetes/ingress-nginx/issues/7837'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

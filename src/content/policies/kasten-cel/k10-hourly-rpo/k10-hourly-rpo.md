@@ -9,6 +9,7 @@ tags:
   - Kasten K10 by Veeam in CEL
 version: 1.11.0
 description: 'K10 Policy resources can be educated to adhere to common Recovery Point Objective (RPO) best practices.  This policy is advising to use an RPO frequency that with hourly granularity if it has the appPriority: Mission Critical'
+createdAt: "2024-07-10T03:46:30.000Z"
 ---
 
 ## Policy Definition

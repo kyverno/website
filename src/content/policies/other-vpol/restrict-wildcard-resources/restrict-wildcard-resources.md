@@ -12,6 +12,7 @@ tags:
   - EKS Best Practices in vpol
 version: 1.14.0
 description: 'Wildcards (''*'') in resources grants access to all of the resources referenced by the given API group and does not follow the principal of least privilege. As much as possible, avoid such open resources unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the resources list found in any rule.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

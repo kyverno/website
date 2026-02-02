@@ -9,6 +9,7 @@ tags:
   - Other in Vpol
 version: 1.14.0
 description: 'hostPath persistentvolumes consume the underlying node''s file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

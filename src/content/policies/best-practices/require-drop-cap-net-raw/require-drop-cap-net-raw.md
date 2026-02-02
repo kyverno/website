@@ -9,6 +9,7 @@ tags:
   - Best Practices
 version: 1.6.0
 description: 'Capabilities permit privileged actions without giving full root access. The CAP_NET_RAW capability, enabled by default, allows processes in a container to forge packets and bind to any interface potentially leading to MitM attacks. This policy ensures that all containers explicitly drop the CAP_NET_RAW ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

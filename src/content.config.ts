@@ -23,7 +23,7 @@ const policiesCollection = defineCollection({
     tags: z.array(z.string()),
     version: z.string().optional(),
     description: z.string().optional(), // Policy description from annotations
-    isNew: z.boolean().optional(), // Flag to mark new policies
+    createdAt: z.coerce.date().optional(), // Policy creation date (from upstream repo); use in components for "new" badge, formatting, etc.
   }),
 })
 
