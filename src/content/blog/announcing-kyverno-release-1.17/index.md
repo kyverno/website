@@ -131,7 +131,7 @@ While they remain functional in this release, the clock has started on their rem
 
 ### Why the Change?
 
-By standardizing on the Common Expression Language (CEL), Kyverno significantly reduces its performance overhead and aligns with the native validation logic used by the Kubernetes API server itself.
+By standardizing on the Common Expression Language (CEL), Kyverno significantly improves its performance and aligns with the native validation logic used by the Kubernetes API server itself.
 
 For platform teams, this means **one less language to learn** and a more predictable policy-as-code experience.
 
