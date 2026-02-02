@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices
 version: 1.14.0
 description: 'Using the Cosign project, OCI images may be signed to ensure supply chain security is maintained. Those signatures can be verified before pulling into a cluster. This policy checks the signature of an image repo called ghcr.io/kyverno/test-verify-image to ensure it has been signed by verifying its signature against the provided public key. This policy serves as an illustration for how to configure a similar rule and will require replacing with your image(s) and keys.'
+createdAt: "2025-03-27T21:20:10.000Z"
 ---
 
 ## Policy Definition

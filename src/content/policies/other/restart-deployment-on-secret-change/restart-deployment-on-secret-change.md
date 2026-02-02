@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.7.0
 description: 'If Secrets are mounted in ways which do not naturally allow updates to be live refreshed it may be necessary to modify a Deployment. This policy watches a Secret and if it changes will write an annotation to one or more target Deployments thus triggering a new rollout and thereby refreshing the referred Secret. It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

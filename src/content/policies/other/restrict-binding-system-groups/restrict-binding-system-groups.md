@@ -12,6 +12,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

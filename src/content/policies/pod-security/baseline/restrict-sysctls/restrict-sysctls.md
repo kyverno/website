@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 description: 'Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node. This policy ensures that only those "safe" subsets can be specified in a Pod.'
+createdAt: "2021-04-18T04:41:22.000Z"
 ---
 
 ## Policy Definition

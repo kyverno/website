@@ -9,6 +9,7 @@ subjects:
 tags:
   - PSP Migration
 description: 'In the earlier Pod Security Policy controller, it was possible to define a setting which would enable AppArmor for all the containers within a Pod so they may be assigned the desired profile. Assigning an AppArmor profile, accomplished via an annotation, is useful in that it allows secure defaults to be defined and may also result in passing other validation rules such as those in the Pod Security Standards. This policy mutates Pods to add an annotation for every container to enabled AppArmor at the runtime/default level.'
+createdAt: "2023-05-22T23:31:26.000Z"
 ---
 
 ## Policy Definition

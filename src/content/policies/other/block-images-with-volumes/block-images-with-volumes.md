@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'OCI images may optionally be built with VOLUME statements which, if run in read-only mode, would still result in write access to the specified location. This may be unexpected and undesirable. This policy checks the contents of every container image and inspects them for such VOLUME statements, then blocks if found.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

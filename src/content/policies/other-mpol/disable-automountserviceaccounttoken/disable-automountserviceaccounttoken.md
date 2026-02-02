@@ -9,7 +9,7 @@ tags:
   - Other
   - EKS Best Practices
 description: 'A new ServiceAccount called `default` is created whenever a new Namespace is created. Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount. This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token into Pods obviating the need to do so individually.'
-isNew: true
+createdAt: "2025-11-18T07:36:13.000Z"
 ---
 
 ## Policy Definition

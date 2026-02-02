@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'Jobs which are user created can often pile up and consume excess space in the cluster. In Kubernetes 1.23, the TTL-after-finished controller is stable and will automatically clean up these Jobs if the ttlSecondsAfterFinished is specified. This policy adds the ttlSecondsAfterFinished field to an Job that does not have an ownerReference set if not already specified.'
+createdAt: "2022-07-09T23:26:05.000Z"
 ---
 
 ## Policy Definition

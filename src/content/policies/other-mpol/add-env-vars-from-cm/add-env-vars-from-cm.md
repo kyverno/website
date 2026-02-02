@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.15.0
 description: 'Instead of defining a common set of environment variables multiple times either in manifests or separate policies, Pods can reference entire collections stored in a ConfigMap. This policy mutates all initContainers (if present) and containers in a Pod with environment variables defined in a ConfigMap named `nsenvvars` that must exist in the destination Namespace.'
+createdAt: "2025-10-29T09:59:30.000Z"
 ---
 
 ## Policy Definition
