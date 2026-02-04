@@ -66,3 +66,7 @@ A minor release will contain a mix of features, enhancements, and bug fixes.
 Major features follow the [Kyverno Design Proposal (KDP)](https://github.com/kyverno/KDP/) process.
 
 During the start of a release, there may be many issues assigned to the release milestone. The priorities for the release are discussed in the weekly maintainer's meetings. As the release progresses several issues may be moved to the next milestone. Hence, if an issue is important it is important to advocate its priority early in the release cycle.
+
+### Release Instructions
+
+For release instructions, see [release.md](https://github.com/nirmata/go-llm-apps/pull/712/changes#diff-1549f8d8c409de908d342190060c75ea78e222e437bc77c5b34229a291fd822eR123).
