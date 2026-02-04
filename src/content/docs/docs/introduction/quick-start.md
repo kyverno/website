@@ -8,7 +8,7 @@ description: An introduction to Kyverno policy and rule types
 
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, generation, cleanup, and image verification allowing you to select the one (or all) which is most relevant to your use case.
 
-These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/) for more complete information on how to install Kyverno in production.
+These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/installation) for more complete information on how to install Kyverno in production.
 
 First, install Kyverno from the latest release manifest.
 
@@ -20,7 +20,7 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 ## Validate Resources
 
-In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/policy-reports/) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
+In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/guides/reports) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
@@ -349,7 +349,7 @@ Clean up the policy:
 kubectl delete deletingpolicy cleanup-bare-pods
 ```
 
-Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [deleting policy section](/docs/policy-types/cel-policies/deleting-policy).
+Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [deleting policy section](/docs/policy-types/deleting-policy).
 
 ## Verify Images
 
@@ -433,4 +433,4 @@ kubectl delete pod test-unsigned test-signed test-wrongkey --ignore-not-found
 kubectl delete imagevalidatingpolicy check-images-cel
 ```
 
-Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [image validating policy section](/docs/policy-types/cel-policies/image-validating-policy).
+Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [image validating policy section](/docs/policy-types/image-validating-policy).
