@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample in CEL
 version: 1.11.0
+description: 'Use of a SHA checksum when pulling an image is often preferable because tags are mutable and can be overwritten. This policy checks to ensure that all images use SHA checksums rather than tags.'
+createdAt: "2024-05-30T04:39:12.000Z"
 ---
 
 ## Policy Definition

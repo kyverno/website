@@ -7,8 +7,12 @@ subjects:
   - RoleBinding
   - ClusterRoleBinding
   - RBAC
-tags: []
+tags:
+  - Security
+  - EKS Best Practices in vpol
 version: 1.14.0
+description: 'Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

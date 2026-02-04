@@ -7,8 +7,11 @@ subjects:
   - Role
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Security in CEL
 version: 1.11.0
+description: 'Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID as declared in the image instead of a random UID'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

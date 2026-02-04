@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - CertificateSigningRequest
-tags: []
+tags:
+  - Other
 version: 1.10.0
+description: 'The Kubernetes API includes a CertificateSigningRequest resource which can be used to generate a certificate for an entity. Because this API can be abused to create a long-lived credential, it is important to be able to audit this API to understand who/what is creating these CSRs and for what actors they are being created. This policy, intended to always be run in Audit mode and produce failure results in a Policy Report, inspects all incoming CertificateSigningRequests and writes out into the Policy Report information on who/what requested it and parsing the CSR to show the Subject information of that CSR resource.'
+createdAt: "2023-04-26T15:16:40.000Z"
 ---
 
 ## Policy Definition

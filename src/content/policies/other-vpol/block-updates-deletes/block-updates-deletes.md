@@ -5,7 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - RBAC
-tags: []
+tags:
+  - Sample
+description: 'Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.'
+createdAt: "2025-12-11T12:49:35.000Z"
 ---
 
 ## Policy Definition

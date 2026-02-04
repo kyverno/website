@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline)
 version: 1.6.0
+description: 'Adding capabilities beyond those listed in the policy must be disallowed.'
+createdAt: "2022-01-28T14:24:06.000Z"
 ---
 
 ## Policy Definition

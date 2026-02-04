@@ -38,7 +38,298 @@
     ASTRO_ENV = "branch"
     SITE_URL = "$DEPLOY_PRIME_URL"
 
-# --- Redirects ---
+# --- Documentation reorganization redirects (commit f4503dcc) ---
+# Applying policies - deleted, moved to guides
+[[redirects]]
+  from = "/docs/applying-policies"
+  to = "/docs/guides/applying-policies"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/applying-policies/*"
+  to = "/docs/guides/applying-policies"
+  status = 301
+  force = true
+
+# Guides moved from root docs to guides/
+[[redirects]]
+  from = "/docs/introduction/admission-controllers"
+  to = "/docs/guides/admission-controllers"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/exceptions"
+  to = "/docs/guides/exceptions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/exceptions/*"
+  to = "/docs/guides/exceptions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/gatekeeper"
+  to = "/docs/guides/gatekeeper"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/high-availability"
+  to = "/docs/guides/high-availability"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/high-availability/*"
+  to = "/docs/guides/high-availability"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/pod-security"
+  to = "/docs/guides/pod-security"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-reports"
+  to = "/docs/guides/reports"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-reports/*"
+  to = "/docs/guides/reports"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/security"
+  to = "/docs/guides/security"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/security/*"
+  to = "/docs/guides/security"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/testing-policies"
+  to = "/docs/guides/testing-policies"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/testing-policies/*"
+  to = "/docs/guides/testing-policies"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/troubleshooting"
+  to = "/docs/guides/troubleshooting"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/troubleshooting/*"
+  to = "/docs/guides/troubleshooting"
+  status = 301
+  force = true
+
+# Installation reorganization
+[[redirects]]
+  from = "/docs/installation"
+  to = "/docs/installation/installation"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/installation/methods"
+  to = "/docs/installation/installation"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/releases"
+  to = "/docs/installation/releases"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/releases/*"
+  to = "/docs/installation/releases"
+  status = 301
+  force = true
+
+# Monitoring - consolidated into guides/monitoring
+[[redirects]]
+  from = "/docs/monitoring"
+  to = "/docs/guides/monitoring"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/monitoring/*"
+  to = "/docs/guides/monitoring"
+  status = 301
+  force = true
+
+# Tracing - consolidated into guides/tracing
+[[redirects]]
+  from = "/docs/tracing"
+  to = "/docs/guides/tracing"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/tracing/*"
+  to = "/docs/guides/tracing"
+  status = 301
+  force = true
+
+# Policy types reorganization
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/cleanup-policy"
+  to = "/docs/policy-types/cleanup-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/policy-rules"
+  to = "/docs/policy-types/cluster-policy/overview"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/policy-rules/*"
+  to = "/docs/policy-types/cluster-policy/overview"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/verify-images"
+  to = "/docs/policy-types/cluster-policy/verify-images/overview"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/verify-images/notary/*"
+  to = "/docs/policy-types/cluster-policy/verify-images/notary"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/verify-images/sigstore/*"
+  to = "/docs/policy-types/cluster-policy/verify-images/sigstore"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/deleting-policy"
+  to = "/docs/policy-types/deleting-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/generating-policy"
+  to = "/docs/policy-types/generating-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/image-validating-policy"
+  to = "/docs/policy-types/image-validating-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/mutating-policy"
+  to = "/docs/policy-types/mutating-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cel-policies/validating-policy"
+  to = "/docs/policy-types/validating-policy"
+  status = 301
+  force = true
+
+# Subprojects reorganization
+[[redirects]]
+  from = "/docs/subprojects/kyverno-authz"
+  to = "/docs/subprojects/authz"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/subprojects/kyverno-authz/*"
+  to = "/docs/subprojects/authz"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/subprojects/kyverno-chainsaw"
+  to = "/docs/subprojects/chainsaw"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/subprojects/kyverno-chainsaw/*"
+  to = "/docs/subprojects/chainsaw"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/subprojects/kyverno-policy-reporter"
+  to = "/docs/subprojects/policy-reporter"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/subprojects/kyverno-policy-reporter/*"
+  to = "/docs/subprojects/policy-reporter"
+  status = 301
+  force = true
+
+# Kyverno CLI reorganization
+[[redirects]]
+  from = "/docs/kyverno-cli"
+  to = "/docs/kyverno-cli/reference/kyverno"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/install"
+  to = "/docs/kyverno-cli/reference/kyverno"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/assertion-trees"
+  to = "/docs/kyverno-cli/reference/kyverno"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/usage"
+  to = "/docs/kyverno-cli/reference/kyverno"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/usage/*"
+  to = "/docs/kyverno-cli/reference/kyverno"
+  status = 301
+  force = true
+
+# Fallback redirect (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"

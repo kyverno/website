@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - PodDisruptionBudget
   - Deployment
-tags: []
+tags:
+  - Other
+description: 'A PodDisruptionBudget which sets its maxUnavailable value to zero prevents all voluntary evictions including Node drains which may impact maintenance tasks. This may be acceptable if there are no matching controllers, but if there are then creation of such a PDB could allow unintended disruption. This policy enforces that a PodDisruptionBudget may not specify the maxUnavailable field as zero if there are any existing matching Deployments having greater than zero replicas.'
+createdAt: "2024-03-03T16:23:02.000Z"
 ---
 
 ## Policy Definition

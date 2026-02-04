@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Application
-tags: []
+tags:
+  - Argo in CEL
 version: 1.11.0
+description: 'This policy prevents the use of the default project in an Application.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition

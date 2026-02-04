@@ -6,8 +6,11 @@ type: ValidatingPolicy
 subjects:
   - Namespace
   - Pod
-tags: []
+tags:
+  - Sample in Vpol
 version: 1.14.0
+description: 'It''s common where policy lookups need to consider a mapping to many possible values rather than a static mapping. This is a sample which demonstrates how to dynamically look up an allow list of Namespaces from a ConfigMap where the ConfigMap stores an array of strings. This policy validates that any Pods created outside of the list of Namespaces have the label `foo` applied.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,13 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Best Practices
+  - EKS Best Practices
+  - PSP Migration
 version: 1.6.0
+description: 'A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

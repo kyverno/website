@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - AuthorizationPolicy
-tags: []
+tags:
+  - Istio
 version: 1.6.0
+description: 'An AuthorizationPolicy enables access controls on workloads in the mesh. It supports per-Namespace controls which can be a union of different behaviors. This policy creates a default deny AuthorizationPolicy for all new Namespaces. Further AuthorizationPolicies should be created to more granularly allow traffic as permitted. Use of this policy will likely require granting the Kyverno ServiceAccount additional privileges required to generate AuthorizationPolicy resources.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

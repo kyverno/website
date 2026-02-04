@@ -6,8 +6,12 @@ type: ClusterPolicy
 subjects:
   - Ingress
   - Pod
-tags: []
+tags:
+  - Ingress
+  - Security
 version: 1.9.0
+description: 'This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.'
+createdAt: "2024-08-26T13:20:30.000Z"
 ---
 
 ## Policy Definition

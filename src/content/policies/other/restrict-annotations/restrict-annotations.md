@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Sample
 version: 1.6.0
+description: 'Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don''t set reserved annotations or to force them to use a newer version of an annotation.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

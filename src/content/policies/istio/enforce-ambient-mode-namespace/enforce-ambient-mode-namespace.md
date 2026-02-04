@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Istio
 version: 1.6.0
+description: 'In order for Istio to include namespaces in ambient mode, the label `istio.io/dataplane-mode` must be set to `ambient`. This policy ensures that all new Namespaces set `istio.io/dataplane-mode` to `ambient`.'
+createdAt: "2024-07-31T12:45:59.000Z"
 ---
 
 ## Policy Definition

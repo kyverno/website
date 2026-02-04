@@ -5,8 +5,12 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Best Practices
+  - EKS Best Practices in CEL
 version: 1.11.0
+description: 'As application workloads share cluster resources, it is important to limit resources requested and consumed by each Pod. It is recommended to require resource requests and limits per Pod, especially for memory and CPU. If a Namespace level request or limit is specified, defaults will automatically be applied to each Pod based on the LimitRange configuration. This policy validates that all containers have something specified for memory and CPU requests and memory limits.'
+createdAt: "2024-06-03T12:31:12.000Z"
 ---
 
 ## Policy Definition

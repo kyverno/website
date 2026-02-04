@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Ingress
-tags: []
+tags:
+  - Other in CEL
 version: 1.11.0
+description: 'Ingress hosts optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given Ingress resource. This policy enforces that any Ingress host does not contain a wildcard character.'
+createdAt: "2024-06-03T12:50:55.000Z"
 ---
 
 ## Policy Definition

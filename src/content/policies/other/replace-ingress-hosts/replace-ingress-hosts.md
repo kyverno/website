@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Ingress
-tags: []
+tags:
+  - Other
 version: 1.9.0
+description: 'An Ingress may specify host names at a variety of locations in the same resource. In some cases, those host names should be modified to, for example, update domain names silently. The replacement must be done in all the fields where a host name can be specified. This policy, illustrating the use of nested foreach loops and operable in Kyverno 1.9+, replaces host names that end with `old.com` with `new.com`.'
+createdAt: "2023-01-01T16:35:38.000Z"
 ---
 
 ## Policy Definition

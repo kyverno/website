@@ -5,8 +5,12 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+  - EKS Best Practices
 version: 1.7.0
+description: 'Container images can be built from a variety of sources, including other preexisting images. Ensuring images that are allowed to run are built from known, trusted images where their provenance is guaranteed can be an important step in ensuring overall cluster security. This policy ensures that any container image specifies some base image in its metadata from four possible sources: Docker BuildKit, OCI annotations (in manifest or config), or Buildpacks. Note that the ability to detect the presence of a base image is not implicit and requires the author to specify it using metadata or build directives of some sort (ex., Dockerfile FROM statements do not automatically expose this information).'
+createdAt: "2022-05-04T20:50:40.000Z"
 ---
 
 ## Policy Definition

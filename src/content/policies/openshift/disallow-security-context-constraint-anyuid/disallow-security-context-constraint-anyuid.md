@@ -7,8 +7,11 @@ subjects:
   - Role
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Security
 version: 1.6.0
+description: 'Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID as declared in the image instead of a random UID'
+createdAt: "2022-03-02T21:16:19.000Z"
 ---
 
 ## Policy Definition

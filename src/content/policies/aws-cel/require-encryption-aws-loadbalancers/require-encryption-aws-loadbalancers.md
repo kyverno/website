@@ -5,7 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - AWS
+  - EKS Best Practices in CEL
+description: 'Services of type LoadBalancer when deployed inside AWS have support for transport encryption if it is enabled via an annotation. This policy requires that Services of type LoadBalancer contain the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert with some value.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,12 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - NetworkPolicy
-tags: []
+tags:
+  - Other
+  - Multi-Tenancy in CEL
 version: 1.11.0
+description: 'By default, all pods in a Kubernetes cluster are allowed to communicate with each other, and all network traffic is unencrypted. It is recommended to not use an empty podSelector in order to more closely control the necessary traffic flows. This policy requires that all NetworkPolicies other than that of `default-deny` not use an empty podSelector.'
+createdAt: "2024-06-06T10:12:46.000Z"
 ---
 
 ## Policy Definition

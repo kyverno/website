@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - ResourceQuota
   - Namespace
-tags: []
+tags:
+  - Resource Management
 version: 1.11.0
+description: 'Automatically adjusts resource quotas based on time schedules to optimize cloud costs. During non-business hours, the policy reduces resource quotas to prevent overprovisioning while ensuring essential services remain operational.'
+createdAt: "2025-10-23T09:14:11.000Z"
 ---
 
 ## Policy Definition

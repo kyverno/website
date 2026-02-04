@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Mesh
-tags: []
+tags:
+  - Consul in CEL
 version: 1.11.0
+description: 'This policy will check the TLS Min version to ensure that whenever the mesh is set, there is a minimum version of TLS set for all the service mesh proxies and this enforces that service mesh mTLS traffic uses TLS v1.2 or newer.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition

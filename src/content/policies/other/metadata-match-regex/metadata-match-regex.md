@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Label
-tags: []
+tags:
+  - Other
+description: 'Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.'
+createdAt: "2022-12-30T21:22:59.000Z"
 ---
 
 ## Policy Definition

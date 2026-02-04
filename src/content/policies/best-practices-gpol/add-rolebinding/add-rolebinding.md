@@ -1,12 +1,15 @@
 ---
 title: 'Add RoleBinding'
-category: validate
+category: generate
 severity: medium
 type: GeneratingPolicy
 subjects:
   - RoleBinding
-tags: []
+tags:
+  - Multi-Tenancy
 version: 1.15.0
+description: 'Typically in multi-tenancy and other use cases, when a new Namespace is created, users and other principals must be given some permissions to create and interact with resources in the Namespace. Very commonly, Roles and RoleBindings are used to grant permissions at the Namespace level. This policy generates a RoleBinding called `<userName>-admin-binding` in the new Namespace which binds to the ClusterRole `admin` as long as a `cluster-admin` did not create the Namespace. Additionally, an annotation named `kyverno.io/user` is added to the RoleBinding recording the name of the user responsible for the Namespace''s creation.'
+createdAt: "2025-11-04T10:13:04.000Z"
 ---
 
 ## Policy Definition

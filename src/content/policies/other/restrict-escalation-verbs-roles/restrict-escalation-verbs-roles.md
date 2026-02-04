@@ -7,8 +7,11 @@ subjects:
   - Role
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Security
 version: 1.6.0
+description: 'The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.'
+createdAt: "2022-05-06T22:16:29.000Z"
 ---
 
 ## Policy Definition

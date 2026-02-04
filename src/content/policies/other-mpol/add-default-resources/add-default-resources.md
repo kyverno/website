@@ -1,10 +1,11 @@
 ---
 title: 'add-default-resources'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects: []
 tags: []
+createdAt: "2025-10-29T09:59:30.000Z"
 ---
 
 ## Policy Definition

@@ -6,8 +6,11 @@ type: ValidatingPolicy
 subjects:
   - Deployment
   - StatefulSet
-tags: []
+tags:
+  - Sample in Vpol
 version: 1.14.0
+description: 'Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with less than 3  replicas are skipped.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

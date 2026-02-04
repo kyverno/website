@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - Secret
   - ServiceAccount
-tags: []
+tags:
+  - Security in CEL
+description: 'Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. When creating a Secret, you can specify its type using the  type field of the Secret resource . The type kubernetes.io/service-account-token is used for legacy ServiceAccount tokens . These legacy Tokens can be of security concern and should be audited.'
+createdAt: "2024-03-22T07:30:58.000Z"
 ---
 
 ## Policy Definition

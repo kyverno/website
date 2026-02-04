@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - PolicyException
-tags: []
+tags:
+  - Sample
 version: 1.9.0
+description: 'A PolicyException grants the applicable resource(s) or subject(s) the ability to bypass an existing Kyverno policy. Care should be taken to ensure that the allowed PolicyExceptions are scoped fine enough and according to your organization''s operation. This is a Kyverno policy intended to provide guardrails for Kyverno PolicyExceptions and contains a number of rules which may help with these scoping best practices. These rules may be changed/removed depending on the exception practices to be implemented.'
+createdAt: "2023-01-01T15:38:22.000Z"
 ---
 
 ## Policy Definition

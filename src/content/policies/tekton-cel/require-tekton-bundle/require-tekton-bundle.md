@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - TaskRun
   - PipelineRun
-tags: []
+tags:
+  - Tekton in CEL
 version: 1.11.0
+description: 'PipelineRun and TaskRun resources must be executed from a bundle'
+createdAt: "2024-08-02T14:44:48.000Z"
 ---
 
 ## Policy Definition

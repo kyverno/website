@@ -1,10 +1,13 @@
 ---
 title: 'Replace Ingress Hosts'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects: []
-tags: []
+tags:
+  - Other
+description: 'An Ingress may specify host names at a variety of locations in the same resource. This policy replaces host names that end with `old.com` with `new.com` in all relevant fields including spec.rules[].host, spec.tls[].hosts[], and spec.tls[].secretName.'
+createdAt: "2025-11-18T07:36:13.000Z"
 ---
 
 ## Policy Definition

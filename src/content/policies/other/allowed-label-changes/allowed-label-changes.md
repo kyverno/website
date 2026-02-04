@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Label
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'In some cases, operations teams need a type of limited access to change resources during troubleshooting or outage mitigation. This policy demonstrates how to prevent modification to labels except one with the key `breakglass`. Changing, adding, or deleting any other labels is denied.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

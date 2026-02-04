@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security
 version: 1.8.0
+description: 'The restricted profile of the Pod Security Standards, which is inclusive of the baseline profile, is a collection of all the most common configurations that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. In some cases, specific exemptions must be made on a per-control basis. This policy configures the restricted profile through the latest version of the Pod Security Standards cluster wide while exempting `nginx` and `redis` container images from the Capabilities control check.'
+createdAt: "2022-10-07T17:56:04.000Z"
 ---
 
 ## Policy Definition

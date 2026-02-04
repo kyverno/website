@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - ConfigMap
-tags: []
+tags:
+  - Other
 version: 1.7.0
+description: 'In some cases, an update to an existing resource should have downstream effects on a different resource in another Namespace. Rather than overwriting the target, the current state of the source can be concatenated to the target. This policy, triggered by an update to a source ConfigMap, concatenates that value of a target ConfigMap in a different Namespace.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

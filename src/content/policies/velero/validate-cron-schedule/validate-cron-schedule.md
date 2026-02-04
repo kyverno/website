@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Schedule
-tags: []
+tags:
+  - Velero
+description: 'A Velero Schedule is given in Cron format and must be accurate to ensure operation. This policy validates that the schedule is a valid Cron format.'
+createdAt: "2022-05-01T23:02:50.000Z"
 ---
 
 ## Policy Definition

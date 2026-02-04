@@ -6,8 +6,11 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Volume
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
+description: 'HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

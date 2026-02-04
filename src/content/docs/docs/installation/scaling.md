@@ -1,6 +1,6 @@
 ---
 title: Scaling Kyverno
-description: Scaling considerations for a Kyverno installation.
+excerpt: Scaling considerations for a Kyverno installation.
 sidebar:
   order: 45
 ---
@@ -23,7 +23,7 @@ We recommend conducting tests in your own environment to determine real-world ut
 
 ### Horizontal Scale
 
-Horizontal scaling refers to increasing the number of replicas of a given controller. Kyverno supports multiple replicas for each of its controllers, but the effect of multiple replicas is handled differently according to the controller. See the [high availability section](/docs/high-availability#how-ha-works-in-kyverno) for more details.
+Horizontal scaling refers to increasing the number of replicas of a given controller. Kyverno supports multiple replicas for each of its controllers, but the effect of multiple replicas is handled differently according to the controller. See the [high availability section](/docs/guides/high-availability#how-ha-works-in-kyverno) for more details.
 
 ### Scale Testing
 

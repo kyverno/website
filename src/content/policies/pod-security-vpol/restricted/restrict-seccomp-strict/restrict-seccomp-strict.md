@@ -5,8 +5,11 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
+description: 'The seccomp profile in the Restricted group must not be explicitly set to Unconfined but additionally must also not allow an unset value. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is  set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

@@ -5,7 +5,10 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Job
-tags: []
+tags:
+  - Other in Vpol
+description: 'Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Volume
-tags: []
+tags:
+  - Pod Security Standards (Restricted)
 version: 1.6.0
+description: 'In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes. This policy blocks any other type of volume other than those in the allow list.'
+createdAt: "2021-03-10T09:08:16.000Z"
 ---
 
 ## Policy Definition

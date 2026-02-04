@@ -29,6 +29,8 @@ interface PolicyMetadata {
   tags: string[]
   version?: string
   type: string // Full kind from YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
+  description?: string // Policy description from annotations
+  createdAt?: string // ISO date when policy was first added (from upstream repo git history)
 }
 
 interface PolicyYaml {
@@ -40,45 +42,109 @@ interface PolicyYaml {
   }
   spec: {
     validationFailureAction?: string
-    rules: Array<{
+    // For Policy/ClusterPolicy
+    rules?: Array<{
       validate?: unknown
       mutate?: unknown
       generate?: unknown
+      verifyImages?: unknown
+      cleanup?: unknown
     }>
+    // For MutatingPolicy
+    mutations?: unknown
+    // For ValidatingPolicy
+    validations?: unknown
+    // For ImageValidatingPolicy
+    attestors?: unknown
+    matchImageReferences?: unknown
   }
 }
 
 /**
  * Determines the policy category from the spec rules and annotations
- * Maps policy type to schema category enum
+ * Maps policy type to schema category enum based on Kyverno engine features
+ *
+ * For new policy types, we can leverage the kind directly since it indicates the category:
+ * - ImageValidatingPolicy → verifyImages
+ * - MutatingPolicy → mutate
+ * - ValidatingPolicy → validate
+ * - GeneratingPolicy → generate
+ * - CleanupPolicy/ClusterCleanupPolicy → cleanup
+ * - DeletingPolicy → cleanup (deletion is a form of cleanup)
+ *
+ * For Policy/ClusterPolicy, we need to inspect the spec.rules array to determine
+ * which engine features are used (verifyImages, cleanup, generate, mutate, validate).
+ *
+ * Priority order: verifyImages > cleanup > generate > mutate > validate
  */
 function getPolicyCategory(
+  policy: PolicyYaml,
   spec: PolicyYaml['spec'],
   annotations: Record<string, string>,
 ): PolicyCategory {
-  // Check for verifyImages category (typically has image verification rules)
+  const kind = policy.kind
+
+  // For new policy types, the kind directly indicates the category
+  // Unlike Policy/ClusterPolicy, we don't need to inspect the spec
+  switch (kind) {
+    case 'ImageValidatingPolicy':
+      return 'verifyImages'
+    case 'MutatingPolicy':
+      return 'mutate'
+    case 'ValidatingPolicy':
+      return 'validate'
+    case 'GeneratingPolicy':
+      return 'generate'
+    case 'CleanupPolicy':
+    case 'ClusterCleanupPolicy':
+      return 'cleanup'
+    case 'DeletingPolicy':
+      return 'cleanup' // Deletion is a form of cleanup
+  }
+
+  // For Policy/ClusterPolicy, inspect spec.rules to determine category
+  if (spec.rules && spec.rules.length > 0) {
+    // Check all rules to find the primary engine feature
+    // Priority order: verifyImages > cleanup > generate > mutate > validate
+    let hasValidate = false
+
+    for (const rule of spec.rules) {
+      if (rule.verifyImages) {
+        return 'verifyImages'
+      }
+      if (rule.cleanup) {
+        return 'cleanup'
+      }
+      if (rule.generate) {
+        return 'generate'
+      }
+      if (rule.mutate) {
+        return 'mutate'
+      }
+      if (rule.validate) {
+        hasValidate = true
+      }
+    }
+
+    // If we found validate rules but no higher priority features, return validate
+    if (hasValidate) {
+      return 'validate'
+    }
+  }
+
+  // Fallback: Check category annotation if rules don't provide clear indication
   const categoryAnnotation = annotations['policies.kyverno.io/category']
-  if (categoryAnnotation?.toLowerCase().includes('verifyimage')) {
-    return 'verifyImages'
+  if (categoryAnnotation) {
+    const lowerAnnotation = categoryAnnotation.toLowerCase()
+    if (lowerAnnotation.includes('verifyimage')) {
+      return 'verifyImages'
+    }
+    if (lowerAnnotation.includes('cleanup')) {
+      return 'cleanup'
+    }
   }
 
-  // Check for cleanup category
-  if (categoryAnnotation?.toLowerCase().includes('cleanup')) {
-    return 'cleanup'
-  }
-
-  // Determine from rule types
-  if (!spec.rules || spec.rules.length === 0) {
-    return 'validate'
-  }
-
-  const firstRule = spec.rules[0]
-  if (firstRule.generate) {
-    return 'generate'
-  }
-  if (firstRule.mutate) {
-    return 'mutate'
-  }
+  // Default to validate if no rules or unclear
   return 'validate'
 }
 
@@ -90,7 +156,7 @@ function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
   const annotations = policy.metadata.annotations || {}
 
   const title = annotations['policies.kyverno.io/title'] || policy.metadata.name
-  const category = getPolicyCategory(policy.spec, annotations)
+  const category = getPolicyCategory(policy, policy.spec, annotations)
 
   // Extract severity, default to 'medium' if not specified
   const severityAnnotation =
@@ -110,15 +176,32 @@ function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
 
   // Extract tags from annotations (if available) or default to empty array
   const tagsAnnotation = annotations['policies.kyverno.io/tags']
-  const tags = tagsAnnotation
+  const tagsFromAnnotation = tagsAnnotation
     ? tagsAnnotation
         .split(',')
         .map((t) => t.trim())
         .filter((t) => t.length > 0)
     : []
 
+  // Extract category from annotations and add to tags
+  const categoryAnnotation = annotations['policies.kyverno.io/category']
+  const categoryTags = categoryAnnotation
+    ? categoryAnnotation
+        .split(',')
+        .map((c) => c.trim())
+        .filter((c) => c.length > 0)
+    : []
+
+  // Combine tags and category tags, removing duplicates
+  const allTags = [...tagsFromAnnotation, ...categoryTags]
+  const tags = Array.from(new Set(allTags)) // Remove duplicates
+
   // Version is optional
   const version = annotations['policies.kyverno.io/minversion'] || undefined
+
+  // Extract description from annotations
+  const description =
+    annotations['policies.kyverno.io/description'] || undefined
 
   // Extract the full kind from the policy YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
   const type = policy.kind
@@ -131,6 +214,7 @@ function extractMetadata(policy: PolicyYaml, filePath: string): PolicyMetadata {
     tags,
     version,
     type,
+    description,
   }
 }
 
@@ -173,6 +257,18 @@ function generateMarkdown(
   // Add version only if present (it's optional in schema)
   if (metadata.version) {
     frontmatterLines.push(`version: ${metadata.version}`)
+  }
+
+  // Add description if present
+  if (metadata.description) {
+    // Escape single quotes in description for YAML
+    const escapedDescription = metadata.description.replace(/'/g, "''")
+    frontmatterLines.push(`description: '${escapedDescription}'`)
+  }
+
+  // Creation date so components can decide how to display (e.g. "new" badge, format date)
+  if (metadata.createdAt) {
+    frontmatterLines.push(`createdAt: "${metadata.createdAt}"`)
   }
 
   frontmatterLines.push('---', '', '## Policy Definition', '')
@@ -249,6 +345,42 @@ async function findPolicyFiles(dir: string): Promise<string[]> {
 }
 
 /**
+ * Gets the creation date of a file from git to determine if it's "new"
+ * Policies created in the last 90 days are considered "new"
+ * Uses git log --reverse to get the first commit (file creation) instead of the latest
+ */
+async function getFileCreationDate(
+  filePath: string,
+  repoDir: string,
+  git: ReturnType<typeof simpleGit>,
+): Promise<Date | null> {
+  try {
+    const relativePath = path.relative(repoDir, filePath).replace(/\\/g, '/')
+    // Use git log --reverse to get the first commit (when file was created)
+    // This requires history, so we need to ensure the clone has enough depth
+    const result = await git.raw([
+      'log',
+      '--reverse',
+      '--format=%ai',
+      '--',
+      relativePath,
+    ])
+
+    if (result && result.trim()) {
+      // Get the first line (first commit date)
+      const firstLine = result.trim().split('\n')[0]
+      if (firstLine) {
+        return new Date(firstLine)
+      }
+    }
+  } catch (error) {
+    // If git log fails, return null (file might not be tracked or repo might be shallow)
+    // With shallow clone, we won't have history to determine creation date
+  }
+  return null
+}
+
+/**
  * Processes a single policy file and generates markdown
  */
 async function processPolicyFile(
@@ -256,6 +388,7 @@ async function processPolicyFile(
   repoDir: string,
   outputDir: string,
   repoUrl: string,
+  git: ReturnType<typeof simpleGit>,
 ): Promise<void> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
@@ -298,13 +431,22 @@ async function processPolicyFile(
 
     const metadata = extractMetadata(policy, filePath)
 
+    // Creation date from upstream repo (for frontmatter)
+    try {
+      const creationDate = await getFileCreationDate(filePath, repoDir, git)
+      if (creationDate) {
+        metadata.createdAt = creationDate.toISOString()
+      }
+    } catch (error) {
+      // If git log fails, continue without createdAt
+    }
+
     // Calculate relative path from repo root (for GitHub link)
     const relativePath = path.relative(repoDir, filePath).replace(/\\/g, '/')
 
     // Preserve directory structure from source repository
     // Remove the filename and get the directory path
     const relativeDir = path.dirname(path.relative(repoDir, filePath))
-    const policyName = policy.metadata.name
     const fileName = path.basename(filePath, path.extname(filePath))
 
     // Output path preserves the source directory structure
@@ -373,14 +515,18 @@ async function main() {
   try {
     console.log(`Cloning ${repoFullName} (branch: ${branch})...`)
 
-    // Clone repository
+    // Clone repository with enough depth to get file creation dates
+    // Using depth 1000 to get sufficient history for determining "new" policies
     const git = simpleGit()
     await git.clone(`https://github.com/${repoFullName}.git`, tempDir, [
       '--branch',
       branch,
       '--depth',
-      '1',
+      '1000', // Increased from 1 to get enough history for file creation dates
     ])
+
+    // Initialize git instance for the cloned repo
+    const repoGit = simpleGit(tempDir)
 
     console.log('Finding policy files...')
     const policyFiles = await findPolicyFiles(tempDir)
@@ -411,7 +557,7 @@ async function main() {
 
     // Process each policy file
     for (const filePath of policyFiles) {
-      await processPolicyFile(filePath, tempDir, outputDir, repoUrl)
+      await processPolicyFile(filePath, tempDir, outputDir, repoUrl, repoGit)
     }
 
     console.log('Policy rendering complete!')

@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Deployment
   - Pod
-tags: []
+tags:
+  - Sample
 version: 1.6.0
+description: 'Applications may involve multiple replicas of the same Pod for availability as well as scale purposes, yet Kubernetes does not by default provide a solution for availability. This policy sets a Pod anti-affinity configuration on Deployments which contain an `app` label if it is not already present.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

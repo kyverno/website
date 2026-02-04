@@ -1,12 +1,15 @@
 ---
 title: 'Mutate termination Grace Periods Seconds'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Sample
 version: 1.15.0
+description: 'Pods with large terminationGracePeriodSeconds (tGPS) might prevent cluster nodes from getting drained, ultimately making the whole cluster unstable. This policy mutates all incoming Pods to set their tGPS under 50s. If the user creates a pod without specifying tGPS, then the Kubernetes default of 30s is maintained.'
+createdAt: "2025-11-14T18:23:14.000Z"
 ---
 
 ## Policy Definition

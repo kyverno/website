@@ -6,7 +6,11 @@ type: ClusterPolicy
 subjects:
   - PersistentVolumeClaim
   - StatefulSet
-tags: []
+tags:
+  - Other
+  - Multi-Tenancy
+description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

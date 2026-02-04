@@ -7,7 +7,10 @@ subjects:
   - Deployment
   - Label
   - Namespace
-tags: []
+tags:
+  - Other
+description: 'It is common for Namespaced resources to need access to labels which have been assigned to the Namespace in which they reside. This policy demonstrates two different ways of assigning Namespace labels to a Deployment. The first method copies only the `owner` label while the second copies all labels except for `kubernetes.io/metadata.name`.'
+createdAt: "2023-12-19T14:21:11.000Z"
 ---
 
 ## Policy Definition

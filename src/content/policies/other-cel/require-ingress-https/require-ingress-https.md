@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Ingress
-tags: []
+tags:
+  - Other in CEL
+description: 'Ingress resources should only allow secure traffic by disabling HTTP and therefore only allowing HTTPS. This policy requires that all Ingress resources set the annotation `kubernetes.io/ingress.allow-http` to `"false"` and specify TLS in the spec.'
+createdAt: "2024-05-30T04:39:12.000Z"
 ---
 
 ## Policy Definition

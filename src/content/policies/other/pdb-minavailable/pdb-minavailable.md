@@ -7,7 +7,10 @@ subjects:
   - PodDisruptionBudget
   - Deployment
   - StatefulSet
-tags: []
+tags:
+  - Other
+description: 'When a Pod controller which can run multiple replicas is subject to an active PodDisruptionBudget, if the replicas field has a value equal to the minAvailable value of the PodDisruptionBudget it may prevent voluntary disruptions including Node drains which may impact routine maintenance tasks and disrupt operations. This policy checks incoming Deployments and StatefulSets which have a matching PodDisruptionBudget to ensure these two values do not match.'
+createdAt: "2022-12-30T20:40:19.000Z"
 ---
 
 ## Policy Definition

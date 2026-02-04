@@ -1,12 +1,15 @@
 ---
 title: 'Remove hostPath Volumes'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Pod
   - Volume
-tags: []
+tags:
+  - Other
+description: 'Pods which mount hostPath volumes are provided access to the underlying filesystem of the Node on which they run. In most scenarios, this should be forbidden. In others, it may be useful to silently remove those hostPath volumes rather than blocking the Pod. This policy removes all hostPath volumes and their volumeMount references from all containers within a Pod.'
+createdAt: "2025-11-18T07:36:13.000Z"
 ---
 
 ## Policy Definition

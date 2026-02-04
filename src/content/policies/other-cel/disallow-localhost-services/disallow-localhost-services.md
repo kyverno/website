@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - Sample in CEL
 version: 1.11.0
+description: 'A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.'
+createdAt: "2024-03-23T11:40:34.000Z"
 ---
 
 ## Policy Definition

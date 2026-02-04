@@ -1,13 +1,16 @@
 ---
 title: 'Add Volume to Deployment'
-category: validate
+category: mutate
 severity: medium
 type: MutatingPolicy
 subjects:
   - Deployment
   - Volume
-tags: []
+tags:
+  - Sample
 version: 1.6.0
+description: 'Some Kubernetes applications like HashiCorp Vault must perform some modifications to resources in order to invoke their specific functionality. Often times, that functionality is controlled by the presence of a label or specific annotation. This policy, based on HashiCorp Vault, adds a volume and volumeMount to a Deployment if there is an annotation called "vault.k8s.corp.net/inject=enabled" present.'
+createdAt: "2025-10-30T07:20:03.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,11 @@ severity: high
 type: ClusterPolicy
 subjects:
   - Route
-tags: []
+tags:
+  - OpenShift in CEL expressions
 version: 1.11.0
+description: 'HTTP traffic is not encrypted and hence insecure. This policy prevents configuration of OpenShift HTTP routes.'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

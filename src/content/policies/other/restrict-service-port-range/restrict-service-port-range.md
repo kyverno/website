@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

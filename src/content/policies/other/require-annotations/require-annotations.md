@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Annotation
-tags: []
+tags:
+  - Other
+description: 'Define and use annotations that identify semantic attributes of your application or Deployment. A common set of annotations allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended annotations describe applications in a way that can be queried. This policy validates that the annotation `corp.org/department` is specified with some value.      '
+createdAt: "2022-12-30T20:57:23.000Z"
 ---
 
 ## Policy Definition

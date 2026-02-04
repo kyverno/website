@@ -9,7 +9,10 @@ subjects:
   - ReplicaSet
   - DaemonSet
   - VerticalPodAutoscaler
-tags: []
+tags:
+  - Other
+description: 'VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods.  It requires defining a specific target resource by kind and name. There are no built-in  validation checks by the VPA controller to ensure that the target resource is associated with it.  This policy ensures that the matching kind has a matching VPA. '
+createdAt: "2024-03-17T12:55:01.000Z"
 ---
 
 ## Policy Definition

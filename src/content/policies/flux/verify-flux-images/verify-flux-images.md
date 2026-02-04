@@ -1,12 +1,15 @@
 ---
 title: 'Verify Flux Images'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - GitRepository
-tags: []
+tags:
+  - Flux
 version: 1.6.0
+description: 'Ensures that container images used to run Flux controllers in the cluster are signed with valid Cosign signatures. Prevents the deployment of untrusted or potentially compromised Flux images. Protects the integrity and security  of the Flux deployment process.'
+createdAt: "2024-03-02T15:03:25.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - AuthorizationPolicy
-tags: []
+tags:
+  - Istio
 version: 1.6.0
+description: 'An AuthorizationPolicy is used to provide access controls for traffic in the mesh and can be defined at multiple levels. For the Namespace level, all Namespaces should have at least one AuthorizationPolicy. This policy, designed to run in background mode for reporting purposes, ensures every Namespace has at least one AuthorizationPolicy.'
+createdAt: "2022-09-19T20:58:04.000Z"
 ---
 
 ## Policy Definition

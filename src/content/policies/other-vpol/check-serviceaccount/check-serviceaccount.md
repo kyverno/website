@@ -6,8 +6,11 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - ServiceAccount
-tags: []
+tags:
+  - Sample
 version: 1.15.0
+description: 'ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.'
+createdAt: "2025-12-16T13:58:08.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,12 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Other
+  - EKS Best Practices in vpol
 version: 1.14.0
+description: 'Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

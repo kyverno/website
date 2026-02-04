@@ -6,8 +6,11 @@ type: ValidatingPolicy
 subjects:
   - Pod
   - Secret
-tags: []
+tags:
+  - Other in Vpol
 version: 1.14.0
+description: 'Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

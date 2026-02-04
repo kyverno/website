@@ -1,6 +1,6 @@
 ---
 title: Variables
-description: Defining and using variables in policies from multiple sources.
+excerpt: Defining and using variables in policies from multiple sources.
 sidebar:
   order: 90
 ---
@@ -179,9 +179,10 @@ The result of the mutation of this Pod with respect to the `OTEL_RESOURCE_ATTRIB
 
 ```yaml
 - name: OTEL_RESOURCE_ATTRIBUTES
-      value: k8s.namespace.name=$(POD_NAMESPACE), k8s.node.name=$(NODE_NAME), k8s.pod.name=$(POD_NAME),
-        k8s.pod.primary_ip_address=$(POD_IP_ADDRESS), k8s.pod.service_account.name=$(POD_SERVICE_ACCOUNT),
-        rule_applied=imbue-pod-spec
+  value: >
+    k8s.namespace.name=$(POD_NAMESPACE), k8s.node.name=$(NODE_NAME), k8s.pod.name=$(POD_NAME),
+    k8s.pod.primary_ip_address=$(POD_IP_ADDRESS), k8s.pod.service_account.name=$(POD_SERVICE_ACCOUNT),
+    rule_applied=imbue-pod-spec
 ```
 
 ## Variables in Helm
@@ -514,31 +515,30 @@ metadata:
 spec:
   background: true
   rules:
-  - name: vault-injector-config-blue-to-green-auth-backend
-    context:
-    - name: hcl
-      variable:
-        jmesPath: replace_all( '{{ request.object.data.config }}', 'from_string','to_string')
-    match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-          names:
-          - test-*
-          namespaces:
-          - corp-tech-ap-team-ping-ep
-    mutate:
-      mutateExistingOnPolicyUpdate: true
-      patchStrategicMerge:
-        data:
-          config: '{{- hcl }}'
-      targets:
-      - apiVersion: v1
-        kind: ConfigMap
-        name: '{{ request.object.metadata.name }}'
-        namespace: '{{ request.object.metadata.namespace }}'
-    name: vault-injector-config-blue-to-green-auth-backend
+    - name: vault-injector-config-blue-to-green-auth-backend
+      context:
+        - name: hcl
+          variable:
+            jmesPath: replace_all( '{{ request.object.data.config }}', 'from_string','to_string')
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+              names:
+                - test-*
+              namespaces:
+                - corp-tech-ap-team-ping-ep
+      mutate:
+        mutateExistingOnPolicyUpdate: true
+        patchStrategicMerge:
+          data:
+            config: '{{- hcl }}'
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: '{{ request.object.metadata.name }}'
+            namespace: '{{ request.object.metadata.namespace }}'
 ```
 
 ConfigMap:

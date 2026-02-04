@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Service
-tags: []
+tags:
+  - Other
+description: 'Services select eligible Pods by way of label matches. Having multiple Service apply based on same labels can cause conflicts and have unintended consequences. This policy ensures that within the same Namespace a Service has a unique set of labels as a selector.'
+createdAt: "2022-12-30T22:30:00.000Z"
 ---
 
 ## Policy Definition

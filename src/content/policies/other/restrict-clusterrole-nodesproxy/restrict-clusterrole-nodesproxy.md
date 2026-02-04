@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Sample
 version: 1.6.0
+description: 'A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. '
+createdAt: "2022-05-05T13:50:26.000Z"
 ---
 
 ## Policy Definition

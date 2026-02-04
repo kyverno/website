@@ -302,7 +302,7 @@ Congratulations, you've just implemented a generation policy in your Kubernetes 
 
 ## Cleanup Resources
 
-Kyverno can automatically cleanup (delete) resources based on conditions and a schedule. This is useful for removing temporary resources, orphaned Pods, or maintaining cluster hygiene. A `ClusterCleanupPolicy` uses a cron schedule to periodically evaluate and remove matching resources.
+Kyverno can automatically clean up (delete) resources based on conditions and a schedule. This is useful for removing temporary resources, orphaned Pods, or maintaining cluster hygiene. A `DeletingPolicy` uses a cron schedule to periodically evaluate and remove matching resources.
 
 Let's create a policy that removes bare Pods (Pods not owned by any controller) every 5 minutes.
 
@@ -312,26 +312,24 @@ First, create a test bare Pod:
 kubectl run test-cleanup --image=nginx
 ```
 
-Now add this ClusterCleanupPolicy:
+Next, apply the following DeletingPolicy to schedule cleanup:
 
-```yaml
+```sh
 kubectl create -f- << EOF
-apiVersion: kyverno.io/v2
-kind: ClusterCleanupPolicy
+apiVersion: policies.kyverno.io/v1beta1
+kind: DeletingPolicy
 metadata:
   name: cleanup-bare-pods
 spec:
-  match:
-    any:
-      - resources:
-          kinds:
-            - Pod
-  conditions:
-    all:
-      - key: "{{ target.metadata.ownerReferences[] || \`[]\` }}"
-        operator: Equals
-        value: []
   schedule: "*/5 * * * *"
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+  conditions:
+    - name: 'bare-pods'
+      expression: "!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0"
 EOF
 ```
 
@@ -348,51 +346,49 @@ kubectl run temp-pod --image=nginx --labels="cleanup.kyverno.io/ttl=2m"
 Clean up the policy:
 
 ```sh
-kubectl delete clustercleanuppolicy cleanup-bare-pods
+kubectl delete deletingpolicy cleanup-bare-pods
 ```
 
-Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [cleanup section](/docs/policy-types/cel-policies/cleanup-policy).
+Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [deleting policy section](/docs/policy-types/cel-policies/deleting-policy).
 
 ## Verify Images
 
 Image verification ensures only signed and trusted container images run in your cluster. Kyverno verifies signatures created by tools like Cosign, preventing deployment of unsigned or tampered images.
 
-Add this policy to verify image signatures:
+Add this policy to verify image signatures (using CEL and Cosign attestor):
 
-```yaml
+```sh
 kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1beta1
+kind: ImageValidatingPolicy
 metadata:
-  name: verify-image
+  name: check-images-cel
 spec:
-  webhookConfiguration:
-    failurePolicy: Fail
-    timeoutSeconds: 30
-  background: false
-  rules:
-    - name: verify-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image*'
-          failureAction: Enforce
-          attestors:
-            - count: 1
-              entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                      5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                      -----END PUBLIC KEY-----
-                    rekor:
-                      ignoreTlog: true
-                      url: https://rekor.sigstore.dev
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  matchImageReferences:
+    - glob: "ghcr.io/kyverno/*"
+  validationActions:
+    - Deny
+  attestors:
+  - name: cosign_attestor
+    cosign:
+      key:
+        data: |
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+      ctlog:
+        url: https://rekor.sigstore.dev
+        insecureIgnoreTlog: true
+  validations:
+    - expression: "images.containers.map(image, verifyImageSignatures(image, [attestors.cosign_attestor])).all(e, e > 0)"
+      message: "Image signature verification failed."
 EOF
 ```
 
@@ -400,37 +396,41 @@ EOF
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Create Pods in a user-defined Namespace or the `default` Namespace for testing.
 :::
 
-Try running a signed image:
+Run a signed image (should succeed):
 
 ```sh
-kubectl run signed --image=ghcr.io/kyverno/test-verify-image:signed
+kubectl run test-signed --image=ghcr.io/kyverno/test-verify-image:signed
 ```
 
-This Pod is created successfully. Kyverno also mutates it to add the image digest.
-
-Now try an unsigned image:
+Run an unsigned image (should fail):
 
 ```sh
-kubectl run unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
+kubectl run test-unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
 ```
 
-You should see an error:
+Run an image signed by a different key (should fail):
 
 ```sh
-Error from server: admission webhook "mutate.kyverno.svc" denied the request:
-
-resource Pod/default/unsigned was blocked due to the following policies
-
-verify-image:
-  verify-signature: 'image verification failed for ghcr.io/kyverno/test-verify-image:unsigned:
-    signature not found'
+kubectl run test-wrongkey --image=ghcr.io/kyverno/test-verify-image:signed-by-someone-else
 ```
 
-Clean up:
+You should see an error for unsigned and wrong-key images:
 
 ```sh
-kubectl delete clusterpolicy verify-image
-kubectl delete pod signed
+Error from server: admission webhook "ivpol.validate.kyverno.svc-fail" denied the request: Policy check-images-cel failed: Image signature verification failed.
 ```
 
-Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [verify images section](/docs/policy-types/cluster-policy/verify-images).
+Check which pods were created:
+
+```sh
+kubectl get pods -l run | Select-String "test-"
+```
+
+Cleanup:
+
+```sh
+kubectl delete pod test-unsigned test-signed test-wrongkey --ignore-not-found
+kubectl delete imagevalidatingpolicy check-images-cel
+```
+
+Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [image validating policy section](/docs/policy-types/cel-policies/image-validating-policy).

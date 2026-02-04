@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - Istio
 version: 1.6.0
+description: 'In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. This policy ensures that all new Namespaces set `istio-inject` to `enabled`.'
+createdAt: "2022-09-19T20:58:04.000Z"
 ---
 
 ## Policy Definition

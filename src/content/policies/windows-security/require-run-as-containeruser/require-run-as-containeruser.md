@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Windows Security
+description: 'Containers must be required to run as ContainerUser. This policy ensures that the fields  spec.securityContext.windowsOptions.runAsUserName, spec.containers[*].securityContext.windowsOptions.runAsUserName,  spec.initContainers[*].securityContext.windowsOptions.runAsUserName, and  is either unset or set to ContainerUser.'
+createdAt: "2024-08-02T14:00:02.000Z"
 ---
 
 ## Policy Definition

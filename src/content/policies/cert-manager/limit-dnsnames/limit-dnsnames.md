@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Certificate
-tags: []
+tags:
+  - Cert-Manager
 version: 1.6.0
+description: 'Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.'
+createdAt: "2021-08-17T10:01:18.000Z"
 ---
 
 ## Policy Definition

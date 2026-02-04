@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - ConfigMap
-tags: []
+tags:
+  - Other
 version: 1.9.0
+description: 'Sometimes a policy should be active or inactive based on a time window determined as part of the policy. Whether the policy should come into play should be dependent on that time. This policy illustrates how to time-bound any policy by using preconditions with JMESPath time filters. In this case, the policy enforces that label `foo` be required on all ConfigMaps during the hours of 8am-5pm EST (expressed in UTC). Additional, similar preconditions may be added to perform other time checks, for example a range of days.'
+createdAt: "2023-01-13T15:54:37.000Z"
 ---
 
 ## Policy Definition

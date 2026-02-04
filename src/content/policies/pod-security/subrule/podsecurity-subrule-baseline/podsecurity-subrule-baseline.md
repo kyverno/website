@@ -5,8 +5,12 @@ severity: high
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security
+  - EKS Best Practices
 version: 1.8.0
+description: 'The baseline profile of the Pod Security Standards is a collection of the most basic and important steps that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. This policy configures the baseline profile through the latest version of the Pod Security Standards cluster wide.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

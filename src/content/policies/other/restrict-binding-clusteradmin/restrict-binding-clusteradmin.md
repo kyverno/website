@@ -7,8 +7,11 @@ subjects:
   - RoleBinding
   - ClusterRoleBinding
   - RBAC
-tags: []
+tags:
+  - Security
 version: 1.6.0
+description: 'The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.'
+createdAt: "2022-05-06T22:18:32.000Z"
 ---
 
 ## Policy Definition

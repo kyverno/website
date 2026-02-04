@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Namespace
   - NetworkPolicy
-tags: []
+tags:
+  - Other
 version: 1.7.0
+description: 'A NetworkPolicy is often a critical piece when provisioning new Namespaces, but there may be existing Namespaces which also need the same resource. Creating each one individually or manipulating each Namespace in order to trigger creation is additional overhead. This policy creates a new NetworkPolicy for existing Namespaces which results in a default deny behavior and labels it with created-by=kyverno.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

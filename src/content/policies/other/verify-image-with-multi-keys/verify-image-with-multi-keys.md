@@ -1,12 +1,15 @@
 ---
 title: 'Verify Image with Multiple Keys'
-category: validate
+category: verifyImages
 severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Software Supply Chain Security
 version: 1.7.0
+description: 'There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy requires the named image be signed by two separate keys. It will search for a global "production" key in a ConfigMap called `keys` in the `default` Namespace and also a Namespace key in the same ConfigMap.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - BuildConfig
-tags: []
+tags:
+  - OpenShift
 version: 1.6.0
+description: 'The Jenkins Pipeline Build Strategy has been deprecated. This policy prevents its use. Use OpenShift Pipelines instead.'
+createdAt: "2022-03-02T21:16:19.000Z"
 ---
 
 ## Policy Definition

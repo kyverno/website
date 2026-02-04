@@ -5,8 +5,11 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
+description: 'Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

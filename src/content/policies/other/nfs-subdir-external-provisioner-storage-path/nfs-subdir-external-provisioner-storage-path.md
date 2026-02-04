@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - PersistentVolumeClaim
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'The NFS subdir external provisioner project allows defining a StorageClass with a pathPattern, a template used to provision subdirectories on NFS exports. This can be controlled with an annotation on a PVC called `nfs.io/storage-path`. This policy ensures that if the StorageClass name `nfs-client` is used by a PVC, corresponding to the NFS subdir external provisioner, and if it sets the nfs.io/storage-path annotation that it cannot be empty, which may otherwise result in it consuming the root of the designated path.'
+createdAt: "2022-05-01T20:08:48.000Z"
 ---
 
 ## Policy Definition

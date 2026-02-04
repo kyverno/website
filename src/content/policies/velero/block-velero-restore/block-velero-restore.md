@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Restore
-tags: []
+tags:
+  - Velero
+description: 'Velero allows on backup and restore operations and is designed to be run with full cluster admin permissions. It allows on cross namespace restore operations, which means you can restore backup of namespace A to namespace B. This policy protect restore operation into system or any protected namespaces, listed in deny condition section.  It checks the Restore CRD object and its namespaceMapping field. If destination match protected namespace then operation fails and warning message is throw.'
+createdAt: "2022-05-01T23:02:50.000Z"
 ---
 
 ## Policy Definition

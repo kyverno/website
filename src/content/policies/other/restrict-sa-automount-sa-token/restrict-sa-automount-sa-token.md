@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - Secret
   - ServiceAccount
-tags: []
+tags:
+  - Security
+description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
+createdAt: "2024-01-16T17:48:48.000Z"
 ---
 
 ## Policy Definition

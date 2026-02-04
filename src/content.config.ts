@@ -7,7 +7,7 @@ import { docsSchema } from '@astrojs/starlight/schema'
 import { glob } from 'astro/loaders'
 
 const policiesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/policies' }),
   schema: z.object({
     title: z.string(),
     category: z.enum([
@@ -22,11 +22,51 @@ const policiesCollection = defineCollection({
     subjects: z.array(z.string()), // Pod, Deployment, ...
     tags: z.array(z.string()),
     version: z.string().optional(),
+    description: z.string().optional(), // Policy description from annotations
+    createdAt: z.coerce.date().optional(), // Policy creation date (from upstream repo); use in components for "new" badge, formatting, etc.
+  }),
+})
+
+const blogCollection = defineCollection({
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/blog',
+    generateId: (options) => {
+      // Extract just the post name (folder or file name)
+      // e.g., "post-name/index.md" -> "post-name"
+      // or "post-name.md" -> "post-name"
+      const pathWithoutIndex = options.entry.replace(/\/index\.md$/, '')
+      const pathWithoutExt = pathWithoutIndex.replace(/\.md$/, '')
+      // Get the last part of the path (handles any nested structure)
+      return pathWithoutExt.split('/').pop() || pathWithoutExt
+    },
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    tags: z.array(z.string()).optional(),
+    excerpt: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+    coverImage: z.string().optional(),
+    featured: z.boolean().optional(),
+    externalURL: z.string().url().optional(),
+    authors: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .optional(),
   }),
 })
 
 export const collections = {
-  docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema(),
+  }),
+
+  blog: blogCollection,
   policies: policiesCollection,
   autoSidebar: defineCollection({
     loader: autoSidebarLoader(),

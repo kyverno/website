@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Restricted) in CEL
 version: 1.11.0
+description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.'
+createdAt: "2024-01-12T20:34:52.000Z"
 ---
 
 ## Policy Definition

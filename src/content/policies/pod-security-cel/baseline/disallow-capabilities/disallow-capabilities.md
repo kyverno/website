@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in CEL
 version: 1.11.0
+description: 'Adding capabilities beyond those listed in the policy must be disallowed.'
+createdAt: "2023-11-08T12:37:25.000Z"
 ---
 
 ## Policy Definition

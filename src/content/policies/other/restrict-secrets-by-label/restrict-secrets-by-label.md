@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Pod
   - Secret
-tags: []
+tags:
+  - Other
 version: 1.6.0
+description: 'Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use labels on referenced entities. This policy ensures that only Secrets not labeled with `status=protected` can be consumed by Pods.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

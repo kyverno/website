@@ -7,8 +7,11 @@ subjects:
   - Role
   - ClusterRole
   - RBAC
-tags: []
+tags:
+  - Security
 version: 1.6.0
+description: 'The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively allows Secrets to be read which may expose sensitive information. This policy prevents a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to fully implement this control, it is recommended to pair this policy with another which also prevents use of the wildcard (''*'') in the verbs list either when explicitly naming Secrets or when also using a wildcard in the base API group.'
+createdAt: "2022-05-06T22:14:40.000Z"
 ---
 
 ## Policy Definition

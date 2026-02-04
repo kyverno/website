@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Job
-tags: []
+tags:
+  - Other
+description: 'Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.'
+createdAt: "2023-06-28T16:09:02.000Z"
 ---
 
 ## Policy Definition

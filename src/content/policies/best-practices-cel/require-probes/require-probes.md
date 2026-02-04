@@ -5,8 +5,12 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Best Practices
+  - EKS Best Practices in CEL
 version: 1.11.0
+description: 'Liveness and readiness probes need to be configured to correctly manage a Pod''s lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod''s containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have one of livenessProbe, readinessProbe, or startupProbe defined.'
+createdAt: "2024-06-03T12:31:12.000Z"
 ---
 
 ## Policy Definition

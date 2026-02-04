@@ -5,7 +5,10 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - RBAC
-tags: []
+tags:
+  - Sample
+description: 'Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

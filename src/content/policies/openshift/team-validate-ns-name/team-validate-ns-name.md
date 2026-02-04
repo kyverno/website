@@ -5,8 +5,11 @@ severity: medium
 type: ClusterPolicy
 subjects:
   - Namespace
-tags: []
+tags:
+  - OpenShift
 version: 1.6.0
+description: 'Naming patterns are commonplace in clusters where creation activities are granted to other users. In order to maintain organization, it is often such that patterns should be established for organizational consistency. This policy denies the creation of a Namespace if the name of the Namespace does not follow a specific naming defined by the cluster admins.'
+createdAt: "2022-04-22T12:39:39.000Z"
 ---
 
 ## Policy Definition

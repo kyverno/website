@@ -6,8 +6,11 @@ type: ClusterPolicy
 subjects:
   - Deployment
   - Volume
-tags: []
+tags:
+  - Sample
 version: 1.6.0
+description: 'The sidecar pattern is very common in Kubernetes whereby other applications can insert components via tacit modification of a submitted resource. This is, for example, often how service meshes and secrets applications are able to function transparently. This policy injects a sidecar container, initContainer, and volume into Pods that match an annotation called `vault.hashicorp.com/agent-inject: true`.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

@@ -5,8 +5,11 @@ severity: medium
 type: ValidatingPolicy
 subjects:
   - Pod
-tags: []
+tags:
+  - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
+description: 'Adding capabilities beyond those listed in the policy must be disallowed.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

@@ -6,7 +6,10 @@ type: ClusterPolicy
 subjects:
   - Job
   - CronJob
-tags: []
+tags:
+  - CAST AI
+description: 'CAST AI will not downscale a node that includes a pod with the  autoscaling.cast.ai/removal-disabled="true" label on it, this protects sensitive workloads from being evicted and can be attributed to any pod to protect against unwanted downscaling. This policy will mutate jobs and  cronjobs to add the removal-disabled label to protect against eviction. '
+createdAt: "2023-06-28T16:09:26.000Z"
 ---
 
 ## Policy Definition
