@@ -423,7 +423,7 @@ Error from server: admission webhook "ivpol.validate.kyverno.svc-fail" denied th
 Check which pods were created:
 
 ```sh
-kubectl get pods -l run | Select-String "test-"
+kubectl get pods -l run
 ```
 
 Cleanup:
