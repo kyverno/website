@@ -69,4 +69,4 @@ During the start of a release, there may be many issues assigned to the release 
 
 ### Release Instructions
 
-For release instructions, see [release.md](https://github.com/nirmata/go-llm-apps/pull/712/changes#diff-1549f8d8c409de908d342190060c75ea78e222e437bc77c5b34229a291fd822eR123).
+For release instructions, see [release.md](https://github.com/kyverno/kyverno/blob/main/docs/dev/releases/create-a-release.md).
