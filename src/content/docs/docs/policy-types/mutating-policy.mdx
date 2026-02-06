@@ -229,7 +229,7 @@ spec:
             metadata: Object.metadata{
               labels: {"managed": "true"}
             }
-          } : 
+          } :
           Object{
             metadata: Object.metadata{
               labels: {"environment": "dev", "managed": "true"}
@@ -484,14 +484,14 @@ spec:
         resources: ['namespaces']
         resourceNames: ['test-namespace']
   targetMatchConstraints:
-  namespaceSelector:
-    matchLabels:
-      test: 'enabled'
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: ['CREATE', 'UPDATE']
-        resources: ['configmaps']
+    namespaceSelector:
+      matchLabels:
+        test: 'enabled'
+      resourceRules:
+        - apiGroups: ['']
+          apiVersions: ['v1']
+          operations: ['CREATE', 'UPDATE']
+          resources: ['configmaps']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
