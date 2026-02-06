@@ -13,9 +13,9 @@ description: "A minimal, runnable CEL-first loop using ValidatingPolicy and clus
 
 ## Tested with
 
-- Kyverno CLI: v1.17.0 (commit 3e5e7756) — used only to confirm the CLI limitation (see Troubleshooting)
+- Kyverno CLI: v1.17.0 (commit 3e5e7756) — used to verify local evaluation works (see Optional section below)
 - kubectl: v1.35.0
-- Kyverno (cluster): v1.17+ (fill in after you validate on a cluster)
+- Kyverno (cluster): v1.17+
 
 ## Policy (ValidatingPolicy)
 
@@ -33,7 +33,7 @@ spec:
     resourceRules:
       - apiGroups: [""]
         apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
+        operations: ["CREATE"]
         resources: ["namespaces"]
   validations:
     - expression: "has(object.metadata.labels) && 'team' in object.metadata.labels"
