@@ -1,0 +1,76 @@
+﻿---
+title: "CEL Golden Path (MVP): Require a Namespace label"
+description: "A minimal, runnable CEL-first verification loop using ValidatingPolicy and kyverno apply."
+---
+
+## Prereqs
+
+## Tested with
+
+- Kyverno CLI: v1.17.0 (commit 3e5e7756)
+- Kyverno: _fill after testing against a cluster (optional for MVP)_
+
+## Policy (ValidatingPolicy)
+
+## Test resources (pass/fail)
+
+## Verify with kyverno apply
+
+## Expected output (anchors)
+
+## Troubleshooting
+### Policy file
+
+Save as policy.yaml.
+
+`yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-namespace-team-label
+spec:
+  validationActions: [Deny]
+  rules:
+    - name: require-team-label
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      validate:
+        cel:
+          expressions:
+            - expression: "has(object.metadata.labels) && 'team' in object.metadata.labels"
+              message: "Namespaces must have the 'team' label."
+## Test resources (pass/fail)
+
+Save as 
+s-good.yaml (has 	eam).
+
+`yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-demo
+  labels:
+    team: platform
+Save as ns-bad.yaml (missing team).
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: no-team-demo
+## Verify with kyverno apply
+
+Pass case:
+
+`ash
+kyverno apply policy.yaml --resource ns-good.yaml
+Fail case:
+
+kyverno apply policy.yaml --resource ns-bad.yaml
+Expected output (anchors)
+Pass case: output contains pass/passed.
+
+Fail case: output contains the message: Namespaces must have the 'team' label.
+
