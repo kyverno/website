@@ -88,6 +88,8 @@ kyverno apply policy.yaml --resource ns-bad.yaml
 
 ## Troubleshooting
 
+See also: Kyverno CEL docs and troubleshooting: https://kyverno.io/docs/writing-policies/validate/validating-policies/cel/
+
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `kyverno apply` or `kubectl apply -f policy.yaml` fails with an unknown field error (for example `spec.rules: ... unknown field`) | The policy YAML does not match the `ValidatingPolicy` schema for your Kyverno version | Use the `matchConstraints` + `validations` form shown in this guide, then retry. |
