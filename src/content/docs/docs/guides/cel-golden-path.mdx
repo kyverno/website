@@ -74,6 +74,8 @@ kubectl apply -f ns-bad.yaml
 
 Optional: verify locally with Kyverno CLI (quick smoke test):
 
+This is a quick, pre-cluster smoke test (dry-run-like) and does not replace verifying real admission behavior on a cluster.
+
 ```bash
 kyverno apply policy.yaml --resource ns-good.yaml
 kyverno apply policy.yaml --resource ns-bad.yaml
