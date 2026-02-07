@@ -16,7 +16,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml" target="-blank">/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-karpenter-donot-evict
