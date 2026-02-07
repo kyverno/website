@@ -17,7 +17,7 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-emptydir-sizelimit/add-emptydir-sizelimit.yaml" target="-blank">/other-mpol/add-emptydir-sizelimit/add-emptydir-sizelimit.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-emptydir-sizelimit

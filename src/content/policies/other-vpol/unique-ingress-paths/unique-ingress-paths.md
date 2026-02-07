@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml" target="-blank">/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: unique-ingress-path
