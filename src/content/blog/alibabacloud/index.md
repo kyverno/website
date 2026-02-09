@@ -193,7 +193,7 @@ The figure below illustrates a Kyverno Agent instance deployed in the cluster. I
 When AI Agents, associated MCP Servers, and gateway containers are deployed within the cluster, Kyverno policies instantly step in as the vigilant "security gatekeeper":
 
 - **Real-time interception of high-risk configurations**: Automatically audit or reject Agent Pods launched with privileged mode, root privileges, missing `securityContext`, or mounting sensitive host directories.
-- **Fine-grained AI gateway authorization**:Leveraging Envoy's [External Authorization](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html) mechanism, Kyverno policies empower AI gateways to enforce identity-aware authorization, achieving fine-grained access control over AI inbound traffic.
+- **Fine-grained AI gateway authorization**: Leveraging Envoy's [External Authorization](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html) mechanism, Kyverno policies empower AI gateways to enforce identity-aware authorization, achieving fine-grained access control over AI inbound traffic.
 - **Closed-loop hardening and remediation**: Upon risk detection, Kyverno not only blocks non-compliant deployments but also delivers automated hardening and remediation templates—ensuring Agents operate as secure, governed application units within the cluster, not attack vectors.
 
 In today’s era of deep AI and cloud-native convergence, Agents infuse Kyverno policies with contextual intelligence, while Kyverno empowers Agents with operational trust—*together closing the loop* on a dynamically evolving, self-reinforcing security framework.
