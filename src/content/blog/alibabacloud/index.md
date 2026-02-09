@@ -1,6 +1,6 @@
 ---
 date: 2026-02-13
-title: "Policy-as-Code on Alibaba Cloud Container Service for Kubernetes: Flexible Kubernetes Governance with Kyverno"
+title: 'Policy-as-Code on Alibaba Cloud Container Service for Kubernetes: Flexible Kubernetes Governance with Kyverno'
 tags:
   - General
 authors:
@@ -18,7 +18,7 @@ Kubernetes natively enables developers to deploy workloads declaratively on dema
 
 Alibaba Cloud [**ACK Policy Governance**](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/security-and-compliance/configure-and-enforce-ack-pod-security-policies) provides built-in security policy governance based on OPA Gatekeeper by default. Enterprise security and operations teams can implement common governance requirements in a codified and automated manner. In addition, ACK offers a [predefined policy rule library](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/security-and-compliance/predefined-security-policies-of-ack) to reduce the learning curve of policy languages and improve the efficiency of development and operations handoffs. As Policy-as-Code becomes more widely adopted in production, a more flexible solution is needed to cover more complex scenarios and achieve a better balance between policy enforcement and developer productivity—**Kyverno is the answer**.
 
-------
+---
 
 ## Why Kyverno?
 
@@ -29,17 +29,13 @@ Kyverno is a Kubernetes-native policy engine. It uses standard CRDs to define an
 - **Comprehensive policy library:** Kyverno supports Kubernetes-native and multiple [policy types](https://kyverno.io/docs/policy-types/), and the Kyverno community provides [policy libraries](https://github.com/kyverno/policies) covering many common Kubernetes application scenarios.
 - **Standardized governance reporting and observability:** While enforcing guardrails, enterprises often place even greater emphasis on the “visibility” of policy governance as a basis for continuously improving cluster security posture. Kyverno provides a Reporting mechanism aligned with the Kubernetes Policy Working Group specifications, helping audit whether workloads deployed in the cluster comply with standards and providing timely feedback to developers. Kyverno also integrates with standard cloud-native observability tools and can seamlessly integrate with [ACK Observability solutions](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/user-guide/observability-overview).
 
-------
+---
 
 ## Real-World Use Cases in ACK
 
 Kyverno is now officially available in the Alibaba Cloud ACK Container Service Marketplace. For installation instructions, see [**Use Kyverno for policy governance**](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/security-and-compliance/using-kyverno-as-a-policy-governance-engine). Kyverno is recommended as the policy engine in scenarios that require custom policies or resource mutation.
 
-
-
 ![alibabacloud-kyverno.png](assets/alibabacloud-kyverno.png)
-
-
 
 Below are two typical use cases for Kyverno.
 
@@ -51,33 +47,29 @@ Within Alibaba Cloud’s policy governance framework, as a cloud service provide
 
 With Kyverno, this can be achieved using clear YAML expressions—friendly to cluster operators who are already familiar with Kubernetes manifests. Policies also support fine-grained resource matching and exemption mechanisms:
 
-
-
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: protect-critical-database-deletion    
+  name: protect-critical-database-deletion
 spec:
   autogen:
     podControllers:
       controllers: []
   matchConstraints:
     resourceRules:
-      - apiGroups: ["db.example.com"]
-        apiVersions: ["*"]
-        resources: ["databases"]
-        operations: ["DELETE"]
+      - apiGroups: ['db.example.com']
+        apiVersions: ['*']
+        resources: ['databases']
+        operations: ['DELETE']
   matchConditions:
     - name: critical-database-instances
       expression: "oldObject.metadata.name in ['critical-db', 'prod-main-db']"
-  validationActions: ["Deny"]
+  validationActions: ['Deny']
   validations:
     - expression: "oldObject.metadata.?annotations['kyverno.io/allow-delete'].orValue('') == 'true'"
-      messageExpression: "'Deletion of critical database instance ' + oldObject.metadata.name + ' is not allowed unless annotated with kyverno.io/allow-delete: \"true\"'"
+      messageExpression: '''Deletion of critical database instance '' + oldObject.metadata.name + '' is not allowed unless annotated with kyverno.io/allow-delete: "true"'''
 ```
-
-
 
 ### Case 2: Auto-Mutating `runAsNonRoot` & Generating Network Policies
 
@@ -90,8 +82,6 @@ Kyverno provides a more user-friendly mutation experience. Developers can perfor
 
 The following is a typical example of automating a secure-by-default baseline. With the MutatingPolicy below, `runAsNonRoot` is automatically added to the Pod `securityContext` when Pods are created:
 
-
-
 ```yaml
 apiVersion: policies.kyverno.io/v1alpha1
 kind: MutatingPolicy
@@ -100,26 +90,24 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-    - apiGroups: [""]
-      apiVersions: ["v1"]
-      operations: ["CREATE", "UPDATE"]
-      resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   mutations:
-  - patchType: ApplyConfiguration
-    applyConfiguration:
-      expression: >-
-        Object{
-          spec: Object.spec{
-            securityContext: Object.spec.securityContext{
-              runAsNonRoot: has(object.spec.securityContext) && has(object.spec.securityContext.runAsNonRoot)
-                           ? object.spec.securityContext.runAsNonRoot
-                           : true          
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >-
+          Object{
+            spec: Object.spec{
+              securityContext: Object.spec.securityContext{
+                runAsNonRoot: has(object.spec.securityContext) && has(object.spec.securityContext.runAsNonRoot)
+                             ? object.spec.securityContext.runAsNonRoot
+                             : true          
+              }
             }
           }
-        }
 ```
-
-
 
 The GeneratingPolicy below enables automatically creating namespace-scoped resources when a Namespace is created or updated:
 
@@ -138,13 +126,13 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   variables:
     - name: targetNs
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: downstream
       expression: >-
         [
@@ -166,7 +154,7 @@ spec:
 
 The Kyverno community’s [policies](https://github.com/kyverno/policies) project provides representative policies across a range of Kubernetes application scenarios and best practices. Interested readers can explore it to discover more possibilities with Kyverno.
 
-------
+---
 
 ## Intelligent Policies × Security Governance Closed Loop
 
@@ -174,17 +162,13 @@ In the evolution of cloud-native security governance, Kyverno and AI Agents tran
 
 ### AI Agent Empowers Kyverno: From "Policy Configuration" to "Intelligent Governance"
 
-
 Leveraging MCP/Skills integrated within the Agent and powered by LLM, SecOps teams can achieve one-click deployment of Kyverno alongside policy sets tailored for typical scenarios. The solution automatically scans workload configurations across defined cluster scopes for diverse compliance and baseline requirements, generating visualized security posture reports to precisely identify high-risk elements (e.g., privileged containers, sensitive volume mounts) and misconfigured authorizations. This transforms traditional "manual inspections" into "minute-level intelligent insights," enabling security policy design with both foresight and precision.
 
 Alibaba Cloud ACK clusters provide automated installation, deployment, and configuration capabilities for [Kagent](https://www.alibabacloud.com/help/en/ack/ack-managed-and-ack-dedicated/use-cases/quickly-build-a-question-and-answer-agent-using-kagent). Cluster security personnel can streamline the end-to-end lifecycle of building, deploying, and managing AI Agents within Kubernetes environments. Based on standardized MCP/Skills specifications, teams flexibly develop and operate Kyverno policy-focused Agents and MCP Servers directly in-cluster.
 
 The figure below illustrates a Kyverno Agent instance deployed in the cluster. Integrated with Tools from [kyverno-mcp](https://github.com/nirmata/kyverno-mcp), it supports context loading and switching across multi-cluster environments and enables policy governance inspection via the kyverno CLI for rapid security and compliance risk detection. Enhanced with Kyverno-specific Skills, the Agent optimizes policy governance workflows: as demonstrated in the interaction snapshot, it swiftly invokes Tools to evaluate namespace-level risks against best-practice policy sets, ultimately delivering tabular compliance reports and consolidated violation summaries.
 
-
-
 ![kyverno-mcp-1.png](assets/kyverno-mcp-1.png)
-
 
 ![kyverno-mcp-2.png](assets/kyverno-mcp-2.png)
 
@@ -196,10 +180,8 @@ When AI Agents, associated MCP Servers, and gateway containers are deployed with
 - **Fine-grained AI gateway authorization**: Leveraging Envoy's [External Authorization](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter.html) mechanism, Kyverno policies empower AI gateways to enforce identity-aware authorization, achieving fine-grained access control over AI inbound traffic.
 - **Closed-loop hardening and remediation**: Upon risk detection, Kyverno not only blocks non-compliant deployments but also delivers automated hardening and remediation templates—ensuring Agents operate as secure, governed application units within the cluster, not attack vectors.
 
-In today’s era of deep AI and cloud-native convergence, Agents infuse Kyverno policies with contextual intelligence, while Kyverno empowers Agents with operational trust—*together closing the loop* on a dynamically evolving, self-reinforcing security framework.
+In today’s era of deep AI and cloud-native convergence, Agents infuse Kyverno policies with contextual intelligence, while Kyverno empowers Agents with operational trust—_together closing the loop_ on a dynamically evolving, self-reinforcing security framework.
 
 ## Conclusion
 
 In the cloud-native era, security and efficiency are no longer a binary trade-off. Alibaba Cloud ACK Container Service remains committed to delivering a Kubernetes governance experience that combines security, compliance, and development agility for enterprises. By integrating the Kyverno policy engine, ACK further enriches its Policy-as-Code capabilities. Looking ahead, Alibaba Cloud will continue collaborating with the Kyverno community to advance policy governance capabilities—empowering enterprises to enjoy cloud-native agility while strengthening the foundation of security and compliance.
-
-
