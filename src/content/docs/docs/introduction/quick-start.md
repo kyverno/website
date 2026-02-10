@@ -1,21 +1,19 @@
 ---
-title: Kubernetes Quick Start
+title: Quick Start Guides
 linkTitle: Quick Start Guides
 sidebar:
   order: 20
-excerpt: An introduction to Kyverno policy and rule types
+description: An introduction to Kyverno policy and rule types
 ---
 
-This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
+This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, generation, cleanup, and image verification allowing you to select the one (or all) which is most relevant to your use case.
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/installation) for more complete information on how to install Kyverno in production.
 
-First, install the latest Kyverno release using Helm:
+First, install Kyverno from the latest release manifest.
 
 ```sh
-helm repo add kyverno https://kyverno.github.io/kyverno/
-helm repo update
-helm install kyverno kyverno/kyverno -n kyverno --create-namespace
+kubectl create -f https://github.com/kyverno/kyverno/releases/latest/download/install.yaml
 ```
 
 Next, select the quick start guide in which you are interested. Alternatively, start at the top and work your way down.
@@ -24,26 +22,29 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 
 In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/guides/reports) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
-Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different policy types to validate, mutate, generate, cleanup, and verify image configurations. The `validationActions` field is set to `Deny` to block Pods that are non-compliant.
+Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different rule types to validate, mutate, generate, cleanup, and verify image configurations. The field `failureAction` is set to `Enforce` to block Pods that are non-compliant. Using the default value `Audit` will report violations but not block requests.
 
-```sh
+```yaml
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationActions:
-    - Deny
-  matchConstraints:
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
-  validations:
-    - message: "label 'team' is required"
-      expression: "has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''"
+  rules:
+  - name: check-team
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      failureAction: Enforce
+      message: "label 'team' is required"
+      pattern:
+        metadata:
+          labels:
+            team: "?*"
 EOF
 ```
 
@@ -120,44 +121,36 @@ Policy reports are helpful in that they are both user- and tool-friendly, based 
 Now that you've experienced validate policies and seen a bit about policy reports, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete validatingpolicy require-labels
+kubectl delete clusterpolicy require-labels
 ```
 
-Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [ValidatingPolicy section](/docs/policy-types/validating-policy).
+Congratulations, you've just implemented a validation policy in your Kubernetes cluster! For more details on validation policies, see the [validate section](/docs/policy-types/cluster-policy/validate).
 
 ## Mutate Resources
 
 Mutation is the ability to change or "mutate" a resource in some way prior to it being admitted into the cluster. A mutate rule is similar to a validate rule in that it selects some type of resource (like Pods or ConfigMaps) and defines what the desired state should look like.
 
-Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno uses CEL expressions to perform conditional logic, making policies easy to write and read.
+Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno has the ability to perform basic "if-then" logical decisions in a very easy way making policies trivial to write and read. The `+(team)` notation uses a Kyverno anchor to define the behavior Kyverno should take if the label key is not found.
 
-```sh
+```yaml
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
-kind: MutatingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
   name: add-labels
 spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
-  matchConditions:
-    - name: team-label-missing
-      expression: '!has(object.metadata.labels) || !has(object.metadata.labels.team)'
-  mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
-        expression: >
-          Object{
-            metadata: Object.metadata{
-              labels: Object.metadata.labels{
-                team: "bravo"
-              }
-            }
-          }
+  rules:
+  - name: add-team
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            +(team): bravo
 EOF
 ```
 
@@ -196,10 +189,10 @@ This time, you should see Kyverno did not add the `team` label with the value de
 Now that you've experienced mutate policies and seen how logic can be written easily, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete mutatingpolicy add-labels
+kubectl delete clusterpolicy add-labels
 ```
 
-Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [MutatingPolicy section](/docs/policy-types/mutating-policy).
+Congratulations, you've just implemented a mutation policy in your Kubernetes cluster! For more details on mutate policies, see the [mutate section](/docs/policy-types/cluster-policy/mutate).
 
 ## Generate Resources
 
@@ -219,7 +212,7 @@ kubectl -n default create secret docker-registry regcred \
 
 By default, Kyverno is [configured with minimal permissions](/docs/installation/customization#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
 
-```sh
+```yaml
 kubectl apply -f- << EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -259,29 +252,29 @@ EOF
 
 Next, create the following Kyverno policy. The `sync-secrets` policy will match on any newly-created Namespace and will clone the Secret we just created earlier into that new Namespace.
 
-```sh
+```yaml
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
-kind: GeneratingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
   name: sync-secrets
 spec:
-  evaluation:
-    synchronize:
-      enabled: true
-  matchConstraints:
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: ['CREATE']
-        resources: ['namespaces']
-  variables:
-    - name: targetNs
-      expression: 'object.metadata.name'
-    - name: sourceSecret
-      expression: 'resource.Get("v1", "secrets", "default", "regcred")'
-  generate:
-    - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
+  rules:
+  - name: sync-image-pull-secret
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      apiVersion: v1
+      kind: Secret
+      name: regcred
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      clone:
+        namespace: default
+        name: regcred
 EOF
 ```
 
@@ -302,7 +295,142 @@ You should see that Kyverno has generated the `regcred` Secret using the source 
 With a basic understanding of generate policies, clean up by deleting the policy you created above.
 
 ```sh
-kubectl delete generatingpolicy sync-secrets
+kubectl delete clusterpolicy sync-secrets
 ```
 
-Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [GeneratingPolicy section](/docs/policy-types/generating-policy).
+Congratulations, you've just implemented a generation policy in your Kubernetes cluster! For more details on generate policies, see the [generate section](/docs/policy-types/cluster-policy/generate).
+
+## Cleanup Resources
+
+Kyverno can automatically clean up (delete) resources based on conditions and a schedule. This is useful for removing temporary resources, orphaned Pods, or maintaining cluster hygiene. A `DeletingPolicy` uses a cron schedule to periodically evaluate and remove matching resources.
+
+Let's create a policy that removes bare Pods (Pods not owned by any controller) every 5 minutes.
+
+First, create a test bare Pod:
+
+```sh
+kubectl run test-cleanup --image=nginx
+```
+
+Next, apply the following DeletingPolicy to schedule cleanup:
+
+```sh
+kubectl create -f- << EOF
+apiVersion: policies.kyverno.io/v1beta1
+kind: DeletingPolicy
+metadata:
+  name: cleanup-bare-pods
+spec:
+  schedule: "*/5 * * * *"
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+  conditions:
+    - name: 'bare-pods'
+      expression: "!has(object.metadata.ownerReferences) || size(object.metadata.ownerReferences) == 0"
+EOF
+```
+
+:::note[Note]
+Kyverno requires appropriate RBAC permissions to delete resources. You may need to grant additional permissions to the cleanup controller.
+:::
+
+The policy will automatically delete the bare Pod within 5 minutes. You can also use the TTL label for immediate cleanup:
+
+```sh
+kubectl run temp-pod --image=nginx --labels="cleanup.kyverno.io/ttl=2m"
+```
+
+Clean up the policy:
+
+```sh
+kubectl delete deletingpolicy cleanup-bare-pods
+```
+
+Congratulations, you've just implemented a cleanup policy in your Kubernetes cluster! For more details, see the [deleting policy section](/docs/policy-types/deleting-policy).
+
+## Verify Images
+
+Image verification ensures only signed and trusted container images run in your cluster. Kyverno verifies signatures created by tools like Cosign, preventing deployment of unsigned or tampered images.
+
+Add this policy to verify image signatures (using CEL and Cosign attestor):
+
+```sh
+kubectl create -f- << EOF
+apiVersion: policies.kyverno.io/v1beta1
+kind: ImageValidatingPolicy
+metadata:
+  name: check-images-cel
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  matchImageReferences:
+    - glob: "ghcr.io/kyverno/*"
+  validationActions:
+    - Deny
+  attestors:
+  - name: cosign_attestor
+    cosign:
+      key:
+        data: |
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+      ctlog:
+        url: https://rekor.sigstore.dev
+        insecureIgnoreTlog: true
+  validations:
+    - expression: "images.containers.map(image, verifyImageSignatures(image, [attestors.cosign_attestor])).all(e, e > 0)"
+      message: "Image signature verification failed."
+EOF
+```
+
+:::note[Note]
+Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Create Pods in a user-defined Namespace or the `default` Namespace for testing.
+:::
+
+Run a signed image (should succeed):
+
+```sh
+kubectl run test-signed --image=ghcr.io/kyverno/test-verify-image:signed
+```
+
+Run an unsigned image (should fail):
+
+```sh
+kubectl run test-unsigned --image=ghcr.io/kyverno/test-verify-image:unsigned
+```
+
+Run an image signed by a different key (should fail):
+
+```sh
+kubectl run test-wrongkey --image=ghcr.io/kyverno/test-verify-image:signed-by-someone-else
+```
+
+You should see an error for unsigned and wrong-key images:
+
+```sh
+Error from server: admission webhook "ivpol.validate.kyverno.svc-fail" denied the request: Policy check-images-cel failed: Image signature verification failed.
+```
+
+Check which pods were created:
+
+```sh
+kubectl get pods -l run
+```
+
+Cleanup:
+
+```sh
+kubectl delete pod test-unsigned test-signed test-wrongkey --ignore-not-found
+kubectl delete imagevalidatingpolicy check-images-cel
+```
+
+Congratulations, you've just implemented image verification in your Kubernetes cluster! For more details, see the [image validating policy section](/docs/policy-types/image-validating-policy).
