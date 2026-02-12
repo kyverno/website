@@ -1,5 +1,5 @@
 ---
-title: Kubernetes Quick Start
+title: Kyverno Quick Start
 linkTitle: Quick Start Guides
 sidebar:
   order: 20
