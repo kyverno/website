@@ -1,6 +1,6 @@
 ---
 title: ImageValidatingPolicy
-excerpt: >-
+description: >-
   Verify container image signatures and attestations
 sidebar:
   order: 6
@@ -8,13 +8,13 @@ sidebar:
 
 import FeatureState from '../../../../components/FeatureState.astro'
 
-<FeatureState state="stable" version="v1.17" />
+<FeatureState state="beta" version="v1.16" />
 
 The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for verifying container image signatures and attestations.
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy).
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.16/docs/user/crd/index.html#policies.kyverno.io/v1beta1.ImageValidatingPolicy).
 
 ### images
 
@@ -23,7 +23,7 @@ When `Kubernetes` resources are evaluated images for pods and pod templates are 
 For example, this policy declaration will process the image specified in the `imageReference` field:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: sample
@@ -41,7 +41,7 @@ spec:
 The `spec.matchImageReferences` field defines rules for matching container images. It allows specifying glob patterns or CEL expressions that specify which images the policy should match.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -59,7 +59,7 @@ The `attestors` field declares trusted signing authorities, such as keys or cert
 **Cosign attestors:** These use public keys, keyless signing, transparency logs, certificates, or TUF-based metadata for image validation.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -150,7 +150,7 @@ spec:
 **Notary attestors:** These use certificates and optional Time Stamp Authority (TSA) certificates for image signature verification.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -192,7 +192,7 @@ spec:
 The `attestations` field specifies additional metadata to validate.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -228,7 +228,7 @@ spec:
 The `validationConfigurations` field defines settings for mutating image tags to digests, verifying that images are using digests, and enforcing image validation requirements across policies.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -246,7 +246,7 @@ spec:
 Credentials specify the authentication information required to securely access and interact with a registry.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -278,7 +278,7 @@ Both policy types have identical functionality and field structure. The only dif
 ### Example NamespacedImageValidatingPolicy
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: NamespacedImageValidatingPolicy
 metadata:
   name: verify-team-images
@@ -324,7 +324,7 @@ Kyverno provides specialized functions for verifying image signatures and attest
 The following policy demonstrates the use of these functions:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: check-images
@@ -379,7 +379,7 @@ This sample policy demonstrates how to verify container image signatures using C
 Kyverno supports the use of regular expressions in identities.subjectRegExp and identities.issuerRegExp fields when configuring keyless attestors
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: require-vulnerability-scan
@@ -421,7 +421,7 @@ spec:
 :::note[Note]
 If your attestation names include special characters like `-`, access them using bracket syntax:
 
-```yaml
+```cel
 attestations["cosign-attes"]
 ```
 
@@ -433,7 +433,7 @@ Alternatively, prefer using camelCase or snake_case to avoid parsing issues in C
 This policy ensures that container images are signed with a specified Cosign public key before being admitted.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1
+apiVersion: policies.kyverno.io/v1beta1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol

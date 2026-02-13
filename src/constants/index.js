@@ -17,8 +17,7 @@ import {
 import { themes } from 'prism-react-renderer'
 
 export const documentationVersions = [
-  { label: 'v1.17.0', href: 'https://kyverno.io' },
-  { label: 'v1.16.0', href: 'https://release-1-16-0.kyverno.io' },
+  { label: 'v1.16.0', href: 'https://kyverno.io' },
   { label: 'v1.15.0', href: 'https://release-1-15-0.kyverno.io' },
   { label: 'v1.14.0', href: 'https://release-1-14-0.kyverno.io' },
   { label: 'main', href: 'https://main.kyverno.io' },
@@ -40,10 +39,10 @@ export const navItemsExternal = [
 export const whyKyvernoCards = [
   {
     icon: Zap,
-    title: 'Easy to Adopt',
-    desc1: 'Use familiar languages and tools.',
+    title: 'Fast & Efficient',
+    desc1: 'CEL-based policies deliver 25% faster latency.',
     desc2:
-      'Kubernetes-native types that integrate seamlessly into your existing workflows.',
+      'Up to 80% CPU reduction with automatic native Kubernetes policy generation.',
   },
   {
     icon: Shield,
@@ -184,11 +183,10 @@ export const policies = [
 export const heroSectionHeadingContent = {
   headingText: [
     { text: 'Unified', color: 'text-primary-100' },
-    { text: 'Policy as Code,', color: 'text-primary-100' },
-    { text: 'Simplified!', color: 'text-accent-100' },
+    { text: 'Policy as Code', color: 'text-primary-100' },
   ],
 
-  paragraphText: `Secure, automate, and operate all your infrastructure and applications with YAML and CEL based policies.`,
+  paragraphText: `Kubernetes-native policy management. Secure, automate, and operate your infrastructure with CEL standards and Kyverno flexibility.`,
 }
 
 export const whykyvernoHeadingContent = {
@@ -200,30 +198,27 @@ export const whykyvernoHeadingContent = {
 export const comparisonChartHeadingContent = {
   headingText: [
     { text: 'Kyverno vs', color: 'text-primary-100' },
-    { text: 'Other policy engines', color: 'text-primary-100' },
+    { text: 'Alternatives', color: 'text-primary-100' },
   ],
 
-  paragraphText: `As the industry's leading policy engine, here's how Kyverno compares with other popular solutions.`,
+  paragraphText: `Compare Kyverno's capabilities with other policy engines.`,
 }
 
 export const featureSectionHeadingContent = {
   headingText: [
-    { text: 'Complete Platform Engineering', color: 'text-theme-primary' },
-    { text: 'Policy As Code Solution', color: 'text-primary-100' },
+    { text: 'Complete Platform', color: 'text-theme-primary' },
+    { text: 'Governance', color: 'text-primary-100' },
   ],
 
-  paragraphText: `From policy creation to enforcement, testing to reporting, and everything in between,
-                       get comprehensive Kubernetes governance and compliance with Kyverno.`,
+  paragraphText: `Comprehensive Kubernetes governance and compliance: from policy creation to enforcement, testing, and reporting.`,
 }
 
 export const celPoliciesHeadingContent = {
   headingText: [
-    { text: 'Introducing', color: 'text-theme-primary' },
-    { text: 'CEL Polices', color: 'text-primary-100' },
+    { text: 'CEL-Powered', color: 'text-theme-primary' },
+    { text: 'Performance', color: 'text-primary-100' },
   ],
-  paragraphText: `CEL (Common Expression Language) policies bring powerful,
-                    fine-grained control to Kyverno, enabling users to write more
-                    expressive and dynamic policy rules without sacrificing performance. `,
+  paragraphText: `Kyverno v1.16 introduces CEL-based policies for improved latency, reduced resource usage, and native Kubernetes alignment.`,
 }
 
 export const ctaSectionHeadingContent = {
@@ -231,16 +226,15 @@ export const ctaSectionHeadingContent = {
     { text: 'Get started with Kyverno', color: 'text-theme-primary' },
   ],
 
-  paragraphText: `Deploy Kyverno in your Kubernetes cluster within minutes and start writing
-                  policies using simple, familiar YAML.`,
+  paragraphText: `Deploy Kyverno in minutes. Use modern CEL-based policies for optimal performance.`,
 }
 
 export const partnersSectionHeadingContent = {
   headingText: [
-    { text: 'Trusted By Industry Leaders', color: 'text-theme-primary' },
+    { text: 'Trusted by Industry Leaders', color: 'text-theme-primary' },
   ],
 
-  paragraphText: 'Powering Policy-Based Security & Operations Worldwide',
+  paragraphText: 'Powering policy-based security and operations worldwide',
 }
 
 export const codingThemes = {
@@ -261,7 +255,7 @@ export const policyShowcaseTabs = [
     id: 'validate-k8s',
     label: 'Validate Kubernetes Resources',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: require-labels
@@ -280,7 +274,7 @@ spec:
   validations:
     -  message: "Pods must have 'app' and 'version' labels"
        expression: |
-         has(variables.labels.app) &&
+         has(variables.labels.app) && 
          has(variables.labels.version)
      `,
   },
@@ -288,7 +282,7 @@ spec:
     id: 'validate-terraform',
     label: 'Validate Terraform Plans',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: check-awsvpc-network-mode
@@ -303,7 +297,7 @@ spec:
   variables:
     - name: ecsTasks
       expression: |
-        object.?planned_values.root_module.resources.exists(r,
+        object.?planned_values.root_module.resources.exists(r, 
           r.type == 'aws_ecs_task_definition').orValue([])
   validations:
     - message: "ECS tasks must use awsvpc network mode."
@@ -318,7 +312,7 @@ spec:
     id: 'validate-dockerfile',
     label: 'Validate Dockerfiles',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: check-label-maintainer
@@ -332,7 +326,7 @@ spec:
     - message: "MAINTAINER is deprecated, use LABELS instead"
       expression: |
         !object.Stages.exists(stage,
-          has(stage.Commands) &&
+          has(stage.Commands) && 
             stage.Commands.exists(cmd, cmd.Name == 'MAINTAINER')
         )
     - message: "Use the LABELS instruction to set the MAINTAINER name"
@@ -340,8 +334,8 @@ spec:
         object.Stages.exists(stage,
           has(stage.Commands) && stage.Commands.exists(cmd,
             has(cmd.Labels) && cmd.Labels.exists(label,
-              label.Key == 'maintainer' ||
-              label.Key == 'owner' ||
+              label.Key == 'maintainer' || 
+              label.Key == 'owner' || 
               label.Key == 'author'
             )
           )
@@ -351,15 +345,15 @@ spec:
     id: 'validate-http',
     label: 'Authorize HTTP Requests',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: authorize-jwt
 spec:
   evaluation:
     mode: "HTTP"
-  failurePolicy: Fail
-  variables:
+  failurePolicy: Fail 
+  variables: 
   - name: authorizationlist
     expression: object.attributes.Header("authorization")
   - name: authorization
@@ -369,11 +363,11 @@ spec:
         : []
   - name: token
     expression: >
-      size(variables.authorization) == 2 &&
+      size(variables.authorization) == 2 && 
         variables.authorization[0].lowerAscii() == "bearer"
           ? jwt.Decode(variables.authorization[1], "secret")
           : null
-  validations:
+  validations: 
     # request not authenticated -> 401
   - expression: >
       variables.token == null || !variables.token.Valid
@@ -392,7 +386,7 @@ spec:
     id: 'validate-envoy',
     label: 'Authorize Envoy Requests',
     learnMore: '/docs/policy-types/validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
 metadata:
   name: check-envoy-request
@@ -415,7 +409,7 @@ spec:
     id: 'mutate-k8s',
     label: 'Mutate Kubernetes Resources',
     learnMore: '/docs/policy-types/mutating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: MutatingPolicy
 metadata:
   name: add-safe-to-evict
@@ -429,11 +423,11 @@ spec:
   matchConditions:
     - name: has-emptydir-or-hostpath
       expression: |
-        has(object.spec.volumes) &&
+        has(object.spec.volumes) && 
         object.spec.volumes.exists(v, has(v.emptyDir) || has(v.hostPath))
     - name: annotation-not-present
       expression: |
-        !has(object.metadata.annotations) ||
+        !has(object.metadata.annotations) || 
         !object.metadata.annotations.exists(k, k == 'cluster-autoscaler.kubernetes.io/safe-to-evict')
   mutations:
     - patchType: ApplyConfiguration
@@ -451,7 +445,7 @@ spec:
     id: 'generate-k8s',
     label: 'Generate Kubernetes Resources',
     learnMore: '/docs/policy-types/generating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: GeneratingPolicy
 metadata:
   name: add-networkpolicy
@@ -490,7 +484,7 @@ spec:
     id: 'cleanup-k8s',
     label: 'Cleanup Kubernetes Resources',
     learnMore: '/docs/policy-types/cleanup-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1beta1
 kind: DeletingPolicy
 metadata:
   name: cleanup-empty-replicasets
@@ -515,7 +509,7 @@ spec:
     id: 'validate-images',
     label: 'Validate Container Images',
     learnMore: '/docs/policy-types/image-validating-policy',
-    policy: `apiVersion: policies.kyverno.io/v1
+    policy: `apiVersion: policies.kyverno.io/v1alpha1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol
@@ -546,7 +540,7 @@ spec:
   validations:
     - message: image is not authorized
       expression: |
-       images.containers.map(image,
+       images.containers.map(image, 
          verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)`,
   },
 ]
