@@ -315,7 +315,7 @@ Although preconditions do not produce a blocking effect similar to deny rules, t
 
 ### Silent Failures with Boolean JMESPath Functions
 
-In Kyverno versions prior to v1.16, JMESPath functions that return booleans (such as `starts_with()`, `ends_with()`, or `contains()`) could fail silently in preconditions due to type coercion when compared with `value: true`. The rule would be skipped without generating errors in logs or PolicyReports, making it difficult to diagnose. While this has been addressed in newer versions, using the [`images` context variable](/docs/policy-types/cluster-policy/variables#images) remains the recommended best practice for registry detection.
+In Kyverno versions prior to v1.16, JMESPath functions that return booleans (such as `starts_with()`, `ends_with()`, or `contains()`) could fail silently in preconditions due to type coercion when compared with `value: true`. The rule would be skipped without generating errors in logs or PolicyReports, making it difficult to diagnose. While this has been addressed in newer versions, using the [`images` context variable](/docs/policy-types/cluster-policy/variables#variables-from-container-images) remains the recommended best practice for registry detection.
 
 **Example of pattern that may fail in older versions:**
 
