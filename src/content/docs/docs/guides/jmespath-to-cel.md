@@ -14,9 +14,9 @@ The following JMESPath filters are not yet fully supported in the CEL engine:
 
 - **`multiply()` / `divide()`** — Kubernetes quantity-aware multiplication and division are not yet available in CEL. Support is being developed as an upstream Kubernetes contribution.
 - **`sum()`** — Summing an array of quantities has no direct CEL equivalent. The Kubernetes CEL quantity type supports pairwise `add()`, but there is no array-reduce equivalent.
-- **`compare()`** — This filter for string lexicographical comparison is not carried forward to the CEL engine. 
+- **`compare()`** — This filter for string lexicographical comparison is not carried forward to the CEL engine.
 - **`regex_replace_all()` / `regex_replace_all_literal()`** — CEL string extensions support regex matching (`matches()`, `find()`, `findAll()`) but not regex-based replacement. Support is being developed as an upstream Kubernetes contribution.
-:::
+  :::
 
 ## Quick Reference
 
@@ -259,8 +259,8 @@ CEL (`MutatingPolicy`):
 
 ```yaml
 variables:
-- name: buildHash
-  expression: object.metadata.labels["buildhash"].substring(0, 12)
+  - name: buildHash
+    expression: object.metadata.labels["buildhash"].substring(0, 12)
 mutations:
   - patchType: ApplyConfiguration
     applyConfiguration:
@@ -676,7 +676,7 @@ mutate:
   patchStrategicMerge:
     metadata:
       annotations:
-        label-keys: '{{labelKeys | join('','', @)}}'
+        label-keys: "{{labelKeys | join(',', @)}}"
 ```
 
 CEL (`MutatingPolicy`):
@@ -1123,9 +1123,9 @@ CEL (`MutatingPolicy`):
 
 ```yaml
 variables:
-- name: thistime
-  expression: |
-    time.truncate(timestamp(object.metadata.annotations["thistime"]), duration("2h"))
+  - name: thistime
+    expression: |
+      time.truncate(timestamp(object.metadata.annotations["thistime"]), duration("2h"))
 mutations:
   - patchType: ApplyConfiguration
     applyConfiguration:
