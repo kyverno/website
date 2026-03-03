@@ -1122,6 +1122,10 @@ thistime: "{{ time_truncate('{{ @ }}','2h') }}"
 CEL (`MutatingPolicy`):
 
 ```yaml
+variables:
+- name: thistime
+  expression: |
+    time.truncate(timestamp(object.metadata.annotations["thistime"]), duration("2h"))
 mutations:
   - patchType: ApplyConfiguration
     applyConfiguration:
@@ -1129,10 +1133,7 @@ mutations:
         Object{
           metadata: Object.metadata{
             annotations: {
-              "thistime": string(time.truncate(
-                timestamp(object.metadata.annotations["thistime"]),
-                duration("2h")
-              ))
+              "thistime": string(variables.thistime)
             }
           }
         }
