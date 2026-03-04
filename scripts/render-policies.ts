@@ -483,16 +483,35 @@ async function processPolicyFile(
 async function main() {
   const args = process.argv.slice(2)
 
+  let repoUrl: string
+  let outputDir: string
+
   if (args.length < 2) {
-    console.error('Usage: render.ts <repo-url> <output-dir>')
     console.error(
-      'Example: render.ts https://github.com/kyverno/policies/main ../src/content/policies/',
+      'Usage: render-policies.ts <policies-ref|repo-url> <output-dir>',
+    )
+    console.error(
+      'Example (ref): render-policies.ts main ./src/content/policies/',
+    )
+    console.error(
+      'Example (release ref): render-policies.ts release-1.17 ./src/content/policies/',
+    )
+    console.error(
+      'Example (explicit URL): render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/',
     )
     process.exit(1)
   }
 
-  const repoUrl = args[0]
-  const outputDir = path.resolve(args[1])
+  outputDir = path.resolve(args[1])
+
+  if (args[0].startsWith('https://github.com/')) {
+    // Full repository URL provided
+    repoUrl = args[0]
+  } else {
+    // Only ref/branch/tag provided, construct the kyverno/policies URL
+    const policiesRef = args[0]
+    repoUrl = `https://github.com/kyverno/policies/${policiesRef}`
+  }
 
   // Extract repo info from URL
   // Format: https://github.com/owner/repo/branch
