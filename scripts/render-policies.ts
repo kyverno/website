@@ -488,16 +488,14 @@ async function main() {
 
   if (args.length < 2) {
     console.error(
-      'Usage: render-policies.ts <policies-ref|repo-url> <output-dir>',
-    )
-    console.error(
-      'Example (ref): render-policies.ts main ./src/content/policies/',
-    )
-    console.error(
-      'Example (release ref): render-policies.ts release-1.17 ./src/content/policies/',
-    )
-    console.error(
-      'Example (explicit URL): render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/',
+      `
+Usage: render-policies.ts <policies-ref|repo-url> <output-dir>
+
+Examples:
+  render-policies.ts main ./src/content/policies/
+  render-policies.ts release-1.17 ./src/content/policies/
+  render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/
+    `.trim(),
     )
     process.exit(1)
   }

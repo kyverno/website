@@ -39,4 +39,5 @@ jobs:
       - name: Verify generated code is up to date
         env:
           POLICIES_REF: ${{ steps.policies_ref.outputs.value }}
+          WEBSITE_BRANCH: ${{ github.ref_name }}
         run: npm run codegen:verify
