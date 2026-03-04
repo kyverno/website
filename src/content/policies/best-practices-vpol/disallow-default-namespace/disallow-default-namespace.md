@@ -1,0 +1,53 @@
+---
+title: 'Disallow Default Namespace in VPOL'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - Pod
+tags:
+  - Multi-Tenancy in VPOL
+version: 1.14.0
+description: 'Kubernetes Namespaces are an optional feature that provide a way to segment and isolate cluster resources across multiple applications and users. As a best practice, workloads should be isolated with Namespaces. Namespaces should be required and the default (empty) Namespace should not be used. This policy validates that Pods specify a Namespace name other than `default`. Rule auto-generation is disabled here due to Pod controllers need to specify the `namespace` field under the top-level `metadata` object and not at the Pod template level.'
+createdAt: "2026-02-23T00:26:12.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/disallow-default-namespace/disallow-default-namespace.yaml" target="-blank">/best-practices-vpol/disallow-default-namespace/disallow-default-namespace.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-default-namespace
+  annotations:
+    policies.kyverno.io/title: Disallow Default Namespace in VPOL
+    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/category: Multi-Tenancy in VPOL
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: Kubernetes Namespaces are an optional feature that provide a way to segment and isolate cluster resources across multiple applications and users. As a best practice, workloads should be isolated with Namespaces. Namespaces should be required and the default (empty) Namespace should not be used. This policy validates that Pods specify a Namespace name other than `default`. Rule auto-generation is disabled here due to Pod controllers need to specify the `namespace` field under the top-level `metadata` object and not at the Pod template level.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  validations:
+    - expression: namespaceObject.metadata.name != 'default'
+      message: Using 'default' namespace is not allowed.
+
+```
