@@ -9,6 +9,7 @@ tags:
   - Best Practices in CEL
 version: 1.11.0
 description: 'A Kubernetes Service of type NodePort uses a host port to receive traffic from any source. A NetworkPolicy cannot be used to control traffic to host ports. Although NodePort Services can be useful, their use must be limited to Services with additional upstream security checks. This policy validates that any new Services do not use the `NodePort` type.'
+createdAt: "2024-06-03T12:31:12.000Z"
 ---
 
 ## Policy Definition

@@ -9,7 +9,7 @@ tags:
   - Istio
 version: 1.6.0
 description: 'In order for Istio to include namespaces in ambient mode, the label `istio.io/dataplane-mode`  must be set to `ambient`. As an alternative to rejecting Namespace definitions which don''t already  contain this label, it can be added automatically. This policy adds the label `istio.io/dataplane-mode` set to `ambient` for all new Namespaces.'
-isNew: true
+createdAt: "2025-10-30T08:57:55.000Z"
 ---
 
 ## Policy Definition

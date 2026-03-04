@@ -30,7 +30,7 @@ interface PolicyMetadata {
   version?: string
   type: string // Full kind from YAML (e.g., ClusterPolicy, Policy, MutatingPolicy)
   description?: string // Policy description from annotations
-  isNew?: boolean // Flag to mark new policies (based on creation date)
+  createdAt?: string // ISO date when policy was first added (from upstream repo git history)
 }
 
 interface PolicyYaml {
@@ -266,9 +266,9 @@ function generateMarkdown(
     frontmatterLines.push(`description: '${escapedDescription}'`)
   }
 
-  // Add isNew flag if present
-  if (metadata.isNew) {
-    frontmatterLines.push(`isNew: true`)
+  // Creation date so components can decide how to display (e.g. "new" badge, format date)
+  if (metadata.createdAt) {
+    frontmatterLines.push(`createdAt: "${metadata.createdAt}"`)
   }
 
   frontmatterLines.push('---', '', '## Policy Definition', '')
@@ -431,18 +431,14 @@ async function processPolicyFile(
 
     const metadata = extractMetadata(policy, filePath)
 
-    // Check if policy is "new" (created in last 90 days)
+    // Creation date from upstream repo (for frontmatter)
     try {
       const creationDate = await getFileCreationDate(filePath, repoDir, git)
       if (creationDate) {
-        const daysSinceCreation =
-          (Date.now() - creationDate.getTime()) / (1000 * 60 * 60 * 24)
-        if (daysSinceCreation <= 90) {
-          metadata.isNew = true
-        }
+        metadata.createdAt = creationDate.toISOString()
       }
     } catch (error) {
-      // If git log fails, continue without isNew flag
+      // If git log fails, continue without createdAt
     }
 
     // Calculate relative path from repo root (for GitHub link)
@@ -451,7 +447,6 @@ async function processPolicyFile(
     // Preserve directory structure from source repository
     // Remove the filename and get the directory path
     const relativeDir = path.dirname(path.relative(repoDir, filePath))
-    const policyName = policy.metadata.name
     const fileName = path.basename(filePath, path.extname(filePath))
 
     // Output path preserves the source directory structure
@@ -488,16 +483,33 @@ async function processPolicyFile(
 async function main() {
   const args = process.argv.slice(2)
 
+  let repoUrl: string
+  let outputDir: string
+
   if (args.length < 2) {
-    console.error('Usage: render.ts <repo-url> <output-dir>')
     console.error(
-      'Example: render.ts https://github.com/kyverno/policies/main ../src/content/policies/',
+      `
+Usage: render-policies.ts <policies-ref|repo-url> <output-dir>
+
+Examples:
+  render-policies.ts main ./src/content/policies/
+  render-policies.ts release-1.17 ./src/content/policies/
+  render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/
+    `.trim(),
     )
     process.exit(1)
   }
 
-  const repoUrl = args[0]
-  const outputDir = path.resolve(args[1])
+  outputDir = path.resolve(args[1])
+
+  if (args[0].startsWith('https://github.com/')) {
+    // Full repository URL provided
+    repoUrl = args[0]
+  } else {
+    // Only ref/branch/tag provided, construct the kyverno/policies URL
+    const policiesRef = args[0]
+    repoUrl = `https://github.com/kyverno/policies/${policiesRef}`
+  }
 
   // Extract repo info from URL
   // Format: https://github.com/owner/repo/branch

@@ -24,7 +24,20 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Determine policies ref
+        id: policies_ref
+        shell: bash
+        run: |
+          ref_name="${GITHUB_REF_NAME}"
+          if [[ "$ref_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
+            echo "value=release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=main" >> "$GITHUB_OUTPUT"
+          fi
       - name: Install dependencies
         run: npm ci
       - name: Verify generated code is up to date
+        env:
+          POLICIES_REF: ${{ steps.policies_ref.outputs.value }}
+          WEBSITE_BRANCH: ${{ github.ref_name }}
         run: npm run codegen:verify

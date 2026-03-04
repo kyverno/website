@@ -9,6 +9,7 @@ tags:
   - Sample in CEL
 version: 1.11.0
 description: 'Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.'
+createdAt: "2024-05-16T14:20:05.000Z"
 ---
 
 ## Policy Definition

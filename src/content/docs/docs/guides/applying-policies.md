@@ -1,6 +1,6 @@
 ---
 title: Applying Policies
-description: Apply policies across clusters and delivery pipelines
+excerpt: Apply policies across clusters and delivery pipelines
 sidebar:
   order: 40
 ---

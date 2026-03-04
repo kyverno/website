@@ -9,6 +9,7 @@ tags:
   - OpenShift
 version: 1.6.0
 description: 'An Route host is a URL at which services may be made available externally. In most cases, these hosts should be unique across the cluster to ensure no routing conflicts occur. This policy checks an incoming Route resource to ensure its hosts are unique to the cluster.'
+createdAt: "2022-03-29T18:46:10.000Z"
 ---
 
 ## Policy Definition

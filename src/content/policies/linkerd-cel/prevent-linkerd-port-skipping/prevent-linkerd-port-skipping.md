@@ -9,6 +9,7 @@ tags:
   - Linkerd in CEL
 version: 1.11.0
 description: 'Linkerd has the ability to skip inbound and outbound ports assigned to Pods, exempting them from mTLS. This can be important in some narrow use cases but generally should be avoided. This policy prevents Pods from setting the annotations `config.linkerd.io/skip-inbound-ports` or `config.linkerd.io/skip-outbound-ports`.'
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition

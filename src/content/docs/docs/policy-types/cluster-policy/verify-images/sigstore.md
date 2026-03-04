@@ -1,6 +1,6 @@
 ---
 title: Sigstore
-description: Verify Sigstore Cosign format signatures and attestations using keys, certificates, or keyless attestors.
+excerpt: Verify Sigstore Cosign format signatures and attestations using keys, certificates, or keyless attestors.
 sidebar:
   order: 2
 ---

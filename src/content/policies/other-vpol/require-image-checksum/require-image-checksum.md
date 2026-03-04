@@ -9,6 +9,7 @@ tags:
   - Sample in Vpol
 version: 1.14.0
 description: 'Use of a SHA checksum when pulling an image is often preferable because tags are mutable and can be overwritten. This policy checks to ensure that all images use SHA checksums rather than tags.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 description: 'SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition
