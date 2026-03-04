@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
 
+# Determine which kyverno-cli image tag/ref to use based on the website branch.
+# If the first argument looks like "release-x-y" or "release-x-y-z",
+# map it to "release-x.y". Otherwise, always fall back to "latest".
+branch_name="$1"
+
+if [[ "$branch_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
+  CLI_REF="release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+else
+  CLI_REF="latest"
+fi
+
+echo "Using kyverno-cli image tag: ${CLI_REF}"
+
 rm -rf ./src/content/docs/docs/kyverno-cli/reference/kyverno*.md
-docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
-  --autogenTag=false															\
-  --website																	\
-  --noDate																	\
-  --markdownLinks																\
+docker run --user root -v "${PWD}":/work --rm "ghcr.io/kyverno/kyverno-cli:${CLI_REF}" docs \
+  --autogenTag=false \
+  --website \
+  --noDate  \
+  --markdownLinks \
   --output "/work/src/content/docs/docs/kyverno-cli/reference"
 
 # Function to run sed in-place (handles macOS vs Linux differences)
