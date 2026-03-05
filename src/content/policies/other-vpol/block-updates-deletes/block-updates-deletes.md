@@ -16,7 +16,7 @@ createdAt: "2025-12-11T12:49:35.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-updates-deletes/block-updates-deletes.yaml" target="-blank">/other-vpol/block-updates-deletes/block-updates-deletes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-updates-deletes
