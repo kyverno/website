@@ -1010,6 +1010,10 @@ Each `foreach` declaration can optionally contain the following declarations:
 - [Preconditions](/docs/policy-types/cluster-policy/preconditions): to control when a loop iteration is skipped.
 - `foreach`: a nested `foreach` declaration described below.
 
+:::note[Note]
+When using preconditions in `foreach` loops for image registry detection, prefer the [`images` context variable](/docs/policy-types/cluster-policy/variables#variables-from-container-images) over JMESPath boolean functions. This provides more reliable string-to-string comparisons and avoids potential type coercion issues. See the [preconditions troubleshooting section](/docs/policy-types/cluster-policy/preconditions#troubleshooting) for examples.
+:::
+
 For a `patchesJson6902` type of `foreach` declaration, an additional variable called `elementIndex` is made available which allows the current index number to be referenced in a loop.
 
 ```yaml
