@@ -1,0 +1,97 @@
+---
+title: "CEL Golden Path (MVP): Require a Namespace label"
+description: "A minimal, runnable CEL-first loop using ValidatingPolicy and cluster admission (kubectl apply)."
+---
+
+## Prereqs
+
+- Access to a real Kubernetes cluster (reachable via `kubectl`).
+- Kyverno installed in that cluster (v1.17+ recommended).
+- `kubectl` installed locally.
+
+> Note: `kyverno apply` (Kyverno CLI) can evaluate `ValidatingPolicy` locally when the policy uses the correct schema (`matchConstraints` + `validations`). This guide focuses on the admission path (`kubectl apply`) for real cluster behavior.
+
+## Tested with
+
+- Kyverno CLI: v1.17.0 (commit 3e5e7756) — used to verify local evaluation works (see Optional section below)
+- kubectl: v1.35.0
+- Kyverno (cluster): v1.17+
+
+## Policy (ValidatingPolicy)
+
+Save as `policy.yaml`:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-namespace-team-label
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["namespaces"]
+  validations:
+    - expression: "has(object.metadata.labels) && 'team' in object.metadata.labels"
+      message: "Namespaces must have the 'team' label."
+```
+
+## Test resources (pass/fail)
+
+Save as `ns-good.yaml` (pass: has `team`):
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-demo
+  labels:
+    team: platform
+```
+
+Save as `ns-bad.yaml` (fail: missing `team`):
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: no-team-demo
+```
+
+## Verify on a cluster (kubectl apply + admission)
+
+Run these commands from the directory where you saved the three files:
+
+```bash
+kubectl apply -f policy.yaml
+kubectl apply -f ns-good.yaml
+kubectl apply -f ns-bad.yaml
+```
+
+Optional: verify locally with Kyverno CLI (quick smoke test):
+
+This is a quick, pre-cluster smoke test (dry-run-like) and does not replace verifying real admission behavior on a cluster.
+
+```bash
+kyverno apply policy.yaml --resource ns-good.yaml
+kyverno apply policy.yaml --resource ns-bad.yaml
+```
+
+## Expected output (anchors)
+
+- Pass case: `kubectl apply -f ns-good.yaml` succeeds (Namespace is created).
+- Fail case: `kubectl apply -f ns-bad.yaml` is denied and the error contains: `Namespaces must have the 'team' label.`
+
+## Troubleshooting
+
+See also: Kyverno CEL docs and troubleshooting: https://kyverno.io/docs/writing-policies/validate/validating-policies/cel/
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `kyverno apply` or `kubectl apply -f policy.yaml` fails with an unknown field error (for example `spec.rules: ... unknown field`) | The policy YAML does not match the `ValidatingPolicy` schema for your Kyverno version | Use the `matchConstraints` + `validations` form shown in this guide, then retry. |
+| `kubectl apply -f policy.yaml` fails with `no matches for kind "ValidatingPolicy"` | Kyverno CRDs are not installed, or Kyverno is too old | Install/upgrade Kyverno (v1.17+), then re-apply the policy. |
+| `kubectl apply -f ns-bad.yaml` succeeds (not denied) | Kyverno is not running/ready, or the policy is not active yet | Check `kubectl -n kyverno get pods` (Ready), re-apply `policy.yaml`, then retry. |
