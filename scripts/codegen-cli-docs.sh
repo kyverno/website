@@ -1,17 +1,34 @@
 #!/usr/bin/env bash
 
-# Determine which kyverno-cli image tag/ref to use based on the website branch.
-# If the first argument looks like "release-x-y" or "release-x-y-z",
-# map it to "release-x.y". Otherwise, always fall back to "latest".
-branch_name="$1"
+set -euo pipefail
 
-if [[ "$branch_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
-  CLI_REF="release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+# Determine the kyverno-cli image tag:
+# - If positional arg is provided: use it directly as the distant repo tag (no transformation)
+# - Otherwise (auto mode): derive from WEBSITE_BRANCH or current git branch, then map:
+#   - release-x-y or release-x-y-z  -> release-x.y
+#   - anything else                 -> latest
+if [[ -n "${1:-}" ]]; then
+  CLI_REF="$1"
+  echo "Using kyverno-cli image tag: ${CLI_REF} (from positional argument)"
 else
-  CLI_REF="latest"
-fi
+  branch_name="${WEBSITE_BRANCH:-}"
+  if [[ -z "${branch_name}" ]]; then
+    if git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
+      branch_name="$(git rev-parse --abbrev-ref HEAD)"
+    else
+      branch_name="main"
+    fi
+  fi
 
-echo "Using kyverno-cli image tag: ${CLI_REF}"
+  if [[ "$branch_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
+    CLI_REF="release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+  else
+    CLI_REF="latest"
+  fi
+
+  echo "Using website branch: ${branch_name}"
+  echo "Using kyverno-cli image tag: ${CLI_REF}"
+fi
 
 rm -rf ./src/content/docs/docs/kyverno-cli/reference/kyverno*.md
 docker run --user root -v "${PWD}":/work --rm "ghcr.io/kyverno/kyverno-cli:${CLI_REF}" docs \
