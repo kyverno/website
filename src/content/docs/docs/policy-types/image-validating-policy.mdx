@@ -135,6 +135,8 @@ spec:
           repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
           pullSecrets: # Kubernetes secrets used to access the registry
             - name: my-registry-secret
+            # this notation can be used to reference image pull secret in a different Namespace
+            - name: my-namespace/my-registry-secret
           tagPrefix: 'v1.' # Restrict verification to images starting with this tag
 
         tuf:
@@ -263,7 +265,8 @@ spec:
       - 'github'
 
     secrets:
-      - 'my-registry-secret' # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
+      - 'my-registry-secret' # Secrets specifies a list of secrets that are provided for credentials.
+      - 'my-namespace/my-registry-secret' # this notation can be used to reference image pull secret in a different Namespace
 ```
 
 ## Policy Scope
