@@ -1,0 +1,58 @@
+---
+title: 'Restrict Image Registries in VPOL'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - Pod
+tags:
+  - Best Practices
+  - EKS Best Practices in VPOL
+version: 1.14.0
+description: 'Images from unknown, public registries can be of dubious quality and may not be scanned and secured, representing a high degree of risk. Requiring use of known, approved registries helps reduce threat exposure by ensuring image pulls only come from them. This policy validates that container images only originate from the registry `eu.foo.io` or `bar.io`. Use of this policy requires customization to define your allowable registries.'
+createdAt: "2026-02-23T00:26:12.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml" target="-blank">/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-image-registries
+  annotations:
+    policies.kyverno.io/title: Restrict Image Registries in VPOL
+    policies.kyverno.io/category: Best Practices, EKS Best Practices in VPOL
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: Images from unknown, public registries can be of dubious quality and may not be scanned and secured, representing a high degree of risk. Requiring use of known, approved registries helps reduce threat exposure by ensuring image pulls only come from them. This policy validates that container images only originate from the registry `eu.foo.io` or `bar.io`. Use of this policy requires customization to define your allowable registries.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+          - pods/ephemeralcontainers
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
+  validations:
+    - expression: variables.allContainers.all(container, container.image.startsWith('eu.foo.io/') || container.image.startsWith('bar.io/'))
+      message: Unknown image registry.
+
+```

@@ -27,7 +27,7 @@ Kyverno also supports high availability. A highly-available installation of Kyve
 
 ## Command Line Interface (CLI)
 
-Kyverno policies can be applied to clusters or resource files (Kubernetes resource manifests, Terraform JSON plans, Deockerfiles, etc.) using a Command Line Interface (CLI). The policies can be applied to Kubernetes resource manifests
+Kyverno policies can be applied to clusters or resource files (Kubernetes resource manifests, Terraform JSON plans, Dockerfiles, etc.) using a Command Line Interface (CLI). The policies can be applied to Kubernetes resource manifests
 
 For more details see the [Kyverno CLI](/docs/subprojects/kyverno-cli/) documentation.
 
