@@ -1,6 +1,6 @@
 ---
 title: Kubernetes Admission Controllers
-description: An introduction to admission controllers in Kubernetes.
+excerpt: An introduction to admission controllers in Kubernetes.
 sidebar:
   order: 35
 ---

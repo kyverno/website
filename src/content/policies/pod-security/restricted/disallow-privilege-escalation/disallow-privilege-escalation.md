@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Restricted)
 description: 'Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.'
+createdAt: "2022-01-28T14:24:06.000Z"
 ---
 
 ## Policy Definition

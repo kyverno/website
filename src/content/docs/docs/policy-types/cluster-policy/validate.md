@@ -1,6 +1,6 @@
 ---
 title: Validate Rules
-description: Check resources configurations for policy compliance.
+excerpt: Check resources configurations for policy compliance.
 sidebar:
   order: 3
 ---

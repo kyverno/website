@@ -9,7 +9,7 @@ tags:
   - Other
 version: 1.15.0
 description: 'Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container''s base, found in an OCI annotation, is in a cluster-wide allow list.'
-isNew: true
+createdAt: "2025-11-25T07:18:35.000Z"
 ---
 
 ## Policy Definition

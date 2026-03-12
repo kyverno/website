@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.7.0
 description: 'Pods which don''t specify at least resource requests are assigned a QoS class of BestEffort which can hog resources for other Pods on Nodes. At a minimum, all Pods should specify resource requests in order to be labeled as the QoS class Burstable. This sample mutates any container in a Pod which doesn''t specify memory or cpu requests to apply some sane defaults.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

@@ -1,6 +1,6 @@
 ---
 title: Policy Exceptions
-description: Create an exception to an existing policy using a PolicyException.
+excerpt: Create an exception to an existing policy using a PolicyException.
 sidebar:
   order: 110
 ---

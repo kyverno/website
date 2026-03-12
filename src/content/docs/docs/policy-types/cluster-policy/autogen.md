@@ -1,6 +1,6 @@
 ---
 title: Auto-Gen Rules
-description: Automatically generate rules for Pod controllers.
+excerpt: Automatically generate rules for Pod controllers.
 sidebar:
   order: 110
 ---

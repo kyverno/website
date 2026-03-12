@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 description: 'The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.'
+createdAt: "2021-04-18T04:41:22.000Z"
 ---
 
 ## Policy Definition

@@ -8,6 +8,7 @@ subjects:
 tags:
   - Linkerd
 description: 'As of Linkerd 2.12, an AuthorizationPolicy is a resource used to selectively allow traffic to either a Server or HTTPRoute resource. Creating AuthorizationPolicies is needed when a Server exists in order to control what traffic is permitted within the mesh to the Pods selected by the Server or HTTPRoute. This policy, requiring Linkerd 2.12+, checks incoming AuthorizationPolicy resources to ensure that either a matching Server or HTTPRoute exists first.'
+createdAt: "2022-10-08T18:55:51.000Z"
 ---
 
 ## Policy Definition

@@ -3,7 +3,7 @@ title: Installation
 linkTitle: Installation
 sidebar:
   order: 20
-description: Understand how to install and configure Kyverno.
+excerpt: Understand how to install and configure Kyverno.
 ---
 
 Kyverno provides multiple methods for installation: Helm and YAML manifest. When installing in a production environment, Helm is the recommended and most flexible method as it offers convenient configuration options to satisfy a wide range of customizations. Regardless of the method, Kyverno must always be installed in a dedicated Namespace; it must not be co-located with other applications in existing Namespaces including system Namespaces such as `kube-system`. The Kyverno Namespace should also not be used for deployment of other, unrelated applications and services.
@@ -44,11 +44,11 @@ Kyverno follows the same support policy as the Kubernetes project (N-2 policy) i
 
 | Kyverno Version | Kubernetes Min | Kubernetes Max |
 | --------------- | -------------- | -------------- |
-| 1.14.x          | 1.29           | 1.32           |
 | 1.15.x          | 1.30           | 1.33           |
 | 1.16.x          | 1.31           | 1.34           |
+| 1.17.x          | 1.32           | 1.35           |
 
-**NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/nirmata).
+**NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/).
 
 ## Helm Chart
 

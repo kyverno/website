@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.7.0
 description: 'This policy generates and synchronizes Argo CD cluster secrets from Rancher  managed cluster.provisioning.cattle.io/v1 resources and their corresponding CAPI secrets. In this solution, Argo CD integrates with Rancher managed clusters via the central Rancher authentication proxy which shares the network endpoint of the Rancher API/GUI. The policy implements work-arounds for Argo CD issue https://github.com/argoproj/argo-cd/issues/9033 "Cluster-API cluster auto-registration" and Rancher issue https://github.com/rancher/rancher/issues/38053 "Fix type and labels Rancher v2 provisioner specifies when creating CAPI Cluster Secret".'
+createdAt: "2022-07-21T23:00:43.000Z"
 ---
 
 ## Policy Definition
