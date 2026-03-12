@@ -484,9 +484,9 @@ spec:
         resources: ['namespaces']
         resourceNames: ['test-namespace']
   targetMatchConstraints:
-  namespaceSelector:
-    matchLabels:
-      test: 'enabled'
+    namespaceSelector:
+      matchLabels:
+        test: 'enabled'
     resourceRules:
       - apiGroups: ['']
         apiVersions: ['v1']
