@@ -1344,7 +1344,7 @@ First, we define a `ValidatingPolicy` that ensures any `Deployment` has no more 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas
@@ -1479,7 +1479,7 @@ First, we define a `ValidatingPolicy` that uses `resource.Get()` to fetch a Conf
 Policy manifest (check-pod-name-from-configmap.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-pod-name-from-configmap
@@ -1617,7 +1617,7 @@ In this example, we will test a policy that disallows `hostPath` volumes, but we
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-path
@@ -1657,7 +1657,7 @@ Now, we create a PolicyException to exempt our specific Pod from this policy. Th
 Policy Exception manifest (exception.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exempt-hostpath-pod
@@ -3231,7 +3231,7 @@ Below is an example of testing a ValidatingPolicy against two resources, one of 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas
@@ -3347,7 +3347,7 @@ Let's start with a policy that disallows creating certain Deployments in the `de
 Policy manifest (`disallow-default-deployment.yaml`):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-namespace
@@ -3557,7 +3557,7 @@ Policy manifest (`check-pod-name-from-configmap.yaml`):
 
 ```yaml
 # policy.yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-pod-name-from-configmap

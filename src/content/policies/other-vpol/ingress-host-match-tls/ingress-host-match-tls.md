@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/ingress-host-match-tls/ingress-host-match-tls.yaml" target="-blank">/other-vpol/ingress-host-match-tls/ingress-host-match-tls.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: ingress-host-match-tls
