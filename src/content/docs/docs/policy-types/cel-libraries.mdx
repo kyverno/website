@@ -456,7 +456,7 @@ The **Hash library** introduces the ability to run hash functions on arbitrary v
 The following policy ensures that the hash of the image name in a certain deployment matches the required value which represents `nginx:latest`:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-hash
