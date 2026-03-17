@@ -512,6 +512,82 @@ In this example:
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
+### Accessing the Original Request
+
+When using `targetMatchConstraints`, the `object` and `oldObject` variables in the CEL context refer to the **target** resource being mutated, not the resource that triggered the original admission request. To access the triggering resource's data, Kyverno provides the `params.originalRequest` variable, which contains:
+
+- **`params.originalRequest.object`**: The object from the original admission request that triggered the mutation (the trigger resource).
+- **`params.originalRequest.oldObject`**: The old object from the original admission request (available on UPDATE operations).
+
+This is useful when your policy needs to:
+1. Filter execution based on properties of the triggering resource (via `matchConditions`)
+2. Extract data from the triggering resource for use in mutations (via `variables`)
+
+The following example demonstrates a policy where a `ConfigMap` update triggers mutations on `ScaledObject` resources. The policy reads the Prometheus server address from the triggering `ConfigMap` and applies it to matching `ScaledObject` targets:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: keda-prometheus-serveraddress-configmap
+spec:
+  evaluation:
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["configmaps"]
+        operations: ["CREATE", "UPDATE"]
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: observability
+  matchConditions:
+    # Only trigger when the specific ConfigMap is modified
+    - name: is-target-configmap
+      expression: >-
+        params.originalRequest.object.metadata.name == "keda-prometheus-serveraddress"
+  targetMatchConstraints:
+    resourceRules:
+      - apiGroups: ["keda.sh"]
+        apiVersions: ["v1alpha1"]
+        resources: ["scaledobjects"]
+  variables:
+    - name: serverAddress
+      expression: >-
+        params.originalRequest.object.data["main"]
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          has(object.metadata.annotations)
+          && object.metadata.annotations.exists(k,
+            k == "prometheus.keda.sh/use-central-serveraddress"
+          )
+          && object.metadata.annotations["prometheus.keda.sh/use-central-serveraddress"] == "true"
+          ? object.spec.triggers.filter(e,
+              has(e.type) && e.type == "prometheus"
+            ).map(e,
+              JSONPatch{
+                op: "replace",
+                path: "/spec/triggers/" + string(object.spec.triggers.indexOf(e)) + "/metadata/serverAddress",
+                value: string(variables.serverAddress)
+              }
+            )
+          : []
+```
+
+In this example:
+
+- **Trigger**: A `ConfigMap` named `keda-prometheus-serveraddress` in the `observability` namespace is created or updated.
+- **`params.originalRequest.object`** is used in `matchConditions` to filter by the trigger ConfigMap name, and in `variables` to extract the server address value.
+- **Target**: All existing `ScaledObject` resources with the annotation `prometheus.keda.sh/use-central-serveraddress: "true"` are mutated to update their Prometheus trigger `serverAddress`.
+
+:::note
+When a policy is evaluated during a direct admission request (without `targetMatchConstraints`), `params.originalRequest.object` and `params.originalRequest.oldObject` will contain the same data as `object` and `oldObject` respectively.
+:::
+
 ## Mutate Ordering
 
 The order of mutations is important when multiple mutations are applied. Kyverno processes mutations in the order they appear in the policy. However, **the order is not guaranteed across multiple MutatingPolicies** - if multiple policies apply to the same resource, their execution order is not deterministic.
