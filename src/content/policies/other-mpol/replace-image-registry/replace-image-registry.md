@@ -38,13 +38,6 @@ spec:
           - UPDATE
         resources:
           - pods
-  variables:
-    - name: stripRegistry
-      expression: |
-        string(img) => 
-          img.contains('/') && img.split('/')[0].contains('.') ? 
-            img.split('/', 2)[1] : 
-            img
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:

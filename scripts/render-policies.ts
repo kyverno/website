@@ -483,16 +483,65 @@ async function processPolicyFile(
 async function main() {
   const args = process.argv.slice(2)
 
-  if (args.length < 2) {
-    console.error('Usage: render.ts <repo-url> <output-dir>')
-    console.error(
-      'Example: render.ts https://github.com/kyverno/policies/main ../src/content/policies/',
-    )
-    process.exit(1)
-  }
+  let repoUrl: string
+  let outputDir: string
+  let policiesRef: string
 
-  const repoUrl = args[0]
-  const outputDir = path.resolve(args[1])
+  if (args.length === 0) {
+    // Auto mode: derive policies ref from WEBSITE_BRANCH or current git branch.
+    // This is the default path used by `npm run codegen:policies`.
+    const websiteBranchEnv = process.env.WEBSITE_BRANCH
+    let branchName = websiteBranchEnv
+
+    if (!branchName) {
+      try {
+        const git = simpleGit()
+        const name = await git.revparse(['--abbrev-ref', 'HEAD'])
+        branchName = name.trim()
+      } catch {
+        branchName = 'main'
+      }
+    }
+
+    const match = branchName?.match(/^release-([0-9]+)-([0-9]+)(-[0-9]+)?$/)
+    if (match) {
+      policiesRef = `release-${match[1]}.${match[2]}`
+    } else {
+      policiesRef = 'main'
+    }
+
+    outputDir = path.resolve('./src/content/policies/')
+    repoUrl = `https://github.com/kyverno/policies/${policiesRef}`
+  } else {
+    if (args.length < 2) {
+      console.error(
+        `
+Usage: render-policies.ts [<policies-ref|repo-url> <output-dir>]
+
+Examples:
+  # Auto mode (uses WEBSITE_BRANCH or current git branch)
+  render-policies.ts
+
+  # Explicit ref or URL:
+  render-policies.ts main ./src/content/policies/
+  render-policies.ts release-1.17 ./src/content/policies/
+  render-policies.ts https://github.com/kyverno/policies/main ./src/content/policies/
+        `.trim(),
+      )
+      process.exit(1)
+    }
+
+    outputDir = path.resolve(args[1])
+
+    if (args[0].startsWith('https://github.com/')) {
+      // Full repository URL provided
+      repoUrl = args[0]
+    } else {
+      // Only ref/branch/tag provided, construct the kyverno/policies URL
+      policiesRef = args[0]
+      repoUrl = `https://github.com/kyverno/policies/${policiesRef}`
+    }
+  }
 
   // Extract repo info from URL
   // Format: https://github.com/owner/repo/branch
