@@ -107,6 +107,10 @@ Entries in a policy report contain a `result` field which can be either `pass`, 
 | warn   | The annotation `policies.kyverno.io/scored` has been set to `"false"` in the policy converting otherwise `fail` results to `warn`.               |
 | error  | Variable substitution failed outside of preconditions and elsewhere in the rule (ex., in the pattern).                                           |
 
+:::note[Note]
+As of Kyverno 1.17, you can use the `--allowedResults` flag on the admission, background, and reports controllers to control which result types are persisted in reports. By default all result types are stored (`pass,fail,error,warn,skip`). Setting this to a subset (e.g., `--allowedResults=fail`) can significantly reduce ETCD pressure in large clusters.
+:::
+
 ### Scenarios for Skip results
 
 A `skip` result signifies that Kyverno decided not to evaluate the resource against a specific rule. This is different from a pass where the resource was evaluated and deemed compliant. A `skip` means the rule was essentially bypassed.
