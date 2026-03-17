@@ -19,15 +19,17 @@ This TypeScript tool fetches Kyverno policies from a GitHub repository and gener
 npm run codegen:policies
 ```
 
-**With custom arguments:**
+**With custom arguments (positional args = distant repo ref/URL and output dir, no transformation):**
 
 ```bash
-npm run codegen:policies -- <repo-url> <output-dir>
+npm run codegen:policies -- <policies-ref|repo-url> <output-dir>
 ```
 
-**Example:**
+**Examples:**
 
 ```bash
+npm run codegen:policies -- main ./src/content/policies/
+npm run codegen:policies -- release-1.17 ./src/content/policies/
 npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/policies/
 ```
 
@@ -84,11 +86,20 @@ This bash script generates CLI documentation by running the kyverno-cli Docker c
 npm run codegen:cli-docs
 ```
 
-**Direct execution:**
+**With explicit image tag (positional arg = distant repo tag, no transformation):**
+
+```bash
+./scripts/codegen-cli-docs.sh release-1.17
+npm run codegen:cli-docs -- release-1.17
+```
+
+**Direct execution (auto mode: uses WEBSITE_BRANCH or git branch):**
 
 ```bash
 ./scripts/codegen-cli-docs.sh
 ```
+
+When a positional argument is provided, it is used directly as the image tag (e.g. `release-1.17`, `latest`). In auto mode, the website branch is mapped: `release-x-y` → `release-x.y`, else `latest`.
 
 ### How it works
 
