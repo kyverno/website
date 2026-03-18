@@ -386,10 +386,10 @@ See the [installation instructions](/docs/installation/installation) for Kyverno
 
 - Pass the flag `metricsPort` to defined the OpenTelemetry Collector endpoint for collecting metrics.
 - Pass the flag `otelConfig=grpc` to export the metrics and traces to an OpenTelemetry collector on the metrics port endpoint
-- Optionally pass the flag `exemplarFilter` to control OpenTelemetry [exemplar](https://opentelemetry.io/docs/specs/otel/metrics/sdk/#exemplar) collection on metrics. Exemplars are sample data points attached to aggregated metrics (such as histograms and counters) that link back to specific trace spans, enabling correlation between metrics and traces. Supported values are `trace-based` (default, exemplars collected only when the context has a sampled trace span), `off` (no exemplars collected), and `always-on` (exemplars collected on every measurement). This flag applies to both Prometheus and OTLP gRPC metrics backends.
+- Optionally pass the flag `exemplarFilter` to control OpenTelemetry [exemplar](https://opentelemetry.io/docs/specs/otel/metrics/sdk/#exemplar) collection on metrics. Exemplars are sample data points attached to aggregated metrics (such as histograms and counters) that link back to specific trace spans, enabling correlation between metrics and traces. Supported values are `trace-based` (default, exemplars collected only when the context has a sampled trace span), `always-off` (no exemplars collected), and `always-on` (exemplars collected on every measurement). This flag applies to both Prometheus and OTLP gRPC metrics backends.
 
 :::note[Note]
-Exemplar collection is disabled by default (`--exemplarFilter=trace-based`) to avoid keep it backward compatible. If you need no exemplars to be collected, set `--exemplarFilter=off`, or `--exemplarFilter=always-on` to collect exemplars on every measurement. See [container flags](/docs/installation/customization#container-flags) for more details on all available flags.
+Exemplar collection is disabled by default (`--exemplarFilter=trace-based`) to avoid keep it backward compatible. If you need no exemplars to be collected, set `--exemplarFilter=always-off`, or `--exemplarFilter=always-on` to collect exemplars on every measurement. See [container flags](/docs/installation/customization#container-flags) for more details on all available flags.
 :::
 
 ### Setting up a secure connection between Kyverno and the collector
