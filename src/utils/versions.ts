@@ -30,21 +30,26 @@ export function getCurrentVersion(
     )
   }
 
+  // Normalize www prefix (e.g., www.kyverno.io -> kyverno.io)
+  const normalizedHostname = hostname.startsWith('www.')
+    ? hostname.slice(4)
+    : hostname
+
   // Match version based on hostname from href
   for (const version of versions) {
     try {
       const versionUrl = new URL(version.href)
       const versionHostname = versionUrl.hostname
 
-      // Exact match
-      if (hostname === versionHostname) {
+      // Exact match (also handles www prefix normalization)
+      if (normalizedHostname === versionHostname) {
         return version
       }
 
       // Check if hostname contains the subdomain (e.g., release-1-15-0.kyverno.io)
       const versionSubdomain = versionHostname.split('.')[0]
       if (
-        hostname.includes(versionSubdomain) &&
+        normalizedHostname.includes(versionSubdomain) &&
         versionSubdomain !== 'kyverno'
       ) {
         return version

@@ -133,6 +133,9 @@ const versionOptions = createVersionOptions(
 </style>
 
 <script>
+  import { documentationVersions } from '../constants/index.js'
+  import { getCurrentVersion } from '../utils/versions'
+
   customElements.define(
     'starlight-version-select',
     class StarlightVersionSelect extends HTMLElement {
@@ -142,7 +145,31 @@ const versionOptions = createVersionOptions(
         const select = this.querySelector('select')
         if (!select) return
 
-        select?.addEventListener('change', (event) => {
+        // Update selected option based on actual browser hostname (client-side).
+        // This ensures the correct version is shown even when the page was
+        // pre-rendered with a different hostname (e.g. localhost during SSG build)
+        // or when the user arrives via www.kyverno.io.
+        const currentVersion = getCurrentVersion(
+          documentationVersions,
+          window.location.hostname,
+        )
+        try {
+          const targetHostname = new URL(currentVersion.href).hostname
+          for (const option of Array.from(select.options)) {
+            try {
+              if (new URL(option.value).hostname === targetHostname) {
+                option.selected = true
+                break
+              }
+            } catch (_e) {
+              // skip options with invalid URLs
+            }
+          }
+        } catch (_e) {
+          // skip if current version href is not a valid URL
+        }
+
+        select.addEventListener('change', (event) => {
           if (event.currentTarget instanceof HTMLSelectElement) {
             // The option value already contains the full URL with path preserved
             window.location.href = event.currentTarget.value
