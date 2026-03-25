@@ -1,6 +1,6 @@
 ---
 title: Uninstalling Kyverno
-description: Uninstalling Kyverno.
+excerpt: Uninstalling Kyverno.
 sidebar:
   order: 65
 ---

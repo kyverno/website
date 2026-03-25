@@ -9,6 +9,7 @@ tags:
   - Kasten K10 by Veeam in CEL
 version: 1.11.0
 description: 'Kubernetes applications are typically deployed into a single, logical namespace.  Kasten K10 policies will discover and protect all resources within the selected namespace(s).  This policy ensures all new namespaces include a label referencing a valid K10 SLA  (Policy Preset) for data protection.This policy can be used in combination with generate  ClusterPolicy to automatically create a K10 policy based on the specified SLA.  The combination ensures that new applications are not inadvertently left unprotected.'
+createdAt: "2024-07-10T03:46:30.000Z"
 ---
 
 ## Policy Definition

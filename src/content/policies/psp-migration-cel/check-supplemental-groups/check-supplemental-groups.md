@@ -9,6 +9,7 @@ tags:
   - PSP Migration in CEL
 version: 1.11.0
 description: 'Supplemental groups control which group IDs containers add and can coincide with restricted groups on the host. Pod Security Policies (PSP) allowed a range of these group IDs to be specified which were allowed. This policy ensures any Pod may only specify supplementalGroup IDs between 100-200 or 500-600.'
+createdAt: "2024-08-02T14:44:48.000Z"
 ---
 
 ## Policy Definition

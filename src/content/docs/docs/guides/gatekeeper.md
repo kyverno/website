@@ -1,5 +1,5 @@
 ---
-description: Migration guidelines with policy mappings
+excerpt: Migration guidelines with policy mappings
 title: Gatekeeper Migration Guide
 type: policies
 url: /policies/gatekeeper/

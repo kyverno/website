@@ -13,6 +13,7 @@ tags:
   - OpenShift
 version: 1.6.0
 description: 'OpenShift APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.      '
+createdAt: "2022-03-02T21:16:19.000Z"
 ---
 
 ## Policy Definition

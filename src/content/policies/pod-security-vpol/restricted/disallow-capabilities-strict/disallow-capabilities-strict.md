@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

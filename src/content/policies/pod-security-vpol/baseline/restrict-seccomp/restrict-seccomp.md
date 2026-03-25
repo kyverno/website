@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 description: 'The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.'
+createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition

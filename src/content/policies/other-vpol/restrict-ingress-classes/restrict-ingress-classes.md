@@ -9,6 +9,7 @@ tags:
   - Sample in Vpol
 version: 1.14.0
 description: 'Ingress classes should only be allowed which match up to deployed Ingress controllers in the cluster. Allowing users to define classes which cannot be satisfied by a deployed Ingress controller can result in either no or undesired functionality. This policy checks Ingress resources and only allows those which define `HAProxy` or `nginx` in the respective annotation. This annotation has largely been replaced as of Kubernetes 1.18 with the IngressClass resource.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

@@ -1,6 +1,6 @@
 ---
 title: Metrics
-description: Complete reference for all Kyverno metrics
+excerpt: Complete reference for all Kyverno metrics
 sidebar:
   order: 1
 ---

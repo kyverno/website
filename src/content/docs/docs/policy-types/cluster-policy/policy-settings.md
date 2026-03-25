@@ -1,6 +1,6 @@
 ---
 title: Policy Settings
-description: Common configuration for all rules in a policy.
+excerpt: Common configuration for all rules in a policy.
 sidebar:
   order: 2
 ---

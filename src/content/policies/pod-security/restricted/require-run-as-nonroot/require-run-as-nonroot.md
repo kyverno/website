@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Restricted)
 description: 'Containers must be required to run as non-root users. This policy ensures `runAsNonRoot` is set to `true`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.'
+createdAt: "2021-03-10T09:08:16.000Z"
 ---
 
 ## Policy Definition

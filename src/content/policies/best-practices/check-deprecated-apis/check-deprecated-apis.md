@@ -9,6 +9,7 @@ tags:
   - Best Practices
 version: 1.7.4
 description: 'Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters. In the validate-v1-22-removals rule, the Lease kind has been commented out due to a check for this kind having a performance penalty on Kubernetes clusters with many leases. Its enabling should be attended carefully and is not recommended on large clusters. PodSecurityPolicy is removed in v1.25 so therefore the validate-v1-25-removals rule may not completely work on 1.25+. This policy requires Kyverno v1.7.4+ to function properly.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

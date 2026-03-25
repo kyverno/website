@@ -1,6 +1,6 @@
 ---
 title: Upgrading Kyverno
-description: Upgrading Kyverno.
+excerpt: Upgrading Kyverno.
 sidebar:
   order: 55
 ---
