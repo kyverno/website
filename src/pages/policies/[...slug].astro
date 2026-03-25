@@ -12,6 +12,7 @@ import {
   formatSeverityLabel,
   getCategoryColor,
   getSeverityColor,
+  isPolicyNew,
 } from '../../components/policy/utils'
 
 export async function getStaticPaths() {
@@ -71,7 +72,7 @@ if (yamlMatch && yamlMatch[1]) {
 const category = data.category || 'validate'
 const severity = data.severity || 'medium'
 const description = data.description || null
-const isNew = data.isNew || false
+const isNew = isPolicyNew(data.createdAt)
 
 // Construct GitHub URL from policy ID
 const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}.yaml`

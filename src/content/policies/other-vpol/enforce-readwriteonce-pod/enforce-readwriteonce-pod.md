@@ -9,6 +9,7 @@ tags:
   - Sample in Vpol
 version: 1.14.0
 description: 'Some stateful workloads with multiple replicas only allow a single Pod to write to a given volume at a time. Beginning in Kubernetes 1.22 and enabled by default in 1.27, a new setting called ReadWriteOncePod, available for CSI volumes only, allows volumes to be writable from only a single Pod. For more information see the blog https://kubernetes.io/blog/2023/04/20/read-write-once-pod-access-mode-beta/. This policy enforces that the accessModes for a PersistentVolumeClaim be set to ReadWriteOncePod.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

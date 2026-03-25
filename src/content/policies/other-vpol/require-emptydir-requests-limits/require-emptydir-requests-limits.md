@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other in Vpol
 description: 'Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

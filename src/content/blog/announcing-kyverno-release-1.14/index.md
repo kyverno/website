@@ -229,7 +229,7 @@ Here are example signatures for each library. For a full list, please see [here]
 
 The Resource library retrieves Kubernetes resources for real-time validations against the current cluster state.
 
-```cel
+```yaml
 resource.Get("v1", "configmaps", "default", "my-config")
 resource.List("apps/v1", "deployments", "default").items
 ```
@@ -238,7 +238,7 @@ resource.List("apps/v1", "deployments", "default").items
 
 The HTTP library enables external API calls for integrating third-party validations into policy decisions.
 
-```cel
+```yaml
 http.Send("GET", "https://api.example.com/data", {}).body
 http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true
 ```
@@ -247,7 +247,7 @@ http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "appl
 
 The User library includes functions like parseServiceAccount() to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
 
-```cel
+```yaml
 parseServiceAccount(request.userInfo.username)
 ```
 
@@ -255,7 +255,7 @@ parseServiceAccount(request.userInfo.username)
 
 The GlobalContext library provides access to cached data in `GlobalContextEntry` that's shared across multiple policies, improving performance by avoiding redundant API calls.
 
-```cel
+```yaml
 globalcontext.Get("gctxentry-apicall-correct", "") != 0
 globalcontext.Get("allowed-registries", "").registries.exists(r, image.registry == r)
 ```
@@ -264,7 +264,7 @@ globalcontext.Get("allowed-registries", "").registries.exists(r, image.registry 
 
 The Image library parses container image references, enabling validation of image components like registry, repository, tag, and digest.
 
-```cel
+```yaml
 image("nginx:latest").registry == "docker.io"
 image("ghcr.io/company/app:v1.2.3").containsDigest()
 ```
@@ -273,7 +273,7 @@ image("ghcr.io/company/app:v1.2.3").containsDigest()
 
 The Image Data library enables deep inspection of container image metadata from OCI registries, including architecture, OS, layers, and manifest details.
 
-```cel
+```yaml
 imagedata.Get("nginx:1.21").config.architecture == "amd64"
 imagedata.Get("my-image:latest").manifest.layers.size() > 0
 ```

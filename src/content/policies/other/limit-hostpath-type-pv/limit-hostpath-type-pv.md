@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'hostPath persistentvolumes consume the underlying node''s file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

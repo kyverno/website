@@ -55,10 +55,10 @@ The development server will start at `http://localhost:4321`. The site will auto
 │   ├── components/           # React components (JSX)
 │   ├── constants/            # Constants and configuration data
 │   ├── content/              # Content files (Markdown/MDX)
-│   │   └── docs/             # Documentation content
-│   │       ├── blog/         # Blog posts
-│   │       ├── docs/         # Documentation pages
-│   │       └── policies/     # Policy examples (generated)
+│   │   ├── docs/             # Documentation content
+│   │   │   ├── blog/         # Blog posts
+│   │   │   └── docs/         # Documentation pages
+│   │   └── policies/         # Policy examples (generated)
 │   ├── layouts/              # Astro layout components
 │   ├── pages/                # Astro pages (file-based routing)
 │   ├── sections/             # Page section components
@@ -96,11 +96,15 @@ The project uses npm scripts for generating content:
 
 - `npm run codegen:policies` - Generate policy markdown files from the kyverno/policies repository
 - `npm run codegen:cli-docs` - Generate CLI documentation from the kyverno-cli Docker image
+- `npm run codegen` - Run both codegen scripts in sequence
 
-You can also run both in sequence:
+By default, both scripts derive the upstream ref from `WEBSITE_BRANCH` or the current git branch. To override, pass the distant repo branch/tag directly (no transformation):
 
 ```bash
-npm run codegen:policies && npm run codegen:cli-docs
+npm run codegen
+# Or with explicit refs:
+npm run codegen:policies -- release-1.17 ./src/content/policies/
+npm run codegen:cli-docs -- release-1.17
 ```
 
 ## Technologies & Tools
@@ -187,7 +191,7 @@ Blog posts are located in `src/content/docs/blog/` and organized by category (e.
 
 #### Policies
 
-Policy examples are generated from the [kyverno/policies](https://github.com/kyverno/policies) repository. To regenerate them:
+Policy examples are generated from the [kyverno/policies](https://github.com/kyverno/policies) repository. By default, the script uses `WEBSITE_BRANCH` or the current git branch to select the policies ref (`release-x.y` for release branches, `main` otherwise). To regenerate them:
 
 ```bash
 npm run codegen:policies
@@ -231,21 +235,30 @@ Policy documentation is generated from the [kyverno/policies](https://github.com
 
 **Usage:**
 
-Default (uses kyverno/policies repository):
+Default (auto mode—derives policies ref from `WEBSITE_BRANCH` or current git branch):
 
 ```bash
 npm run codegen:policies
 ```
 
-Custom repository and output directory:
+With explicit ref or full repository URL:
 
 ```bash
-npm run codegen:policies -- <repo-url> <output-dir>
+npm run codegen:policies -- <policies-ref|repo-url> <output-dir>
 ```
+
+**Branch mapping (auto mode only):**
+
+- `release-x-y` or `release-x-y-z` → fetches `release-x.y` branch from kyverno/policies
+- Any other branch → fetches `main`
+
+When a positional argument is provided, it is used directly as the distant repo ref (e.g. `main`, `release-1.17`).
 
 **Example with custom arguments:**
 
 ```bash
+npm run codegen:policies -- main ./src/content/policies/
+npm run codegen:policies -- release-1.17 ./src/content/policies/
 npm run codegen:policies -- https://github.com/kyverno/policies/main ./src/content/policies/
 ```
 
@@ -284,11 +297,30 @@ CLI documentation is generated from the kyverno-cli Docker image:
 npm run codegen:cli-docs
 ```
 
-This script:
+With optional override:
 
-1. Removes existing CLI documentation files
-2. Runs the kyverno-cli Docker container to generate documentation
-3. Outputs markdown files to `src/content/docs/docs/kyverno-cli/reference/`
+```bash
+# Auto mode: WEBSITE_BRANCH or git branch (release-1-17 → release-1.17 image)
+WEBSITE_BRANCH=release-1-17 npm run codegen:cli-docs
+
+# Explicit: positional arg is the distant image tag directly (no transformation)
+npm run codegen:cli-docs -- release-1.17
+./scripts/codegen-cli-docs.sh release-1.17
+```
+
+**Branch mapping (auto mode only):**
+
+- `release-x-y` or `release-x-y-z` → uses `ghcr.io/kyverno/kyverno-cli:release-x.y` image
+- Any other branch → uses `latest` image
+
+When a positional argument is provided, it is used directly as the image tag.
+
+**What it does:**
+
+1. Removes existing CLI documentation files from `src/content/docs/docs/kyverno-cli/reference/`
+2. Runs the kyverno-cli Docker container with `--website`, `--noDate`, `--markdownLinks` and related options
+3. Post-processes generated markdown: normalizes links to absolute `/docs/...` paths, converts external kyverno.io URLs, and removes "For more information visit..." lines
+4. Outputs markdown files to `src/content/docs/docs/kyverno-cli/reference/`
 
 **Requirements:**
 
@@ -302,9 +334,10 @@ Before committing changes, ensure generated content is up to date. You can verif
 1. Running the codegen scripts:
 
    ```bash
-   npm run codegen:policies
-   npm run codegen:cli-docs
+   npm run codegen
    ```
+
+   Or run them individually: `npm run codegen:policies` and `npm run codegen:cli-docs`
 
 2. Checking git status to see if any files changed:
 
@@ -322,7 +355,7 @@ Before committing changes, ensure generated content is up to date. You can verif
 2. **Build Testing**: Run `npm run build` to ensure the site builds without errors
 3. **Format Checking**: Run `npm run format:check` to ensure code is properly formatted
 4. **Link Checking**: Run `npm run check:links` to validate all links in the documentation (both internal and external)
-5. **Code Generation**: Run `npm run codegen:policies` and `npm run codegen:cli-docs` to ensure generated content is up to date, then check `git status` for any changes
+5. **Code Generation**: Run `npm run codegen` to ensure generated content is up to date, then check `git status` for any changes
 
 ### Link Validation
 

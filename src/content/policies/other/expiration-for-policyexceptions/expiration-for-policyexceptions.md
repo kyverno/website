@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.9.0
 description: 'In situations where Ops/Platform teams want to allow exceptions on a temporary basis, there must be a way to remove the PolicyException once the expiration time has been reached. After the exception is removed, the rule(s) for which the exception is granted go back into full effect. This policy generates a ClusterCleanupPolicy with a four hour expiration time after which the PolicyException is deleted. It may be necessary to grant both the Kyverno as well as cleanup controller ServiceAccounts additional permissions to operate this policy.'
+createdAt: "2023-01-13T15:46:23.000Z"
 ---
 
 ## Policy Definition

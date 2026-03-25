@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.6.0
 description: 'This policy prevents the use of the default project in an Application.'
+createdAt: "2022-05-11T19:10:17.000Z"
 ---
 
 ## Policy Definition

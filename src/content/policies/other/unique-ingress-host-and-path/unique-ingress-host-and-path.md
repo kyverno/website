@@ -9,6 +9,7 @@ tags:
   - Sample
 version: 1.6.0
 description: 'Similar to the ability to check the uniqueness of hosts and paths independently, it is possible to check for uniqueness of them both together across a cluster. This policy ensures that no Ingress can be created or updated unless it is globally unique with respect to host plus path combination.'
+createdAt: "2022-05-05T12:36:18.000Z"
 ---
 
 ## Policy Definition

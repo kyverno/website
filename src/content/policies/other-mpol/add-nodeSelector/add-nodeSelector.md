@@ -9,7 +9,7 @@ tags:
   - Sample
 version: 1.15.0
 description: 'The nodeSelector field uses labels to select the node on which a Pod can be scheduled. This can be useful when Pods have specific needs that only certain nodes in a cluster can provide. This policy adds the nodeSelector field to a Pod spec and configures it with labels `foo` and `color`.'
-isNew: true
+createdAt: "2025-10-30T07:20:03.000Z"
 ---
 
 ## Policy Definition

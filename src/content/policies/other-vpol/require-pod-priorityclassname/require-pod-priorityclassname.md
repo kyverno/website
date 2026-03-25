@@ -9,6 +9,7 @@ tags:
   - Multi-Tenancy
   - EKS Best Practices in vpol
 description: 'A Pod may optionally specify a priorityClassName which indicates the scheduling priority relative to others. This requires creation of a PriorityClass object in advance. With this created, a Pod may set this field to that value. In a multi-tenant environment, it is often desired to require this priorityClassName be set to make certain tenant scheduling guarantees. This policy requires that a Pod defines the priorityClassName field with some value.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

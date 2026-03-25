@@ -1,6 +1,6 @@
 ---
 title: Security
-description: Security Processes and Guidelines
+excerpt: Security Processes and Guidelines
 sidebar:
   order: 90
 ---
@@ -26,12 +26,12 @@ The Kyverno project participates in 3rd party security audits and reviews that h
 
 ## Kyverno Third-Party Security Audit 2023
 
-A Kyverno Third-Party Security Audit was conducted by [Ada Logics](https://adalogics.com/), in collaboration with the project maintainers and was funded by [the Cloud Native Computing Foundation](https://www.cncf.io/). The audit identified and addressed ten security issues, including six CVEs, with fixes in Kyverno v1.10.6 and v1.11.1. Notably, users of official releases were unaffected by CVEs in the Notary verifier. The audit did not reveal any policy by-pass situations, but did identify two security bugs with a third-party dependency. Kyverno was found to demonstrate strong compliance with [SLSA](https://slsa.dev/), earning the highest score, and ensuring tamper-proof build artifacts. More information is available in this [blog post](/blog/general/2023-security-audit/) with the audit report link at the bottom.
+A [Kyverno Third-Party Security Audit](https://kyverno.io/blog/2023-security-audit/assets/kyverno-2023-security-audit-report.pdf) was conducted by [Ada Logics](https://adalogics.com/), in collaboration with the project maintainers and was funded by [the Cloud Native Computing Foundation](https://www.cncf.io/). The audit identified and addressed ten security issues, including six CVEs, with fixes in Kyverno v1.10.6 and v1.11.1. Notably, users of official releases were unaffected by CVEs in the Notary verifier. The audit did not reveal any policy by-pass situations, but did identify two security bugs with a third-party dependency. Kyverno was found to demonstrate strong compliance with [SLSA](https://slsa.dev/), earning the highest score, and ensuring tamper-proof build artifacts. More information is available in this [blog post](https://kyverno.io/blog/2023/11/28/2023-security-audit/) with the audit report link at the bottom.
 
 ## Kyverno Fuzzing Security Audit 2023
 
-The Kyverno Fuzzing Security Audit was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs. Post-audit, Kyverno continues to test for bugs and vulnerabilities using [OSS-Fuzz](https://github.com/google/oss-fuzz).
-The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](/blog/general/2023-security-audit/).
+The [Kyverno Fuzzing Security Audit](https://kyverno.io/blog/fuzzing-audit/assets/kyverno-2023-fuzzing-security-audit.pdf) was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs. Post-audit, Kyverno continues to test for bugs and vulnerabilities using [OSS-Fuzz](https://github.com/google/oss-fuzz).
+The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](https://kyverno.io/blog/2023/09/06/fuzzing-audit/).
 
 ## Contact Us
 

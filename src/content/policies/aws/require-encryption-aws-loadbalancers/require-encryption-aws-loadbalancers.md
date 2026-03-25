@@ -10,6 +10,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'Services of type LoadBalancer when deployed inside AWS have support for transport encryption if it is enabled via an annotation. This policy requires that Services of type LoadBalancer contain the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert with some value.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

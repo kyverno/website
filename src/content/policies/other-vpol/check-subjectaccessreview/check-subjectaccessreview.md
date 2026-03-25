@@ -9,7 +9,7 @@ tags:
   - Other
 version: 1.15.0
 description: 'In some cases a validation check for one type of resource may need to take into consideration the requesting user''s permissions on a different type of resource. Rather than parsing through all Roles and/or ClusterRoles to check if these permissions are held, Kyverno can perform a SubjectAccessReview request to the Kubernetes API server and have it figure out those permissions. This policy illustrates how to perform a POST request to the API server to subject a SubjectAccessReview for a user creating/updating a ConfigMap. It is intended to be used as a component in a more functional rule.'
-isNew: true
+createdAt: "2025-12-16T13:58:08.000Z"
 ---
 
 ## Policy Definition
