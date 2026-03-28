@@ -361,11 +361,11 @@ metadata:
   name: foreach
 spec:
   matchConstraints:
-  resourceRules:
-    - apiGroups: ['']
-      apiVersions: ['v1']
-      operations: ['CREATE']
-      resources: ['pods']
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
