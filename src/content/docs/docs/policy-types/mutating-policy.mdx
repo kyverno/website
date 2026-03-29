@@ -528,26 +528,25 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-    - apiGroups: [ "" ]
-      apiVersions: [ "v1" ]
-      operations: [ "CREATE" ]
-      resources: [ "secrets" ]
-      resourceNames: ["trigger-secret"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['secrets']
+        resourceNames: ['trigger-secret']
   targetMatchConstraints:
     expression: resource.get("v1", "configmaps", object.metadata.namespace, "test-cm-1")
   mutations:
-  - patchType: ApplyConfiguration
-    applyConfiguration:
-      expression: >
-        Object{
-          metadata: Object.metadata{
-            labels: Object.metadata.labels{
-              mentorship: "kyverno"
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                mentorship: "kyverno"
+              }
             }
           }
-        }
 ```
-
 
 ## Mutate Ordering
 
