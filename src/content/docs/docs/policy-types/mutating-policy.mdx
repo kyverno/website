@@ -512,7 +512,7 @@ In this example:
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
-As of kyverno 1.17, its possible to select mutation targets with a CEL expression. The expression must use the resource library because it must evaluate to a kubernetes object. The expression can be defined under the `targetMatchConstraints.expression` field with takes a string CEL expression.
+As of kyverno 1.17, its possible to select mutation targets with a CEL expression. The expression must use the resource library because it must evaluate to a kubernetes object. The expression can be defined under the `targetMatchConstraints.expression` field which takes a string CEL expression.
 
 The following policy will target a configmap resource called `test-cm-1` in the same namespace as the trigger object.
 
