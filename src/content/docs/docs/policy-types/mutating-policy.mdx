@@ -361,11 +361,11 @@ metadata:
   name: foreach
 spec:
   matchConstraints:
-  resourceRules:
-    - apiGroups: ['']
-      apiVersions: ['v1']
-      operations: ['CREATE']
-      resources: ['pods']
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -465,7 +465,9 @@ This means if you have 10 existing namespaces and create a new one, all 11 names
 
 ### Different Trigger and Target
 
-You can specify different trigger and target resources using `targetMatchConstraints`. When a trigger occurs, Kyverno will mutate ALL existing resources that match the target criteria:
+You can specify different trigger and target resources using `targetMatchConstraints`. When a trigger occurs, Kyverno will mutate ALL existing resources that match the target criteria.
+
+You have access to properties of the triggering resource via `request.object` and `request.oldObject` in variable expressions. In mutation expressions, `Object` references the target resource from `targetMatchConstraints`. In order to use `request.object` or `request.oldObject` in mutations expressions you have to passing them to the mutation context as a variable first:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -492,6 +494,8 @@ spec:
         apiVersions: ['v1']
         operations: ['CREATE', 'UPDATE']
         resources: ['configmaps']
+  variables:
+    triggerNamespace: request.object.metadata.name
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -499,7 +503,7 @@ spec:
           Object{
             metadata: Object.metadata{
               labels: Object.metadata.labels{
-                foo: "bar"
+                trigger: variables.triggerNamespace
               }
             }
           }
@@ -508,7 +512,7 @@ spec:
 In this example:
 
 - **Trigger**: When the namespace `test-namespace` is created or updated
-- **Target**: ALL existing ConfigMaps in namespaces with the label `test: enabled` will be mutated to add the `foo: "bar"` label
+- **Target**: ALL existing ConfigMaps in namespaces with the label `test: enabled` will be mutated to add the `trigger: test-namespace` label
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
