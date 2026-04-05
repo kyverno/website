@@ -211,6 +211,94 @@ To evaluate JSON policies, use the [Kyverno CLI](/docs/subprojects/kyverno-cli).
 
 A Kyverno Engine SDK is planned for a subsequent release.
 
+## HTTP and Envoy Authorization Payloads
+
+The Kyverno `ValidatingPolicy` can be used to evaluate HTTP and Envoy External Authorization requests. This allows policies to act as an authorization policy engine for HTTP-based and Envoy-based workloads.
+
+### HTTP Authorization
+
+Here is an example of a policy that evaluates an HTTP authorization request:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: http-allow
+spec:
+  evaluation:
+    mode: HTTP
+  validations:
+    - expression: >
+        http.Allowed().Response()
+```
+
+To write a policy for HTTP authorization payloads:
+
+1. Set `spec.evaluation.mode` to `HTTP`.
+2. Use the `http` CEL library in `spec.validations` to define your authorization logic.
+
+The corresponding HTTP check request payload (`request.json`):
+
+```json
+{
+  "attributes": {
+    "method": "GET",
+    "path": "/api/v1/pods",
+    "host": "kubernetes.default.svc"
+  }
+}
+```
+
+To evaluate HTTP authorization policies, use the [Kyverno CLI](/docs/subprojects/kyverno-cli) with the `--http-payload` flag:
+
+```sh
+kyverno apply http-authz-policy.yaml --http-payload request.json
+```
+
+### Envoy External Authorization
+
+Here is an example of a policy that evaluates an Envoy External Authorization `CheckRequest`:
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: envoy-allow
+spec:
+  evaluation:
+    mode: Envoy
+  validations:
+    - expression: >
+        envoy.Allowed().Response()
+```
+
+To write a policy for Envoy authorization payloads:
+
+1. Set `spec.evaluation.mode` to `Envoy`.
+2. Use the `envoy` CEL library in `spec.validations` to define your authorization logic.
+
+The corresponding Envoy check request payload (`envoy-request.json`):
+
+```json
+{
+  "attributes": {
+    "request": {
+      "http": {
+        "method": "GET",
+        "path": "/api/v1/pods",
+        "headers": {}
+      }
+    }
+  }
+}
+```
+
+To evaluate Envoy authorization policies, use the [Kyverno CLI](/docs/subprojects/kyverno-cli) with the `--envoy-payload` flag:
+
+```sh
+kyverno apply envoy-authz-policy.yaml --envoy-payload envoy-request.json
+```
+
 ## Reporting Details in ValidatingPolicy
 
 When a ValidatingPolicy is evaluated, the results are recorded in PolicyReports. PolicyReports are standard Kubernetes custom resources that summarize the outcomes of policy evaluations, including whether resources passed or failed validation.

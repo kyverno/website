@@ -653,6 +653,114 @@ echo $?
 3
 ```
 
+### Authorization Policy Testing
+
+The `apply` command supports testing HTTP and Envoy External Authorization policies locally without a running cluster, using the `--http-payload` and `--envoy-payload` flags respectively. These flags accept a path to a JSON file representing the authorization check request.
+
+Apply an HTTP authorization policy against an HTTP check request payload:
+
+```sh
+kyverno apply /path/to/policy.yaml --http-payload /path/to/request.json
+```
+
+Apply an Envoy authorization policy against an Envoy check request payload:
+
+```sh
+kyverno apply /path/to/policy.yaml --envoy-payload /path/to/request.json
+```
+
+Multiple payloads can be passed by repeating the flag:
+
+```sh
+kyverno apply /path/to/policy.yaml --envoy-payload /path/to/request1.json --envoy-payload /path/to/request2.json
+```
+
+Both flags can be used together when applying multiple policies of different types:
+
+```sh
+kyverno apply /path/to/http-policy.yaml /path/to/envoy-policy.yaml --http-payload /path/to/http-request.json --envoy-payload /path/to/envoy-request.json
+```
+
+#### HTTP Authorization Policies — Example
+
+Policy manifest (`http-authz-policy.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: http-allow
+spec:
+  evaluation:
+    mode: HTTP
+  validations:
+    - expression: >
+        http.Allowed().Response()
+```
+
+HTTP check request payload (`request.json`):
+
+```json
+{
+  "attributes": {
+    "method": "GET",
+    "path": "/api/v1/pods",
+    "host": "kubernetes.default.svc"
+  }
+}
+```
+
+Apply the HTTP authorization policy against the request payload:
+
+```sh
+kyverno apply http-authz-policy.yaml --http-payload request.json
+```
+
+#### Envoy External Authorization Policies — Example
+
+Policy manifest (`envoy-authz-policy.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: envoy-allow
+spec:
+  evaluation:
+    mode: Envoy
+  validations:
+    - expression: >
+        envoy.Allowed().Response()
+```
+
+Envoy check request payload (`envoy-request.json`):
+
+```json
+{
+  "attributes": {
+    "request": {
+      "http": {
+        "method": "GET",
+        "path": "/api/v1/pods",
+        "headers": {}
+      }
+    }
+  }
+}
+```
+
+Apply the Envoy authorization policy against the request payload:
+
+```sh
+kyverno apply envoy-authz-policy.yaml --envoy-payload envoy-request.json
+```
+
+Both flags can be combined in a single invocation when testing multiple policy types simultaneously:
+
+```sh
+kyverno apply http-authz-policy.yaml envoy-authz-policy.yaml --http-payload request.json --envoy-payload envoy-request.json
+```
+
 ### Generating Policy Reports
 
 Policy reports provide information about policy execution and violations. Use `--policy-report` with the `apply` command to generate a policy report for `validate` policies. `mutate` and `generate` policies do not trigger policy reports.
