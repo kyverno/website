@@ -1,34 +1,12 @@
-import {} from 'lucide-react'
-
-import {
-  Box,
-  ChartColumn,
-  CircleCheckBig,
-  Code,
-  GitBranch,
-  Globe,
-  Lock,
-  Shield,
-  Terminal,
-  TestTube,
-  Zap,
-} from 'lucide-react'
+import { Globe, Shield, Zap } from 'lucide-react'
 
 import { themes } from 'prism-react-renderer'
 
-export const documentationVersions = [
-  { label: 'v1.17.0', href: 'https://kyverno.io' },
-  { label: 'v1.16.0', href: 'https://release-1-16-0.kyverno.io' },
-  { label: 'v1.15.0', href: 'https://release-1-15-0.kyverno.io' },
-  { label: 'v1.14.0', href: 'https://release-1-14-0.kyverno.io' },
-  { label: 'main', href: 'https://main.kyverno.io' },
-]
-
-export const versions = [
-  { label: 'v1alpha1', href: '#' },
-  { label: 'v1.15', href: '#' },
-  { label: 'v1.14', href: '#' },
-]
+export {
+  compatibilityMatrix,
+  documentationVersions,
+  latestStableVersion as lastestStableVersion,
+} from './version'
 
 export const navItemsExternal = [
   { label: 'Documentation', href: '/docs/introduction' },
