@@ -7,8 +7,9 @@ sidebar:
 ---
 
 import FeatureState from '../../../../components/FeatureState.astro'
+import { lastestStableVersion } from '../../../../constants'
 
-<FeatureState state="stable" version="v1.17" />
+<FeatureState state="stable" version={lastestStableVersion} />
 
 The Kyverno `MutatingPolicy` type extends the Kubernetes `MutatingAdmissionPolicy` type for complex mutation operations and other features required for Policy-as-Code. A `MutatingPolicy` is a superset of a `MutatingAdmissionPolicy` and contains additional fields for Kyverno specific features.
 
