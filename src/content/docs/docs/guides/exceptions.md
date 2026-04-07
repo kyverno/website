@@ -855,7 +855,7 @@ Kyverno supports narrowly scoped, CEL-aware exceptions so you can permit specifi
 This exception allows Pods in the `ci` namespace to use images matching the provided patterns while keeping the “no latest tag” guardrail enforced for all others. The match condition narrows the bypass to a specific team for auditability.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: allow-ci-latest-images
@@ -873,7 +873,7 @@ spec:
 The following `ValidatingPolicy` references `exceptions.allowedImages` to skip validation checks for whitelisted image(s).
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-image-tag
@@ -904,7 +904,7 @@ spec:
 This exception supplies a list of values via `allowedValues` that a CEL validation may accept for a constrained set of targets so teams can proceed without weakening the entire policy.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: allow-debug-annotation
@@ -922,7 +922,7 @@ spec:
 Here’s the policy leveraging the above allowed values. It denies resources unless the annotation/capability value is present in `exceptions.allowedValues`.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-security-context
@@ -953,7 +953,7 @@ spec:
 Use `reportResult` in a `PolicyException` to control how matches appear in PolicyReports. Setting `reportResult: pass` marks exceptions as “pass” instead of the default “skip”.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exclude-skipped-deployment-2
