@@ -31,9 +31,7 @@ export function getCurrentVersion(
   }
 
   // Normalize www prefix (e.g., www.kyverno.io -> kyverno.io)
-  const normalizedHostname = hostname.startsWith('www.')
-    ? hostname.slice(4)
-    : hostname
+  const normalizedHostname = hostname.replace(/^www\./, '')
 
   // Match version based on hostname from href
   for (const version of versions) {
