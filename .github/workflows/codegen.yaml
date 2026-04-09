@@ -11,7 +11,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -26,7 +26,7 @@ jobs:
         run: npm run codegen
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'Run automated codegen to update policy and cli documentation'
           title: '[Automated] - Update policy library and CLI documentation'
