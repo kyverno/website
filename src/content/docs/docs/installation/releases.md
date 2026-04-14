@@ -19,7 +19,7 @@ Other Kubernetes versions may work, but are not tested and therefore no guarante
 Release notes are available on GitHub at [kyverno/kyverno releases](https://github.com/kyverno/kyverno/releases).
 
 :::note[Enterprise Support]
-For long-term compatibility, production support, and maximizing your investment in Kyverno, consider using a **[commercial Kyverno distribution](/support)**. By partnering with vendors who maintain the project, you help secure Kyverno’s future while receiving additional benefits and features.
+For long-term compatibility, production support, and maximizing your investment in Kyverno, consider using a **[commercial Kyverno distribution](https://kyverno.io/support/)**. By partnering with vendors who maintain the project, you help secure Kyverno’s future while receiving additional benefits and features.
 :::
 
 ## Release Management
