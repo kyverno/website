@@ -495,6 +495,38 @@ The following flags can be used to control the advanced behavior of the various 
 | `webhookServerPort` (A)                 | `9443`                                              | Specifies the port to use for webhook call-backs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `webhookTimeout` (A)                    | `10`                                                | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds).                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
+### HTTP Calls
+
+Kyverno 1.18 introduced additional hardening for HTTP usage within policies.
+
+- CEL HTTP in namespaced policies is disabled by default and must be explicitly enabled with `--allowHTTPInNamespacedPolicies=true` (or `FLAG_ENABLE_HTTP_IN_NAMESPACED_POLICIES=true`).
+- Cluster-scoped policies default allow HTTP calls. Treat this as a privileged capability and restrict who can create cluster-scoped policies.
+- CEL HTTP calls for both namespaced and cluster-scoped policies can be controlled using `--httpBlocklist`/`FLAG_HTTP_BLOCKLIST` and `--httpAllowlist`/`FLAG_HTTP_ALLOWLIST`.
+
+Default blocked destinations in `httpBlocklist` include:
+
+- loopback: `127.0.0.0/8`, `::1/128`
+- link-local: `169.254.0.0/16`, `fe80::/10`
+- private ranges: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `fc00::/7`
+- carrier-grade NAT: `100.64.0.0/10`
+- metadata hosts: `metadata.google.internal`, `metadata.internal`
+
+Example deployment args:
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: kyverno
+          args:
+            - --allowHTTPInNamespacedPolicies=true
+            - --httpBlocklist=127.0.0.0/8,::1/128,169.254.0.0/16,fe80::/10
+            - --httpAllowlist=https://api.example.com,https://webhook.corp/v1/
+```
+
+Kyverno also uses a scoped ServiceAccount token for outbound HTTP context requests when no `Authorization` header is provided by policy configuration. This reduces token replay risk against the Kubernetes API server compared to using the default ServiceAccount token.
+
 ### Policy Report access
 
 During a Kyverno installation, a ClusterRole named `kyverno:rbac:admin:policyreports` is created which has permissions to perform all operations the two main Policy Report custom resources, `policyreport` and `clusterpolicyreport`. To grant access to a Namespace admin, configure the following YAML manifest according to your needs then apply to the cluster.
