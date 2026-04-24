@@ -388,13 +388,29 @@ The following keys are used to control the behavior of Kyverno and must be set i
 4. `excludeUsernames`: excludes user names from any processing. Supports the `!` operator to negate an entry (ex., `!john` will include the username `john` if it was excluded via another parameter). Default is `'!system:kube-scheduler'`.
 5. `excludeRoles`: list of Roles to exclude from processing. Default is undefined.
 6. `excludeClusterRoles`: list of ClusterRoles to exclude from processing. Default is undefined.
-7. `generateSuccessEvents`: specifies whether (true/false) to generate success events. Default is set to "false".
+7. `generateSuccessEvents`: **(Deprecated in 1.18)** specifies whether (true/false) to generate success events for policy evaluations. Default is set to "false". Use the `omitEvents` container flag instead to control which event types are suppressed. When `generateSuccessEvents` is `"true"` but `PolicyApplied` is included in `--omitEvents` (which is the Helm chart default), the settings conflict and Kyverno will log an error—no success events will be generated until `PolicyApplied` is removed from `--omitEvents`.
 8. `matchConditions`: uses CEL-based expressions in the webhook configuration to narrow which admission requests are forwarded to Kyverno. Requires Kubernetes 1.27+ with the `AdmissionWebhookMatchConditions` feature gate to be enabled.
 9. `resourceFilters`: Kubernetes resources in the format "[kind,namespace,name]" where the policy is not evaluated by the admission webhook. For example --filterKind "[Deployment, kyverno, kyverno]" --filterKind "[Deployment, kyverno, kyverno],[Events, *, *]". Note that resource filters do not apply to background scanning mode. See the [Resource Filters](#resource-filters) section for more complete information.
-10. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
-11. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
-12. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](/docs/installation/platform-notes#notes-for-aks-users) section for details.
-13. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+10. `successEventActions`: comma-separated list of success event action types for which Kubernetes events should be emitted (1.18+). When empty (default), all success events are emitted. Accepted values are `Resource Mutated`, `Resource Passed`, `Resource Generated`, and `Resource Cleaned Up`. Setting this to a subset of action types allows operators to reduce event noise—for example, `successEventActions: "Resource Mutated"` restricts success events to mutation operations only. This parameter currently requires `generateSuccessEvents` to be `"true"` to take effect; however, since `generateSuccessEvents` is deprecated, the recommended approach is to remove `PolicyApplied` from `--omitEvents` (or the equivalent Helm value) to enable success events, and use `successEventActions` to further filter by action type.
+11. `updateRequestThreshold`: sets the threshold for the total number of updaterequests generated for mutateExisting and generate policies. It takes the value of the string and default is 1000.
+12. `webhooks`: specifies the Namespace or object exclusion to configure in the webhooks managed by Kyverno. Default is `'[{"namespaceSelector":{"matchExpressions":[{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kube-system"]},{"key":"kubernetes.io/metadata.name","operator":"NotIn","values":["kyverno"]}],"matchLabels":null}}]'`.
+13. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](/docs/installation/platform-notes#notes-for-aks-users) section for details.
+14. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
+
+The following example ConfigMap shows how to enable success events for mutation operations only:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno
+  namespace: kyverno
+data:
+  generateSuccessEvents: "true"
+  successEventActions: "Resource Mutated"
+```
+
+When using this configuration, ensure `PolicyApplied` is not present in the `--omitEvents` container flag (it is included by default in the Helm chart). To emit mutation success events alongside the default omit settings, either remove `PolicyApplied` from `--omitEvents` or override the Helm value `features.omitEvents.eventTypes`.
 
 ### Container Flags
 
