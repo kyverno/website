@@ -50,7 +50,7 @@ To enable HPA with CPU-based scaling only, set the following values:
 admissionController:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 3
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
 ```
@@ -63,7 +63,7 @@ To enable HPA with memory-based scaling only, unset the CPU target and set a mem
 admissionController:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 3
     maxReplicas: 10
     targetCPUUtilizationPercentage: ~
     targetMemoryUtilizationPercentage: 80
@@ -77,7 +77,7 @@ Both metrics can be used simultaneously. The HPA will scale up when either thres
 admissionController:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 3
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
@@ -87,7 +87,7 @@ admissionController:
 
 For a production environment, consider the following starting points based on the [scale testing results](#scale-testing) above:
 
-- Set `minReplicas` to at least `2` (or `3` for a fully high-available deployment) to ensure availability during node disruptions and rolling upgrades.
+- Set `minReplicas` to at least `3`, which is the [minimum for a highly-available admission controller deployment](/docs/guides/high-availability#admission-controller).
 - Set `maxReplicas` based on your cluster size and the maximum acceptable latency under peak load. Values between `5` and `10` are common for large clusters.
 - Use a CPU target of `80` and/or a memory target of `80` as a starting point, then adjust based on observed utilization.
 - Ensure the admission controller Pods have appropriate [resource requests and limits](/docs/installation/customization#container-flags) set so that the HPA utilization percentages are calculated correctly. Without requests defined, the HPA cannot compute utilization.
