@@ -33,14 +33,14 @@ Kyverno 1.18 adds support for automatic horizontal scaling of the admission cont
 
 The following Helm values control HPA behavior for the admission controller:
 
-| Value | Default | Description |
-| ----- | ------- | ----------- |
-| `admissionController.autoscaling.enabled` | `false` | Enable or disable the HPA |
-| `admissionController.autoscaling.minReplicas` | `1` | Minimum number of replicas |
-| `admissionController.autoscaling.maxReplicas` | `10` | Maximum number of replicas |
-| `admissionController.autoscaling.targetCPUUtilizationPercentage` | `80` | Target average CPU utilization (%) across all replicas |
-| `admissionController.autoscaling.targetMemoryUtilizationPercentage` | (unset) | Target average memory utilization (%) across all replicas |
-| `admissionController.autoscaling.behavior` | `{}` | Custom [scaling behavior](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior) configuration |
+| Value                                                               | Default | Description                                                                                                                                       |
+| ------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admissionController.autoscaling.enabled`                           | `false` | Enable or disable the HPA                                                                                                                         |
+| `admissionController.autoscaling.minReplicas`                       | `1`     | Minimum number of replicas                                                                                                                        |
+| `admissionController.autoscaling.maxReplicas`                       | `10`    | Maximum number of replicas                                                                                                                        |
+| `admissionController.autoscaling.targetCPUUtilizationPercentage`    | `80`    | Target average CPU utilization (%) across all replicas                                                                                            |
+| `admissionController.autoscaling.targetMemoryUtilizationPercentage` | (unset) | Target average memory utilization (%) across all replicas                                                                                         |
+| `admissionController.autoscaling.behavior`                          | `{}`    | Custom [scaling behavior](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior) configuration |
 
 #### Enabling CPU-Based Autoscaling
 
