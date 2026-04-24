@@ -119,7 +119,7 @@ reportsController:
 
 ## TLS for the /metrics Endpoint
 
-Starting with Kyverno 1.18, the `/metrics` endpoint can be served over HTTPS. This improves security in environments where metrics are scraped over the network and helps meet compliance requirements that mandate encryption in transit.
+The `/metrics` endpoint can be served over HTTPS. This improves security in environments where metrics are scraped over the network and helps meet compliance requirements that mandate encryption in transit.
 
 ### Enabling TLS via Helm
 
