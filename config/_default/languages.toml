@@ -1,7 +1,0 @@
-[en]
-  title = "Kyverno"
-  languageName ="English"
-  # Weight used for sorting.
-  weight = 1
-[en.params]
-  description = "Kyverno is a policy engine designed for Kubernetes"

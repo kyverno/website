@@ -1,0 +1,53 @@
+---
+title: 'Disallow Helm Tiller in VPOL'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - Pod
+tags:
+  - Sample in VPOL
+version: 1.14.0
+description: 'Tiller, found in Helm v2, has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users. It is recommend to use Helm v3+ which does not contain Tiller for these reasons. This policy validates that there is not an image containing the name `tiller`.'
+createdAt: "2026-02-23T00:26:12.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/disallow-helm-tiller/disallow-helm-tiller.yaml" target="-blank">/best-practices-vpol/disallow-helm-tiller/disallow-helm-tiller.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-helm-tiller
+  annotations:
+    policies.kyverno.io/title: Disallow Helm Tiller in VPOL
+    policies.kyverno.io/category: Sample in VPOL
+    policies.kyverno.io/minversion: 1.14.0
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: Tiller, found in Helm v2, has known security challenges. It requires administrative privileges and acts as a shared resource accessible to any authenticated user. Tiller can lead to privilege escalation as restricted users can impact other users. It is recommend to use Helm v3+ which does not contain Tiller for these reasons. This policy validates that there is not an image containing the name `tiller`.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  validations:
+    - expression: object.spec.containers.all(container, !container.image.contains('tiller'))
+      message: Helm Tiller is not allowed
+
+```

@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+# Show info message about the hook
+cat <<EOF
+
+INFO: This project has a pre-commit hook that automatically formats staged files.
+If necessary, you can disable this with the "--no-verify" flag during the commit.
+Example:
+    "git commit -m <message> --no-verify"
+
+EOF
+
+# Format staged files using lint-staged (configured in package.json)
+# lint-staged automatically re-stages the files it processes, so no need for git add
+npm run format:write
