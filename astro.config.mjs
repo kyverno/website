@@ -162,6 +162,13 @@ export default defineConfig({
         // starlightAutoSidebar(),
         ...checkLinksPlugin,
       ],
+      expressiveCode: {
+        shiki: {
+          langAlias: {
+            cel: 'javascript',
+          },
+        },
+      },
     }),
     react(),
     markdoc(),
