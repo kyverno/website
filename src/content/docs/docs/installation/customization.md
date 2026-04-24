@@ -397,21 +397,6 @@ The following keys are used to control the behavior of Kyverno and must be set i
 13. `webhookAnnotations`: instructs Kyverno to add annotations to its webhooks for AKS support. Default is undefined. See the [AKS notes](/docs/installation/platform-notes#notes-for-aks-users) section for details.
 14. `webhookLabels`: instructs Kyverno to add labels to its webhooks. Default is undefined.
 
-The following example ConfigMap shows how to enable success events for mutation operations only:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kyverno
-  namespace: kyverno
-data:
-  generateSuccessEvents: "true"
-  successEventActions: "Resource Mutated"
-```
-
-When using this configuration, ensure `PolicyApplied` is not present in the `--omitEvents` container flag (it is included by default in the Helm chart). To emit mutation success events alongside the default omit settings, either remove `PolicyApplied` from `--omitEvents` or override the Helm value `features.omitEvents.eventTypes`.
-
 ### Container Flags
 
 The following flags can be used to control the advanced behavior of the various Kyverno controllers and should be set on the main container in the form of arguments. All container flags can be prefaced with one or two dashes (ex., `-admissionReports` or `--admissionReports`). The controller(s) to which a given flag is applicable is shown in parenthesis.
