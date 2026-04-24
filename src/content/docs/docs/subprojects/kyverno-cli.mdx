@@ -1722,7 +1722,7 @@ The output confirms that the PolicyException worked as intended:
 
 ### Using `--exceptions-with-policies`
 
-In Kyverno 1.18, the `--exceptions-with-policies` flag lets you bundle `PolicyException` resources alongside their associated policy files, rather than passing them separately with the `--exception` flag. This is convenient for organizing exceptions co-located with policies in the same directory.
+The `--exceptions-with-policies` flag lets you bundle `PolicyException` resources alongside their associated policy files, rather than passing them separately with the `--exception` flag. This is convenient for organizing exceptions co-located with policies in the same directory.
 
 When `--exceptions-with-policies` is set, the CLI automatically loads any `PolicyException` resources it finds within the paths provided as policies. You do not need to pass an additional `--exception` flag.
 
@@ -1748,7 +1748,7 @@ kyverno apply policies/disallow-host-path.yaml --resource /path/to/resource.yaml
 
 ### Applying Cleanup Policies
 
-Starting with Kyverno 1.18, `kyverno apply` accepts `CleanupPolicy` and `ClusterCleanupPolicy` resources. When applied, the CLI performs a local dry-run evaluation of the cleanup rules against the provided resources. It does **not** call the Kubernetes delete API. The evaluation checks namespace matching, `match`/`exclude` conditions, and any `conditions` defined in the policy.
+`kyverno apply` accepts `CleanupPolicy` and `ClusterCleanupPolicy` resources. When applied, the CLI performs a local dry-run evaluation of the cleanup rules against the provided resources. It does **not** call the Kubernetes delete API. The evaluation checks namespace matching, `match`/`exclude` conditions, and any `conditions` defined in the policy.
 
 A result of `pass` indicates the resource **would be deleted** by the cleanup policy. A result of `fail` indicates the resource does **not** match and would not be deleted.
 
@@ -3866,7 +3866,7 @@ Test Summary: 2 tests passed and 0 tests failed
 
 ### Testing `mutateExisting` MutatingPolicies
 
-Kyverno 1.18 adds support for testing `MutatingPolicy` resources that use `mutateExisting: true` rules — rules that mutate resources already present in the cluster (rather than the incoming admission request). When the `mutateExisting` flag is set on a rule, the rule is triggered by a separate **trigger** resource and mutates one or more **target** resources.
+The CLI also supports testing `MutatingPolicy` resources that use `mutateExisting: true` rules, rules that mutate resources already present in the cluster (rather than the incoming admission request). When the `mutateExisting` flag is set on a rule, the rule is triggered by a separate **trigger** resource and mutates one or more **target** resources.
 
 To test such policies, provide the trigger resources under `resources` and the target resources under `targetResources` in the test manifest. The `patchedResources` field should point to the expected post-mutation state of the target resource.
 
@@ -3993,7 +3993,7 @@ Test Summary: 1 tests passed and 0 tests failed
 
 ### Testing HTTP/Envoy Authorization Policies
 
-Kyverno 1.18 adds support for testing `ValidatingPolicy` resources that use the `HTTP` or `Envoy` evaluation modes via the `kyverno test` command. These policies validate HTTP or Envoy authorization check requests rather than Kubernetes resources.
+On top of kyverno-kubernetes resources, the CLI supports testing for `ValidatingPolicy` resources that use the `HTTP` or `Envoy` evaluation modes (for the [kyverno-authz](https://github.com/kyverno/kyverno-authz) server) via the `kyverno test` command. These policies validate HTTP or Envoy authorization check requests rather than Kubernetes resources.
 
 To test authz policies, place a `ValidatingPolicy` with `evaluationMode: HTTP` or `evaluationMode: Envoy` in the `policies` list, and provide one or more request payload JSON files in the `requests` field of the test manifest. Each request file contains a single check request (or a JSON array of requests) that is evaluated against the policy rules.
 

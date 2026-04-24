@@ -36,12 +36,6 @@ kyverno test [local folder or git repository]... [flags]
 
   # Test some specific test cases out of many test cases in a local folder
   kyverno test . --test-case-selector "policy=disallow-latest-tag, rule=require-image-tag, resource=test-require-image-tag-pass"
-
-  # Test a MutatingPolicy with mutateExisting rules
-  kyverno test /path/to/test/folder/containing/mutate-existing-policy
-
-  # Test HTTP/Envoy authz ValidatingPolicies
-  kyverno test /path/to/test/folder/containing/authz-policy
 ```
 
 ### Options
