@@ -300,7 +300,7 @@ For defense in depth, pair the above with restrictive egress policies:
 - allow only approved external destinations used by policy HTTP calls
 - explicitly block metadata endpoints and private/link-local ranges unless required by your design
 
-Kyverno also provides HTTP hardening controls for CEL policy HTTP usage (`allowHTTPInNamespacedPolicies`, `httpBlocklist`, and `httpAllowlist`). See [configuration details](/docs/installation/customization#http-context-security-controls).
+Kyverno also provides HTTP hardening controls for CEL policy HTTP usage (`allowHTTPInNamespacedPolicies`, `httpBlocklist`, and `httpAllowlist`). See [configuration details](/docs/installation/customization#http-calls).
 
 ### Webhooks
 
