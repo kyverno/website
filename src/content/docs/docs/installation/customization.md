@@ -382,7 +382,7 @@ rules:
 
 The following keys are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap. Kyverno watches for changes to this ConfigMap and will load any updates which occur.
 
-1. `defaultRegistry`: sets the default image registry to use if one is not specified. Defaults to `docker.io`.
+1. `defaultRegistry`: sets the default image registry to use if one is not specified. Defaults to `docker.io`. Accepts a hostname or a hostname with a path suffix (e.g. `registry.example.com/myorg`), in which case an unqualified image like `nginx:latest` resolves to `registry.example.com/myorg/nginx:latest`. Images that already contain a registry prefix are not modified.
 2. `enableDefaultRegistryMutation`: tells Kyverno whether it should update its internal context with the value of the `defaultRegistry` key when the condition is met. Defaults to `"true"`.
 3. `excludeGroups`: excludes the provided groups from any processing. Supports a comma-separated list of groups. Defaults to `system:serviceaccounts:kube-system,system:nodes`.
 4. `excludeUsernames`: excludes user names from any processing. Supports the `!` operator to negate an entry (ex., `!john` will include the username `john` if it was excluded via another parameter). Default is `'!system:kube-scheduler'`.
