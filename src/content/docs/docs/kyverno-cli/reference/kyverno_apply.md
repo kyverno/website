@@ -35,6 +35,18 @@ kyverno apply [flags]
 
   # Apply multiple policy with variable on multiple resource
   kyverno apply /path/to/policy1.yaml /path/to/policy2.yaml --resource /path/to/resource1.yaml --resource /path/to/resource2.yaml -f /path/to/value.yaml
+
+  # Apply a policy with a PolicyException bundled alongside it
+  kyverno apply /path/to/policy.yaml /path/to/exception.yaml --exceptions-with-policies --resource /path/to/resource.yaml
+
+  # Apply a CleanupPolicy to resources
+  kyverno apply /path/to/cleanup-policy.yaml --resource /path/to/resource.yaml --policy-report
+
+  # Apply an HTTP authz ValidatingPolicy using an HTTP check request payload
+  kyverno apply /path/to/http-policy.yaml --http-payload /path/to/request.json --policy-report
+
+  # Apply an Envoy authz ValidatingPolicy using an Envoy CheckRequest payload
+  kyverno apply /path/to/envoy-policy.yaml --envoy-payload /path/to/check-request.json --policy-report
 ```
 
 ### Options
@@ -50,8 +62,10 @@ kyverno apply [flags]
       --continue-on-error                  Continue processing despite resource loading errors (default true)
       --continue-on-fail                   If set to true, will continue to apply policies on the next resource upon failure to apply to the current resource instead of exiting out
       --detailed-results                   If set to true, display detailed results
+      --envoy-payload strings              Path to Envoy CheckRequest JSON payload files
   -e, --exception strings                  Policy exception to be considered when evaluating policies against resources
       --exceptions strings                 Policy exception to be considered when evaluating policies against resources
+      --exceptions-with-policies           Evaluate policy exceptions from the policies path
       --exceptions-with-resources          Evaluate policy exceptions from the resources path
       --exceptions-within-policies         Evaluate policy exceptions from the policies path
       --exceptions-within-resources        Evaluate policy exceptions from the resources path
@@ -59,6 +73,7 @@ kyverno apply [flags]
       --generated-exception-ttl duration   Default TTL for generated exceptions (default 720h0m0s)
   -b, --git-branch string                  test git repository branch
   -h, --help                               help for apply
+      --http-payload strings               Path to HTTP check request JSON payload files
       --json strings                       Path to JSON payload files
       --kubeconfig string                  path to kubeconfig file with authorization and master location information
   -n, --namespace string                   Optional Policy parameter passed with cluster flag

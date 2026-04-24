@@ -1720,6 +1720,191 @@ The output confirms that the PolicyException worked as intended:
 
 - `summary.skip: 1`: The final count reflects that one rule was skipped.
 
+### Using `--exceptions-with-policies`
+
+In Kyverno 1.18, the `--exceptions-with-policies` flag lets you bundle `PolicyException` resources alongside their associated policy files, rather than passing them separately with the `--exception` flag. This is convenient for organizing exceptions co-located with policies in the same directory.
+
+When `--exceptions-with-policies` is set, the CLI automatically loads any `PolicyException` resources it finds within the paths provided as policies. You do not need to pass an additional `--exception` flag.
+
+For example, given a directory layout like:
+
+```
+policies/
+  disallow-host-path.yaml    # ValidatingPolicy
+  exempt-hostpath-pod.yaml   # PolicyException for the above policy
+```
+
+You can run:
+
+```bash
+kyverno apply policies/ --resource /path/to/resource.yaml --exceptions-with-policies -p
+```
+
+This is equivalent to:
+
+```bash
+kyverno apply policies/disallow-host-path.yaml --resource /path/to/resource.yaml --exception policies/exempt-hostpath-pod.yaml -p
+```
+
+### Applying Cleanup Policies
+
+Starting with Kyverno 1.18, `kyverno apply` accepts `CleanupPolicy` and `ClusterCleanupPolicy` resources. When applied, the CLI performs a local dry-run evaluation of the cleanup rules against the provided resources. It does **not** call the Kubernetes delete API. The evaluation checks namespace matching, `match`/`exclude` conditions, and any `conditions` defined in the policy.
+
+A result of `pass` indicates the resource **would be deleted** by the cleanup policy. A result of `fail` indicates the resource does **not** match and would not be deleted.
+
+Policy manifest (cleanup-pod-by-name.yaml):
+
+```yaml
+apiVersion: kyverno.io/v2
+kind: CleanupPolicy
+metadata:
+  name: cleanup-pod-by-name
+  namespace: test
+spec:
+  schedule: "*/5 * * * *"
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          names:
+            - cleanup-pod-1
+          namespaces:
+            - test
+```
+
+Resource manifest (resource.yaml):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cleanup-pod-1
+  namespace: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cleanup-pod-2
+  namespace: other
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+```
+
+Run:
+
+```bash
+kyverno apply cleanup-pod-by-name.yaml --resource resource.yaml --policy-report --output-format json
+```
+
+The output shows `cleanup-pod-1` as `pass` (would be deleted) and `cleanup-pod-2` as `fail` (would not be deleted):
+
+```json
+{"kind":"PolicyReport","apiVersion":"openreports.io/v1alpha1","metadata":{"name":"cleanup-pod-by-name","namespace":"test"},"summary":{"pass":1,"fail":0,"warn":0,"error":0,"skip":0},"results":[{"policy":"test/cleanup-pod-by-name","rule":"cleanup-pod-by-name","result":"pass","resources":[{"kind":"Pod","namespace":"test","name":"cleanup-pod-1","apiVersion":"v1"}],"message":"resource matched"}]}
+---
+{"kind":"PolicyReport","apiVersion":"openreports.io/v1alpha1","metadata":{"name":"cleanup-pod-by-name","namespace":"test"},"summary":{"pass":0,"fail":1,"warn":0,"error":0,"skip":0},"results":[{"policy":"test/cleanup-pod-by-name","rule":"cleanup-pod-by-name","result":"fail","resources":[{"kind":"Pod","namespace":"other","name":"cleanup-pod-2","apiVersion":"v1"}],"message":"resource did not match"}]}
+```
+
+Cluster-scoped `ClusterCleanupPolicy` works in the same way, producing a `ClusterReport` instead of a `PolicyReport`.
+
+### Applying HTTP/Envoy Authorization Policies
+
+Kyverno 1.18 extends `kyverno apply` to evaluate `ValidatingPolicy` resources that use the `HTTP` or `Envoy` evaluation modes. Instead of Kubernetes resources, you provide HTTP or Envoy check request payloads using the `--http-payload` and `--envoy-payload` flags respectively.
+
+#### HTTP Authorization Policy
+
+Define a `ValidatingPolicy` with `evaluationMode: HTTP` that validates incoming HTTP requests:
+
+Policy manifest (http-allow.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: http-allow
+spec:
+  evaluationMode: HTTP
+  rules:
+    - name: allow-simple-get
+      match:
+        any:
+          - (request.method == "GET" && request.path == "/")
+      validate:
+        message: "allow GET /"
+```
+
+Request payload (request.json):
+
+```json
+{
+  "attributes": {
+    "method": "GET",
+    "host": "example.com",
+    "path": "/"
+  }
+}
+```
+
+Run:
+
+```bash
+kyverno apply http-allow.yaml --http-payload request.json --policy-report
+```
+
+The output confirms the request matches the policy and the result is `pass`.
+
+#### Envoy Authorization Policy
+
+Define a `ValidatingPolicy` with `evaluationMode: Envoy` for Envoy `CheckRequest` payloads:
+
+Policy manifest (envoy-allow.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: envoy-allow
+spec:
+  evaluationMode: Envoy
+  rules:
+    - name: allow-get
+      match:
+        any:
+          - (request.http.method == "GET")
+      validate:
+        message: "allow GET requests"
+```
+
+Request payload (check-request.json):
+
+```json
+{
+  "attributes": {
+    "request": {
+      "http": {
+        "method": "GET",
+        "path": "/api/v1/resource",
+        "host": "example.com"
+      }
+    }
+  }
+}
+```
+
+Run:
+
+```bash
+kyverno apply envoy-allow.yaml --envoy-payload check-request.json --policy-report
+```
+
+Multiple request payloads (as a JSON array) are also supported. The output shows one result entry per request evaluated.
+
 ## Test Command
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
@@ -3677,6 +3862,283 @@ Loading test  ( kyverno-test.yaml ) ...
 │────│────────────────────│──────│─────────────────────────│────────│────────│
 
 Test Summary: 2 tests passed and 0 tests failed
+```
+
+### Testing `mutateExisting` MutatingPolicies
+
+Kyverno 1.18 adds support for testing `MutatingPolicy` resources that use `mutateExisting: true` rules — rules that mutate resources already present in the cluster (rather than the incoming admission request). When the `mutateExisting` flag is set on a rule, the rule is triggered by a separate **trigger** resource and mutates one or more **target** resources.
+
+To test such policies, provide the trigger resources under `resources` and the target resources under `targetResources` in the test manifest. The `patchedResources` field should point to the expected post-mutation state of the target resource.
+
+In this example, a `MutatingPolicy` is triggered by a `Deployment` and mutates a `ConfigMap` target.
+
+Policy manifest (policy.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-label-on-deployment
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
+  mutateExisting: true
+  rules:
+    - name: add-label-to-configmap
+      targetMatchConstraints:
+        resourceRules:
+          - apiGroups: ['']
+            apiVersions: ['v1']
+            resources: ['configmaps']
+      mutations:
+        - patchType: MergePatch
+          mergePatch: |
+            {"metadata": {"labels": {"managed-by": "kyverno"}}}
+```
+
+Trigger resource (trigger-deployment.yaml):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+```
+
+Target resource (configmap.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap
+  namespace: default
+data:
+  key: value
+```
+
+Expected patched target (patched-configmap.yaml):
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap
+  namespace: default
+  labels:
+    managed-by: kyverno
+data:
+  key: value
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-mutate-existing
+policies:
+  - policy.yaml
+resources:
+  - trigger-deployment.yaml
+targetResources:
+  - configmap.yaml
+results:
+  - policy: add-label-on-deployment
+    rule: add-label-to-configmap
+    resources:
+      - my-configmap
+    patchedResources: patched-configmap.yaml
+    result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│─────────────────────────│───────────────────────│───────────────────────────────────│────────│────────│
+│ ID │ POLICY                  │ RULE                  │ RESOURCE                          │ RESULT │ REASON │
+│────│─────────────────────────│───────────────────────│───────────────────────────────────│────────│────────│
+│ 1  │ add-label-on-deployment │ add-label-to-configmap │ v1/ConfigMap/default/my-configmap │ Pass   │ Ok     │
+│────│─────────────────────────│───────────────────────│───────────────────────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+### Testing HTTP/Envoy Authorization Policies
+
+Kyverno 1.18 adds support for testing `ValidatingPolicy` resources that use the `HTTP` or `Envoy` evaluation modes via the `kyverno test` command. These policies validate HTTP or Envoy authorization check requests rather than Kubernetes resources.
+
+To test authz policies, place a `ValidatingPolicy` with `evaluationMode: HTTP` or `evaluationMode: Envoy` in the `policies` list, and provide one or more request payload JSON files in the `requests` field of the test manifest. Each request file contains a single check request (or a JSON array of requests) that is evaluated against the policy rules.
+
+#### HTTP Authorization Policy Example
+
+Policy manifest (http-policy.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: http-allow
+spec:
+  evaluationMode: HTTP
+  rules:
+    - name: allow-get
+      match:
+        any:
+          - (request.method == "GET" && request.path == "/")
+      validate:
+        message: "allow GET /"
+```
+
+Request payload (request.json):
+
+```json
+{
+  "attributes": {
+    "method": "GET",
+    "host": "example.com",
+    "path": "/"
+  }
+}
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-http-authz
+policies:
+  - http-policy.yaml
+requests:
+  - request.json
+results:
+  - policy: http-allow
+    rule: allow-get
+    request: request.json
+    result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 request with 0 exceptions ...
+  Checking results ...
+
+│────│────────────│───────────│──────────────────│────────│────────│
+│ ID │ POLICY     │ RULE      │ REQUEST          │ RESULT │ REASON │
+│────│────────────│───────────│──────────────────│────────│────────│
+│ 1  │ http-allow │ allow-get │ request.json     │ Pass   │ Ok     │
+│────│────────────│───────────│──────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+#### Envoy Authorization Policy Example
+
+Policy manifest (envoy-policy.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: envoy-allow
+spec:
+  evaluationMode: Envoy
+  rules:
+    - name: allow-get
+      match:
+        any:
+          - (request.http.method == "GET")
+      validate:
+        message: "allow GET requests"
+```
+
+Request payload (check-request.json):
+
+```json
+{
+  "attributes": {
+    "request": {
+      "http": {
+        "method": "GET",
+        "path": "/api/v1/resource",
+        "host": "example.com"
+      }
+    }
+  }
+}
+```
+
+Test manifest (kyverno-test.yaml):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-envoy-authz
+policies:
+  - envoy-policy.yaml
+requests:
+  - check-request.json
+results:
+  - policy: envoy-allow
+    rule: allow-get
+    request: check-request.json
+    result: pass
+```
+
+```sh
+$ kyverno test .
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 1 request with 0 exceptions ...
+  Checking results ...
+
+│────│─────────────│───────────│────────────────────│────────│────────│
+│ ID │ POLICY      │ RULE      │ REQUEST            │ RESULT │ REASON │
+│────│─────────────│───────────│────────────────────│────────│────────│
+│ 1  │ envoy-allow │ allow-get │ check-request.json │ Pass   │ Ok     │
+│────│─────────────│───────────│────────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
 ```
 
 ## jp Command

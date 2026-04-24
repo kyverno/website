@@ -13,6 +13,10 @@ Run tests from a local filesystem or a remote git repository.
   The test command provides a facility to test resources against policies by comparing expected results,
   declared ahead of time in a test manifest file, to actual results reported by Kyverno.
   
+  Supported policy kinds include: Policy, ClusterPolicy, ValidatingAdmissionPolicy, MutatingAdmissionPolicy,
+  ValidatingPolicy, MutatingPolicy (including mutateExisting rules), ImageValidationPolicy,
+  GeneratingPolicy, and HTTP/Envoy authorization ValidatingPolicies.
+  
   Users provide the path to the folder containing a kyverno-test.yaml file where the location could be
   on a local filesystem or a remote git repository.
 
@@ -32,6 +36,12 @@ kyverno test [local folder or git repository]... [flags]
 
   # Test some specific test cases out of many test cases in a local folder
   kyverno test . --test-case-selector "policy=disallow-latest-tag, rule=require-image-tag, resource=test-require-image-tag-pass"
+
+  # Test a MutatingPolicy with mutateExisting rules
+  kyverno test /path/to/test/folder/containing/mutate-existing-policy
+
+  # Test HTTP/Envoy authz ValidatingPolicies
+  kyverno test /path/to/test/folder/containing/authz-policy
 ```
 
 ### Options
