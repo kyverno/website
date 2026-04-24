@@ -6,7 +6,9 @@ sidebar:
   order: 10
 ---
 
-Beyond the main branch which has the latest unreleased features, the Kyverno project maintains a dedicated release branch for the most recent minor version. This release branch provides approximately three months of community support via patch releases that are strictly limited to critical bug fixes and critical-to-high severity CVEs.
+The Kyverno project provides patch support for the most recent minor version in a dedicated release branch. All patches are first submitted to `main`, where new features are developed and tested, and then ported back to the release branch.
+
+This provides approximately three (3) months of community patch support. Patches are strictly limited to fixed for critical bugs and critical-to-high severity CVEs.
 
 |                                    |                                           |
 | ---------------------------------- | ----------------------------------------- |
