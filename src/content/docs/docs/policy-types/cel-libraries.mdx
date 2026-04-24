@@ -819,11 +819,11 @@ Error from server: error when creating "STDIN": admission webhook "vpol.validate
 
 The **Gzip library** enables decompression of gzip-compressed byte sequences using the `gzip.decompress()` function. This is particularly useful when verifying or mutating data that has been compressed before storage, such as confidential container (CoCo) initdata stored as base64-encoded gzip in ConfigMaps or annotations.
 
-| CEL Expression                                           | Purpose                                                |
-| -------------------------------------------------------- | ------------------------------------------------------ |
+| CEL Expression                                           | Purpose                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- |
 | `gzip.decompress(bytes)`                                 | Decompress a gzip-compressed byte sequence into a string |
-| `gzip.decompress(base64.decode(encodedStr))`             | Decode a base64 string and then decompress it          |
-| `gzip.decompress(base64.decode(object.data['payload']))` | Decompress base64-gzip data from a ConfigMap field     |
+| `gzip.decompress(base64.decode(encodedStr))`             | Decode a base64 string and then decompress it            |
+| `gzip.decompress(base64.decode(object.data['payload']))` | Decompress base64-gzip data from a ConfigMap field       |
 
 The input to `gzip.decompress()` must be a valid gzip byte sequence (type `bytes`). The function returns a plain `string`. A common pattern is to first decode a base64 string with `base64.decode()` and then pass the result to `gzip.decompress()`.
 
