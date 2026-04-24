@@ -312,7 +312,7 @@ spec:
 
 #### Pod imagePullSecrets (1.18+)
 
-Starting with Kyverno 1.18, Kyverno **automatically** uses the `imagePullSecrets` defined in the pod spec as registry credentials when verifying images. No additional policy configuration is required — Kyverno reads `spec.imagePullSecrets` (and `spec.initContainers[*].imagePullPolicy`, etc.) from the pod being evaluated and uses those secrets to authenticate with the registry.
+Starting with Kyverno 1.18, Kyverno **automatically** uses the `imagePullSecrets` defined in the pod spec as registry credentials when verifying images. No additional policy configuration is required — Kyverno reads `spec.imagePullSecrets` from the pod being evaluated and uses those secrets to authenticate with the registry. These secrets apply to all containers (including init containers) in the pod.
 
 **When to use pod imagePullSecrets:** This approach is ideal when workloads already carry their own registry credentials via `imagePullSecrets`. By reusing those credentials, you avoid duplicating secret references in the policy itself. It is particularly useful for multi-tenant environments where each workload namespace manages its own pull secrets.
 
@@ -370,7 +370,7 @@ subjects:
 ```
 
 :::note[Note]
-When Kyverno automatically uses pod `imagePullSecrets` (the implicit behavior introduced in 1.18), it reads those secrets from the **pod's namespace**. The same RBAC rules above apply — Kyverno needs `get` access to secrets in the pod's namespace.
+When Kyverno automatically uses pod `imagePullSecrets` (the implicit behavior introduced in 1.18), it reads those secrets from the **pod's namespace**. You must create a Role and RoleBinding similar to the example above in **every namespace** where pods that use `imagePullSecrets` will be deployed, so Kyverno can read those secrets during image verification.
 :::
 
 ## Policy Scope
