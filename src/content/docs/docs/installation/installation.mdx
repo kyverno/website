@@ -42,30 +42,9 @@ A standard Kyverno installation consists of a number of different components, so
 - **CustomResourceDefinitions**
   - CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
 
-## Compatibility Matrix
+## Kubernetes Compatibility
 
-Kyverno follows the same support policy as the Kubernetes project (N-2 policy) in which the current release and the previous two minor versions are maintained. Although prior versions may work, they are not tested and therefore no guarantees are made as to their full compatibility. The below table shows the compatibility matrix.
-
-<table>
-  <thead>
-    <tr>
-      <th>Kyverno Version</th>
-      <th>Kubernetes Min</th>
-      <th>Kubernetes Max</th>
-    </tr>
-  </thead>
-  <tbody>
-    {compatibilityMatrix.map((entry) => (
-      <tr key={entry.kyverno}>
-        <td>{entry.kyverno}</td>
-        <td>{entry.minKubernetes}</td>
-        <td>{entry.maxKubernetes}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
-**NOTE:** For long term compatibility Support select a [commercially supported Kyverno distribution](https://kyverno.io/support/).
+See [Releases](/docs/installation/releases/) for supported releases and compatibility.
 
 ## Helm Chart
 

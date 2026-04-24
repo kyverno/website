@@ -3,12 +3,26 @@ title: Releases
 linkTitle: Releases
 excerpt: Understand how and when Kyverno releases software.
 sidebar:
-  order: 20
+  order: 10
 ---
 
-## Release Notes and Assets
+The Kyverno project provides patch support for the most recent minor version in a dedicated release branch. All patches are first submitted to `main`, where new features are developed and tested, and then ported back to the release branch.
 
-Release notes are available on GitHub at https://github.com/kyverno/kyverno/releases
+This provides approximately three (3) months of community patch support. Patches are strictly limited to fixed for critical bugs and critical-to-high severity CVEs.
+
+|                                    |                                           |
+| ---------------------------------- | ----------------------------------------- |
+| **Latest Release:**                | v1.17 (released: Feb 2, 2026)             |
+| **Estimated End of Life:**         | on v1.18 release (estimated: April, 2026) |
+| **Kubernetes Versions Supported:** | v1.32 - v1.35                             |
+
+Other Kubernetes versions may work, but are not tested and therefore no guarantees are made as to their full compatibility.
+
+Release notes are available on GitHub at [kyverno/kyverno releases](https://github.com/kyverno/kyverno/releases).
+
+:::note[Enterprise Support]
+For long-term compatibility, production support, and maximizing your investment in Kyverno, consider using a **[commercial Kyverno distribution](https://kyverno.io/support/)**. By partnering with vendors who maintain the project, you help secure Kyverno’s future while receiving additional benefits and features.
+:::
 
 ## Release Management
 
