@@ -129,7 +129,7 @@ To enable TLS for the metrics endpoints, set `metering.secure` to `true` for eac
 admissionController:
   metering:
     secure: true
-    tlsKeyAlgorithm: RSA  # Supported: RSA, ECDSA, Ed25519
+    tlsKeyAlgorithm: RSA # Supported: RSA, ECDSA, Ed25519
 
 backgroundController:
   metering:
@@ -193,7 +193,7 @@ scrape_configs:
   - job_name: kyverno
     scheme: https
     tls_config:
-      insecure_skip_verify: true   # Or configure ca_file for proper verification
+      insecure_skip_verify: true # Or configure ca_file for proper verification
     static_configs:
       - targets: ['kyverno-svc-metrics.kyverno.svc.cluster.local:8000']
 ```
@@ -202,14 +202,14 @@ scrape_configs:
 
 The following CLI flags control TLS for the metrics endpoint. These correspond to the Helm `metering` values but can also be set directly when running Kyverno outside of Helm.
 
-| Flag                   | Default  | Controllers | Description                                                                                                                                             |
-| ---------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `metricsTLS`           | `false`  | ABCR        | Enables TLS on the metrics HTTP server.                                                                                                                 |
-| `metricsCASecretName`  |          | ABCR        | Name of the Kubernetes Secret containing the CA certificate used to sign the metrics TLS certificate.                                                   |
-| `metricsTLSSecretName` |          | ABCR        | Name of the Kubernetes Secret containing the TLS certificate and key for the metrics server.                                                            |
-| `metricsKeyAlgorithm`  | `RSA`    | ABCR        | Key algorithm for auto-generated self-signed TLS certificates. Supported values: `RSA`, `ECDSA`, `Ed25519`.                                             |
-| `metricsRenewBefore`   | `360h0m0s` | ABCR        | How long before certificate expiry the metrics TLS certificate is automatically renewed. Uses Go duration format (e.g. `360h0m0s` for 15 days).         |
-| `metricsServerIP`      |          | ABCR        | IP address where the metrics server is reachable. Used to add IP Subject Alternative Names (SANs) to the generated certificate. Required when accessing the metrics endpoint outside the cluster by IP address. |
+| Flag                   | Default    | Controllers | Description                                                                                                                                                                                                     |
+| ---------------------- | ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `metricsTLS`           | `false`    | ABCR        | Enables TLS on the metrics HTTP server.                                                                                                                                                                         |
+| `metricsCASecretName`  |            | ABCR        | Name of the Kubernetes Secret containing the CA certificate used to sign the metrics TLS certificate.                                                                                                           |
+| `metricsTLSSecretName` |            | ABCR        | Name of the Kubernetes Secret containing the TLS certificate and key for the metrics server.                                                                                                                    |
+| `metricsKeyAlgorithm`  | `RSA`      | ABCR        | Key algorithm for auto-generated self-signed TLS certificates. Supported values: `RSA`, `ECDSA`, `Ed25519`.                                                                                                     |
+| `metricsRenewBefore`   | `360h0m0s` | ABCR        | How long before certificate expiry the metrics TLS certificate is automatically renewed. Uses Go duration format (e.g. `360h0m0s` for 15 days).                                                                 |
+| `metricsServerIP`      |            | ABCR        | IP address where the metrics server is reachable. Used to add IP Subject Alternative Names (SANs) to the generated certificate. Required when accessing the metrics endpoint outside the cluster by IP address. |
 
 ## Configuring the metrics
 
