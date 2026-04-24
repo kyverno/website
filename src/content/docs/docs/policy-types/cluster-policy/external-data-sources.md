@@ -551,7 +551,9 @@ This sample policy retrieves the list of Services in the Namespace and stores th
 
 Similar to how Kyverno is able to call the Kubernetes API server to both `GET` and `POST` data for use in a context variable, Kyverno is also able to call any other service in the cluster. This feature is nested under the apiCall context type and builds upon it. See the section [above](#variables-from-kubernetes-api-server-calls) on Kubernetes API calls for more information.
 
-By using the `apiCall.service` object, a call may be made to another URL to retrieve and store data. The fields `caBundle` and `url` are used to specify the CA bundle and URL, respectively, for the call. The fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be to either the Kubernetes API or some other service. At this time, authentication as part of these service calls is not supported. The response from a Service call must only be JSON.
+By using the `apiCall.service` object, a call may be made to another URL to retrieve and store data. The fields `caBundle` and `url` are used to specify the CA bundle and URL, respectively, for the call. The fields `apiCall.urlPath` and `apiCall.service.url` are mutually exclusive; a call can only be to either the Kubernetes API or some other service. The response from a Service call must only be JSON.
+
+If a policy does not explicitly provide an `Authorization` header, Kyverno injects a scoped ServiceAccount token for outbound HTTP context requests. This token uses a Kyverno-specific audience to reduce replay risk against the Kubernetes API server. If a policy sets `service.headers` with `Authorization`, that value is used as-is.
 
 For example, the following policy makes a `POST` request to another Kubernetes Service accessible at `http://sample.kyverno-extension/check-namespace` and sends it the data `{"name":"foonamespace"}` when a ConfigMap is created in the `foonamespace` Namespace. The JSON result Kyverno receives is stored in the context called `result`. The value of `result` is JSON where the key `allowed` is either `true` or `false`. The request is blocked if the value is `false`.
 
