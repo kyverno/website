@@ -40,11 +40,11 @@ The `attestors` declaration specifies one or more ways of checking image signatu
 
 The `attestors.count` specifies the required count of attestors in the entries list that must be verified. By default, and when not specified, all attestors are verified.
 
-The `imageRegistryCredentials` attribute allows configuration of registry credentials per policy. Kyverno falls back to global credentials if this is empty.
+The `imageRegistryCredentials` attribute allows configuration of registry credentials per policy. Additionally the `imagePullSecrets` of the resource will be used if defined. Kyverno falls back to global credentials if none of these credentials are valid to retrieve the resource manifest.
 
 The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
-The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
+The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. `my-namespace/my-registry-secret` can be used to reference image pull secret in a different Namespace. The admission-controller needs to be configured to read secrets from specified Namespace.
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
