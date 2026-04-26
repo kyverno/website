@@ -1720,6 +1720,114 @@ The output confirms that the PolicyException worked as intended:
 
 - `summary.skip: 1`: The final count reflects that one rule was skipped.
 
+### Cross-Resource Policy Evaluation (Offline)
+
+Policies that use `context.apiCall` to look up sibling Kubernetes objects (for example, "does a PodDisruptionBudget exist for this Deployment?") previously required the `--cluster` flag to reach a live API server. Without `--cluster`, the CLI logged `disabled loading of APICall context entry` and skipped those rules entirely, resulting in misleading pass/fail counts in CI.
+
+Starting in Kyverno 1.14, when you pass resources with `--resource` and do **not** use `--cluster`, the CLI automatically builds an in-memory dynamic client from the supplied manifests and enables `apiCall` against that snapshot. This makes it possible to lint a complete multi-document manifest — for example, the output of `helm template` — in CI without any cluster access.
+
+The same mechanism resolves `context.globalReference` entries: if any `GlobalContextEntry` objects (API version `kyverno.io/v2`) appear in the resource stream, the CLI snapshots the relevant resources from the in-memory client and wires them into the context loader factory, so policies that use `globalReference` can also be validated fully offline.
+
+:::note[Note]
+Only `GlobalContextEntry` entries with a `spec.kubernetesResource` source are resolved this way. Entries that point to an external HTTP service are out of scope for offline evaluation.
+:::
+
+#### Offline apiCall GET
+
+The example below checks that every Deployment has an associated ServiceAccount in the same namespace, using an `apiCall` context entry to fetch the ServiceAccount.
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-serviceaccount
+spec:
+  rules:
+    - name: sa-must-exist
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      context:
+        - name: sa
+          apiCall:
+            urlPath: /api/v1/namespaces/{{request.object.metadata.namespace}}/serviceaccounts/{{request.object.spec.template.spec.serviceAccountName}}
+            jmesPath: metadata.name
+      validate:
+        failureAction: Enforce
+        message: 'ServiceAccount {{ sa }} referenced by Deployment must exist in the same namespace'
+        deny:
+          conditions:
+            any:
+              - key: '{{ sa }}'
+                operator: Equals
+                value: ''
+```
+
+Resource manifest (`resources.yaml`) — the Deployment and its ServiceAccount together in one file:
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-sa
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    spec:
+      serviceAccountName: my-sa
+      containers:
+        - name: app
+          image: nginx:stable
+```
+
+Apply offline — no cluster required:
+
+```sh
+kyverno apply policy.yaml --resource resources.yaml
+```
+
+The CLI builds a fake client from `resources.yaml`, resolves the `apiCall` against it, and produces:
+
+```
+Applying 1 policy rule(s) to 1 resource(s)...
+
+pass: 1, fail: 0, warn: 0, error: 0, skip: 0
+```
+
+#### Offline apiCall LIST
+
+The example below reproduces the PodDisruptionBudget pattern from [issue #8615](https://github.com/kyverno/kyverno/issues/8615): every Deployment must have a matching PDB.
+
+```sh
+kyverno apply policy.yaml --resource resources.yaml
+```
+
+When the PDB is absent from `resources.yaml`, the rule evaluates to `fail` instead of being silently skipped. No `"disabled loading of APICall context entry"` warning appears.
+
+#### Offline GlobalContextEntry
+
+Policies that reference a `GlobalContextEntry` can also be evaluated offline by including the `GlobalContextEntry` object (and the resources it points to) in the same manifest.
+
+```sh
+kyverno apply policy.yaml --resource resources.yaml
+```
+
+The CLI detects `kyverno.io/v2 GlobalContextEntry` objects in the resource stream, lists the matching resources from the in-memory client, and wires the result into the context loader factory — no cluster or controller needed.
+
 ## Test Command
 
 The `test` command is used to test a given set of resources against one or more policies to check desired results, declared in advance in a separate test manifest file, against the actual results. `test` is useful when you wish to declare what your expected results should be by defining the intent which then assists with locating discrepancies should those results change.
@@ -1765,6 +1873,19 @@ exceptions: # optional files for specifying exceptions. See below for an example
 variables: variables.yaml # optional file for declaring variables. see below for example.
 userinfo: user_info.yaml # optional file for declaring admission request information (roles, cluster roles and subjects). see below for example.
 context: context.yaml # optional file for declaring context variables. It is used in the new policy types; validatingpolicies, imagevalidationpolicies, mutatingpolicies and generatingpolicies.
+apiCallResponses: # optional; inline mock responses for context.apiCall and CEL http.Get()/http.Post() calls (offline testing)
+  - url: https://example.com/api # URL to match
+    method: GET # optional HTTP method filter
+    response:
+      statusCode: 200
+      body: {} # arbitrary JSON object
+globalContextEntries: # optional; inline mock data for GlobalContextEntry references (offline testing)
+  - name: <globalcontextentry-name>
+    data: {} # arbitrary JSON root object
+    fieldPath: '' # optional JMESPath to narrow the root
+    projections: # optional named JMESPath extractions from the root
+      - name: <key>
+        path: <jmespath>
 results:
   - policy: <name> # Namespaced Policy is specified as <namespace>/<name>
     isValidatingAdmissionPolicy: false # when the policy is ValidatingAdmissionPolicy, this field is required.
@@ -1796,6 +1917,8 @@ The test declaration consists of the following parts:
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
 7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](#working-with-assertion-trees)).
+8. The `apiCallResponses` element which declares static mock responses for `context.apiCall` and CEL `http.Get()`/`http.Post()` calls, enabling offline testing without a real HTTP server. Optional.
+9. The `globalContextEntries` element which declares inline mock data for `GlobalContextEntry` references, satisfying both `context.globalReference` (v1 ClusterPolicy) and `globalContext.Get()` (CEL ValidatingPolicy) calls offline. Optional.
 
 If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
@@ -3675,6 +3798,312 @@ Loading test  ( kyverno-test.yaml ) ...
 │ 1  │ disallow-host-path │      │ v1/Pod/default/bad-pod  │ Pass   │ Ok     │
 │ 2  │ disallow-host-path │      │ v1/Pod/default/good-pod │ Pass   │ Ok     │
 │────│────────────────────│──────│─────────────────────────│────────│────────│
+
+Test Summary: 2 tests passed and 0 tests failed
+```
+
+### Testing Policies with Offline HTTP Mocks and Global Context
+
+Policies that call an external HTTP service via `context.apiCall`, CEL `http.Get()`, or `http.Post()`, or that look up a `GlobalContextEntry` reference, cannot be tested with `kyverno test` by default because the CLI has no live cluster or external server available. Starting in Kyverno 1.14, `kyverno-test.yaml` accepts two new optional fields — `apiCallResponses` and `globalContextEntries` — so the expected external data can be declared inline, enabling fully offline policy validation in local development and CI/CD pipelines.
+
+#### Schema overview
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: my-test
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+# Inline mock responses for context.apiCall and CEL http.Get() / http.Post() calls.
+apiCallResponses:
+  - url: https://external-service.example.com/api/check # URL to match (required)
+    method: GET # HTTP method (optional; matches any method if omitted)
+    response:
+      statusCode: 200 # Must be a valid HTTP status code (100–599)
+      body: # Arbitrary JSON object
+        allowed: true
+# Inline mock data for GlobalContextEntry references.
+globalContextEntries:
+  - name: gctxentry-deployments # Must match the GlobalContextEntry name used in the policy
+    data: # Root JSON object (arbitrary structure)
+      deployments:
+        - name: existing-deployment-1
+        - name: existing-deployment-2
+    fieldPath: deployments # Optional JMESPath applied to `data` before projections
+    projections: # Optional list of named values extracted from the root
+      - name: items
+        path: deployments
+results:
+  - kind: Pod
+    policy: my-policy
+    resources:
+      - default/my-pod
+    result: pass
+    rule: my-rule
+```
+
+:::note[Note]
+The `body` field of each `apiCallResponse` accepts any valid JSON object — the same Kubernetes-style unstructured format used for `runtime.RawExtension`. The status code is validated to be a standard HTTP code (100–599) and the body must be valid JSON; the CLI will report an error for a malformed mock before any test runs.
+:::
+
+#### Mocking CEL `http.Get()` calls
+
+The following example tests a `ValidatingPolicy` that calls an external configuration endpoint using CEL's built-in `http.Get()`.
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-external-config
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  variables:
+    - name: config
+      expression: http.Get("https://example.com/config")
+  validations:
+    - expression: variables.config.body.allowed == true
+      message: 'External config check failed'
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel-http-get-mock-test
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+apiCallResponses:
+  - method: GET
+    url: https://example.com/config
+    response:
+      statusCode: 200
+      body:
+        allowed: true
+results:
+  - isValidatingPolicy: true
+    kind: Pod
+    policy: check-external-config
+    resources:
+      - test-pod
+    result: pass
+```
+
+Run the test:
+
+```sh
+kyverno test .
+```
+
+Expected output:
+
+```
+Loading test  ( kyverno-test.yaml ) ...
+  Applying 1 policy to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ ID │ POLICY                │ RULE │ RESOURCE                    │ RESULT │ REASON │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ 1  │ check-external-config │      │ v1/Pod/default/test-pod     │ Pass   │ Ok     │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+#### Mocking `context.apiCall` (v1 ClusterPolicy)
+
+The same `apiCallResponses` field also mocks `context.apiCall` service URL entries in v1 Kyverno policies. Variable substitution is applied to the URL before matching, so templates like `https://service/check/{{request.object.metadata.name}}` will resolve correctly.
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-external-service
+spec:
+  rules:
+    - name: check-allowed
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      context:
+        - name: response
+          apiCall:
+            method: GET
+            urlPath: ''
+            service:
+              url: https://external-service.example.com/api/check
+            jmesPath: body
+      validate:
+        failureAction: Enforce
+        message: 'External service denied this Pod'
+        deny:
+          conditions:
+            any:
+              - key: '{{ response.allowed }}'
+                operator: Equals
+                value: false
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: mock-apicall-responses
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+variables: values.yaml
+apiCallResponses:
+  - url: https://external-service.example.com/api/check
+    response:
+      statusCode: 200
+      body:
+        allowed: true
+results:
+  - kind: Pod
+    policy: check-external-service
+    rule: check-allowed
+    resources:
+      - test-ns/test-pod-pass
+    result: pass
+```
+
+#### Mocking GlobalContextEntry references
+
+The `globalContextEntries` field supplies static data for policies that use `context.globalReference` (v1 ClusterPolicy) or `globalContext.Get()` (CEL `ValidatingPolicy`).
+
+The `projections` list maps names to JMESPath expressions evaluated on the data root, matching the real `GlobalContextEntry` projection behavior. An optional `fieldPath` can narrow the root before projections are applied.
+
+Policy manifest — v1 ClusterPolicy (`policy.yaml`):
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-global-context
+spec:
+  rules:
+    - name: check-deployment-count
+      context:
+        - name: deploymentCount
+          globalReference:
+            name: gctxentry-deployments
+            jmesPath: 'items | length(@)'
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      validate:
+        failureAction: Enforce
+        deny:
+          conditions:
+            any:
+              - key: '{{ deploymentCount }}'
+                operator: Equals
+                value: 0
+```
+
+Policy manifest — CEL ValidatingPolicy (`policy-vpol.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-global-context-cel
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: [CREATE, UPDATE]
+        resources: [deployments]
+  variables:
+    - name: deploymentData
+      expression: globalContext.Get("gctxentry-deployments", "")
+  validations:
+    - expression: >-
+        variables.deploymentData != null && size(variables.deploymentData.items) >= 2
+      message: 'Deployment count from global context must be at least 2'
+```
+
+Test manifest (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: mock-global-context
+policies:
+  - policy.yaml
+  - policy-vpol.yaml
+resources:
+  - resources.yaml
+variables: values.yaml
+globalContextEntries:
+  - name: gctxentry-deployments
+    data:
+      deployments:
+        - name: existing-deployment-1
+        - name: existing-deployment-2
+    projections:
+      - name: items
+        path: deployments
+results:
+  - kind: Deployment
+    policy: check-global-context
+    rule: check-deployment-count
+    resources:
+      - test-ns/test-deployment
+    result: pass
+  - isValidatingPolicy: true
+    kind: Deployment
+    policy: check-global-context-cel
+    resources:
+      - test-ns/test-deployment
+    result: pass
+```
+
+Run the test:
+
+```sh
+kyverno test .
+```
+
+Expected output:
+
+```
+Loading test  ( kyverno-test.yaml ) ...
+  Applying 2 policies to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│──────────────────────────│────────────────────────│────────────────────────────────────────────│────────│────────│
+│ ID │ POLICY                   │ RULE                   │ RESOURCE                                   │ RESULT │ REASON │
+│────│──────────────────────────│────────────────────────│────────────────────────────────────────────│────────│────────│
+│ 1  │ check-global-context     │ check-deployment-count │ apps/v1/Deployment/test-ns/test-deployment │ Pass   │ Ok     │
+│ 2  │ check-global-context-cel │                        │ apps/v1/Deployment/test-ns/test-deployment │ Pass   │ Ok     │
+│────│──────────────────────────│────────────────────────│────────────────────────────────────────────│────────│────────│
 
 Test Summary: 2 tests passed and 0 tests failed
 ```
