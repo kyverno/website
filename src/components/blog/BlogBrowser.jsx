@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { BlogSearch } from './BlogSearch'
+import { useUrlState } from '../../hooks/useUrlState'
 
 export const BlogBrowser = ({ posts }) => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTag, setActiveTag] = useState(null)
+  const [searchQuery, setSearchQuery] = useUrlState('q', '')
+  const [activeTag, setActiveTag] = useUrlState('tag', '')
 
   // Extract all unique tags from posts
   const allTags = useMemo(() => {
@@ -43,20 +44,12 @@ export const BlogBrowser = ({ posts }) => {
   // Handle tag filter toggle (tab-style: single selection)
   const handleTagFilter = (tag) => {
     if (tag === 'all') {
-      setActiveTag(null)
+      setActiveTag('')
     } else {
       // Toggle: if clicking the same tag, deselect it (show all)
-      setActiveTag((prev) => (prev === tag ? null : tag))
+      setActiveTag((prev) => (prev === tag ? '' : tag))
     }
   }
-
-  // Clear search when component unmounts or when needed
-  useEffect(() => {
-    return () => {
-      setSearchQuery('')
-      setActiveTag(null)
-    }
-  }, [])
 
   return (
     <div>
