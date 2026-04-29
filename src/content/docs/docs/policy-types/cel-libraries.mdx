@@ -815,6 +815,85 @@ EOF
 Error from server: error when creating "STDIN": admission webhook "vpol.validate.kyverno.svc-fail" denied the request: Policy check-goodboi failed: "Only good bois allowed."
 ```
 
+## Gzip library
+
+The **Gzip library** enables decompression of gzip-compressed byte sequences using the `gzip.decompress()` function. This is particularly useful when verifying or mutating data that has been compressed before storage, such as confidential container (CoCo) initdata stored as base64-encoded gzip in ConfigMaps or annotations.
+
+| CEL Expression                                           | Purpose                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- |
+| `gzip.decompress(bytes)`                                 | Decompress a gzip-compressed byte sequence into a string |
+| `gzip.decompress(base64.decode(encodedStr))`             | Decode a base64 string and then decompress it            |
+| `gzip.decompress(base64.decode(object.data['payload']))` | Decompress base64-gzip data from a ConfigMap field       |
+
+The input to `gzip.decompress()` must be a valid gzip byte sequence (type `bytes`). The function returns a plain `string`. A common pattern is to first decode a base64 string with `base64.decode()` and then pass the result to `gzip.decompress()`.
+
+:::caution
+Decompressing untrusted or excessively large payloads can cause high memory usage. Validate the source of compressed data and apply resource limits when using this function in production policies.
+:::
+
+The sample policy below uses `gzip.decompress()` in a `MutatingPolicy` to inject a CoCo initdata annotation into pods. It reads a base64-gzip-encoded TOML blob from a ConfigMap and decompresses it before writing it as a pod annotation:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: inject-coco-initdata
+  annotations:
+    policies.kyverno.io/title: Inject CoCo InitData Annotation
+    policies.kyverno.io/description: >-
+      Injects the CoCo initdata annotation into pods with the label 'coco=enabled'
+      and a reference to an initdata ConfigMap. Retrieves the initdata from the
+      specified ConfigMap and injects it as the
+      'io.katacontainers.config.runtime.cc_init_data' annotation.
+spec:
+  matchConditions:
+    - name: has-coco-label
+      expression: "object.metadata.labels['coco'] == 'enabled'"
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE]
+        resources: [pods]
+  variables:
+    - name: configMapName
+      expression: >-
+        has(object.metadata.annotations) && 'coco.io/initdata-configmap' in object.metadata.annotations
+          ? object.metadata.annotations['coco.io/initdata-configmap']
+          : 'initdata-configmap'
+    - name: configMapNamespace
+      expression: "has(object.metadata.namespace) ? object.metadata.namespace : 'default'"
+    - name: configMap
+      expression: "resource.Get('v1', 'configmaps', variables.configMapNamespace, variables.configMapName)"
+    - name: initData
+      expression: >-
+        has(variables.configMap.data) && 'data' in variables.configMap.data
+          ? gzip.decompress(base64.decode(variables.configMap.data['data']))
+          : ''
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >-
+          variables.initData != ''
+            ? Object{metadata: Object.metadata{annotations: {'io.katacontainers.config.runtime.cc_init_data': variables.initData}}}
+            : Object{}
+```
+
+The ConfigMap referenced by this policy stores the initdata as a base64-encoded gzip blob:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: initdata-configmap
+data:
+  # Base64-gzip encoded initdata TOML
+  # To update: echo '<toml-content>' | gzip | base64
+  data: H4sIAAAAAAAA/...
+```
+
+When the policy is applied, any pod with the `coco=enabled` label and a `coco.io/initdata-configmap` annotation is mutated so that the decompressed plaintext TOML is written to the `io.katacontainers.config.runtime.cc_init_data` annotation.
+
 ## Time functions
 
 The kyverno CEL execution environment comes with a few functions related to time. Which are getting the current time, truncate timestamps, and convert timestamps to cron format.
