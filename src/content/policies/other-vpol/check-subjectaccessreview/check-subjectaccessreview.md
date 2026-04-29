@@ -17,7 +17,7 @@ createdAt: "2025-12-16T13:58:08.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-subjectaccessreview/check-subjectaccessreview.yaml" target="-blank">/other-vpol/check-subjectaccessreview/check-subjectaccessreview.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-subjectaccessreview
