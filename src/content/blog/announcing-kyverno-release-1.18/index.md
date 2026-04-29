@@ -3,7 +3,7 @@ date: 2026-04-24
 title: Announcing Kyverno 1.18!
 tags:
   - Releases
-excerpt: Security enhancements, image verification improvements, and CLI expansion in Kyverno 1.18
+excerpt: Security enhancements, CLI expansion, and policy engine improvements in Kyverno 1.18
 draft: false
 featured: true
 ---
@@ -12,15 +12,13 @@ featured: true
 
 We’re excited to announce the release of **Kyverno 1.18**, our **first release since** [graduating within the Cloud Native Computing Foundation](https://www.cncf.io/announcements/2026/03/24/cloud-native-computing-foundation-announces-kyvernos-graduation/).
 
-This release builds on Kyverno’s growing role as a **Kubernetes-native policy engine**, with major investments in **security, image verification, CLI capabilities, and policy engine reliability**. It also continues our transition toward **CEL-based policy types**, setting the foundation for the future of policy as code.
+This release builds on Kyverno’s growing role as a **Kubernetes-native policy engine**, with major investments in **security, CLI capabilities, and policy engine reliability**. It also continues our transition toward **CEL-based policy types**, setting the foundation for the future of policy as code.
 
 ## **TL;DR**
 
 Kyverno 1.18 delivers:
 
 - Stronger **security controls** for HTTP-based policy execution and multiple CVE mitigations
-
-- Expanded **image verification capabilities**, including namespaced credentials and major bug fixes
 
 - Significant **CLI enhancements** for testing and applying modern policy types
 
@@ -43,34 +41,6 @@ Kyverno policies can call external services via HTTP CEL libraries. In 1.18, thi
 - **Scoped token authorization**: Previously, Kyverno HTTP calls included a token which could be used to impersonate Kyverno controllers. Now, HTTP calls include a separate scoped token that ensures that servers cannot misuse the token. See [CVE-2026-41323](https://github.com/kyverno/kyverno/security/advisories/GHSA-f9g8-6ppc-pqq4) for details.
 
 These changes reduce the risk of unintended external access while maintaining flexibility for advanced policy use cases.
-
-**Image Verification Enhancements**
-
-Kyverno continues to invest heavily in **software supply chain security**, and 1.18 delivers meaningful improvements.
-
-### **Namespaced Image Registry Credentials**
-
-`imageRegistryCredentials` now supports:
-
-- **Namespaced secrets**
-
-- **Pod-level imagePullSecrets**
-
-This makes image verification more flexible and aligned with real-world Kubernetes deployments, especially in multi-tenant environments.
-
-### **Improved ImageValidatingPolicy Reliability**
-
-A large number of fixes improve the correctness and robustness of image verification, including:
-
-- Better handling of **signed timestamps and TSA certificate chains**
-
-- Fixes for **Notary resolver errors**
-
-- Correct filtering for `matchImageReferences`
-
-- Improved **autogen support for namespaced policies**
-
-These updates ensure that verification logic behaves as expected and reduces the risk of silent bypass or inconsistent enforcement.
 
 ## **CLI Expansion and Developer Experience**
 
@@ -135,6 +105,14 @@ These changes make Kyverno more resilient in high-scale production environments.
 - Improved compilation and evaluation of policy variables and conditions
 
 - Better alignment between policy types and execution engines
+
+### **Image Verification Improvements**
+
+Several targeted improvements land for image verification:
+
+- For `ClusterPolicies`, `imageRegistryCredentials.secrets` now accepts a `namespace/name` notation, and pod-level `imagePullSecrets` are automatically used as registry credentials, useful in multi-tenant environments where each namespace manages its own pull secrets.
+
+- Reliability fixes for `ImageValidatingPolicy`, including better handling of signed timestamps and TSA certificate chains, Notary resolver fixes, correct `matchImageReferences` filtering, and improved autogen support for namespaced policies.
 
 ## **Policies Helm Chart Enhancements**
 
@@ -228,7 +206,6 @@ Kyverno community meetings now run at **multiple global-friendly times**:
 
 You can find all meetings on the [CNCF Calendar](https://www.cncf.io/calendar/) using the Kyverno filter.
 
-
 Additionally, we are working to create a space where community members can publish case studies and use cases to our community blog in hopes that this will serve as a space where everyone can learn from each other. Please keep an eye out for the announcements of when this section of the blog will be live and if you would like to submit a use case or case study, please reach out to [cortney.nickerson@nirmata.com](mailto:cortney.nickerson@nirmata.com) directly.
 
 **Getting Started and Upgrading**
@@ -267,7 +244,7 @@ Looking ahead, the [Kyverno ](https://github.com/kyverno/kyverno/blob/main/ROADM
 
 **Kyverno 1.18 is a meaningful step forward following our CNCF graduation.**
 
-With stronger security, more flexible image verification, expanded CLI capabilities, and continued investment in Kubernetes-native policy, Kyverno is helping teams move from policy enforcement to policy-driven operations at scale.
+With stronger security, expanded CLI capabilities, and continued investment in policy engine reliability and Kubernetes-native policy, Kyverno is helping teams move from policy enforcement to policy-driven operations at scale.
 
 As the project continues to grow, we are also evolving how we operate to ensure long-term sustainability. Our move to an **N-1 support model** reflects a commitment to maintaining high-quality releases while keeping pace with the needs of a rapidly expanding community and ecosystem.
 
