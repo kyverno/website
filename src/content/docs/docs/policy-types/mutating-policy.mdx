@@ -378,7 +378,7 @@ spec:
                 securityContext: Object.spec.containers.securityContext{
                   allowPrivilegeEscalation: false
                 }
-              }
+              })
             }
           }
 ```
@@ -393,12 +393,12 @@ kind: MutatingPolicy
 metadata:
   name: foreach-conditional
 spec:
-matchConstraints:
-  resourceRules:
-    - apiGroups: ['']
-      apiVersions: ['v1']
-      resources: ['pods']
-      operations: ['CREATE', 'UPDATE']
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
   mutations:
     - patchType: JSONPatch
       jsonPatch:
