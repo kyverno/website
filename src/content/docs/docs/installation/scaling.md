@@ -25,6 +25,108 @@ We recommend conducting tests in your own environment to determine real-world ut
 
 Horizontal scaling refers to increasing the number of replicas of a given controller. Kyverno supports multiple replicas for each of its controllers, but the effect of multiple replicas is handled differently according to the controller. See the [high availability section](/docs/guides/high-availability#how-ha-works-in-kyverno) for more details.
 
+### HPA Autoscaling for the Admission Controller
+
+Kyverno 1.18 adds support for automatic horizontal scaling of the admission controller using a [HorizontalPodAutoscaler (HPA)](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). This allows Kubernetes to automatically increase or decrease the number of admission controller replicas based on observed CPU or memory utilization.
+
+#### Helm Chart Values
+
+The following Helm values control HPA behavior for the admission controller:
+
+| Value                                                               | Default | Description                                                                                                                                       |
+| ------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admissionController.autoscaling.enabled`                           | `false` | Enable or disable the HPA                                                                                                                         |
+| `admissionController.autoscaling.minReplicas`                       | `1`     | Minimum number of replicas                                                                                                                        |
+| `admissionController.autoscaling.maxReplicas`                       | `10`    | Maximum number of replicas                                                                                                                        |
+| `admissionController.autoscaling.targetCPUUtilizationPercentage`    | `80`    | Target average CPU utilization (%) across all replicas                                                                                            |
+| `admissionController.autoscaling.targetMemoryUtilizationPercentage` | (unset) | Target average memory utilization (%) across all replicas                                                                                         |
+| `admissionController.autoscaling.behavior`                          | `{}`    | Custom [scaling behavior](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior) configuration |
+
+#### Enabling CPU-Based Autoscaling
+
+To enable HPA with CPU-based scaling only, set the following values:
+
+```yaml
+admissionController:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+```
+
+#### Enabling Memory-Based Autoscaling
+
+To enable HPA with memory-based scaling only, unset the CPU target and set a memory target:
+
+```yaml
+admissionController:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: ~
+    targetMemoryUtilizationPercentage: 80
+```
+
+#### Combining CPU and Memory Autoscaling
+
+Both metrics can be used simultaneously. The HPA will scale up when either threshold is exceeded:
+
+```yaml
+admissionController:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+```
+
+#### Recommended Settings for Production
+
+For a production environment, consider the following starting points based on the [scale testing results](#scale-testing) above:
+
+- Set `minReplicas` to at least `3`, which is the [minimum for a highly-available admission controller deployment](/docs/guides/high-availability#admission-controller).
+- Set `maxReplicas` based on your cluster size and the maximum acceptable latency under peak load. Values between `5` and `10` are common for large clusters.
+- Use a CPU target of `80` and/or a memory target of `80` as a starting point, then adjust based on observed utilization.
+- Ensure the admission controller Pods have appropriate [resource requests and limits](/docs/installation/customization#container-flags) set so that the HPA utilization percentages are calculated correctly. Without requests defined, the HPA cannot compute utilization.
+
+```yaml
+admissionController:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+```
+
+#### Interaction with PodDisruptionBudget
+
+When running multiple replicas, it is recommended to also configure a [PodDisruptionBudget (PDB)](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) to prevent all replicas from being evicted simultaneously during voluntary disruptions (for example, node drains). The Helm chart creates a PDB automatically when `replicas` is greater than `1`, but when autoscaling is enabled the replica count is managed dynamically and a PDB should be configured explicitly:
+
+```yaml
+admissionController:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 2
+```
+
+Setting `minAvailable` to one less than `minReplicas` ensures at least a quorum of replicas remain available during maintenance operations while still allowing rolling upgrades.
+
 ### Scale Testing
 
 Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
