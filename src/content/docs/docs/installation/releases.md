@@ -10,11 +10,11 @@ The Kyverno project provides patch support for the most recent minor version in 
 
 This provides approximately three (3) months of community patch support. Patches are strictly limited to fixed for critical bugs and critical-to-high severity CVEs.
 
-|                                    |                                           |
-| ---------------------------------- | ----------------------------------------- |
-| **Latest Release:**                | v1.17 (released: Feb 2, 2026)             |
-| **Estimated End of Life:**         | on v1.18 release (estimated: April, 2026) |
-| **Kubernetes Versions Supported:** | v1.32 - v1.35                             |
+|                                    |                                     |
+| ---------------------------------- | ----------------------------------- |
+| **Latest Release:**                | v1.18 (released: April 29, 2026)    |
+| **Estimated End of Life:**         | v1.19 release (estimated: Jul 2026) |
+| **Kubernetes Versions Supported:** | v1.33 - v1.35                       |
 
 Other Kubernetes versions may work, but are not tested and therefore no guarantees are made as to their full compatibility.
 
