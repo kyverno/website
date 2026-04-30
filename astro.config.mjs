@@ -68,7 +68,7 @@ export default defineConfig({
         {
           label: 'Setup',
           autogenerate: { directory: 'docs/installation' },
-          collapsed: true,
+          collapsed: false,
         },
         {
           label: 'Policy Types',

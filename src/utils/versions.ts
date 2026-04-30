@@ -2,6 +2,8 @@
  * Utility functions for version detection and URL handling
  */
 
+import { latestStableVersion } from '../constants/version'
+
 export interface Version {
   label: string
   href: string
@@ -11,6 +13,10 @@ export interface VersionOption {
   label: string
   href: string
   isCurrent: boolean
+}
+
+function getLatestStableVersion(versions: Version[]): Version | undefined {
+  return versions.find((v) => v.label === latestStableVersion)
 }
 
 /**
@@ -24,10 +30,8 @@ export function getCurrentVersion(
   hostname?: string,
 ): Version {
   if (!hostname || !versions || versions.length === 0) {
-    // Default to "main" version if no hostname or versions
-    return (
-      versions?.find((v) => v.href.includes('main.kyverno.io')) || versions?.[0]
-    )
+    // Default to latest stable version if no hostname or versions.
+    return getLatestStableVersion(versions) || versions?.[0]
   }
 
   // Match version based on hostname from href
@@ -55,9 +59,8 @@ export function getCurrentVersion(
     }
   }
 
-  // Default to "main" version if no match found
-  const mainVersion = versions.find((v) => v.href.includes('main.kyverno.io'))
-  return mainVersion || versions[0]
+  // Default to latest stable version if no match is found.
+  return getLatestStableVersion(versions) || versions[0]
 }
 
 /**
