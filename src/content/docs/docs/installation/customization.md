@@ -505,11 +505,11 @@ Kyverno 1.18 introduced additional hardening for HTTP usage within policies.
 
 Default blocked destinations in `httpBlocklist` include:
 
-- loopback: `127.0.0.0/8`, `::1/128`
-- link-local: `169.254.0.0/16`, `fe80::/10`
-- private ranges: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `fc00::/7`
-- carrier-grade NAT: `100.64.0.0/10`
-- metadata hosts: `metadata.google.internal`, `metadata.internal`
+- AWS/GCP/Azure metadata service: 169.254.169.254
+- GCP metadata service alternate: 169.254.169.253
+- GCP metadata service hostname: metadata.google.internal
+- IPv4 loopback: "127.0.0.0/8
+- Pv6 loopback: "::1/128
 
 Example deployment args:
 
