@@ -6,13 +6,15 @@ sidebar:
   order: 10
 ---
 
-The Kyverno project provides patch support for the most recent minor version in a dedicated release branch. All patches are first submitted to `main`, where new features are developed and tested, and then ported back to the release branch.
+Kyverno provides approximately three (3) months of community patch support. Patches are strictly limited to fixes for critical bugs and critical-to-high severity CVEs.
 
-This provides approximately three (3) months of community patch support. Patches are strictly limited to fixed for critical bugs and critical-to-high severity CVEs.
+Patches are managed in a dedicated release branch (e.g. `release-1.18`). All patches are first submitted to `main`, where new features are also developed and tested, and then cherry-picked to the release branch.
+
+**Patch Support Schedule:**
 
 |                                    |                                     |
 | ---------------------------------- | ----------------------------------- |
-| **Latest Release:**                | v1.18 (released: April 29, 2026)    |
+| **Supported Release:**             | v1.18 (released: April 29, 2026)    |
 | **Estimated End of Life:**         | v1.19 release (estimated: Jul 2026) |
 | **Kubernetes Versions Supported:** | v1.33 - v1.35                       |
 
