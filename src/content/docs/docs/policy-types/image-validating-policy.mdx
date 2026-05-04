@@ -34,6 +34,26 @@ spec:
   images:
     - name: imagerefs
       expression: '[object.imageReference]'
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['example.io']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['myresources']
+  matchImageReferences:
+    - glob: 'ghcr.io/myrepo/myapp*'
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - issuer: 'https://token.actions.githubusercontent.com'
+              subject: '*'
+  validations:
+    - expression: >-
+        images.imagerefs.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
 ```
 
 ### matchImageReferences
@@ -46,9 +66,27 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  matchImageReferences:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences: # At least one sub-field is required
     - glob: 'ghcr.io/kyverno/*' # Match images using glob pattern
     - expression: "image.registry == 'ghcr.io'" # Match using CEL expression
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - issuer: 'https://token.actions.githubusercontent.com'
+              subject: '*'
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
 ```
 
 ### attestors
@@ -141,6 +179,14 @@ spec:
             data: | # Optional base64-encoded TUF root metadata (optional)
               eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
           mirror: 'https://tuf.example.org' # Sigstore TUF mirror URL (optional)
+
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/*'
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
 ```
 
 **Notary attestors:** These use certificates and optional Time Stamp Authority (TSA) certificates for image signature verification.
@@ -181,6 +227,11 @@ spec:
             MIIC4jCCAcqgAwIBAgIQAm3T2tWk...
             -----END CERTIFICATE-----
           expression: variables.cm.data.tsaCert
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
 ```
 
 ### attestations
@@ -217,6 +268,11 @@ spec:
     - name: toto # Another attestation named `toto`
       intoto:
         type: https://example.com/attestations/slsa-provenance/v0.2 # Predicate type URI for in-toto format
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
 ```
 
 ### validationConfigurations
@@ -229,6 +285,12 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   matchImageReferences:
     - glob: ghcr.io/*
   validationConfigurations:
@@ -247,6 +309,12 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   matchImageReferences:
     - glob: ghcr.io/*
   credentials:
@@ -460,6 +528,65 @@ spec:
   validations:
     - expression: >-
         images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: >-
+        failed the image Signature verification
+```
+
+#### Custom Image Extractor
+
+This policy demonstrates how to use a custom image extractor to verify images in a custom resource where the image reference is not in a standard location.
+
+The `spec.images` field takes a list of named CEL expressions to determine where the images are located within the resource. The extracted images can then be referenced in the `validations` expressions using the given name (e.g., `images.custom_image`).
+
+For example, given a custom resource `myresources.example.io` that defines an image in `foo.bar`:
+
+```yaml
+apiVersion: example.io/v1
+kind: myresources
+metadata:
+  name: sample-resource
+foo:
+  bar: 'ghcr.io/myrepo/myapp:v1.0.0'
+```
+
+The following policy extracts and verifies this image:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-custom-resource-image
+spec:
+  webhookConfiguration:
+    timeoutSeconds: 15
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['example.io']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['myresources']
+  images:
+    - name: custom_image
+      expression: '[object.foo.bar]'
+  matchImageReferences:
+    - glob: 'ghcr.io/myrepo/myapp*'
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6QsNef3SKYhJVYSVj+ZfbPwJd0pv
+            DLYNHXITZkhIzfE+apcxDjCCkDPcJ3A3zvhPATYOIsCxYPch7Q2JdJLsDQ==
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.custom_image.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
       message: >-
         failed the image Signature verification
 ```
