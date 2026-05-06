@@ -14,14 +14,21 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 
 import { PolicyCard } from './PolicyCard'
+import { useUrlState } from '../../hooks/useUrlState'
 
 export const PolicyBrowser = ({ policies }) => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState([])
-  const [selectedSeverities, setSelectedSeverities] = useState([])
-  const [selectedResources, setSelectedResources] = useState([])
-  const [selectedTags, setSelectedTags] = useState([])
-  const [selectedTypes, setSelectedTypes] = useState([])
+  const [searchQuery, setSearchQuery] = useUrlState('q', '')
+  const [selectedCategories, setSelectedCategories] = useUrlState(
+    'category',
+    [],
+  )
+  const [selectedSeverities, setSelectedSeverities] = useUrlState(
+    'severity',
+    [],
+  )
+  const [selectedResources, setSelectedResources] = useUrlState('resource', [])
+  const [selectedTags, setSelectedTags] = useUrlState('tag', [])
+  const [selectedTypes, setSelectedTypes] = useUrlState('type', [])
   const [activeCategoryButton, setActiveCategoryButton] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 24
@@ -229,6 +236,13 @@ export const PolicyBrowser = ({ policies }) => {
     selectedTags,
     selectedTypes,
   ])
+
+  // Keep the category tab bar in sync when selectedCategories is restored from URL
+  useEffect(() => {
+    setActiveCategoryButton(
+      selectedCategories.length === 1 ? selectedCategories[0] : 'all',
+    )
+  }, [selectedCategories])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredPolicies.length / itemsPerPage)

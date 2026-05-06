@@ -40,7 +40,7 @@ export const BlogSearch = ({
           type="button"
           onClick={() => onTagFilter?.('all')}
           className={`px-5 py-3 text-sm font-medium cursor-pointer transition-all whitespace-nowrap relative flex-shrink-0 ${
-            activeTag === null
+            !activeTag
               ? 'text-primary-100 border-b-2 border-primary-100'
               : 'text-theme-tertiary hover:text-theme-secondary'
           }`}
