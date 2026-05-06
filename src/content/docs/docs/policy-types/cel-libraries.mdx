@@ -311,7 +311,7 @@ The **Image library** offers functions to parse and analyze image references. It
 | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `image("nginx:latest")`                                                                     | Convert an image string into an image object (must be used before calling any image methods) |
 | `isImage("nginx:latest")`                                                                   | Check if the string is a valid image                                                         |
-| `image("nginx:latest").registry()`                                                          | Get the image registry (e.g., `docker.io`)                                                   |
+| `image("nginx:latest").registry()`                                                          | Get the image registry (e.g., `index.docker.io`)                                             |
 | `image("nginx:latest").repository()`                                                        | Get the image repository path (e.g., `library/nginx`)                                        |
 | `image("nginx:latest").identifier()`                                                        | Get the image identifier (e.g., tag or digest part)                                          |
 | `image("nginx:latest").tag()`                                                               | Get the tag portion of the image (e.g., `latest`)                                            |
