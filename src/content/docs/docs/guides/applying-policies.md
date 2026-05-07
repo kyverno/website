@@ -17,6 +17,18 @@ Exceptions to policies may be defined in the rules themselves or with a separate
 
 [Cleanup policies](/docs/policy-types/cleanup-policy), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
 
+The table below summarizes the core capabilities of Kyverno and their outcomes:
+
+| Capability        | Outcome                                                        |
+| :---------------- | :------------------------------------------------------------- |
+| **Validate**      | Resources that do not comply with policies are blocked.        |
+| **Mutate**        | Resources are modified to match policy definitions.            |
+| **Generate**      | New resources are automatically created based on triggers.     |
+| **Verify Images** | Container images are verified for signatures and attestations. |
+| **Cleanup**       | Existing resources are removed based on a schedule.            |
+
+Kyverno also generates [PolicyReports](/docs/guides/reports) to provide observability for policy results, which can be visualized using tools like [Policy Reporter](https://github.com/kyverno/policy-reporter).
+
 ## In Pipelines
 
 You can use the [Kyverno CLI](/docs/subprojects/kyverno-cli) to apply policies to YAML resource manifest files as part of a software delivery pipeline. This command line tool allows integrating Kyverno into GitOps style workflows and checks for policy compliance of resource manifests before they are committed to version control and applied to clusters.
