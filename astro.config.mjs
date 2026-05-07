@@ -157,11 +157,7 @@ export default defineConfig({
           slug: 'community',
         },
       ],
-      plugins: [
-        starlightImageZoom(),
-        // starlightAutoSidebar(),
-        ...checkLinksPlugin,
-      ],
+      plugins: [starlightImageZoom(), ...checkLinksPlugin],
     }),
     react(),
     markdoc(),
