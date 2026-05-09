@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
 import markdoc from '@astrojs/markdoc'
+import mermaid from 'astro-mermaid'
 import netlify from '@astrojs/netlify'
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
-import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
@@ -22,6 +22,7 @@ const checkLinksPlugin = process.env.CHECK_LINKS
 // https://astro.build/config
 export default defineConfig({
   integrations: [
+    mermaid(),
     starlight({
       title: 'Kyverno',
       customCss: ['./src/styles/global.css'],
@@ -68,7 +69,7 @@ export default defineConfig({
         {
           label: 'Setup',
           autogenerate: { directory: 'docs/installation' },
-          collapsed: true,
+          collapsed: false,
         },
         {
           label: 'Policy Types',
@@ -157,11 +158,7 @@ export default defineConfig({
           slug: 'community',
         },
       ],
-      plugins: [
-        starlightImageZoom(),
-        // starlightAutoSidebar(),
-        ...checkLinksPlugin,
-      ],
+      plugins: [starlightImageZoom(), ...checkLinksPlugin],
     }),
     react(),
     markdoc(),
