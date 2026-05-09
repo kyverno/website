@@ -1,6 +1,6 @@
 ---
 title: Configuring Kyverno
-description: Configuration options for a Kyverno installation.
+excerpt: Configuration options for a Kyverno installation.
 sidebar:
   order: 35
 ---
@@ -382,7 +382,7 @@ rules:
 
 The following keys are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap. Kyverno watches for changes to this ConfigMap and will load any updates which occur.
 
-1. `defaultRegistry`: sets the default image registry to use if one is not specified. Defaults to `docker.io`.
+1. `defaultRegistry`: sets the default image registry to use if one is not specified. Defaults to `docker.io`. Accepts a hostname or a hostname with a path suffix (e.g. `registry.example.com/myorg`), in which case an unqualified image like `nginx:latest` resolves to `registry.example.com/myorg/nginx:latest`. Images that already contain a registry prefix are not modified.
 2. `enableDefaultRegistryMutation`: tells Kyverno whether it should update its internal context with the value of the `defaultRegistry` key when the condition is met. Defaults to `"true"`.
 3. `excludeGroups`: excludes the provided groups from any processing. Supports a comma-separated list of groups. Defaults to `system:serviceaccounts:kube-system,system:nodes`.
 4. `excludeUsernames`: excludes user names from any processing. Supports the `!` operator to negate an entry (ex., `!john` will include the username `john` if it was excluded via another parameter). Default is `'!system:kube-scheduler'`.
@@ -411,6 +411,7 @@ The following flags can be used to control the advanced behavior of the various 
 | `admissionReports` (AR)                 | true                                                | Enables the AdmissionReport resource which is created from validate rules in `Audit` mode. Used to factor into a final PolicyReport.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `aggregateReports` (R)                  | true                                                | Enables the report aggregating ability of AdmissionReports (1.10.2+).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `aggregationWorkers` (R)                | 10                                                  | Configures the number of internal worker threads used to perform reports aggregation (1.12.3+).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `allowedResults` (ABR)                  | `pass,fail,error,warn,skip`                         | Comma-separated list of result types for which creating reports is desired. Only results matching the specified values are stored. Accepted values: `pass`, `fail`, `error`, `warn`, `skip` (1.17+).                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `allowInsecureRegistry` (ABR)           | `"false"`                                           | Allows Kyverno to work with insecure registries (i.e., bypassing certificate checks) either with [verifyImages](/docs/policy-types/cluster-policy/verify-images/overview) rules or [variables from image registries](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries). Only for testing purposes. Not to be used in production situations.                                                                                                                                                                                                                                                                              |
 | `alsologtostderr` (ABCR)                |                                                     | Log to standard error as well as files (no effect when -logtostderr=true)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `autoUpdateWebhooks` (A)                | true                                                | Set this flag to `false` to disable auto-configuration of the webhook. With this feature disabled, Kyverno creates a default webhook configuration (which matches ALL resources), therefore, webhooks configuration via the ConfigMap will be ignored. However, the user still can modify it by patching the webhook resource manually. Setting this flag to `false` after it has been set to `true` will retain existing webhooks and automatic updates will cease. All further changes will be manual in nature. If the webhook or webhook configuration resource is deleted, it will be replaced by one matching on a wildcard.                              |
@@ -493,6 +494,38 @@ The following flags can be used to control the advanced behavior of the various 
 | `webhookServerHost` (A)                 | `""`                                                | Specifies the address to use for the webhook call-backs. This should only be used when `hostNetwork: true` is set in the manifest.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `webhookServerPort` (A)                 | `9443`                                              | Specifies the port to use for webhook call-backs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `webhookTimeout` (A)                    | `10`                                                | Specifies the timeout for webhooks, in seconds. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be an integer number between 1 and 30 (seconds).                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+### HTTP Calls
+
+Kyverno 1.18 introduced additional hardening for HTTP usage within policies.
+
+- CEL HTTP in namespaced policies is disabled by default and must be explicitly enabled with `--allowHTTPInNamespacedPolicies=true` (or `FLAG_ENABLE_HTTP_IN_NAMESPACED_POLICIES=true`).
+- Cluster-scoped policies default allow HTTP calls. Treat this as a privileged capability and restrict who can create cluster-scoped policies.
+- CEL HTTP calls for both namespaced and cluster-scoped policies can be controlled using `--httpBlocklist`/`FLAG_HTTP_BLOCKLIST` and `--httpAllowlist`/`FLAG_HTTP_ALLOWLIST`.
+
+Default blocked destinations in `httpBlocklist` include:
+
+- AWS/GCP/Azure metadata service: 169.254.169.254
+- GCP metadata service alternate: 169.254.169.253
+- GCP metadata service hostname: metadata.google.internal
+- IPv4 loopback: "127.0.0.0/8
+- Pv6 loopback: "::1/128
+
+Example deployment args:
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: kyverno
+          args:
+            - --allowHTTPInNamespacedPolicies=true
+            - --httpBlocklist=127.0.0.0/8,::1/128,169.254.0.0/16,fe80::/10
+            - --httpAllowlist=https://api.example.com,https://webhook.corp/v1/
+```
+
+Kyverno also uses a scoped ServiceAccount token for outbound HTTP context requests when no `Authorization` header is provided by policy configuration. This reduces token replay risk against the Kubernetes API server compared to using the default ServiceAccount token.
 
 ### Policy Report access
 

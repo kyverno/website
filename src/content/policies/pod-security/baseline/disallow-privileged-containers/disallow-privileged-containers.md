@@ -8,6 +8,7 @@ subjects:
 tags:
   - Pod Security Standards (Baseline)
 description: 'Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.'
+createdAt: "2021-04-18T04:41:22.000Z"
 ---
 
 ## Policy Definition

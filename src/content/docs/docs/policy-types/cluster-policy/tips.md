@@ -1,6 +1,6 @@
 ---
 title: Tips & Tricks
-description: Tips and tricks for writing more effective policy.
+excerpt: Tips and tricks for writing more effective policy.
 sidebar:
   order: 140
 ---

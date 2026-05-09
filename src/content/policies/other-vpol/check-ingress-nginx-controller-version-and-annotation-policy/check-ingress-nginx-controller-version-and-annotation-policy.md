@@ -10,7 +10,7 @@ tags:
   - Ingress
   - Security
 description: 'This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.'
-isNew: true
+createdAt: "2025-12-15T09:53:18.000Z"
 ---
 
 ## Policy Definition

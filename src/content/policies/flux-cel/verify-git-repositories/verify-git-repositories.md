@@ -9,6 +9,7 @@ tags:
   - Flux in CEL
 version: 1.11.0
 description: 'Ensures that Git repositories used for Flux deployments in a cluster originate from a specific, trusted organization. Prevents the use of untrusted or potentially risky Git repositories. Protects the integrity and security of Flux deployments.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition

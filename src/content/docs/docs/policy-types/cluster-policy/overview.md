@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: Get an overview of how Kyverno policies and rules work.
+excerpt: Get an overview of how Kyverno policies and rules work.
 sidebar:
   order: 1
 ---

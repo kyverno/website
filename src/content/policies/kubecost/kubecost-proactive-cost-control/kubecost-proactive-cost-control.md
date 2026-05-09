@@ -9,6 +9,7 @@ tags:
   - Kubecost
 version: 1.11.0
 description: 'Kubecost Enterprise allows users to define budgets for Namespaces and clusters as well as predict the cost of new Deployments based on historical cost data. By combining these abilities, users can achieve proactive cost controls for clusters with Kubecost installed by denying Deployments which would exceed the remaining configured monthly budget, if applicable. This policy checks for the creation of Deployments and compares the predicted cost of the Deployment to the remaining amount in the monthly budget, if one is found. If the predicted cost is greater than the remaining budget, the Deployment is denied. This policy requires Kubecost Enterprise at a version of 1.108 or greater.'
+createdAt: "2024-01-23T14:40:17.000Z"
 ---
 
 ## Policy Definition

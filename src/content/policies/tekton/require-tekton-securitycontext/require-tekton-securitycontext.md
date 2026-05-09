@@ -9,6 +9,7 @@ tags:
   - Tekton
 version: 1.7.0
 description: 'A securityContext is required for each TaskRun step.'
+createdAt: "2022-09-21T15:42:39.000Z"
 ---
 
 ## Policy Definition

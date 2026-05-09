@@ -9,7 +9,7 @@ tags:
   - Other
 version: 1.15.0
 description: 'Containers which request use of an NVIDIA GPU often need to be authored to consume them via a CUDA environment variable called NVIDIA_VISIBLE_DEVICES. This policy checks the containers which request a GPU to ensure they have been authored with this environment variable.'
-isNew: true
+createdAt: "2025-12-16T13:58:08.000Z"
 ---
 
 ## Policy Definition

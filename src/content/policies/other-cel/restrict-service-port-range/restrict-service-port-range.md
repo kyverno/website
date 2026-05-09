@@ -9,6 +9,7 @@ tags:
   - Other in CEL
 version: 1.11.0
 description: 'Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.'
+createdAt: "2024-06-06T10:12:46.000Z"
 ---
 
 ## Policy Definition

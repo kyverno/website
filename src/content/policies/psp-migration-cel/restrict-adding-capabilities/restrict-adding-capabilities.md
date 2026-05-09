@@ -9,6 +9,7 @@ tags:
   - PSP Migration in CEL
 version: 1.11.0
 description: 'Adding capabilities is a way for containers in a Pod to request higher levels of ability than those with which they may be provisioned. Many capabilities allow system-level control and should be prevented. Pod Security Policies (PSP) allowed a list of "good" capabilities to be added. This policy checks ephemeralContainers, initContainers, and containers to ensure the only capabilities that can be added are either NET_BIND_SERVICE or CAP_CHOWN.'
+createdAt: "2024-08-02T14:44:48.000Z"
 ---
 
 ## Policy Definition

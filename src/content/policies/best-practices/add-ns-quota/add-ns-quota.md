@@ -11,6 +11,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'To better control the number of resources that can be created in a given Namespace and provide default resource consumption limits for Pods, ResourceQuota and LimitRange resources are recommended. This policy will generate ResourceQuota and LimitRange resources when a new Namespace is created.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

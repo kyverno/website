@@ -9,6 +9,7 @@ tags:
   - Sample
 version: 1.6.0
 description: 'In response to CVE-2021-44228 referred to as Log4Shell, a RCE vulnerability in the Log4j library, a partial yet incomplete workaround for versions 2.10 to 2.14.1 of the library is to set the environment variable LOG4J_FORMAT_MSG_NO_LOOKUPS to "true". While this does provide some benefit by limiting exposure, there are still code paths which can exploit this vulnerability. It is highly recommended to upgrade log4j as soon as possible. See https://logging.apache.org/log4j/2.x/security.html for more details. This policy will mutate all initContainers and containers in an incoming Pod to add this environment variable automatically.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

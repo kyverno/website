@@ -1,6 +1,6 @@
 ---
 title: Monitoring
-description: Monitor and observe the operation of Kyverno using metrics.
+excerpt: Monitor and observe the operation of Kyverno using metrics.
 sidebar:
   order: 70
 ---

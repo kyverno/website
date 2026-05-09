@@ -11,6 +11,7 @@ tags:
   - EKS Best Practices
 version: 1.6.0
 description: 'Kubernetes automatically mounts ServiceAccount credentials in each Pod. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

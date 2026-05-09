@@ -9,6 +9,7 @@ tags:
   - Other in Vpol
 version: 1.14.0
 description: 'This policy restricts Pod images to approved registries defined globally in a ConfigMap as a single string, newline-separated list, or YAML list with hyphens, and optionally at the Namespace level via annotations. Uses contains() for compatibility with Kyverno 1.14.0.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

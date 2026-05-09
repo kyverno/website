@@ -8,7 +8,7 @@ subjects:
 tags:
   - Karpenter
   - EKS Best Practices
-isNew: true
+createdAt: "2025-10-30T07:20:03.000Z"
 ---
 
 ## Policy Definition

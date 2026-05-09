@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other
 description: 'Environment variables control many aspects of a container''s execution and are often the source of many different configuration settings. Being able to ensure that the value of a specific environment variable either is or is not set to a specific string is useful to maintain such controls. This policy checks every container to ensure that if the `DISABLE_OPA` environment variable is defined, it must not be set to a value of `"true"`.'
+createdAt: "2022-12-03T18:03:51.000Z"
 ---
 
 ## Policy Definition

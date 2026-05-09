@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.6.0
 description: 'Image tags are mutable and the change of an image can result in the same tag. This policy resolves the image digest of each image in a container and replaces the image with the fully resolved reference which includes the digest rather than tag.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

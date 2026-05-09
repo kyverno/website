@@ -9,6 +9,7 @@ tags:
   - Argo in CEL
 version: 1.11.0
 description: 'This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.'
+createdAt: "2024-07-09T15:06:33.000Z"
 ---
 
 ## Policy Definition

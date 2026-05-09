@@ -9,6 +9,7 @@ subjects:
 tags:
   - Security in vpol
 description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

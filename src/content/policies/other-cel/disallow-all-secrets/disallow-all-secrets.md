@@ -10,6 +10,7 @@ tags:
   - Other in CEL
 version: 1.11.0
 description: 'Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.'
+createdAt: "2024-03-22T07:57:44.000Z"
 ---
 
 ## Policy Definition

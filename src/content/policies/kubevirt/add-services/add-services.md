@@ -8,6 +8,7 @@ subjects:
 tags:
   - KubeVirt
 description: 'Add an SSH Service to every VirtualMachineInstance which is getting created. This Service will use a ClusterIP, thus the admin has to ensure that the IP space is large enough and ClusterIP type can be met.'
+createdAt: "2022-09-13T12:15:40.000Z"
 ---
 
 ## Policy Definition

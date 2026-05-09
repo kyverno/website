@@ -9,6 +9,7 @@ tags:
   - Veeam Kasten
 version: 1.12.0
 description: 'Generates a Kasten policy for a new namespace that includes a valid "dataprotection" label, if the policy does not already exist. Use with "kasten-validate-ns-by-preset-label" policy to require "dataprotection" labeling on new namespaces.'
+createdAt: "2024-05-15T17:52:37.000Z"
 ---
 
 ## Policy Definition

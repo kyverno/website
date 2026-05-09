@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
 description: 'Prepends ''registry.io/'' to all container and initContainer images in Pods.'
-isNew: true
+createdAt: "2025-11-14T18:23:14.000Z"
 ---
 
 ## Policy Definition

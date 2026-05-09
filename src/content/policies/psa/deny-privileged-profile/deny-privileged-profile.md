@@ -9,6 +9,7 @@ tags:
   - Pod Security Admission
 version: 1.6.0
 description: 'When Pod Security Admission (PSA) is enforced at the cluster level via an AdmissionConfiguration file which defines a default level at baseline or restricted, setting of a label at the `privileged` profile will effectively cause unrestricted workloads in that Namespace, overriding the cluster default. This may effectively represent a circumvention attempt and should be closely controlled. This policy ensures that only those holding the cluster-admin ClusterRole may create Namespaces which assign the label `pod-security.kubernetes.io/enforce=privileged`.'
+createdAt: "2022-07-14T00:30:48.000Z"
 ---
 
 ## Policy Definition

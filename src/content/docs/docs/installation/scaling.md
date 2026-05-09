@@ -1,6 +1,6 @@
 ---
 title: Scaling Kyverno
-description: Scaling considerations for a Kyverno installation.
+excerpt: Scaling considerations for a Kyverno installation.
 sidebar:
   order: 45
 ---

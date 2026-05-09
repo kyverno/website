@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other
 description: 'VerticalPodAutoscaler (VPA) is useful to automatically adjust the resources assigned to Pods. It requires defining a specific target resource by kind and name. There are no built-in validation checks by the VPA controller to prevent the creation of multiple VPAs which target the same resource. This policy has two rules, the first of which ensures that the only targetRef kinds accepted are one of either Deployment, StatefulSet, ReplicaSet, or DaemonSet. The second prevents the creation of duplicate VPAs by validating that any new VPA targets a unique resource.'
+createdAt: "2024-03-11T07:08:22.000Z"
 ---
 
 ## Policy Definition

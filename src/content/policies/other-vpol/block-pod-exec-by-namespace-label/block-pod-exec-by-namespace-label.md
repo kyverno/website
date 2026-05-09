@@ -9,7 +9,7 @@ tags:
   - Sample
 version: 1.14.0
 description: 'The `exec` command may be used to gain shell access, or run other commands, in a Pod''s container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands based upon a Namespace label `exec=false`.'
-isNew: true
+createdAt: "2025-12-11T12:49:35.000Z"
 ---
 
 ## Policy Definition

@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.10.0
 description: 'Kubernetes Events are limited in that the circumstances under which they are created cannot be changed and with what they are associated is fixed. It may be advantageous in many cases to augment these out-of-the-box Events with custom Events which can be custom designed to your needs. This policy generates an Event on a Pod when an exec has been made to it. It lists the userInfo of the actor performing the exec along with the command used in the exec.'
+createdAt: "2023-04-26T15:16:40.000Z"
 ---
 
 ## Policy Definition

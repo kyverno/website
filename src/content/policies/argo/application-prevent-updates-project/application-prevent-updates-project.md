@@ -9,6 +9,7 @@ tags:
   - Argo
 version: 1.6.0
 description: 'This policy prevents updates to the project field after an Application is created.'
+createdAt: "2022-05-11T19:11:22.000Z"
 ---
 
 ## Policy Definition

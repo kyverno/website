@@ -10,6 +10,7 @@ tags:
   - Sample
 version: 1.8.0
 description: 'Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with leass than 3  replicas are skipped.'
+createdAt: "2023-04-07T12:08:15.000Z"
 ---
 
 ## Policy Definition

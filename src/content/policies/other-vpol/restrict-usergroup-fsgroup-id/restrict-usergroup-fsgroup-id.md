@@ -9,6 +9,7 @@ tags:
   - Sample in Vpol
 version: 1.14.0
 description: 'All processes inside a Pod can be made to run with specific user and groupID by setting `runAsUser` and `runAsGroup` respectively. `fsGroup` can be specified to make sure any file created in the volume will have the specified groupID. This policy validates that these fields are set to the defined values.'
+createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
 ## Policy Definition

@@ -8,6 +8,7 @@ subjects:
 tags:
   - Velero in CEL
 description: 'A Velero Schedule is given in Cron format and must be accurate to ensure operation. This policy validates that the schedule is a valid Cron format.'
+createdAt: "2024-08-02T14:44:48.000Z"
 ---
 
 ## Policy Definition

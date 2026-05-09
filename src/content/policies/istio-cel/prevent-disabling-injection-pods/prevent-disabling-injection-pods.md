@@ -9,6 +9,7 @@ tags:
   - Istio in CEL
 version: 1.11.0
 description: 'One way sidecar injection in an Istio service mesh may be accomplished is by defining an annotation at the Pod level. Pods not receiving a sidecar cannot participate in the mesh thereby reducing visibility. This policy ensures that Pods cannot set the annotation `sidecar.istio.io/inject` to a value of `false`.'
+createdAt: "2024-07-10T03:46:30.000Z"
 ---
 
 ## Policy Definition

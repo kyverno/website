@@ -1,17 +1,47 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+# Determine the kyverno-cli image tag:
+# - If positional arg is provided: use it directly as the distant repo tag (no transformation)
+# - Otherwise (auto mode): derive from WEBSITE_BRANCH or current git branch, then map:
+#   - release-x-y or release-x-y-z  -> release-x.y
+#   - anything else                 -> latest
+if [[ -n "${1:-}" ]]; then
+  CLI_REF="$1"
+  echo "Using kyverno-cli image tag: ${CLI_REF} (from positional argument)"
+else
+  branch_name="${WEBSITE_BRANCH:-}"
+  if [[ -z "${branch_name}" ]]; then
+    if git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
+      branch_name="$(git rev-parse --abbrev-ref HEAD)"
+    else
+      branch_name="main"
+    fi
+  fi
+
+  if [[ "$branch_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
+    CLI_REF="release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+  else
+    CLI_REF="latest"
+  fi
+
+  echo "Using website branch: ${branch_name}"
+  echo "Using kyverno-cli image tag: ${CLI_REF}"
+fi
+
 rm -rf ./src/content/docs/docs/kyverno-cli/reference/kyverno*.md
-docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
-  --autogenTag=false															\
-  --website																	\
-  --noDate																	\
-  --markdownLinks																\
+docker run --user root -v "${PWD}":/work --rm "ghcr.io/kyverno/kyverno-cli:${CLI_REF}" docs \
+  --autogenTag=false \
+  --website \
+  --noDate  \
+  --markdownLinks \
   --output "/work/src/content/docs/docs/kyverno-cli/reference"
 
 # Function to run sed in-place (handles macOS vs Linux differences)
 sed_in_place() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "$@"
+    sed -i'' "$@"
   else
     sed -i "$@"
   fi

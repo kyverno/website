@@ -8,6 +8,7 @@ subjects:
 tags:
   - Linkerd
 description: 'Setting the annotation on a Pod (or its controller) `linkerd.io/inject` to `disabled` may effectively disable mesh participation for that workload reducing security and visibility. This policy prevents setting the annotation `linkerd.io/inject` to `disabled` for Pods.'
+createdAt: "2022-09-20T15:42:26.000Z"
 ---
 
 ## Policy Definition

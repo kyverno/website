@@ -73,7 +73,7 @@ The framework implements a multi-layered approach combining the strengths of dif
 
 ### 2. Runtime Validation (Continuous Monitoring):
 
-- **Kyverno**: CNCF Incubating project for Kubernetes resource validation
+- **Kyverno**: CNCF Graduated project for Kubernetes resource validation
 - **Coverage**: Pod Security Standards, RBAC, Service Accounts, Network Policies
 
 ### 3. Node-Level Validation (Deep System Inspection):

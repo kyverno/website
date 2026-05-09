@@ -3,7 +3,7 @@ title: Introduction
 linkTitle: Introduction
 sidebar:
   order: 10
-description: Learn about Kyverno and its powerful capabilities
+excerpt: Learn about Kyverno and its powerful capabilities
 ---
 
 ## What is Policy Management?

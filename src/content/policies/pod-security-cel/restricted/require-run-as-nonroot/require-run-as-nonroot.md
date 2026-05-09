@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Restricted) in CEL
 version: 1.11.0
 description: 'Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.'
+createdAt: "2024-03-09T15:56:55.000Z"
 ---
 
 ## Policy Definition

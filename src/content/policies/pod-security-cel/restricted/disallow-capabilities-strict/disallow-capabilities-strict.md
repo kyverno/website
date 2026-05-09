@@ -9,6 +9,7 @@ tags:
   - Pod Security Standards (Restricted) in CEL
 version: 1.11.0
 description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.'
+createdAt: "2024-01-12T20:34:52.000Z"
 ---
 
 ## Policy Definition

@@ -54,7 +54,7 @@ To start contributing, take a look at available issues in the [Good First Issues
 
 ## Join Kyverno Adopters
 
-Kyverno is a CNCF incubating project and is growing fast. To qualify for the [graduation level](https://github.com/cncf/toc/blob/main/process/graduation_criteria.md#graduation-stage) the CNCF requires production usage by multiple end users.
+Kyverno is a CNCF Graduated project and is growing fast. To qualify for the [graduation level](https://github.com/cncf/toc/blob/main/process/graduation_criteria.md#graduation-stage) the CNCF requires production usage by multiple end users.
 
 The goal of this adopters program is to gather real-world usage examples and help the Kyverno project grow. We hope to achieve this by learning from the existing and new adopters of Kyverno who are willing to share their stories with CNCF.
 

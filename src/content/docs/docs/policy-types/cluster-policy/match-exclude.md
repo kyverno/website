@@ -1,6 +1,6 @@
 ---
 title: Selecting Resources
-description: Identifying and filtering resources for rule evaluation.
+excerpt: Identifying and filtering resources for rule evaluation.
 sidebar:
   order: 20
 ---

@@ -1,14 +1,30 @@
 ---
 title: Releases
 linkTitle: Releases
-description: Understand how and when Kyverno releases software.
+excerpt: Understand how and when Kyverno releases software.
 sidebar:
-  order: 20
+  order: 10
 ---
 
-## Release Notes and Assets
+Kyverno provides approximately three (3) months of community patch support. Patches are strictly limited to fixes for critical bugs and critical-to-high severity CVEs.
 
-Release notes are available on GitHub at https://github.com/kyverno/kyverno/releases
+Patches are managed in a dedicated release branch (e.g. `release-1.18`). All patches are first submitted to `main`, where new features are also developed and tested, and then cherry-picked to the release branch.
+
+**Patch Support Schedule:**
+
+|                                    |                                     |
+| ---------------------------------- | ----------------------------------- |
+| **Supported Release:**             | v1.18 (released: April 29, 2026)    |
+| **Estimated End of Life:**         | v1.19 release (estimated: Jul 2026) |
+| **Kubernetes Versions Supported:** | v1.33 - v1.35                       |
+
+Other Kubernetes versions may work, but are not tested and therefore no guarantees are made as to their full compatibility.
+
+Release notes are available on GitHub at [kyverno/kyverno releases](https://github.com/kyverno/kyverno/releases).
+
+:::note[Enterprise Support]
+For long-term compatibility, production support, and maximizing your investment in Kyverno, consider using a **[commercial Kyverno distribution](https://kyverno.io/support/)**. By partnering with vendors who maintain the project, you help secure Kyverno’s future while receiving additional benefits and features.
+:::
 
 ## Release Management
 
@@ -66,3 +82,7 @@ A minor release will contain a mix of features, enhancements, and bug fixes.
 Major features follow the [Kyverno Design Proposal (KDP)](https://github.com/kyverno/KDP/) process.
 
 During the start of a release, there may be many issues assigned to the release milestone. The priorities for the release are discussed in the weekly maintainer's meetings. As the release progresses several issues may be moved to the next milestone. Hence, if an issue is important it is important to advocate its priority early in the release cycle.
+
+### Release Instructions
+
+For release instructions, see [release.md](https://github.com/kyverno/kyverno/blob/main/docs/dev/releases/create-a-release.md).

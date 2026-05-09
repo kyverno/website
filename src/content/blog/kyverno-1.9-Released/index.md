@@ -130,7 +130,7 @@ The Kyverno CLI now has experimental support for uploading and downloading Kyver
 
 We're preparing for the movement away from v1 of our policy schema which has served us well for a while now. As we go towards v2beta1, which is available in 1.9, we get rid of deprecated and obsoleted fields to make a nice and tidy policy. We ask you to start moving in the direction of v2beta1 now to make the removal process much smoother.
 
-Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [N-2 support policy](/docs/installation/installation#compatibility-matrix), and so to ensure we're staying current, we're now building and testing up to 1.26.
+Kyverno 1.9 brings support for Kubernetes 1.26. Kyverno follows an [main + 1 support policy](/docs/installation/installation/#kubernetes-compatibility), and so to ensure we're staying current, we're now building and testing up to 1.26.
 
 We have long been a champion of software supply chain security and insist on enacting these practices ourselves. With the 1.9 release, Kyverno now generates and attests to [SLSA provenance](https://slsa.dev/spec/v0.1/index) which anyone on their end can publicly [verify](/docs/guides/security#verifying-provenance). We believe this and other policies by which we abide makes us adherent to SLSA [Level 3](https://slsa.dev/spec/v0.1/levels) and will be working with the [Open Source Security Foundation](https://openssf.org/) to ensure this is the case.
 

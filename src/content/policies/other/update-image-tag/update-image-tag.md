@@ -9,6 +9,7 @@ tags:
   - Other
 version: 1.7.0
 description: 'For use cases like sidecar injection, it is often the case where existing Deployments need the sidecar image updated without destroying the whole Deployment or Pods. This policy updates the image tag on containers named vault-agent for existing Deployments which have the annotation vault.hashicorp.com/agent-inject="true". It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.'
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

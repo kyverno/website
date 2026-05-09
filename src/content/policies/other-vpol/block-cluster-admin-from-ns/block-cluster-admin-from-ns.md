@@ -11,7 +11,7 @@ tags:
   - Other
 version: 1.15.0
 description: 'In some cases, it may be desirable to block operations of certain privileged users (i.e. cluster-admins) in a specific namespace. In this policy, Kyverno will look for all user operations (CREATE, UPDATE, DELETE), on every object kind, in the testnamespace namespace, and for the ClusterRole cluster-admin. The user testuser is also mentioned so it won''t include all the cluster-admins in the cluster, but will be flexible enough to apply only for a sub-group of the cluster-admins in the cluster.'
-isNew: true
+createdAt: "2025-11-27T16:20:28.000Z"
 ---
 
 ## Policy Definition

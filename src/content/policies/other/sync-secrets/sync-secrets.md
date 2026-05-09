@@ -9,6 +9,7 @@ tags:
   - Sample
 version: 1.6.0
 description: 'Secrets like registry credentials often need to exist in multiple Namespaces so Pods there have access. Manually duplicating those Secrets is time consuming and error prone. This policy will copy a Secret called `regcred` which exists in the `default` Namespace to new Namespaces when they are created. It will also push updates to the copied Secrets should the source Secret be changed.      '
+createdAt: "2023-04-04T23:03:22.000Z"
 ---
 
 ## Policy Definition

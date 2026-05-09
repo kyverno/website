@@ -13,6 +13,7 @@ tags:
   - OpenShift in CEL
 version: 1.11.0
 description: 'OpenShift APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal. Note that checking for some of these resources may require modifying the Kyverno ConfigMap to remove filters.      '
+createdAt: "2024-07-15T10:06:45.000Z"
 ---
 
 ## Policy Definition
