@@ -44,7 +44,103 @@ The `imageRegistryCredentials` attribute allows configuration of registry creden
 
 The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
-The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace.
+The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace. Starting with Kyverno 1.18, a `namespace/name` notation is also accepted to reference secrets from other namespaces.
+
+#### Namespaced Secrets (1.18+)
+
+Prior to 1.18, all secrets in `imageRegistryCredentials.secrets` had to live in the Kyverno namespace. Starting with 1.18, you can use `namespace/name` notation to reference a secret from any namespace:
+
+- **Plain name** (e.g., `my-registry-secret`): Kyverno looks for the secret in the Kyverno namespace (unchanged behavior).
+- **`namespace/name`** (e.g., `production/my-registry-secret`): Kyverno reads the secret from the specified namespace.
+
+Example `ClusterPolicy` using a namespaced secret:
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-images-production
+spec:
+  rules:
+    - name: verify-image
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      verifyImages:
+        - imageReferences:
+            - 'registry.example.com/production/*'
+          imageRegistryCredentials:
+            secrets:
+              - 'production/registry-pull-secret'
+          attestors:
+            - entries:
+                - keys:
+                    publicKeys: |
+                      -----BEGIN PUBLIC KEY-----
+                      ...
+                      -----END PUBLIC KEY-----
+```
+
+#### Pod imagePullSecrets (1.18+)
+
+Starting with Kyverno 1.18, Kyverno **automatically** uses the `imagePullSecrets` defined in the pod spec as registry credentials when verifying images. No additional policy configuration is required — Kyverno reads `spec.imagePullSecrets` from the pod being evaluated and uses those secrets to authenticate with the registry.
+
+For example, if a pod carries its own pull secret:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+  namespace: team-a
+spec:
+  imagePullSecrets:
+    - name: team-a-registry-secret
+  containers:
+    - name: app
+      image: registry.example.com/team-a/app:latest
+```
+
+Kyverno will automatically use `team-a-registry-secret` from the `team-a` namespace when verifying the image, without any `imageRegistryCredentials` configuration in the policy.
+
+#### RBAC Requirements for Namespaced Secrets
+
+When `imageRegistryCredentials.secrets` references secrets outside the Kyverno namespace, or when Kyverno reads pod `imagePullSecrets` (which live in the pod's namespace), the admission and background controllers need `get` access to secrets in those namespaces.
+
+Create a Role and RoleBinding in each target namespace:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kyverno-secret-reader
+  namespace: production
+rules:
+  - apiGroups: ['']
+    resources: ['secrets']
+    verbs: ['get', 'list', 'watch']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kyverno-secret-reader
+  namespace: production
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kyverno-secret-reader
+subjects:
+  - kind: ServiceAccount
+    name: kyverno-background-controller
+    namespace: kyverno
+  - kind: ServiceAccount
+    name: kyverno-admission-controller
+    namespace: kyverno
+```
+
+For pod `imagePullSecrets`, repeat this Role and RoleBinding in every namespace where pods with `imagePullSecrets` will be deployed.
 
 For additional details please reference a section below for the solution used to sign the images and attestations:
 
