@@ -89,6 +89,7 @@ export default defineConfig({
                 'docs/policy-types/cluster-policy/match-exclude',
                 'docs/policy-types/cluster-policy/validate',
                 'docs/policy-types/cluster-policy/mutate',
+                'docs/policy-types/cluster-policy/mutate-existing',
                 'docs/policy-types/cluster-policy/generate',
                 {
                   label: 'Verify Image Rules',
