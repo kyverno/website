@@ -20,6 +20,10 @@ If you find or suspect a vulnerability, please email the security group at kyver
 
 The Kyverno security response team will send an initial acknowledgement of the disclosure in 3-5 working days. Once the vulnerability and mitigation are confirmed, the team will plan to release any necessary changes based on the severity and complexity. Additional details on the security policy and processes are available in the Kyverno [git repo](https://github.com/kyverno/kyverno/blob/main/SECURITY.md).
 
+## Security Advisories
+
+Kyverno publishes security advisories for any vulnerabilities discovered in the project. Users should regularly review [published security advisories](https://github.com/kyverno/kyverno/security/advisories) to stay informed about potential security issues and available patches.
+
 ## Security Audits
 
 The Kyverno project participates in 3rd party security audits and reviews that help provide a comprehensive evaluation of the project's security posture. These are listed below:
