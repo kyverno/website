@@ -2,6 +2,11 @@
 
 Thank you for expressing interest in contributing to the Kyverno documentation! We welcome all contributions, suggestions, and feedback! We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
 
+> **New to Kyverno?** Before diving in, we recommend exploring the
+> [Kyverno Docs](https://kyverno.io/docs/) to get familiar with key concepts
+> like policy validation, mutation, and generation — it'll make contributing
+> much smoother!
+
 ## Contributor License Agreement
 
 Contributions to this project must be accompanied by a [Contributor License Agreement](https://github.com/cncf/cla). Project authors will retain the copyright to your contribution; this simply gives us permission to use and redistribute your contributions as part of the project. You generally only need to submit a CLA once, so if you've already submitted one (even if it was for a different project), you probably don't need to do it again.
@@ -14,23 +19,39 @@ All submissions, including submissions by project members, require review. We us
 
 This project follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/main/code-of-conduct.md).
 
-## Ways To Contribute
+## Ways to Contribute
 
 If you wish to contribute to this project, there are several options as outlined below.
 
-[Report Issues](#report-issues)
-[Submit a Pull Request](#submit-a-pull-request)
-[Join Our Community Meetings](#community-meetings)
+- [Report Issues](#report-issues)
+- [Submit a Pull Request](#submit-a-pull-request)
+- [Good First Issues](#good-first-issues)
+- [Join Our Community Meetings](#community-meetings)
 
-### Report issues
+### Report Issues
 
 If you see a bug or want to suggest an enhancement, please create an [issue](https://github.com/kyverno/website/issues/new/choose). Issues are a great way to tell the Kyverno documentation team what you think can be improved or fixed. Even reporting a misspelling is appreciated!
+
+### Good First Issues
+
+New to open source or just getting started with Kyverno? Check out our
+[Good First Issues](https://github.com/kyverno/website/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+— these are hand-picked, beginner-friendly issues to help you make your
+first contribution with confidence.
+
+To get started:
+
+1. Browse the list and find an issue that interests you
+2. Leave a comment to request assignment
+3. Follow the steps in [Submit a Pull Request](#submit-a-pull-request) below
 
 ### Submit a Pull Request
 
 Find an [open issue](https://github.com/kyverno/website/issues) and indicate your interest by requesting assignment. We understand that sometimes priorities change, so if you've been assigned an issue but are no longer able to or interested in completing it, please unassign yourself so future contributors know it is available to take on.
 
 If you are new to the git contribution flow or GitHub in general, please see the [excellent documentation](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) available on the Git website with easy, step-by-step instructions on how to create your first Pull Request on GitHub.
+
+First time contributing to open source? Don't worry, maintainers and community members are happy to help guide you through the contribution process.
 
 #### Overview
 
@@ -75,6 +96,15 @@ The development server will start at `http://localhost:4321`. The site will auto
 
 For more information about testing and building, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
+#### Before Submitting a Pull Request
+
+Before opening a PR, please ensure that:
+
+- [ ] Documentation links and formatting render correctly
+- [ ] Changes have been reviewed for typos or grammar issues
+- [ ] The website builds and runs successfully using `npm run dev`
+- [ ] Commits are signed off according to the DCO requirements
+
 ### Get In Touch
 
 #### Slack
@@ -83,7 +113,15 @@ Kyverno maintains a thriving community with two different opportunities to parti
 
 #### Community Meetings
 
-For the available Kyverno meetings, see [here](https://kyverno.io/community/#meetings).
+- View upcoming Kyverno meetings on the [community meetings page](https://kyverno.io/community/#meetings)
+- View the [Kyverno meeting calendar](https://zoom-lfx.platform.linuxfoundation.org/meetings/kyverno?view=week)
+- Join the [Kyverno Google Group](https://groups.google.com/g/kyverno) to receive project updates and meeting invites
+
+#### Community Page
+
+Explore the [Kyverno Community Page](https://kyverno.io/community/) to learn
+more about the project, meet the maintainers, and discover more ways to get
+involved.
 
 ## Developer Certificate of Origin (DCO) Sign off
 
