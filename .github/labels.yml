@@ -1,0 +1,71 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/content/docs/**/*.{md,mdx}'
+          - 'src/content/policies/**/*.md'
+          - 'content/**/*.md'
+          - 'README.md'
+          - 'CONTRIBUTING.md'
+          - 'DEVELOPMENT.md'
+          - 'OWNERS.md'
+
+blog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/content/blog/**/*'
+
+website-redesign:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/components/**/*.{astro,css,js,jsx,ts,tsx}'
+          - 'src/layouts/**/*.astro'
+          - 'src/sections/**/*.{astro,css,js,jsx,ts,tsx}'
+          - 'src/styles/**/*.css'
+          - 'public/assets/**/*'
+
+github_actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**/*.{yml,yaml}'
+          - '.github/actions/**/*.{yml,yaml}'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'package-lock.json'
+          - '.github/dependabot.yml'
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'astro.config.mjs'
+          - 'markdoc.config.mjs'
+          - 'src/content.config.ts'
+          - 'netlify.toml'
+          - 'tsconfig.json'
+          - 'lychee.toml'
+
+javascript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/constants/**/*.{js,ts}'
+          - 'src/hooks/**/*.{js,jsx,ts,tsx}'
+          - 'src/utils/**/*.{js,ts}'
+          - 'scripts/**/*.{js,ts,mjs,cjs}'
+
+go:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.go'
+          - 'go.mod'
+          - 'go.sum'
+
+webhook:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/content/docs/**/admission-controllers.md'
+          - 'src/content/docs/**/validating-policy.mdx'
+          - 'src/content/docs/**/mutating-policy.mdx'
+          - 'src/content/docs/**/image-validating-policy.mdx'
+          - 'src/content/policies/**/admission-webhooks/**/*'
