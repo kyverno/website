@@ -4,7 +4,7 @@ Thank you for expressing interest in contributing to the Kyverno documentation! 
 
 > **New to Kyverno?** Before diving in, we recommend exploring the
 > [Kyverno Docs](https://kyverno.io/docs/policy-types/overview/) to get familiar with key concepts
-> like validation, mutation, generation, image verification, cleanup, and exception policies, it'll make  
+> like validation, mutation, generation, image verification, cleanup and exception policies, it'll make  
 > contributing much smoother!
 
 ## Contributor License Agreement
