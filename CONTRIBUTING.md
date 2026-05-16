@@ -3,9 +3,9 @@
 Thank you for expressing interest in contributing to the Kyverno documentation! We welcome all contributions, suggestions, and feedback! We'd love to accept your contributions to this project, there are just a few guidelines you need to follow.
 
 > **New to Kyverno?** Before diving in, we recommend exploring the
-> [Kyverno Docs](https://kyverno.io/docs/) to get familiar with key concepts
-> like policy validation, mutation, and generation — it'll make contributing
-> much smoother!
+> [Kyverno Docs](https://kyverno.io/docs/policy-types/overview/) to get familiar with key concepts
+> like validation, mutation, generation, image verification, cleanup, and exception policies, it'll make  
+> contributing much smoother!
 
 ## Contributor License Agreement
 
@@ -36,7 +36,7 @@ If you see a bug or want to suggest an enhancement, please create an [issue](htt
 
 New to open source or just getting started with Kyverno? Check out our
 [Good First Issues](https://github.com/kyverno/website/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-— these are hand-picked, beginner-friendly issues to help you make your
+these are hand-picked, beginner-friendly issues to help you make your
 first contribution with confidence.
 
 To get started:
@@ -103,7 +103,7 @@ Before opening a PR, please ensure that:
 - [ ] Documentation links and formatting render correctly
 - [ ] Changes have been reviewed for typos or grammar issues
 - [ ] The website builds and runs successfully using `npm run dev`
-- [ ] Commits are signed off according to the DCO requirements
+- [ ] Commits are signed off according to the [DCO requirements](#developer-certificate-of-origin-dco-sign-off)
 
 ### Get In Touch
 
