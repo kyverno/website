@@ -5,12 +5,23 @@ export const CncfSection = () => {
         <h2 className="text-2xl sm:text-3xl font-bold text-primary-100">
           Kyverno is a CNCF Graduated Project
         </h2>
+
+        {/* Light mode logo */}
+        <img
+          src="assets/images/cncf-light.png"
+          alt="CNCF logo"
+          className="w-120 block dark:hidden"
+          loading="lazy"
+        />
+
+        {/* Dark mode logo */}
         <img
           src="assets/images/cncf.png"
           alt="CNCF logo"
-          className="w-120"
+          className="w-120 hidden dark:block"
           loading="lazy"
         />
+
         <p className="text-base sm:text-lg text-theme-secondary max-w-100">
           The Linux Foundation® (TLF) has registered trademarks and uses
           trademarks. For a list of TLF trademarks, see Trademark Usage.
