@@ -50,11 +50,16 @@ export const formatSeverityLabel = (severity: string): string => {
  */
 export const getCategoryColor = (category: string): string => {
   const knownColors: Record<string, string> = {
-    verifyImages: 'text-cyan-400 bg-cyan-950/50 border-cyan-900/50',
-    validate: 'text-blue-400 bg-blue-950/50 border-blue-900/50',
-    mutate: 'text-purple-400 bg-purple-950/50 border-purple-900/50',
-    generate: 'text-emerald-400 bg-emerald-950/50 border-emerald-900/50',
-    cleanup: 'text-orange-400 bg-orange-950/50 border-orange-900/50',
+    verifyImages:
+      'text-cyan-900 bg-cyan-200 border-cyan-300 dark:text-cyan-400 dark:bg-cyan-950/50 dark:border-cyan-900/50',
+    validate:
+      'text-blue-900 bg-blue-200 border-blue-300 dark:text-blue-400 dark:bg-blue-950/50 dark:border-blue-900/50',
+    mutate:
+      'text-purple-900 bg-purple-200 border-purple-300 dark:text-purple-400 dark:bg-purple-950/50 dark:border-purple-900/50',
+    generate:
+      'text-emerald-900 bg-emerald-200 border-emerald-300 dark:text-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-900/50',
+    cleanup:
+      'text-orange-900 bg-orange-200 border-orange-300 dark:text-orange-400 dark:bg-orange-950/50 dark:border-orange-900/50',
   }
 
   if (category && knownColors[category]) {
@@ -68,9 +73,10 @@ export const getCategoryColor = (category: string): string => {
  */
 export const getSeverityColor = (severity: string): string => {
   const knownColors: Record<string, string> = {
-    high: 'text-red-400 bg-red-950/50 border-red-900/50',
-    medium: 'text-yellow-400 bg-yellow-950/50 border-yellow-900/50',
-    low: 'text-green-400 bg-green-950/50 border-green-900/50',
+    high: 'text-red-900 bg-red-200 border-red-300 dark:text-red-400 dark:bg-red-950/50 dark:border-red-900/50',
+    medium:
+      'text-yellow-900 bg-yellow-200 border-yellow-300 dark:text-yellow-400 dark:bg-yellow-950/50 dark:border-yellow-900/50',
+    low: 'text-green-900 bg-green-200 border-green-300 dark:text-green-400 dark:bg-green-950/50 dark:border-green-900/50',
   }
 
   if (severity && knownColors[severity]) {
