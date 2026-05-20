@@ -33,6 +33,13 @@ A [Kyverno Third-Party Security Audit](https://kyverno.io/blog/2023-security-aud
 The [Kyverno Fuzzing Security Audit](https://kyverno.io/blog/fuzzing-audit/assets/kyverno-2023-fuzzing-security-audit.pdf) was conducted as part of the CNCF's security initiative. Fuzz testing, or fuzzing, is an automated process that injects random inputs into the system to reveal defects and vulnerabilities. The audit, spanning July and August 2023, resulted in 15 fuzzers identifying three bugs. Post-audit, Kyverno continues to test for bugs and vulnerabilities using [OSS-Fuzz](https://github.com/google/oss-fuzz).
 The audit's findings prompted fixes and ongoing testing to ensure a secure and robust code base. You can read more about the fuzz testing [in this blog post](https://kyverno.io/blog/2023/09/06/fuzzing-audit/).
 
+### CNCF TAG Security Assessments
+
+As part of the CNCF graduation process, Kyverno has undergone security assessments by the CNCF Technical Advisory Group for Security (TAG Security):
+
+- [Self-assessment](https://github.com/cncf/tag-security/blob/main/community/assessments/projects/kyverno/self-assessment.md) — prepared by the Kyverno maintainers, covering the project's security posture, threat model, and compliance with CNCF security best practices.
+- Joint assessment — a collaborative assessment between the Kyverno team and CNCF TAG Security reviewers; currently in progress and will be published at the [TAG Security assessments directory](https://github.com/cncf/tag-security/tree/main/community/assessments/projects/kyverno) upon completion.
+
 ## Contact Us
 
 To communicate with the Kyverno team, for any questions or discussions, use [Slack](https://slack.k8s.io/#kyverno) or [GitHub](https://github.com/kyverno/kyverno).
