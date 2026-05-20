@@ -72,13 +72,13 @@ The Kyverno policy library includes examples that can support software supply ch
 
 ## Outcome Mapping
 
-| User Goal | Kyverno Capability | Example Policy |
-|---|---|---|
-| Require trusted images before deployment | Image verification | Verify image signatures |
-| Verify build provenance | Attestation verification | Verify SLSA provenance |
-| Prevent mutable image references | Validation policy | Disallow latest tag |
-| Roll out controls safely | Audit and enforce modes | Apply policies in audit mode before enforcement |
-| Track violations over time | Policy reports | Review policy reports for supply chain policy results |
+| User Goal                                | Kyverno Capability      | Example Policy                                |
+| ---------------------------------------- | ----------------------- | --------------------------------------------- |
+| Require trusted images before deployment | Image verification      | Verify image signatures                       |
+| Verify build provenance                  | Attestation verification | Verify SLSA provenance                        |
+| Prevent mutable image references         | Validation policy       | Disallow latest tag                           |
+| Roll out controls safely                 | Audit and enforce modes | Apply policies in audit mode before enforcing |
+| Track violations over time               | Policy reports          | Review policy reports for supply chain policy results |
 
 ## Community Resources
 
