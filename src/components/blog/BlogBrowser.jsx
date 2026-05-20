@@ -85,11 +85,12 @@ export const BlogBrowser = ({ posts }) => {
                   >
                     <div class="h-full flex flex-col bg-dark-50 rounded-xl overflow-hidden border border-stroke hover:border-primary-100/50 hover:bg-dark-50/80 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                       {post.image && (
-                        <div class="w-full h-48 overflow-hidden bg-stroke/30">
+                        <div class="w-full h-52 overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-dark-100 dark:to-dark-50 flex items-center justify-center p-4 border-b border-stroke/30">
                           <img
                             src={post.image}
                             alt={post.title}
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            class="max-w-full max-h-full object-contain transition-all duration-300 group-hover:scale-105"
                           />
                         </div>
                       )}
@@ -161,11 +162,12 @@ export const BlogBrowser = ({ posts }) => {
                   <a href={post.url} data-astro-reload class="block h-full">
                     <div class="h-full flex flex-col bg-dark-50 rounded-xl overflow-hidden border border-stroke hover:border-primary-100/50 hover:bg-dark-50/80 transition-all duration-300 hover:shadow-xl hover:shadow-primary-100/20 hover:-translate-y-1">
                       {post.image && (
-                        <div class="w-full h-48 overflow-hidden bg-stroke/30">
+                        <div class="w-full h-52 overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-dark-100 dark:to-dark-50 flex items-center justify-center p-4 border-b border-stroke/30">
                           <img
                             src={post.image}
                             alt={post.title}
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            class="max-w-full max-h-full object-contain transition-all duration-300 group-hover:scale-105"
                           />
                         </div>
                       )}
