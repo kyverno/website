@@ -56,7 +56,7 @@ export const PolicyCard = ({ policy }) => {
               {formatSeverityLabel(severity)}
             </span>
             {isNew && (
-              <span className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border text-purple-400 bg-purple-950/50 border-purple-900/50">
+              <span className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border text-purple-900 bg-purple-200 border-purple-300 dark:text-purple-400 dark:bg-purple-950/50 dark:border-purple-900/50">
                 New
               </span>
             )}
