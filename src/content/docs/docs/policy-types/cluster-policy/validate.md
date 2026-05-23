@@ -22,7 +22,7 @@ Kyverno supports several ways to express validation logic:
 - Use `pattern` when the resource should match a desired structure or value.
 - Use `anyPattern` when more than one valid structure should be accepted.
 - Use `deny` rules when validation depends on conditions or comparisons.
-- Use CEL expressions when the policy needs more flexible logic using admission request data.
+- Use CEL expressions when validation needs expression-based checks over admission request data, including comparisons and conditions that are easier to express in CEL than in `pattern`, `anyPattern`, or `deny`. See [Common Expression Language (CEL)](#common-expression-language-cel) for details.
 
 These approaches can be used to write simple checks as well as more advanced validation policies, depending on how much control the policy requires.
 
