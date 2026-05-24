@@ -1,4 +1,9 @@
-## Software Supply Chain Security
+---
+title: Software Supply Chain Security
+excerpt: Use Kyverno policies to reduce software supply chain risk in Kubernetes.
+sidebar:
+  order: 10
+---
 
 Software supply chain security in Kubernetes focuses on controlling which workloads can run, where container images come from, and how those images were built and verified.
 
