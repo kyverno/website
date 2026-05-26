@@ -16,13 +16,13 @@ The new CEL based Kyverno [ValidatingPolicy](/docs/policy-types/validating-polic
 
 | Policy Type                                                         | Description                                                                | API Version              | Status             |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------ | ------------------ |
-| [ValidatingPolicy](/docs/policy-types/validating-policy)            | Validate Kubernetes resources or JSON payloads                             | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [MutatingPolicy](/docs/policy-types/mutating-policy)                | Mutate new or existing resources                                           | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [GeneratingPolicy](/docs/policy-types/generating-policy)            | Create or clone resources based on flexible triggers                       | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [DeletingPolicy](/docs/policy-types/deleting-policy)                | Deletes matching resources based on a schedule                             | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures and attestations                         | `policies.kyverno.io/v1` | Stable (v1.17)     |
-| [ClusterPolicy](/docs/policy-types/cluster-policy/overview)         | Legacy policy type with validate, mutate, generate, and verifyImages rules | `kyverno.io/v1`          | Deprecated (v1.17) |
-| [CleanupPolicy](/docs/policy-types/cleanup-policy)                  | Legacy policy type that deletes matching resources based on a schedule     | `kyverno.io/v2`          | Deprecated (v1.17) |
+| [ValidatingPolicy](/docs/policy-types/validating-policy)            | Validate Kubernetes resources or JSON payloads                             | `policies.kyverno.io/v1` | Stable (v1.18)     |
+| [MutatingPolicy](/docs/policy-types/mutating-policy)                | Mutate new or existing resources                                           | `policies.kyverno.io/v1` | Stable (v1.18)     |
+| [GeneratingPolicy](/docs/policy-types/generating-policy)            | Create or clone resources based on flexible triggers                       | `policies.kyverno.io/v1` | Stable (v1.18)     |
+| [DeletingPolicy](/docs/policy-types/deleting-policy)                | Deletes matching resources based on a schedule                             | `policies.kyverno.io/v1` | Stable (v1.18)     |
+| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures and attestations                         | `policies.kyverno.io/v1` | Stable (v1.18)     |
+| [ClusterPolicy](/docs/policy-types/cluster-policy/overview)         | Legacy policy type with validate, mutate, generate, and verifyImages rules | `kyverno.io/v1`          | Deprecated (v1.18) |
+| [CleanupPolicy](/docs/policy-types/cleanup-policy)                  | Legacy policy type that deletes matching resources based on a schedule     | `kyverno.io/v2`          | Deprecated (v1.18) |
 
 ## Deprecation Schedule for Legacy Types
 

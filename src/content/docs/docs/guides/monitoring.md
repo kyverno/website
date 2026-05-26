@@ -698,3 +698,98 @@ Go to Grafana on port 3000 -> Dashboards -> New -> import -> Upload file that yo
 ```sh
 curl https://raw.githubusercontent.com/kyverno/grafana-dashboard/master/grafana/dashboard.json -o kyverno-dashboard.json
 ```
+
+## Alerting
+
+Kyverno supports alerting via an optional `PrometheusRule` resource. This requires [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator) to be installed (the same prerequisite as `serviceMonitor.enabled`). If you followed the [Tutorial](#tutorial) above, kube-prometheus-stack already includes it.
+
+### PrometheusRule
+
+Enable the resource and provide your alert rules via `prometheusRule.spec` in `values.yaml`. The `additionalLabels` must match the `ruleSelector` on your Prometheus instance (for kube-prometheus-stack, this is typically `release: prometheus`).
+
+```yaml
+prometheusRule:
+  enabled: true
+  additionalLabels:
+    release: prometheus
+  spec:
+    - name: kyverno.admission
+      rules:
+        - alert: KyvernoAdmissionHighLatency
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(kyverno_admission_review_duration_seconds_bucket[5m])) by (le)
+            ) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Kyverno admission review p99 latency is elevated
+            description: >-
+              Admission review p99 latency is {{ $value | humanizeDuration }},
+              above the 1s threshold. Kubernetes webhooks hard-timeout at 10s.
+            runbook_url: https://kyverno.io/docs/guides/monitoring/#admission-latency-high
+```
+
+Additional commented-out example rules are in the chart's `values.yaml` under `prometheusRule.spec`. Thresholds should be tuned to your environment's measured baseline — see [published benchmarks](https://kyverno.io/docs/installation/scaling/) as a starting reference.
+
+### Key Metrics
+
+| Metric                                      | Type      | Description                                                                                            |
+| ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| `kyverno_admission_review_duration_seconds` | Histogram | End-to-end admission review latency (all policies combined)                                            |
+| `kyverno_policy_execution_duration_seconds` | Histogram | Per-rule execution latency, labelled by `rule_type`                                                    |
+| `kyverno_admission_requests_total`          | Counter   | Total admission requests, labelled by `resource_kind`, `resource_request_operation`, `request_allowed` |
+| `kyverno_policy_results_total`              | Counter   | Policy evaluation results, labelled by `rule_result`, `rule_execution_cause`                           |
+
+Both histogram metrics expose `_bucket`, `_sum`, and `_count` series, so `histogram_quantile` is supported.
+
+### Alert Runbook {#alerting-runbook}
+
+#### Admission latency high {#admission-latency-high}
+
+**Symptom:** p99 admission review duration is above threshold for more than 5 minutes.
+
+**Possible causes:**
+
+- Surge in admission request volume (check `sum(rate(kyverno_admission_requests_total[5m]))`)
+- Policy count or complexity increased recently (check `kyverno_policy_changes_total`)
+- Kyverno pods under-resourced (check CPU throttling and memory pressure)
+- External data source calls (global context entries, API calls) adding latency
+
+**Diagnosis:**
+
+```sh
+kubectl exec -n kyverno deploy/kyverno -c kyverno -- \
+  curl -s localhost:8000/metrics | grep admission_review_duration
+kubectl top pod -n kyverno
+kubectl get events -n kyverno --sort-by='.lastTimestamp' | tail -20
+```
+
+**Mitigations:**
+
+1. If CPU-bound: increase `admissionController.resources.limits.cpu` and scale replicas
+2. If policy-complexity-bound: review recently added policies; consider background mode for non-urgent validate rules
+3. If approaching the Kubernetes timeout: follow the [temporary disable runbook](https://kyverno.io/docs/operational-runbook/) to reduce scope while investigating
+
+#### Policy execution latency high {#policy-execution-latency-high}
+
+**Symptom:** p99 per-rule execution duration is above threshold for more than 5 minutes.
+
+**Possible causes:**
+
+- Complex CEL or JMESPath expressions with large context
+- Global context entry fetches (external API calls per rule evaluation)
+
+**Diagnosis:**
+
+```sh
+kubectl exec -n kyverno deploy/kyverno -c kyverno -- \
+  curl -s localhost:8000/metrics | grep policy_execution_duration
+```
+
+**Mitigations:**
+
+1. Identify the slow rule type from the `rule_type` label on the alert
+2. For `generate` rules: ensure deferred generation is enabled (`spec.generateExisting: false` where appropriate)
+3. For `mutate` rules with external lookups: cache context data or move to background processing

@@ -7,8 +7,9 @@ sidebar:
 ---
 
 import FeatureState from '../../../../components/FeatureState.astro'
+import { lastestStableVersion } from '../../../../constants'
 
-<FeatureState state="stable" version="v1.17" />
+<FeatureState state="stable" version={lastestStableVersion} />
 
 ## Introduction
 

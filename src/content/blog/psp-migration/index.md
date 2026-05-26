@@ -89,7 +89,7 @@ In this section, we'll walk you through a guided migration process which follows
 
 We'll assume the following:
 
-1. Kubernetes v1.24 is in use although this should be applicable to earlier versions as well. Note the versions supported by Kyverno in the compatibility matrix [here](/docs/installation/installation#compatibility-matrix).
+1. Kubernetes v1.24 is in use although this should be applicable to earlier versions as well. Note the versions supported by Kyverno in the compatibility matrix [here](/docs/installation/installation/#kubernetes-compatibility).
 2. A Namespaced called `qa` which is the subject of this tutorial.
 3. A user named `chip` who is currently subject to a PSP in the `qa` Namespace we wish to migrate onto Kyverno.
 

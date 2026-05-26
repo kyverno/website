@@ -6,9 +6,11 @@ sidebar:
 excerpt: Test Kyverno policies for effectiveness.
 ---
 
+:::tip
 The [Kyverno CLI `test` command](/docs/kyverno-cli/reference/kyverno_test) can be used to test if a policy is behaving as expected.
 
 Please refer to the [`test` command documentation](/docs/kyverno-cli/reference/kyverno_test) for details. You can also find examples in the [sample policies repo](https://github.com/kyverno/policies).
+:::
 
 ## Continuous Integration
 

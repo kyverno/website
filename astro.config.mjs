@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
 import markdoc from '@astrojs/markdoc'
+import mermaid from 'astro-mermaid'
 import netlify from '@astrojs/netlify'
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
-import starlightAutoSidebar from 'starlight-auto-sidebar'
 import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 import tailwindcss from '@tailwindcss/vite'
@@ -22,8 +22,10 @@ const checkLinksPlugin = process.env.CHECK_LINKS
 // https://astro.build/config
 export default defineConfig({
   integrations: [
+    mermaid(),
     starlight({
       title: 'Kyverno',
+      favicon: '/favicon.svg',
       customCss: ['./src/styles/global.css'],
       components: {
         PageSidebar: './src/components/PageSidebar.astro',
@@ -62,13 +64,13 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Introduction',
-          autogenerate: { directory: 'docs/introduction' },
           collapsed: true,
+          items: [{ autogenerate: { directory: 'docs/introduction' } }],
         },
         {
           label: 'Setup',
-          autogenerate: { directory: 'docs/installation' },
-          collapsed: true,
+          collapsed: false,
+          items: [{ autogenerate: { directory: 'docs/installation' } }],
         },
         {
           label: 'Policy Types',
@@ -92,9 +94,14 @@ export default defineConfig({
                 {
                   label: 'Verify Image Rules',
                   collapsed: true,
-                  autogenerate: {
-                    directory: 'docs/policy-types/cluster-policy/verify-images',
-                  },
+                  items: [
+                    {
+                      autogenerate: {
+                        directory:
+                          'docs/policy-types/cluster-policy/verify-images',
+                      },
+                    },
+                  ],
                 },
                 'docs/policy-types/cluster-policy/autogen',
                 'docs/policy-types/cluster-policy/variables',
@@ -143,25 +150,23 @@ export default defineConfig({
             {
               label: 'Kyverno CLI',
               collapsed: true,
-              autogenerate: { directory: 'docs/kyverno-cli/reference' },
+              items: [
+                { autogenerate: { directory: 'docs/kyverno-cli/reference' } },
+              ],
             },
           ],
         },
         {
           label: 'Sub-Projects',
-          autogenerate: { directory: 'docs/subprojects' },
           collapsed: true,
+          items: [{ autogenerate: { directory: 'docs/subprojects' } }],
         },
         {
           label: 'Community',
           slug: 'community',
         },
       ],
-      plugins: [
-        starlightImageZoom(),
-        // starlightAutoSidebar(),
-        ...checkLinksPlugin,
-      ],
+      plugins: [starlightImageZoom(), ...checkLinksPlugin],
     }),
     react(),
     markdoc(),

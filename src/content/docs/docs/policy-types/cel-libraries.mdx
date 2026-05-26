@@ -221,6 +221,22 @@ spec:
 
 When communicating over HTTPS, Kyverno uses the provided CA bundle to validate the server's certificate.
 
+:::note[Security Note]
+Kyverno's HTTP hardening controls for CEL HTTP calls (`http.get()`/`http.post()`) are configured with `--httpBlocklist`/`--httpAllowlist` and `--allowHTTPInNamespacedPolicies`.
+
+- Namespaced policies: CEL HTTP is disabled by default and can be enabled explicitly.
+- Cluster-scoped policies: CEL HTTP bypasses the blocklist check by design.
+
+See [Configuring Kyverno](/docs/installation/customization#http-calls) for details.
+:::
+
+:::note[Security Note]
+If an `Authorization` header is not explicitly provided, Kyverno injects a scoped ServiceAccount
+token for outbound HTTP context requests. This token can be used by servers to authenticate the
+HTTP request using the TokenReview API. The token uses a Kyverno-specific audience
+(default: `kyverno-svc.kyverno.io`) to reduce replay risk against the Kubernetes API server.
+:::
+
 ## User library
 
 The **User library** includes functions like `parseServiceAccount()` to extract metadata from the user or service account that triggered the admission request. These expressions help enforce policies based on user identity, namespace association, or naming conventions of service accounts.
