@@ -1724,7 +1724,7 @@ The output confirms that the PolicyException worked as intended:
 
 Policies that use `context.apiCall` to look up sibling Kubernetes objects (for example, "does a PodDisruptionBudget exist for this Deployment?") previously required the `--cluster` flag to reach a live API server. Without `--cluster`, the CLI logged `disabled loading of APICall context entry` and skipped those rules entirely, resulting in misleading pass/fail counts in CI.
 
-Starting in Kyverno 1.14, when you pass resources with `--resource` and do **not** use `--cluster`, the CLI automatically builds an in-memory dynamic client from the supplied manifests and enables `apiCall` against that snapshot. This makes it possible to lint a complete multi-document manifest — for example, the output of `helm template` — in CI without any cluster access.
+Starting in Kyverno CLI v1.14, when you pass resources with `--resource` and do **not** use `--cluster`, the CLI automatically builds an in-memory dynamic client from the supplied manifests and enables `apiCall` against that snapshot. This makes it possible to lint a complete multi-document manifest — for example, the output of `helm template` — in CI without any cluster access.
 
 The same mechanism resolves `context.globalReference` entries: if any `GlobalContextEntry` objects appear in the resource stream, the CLI snapshots the relevant resources from the in-memory client and wires them into the context loader factory, so policies that use `globalReference` can also be validated fully offline.
 
@@ -3860,9 +3860,9 @@ globalContextEntries:
     # resourceFiles:
     #   - gce-deployments.yaml
     fieldPath: deployments # Optional JMESPath applied to the root before projections
-    projections: # Optional list of named values extracted from the root
+    projections: # Optional list of named values extracted from the narrowed root
       - name: items
-        path: deployments
+        path: '@'
 results:
   - kind: Pod
     policy: my-policy
@@ -3929,7 +3929,7 @@ results:
     kind: Pod
     policy: check-external-config
     resources:
-      - test-pod
+      - default/test-pod
     result: pass
 ```
 
