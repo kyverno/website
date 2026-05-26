@@ -27,7 +27,7 @@ This is when Kyverno's `ValidatingPolicy` comes in to play.
 
 ## What ValidatingPolicy actually does
 
-You can think of it like an automated code review that runs on every resource before it enters the cluster.
+Think of `ValidatingPolicy` like an automated code review that runs on every resource before it enters the cluster.
 
 Except instead of relying on a human reviewer who might miss something or approve a bad change during a busy day, the policy runs automatically on every request.
 
