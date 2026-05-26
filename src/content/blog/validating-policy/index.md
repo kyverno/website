@@ -18,7 +18,7 @@ That's completely fine for learning.
 But in a real shared cluster, one bad manifest can:
 
 - consume all node resources
-- bypass security controls,
+- bypass security controls
 - or create deployments that become impossible to manage later.
 
 Kubernetes doesn't judge. It just runs whatever it's told to. That's why rules become necessary.
