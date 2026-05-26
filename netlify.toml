@@ -340,6 +340,21 @@
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
+    # Short cache for HTML: avoids repeated 304s within a session while
+    # still picking up new deploys within a minute.
+    Cache-Control = "public, max-age=300, must-revalidate"
+
+# Astro fingerprints every JS/CSS/image under /_astro/ with a content hash,
+# so these files are safe to cache forever — changing content gets a new URL.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
 
 [[headers]]
   for = "/blog/index.xml"
