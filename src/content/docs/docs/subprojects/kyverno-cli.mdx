@@ -1881,11 +1881,11 @@ apiCallResponses: # optional; inline mock responses for context.apiCall and CEL 
     method: GET # optional HTTP method filter
     response:
       statusCode: 200
-      body: {} # arbitrary JSON object
+      body: {} # arbitrary JSON value (object/array/string/number/bool/null)
 globalContextEntries: # optional; inline mock data for GlobalContextEntry references (offline testing)
   - name: <globalcontextentry-name>
     # Choose exactly ONE of the three mutually exclusive data sources below.
-    # Option 1: arbitrary JSON root object
+    # Option 1: arbitrary JSON root value
     # data: {}
     # Option 2: inline Kubernetes resource manifests
     # resources:
@@ -1933,7 +1933,7 @@ The test declaration consists of the following parts:
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
 7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](#working-with-assertion-trees)).
 8. The `apiCallResponses` element which declares static mock responses for `context.apiCall` and CEL `http.Get()`/`http.Post()` calls, enabling offline testing without a real HTTP server. Optional.
-9. The `globalContextEntries` element which declares mock data for `GlobalContextEntry` references, satisfying both `context.globalReference` (v1 ClusterPolicy) and `globalContext.Get()` (CEL ValidatingPolicy) calls offline. Each entry supports three mutually exclusive data sources: `data` (arbitrary JSON object), `resources` (inline Kubernetes resource manifests), or `resourceFiles` (paths to YAML files relative to the test directory). The `resources` and `resourceFiles` options decode manifests into the same `[]interface{}` shape as the real Kubernetes resource cache, making it possible to test `kubernetesResource`-backed GlobalContextEntries fully offline. Optional.
+9. The `globalContextEntries` element which declares mock data for `GlobalContextEntry` references, satisfying both `context.globalReference` (v1 ClusterPolicy) and `globalContext.Get()` (CEL ValidatingPolicy) calls offline. Each entry supports three mutually exclusive data sources: `data` (arbitrary JSON value), `resources` (inline Kubernetes resource manifests), or `resourceFiles` (paths to YAML files relative to the test directory). The `resources` and `resourceFiles` options decode manifests into the same `[]interface{}` shape as the real Kubernetes resource cache, making it possible to test `kubernetesResource`-backed GlobalContextEntries fully offline. Optional.
 
 If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
@@ -3819,7 +3819,7 @@ Test Summary: 2 tests passed and 0 tests failed
 
 ### Testing Policies with Offline HTTP Mocks and Global Context
 
-Policies that call an external HTTP service via `context.apiCall`, CEL `http.Get()`, or `http.Post()`, or that look up a `GlobalContextEntry` reference, cannot be tested with `kyverno test` by default because the CLI has no live cluster or external server available. Starting in Kyverno 1.14, `kyverno-test.yaml` accepts two new optional fields — `apiCallResponses` and `globalContextEntries` — so the expected external data can be declared inline, enabling fully offline policy validation in local development and CI/CD pipelines.
+Policies that call an external HTTP service via `context.apiCall`, CEL `http.Get()`, or `http.Post()`, or that look up a `GlobalContextEntry` reference, cannot be tested with `kyverno test` by default because the CLI has no live cluster or external server available. Starting in Kyverno CLI v1.14, `kyverno-test.yaml` accepts two new optional fields — `apiCallResponses` and `globalContextEntries` — so the expected external data can be declared inline, enabling fully offline policy validation in local development and CI/CD pipelines.
 
 #### Schema overview
 
@@ -3844,7 +3844,7 @@ apiCallResponses:
 # Each entry requires exactly ONE of: data, resources, or resourceFiles (mutually exclusive).
 globalContextEntries:
   - name: gctxentry-deployments # Must match the GlobalContextEntry name used in the policy
-    # Option 1: arbitrary JSON root object
+    # Option 1: arbitrary JSON root value
     data:
       deployments:
         - name: existing-deployment-1
@@ -3873,7 +3873,7 @@ results:
 ```
 
 :::note[Note]
-The `body` field of each `apiCallResponse` accepts any valid JSON object — the same Kubernetes-style unstructured format used for `runtime.RawExtension`. The status code is validated to be a standard HTTP code (100–599) and the body must be valid JSON; the CLI will report an error for a malformed mock before any test runs.
+The `body` field of each `apiCallResponses` entry accepts any valid JSON value (object, array, string, number, boolean, or null). The status code is validated to be a standard HTTP code (100–599) and the body must be valid JSON; the CLI will report an error for a malformed mock before any test runs.
 :::
 
 :::note[Mutual Exclusivity]
