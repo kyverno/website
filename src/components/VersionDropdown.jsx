@@ -2,15 +2,18 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createVersionOptions, getCurrentVersion } from '../utils/versions'
 
 import { ChevronDown } from 'lucide-react'
-import { documentationVersions } from '../constants/index.js'
+import {
+  documentationVersions,
+  lastestStableVersion,
+} from '../constants/index.js'
 
 export const VersionDropdown = ({ className = '' }) => {
-  // Initialize with "main" version as default
-  const mainVersion =
-    documentationVersions.find((v) => v.href.includes('main.kyverno.io')) ||
+  // Initialize with latest stable version as default.
+  const defaultVersion =
+    documentationVersions.find((v) => v.label === lastestStableVersion) ||
     documentationVersions[0]
   const [isOpen, setIsOpen] = useState(false)
-  const [currentVersion, setCurrentVersion] = useState(mainVersion)
+  const [currentVersion, setCurrentVersion] = useState(defaultVersion)
   const dropdownRef = useRef(null)
 
   useEffect(() => {
