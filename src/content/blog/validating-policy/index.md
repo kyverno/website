@@ -23,7 +23,7 @@ But in a real shared cluster, one bad manifest can:
 
 Kubernetes doesn't judge. It just runs whatever it's told to. That's why rules become necessary.
 
-That's when Kyverno's `ValidatingPolicy` comes in.
+This is when Kyverno's `ValidatingPolicy` comes in to play.
 
 ## What ValidatingPolicy actually does
 
