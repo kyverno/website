@@ -1726,7 +1726,7 @@ Policies that use `context.apiCall` to look up sibling Kubernetes objects (for e
 
 Starting in Kyverno 1.14, when you pass resources with `--resource` and do **not** use `--cluster`, the CLI automatically builds an in-memory dynamic client from the supplied manifests and enables `apiCall` against that snapshot. This makes it possible to lint a complete multi-document manifest — for example, the output of `helm template` — in CI without any cluster access.
 
-The same mechanism resolves `context.globalReference` entries: if any `GlobalContextEntry` objects (API version `kyverno.io/v2`) appear in the resource stream, the CLI snapshots the relevant resources from the in-memory client and wires them into the context loader factory, so policies that use `globalReference` can also be validated fully offline.
+The same mechanism resolves `context.globalReference` entries: if any `GlobalContextEntry` objects appear in the resource stream, the CLI snapshots the relevant resources from the in-memory client and wires them into the context loader factory, so policies that use `globalReference` can also be validated fully offline.
 
 :::note[Note]
 Only `GlobalContextEntry` entries with a `spec.kubernetesResource` source are resolved this way. Entries that point to an external HTTP service are out of scope for offline evaluation.
@@ -1787,6 +1787,9 @@ spec:
     matchLabels:
       app: my-app
   template:
+    metadata:
+      labels:
+        app: my-app
     spec:
       serviceAccountName: my-sa
       containers:
@@ -1826,7 +1829,7 @@ Policies that reference a `GlobalContextEntry` can also be evaluated offline by 
 kyverno apply policy.yaml --resource resources.yaml
 ```
 
-The CLI detects `kyverno.io/v2 GlobalContextEntry` objects in the resource stream, lists the matching resources from the in-memory client, and wires the result into the context loader factory — no cluster or controller needed.
+The CLI detects `GlobalContextEntry` objects in the resource stream, lists the matching resources from the in-memory client, and wires the result into the context loader factory — no cluster or controller needed.
 
 ## Test Command
 
@@ -1881,16 +1884,19 @@ apiCallResponses: # optional; inline mock responses for context.apiCall and CEL 
       body: {} # arbitrary JSON object
 globalContextEntries: # optional; inline mock data for GlobalContextEntry references (offline testing)
   - name: <globalcontextentry-name>
-    # Choose exactly ONE of the three mutually exclusive data sources:
-    data: {} # arbitrary JSON root object
-    resources: # list of inline Kubernetes resource manifests (mutually exclusive with data and resourceFiles)
-      - apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: <resource-name>
-          namespace: <namespace>
-    resourceFiles: # list of YAML file paths relative to the test directory (mutually exclusive with data and resources)
-      - <path/to/resources.yaml>
+    # Choose exactly ONE of the three mutually exclusive data sources below.
+    # Option 1: arbitrary JSON root object
+    # data: {}
+    # Option 2: inline Kubernetes resource manifests
+    # resources:
+    #   - apiVersion: apps/v1
+    #     kind: Deployment
+    #     metadata:
+    #       name: <resource-name>
+    #       namespace: <namespace>
+    # Option 3: YAML file paths relative to the test directory
+    # resourceFiles:
+    #   - <path/to/resources.yaml>
     fieldPath: '' # optional JMESPath to narrow the root (applies to data; not used with resources/resourceFiles)
     projections: # optional named JMESPath extractions from the root
       - name: <key>
@@ -3876,7 +3882,7 @@ For each `globalContextEntries` entry, `data`, `resources`, and `resourceFiles` 
 
 #### Mocking CEL `http.Get()` calls
 
-The following example tests a `ValidatingPolicy` that calls an external configuration endpoint using CEL's built-in `http.Get()`.
+The following example tests a `ValidatingPolicy` that calls an external configuration endpoint using Kyverno's CEL `http.Get()` library function.
 
 Policy manifest (`policy.yaml`):
 
@@ -3896,7 +3902,7 @@ spec:
     - name: config
       expression: http.Get("https://example.com/config")
   validations:
-    - expression: variables.config.body.allowed == true
+    - expression: variables.config.allowed == true
       message: 'External config check failed'
 ```
 
@@ -4173,7 +4179,7 @@ spec:
           conditions:
             any:
               - key: '{{ existingDeployments }}'
-                operator: Equal
+                operator: Equals
                 value: 0
 ```
 
