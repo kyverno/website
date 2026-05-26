@@ -37,7 +37,7 @@ returns `false`, the resource is blocked and the person gets the error message b
 
 ## Two modes: block it or just watch it
 
-Before writing anything, there's one decision to make for every ValidatingPolicy:
+Before writing anything, there's one decision to make for every `ValidatingPolicy`:
 either block violations, or just report them?
 
 ```yaml
