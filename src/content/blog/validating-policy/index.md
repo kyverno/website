@@ -17,7 +17,7 @@ That's completely fine for learning.
 
 But in a real shared cluster, one bad manifest can:
 
-- consume all node resources,
+- consume all node resources
 - bypass security controls,
 - or create deployments that become impossible to manage later.
 
