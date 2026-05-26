@@ -55,7 +55,7 @@ starting with `Deny` is almost never the right move. It'll block things that are
 running and cause incidents.
 
 **The safer approach**: start with `Audit` first. Let it run for a few days, see what it
-catches, fix the existing violations, then switch to Deny.
+catches, fix the existing violations, then switch to `Deny`.
 
 Think of Audit as "silent observer mode." The rule is running. Violations are being
 recorded. Nothing is breaking. It's just gathering information before the lever gets pulled.
