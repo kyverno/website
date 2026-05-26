@@ -9,7 +9,7 @@ excerpt: Learn how Kyverno ValidatingPolicy works with real-world examples for e
 draft: true
 ---
 
-Here's something that surprises most people when they first start working with Kubernetes:
+Something that surprises most people when they first start working with Kubernetes is that
 by default, a cluster will accept almost anything thrown at it.
 
 No resource limits? Sure. No labels? Fine. Privileged containers? Go ahead.
