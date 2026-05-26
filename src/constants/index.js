@@ -101,17 +101,17 @@ export const celPoliciesCardColors = [
 ]
 
 export const partners = [
-  { image: 'assets/product-icons/adidas-icon.svg', name: 'Adidas' },
-  { image: 'assets/product-icons/bloomberg-icon.svg', name: 'Bloomberg' },
-  { image: 'assets/product-icons/linkedin-icon.svg', name: 'Linkedin' },
-  { image: 'assets/product-icons/razorpay-icon.svg', name: 'Razorpay' },
-  { image: 'assets/product-icons/robinhood-icon.svg', name: 'Robinhood' },
-  { image: 'assets/product-icons/spotify-icon.svg', name: 'Spotify' },
-  { image: 'assets/product-icons/telecom-icon.svg', name: 'Telecom' },
-  { image: 'assets/product-icons/us-dod-icon.svg', name: 'US-DOD' },
-  { image: 'assets/product-icons/vodafone-icon.svg', name: 'Vodafone' },
-  { image: 'assets/product-icons/wayfair-icon.svg', name: 'Wayfair' },
-  { image: 'assets/product-icons/yahoo-icon.svg', name: 'Yahoo' },
+  { image: '/assets/product-icons/adidas-icon.svg', name: 'Adidas' },
+  { image: '/assets/product-icons/bloomberg-icon.svg', name: 'Bloomberg' },
+  { image: '/assets/product-icons/linkedin-icon.svg', name: 'Linkedin' },
+  { image: '/assets/product-icons/razorpay-icon.svg', name: 'Razorpay' },
+  { image: '/assets/product-icons/robinhood-icon.svg', name: 'Robinhood' },
+  { image: '/assets/product-icons/spotify-icon.svg', name: 'Spotify' },
+  { image: '/assets/product-icons/telecom-icon.svg', name: 'Telecom' },
+  { image: '/assets/product-icons/us-dod-icon.svg', name: 'US-DOD' },
+  { image: '/assets/product-icons/vodafone-icon.svg', name: 'Vodafone' },
+  { image: '/assets/product-icons/wayfair-icon.svg', name: 'Wayfair' },
+  { image: '/assets/product-icons/yahoo-icon.svg', name: 'Yahoo' },
 ]
 
 export const supportLinks = [
