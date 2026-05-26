@@ -512,5 +512,5 @@ You just have to apply one rule. Kyverno handles the rest.
 Try any of the policies in this guide directly in the browser:
 https://playground.kyverno.io/
 
-Paste the policy on the left side, paste any of the test pods on the right, and see exactly
+Want to try out `ValidatingPolicy`along with the other new Kyverno policy types? Jump in to the playground. Paste the policy on the left side, paste any of the test pods on the right, and see exactly
 what Kyverno would do. You don't need any setup for this.
