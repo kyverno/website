@@ -98,7 +98,7 @@ Four things to understand:
 
 ## Use case 1: Require labels on every Pod
 
-This is the most common ValidatingPolicy there is. Labels are how teams organize, monitor, and route traffic in Kubernetes. A Pod without proper labels is like an unlabeled box
+This is the most common `ValidatingPolicy` there is. Labels are how teams organize, monitor, and route traffic in Kubernetes. A pod without proper labels is like an unlabeled box
 in a warehouse. Good luck finding it when something goes wrong at 2 AM.
 
 ```yaml
