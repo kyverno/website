@@ -7,6 +7,7 @@ import { Footer } from '../../sections/Footer'
 import '../../styles/blog-index.css'
 import { formatDatePath } from '../../utils/blog'
 import { BlogBrowser } from '../../components/blog/BlogBrowser.jsx'
+import kyvernoSvg from '../../assets/images/kyverno.svg'
 
 // Get all blog posts from the blog collection
 const blogPosts = (await getCollection('blog'))
@@ -55,7 +56,7 @@ function getPostStaticPath(post: (typeof blogPosts)[0]): string {
 function getCoverImage(post: (typeof blogPosts)[0]): string | null {
   const coverImage = post.data.coverImage
   // Defaults image to the logo in the public folder when the posts doesn't have a cover
-  if (!coverImage) return '/assets/images/kyverno.svg'
+  if (!coverImage) return kyvernoSvg.src
 
   // If it's already an absolute URL or path, return as-is
   if (coverImage.startsWith('http') || coverImage.startsWith('/')) {
