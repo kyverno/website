@@ -29,7 +29,7 @@ This is when Kyverno's `ValidatingPolicy` comes in to play.
 
 Think of `ValidatingPolicy` like an automated code review that runs on every resource before it enters the cluster.
 
-Except instead of relying on a human reviewer who might miss something or approve a bad change during a busy day, the policy runs automatically on every request.
+The advantage of using a Kyverno policy instead of relying on a human reviewer who might miss something or approve a bad change during a busy day, is that a policy is run and applied on every request at admission ensuring that the same standards are always met.
 
 Every time someone runs `kubectl apply`, Kyverno intercepts that request and evaluates
 the policy expression. If the expression returns `true`, the resource passes. If it
