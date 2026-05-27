@@ -39,6 +39,19 @@
     SITE_URL = "$DEPLOY_PRIME_URL"
 
 # --- Documentation reorganization redirects (commit f4503dcc) ---
+# Docs landing page
+[[redirects]]
+  from = "/docs"
+  to = "/docs/introduction/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/"
+  to = "/docs/introduction/"
+  status = 301
+  force = true
+
 # Applying policies - deleted, moved to guides
 [[redirects]]
   from = "/docs/applying-policies"
@@ -329,20 +342,21 @@
   status = 301
   force = true
 
-# Fallback redirect (must be last)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # --- Headers ---
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
-    # Short cache for HTML: avoids repeated 304s within a session while
-    # still picking up new deploys within a minute.
-    Cache-Control = "public, max-age=300, must-revalidate"
+    # Cache HTML briefly, then allow stale responses while Netlify refreshes
+    # in the background to reduce repeat origin requests.
+    Cache-Control = "public, max-age=300, stale-while-revalidate=86400"
+
+# Docs are the hottest traffic surface; cache them longer to reduce request
+# volume while still allowing fast background refreshes.
+[[headers]]
+  for = "/docs/*"
+  [headers.values]
+    Cache-Control = "public, max-age=1800, stale-while-revalidate=86400"
 
 # Astro fingerprints every JS/CSS/image under /_astro/ with a content hash,
 # so these files are safe to cache forever — changing content gets a new URL.
