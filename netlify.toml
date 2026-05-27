@@ -329,12 +329,6 @@
   status = 301
   force = true
 
-# Fallback redirect (must be last)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # --- Headers ---
 [[headers]]
   for = "/*"
