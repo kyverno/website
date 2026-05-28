@@ -2,6 +2,18 @@ import { Globe, Shield, Zap } from 'lucide-react'
 
 import { themes } from 'prism-react-renderer'
 
+import adidasIcon from '../assets/product-icons/adidas-icon.svg'
+import bloombergIcon from '../assets/product-icons/bloomberg-icon.svg'
+import linkedinIcon from '../assets/product-icons/linkedin-icon.svg'
+import razorpayIcon from '../assets/product-icons/razorpay-icon.svg'
+import robinhoodIcon from '../assets/product-icons/robinhood-icon.svg'
+import spotifyIcon from '../assets/product-icons/spotify-icon.svg'
+import telecomIcon from '../assets/product-icons/telecom-icon.svg'
+import usDodIcon from '../assets/product-icons/us-dod-icon.svg'
+import vodafoneIcon from '../assets/product-icons/vodafone-icon.svg'
+import wayfairIcon from '../assets/product-icons/wayfair-icon.svg'
+import yahooIcon from '../assets/product-icons/yahoo-icon.svg'
+
 export {
   compatibilityMatrix,
   documentationVersions,
@@ -101,17 +113,17 @@ export const celPoliciesCardColors = [
 ]
 
 export const partners = [
-  { image: 'assets/product-icons/adidas-icon.svg', name: 'Adidas' },
-  { image: 'assets/product-icons/bloomberg-icon.svg', name: 'Bloomberg' },
-  { image: 'assets/product-icons/linkedin-icon.svg', name: 'Linkedin' },
-  { image: 'assets/product-icons/razorpay-icon.svg', name: 'Razorpay' },
-  { image: 'assets/product-icons/robinhood-icon.svg', name: 'Robinhood' },
-  { image: 'assets/product-icons/spotify-icon.svg', name: 'Spotify' },
-  { image: 'assets/product-icons/telecom-icon.svg', name: 'Telecom' },
-  { image: 'assets/product-icons/us-dod-icon.svg', name: 'US-DOD' },
-  { image: 'assets/product-icons/vodafone-icon.svg', name: 'Vodafone' },
-  { image: 'assets/product-icons/wayfair-icon.svg', name: 'Wayfair' },
-  { image: 'assets/product-icons/yahoo-icon.svg', name: 'Yahoo' },
+  { image: adidasIcon.src, name: 'Adidas' },
+  { image: bloombergIcon.src, name: 'Bloomberg' },
+  { image: linkedinIcon.src, name: 'Linkedin' },
+  { image: razorpayIcon.src, name: 'Razorpay' },
+  { image: robinhoodIcon.src, name: 'Robinhood' },
+  { image: spotifyIcon.src, name: 'Spotify' },
+  { image: telecomIcon.src, name: 'Telecom' },
+  { image: usDodIcon.src, name: 'US-DOD' },
+  { image: vodafoneIcon.src, name: 'Vodafone' },
+  { image: wayfairIcon.src, name: 'Wayfair' },
+  { image: yahooIcon.src, name: 'Yahoo' },
 ]
 
 export const supportLinks = [
@@ -129,12 +141,12 @@ export const supportLinks = [
 ]
 
 export const ResourcesLinks = [
-  { href: 'docs/introduction', text: 'Documentation' },
+  { href: '/docs/introduction', text: 'Documentation' },
   {
     href: 'https://kyverno.io/docs/kyverno-cli/reference/',
     text: 'API Reference',
   },
-  { href: 'policies', text: 'Policy Samples' },
+  { href: '/policies', text: 'Policy Samples' },
   { href: '#', text: 'Blog' },
 ]
 
