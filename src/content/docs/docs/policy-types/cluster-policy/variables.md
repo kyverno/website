@@ -398,6 +398,12 @@ Kyverno by default sets an empty registry to `docker.io` and an empty tag to `la
 Note that certain characters must be escaped for JMESPath processing (ex. `-` in the case of container's name), escaping can be done by using double quotes with double escape character `\`, for example, `{{images.containers.\"my-container\".tag}}`. For more detailed information, see the JMESPath [page on formatting](/docs/policy-types/cluster-policy/jmespath#formatting).
 :::
 
+:::caution[Note]
+When writing mutation policies with `foreach` that need to detect which registry an image comes from, use `images.containers."{{element.name}}".registry` in preconditions rather than JMESPath boolean functions like `starts_with()`. The `images` context provides reliable string-to-string comparisons and avoids potential type coercion issues that could cause silent precondition failures in older Kyverno versions (< v1.16).
+
+See the [preconditions troubleshooting section](/docs/policy-types/cluster-policy/preconditions#troubleshooting) for more details.
+:::
+
 You can also fetch image properties of all containers for further processing. For example, `{{ images.containers.*.name }}` creates a string list of all image names.
 
 ## Inline Variables
