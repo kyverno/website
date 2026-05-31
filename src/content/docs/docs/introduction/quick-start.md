@@ -10,7 +10,7 @@ This section is intended to provide you with some quick guides on how to get Kyv
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/installation) for more complete information on how to install Kyverno in production.
 
-First, install the latest Kyverno release using Helm:
+First,install the latest Kyverno release using Helm:
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
@@ -26,9 +26,13 @@ In the validation guide, you will see how simple an example Kyverno policy can b
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different policy types to validate, mutate, generate, cleanup, and verify image configurations. The `validationActions` field is set to `Deny` to block Pods that are non-compliant.
 
+:::note[Version Note]
+This policy uses `policies.kyverno.io/v1` and requires Kyverno v1.12 or later.
+:::
+
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-labels
@@ -133,7 +137,7 @@ Add this Kyverno mutate policy to your cluster. This policy will add the label `
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels
@@ -261,7 +265,7 @@ Next, create the following Kyverno policy. The `sync-secrets` policy will match 
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: sync-secrets
