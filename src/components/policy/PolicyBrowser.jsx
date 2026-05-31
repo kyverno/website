@@ -10,6 +10,7 @@ import {
   formatCategoryLabel,
   formatSeverityLabel,
   getSeverityOrder,
+  isPolicyNew,
 } from './utils'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -31,6 +32,7 @@ export const PolicyBrowser = ({ policies }) => {
   const [selectedTypes, setSelectedTypes] = useUrlState('type', [])
   const [activeCategoryButton, setActiveCategoryButton] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
+  const [showNewOnly, setShowNewOnly] = useState(false)
   const itemsPerPage = 24
 
   // Helper function to check if a policy matches filters (excluding a specific filter type)
@@ -93,13 +95,16 @@ export const PolicyBrowser = ({ policies }) => {
       selectedTypes.length === 0 ||
       (policy.data.type && selectedTypes.includes(policy.data.type))
 
+    const matchesNew = !showNewOnly || isPolicyNew(policy.data.createdAt)
+
     return (
       matchesSearch &&
       matchesCategory &&
       matchesSeverity &&
       matchesResource &&
       matchesTag &&
-      matchesType
+      matchesType &&
+      matchesNew
     )
   }
 
@@ -134,6 +139,7 @@ export const PolicyBrowser = ({ policies }) => {
       selectedResources,
       selectedTags,
       selectedTypes,
+      showNewOnly,
     ],
   )
 
@@ -146,6 +152,7 @@ export const PolicyBrowser = ({ policies }) => {
       selectedResources,
       selectedTags,
       selectedTypes,
+      showNewOnly,
     ],
   )
 
@@ -158,6 +165,7 @@ export const PolicyBrowser = ({ policies }) => {
       selectedResources,
       selectedTags,
       selectedTypes,
+      showNewOnly,
     ],
   )
 
@@ -170,6 +178,7 @@ export const PolicyBrowser = ({ policies }) => {
       selectedSeverities,
       selectedTags,
       selectedTypes,
+      showNewOnly,
     ],
   )
 
@@ -182,6 +191,7 @@ export const PolicyBrowser = ({ policies }) => {
       selectedSeverities,
       selectedResources,
       selectedTypes,
+      showNewOnly,
     ],
   )
 
@@ -223,6 +233,7 @@ export const PolicyBrowser = ({ policies }) => {
     selectedResources,
     selectedTags,
     selectedTypes,
+    showNewOnly,
   ])
 
   // Reset to page 1 when filters change
@@ -235,6 +246,7 @@ export const PolicyBrowser = ({ policies }) => {
     selectedResources,
     selectedTags,
     selectedTypes,
+    showNewOnly,
   ])
 
   // Keep the category tab bar in sync when selectedCategories is restored from URL
@@ -414,6 +426,14 @@ export const PolicyBrowser = ({ policies }) => {
         ariaLabel: `Remove ${tag} filter`,
       })
     })
+    if (showNewOnly) {
+      filters.push({
+        type: 'new',
+        label: 'New Policies Only',
+        onRemove: () => setShowNewOnly(false),
+        ariaLabel: 'Remove new policies filter',
+      })
+    }
     return filters
   }, [
     searchQuery,
@@ -422,9 +442,15 @@ export const PolicyBrowser = ({ policies }) => {
     selectedTypes,
     selectedResources,
     selectedTags,
+    showNewOnly,
   ])
 
   const hasActiveFilters = activeFilters.length > 0
+
+  const newPoliciesCount = useMemo(
+    () => policies.filter((p) => isPolicyNew(p.data.createdAt)).length,
+    [policies],
+  )
 
   const clearAllFilters = () => {
     setSearchQuery('')
@@ -433,6 +459,7 @@ export const PolicyBrowser = ({ policies }) => {
     setSelectedResources([])
     setSelectedTags([])
     setSelectedTypes([])
+    setShowNewOnly(false)
     setActiveCategoryButton('all')
   }
 
@@ -517,6 +544,29 @@ export const PolicyBrowser = ({ policies }) => {
       <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 lg:gap-8">
         {/* Filter Sidebar */}
         <aside className="static lg:sticky lg:top-8 h-fit space-y-4">
+          {/* New Policies Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowNewOnly((prev) => !prev)}
+            className={`w-full flex items-center justify-between px-4 sm:px-6 py-4 backdrop-blur-sm border rounded-2xl shadow-lg text-xs uppercase tracking-widest font-bold transition-all ${
+              showNewOnly
+                ? 'bg-purple-950/20 border-purple-900/50 text-purple-400'
+                : 'bg-dark-50/80 border-stroke/50 text-theme-tertiary hover:text-purple-400 hover:border-purple-900/50'
+            }`}
+            aria-pressed={showNewOnly}
+          >
+            <span>New Policies</span>
+            <span
+              className={`px-2 py-0.5 rounded-md text-xs font-semibold ${
+                showNewOnly
+                  ? 'bg-purple-950/50 text-purple-300'
+                  : 'bg-stroke/50 text-theme-tertiary'
+              }`}
+            >
+              {newPoliciesCount}
+            </span>
+          </button>
+
           <FilterSection
             title="Policy Kind"
             items={Object.entries(typeCounts)}
