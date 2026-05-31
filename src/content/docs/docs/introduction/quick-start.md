@@ -47,6 +47,32 @@ spec:
 EOF
 ```
 
+:::note[For Windows Users]
+The `<<EOF` syntax is not supported in PowerShell. Use the following command instead:
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: require-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - message: "label 'team' is required"
+      expression: "has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''"
+"@ | kubectl create -f -
+```
+
+:::
+
 Try creating a Deployment without the required label.
 
 ```sh
@@ -161,6 +187,41 @@ spec:
 EOF
 ```
 
+:::note[For Windows Users]
+The `<<EOF` syntax is not supported in PowerShell. Use the following command instead:
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1alpha1
+kind: MutatingPolicy
+metadata:
+  name: add-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchConditions:
+    - name: team-label-missing
+      expression: '!has(object.metadata.labels) || !has(object.metadata.labels.team)'
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                team: "bravo"
+              }
+            }
+          }
+"@ | kubectl create -f -
+```
+
+:::
+
 Let's now create a new Pod which does not have the desired label defined.
 
 ```sh
@@ -257,6 +318,49 @@ rules:
 EOF
 ```
 
+:::note[For Windows Users]
+The `<<EOF` syntax is not supported in PowerShell. Use the following command instead:
+
+```powershell
+@"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:view
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:manage
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - create
+  - update
+  - delete
+"@ | kubectl apply -f -
+```
+
+:::
+
 Next, create the following Kyverno policy. The `sync-secrets` policy will match on any newly-created Namespace and will clone the Secret we just created earlier into that new Namespace.
 
 ```sh
@@ -284,6 +388,37 @@ spec:
     - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
 EOF
 ```
+
+:::note[For Windows Users]
+The `<<EOF` syntax is not supported in PowerShell. Use the following command instead:
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1alpha1
+kind: GeneratingPolicy
+metadata:
+  name: sync-secrets
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: targetNs
+      expression: 'object.metadata.name'
+    - name: sourceSecret
+      expression: 'resource.Get("v1", "secrets", "default", "regcred")'
+  generate:
+    - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
+"@ | kubectl create -f -
+```
+
+:::
 
 Create a new Namespace to test the policy.
 
