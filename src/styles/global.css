@@ -219,6 +219,37 @@ details summary::marker {
   display: none;
 }
 
+/* === Fluid Width Overrides === */
+html[data-layout-width='fluid'] .sl-container {
+  max-width: 100% !important;
+}
+
+html[data-layout-width='fluid'] .main-pane {
+  width: 100% !important;
+}
+
+html[data-layout-width='fluid'] [data-has-sidebar][data-has-toc] .main-pane {
+  --sl-content-margin-inline: auto !important;
+  width: 100% !important;
+}
+
+html[data-layout-width='fluid'] .max-w-7xl {
+  max-width: 100%;
+}
+
+html[data-layout-width='fluid'] .max-w-4xl {
+  max-width: 100%;
+}
+
+html[data-layout-width='fluid'] .max-w-\[1600px\] {
+  max-width: 100%;
+}
+
+html[data-layout-width='fluid'] .content-panel {
+  padding-left: max(1rem, var(--sl-content-pad-x, 1rem)) !important;
+  padding-right: max(1rem, var(--sl-content-pad-x, 1rem)) !important;
+}
+
 /* Hide scrollbar for horizontal scrolling on mobile */
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
