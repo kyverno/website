@@ -2,7 +2,6 @@
 import config from 'virtual:starlight/user-config'
 
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect'
-import { LayoutWidthToggle } from '../components/LayoutWidthToggle.jsx'
 import Search from 'virtual:starlight/components/Search'
 import SiteTitle from 'virtual:starlight/components/SiteTitle'
 import SocialIcons from 'virtual:starlight/components/SocialIcons'
@@ -25,9 +24,6 @@ const shouldRenderSearch =
       <SocialIcons />
     </div>
     <ThemeSelect />
-    <div class="starlight-layout-toggle">
-      <LayoutWidthToggle client:load />
-    </div>
     <LanguageSelect />
   </div>
 </div>
@@ -58,21 +54,6 @@ const shouldRenderSearch =
       content: '';
       height: 2rem;
       border-inline-end: 1px solid var(--sl-color-gray-5);
-    }
-
-    .starlight-layout-toggle {
-      display: flex;
-      align-items: center;
-    }
-
-    .starlight-layout-toggle button {
-      color: var(--sl-color-gray-1);
-      border-color: var(--sl-color-gray-5);
-    }
-
-    .starlight-layout-toggle button:hover {
-      color: var(--sl-color-white);
-      background-color: var(--sl-color-gray-6);
     }
 
     @media (min-width: 50rem) {
