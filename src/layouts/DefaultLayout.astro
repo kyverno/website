@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import faviconSvg from '../assets/images/kyverno-logo.svg'
 ---
 
 <!doctype html>
@@ -69,7 +70,7 @@ import '../styles/global.css'
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={faviconSvg.src} type="image/svg+xml" />
   </head>
   <body>
     <slot />

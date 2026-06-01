@@ -180,6 +180,11 @@ export default defineConfig({
       viteStaticCopy({
         targets: [
           {
+            src: 'src/assets/images/kyverno-logo.svg',
+            dest: '.',
+            rename: () => 'favicon.svg',
+          },
+          {
             src: 'src/content/blog/**/assets/*',
             dest: 'blog',
             rename: (name, ext, fullPath) => {
