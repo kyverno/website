@@ -2,6 +2,7 @@ import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 
 import { Button } from '../components/Button.jsx'
+import { LayoutWidthToggle } from '../components/LayoutWidthToggle.jsx'
 import { SiteLogo } from '../components/SiteLogo.jsx'
 import { ThemeToggle } from '../components/ThemeToggle.jsx'
 import { TopNavLinks } from '../components/TopNavLinks.jsx'
@@ -74,6 +75,7 @@ export const TopNav = () => {
             <Button href="/support" variant="accent" size="large">
               Support
             </Button>
+            <LayoutWidthToggle />
             <ThemeToggle />
           </div>
           <div className="xl:hidden flex flex-col justify-end">
@@ -104,6 +106,7 @@ export const TopNav = () => {
                   Support
                 </Button>
               </div>
+              <LayoutWidthToggle />
               <ThemeToggle />
             </div>
           </div>
