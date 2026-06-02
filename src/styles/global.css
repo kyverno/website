@@ -249,13 +249,17 @@ html[data-layout-width='fluid'] .content-panel {
   html[data-has-sidebar] {
     --kyverno-sidebar-collapsed-width: 0.4rem;
     --kyverno-sidebar-toggle-size: 2rem;
+    --kyverno-sidebar-transition-duration: 520ms;
+    --kyverno-sidebar-transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html[data-has-sidebar] .sidebar-pane,
   html[data-has-sidebar] .main-frame {
     transition:
-      width 320ms cubic-bezier(0.16, 1, 0.3, 1),
-      padding-inline-start 320ms cubic-bezier(0.16, 1, 0.3, 1);
+      width var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease),
+      padding-inline-start var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease);
   }
 
   html[data-has-sidebar] .sidebar-pane {
@@ -264,14 +268,17 @@ html[data-layout-width='fluid'] .content-panel {
 
   html[data-has-sidebar] .sidebar-content {
     position: relative;
+    transition: padding-inline var(--kyverno-sidebar-transition-duration)
+      var(--kyverno-sidebar-transition-ease);
   }
 
   html[data-has-sidebar] .sidebar-nav-content {
     opacity: 1;
     transform: translateX(0) scale(1);
     transition:
-      opacity 180ms ease,
-      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 420ms var(--kyverno-sidebar-transition-ease),
+      transform var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease);
   }
 
   html[data-has-sidebar] .sidebar-collapse-toggle {
@@ -284,8 +291,8 @@ html[data-layout-width='fluid'] .content-panel {
     align-items: center;
     justify-content: center;
 
-    width: 1.75rem;
-    height: 3.5rem;
+    width: 1.5rem;
+    height: 4rem;
     padding: 0;
 
     border: 1px solid var(--sl-color-hairline-shade);
@@ -303,8 +310,10 @@ html[data-layout-width='fluid'] .content-panel {
       border-color 180ms ease,
       color 180ms ease,
       box-shadow 180ms ease,
-      inset-inline-start 320ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 180ms ease;
+      inset-inline-start var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease),
+      transform var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease);
   }
 
   html[data-has-sidebar] .sidebar-collapse-toggle:hover {
@@ -319,10 +328,12 @@ html[data-layout-width='fluid'] .content-panel {
   }
 
   html[data-has-sidebar] .sidebar-collapse-toggle__icon {
-    font-size: 1.25rem;
+    font-size: 1rem;
     line-height: 1;
-    transform: translateY(-0.0625rem);
-    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    transition:
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 250ms ease;
   }
 
   html.sidebar-collapsed[data-has-sidebar] .sidebar-pane {
@@ -338,7 +349,7 @@ html[data-layout-width='fluid'] .content-panel {
 
   html.sidebar-collapsed[data-has-sidebar] .sidebar-nav-content {
     opacity: 0;
-    transform: translateX(-16px) scale(0.98);
+    transform: translateX(-1.25rem) scale(0.985);
     pointer-events: none;
   }
 
@@ -356,6 +367,16 @@ html[data-layout-width='fluid'] .content-panel {
 }
 
 @media (min-width: 72rem) {
+  html[data-has-sidebar] .right-sidebar-container,
+  html[data-has-sidebar] .main-pane,
+  html[data-has-sidebar] .main-pane .sl-container {
+    transition:
+      width var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease),
+      max-width var(--kyverno-sidebar-transition-duration)
+        var(--kyverno-sidebar-transition-ease);
+  }
+
   html.sidebar-collapsed[data-has-sidebar][data-has-toc] {
     --kyverno-expanded-toc-width: calc(
       var(--sl-sidebar-width) +
