@@ -35,12 +35,27 @@ const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
     }
 
     .sl-container {
-      width: 14rem;
-      max-width: 14rem;
+      width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      min-width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      max-width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      transition: none !important;
     }
 
     .right-sidebar-panel :global(h2) {
       color: var(--sl-color-white);
+    }
+
+    .right-sidebar-panel :global(:where(a)) {
+      display: block;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
   }
 </style>
