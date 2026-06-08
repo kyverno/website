@@ -1,9 +1,8 @@
 ---
 title: Global Context Caching
-description: >-
-    Use GlobalContextEntry to cache Kubernetes resources and external API
-    data globally, optimizing policy evaluation performance at scale.
-weight: 10
+excerpt: Cache Kubernetes resources and external API data globally to speed up policy evaluation at scale.
+sidebar:
+  order: 105
 ---
 
 
@@ -29,7 +28,7 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 - **Kyverno >= 1.12.0** is installed in your cluster (`GlobalContextEntry`
   was introduced in this release). Verify your version with:
   ```bash
-    kubectl get deployment -n kyverno -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+  kubectl get deployment -n kyverno -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.template.spec.containers[0].image}{"\n"}{end}'
   ```
 
 - **kubectl** access with sufficient permissions to create cluster-scoped resources.
@@ -37,7 +36,7 @@ Before configuring a `GlobalContextEntry`, ensure the following:
   ServiceAccount must have `get`, `list`, and `watch` permissions on the target
   resource. This is especially important for custom resources (CRs).
 
-> **API Version Note:** `GlobalContextEntry` uses `apiVersion: kyverno.io/v2`
+> **API Version Note:** `GlobalContextEntry` uses `apiVersion: kyverno.io/v2alpha1`
 > while `ClusterPolicy` and `Policy` resources use `apiVersion: kyverno.io/v1`.
 > This is expected — they are separate resource kinds with independent API
 > version tracks. To confirm the served API versions on your cluster, run:
@@ -108,7 +107,7 @@ The fastest way to use `GlobalContextEntry` is a two-step process: define a cach
 ### Step 1: Create a GlobalContextEntry
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: my-first-cache
@@ -162,7 +161,7 @@ Use this mode to capture internal topology data, structural metadata, or shared 
 
 #### Syntax Example: Local ConfigMap Tracking
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: configmap-cache
@@ -190,7 +189,7 @@ Use this mode to extract and synchronize authorization lists, identity definitio
 #### Syntax Example: External Metadata Ingestion
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: corporate-teams-cache
@@ -219,7 +218,7 @@ Projections work with both `urlPath` (Kubernetes API server) and `service.url`
 **For Kubernetes API server responses** — use `urlPath`:
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: my-k8s-cached-data
@@ -234,7 +233,7 @@ spec:
 **For external endpoint responses** — use `service.url`:
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: my-external-cached-data
@@ -272,10 +271,12 @@ context:
 
 If you defined `projections` in your `GlobalContextEntry` spec, reference a projection by appending `.<projection-name>` to `globalReference.name`:
 
-    context:
-      - name: myData
-        globalReference:
-          name: my-k8s-cached-data.config-names  # <GlobalContextEntry>.<projections[].name>
+~~~yaml
+context:
+  - name: myData
+    globalReference:
+      name: my-k8s-cached-data.config-names  # <GlobalContextEntry>.<projections[].name>
+~~~
 
 
 ## Eventual Consistency & Operational Notes
@@ -310,7 +311,7 @@ This scenario caches cluster-wide configuration mappings centrally so multiple r
 #### Step 1: Define the Cache entry
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: shared-config-cache
@@ -367,7 +368,7 @@ This implementation ensures cluster deployments pull strictly from vetted, enter
 #### Step 1: Define the Cache entry
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: approved-registries-cache
@@ -428,7 +429,7 @@ Useful for performance-heavy validation structures, like tracking dynamic team m
 #### Step 1: Define the Cache entry
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
 metadata:
   name: rbac-team-cache
@@ -545,11 +546,13 @@ kubectl logs -n kyverno \
 
 `GlobalContextEntry` status does not expose the cached payload. To validate the data shape and build correct JMESPath expressions, fetch the source directly:
 
-    # kubernetesResource mode (example)
-    kubectl get <resource> -n <namespace> -o json | jq .
+~~~bash
+# kubernetesResource mode (example)
+kubectl get <resource> -n <namespace> -o json | jq .
 
-    # apiCall.urlPath mode (example)
-    kubectl get --raw "<urlPath>" | jq .
+# apiCall.urlPath mode (example)
+kubectl get --raw "<urlPath>" | jq .
+~~~
 
 ## Cleanup
 
