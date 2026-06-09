@@ -460,14 +460,14 @@ spec:
       - name: cluster_bindings
         globalReference:
           name: rbac-team-cache
-          jmesPath: "[].subjects[?kind=='User'].name"
+          jmesPath: "[].subjects[?kind=='User'][].name"
     validate:
       message: "User initiating namespace creation is not registered in cluster role metadata."
       deny:
         conditions:
           any:
           - key: "{{ request.userInfo.username }}"
-            operator: AnyNotIn
+            operator: NotIn
             value: "{{ cluster_bindings }}"
 ```
 
