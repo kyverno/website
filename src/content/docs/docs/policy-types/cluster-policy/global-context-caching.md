@@ -271,12 +271,12 @@ context:
 
 If you defined `projections` in your `GlobalContextEntry` spec, reference a projection by appending `.<projection-name>` to `globalReference.name`:
 
-~~~yaml
+```yaml
 context:
   - name: myData
     globalReference:
       name: my-k8s-cached-data.config-names  # <GlobalContextEntry>.<projections[].name>
-~~~
+```
 
 
 ## Eventual Consistency & Operational Notes
@@ -473,8 +473,10 @@ spec:
 
 ## Verification
 
-> **Note:** `gctxentry` is the registered short name for `globalcontextentries`.
-> Both forms work — use whichever you prefer.
+> **Note:** `gctxentry` may be registered as a short name depending on your
+> Kyverno installation. To confirm available short names on your cluster, run:
+> `kubectl api-resources | grep kyverno`
+
 ```bash
 # Linux/macOS
 kubectl api-resources | grep kyverno
@@ -546,13 +548,13 @@ kubectl logs -n kyverno \
 
 `GlobalContextEntry` status does not expose the cached payload. To validate the data shape and build correct JMESPath expressions, fetch the source directly:
 
-~~~bash
+```bash
 # kubernetesResource mode (example)
 kubectl get <resource> -n <namespace> -o json | jq .
 
 # apiCall.urlPath mode (example)
 kubectl get --raw "<urlPath>" | jq .
-~~~
+```
 
 ## Cleanup
 
