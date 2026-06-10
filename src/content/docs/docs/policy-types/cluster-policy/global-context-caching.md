@@ -58,7 +58,7 @@ ClusterRole using a JSON patch:
 ```
 ```powershell
   # Windows PowerShell
-  kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{\"op\":\"add\",\"path\":\"/rules/-\",\"value\":{\"apiGroups\":[\"your.crd.group\"],\"resources\":[\"yourresources\"],\"verbs\":[\"get\",\"list\",\"watch\"]}}]'
+  kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
 ```
 
 > **Note:** Replace `your.crd.group` and `yourresources` with your actual
