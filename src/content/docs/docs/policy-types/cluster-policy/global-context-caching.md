@@ -43,14 +43,7 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 > **API Version Note:** `GlobalContextEntry` uses `apiVersion: kyverno.io/v2alpha1`
 > while `ClusterPolicy` and `Policy` resources use `apiVersion: kyverno.io/v1`.
 > This is expected — they are separate resource kinds with independent API
-> version tracks. To confirm the served API versions on your cluster, run:
-> ```bash
-># Linux/macOS
->kubectl api-resources | grep kyverno
->
-># Windows PowerShell
->kubectl api-resources | Select-String kyverno
-> ```
+
 
 
 ### Granting RBAC Permissions for Custom Resources (CRs)
