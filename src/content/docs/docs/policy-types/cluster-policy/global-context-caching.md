@@ -28,7 +28,11 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 - **Kyverno >= 1.12.0** is installed in your cluster (`GlobalContextEntry`
   was introduced in this release). Verify your version with:
   ```bash
+  # Linux/macOS
   kubectl get deployment -n kyverno -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+
+  # Windows PowerShell
+  kubectl get deployment -n kyverno -o jsonpath="{range .items[*]}{.metadata.name}{': '}{.spec.template.spec.containers[0].image}{'\n'}{end}"
   ```
 
 - **kubectl** access with sufficient permissions to create cluster-scoped resources.
@@ -50,8 +54,13 @@ If you are caching a **custom resource (CR)** served by a CRD — for example,
 a resource from a custom API group — append a rule to Kyverno's existing
 ClusterRole using a JSON patch:
 
+
 ```bash
-kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
+  # Linux/macOS
+  kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
+
+  # Windows PowerShell
+  kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{\"op\":\"add\",\"path\":\"/rules/-\",\"value\":{\"apiGroups\":[\"your.crd.group\"],\"resources\":[\"yourresources\"],\"verbs\":[\"get\",\"list\",\"watch\"]}}]'
 ```
 
 > **Note:** Replace `your.crd.group` and `yourresources` with your actual
