@@ -45,7 +45,11 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 > This is expected — they are separate resource kinds with independent API
 > version tracks. To confirm the served API versions on your cluster, run:
 > ```bash
-> kubectl api-resources | grep kyverno
+># Linux/macOS
+>kubectl api-resources | grep kyverno
+>
+># Windows PowerShell
+>kubectl api-resources | Select-String kyverno
 > ```
 
 
@@ -58,7 +62,8 @@ ClusterRole using a JSON patch:
 ```bash
   # Linux/macOS
   kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
-
+```
+```powershell
   # Windows PowerShell
   kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{\"op\":\"add\",\"path\":\"/rules/-\",\"value\":{\"apiGroups\":[\"your.crd.group\"],\"resources\":[\"yourresources\"],\"verbs\":[\"get\",\"list\",\"watch\"]}}]'
 ```
