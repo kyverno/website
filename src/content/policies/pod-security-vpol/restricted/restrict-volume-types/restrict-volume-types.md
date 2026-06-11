@@ -18,7 +18,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml" target="-blank">/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-volume-types

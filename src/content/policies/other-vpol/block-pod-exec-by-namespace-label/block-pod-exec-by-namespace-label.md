@@ -17,7 +17,7 @@ createdAt: "2025-12-11T12:49:35.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-namespace-label/block-pod-exec-by-namespace-label.yaml" target="-blank">/other-vpol/block-pod-exec-by-namespace-label/block-pod-exec-by-namespace-label.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-exec-by-namespace-label

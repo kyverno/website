@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-gpol/add-rolebinding/add-rolebinding.yaml" target="-blank">/best-practices-gpol/add-rolebinding/add-rolebinding.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-rolebinding

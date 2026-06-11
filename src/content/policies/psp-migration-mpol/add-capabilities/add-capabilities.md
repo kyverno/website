@@ -16,7 +16,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-capabilities/add-capabilities.yaml" target="-blank">/psp-migration-mpol/add-capabilities/add-capabilities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-capabilities
