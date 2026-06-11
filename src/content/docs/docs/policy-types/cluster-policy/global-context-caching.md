@@ -6,7 +6,7 @@ sidebar:
 ---
 
 
-# GlobalContextEntry
+# Global Context Caching
 
 By centralizing and pre-fetching heavy datasets, multiple policies can evaluate
 incoming mutation, validation, or generation requests instantly by adding a
@@ -157,7 +157,7 @@ Use this mode to capture internal topology data, structural metadata, or shared 
 
 | Schema Field | Value Data Type | Required | Engine Validation Constraints |
 | :--- | :--- | :--- | :--- |
-| `group` | string | Conditional | The Kubernetes API group (e.g., `apps`). Required for non-core resources. Use an empty string `""` only for core API resources with `version: v1`. |
+| `group` | string | Conditional | The Kubernetes API group (e.g., `apps`). Required for non-core resources. Use an empty string `""` **only when `version` is also `v1`** — this is the only valid core API combination. Any other pairing (e.g., `group: ""` with `version: v1beta1`) will fail schema validation. |
 | `version` | string | **Yes** | The explicit API version state (e.g., `v1`, `v1beta1`). |
 | `resource` | string | **Yes** | **Must be lowercased and pluralized** (e.g., use `configmaps` or `secrets`, not `ConfigMap`). |
 | `namespace` | string | No | The target namespace boundaries. If omitted, Kyverno tracks across **all namespaces** globally. |
@@ -218,6 +218,15 @@ Caching large-scale external API payloads or extensive multi-namespace collectio
 > These two fields are **mutually exclusive** — only one may be defined per `apiCall` entry.
 
  Projections act as a high-performance filtering layer, transforming raw complex structures into exact key-value primitives or explicit string arrays for policy consumption. This helps simplify policy evaluation and reduce the amount of data rules need to traverse, but it does not necessarily remove the underlying cached payload.
+
+ > **Important:** The `name` of each projection must be different from the
+> `GlobalContextEntry`'s own `metadata.name`. Using the same name will fail
+> schema validation with: `"A projection entry requires a name different from
+> the global context entry name"`.
+>
+> Example — if your entry is named `my-k8s-cached-data`, your projection name
+> cannot also be `my-k8s-cached-data`. Use a descriptive sub-name like
+> `config-names` instead.
 
 Projections work with both `urlPath` (Kubernetes API server) and `service.url`
 (external endpoints). Here are both forms:
@@ -480,8 +489,9 @@ spec:
 
 ## Verification
 
-> **Note:** `gctxentry` may be registered as a short name depending on your
-> Kyverno installation. To confirm available short names on your cluster, run:
+> **Note:** `gctxentry` is always registered as a short name for `GlobalContextEntry`
+> (defined in the Kyverno CRD via `shortName=gctxentry`). You can confirm all
+> available Kyverno resource short names on your cluster with:
 > `kubectl api-resources | grep kyverno`
 
 ```bash
