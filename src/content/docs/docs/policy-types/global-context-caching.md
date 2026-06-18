@@ -42,7 +42,7 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 
 > **API Version Note:** `GlobalContextEntry` uses `apiVersion: kyverno.io/v2alpha1`
 > while `ClusterPolicy` and `Policy` resources use `apiVersion: kyverno.io/v1`.
-> This is expected — they are separate resource kinds with independent API
+> This is expected — they are separate resource kinds with independent API versioning tracks
 
 
 
