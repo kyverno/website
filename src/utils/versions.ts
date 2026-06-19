@@ -12,6 +12,7 @@ export interface Version {
 export interface VersionOption {
   label: string
   href: string
+  baseHref: string
   isCurrent: boolean
 }
 
@@ -36,7 +37,6 @@ export function getCurrentVersion(
 
   const normalizedHostname = hostname.toLowerCase().replace(/^www\./, '')
 
-  // Match version based on hostname from href
   for (const version of versions) {
     try {
       const versionUrl = new URL(version.href)
@@ -71,7 +71,7 @@ export function getCurrentVersion(
  * @param versions - Array of version objects with {label, href}
  * @param currentPath - Current pathname to preserve
  * @param currentHostname - Current hostname for detection
- * @returns Array of version options with {label, href, isCurrent}
+ * @returns Array of version options with {label, href, baseHref, isCurrent}
  */
 export function createVersionOptions(
   versions: Version[],
@@ -87,6 +87,7 @@ export function createVersionOptions(
       return {
         label: version.label,
         href: targetUrl.toString(),
+        baseHref: version.href,
         isCurrent: version.href === currentVersion.href,
       }
     } catch (e) {
@@ -94,6 +95,7 @@ export function createVersionOptions(
       return {
         label: version.label,
         href: version.href,
+        baseHref: version.href,
         isCurrent: version.href === currentVersion.href,
       }
     }
