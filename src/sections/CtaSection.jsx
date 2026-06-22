@@ -31,10 +31,10 @@ export const CtaSection = () => {
           headerLevel="h3"
         />
         <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <Button href="docs/introduction" variant="primary">
+          <Button href="/docs/introduction" variant="primary">
             Get Started
           </Button>
-          <Button href="docs/applying-policies/" variant="secondary">
+          <Button href="/docs/applying-policies/" variant="secondary">
             Explore Policies
           </Button>
         </div>

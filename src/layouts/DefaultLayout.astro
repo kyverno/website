@@ -28,6 +28,16 @@ import '../styles/global.css'
         }
       })()
     </script>
+    <script is:inline>
+      ;(function () {
+        try {
+          const stored = localStorage.getItem('kyverno-layout-width')
+          if (stored === 'fluid') {
+            document.documentElement.setAttribute('data-layout-width', 'fluid')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <meta
       name="description"
       content="Simplify cloud-native governance with Kyverno. Automate Kubernetes security, ensure resource compliance, and empower Platform Engineers to manage infrastructure and applications using native YAML-based declarative policy-as-code."
@@ -59,7 +69,7 @@ import '../styles/global.css'
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href="/assets/images/favicon.svg" type="image/svg" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
     <slot />
