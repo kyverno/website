@@ -301,7 +301,7 @@ By default, a Kyverno installation does not configure NetworkPolicies (see [this
 
 When no NetworkPolicy is configured, the Kyverno webhook is reachable from any pod in the cluster and its outbound traffic is unrestricted. Several mitigations in the [Threat Model](#threat-model) below assume a NetworkPolicy is in place, leaving the following risks:
 
-- Kyverno does not authenticate callers of its webhook (Threats 2, 8, 9). Any in-cluster workload that can reach port 9443 can attempt to flood the webhook or spoof admission requests.
+- Kyverno does not authenticate callers of its webhook (Threats 1, 2, 8, 9). Any in-cluster workload that can reach port 9443 can attempt to flood the webhook or spoof admission requests.
 - Policies that fetch external data via [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with a `service.url` can send admission request data to any reachable endpoint, including cloud-provider metadata services and link-local addresses (Threat 18).
 - The admission controller has full CRUD on Kyverno policy CRDs and on its own `MutatingWebhookConfiguration` and `ValidatingWebhookConfiguration` resources, so a controller-pod compromise can silently rewrite the policy set the cluster enforces. Without an egress NetworkPolicy, the attacker can also reach the Kubernetes API (with the controller's ServiceAccount token) and any other internal service routable from the pod.
 
