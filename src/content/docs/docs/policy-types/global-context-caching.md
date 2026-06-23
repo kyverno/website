@@ -5,7 +5,6 @@ sidebar:
   order: 105
 ---
 
-
 # Global Context Caching
 
 By centralizing and pre-fetching heavy datasets, multiple policies can evaluate
@@ -27,6 +26,7 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 
 - **Kyverno >= 1.12.0** is installed in your cluster (`GlobalContextEntry`
   was introduced in this release). Verify your version with:
+
   ```bash
   # Linux/macOS
   kubectl get deployment -n kyverno -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.template.spec.containers[0].image}{"\n"}{end}'
@@ -44,18 +44,17 @@ Before configuring a `GlobalContextEntry`, ensure the following:
 > while `ClusterPolicy` and `Policy` resources use `apiVersion: kyverno.io/v1`.
 > This is expected — they are separate resource kinds with independent API versioning tracks
 
-
-
 ### Granting RBAC Permissions for Custom Resources (CRs)
+
 If you are caching a **custom resource (CR)** served by a CRD — for example,
 a resource from a custom API group — append a rule to Kyverno's existing
 ClusterRole using a JSON patch:
-
 
 ```bash
   # Linux/macOS
   kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
 ```
+
 ```powershell
   # Windows PowerShell
   kubectl patch clusterrole kyverno:admission-controller --type=json --patch '[{"op":"add","path":"/rules/-","value":{"apiGroups":["your.crd.group"],"resources":["yourresources"],"verbs":["get","list","watch"]}}]'
@@ -68,7 +67,6 @@ ClusterRole using a JSON patch:
 > patch needed.
 
 ---
-
 
 ## Concept & Architecture: The "Why"
 
@@ -90,17 +88,21 @@ graph TD
 Kyverno operates natively as a Kubernetes Admission Controller webhook. When a resource lifecycle event occurs (e.g., `kubectl apply`), Kyverno intercepts the request and must determine whether to allow or deny it with minimal latency.
 
 ### The Problem: Reactive Inline Lookup Bottlenecks
+
 Traditionally, when a policy requires data outside the immediate admission review payload—such as comparing an incoming image tag against an allowed private enterprise registry list stored in a cluster `ConfigMap`—it relies on an inline `apiCall` context variable.
 
 Under high cluster density, if a continuous integration or continuous deployment (CI/CD) engine (e.g., Argo CD or Flux) executes a massive batch deployment of 200 microservices simultaneously:
-* Kyverno is forced to instantiate **200 separate, concurrent network calls** to the Kubernetes API server or target external webhooks to retrieve identical tracking data.
-* This scenario creates severe internal network latency spikes, induces heavy connection-throttling at the API server layer, and heavily balloons cluster CPU utilization, occasionally prompting admission timeouts.
+
+- Kyverno is forced to instantiate **200 separate, concurrent network calls** to the Kubernetes API server or target external webhooks to retrieve identical tracking data.
+- This scenario creates severe internal network latency spikes, induces heavy connection-throttling at the API server layer, and heavily balloons cluster CPU utilization, occasionally prompting admission timeouts.
 
 ### The Solution: Global Memory Caching
+
 `GlobalContextEntry` decouples the policy execution pathway from external network dependencies entirely.
 
 Instead of executing real-time fetches during admission evaluation, Kyverno delegates resource
 tracking to an asynchronous background worker loop:
+
 1. **Background Collection:** Kyverno queries the designated cluster resource or external target once, building a localized memory structure.
 2. **Deterministic Refreshing:** For `apiCall` mode, Kyverno polls the target at user-configured `refreshInterval` intervals. For `kubernetesResource` mode, Kyverno uses Kubernetes watch/informer mechanisms to automatically track resource changes without polling.
 3. **Instant Lookup Execution:** When the same batch of 200 microservices triggers policy evaluations, Kyverno serves the evaluation data directly out of local RAM cache. Network overhead drops to near 0 ms, ensuring horizontal stability at massive organizational scales.
@@ -120,7 +122,7 @@ metadata:
   name: my-first-cache
 spec:
   kubernetesResource:
-    group: ""
+    group: ''
     version: v1
     resource: configmaps
     namespace: default
@@ -133,7 +135,7 @@ context:
   - name: cached_configmaps
     globalReference:
       name: my-first-cache
-      jmesPath: "[].metadata.name"
+      jmesPath: '[].metadata.name'
 ```
 
 `{{ cached_configmaps }}` is now available inside your policy rules with zero inline API call overhead. See [Configuration Modes](#configuration-modes) for the full schema reference.
@@ -145,8 +147,8 @@ context:
 A `GlobalContextEntry` must set exactly one of the following mutually exclusive
 source fields:
 
-* `kubernetesResource`: Monitors and maps native objects living within the cluster.
-* `apiCall`: Polls external endpoints or performs structured internal HTTP interactions.
+- `kubernetesResource`: Monitors and maps native objects living within the cluster.
+- `apiCall`: Polls external endpoints or performs structured internal HTTP interactions.
 
 Optionally, either mode can also include a `projections` block to pre-filter
 the cached data using JMESPath before policies consume it.
@@ -155,18 +157,19 @@ the cached data using JMESPath before policies consume it.
 
 Use this mode to capture internal topology data, structural metadata, or shared configuration boundaries (e.g., `ConfigMaps`, `Namespaces`, or custom resource configurations).
 
-| Schema Field | Value Data Type | Required | Engine Validation Constraints |
-| :--- | :--- | :--- | :--- |
-| `group` | string | Conditional | The Kubernetes API group (e.g., `apps`). Required for non-core resources. Use an empty string `""` **only when `version` is also `v1`** — this is the only valid core API combination. Any other pairing (e.g., `group: ""` with `version: v1beta1`) will fail schema validation. |
-| `version` | string | **Yes** | The explicit API version state (e.g., `v1`, `v1beta1`). |
-| `resource` | string | **Yes** | **Must be lowercased and pluralized** (e.g., use `configmaps` or `secrets`, not `ConfigMap`). |
-| `namespace` | string | No | The target namespace boundaries. If omitted, Kyverno tracks across **all namespaces** globally. |
+| Schema Field | Value Data Type | Required    | Engine Validation Constraints                                                                                                                                                                                                                                                     |
+| :----------- | :-------------- | :---------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `group`      | string          | Conditional | The Kubernetes API group (e.g., `apps`). Required for non-core resources. Use an empty string `""` **only when `version` is also `v1`** — this is the only valid core API combination. Any other pairing (e.g., `group: ""` with `version: v1beta1`) will fail schema validation. |
+| `version`    | string          | **Yes**     | The explicit API version state (e.g., `v1`, `v1beta1`).                                                                                                                                                                                                                           |
+| `resource`   | string          | **Yes**     | **Must be lowercased and pluralized** (e.g., use `configmaps` or `secrets`, not `ConfigMap`).                                                                                                                                                                                     |
+| `namespace`  | string          | No          | The target namespace boundaries. If omitted, Kyverno tracks across **all namespaces** globally.                                                                                                                                                                                   |
 
 > **Important:** Ensure the Kyverno ServiceAccount has the necessary RBAC
 > permissions (`get`, `list`, `watch`) for the resources you are caching,
 > especially when tracking custom resources (CRs).
 
 #### Syntax Example: Local ConfigMap Tracking
+
 ```yaml
 apiVersion: kyverno.io/v2alpha1
 kind: GlobalContextEntry
@@ -174,22 +177,23 @@ metadata:
   name: configmap-cache
 spec:
   kubernetesResource:
-    group: ""
+    group: ''
     version: v1
     resource: configmaps
     namespace: default
 ```
+
 ### 2. External API Caching
 
 Use this mode to extract and synchronize authorization lists, identity definitions, or operational constraints managed outside the local Kubernetes ecosystem.
 
-| Schema Field | Default Value | Engine Validation Constraints |
-| :--- | :--- | :--- |
-| `urlPath` | — | Path for querying the **local Kubernetes API server**. Mutually exclusive with `service.url`. |
-| `service.url` | — | Full URL for **external endpoints**. Mutually exclusive with `urlPath`. |
-| `refreshInterval` | `10m` | Background polling cadence. Accepts duration strings (e.g., `30s`, `5m`, `2h`). Must be > `0s`. |
-| `retryLimit` | `3` | Max retry attempts before the sync loop errors. Minimum value is `1`. |
-| `method` | `GET` | HTTP method. **Must be explicitly set to `POST`** if a `data` payload array is provided. |
+| Schema Field      | Default Value | Engine Validation Constraints                                                                   |
+| :---------------- | :------------ | :---------------------------------------------------------------------------------------------- |
+| `urlPath`         | —             | Path for querying the **local Kubernetes API server**. Mutually exclusive with `service.url`.   |
+| `service.url`     | —             | Full URL for **external endpoints**. Mutually exclusive with `urlPath`.                         |
+| `refreshInterval` | `10m`         | Background polling cadence. Accepts duration strings (e.g., `30s`, `5m`, `2h`). Must be > `0s`. |
+| `retryLimit`      | `3`           | Max retry attempts before the sync loop errors. Minimum value is `1`.                           |
+| `method`          | `GET`         | HTTP method. **Must be explicitly set to `POST`** if a `data` payload array is provided.        |
 
 > **Method Enforcement:** If your `apiCall` profile passes a custom request payload under the `data` array parameter, the underlying HTTP schema engine enforces that the `method` parameter **must be explicitly configured as POST**.
 
@@ -203,26 +207,28 @@ metadata:
 spec:
   apiCall:
     service:
-      url: "https://api.internal.corporate/v1/teams"
+      url: 'https://api.internal.corporate/v1/teams'
     refreshInterval: 5m
     retryLimit: 5
 ```
+
 ## Data Projections (JMESPath Slicing)
 
 Caching large-scale external API payloads or extensive multi-namespace collections inside memory can stress system overhead. Kyverno supports `projections` using **JMESPath** so policies can work with a narrower, more focused view of that cached data.
 
 > **Note on API Sources:**
+>
 > - Use `urlPath` when querying the **local Kubernetes API server** (e.g., fetching internal cluster resources).
 > - Use `service.url` when targeting **external endpoints** (e.g., external inventory or security services).
 
 > These two fields are **mutually exclusive** — only one may be defined per `apiCall` entry.
 
- Projections act as a high-performance filtering layer, transforming raw complex structures into exact key-value primitives or explicit string arrays for policy consumption. This helps simplify policy evaluation and reduce the amount of data rules need to traverse, but it does not necessarily remove the underlying cached payload.
+Projections act as a high-performance filtering layer, transforming raw complex structures into exact key-value primitives or explicit string arrays for policy consumption. This helps simplify policy evaluation and reduce the amount of data rules need to traverse, but it does not necessarily remove the underlying cached payload.
 
- > **Important:** The `name` of each projection must be different from the
+> **Important:** The `name` of each projection must be different from the
 > `GlobalContextEntry`'s own `metadata.name`. Using the same name will fail
 > schema validation with: `"A projection entry requires a name different from
-> the global context entry name"`.
+the global context entry name"`.
 >
 > Example — if your entry is named `my-k8s-cached-data`, your projection name
 > cannot also be `my-k8s-cached-data`. Use a descriptive sub-name like
@@ -240,10 +246,10 @@ metadata:
   name: my-k8s-cached-data
 spec:
   apiCall:
-    urlPath: "/api/v1/namespaces/default/configmaps"
+    urlPath: '/api/v1/namespaces/default/configmaps'
   projections:
     - name: config-names
-      jmesPath: "items[].metadata.name"
+      jmesPath: 'items[].metadata.name'
 ```
 
 **For external endpoint responses** — use `service.url`:
@@ -256,17 +262,16 @@ metadata:
 spec:
   apiCall:
     service:
-      url: "https://api.internal.corporate/v1/teams"
+      url: 'https://api.internal.corporate/v1/teams'
     refreshInterval: 5m
   projections:
     - name: team-ids
-      jmesPath: "teams[].id"
+      jmesPath: 'teams[].id'
 ```
 
 > `urlPath` and `service.url` are **mutually exclusive** — only one may be
 > defined per `apiCall` entry. Use `urlPath` for in-cluster Kubernetes API
 > resources and `service.url` for all external HTTP endpoints.
-
 
 ### Referencing Cached Data in a Policy
 
@@ -277,11 +282,12 @@ Use the `jmesPath` field to filter the cached payload at reference time:
 context:
   - name: cached_configmaps
     globalReference:
-      name: shared-config-cache        # GlobalContextEntry name
-      jmesPath: "[].metadata.name"     # filter applied at reference time
+      name: shared-config-cache # GlobalContextEntry name
+      jmesPath: '[].metadata.name' # filter applied at reference time
 ```
 
 > **JMESPath shape reminder:**
+>
 > - `kubernetesResource` mode → use `[].metadata.name`
 > - `apiCall.urlPath` mode → use `items[].metadata.name`
 
@@ -291,26 +297,26 @@ If you defined `projections` in your `GlobalContextEntry` spec, reference a proj
 context:
   - name: myData
     globalReference:
-      name: my-k8s-cached-data.config-names  # <GlobalContextEntry>.<projections[].name>
+      name: my-k8s-cached-data.config-names # <GlobalContextEntry>.<projections[].name>
 ```
-
 
 ## Eventual Consistency & Operational Notes
 
 **Eventual Consistency:** Caches are updated asynchronously. Policy evaluations may briefly use slightly stale data between refresh cycles. Design your policy logic to tolerate this window, particularly for rapidly changing resources.
 
 **Production Security — External API Calls:**
+
 - Store credentials in Kubernetes `Secrets`, never hardcoded in the resource spec.
 - Ensure all external endpoints are protected with valid TLS certificates.
 
 **Inline `apiCall` vs. `GlobalContextEntry` — When to Use Which:**
 
-| Feature | Inline `apiCall` | `GlobalContextEntry` |
-| :--- | :--- | :--- |
-| **Performance** | High overhead (one call per request) | High performance (served from RAM cache) |
-| **Use Case** | Real-time, volatile data | Static or slowly changing data |
-| **Scalability** | Can overwhelm API servers under load | Significantly reduces API server load |
-| **Data Freshness** | Always current | Eventually consistent |
+| Feature            | Inline `apiCall`                     | `GlobalContextEntry`                     |
+| :----------------- | :----------------------------------- | :--------------------------------------- |
+| **Performance**    | High overhead (one call per request) | High performance (served from RAM cache) |
+| **Use Case**       | Real-time, volatile data             | Static or slowly changing data           |
+| **Scalability**    | Can overwhelm API servers under load | Significantly reduces API server load    |
+| **Data Freshness** | Always current                       | Eventually consistent                    |
 
 ### Behavior on Cache Failure
 
@@ -333,11 +339,12 @@ metadata:
   name: shared-config-cache
 spec:
   kubernetesResource:
-    group: ""
+    group: ''
     version: v1
     resource: configmaps
     namespace: default
 ```
+
 > **JMESPath Structure Note:** The shape of cached data differs by mode:
 >
 > - **`kubernetesResource` mode** returns a raw array. Use `[].metadata.name`
@@ -357,26 +364,27 @@ spec:
   validationFailureAction: Enforce
   background: false
   rules:
-  - name: configmap-must-exist
-    match:
-      any:
-      - resources:
-          kinds:
-          - Deployment
-    context:
-      - name: cached_configmaps
-        globalReference:
-          name: shared-config-cache
-          jmesPath: "[].metadata.name"
-    validate:
-      message: "Deployment initialization rejected. Required 'app-config' asset missing from GlobalContext cache."
-      deny:
-        conditions:
-          any:
-          - key: "app-config"
-            operator: NotIn
-            value: "{{ cached_configmaps }}"
+    - name: configmap-must-exist
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      context:
+        - name: cached_configmaps
+          globalReference:
+            name: shared-config-cache
+            jmesPath: '[].metadata.name'
+      validate:
+        message: "Deployment initialization rejected. Required 'app-config' asset missing from GlobalContext cache."
+        deny:
+          conditions:
+            any:
+              - key: 'app-config'
+                operator: NotIn
+                value: '{{ cached_configmaps }}'
 ```
+
 ### 2. Caching Approved Container Registries (External API)
 
 This implementation ensures cluster deployments pull strictly from vetted, enterprise-controlled image domains stored on an external inventory catalog manager.
@@ -391,10 +399,11 @@ metadata:
 spec:
   apiCall:
     service:
-      url: "https://api.corporate.internal/v1/registries"
+      url: 'https://api.corporate.internal/v1/registries'
     refreshInterval: 30m
     retryLimit: 3
 ```
+
 #### Step 2: Bind a Policy to the Entry
 
 Assuming the API returns: `{"allowed": ["internal-registry.io", "gcr.io/vetted-project"]}`
@@ -408,28 +417,29 @@ spec:
   validationFailureAction: Enforce
   background: false
   rules:
-  - name: check-image-registry
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    context:
-      - name: allowed_registries
-        globalReference:
-          name: approved-registries-cache
-          jmesPath: "allowed"
-    validate:
-      message: "The container image registry is not approved by enterprise security policy."
-      foreach:
-      - list: "request.object.spec.containers"
-        deny:
-          conditions:
-            any:
-            - key: "{{ split(element.image, '/')[0] }}"
-              operator: NotIn
-              value: "{{ allowed_registries }}"
+    - name: check-image-registry
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      context:
+        - name: allowed_registries
+          globalReference:
+            name: approved-registries-cache
+            jmesPath: 'allowed'
+      validate:
+        message: 'The container image registry is not approved by enterprise security policy.'
+        foreach:
+          - list: 'request.object.spec.containers'
+            deny:
+              conditions:
+                any:
+                  - key: "{{ split(element.image, '/')[0] }}"
+                    operator: NotIn
+                    value: '{{ allowed_registries }}'
 ```
+
 > **How the registry is extracted:** `split(element.image, '/')[0]` splits the
 > full image string (e.g., `internal-registry.io/myapp:v1`) on `/` and takes
 > the first segment as the registry hostname. This avoids nested template
@@ -451,10 +461,11 @@ metadata:
   name: rbac-team-cache
 spec:
   kubernetesResource:
-    group: "rbac.authorization.k8s.io"
+    group: 'rbac.authorization.k8s.io'
     version: v1
     resource: clusterrolebindings
 ```
+
 #### Step 2: Bind a Policy to the Entry
 
 ```yaml
@@ -466,25 +477,25 @@ spec:
   validationFailureAction: Enforce
   background: false
   rules:
-  - name: restrict-namespace-creation
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    context:
-      - name: cluster_bindings
-        globalReference:
-          name: rbac-team-cache
-          jmesPath: "[].subjects[?kind=='User'][].name"
-    validate:
-      message: "User initiating namespace creation is not registered in cluster role metadata."
-      deny:
-        conditions:
-          any:
-          - key: "{{ request.userInfo.username }}"
-            operator: NotIn
-            value: "{{ cluster_bindings }}"
+    - name: restrict-namespace-creation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      context:
+        - name: cluster_bindings
+          globalReference:
+            name: rbac-team-cache
+            jmesPath: "[].subjects[?kind=='User'][].name"
+      validate:
+        message: 'User initiating namespace creation is not registered in cluster role metadata.'
+        deny:
+          conditions:
+            any:
+              - key: '{{ request.userInfo.username }}'
+                operator: NotIn
+                value: '{{ cluster_bindings }}'
 ```
 
 ## Verification
@@ -517,18 +528,18 @@ Look for the `status` block in the output. A healthy entry looks like this:
 status:
   conditions:
     - type: Ready
-      status: "True"
+      status: 'True'
       reason: Succeeded
-      message: "GlobalContextEntry synced successfully"
+      message: 'GlobalContextEntry synced successfully'
 ```
 
 Key fields to inspect:
 
-| Field | What to Check |
-| :--- | :--- |
-| `status.conditions[].type: Ready` | Must be `"True"`. Any other value means the cache is not serving data. |
-| `status.conditions[].reason` | `Succeeded` = healthy. `Failed` = check the message field for the error. |
-| `status.lastRefreshTime` | Confirms the last successful sync. If this is stale, the background worker may be stuck. |
+| Field                             | What to Check                                                                            |
+| :-------------------------------- | :--------------------------------------------------------------------------------------- |
+| `status.conditions[].type: Ready` | Must be `"True"`. Any other value means the cache is not serving data.                   |
+| `status.conditions[].reason`      | `Succeeded` = healthy. `Failed` = check the message field for the error.                 |
+| `status.lastRefreshTime`          | Confirms the last successful sync. If this is stale, the background worker may be stuck. |
 
 ### 2. Watch Live Sync Events
 
@@ -587,16 +598,15 @@ kubectl delete globalcontextentries <entry-name>
 
 ---
 
-
 ## Troubleshooting
 
 When working with `GlobalContextEntry`, misconfigurations typically manifest as empty context variables inside evaluations or synchronization blockages.
 
 ### Common Issues Matrix
 
-| Symptom / Error | Root Cause | Remediation Steps |
-| :--- | :--- | :--- |
-| `GlobalContextEntry` creation fails with validation/schema errors | Singular configuration constraint violation. | Ensure you configured `kubernetesResource` **or** `apiCall`. Defining both simultaneously violates resource schemas. |
-| Resource tracking results in completely empty arrays | Incorrect resource naming specification. | The `resource` field **must be lowercased and pluralized**. Use `configmaps` instead of `ConfigMap`. |
-| Policies return `variable evaluation error` on global contexts | Kyverno controllers lack appropriate RBAC clearance. | Verify Kyverno's ClusterRole has `get`, `list`, and `watch` permissions for that specific API group. |
-| External API caching loops fail continuously | Incorrect configuration of custom data variables. | If supplying a payload under `apiCall`, explicitly set `method: POST`. |
+| Symptom / Error                                                   | Root Cause                                           | Remediation Steps                                                                                                    |
+| :---------------------------------------------------------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `GlobalContextEntry` creation fails with validation/schema errors | Singular configuration constraint violation.         | Ensure you configured `kubernetesResource` **or** `apiCall`. Defining both simultaneously violates resource schemas. |
+| Resource tracking results in completely empty arrays              | Incorrect resource naming specification.             | The `resource` field **must be lowercased and pluralized**. Use `configmaps` instead of `ConfigMap`.                 |
+| Policies return `variable evaluation error` on global contexts    | Kyverno controllers lack appropriate RBAC clearance. | Verify Kyverno's ClusterRole has `get`, `list`, and `watch` permissions for that specific API group.                 |
+| External API caching loops fail continuously                      | Incorrect configuration of custom data variables.    | If supplying a payload under `apiCall`, explicitly set `method: POST`.                                               |
