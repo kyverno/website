@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@astrojs/markdoc": "^1.0.5",
-    "@astrojs/netlify": "^7.0.10",
+    "@astrojs/netlify": "^7.0.13",
     "@astrojs/prism": "^4.0.2",
     "@astrojs/react": "^5.0.5",
     "@astrojs/starlight": "^0.39.2",
