@@ -244,7 +244,43 @@ spec:
 
 ### credentials
 
-Credentials specify the authentication information required to securely access and interact with a registry.
+Credentials specify the authentication information required to securely access and interact with a private registry. The `credentials` field supports two mechanisms: ambient cloud credential **providers** and Kubernetes **secrets** containing registry login data.
+
+:::caution[No global credential helpers]
+The `--registryCredentialHelpers` Helm/CLI flag (e.g. `features.registryCredentialHelpers.enabled`) has **no effect** on `ImageValidatingPolicy`. `spec.credentials` on each policy is the **only** way to configure registry authentication for IVPOL, there is no global fallback.
+:::
+
+#### Known limitations
+
+The following credential features are **not yet supported** by `ImageValidatingPolicy`:
+
+- **No automatic pod `imagePullSecrets`**: IVPOL does not automatically pick up `imagePullSecrets` declared on the Pod/Deployment being admitted. You must explicitly list secrets in `spec.credentials.secrets`.
+- **No cross-namespace secrets**: secrets must exist in the Kyverno namespace (typically `kyverno`). The `namespace/name` notation is not supported; you must copy or sync the secret into the Kyverno namespace.
+- **No global credential helpers**: providers must be declared per-policy (see above).
+
+#### providers
+
+The `providers` field enables ambient cloud credential helpers. Each value activates the corresponding credential helper for registry authentication:
+
+| Provider  | Registry                                          | Typical auth mechanism               |
+| --------- | ------------------------------------------------- | ------------------------------------ |
+| `default` | Any registry supporting Docker credential helpers | Docker config / keychain             |
+| `amazon`  | Amazon ECR (`*.dkr.ecr.*.amazonaws.com`)          | IRSA / IAM instance profile          |
+| `google`  | Google Artifact Registry / GCR                    | Workload Identity / ADC              |
+| `azure`   | Azure Container Registry                          | Workload Identity / managed identity |
+| `github`  | GitHub Container Registry (`ghcr.io`)             | GitHub token via credential helper   |
+
+When using cloud IAM (e.g. IRSA on AWS, Workload Identity on GKE), you only need to add the matching provider, no secret is required, provided the Kyverno admission controller pod has the appropriate IAM permissions.
+
+#### secrets
+
+The `secrets` field accepts a list of Kubernetes `Secret` names (of type `kubernetes.io/dockerconfigjson`) used to authenticate against private registries.
+
+:::caution[Secrets must be in the Kyverno namespace]
+Secrets must exist in the **Kyverno namespace** (typically `kyverno`), not in the namespace of the resource being admitted. IVPOL does not read `imagePullSecrets` from the pod spec, and cross-namespace references (`namespace/name`) are not supported. If your registry secret lives in a workload namespace, you must copy or sync it into the Kyverno namespace.
+:::
+
+#### Example: public registry (no credentials needed)
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -254,17 +290,93 @@ metadata:
 spec:
   matchImageReferences:
     - glob: ghcr.io/*
-  credentials:
-    allowInsecureRegistry: false # Deny insecure access to registries
-    providers: # specifies whose authentication providers are provided
-      - 'default'
-      - 'google'
-      - 'azure'
-      - 'amazon'
-      - 'github'
+  # no credentials block needed for public registries
+```
 
+#### Example: Amazon ECR with IRSA
+
+Ensure the Kyverno admission controller ServiceAccount has an IAM role with `ecr:GetAuthorizationToken` and `ecr:BatchGetImage` permissions, and that `AWS_ROLE_ARN` / `AWS_WEB_IDENTITY_TOKEN_FILE` are injected into the pod. Then set `providers: [amazon]` on the policy:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-ecr-images
+spec:
+  matchImageReferences:
+    - glob: '123456789.dkr.ecr.eu-central-1.amazonaws.com/*'
+  credentials:
+    providers:
+      - amazon
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |
+            -----BEGIN PUBLIC KEY-----
+            ...
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e, e > 0)
+      message: image must be signed
+```
+
+#### Example: private registry with a pull secret
+
+The secret must be created in the Kyverno namespace before referencing it here:
+
+```bash
+kubectl create secret docker-registry my-registry-secret \
+  --docker-server=registry.example.com \
+  --docker-username=<user> \
+  --docker-password=<token> \
+  -n kyverno
+```
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-private-images
+spec:
+  matchImageReferences:
+    - glob: 'registry.example.com/*'
+  credentials:
     secrets:
-      - 'my-registry-secret' # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
+      - my-registry-secret # must exist in the Kyverno namespace
+  attestors:
+    - name: notary
+      notary:
+        certs:
+          value: |
+            -----BEGIN CERTIFICATE-----
+            ...
+            -----END CERTIFICATE-----
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.notary])).all(e, e > 0)
+      message: image must be signed
+```
+
+#### Example: combining providers and secrets
+
+Both mechanisms can be used together when a policy needs to verify images from multiple registries requiring different auth methods:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: check-images
+spec:
+  matchImageReferences:
+    - glob: '*.dkr.ecr.*.amazonaws.com/*'
+    - glob: 'registry.example.com/*'
+  credentials:
+    providers:
+      - amazon
+    secrets:
+      - my-registry-secret # must exist in the Kyverno namespace
 ```
 
 ## Policy Scope
