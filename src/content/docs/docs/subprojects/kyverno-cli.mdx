@@ -3880,7 +3880,7 @@ The `body` field of each `apiCallResponses` entry accepts any valid JSON value (
 For each `globalContextEntries` entry, `data`, `resources`, and `resourceFiles` are mutually exclusive — provide exactly one. The `resources` and `resourceFiles` options are designed for `kubernetesResource`-backed GlobalContextEntries: the CLI decodes the manifests into the same `[]interface{}` list shape returned by the real Kubernetes informer cache, so JMESPath and CEL projections work identically to production. The `data` option is for arbitrary JSON — useful for mocking any GlobalContextEntry that holds structured data rather than Kubernetes objects.
 :::
 
-:::caution[Duplicate Key Validation]
+:::note[Duplicate Key Validation]
 Each `apiCallResponses` entry is uniquely identified by its **method + URL** combination. Configuring two entries with the same `method` and `url` is an error — the CLI will reject the test manifest before any evaluation begins. This prevents silent non-deterministic behavior caused by duplicate mocks.
 
 Different HTTP methods to the same URL are valid distinct entries. For example, a `GET` entry and a `POST` entry that both point to `https://authz.example.com/validate` can coexist without conflict.
