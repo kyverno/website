@@ -74,6 +74,19 @@ const severity = data.severity || 'medium'
 const description = data.description || null
 const isNew = isPolicyNew(data.createdAt)
 
+const policyTypeDocs = {
+  ClusterPolicy: '/docs/policy-types/cluster-policy/overview/',
+  Policy: '/docs/policy-types/cluster-policy/overview/',
+  ValidatingPolicy: '/docs/policy-types/validating-policy/',
+  ImageValidatingPolicy: '/docs/policy-types/image-validating-policy/',
+  MutatingPolicy: '/docs/policy-types/mutating-policy/',
+  DeletingPolicy: '/docs/policy-types/deleting-policy/',
+  GeneratingPolicy: '/docs/policy-types/generating-policy/',
+  ClusterCleanupPolicy: '/docs/policy-types/cleanup-policy/',
+}
+
+const policyTypeDocUrl = data.type ? policyTypeDocs[data.type] : undefined
+
 // Construct GitHub URL from policy ID
 const githubUrl = `https://github.com/kyverno/policies/blob/main/${policy.id}.yaml`
 
@@ -206,7 +219,18 @@ const relatedPolicies = allPolicies
                 Type
               </dt>
               <dd class="text-theme-primary font-mono text-sm font-medium">
-                {data.type}
+                {
+                  policyTypeDocUrl ? (
+                    <a
+                      href={policyTypeDocUrl}
+                      class="text-primary-100 hover:underline"
+                    >
+                      {data.type}
+                    </a>
+                  ) : (
+                    data.type
+                  )
+                }
               </dd>
             </div>
 
