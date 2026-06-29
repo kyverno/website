@@ -3880,6 +3880,12 @@ The `body` field of each `apiCallResponses` entry accepts any valid JSON value (
 For each `globalContextEntries` entry, `data`, `resources`, and `resourceFiles` are mutually exclusive — provide exactly one. The `resources` and `resourceFiles` options are designed for `kubernetesResource`-backed GlobalContextEntries: the CLI decodes the manifests into the same `[]interface{}` list shape returned by the real Kubernetes informer cache, so JMESPath and CEL projections work identically to production. The `data` option is for arbitrary JSON — useful for mocking any GlobalContextEntry that holds structured data rather than Kubernetes objects.
 :::
 
+:::note[Duplicate Key Validation]
+Each `apiCallResponses` entry is uniquely identified by its **method + URL** combination. Configuring two entries with the same `method` and `url` is an error — the CLI will reject the test manifest before any evaluation begins. This prevents silent non-deterministic behavior caused by duplicate mocks.
+
+Different HTTP methods to the same URL are valid distinct entries. For example, a `GET` entry and a `POST` entry that both point to `https://authz.example.com/validate` can coexist without conflict.
+:::
+
 #### Mocking CEL `http.Get()` calls
 
 The following example tests a `ValidatingPolicy` that calls an external configuration endpoint using Kyverno's CEL `http.Get()` library function.
@@ -3950,6 +3956,107 @@ Loading test  ( kyverno-test.yaml ) ...
 │ ID │ POLICY                │ RULE │ RESOURCE                    │ RESULT │ REASON │
 │────│───────────────────────│──────│─────────────────────────────│────────│────────│
 │ 1  │ check-external-config │      │ v1/Pod/default/test-pod     │ Pass   │ Ok     │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+#### Mocking CEL `http.Post()` calls
+
+The following example tests a `ValidatingPolicy` that calls an external authorization service using Kyverno's CEL `http.Post()` library function. Both a pass scenario (the service allows the request) and a deny scenario (the service rejects the request) are shown.
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-pod-admission
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  validations:
+    - expression: >-
+        http.Post("https://authz.example.com/validate",
+          {"namespace": object.metadata.namespace, "name": object.metadata.name}).body.allowed == true
+      message: 'External authorization service rejected this pod'
+```
+
+Test manifest — pass scenario (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel-http-post-mock
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+apiCallResponses:
+  - method: POST
+    url: https://authz.example.com/validate
+    response:
+      statusCode: 200
+      body:
+        allowed: true
+results:
+  - isValidatingPolicy: true
+    kind: Pod
+    policy: check-pod-admission
+    resources:
+      - default/test-pod
+    result: pass
+```
+
+Test manifest — deny scenario (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel-http-post-mock-deny
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+apiCallResponses:
+  - method: POST
+    url: https://authz.example.com/validate
+    response:
+      statusCode: 200
+      body:
+        allowed: false
+results:
+  - isValidatingPolicy: true
+    kind: Pod
+    policy: check-pod-admission
+    resources:
+      - default/test-pod
+    result: fail
+```
+
+Run the test:
+
+```sh
+kyverno test .
+```
+
+Expected output (pass scenario):
+
+```
+Loading test  ( kyverno-test.yaml ) ...
+  Applying 1 policy to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ ID │ POLICY                │ RULE │ RESOURCE                    │ RESULT │ REASON │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ 1  │ check-pod-admission   │      │ v1/Pod/default/test-pod     │ Pass   │ Ok     │
 │────│───────────────────────│──────│─────────────────────────────│────────│────────│
 
 Test Summary: 1 tests passed and 0 tests failed
