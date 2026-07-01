@@ -299,13 +299,13 @@ By default, a Kyverno installation does not configure NetworkPolicies (see [this
 
 #### Risk of not configuring a NetworkPolicy
 
-When no NetworkPolicy is configured, the Kyverno webhook is reachable from any pod in the cluster and its outbound traffic is unrestricted. Several mitigations in the [Threat Model](#threat-model) below assume a NetworkPolicy is in place, leaving the following risks:
+Without a NetworkPolicy, the webhook is reachable from any pod and its outbound traffic is unrestricted. Several mitigations in the [Threat Model](#threat-model) below assume a NetworkPolicy is in place, leaving these risks:
 
-- Kyverno does not authenticate callers of its webhook (Threats 1, 2, 8, 9). Any in-cluster workload that can reach port 9443 can attempt to flood the webhook or spoof admission requests.
-- Policies that fetch external data via [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with a `service.url` can send admission request data to any reachable endpoint, including cloud-provider metadata services and link-local addresses (Threat 18).
-- The admission controller has full CRUD on Kyverno policy CRDs and on its own `MutatingWebhookConfiguration` and `ValidatingWebhookConfiguration` resources, so a controller-pod compromise can silently rewrite the policy set the cluster enforces. Without an egress NetworkPolicy, the attacker can also reach the Kubernetes API (with the controller's ServiceAccount token) and any other internal service routable from the pod.
+- **Direct webhook access (Threat IDs 1, 2, 8, 9).** Kyverno does not authenticate the API server, so any pod that reaches port 9443 can flood the webhook or send arbitrary AdmissionReview requests.
+- **Data exfiltration (Threat ID 18).** Policies can send admission-request data to any reachable endpoint, including cloud metadata and link-local addresses. This covers [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with `service.url` and CEL's [HTTP library](/docs/policy-types/cel-libraries#http-library) (`http.Get()` / `http.Post()`).
+- **Controller compromise (Threat ID 4).** The controller can modify Kyverno policies and its own `MutatingWebhookConfiguration` / `ValidatingWebhookConfiguration`, so a compromised pod can silently change what the cluster enforces. With no egress policy, it can also reach the API server and other internal services.
 
-To mitigate these risks, configure a NetworkPolicy that allows only the flows listed below; any other traffic to or from the controller is then denied by default.
+To mitigate, configure a NetworkPolicy allowing only the flows listed below. NetworkPolicies are only effective if the cluster's CNI enforces them, so confirm CNI support before relying on this control.
 
 Kyverno requires the following network communications to be allowed:
 
