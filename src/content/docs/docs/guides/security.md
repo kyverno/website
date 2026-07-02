@@ -297,6 +297,16 @@ Kyverno network traffic is encrypted and should be restricted using NetworkPolic
 
 By default, a Kyverno installation does not configure NetworkPolicies (see [this issue](https://github.com/kyverno/kyverno/issues/2917)). The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) has a `networkPolicy.enabled` option to enable a NetworkPolicy.
 
+#### Risk of not configuring a NetworkPolicy
+
+Without a NetworkPolicy, the webhook is reachable from any pod and its outbound traffic is unrestricted. Several mitigations in the [Threat Model](#threat-model) below assume a NetworkPolicy is in place, leaving these risks:
+
+- Direct webhook access (Threat IDs 1, 2, 8, 9): Kyverno does not authenticate the API server, so any pod that reaches port 9443 can flood the webhook or send arbitrary `AdmissionReview` requests.
+- Data exfiltration (Threat ID 18): Policies can send admission-request data to any reachable endpoint, including cloud metadata and link-local addresses. This covers [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with `apiCall.service.url` and the CEL [HTTP library](/docs/policy-types/cel-libraries#http-library) (`http.Get()` / `http.Post()`).
+- Controller compromise (Threat ID 4): The controller can modify Kyverno policies and its own `MutatingWebhookConfiguration` / `ValidatingWebhookConfiguration`, so a compromised pod can silently change what the cluster enforces. With no egress policy, it can also reach the API server and other internal services.
+
+To mitigate, configure a NetworkPolicy allowing only the flows listed below. NetworkPolicies are only effective if the cluster's CNI enforces them, so confirm CNI support before relying on this control.
+
 Kyverno requires the following network communications to be allowed:
 
 - ingress traffic to port 9443 from the API server
