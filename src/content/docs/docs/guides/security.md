@@ -316,6 +316,8 @@ Kyverno requires the following network communications to be allowed:
 - egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/overview) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries) are used
 - egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) feature is used
 
+See [NetworkPolicy Samples](/docs/installation/network-policies) for ready-to-adapt manifests.
+
 For defense in depth, pair the above with restrictive egress policies:
 
 - allow only approved external destinations used by policy HTTP calls
