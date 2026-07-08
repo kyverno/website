@@ -211,4 +211,7 @@ export default defineConfig({
       }),
     ],
   },
+  redirects: {
+    '/docs': '/docs/introduction/',
+  },
 })
