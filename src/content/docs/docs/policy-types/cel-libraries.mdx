@@ -220,9 +220,9 @@ spec:
         'External POST call did not return the expected response ' + string(variables.response.received)
 ```
 
-If the HTTPS endpoint uses a certificate signed by a private CA (for example, an internal cluster service), the pod's default trust store won't validate it. Use `http.Client(caBundle)` to pass in a trusted CA bundle, then call `Get` or `Post` on the result. The bundle is a PEM string containing one or more `-----BEGIN CERTIFICATE-----` blocks. An empty string means "use the system trust store". The same format is accepted by [`apiCall.service.caBundle`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) on legacy `ClusterPolicy` context entries.
+If the HTTPS endpoint uses a certificate signed by a private CA (for example, an internal cluster service), Kyverno's default trust store won't validate it. Use `http.Client(caBundle)` to pass in a trusted CA bundle, then call `Get` or `Post` on the result. The bundle is a PEM string containing one or more `-----BEGIN CERTIFICATE-----` blocks. An empty string means "use the system trust store". The same format is accepted by [`apiCall.service.caBundle`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) in `ClusterPolicy` context entries.
 
-The following sample reads the CA bundle from a ConfigMap and uses it to call an internal HTTPS service:
+The following sample reads the CA bundle from a ConfigMap in the same namespace as the incoming Pod and uses it to call an internal HTTPS service. Kyverno's ServiceAccount must have permission to `get` ConfigMaps in the referenced namespace.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -241,7 +241,7 @@ spec:
   variables:
     - name: caBundle
       expression: >-
-        resource.Get("v1", "configmaps", "kyverno", "internal-ca").data["ca.crt"]
+        resource.Get("v1", "configmaps", object.metadata.namespace, "internal-ca").data["ca.crt"]
     - name: externalData
       expression: >-
         http.Client(variables.caBundle).Get("https://internal.api.svc.cluster.local/data")
