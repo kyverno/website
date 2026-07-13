@@ -15,7 +15,7 @@ The Kyverno `ImageValidatingPolicy` type is a Kyverno policy type designed for v
 
 ## Additional Fields
 
-The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/release-1.14/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.ImageValidatingPolicy).
+The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-types/validating-policy) with the following additional fields for image verification features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.ImageValidatingPolicy).
 
 ### images
 
@@ -34,7 +34,6 @@ spec:
   images:
     - name: imagerefs
       expression: '[object.imageReference]'
-  # ...
 ```
 
 ### matchImageReferences
@@ -47,10 +46,9 @@ kind: ImageValidatingPolicy
 metadata:
   name: check-images
 spec:
-  matchImageReferences: # At least one sub-field is required
+  matchImageReferences:
     - glob: 'ghcr.io/kyverno/*' # Match images using glob pattern
     - expression: "image.registry == 'ghcr.io'" # Match using CEL expression
-  # ...
 ```
 
 ### attestors
@@ -78,7 +76,7 @@ spec:
   attestors:
     - name: cosign # A unique name to identify this attestor
       cosign:
-        key: # Public key-based verification and At least one sub-field is required
+        key:
           expression: variables.cm.data.pubKey # CEL expression that resolves to the public key
           kms: 'gcpkms://...' # KMS URI for key verification (e.g., GCP KMS, AWS KMS)
           hashAlgorithm: 'sha256' # Optional hash algorithm used with the key
@@ -94,8 +92,7 @@ spec:
               issuer: 'https://token.actions.githubusercontent.com'
               subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*" # Optional regex for subject matching
               issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com" # Optional regex for issuer matching
-          roots:
-            | # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
+          roots: |
             -----BEGIN CERTIFICATE-----
             ...
             -----END CERTIFICATE-----
@@ -118,19 +115,19 @@ spec:
           insecureIgnoreTlog: false # Skip TLog verification (for testing only)
           insecureIgnoreSCT: false # Skip Signed Certificate Timestamp (for testing only)
 
-        certificate: # Certificate-based verification and At least one sub-field is required
+        certificate:
           cert:
-            value: | # Inline signing certificate
+            value: |
               -----BEGIN CERTIFICATE-----
               ...
               -----END CERTIFICATE-----
-            expression: variables.cm.data.cert # CEL expression resolving to certificate
-          certChain: # At least one sub-field is required
-            value: | # Certificate chain associated with the signer o
+            expression: variables.cm.data.cert
+          certChain:
+            value: |
               -----BEGIN CERTIFICATE-----
               ...
               -----END CERTIFICATE-----
-            expression: variables.cm.data.certChain # CEL expression resolving to certificate
+            expression: variables.cm.data.certChain
 
         source: # Optional metadata to constrain image source (optional)
           repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
@@ -144,8 +141,6 @@ spec:
             data: | # Optional base64-encoded TUF root metadata (optional)
               eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
           mirror: 'https://tuf.example.org' # Sigstore TUF mirror URL (optional)
-
-  # ...
 ```
 
 **Notary attestors:** These use certificates and optional Time Stamp Authority (TSA) certificates for image signature verification.
