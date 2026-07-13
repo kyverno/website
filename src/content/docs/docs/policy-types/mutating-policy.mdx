@@ -60,7 +60,7 @@ The table below compares major features across the Kubernetes `MutatingAdmission
 
 ## Additional Fields
 
-The `MutatingPolicy` extends the [Kubernetes MutatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/) with the following additional fields for Kyverno features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io%2fv1alpha1).
+The `MutatingPolicy` extends the [Kubernetes MutatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/) with the following additional fields for Kyverno features. A complete reference is provided in the [API specification](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.MutatingPolicy).
 
 ### evaluation
 
@@ -76,15 +76,14 @@ spec:
     admission:
       enabled: true
     mutateExisting:
-      enabled: false
-  # ...
+      enabled: true
 ```
 
 - **`admission.enabled`**: When set to `true`, the policy is applied during admission requests (CREATE, UPDATE operations). This is the primary use case for mutating resources as they are being created or updated.
 
 - **`mutateExisting.enabled`**: When set to `true`, the policy is applied to existing resources in the cluster through background processing. This allows you to mutate resources that already exist without requiring them to be recreated or updated.
 
-Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.EvaluationConfiguration) for details.
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.EvaluationConfiguration) for details.
 
 ### webhookConfiguration
 
@@ -98,12 +97,11 @@ metadata:
 spec:
   webhookConfiguration:
     timeoutSeconds: 15
-  # ...
 ```
 
 In the policy above, `webhookConfiguration.timeoutSeconds` is set to `15`, which defines how long the admission request waits for policy evaluation. The default is `10` seconds, and the allowed range is `1` to `30` seconds. After this timeout, the request will fail or ignore the result based on the failure policy. Kyverno reflects this setting in the generated `MutatingWebhookConfiguration`.
 
-Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.WebhookConfiguration) for details.
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.WebhookConfiguration) for details.
 
 ### autogen
 
@@ -130,7 +128,7 @@ spec:
 
 Generating a `MutatingAdmissionPolicy` from a `MutatingPolicy` provides the benefits of faster and more resilient execution during admission controls while leveraging all features of Kyverno.
 
-Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1alpha1.AutogenConfiguration) for details.
+Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.AutogenConfiguration) for details.
 
 ## Policy Scope
 
@@ -225,15 +223,21 @@ spec:
     - patchType: ApplyConfiguration
       applyConfiguration:
         expression: |
-          has(object.metadata.labels) && has(object.metadata.labels.environment) ?
           Object{
             metadata: Object.metadata{
-              labels: {"managed": "true"}
+              labels: {
+                "environment": "prod"
+              }
             }
-          } : 
+          }
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: |
           Object{
             metadata: Object.metadata{
-              labels: {"environment": "dev", "managed": "true"}
+              labels: {
+                "tier": "frontend"
+              }
             }
           }
 ```
@@ -262,23 +266,9 @@ spec:
           - CREATE
   mutations:
     - patchType: JSONPatch
-      jsonPatch:
-        expression: |
-          has(object.metadata.labels) ?
-          [
-              JSONPatch{
-                  op: "add",
-                  path: "/metadata/labels/managed",
-                  value: "true"
-              }
-          ] :
-          [
-              JSONPatch{
-                  op: "add",
-                  path: "/metadata/labels",
-                  value: {"managed": "true"}
-              }
-          ]
+      patchJson6902: |
+        - path: "/metadata/labels/purpose"
+          op: remove
 ```
 
 ### Multiple JSONPatch Operations
@@ -336,17 +326,17 @@ spec:
           - pods
         operations:
           - CREATE
-    mutations:
-      - patchType: JSONPatch
-        jsonPatch:
-          expression: |
-            [
-              JSONPatch{
-                op: "add",
-                path: "/metadata/labels/" + jsonpatch.escapeKey("app.kubernetes.io/name"),
-                value: "my-app"
-              }
-            ]
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          [
+            JSONPatch{
+              op: "add",
+              path: "/metadata/labels/" + jsonpatch.escapeKey("app.kubernetes.io/name"),
+              value: "my-app"
+            }
+          ]
 ```
 
 ## Looping with CEL Functions
@@ -425,6 +415,8 @@ MutatingPolicy supports background processing to mutate existing resources in th
 
 2. **Custom Permissions**: Custom permissions are almost always required. Because these mutations occur on existing resources and not during an AdmissionReview, Kyverno may need additional permissions which it does not have by default. See the section on [customizing permissions](/docs/installation/customization#customizing-permissions) for how to grant additional permissions to the Kyverno background controller's ServiceAccount. Kyverno will perform these permissions checks when a mutate existing policy is installed.
 
+3. **Testing**: As of Kyverno 1.18, the [Kyverno CLI](/docs/subprojects/kyverno-cli) (`kyverno apply` and `kyverno test`) includes full support for `mutateExisting` rules within `MutatingPolicy` resources, allowing them to be tested locally.
+
 ### Same Trigger and Target
 
 When the trigger and target are the same resource type, the policy will mutate ALL existing resources of that type when a trigger occurs:
@@ -468,7 +460,7 @@ This means if you have 10 existing namespaces and create a new one, all 11 names
 
 You can specify different trigger and target resources using `targetMatchConstraints`. When a trigger occurs, Kyverno will mutate ALL existing resources that match the target criteria.
 
-You have access to properties of the triggering resource via `request.object` and `request.oldObject` in variable expressions. In mutation expressions, `Object` references the target resource from `targetMatchConstraints`. In order to use `request.object` or `request.oldObject` in mutations expressions you have to passing them to the mutation context as a variable first:
+You have access to properties of the triggering resource via `request.object` and `request.oldObject` in variable expressions. In mutation expressions, `Object` references the target resource from `targetMatchConstraints`. In order to use `request.object` or `request.oldObject` in mutation expressions, you have to pass them to the mutation context as a variable first:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -500,11 +492,11 @@ spec:
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
-        expression: >
+        expression: |
           Object{
             metadata: Object.metadata{
-              labels: Object.metadata.labels{
-                trigger: variables.triggerNamespace
+              labels: {
+                "trigger": string(variables.triggerNamespace)
               }
             }
           }
@@ -517,12 +509,12 @@ In this example:
 
 This means if you have 5 ConfigMaps in matching namespaces and update the trigger namespace, all 5 ConfigMaps will be mutated.
 
-As of kyverno 1.17, its possible to select mutation targets with a CEL expression. The expression must use the resource library because it must evaluate to a kubernetes object. The expression can be defined under the `targetMatchConstraints.expression` field which takes a string CEL expression.
+As of Kyverno 1.17, it's possible to select mutation targets with a CEL expression. The expression must use the resource library because it must evaluate to a Kubernetes object. The expression can be defined under the `targetMatchConstraints.expression` field which takes a string CEL expression.
 
 The following policy will target a configmap resource called `test-cm-1` in the same namespace as the trigger object.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: test-mpol-different-trigger-target-expression
@@ -625,15 +617,15 @@ spec:
         apiVersions: ['v1']
         resources: ['pods']
         operations: ['CREATE']
-mutations:
-  - patchType: ApplyConfiguration
-    applyConfiguration:
-      expression: |
-        Object{
-            metadata: Object.metadata{
-          labels: {"stage": "initial"}
+    mutations:
+      - patchType: ApplyConfiguration
+        applyConfiguration:
+          expression: |
+            Object{
+              metadata: Object.metadata{
+                labels: {"stage": "initial"}
+              }
             }
-        }
 ```
 
 **Reinvocation Policy Options:**
@@ -643,8 +635,24 @@ mutations:
 
 ## GitOps Considerations
 
-While GitOps is great at managing configurations, some changes such as label propagations are best handled using mutating policies.
+It is common to use Kyverno in a GitOps approach where policies and resources are deployed via tools like Argo CD or Flux. When using mutations, divergence from the state in git can cause "fighting" between Kyverno and the GitOps controller.
 
-Kyverno's MutatingPolicies are designed to interoperate nicely with GitOps solutions.
+### Flux
 
-For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate#gitops-considerations) in the ClusterPolicy mutate documentation.
+Flux natively accommodates mutating admission controllers like Kyverno by using server-side apply in dry-run mode. The resource returned to Flux already includes mutations, so Flux usually requires no extra configuration. However, this may increase load on Kyverno as mutations are performed during each diff calculation.
+
+### Argo CD
+
+For Argo CD (v2.10+), using **ServerSideDiff** is recommended as it delegates the comparison to Kubernetes, resolving OutOfSync warnings.
+
+For older versions (v2.9 and below), you may need to configure `ignoreDifferences` in the `Application` resource:
+
+```yaml
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jqPathExpressions:
+      - .metadata.labels.foo
+```
+
+It is also helpful to configure `managedFieldsManagers` with a value of `kyverno` to allow Kyverno to own the mutated fields.
