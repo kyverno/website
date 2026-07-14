@@ -28,16 +28,6 @@ import '../styles/global.css'
         }
       })()
     </script>
-    <script is:inline>
-      ;(function () {
-        try {
-          const stored = localStorage.getItem('kyverno-layout-width')
-          if (stored === 'fluid') {
-            document.documentElement.setAttribute('data-layout-width', 'fluid')
-          }
-        } catch (e) {}
-      })()
-    </script>
     <meta
       name="description"
       content="Simplify cloud-native governance with Kyverno. Automate Kubernetes security, ensure resource compliance, and empower Platform Engineers to manage infrastructure and applications using native YAML-based declarative policy-as-code."

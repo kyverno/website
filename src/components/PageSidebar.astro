@@ -8,6 +8,7 @@ const currentSlug = Astro.url.pathname
 
 // Hide sidebar on Support page
 const isSupportPage = currentSlug === '/support/' || currentSlug === '/support'
+
 const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
 ---
 
@@ -17,6 +18,7 @@ const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
       <div class="lg:sl-hidden">
         <MobileTableOfContents />
       </div>
+
       <div class="right-sidebar-panel sl-hidden lg:sl-block">
         <div class="sl-container">
           <TableOfContents />
@@ -31,11 +33,29 @@ const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
     .right-sidebar-panel {
       padding: 1rem var(--sl-sidebar-pad-x);
     }
+
     .sl-container {
-      width: calc(var(--sl-sidebar-width) - 2 * var(--sl-sidebar-pad-x));
+      width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      min-width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      max-width: calc(
+        var(--kyverno-toc-column-width, 15rem) - 2 * var(--sl-sidebar-pad-x)
+      );
+      transition: none !important;
     }
+
     .right-sidebar-panel :global(h2) {
       color: var(--sl-color-white);
+    }
+
+    .right-sidebar-panel :global(:where(a)) {
+      display: block;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
   }
 </style>
@@ -82,7 +102,7 @@ const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
 
   :global(body[data-slug='/support/'] .sl-container),
   :global(body[data-slug='/support'] .sl-container) {
-    max-width: 90rem !important; /* Much wider than default 45rem */
+    max-width: 90rem !important;
     margin-inline: auto !important;
   }
 
