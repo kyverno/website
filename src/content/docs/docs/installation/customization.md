@@ -94,7 +94,7 @@ cleanupController:
 Or directly via the `--tlsKeyAlgorithm` container flag (see [Container Flags](#container-flags)).
 
 :::note[Note]
-The key algorithm setting only applies when Kyverno manages its own certificates. If you are using custom certificates or cert-manager to provision certificates, you should configure the algorithm in your certificate generation process instead.
+The key algorithm setting only applies when Kyverno manages its own certificates. If you are using custom certificates, you should configure the algorithm in your certificate generation process. For cert-manager managed certificates, see [cert-manager Integration](#cert-manager-integration).
 :::
 
 After installing Kyverno, you can verify the certificate type:
@@ -103,6 +103,45 @@ After installing Kyverno, you can verify the certificate type:
 $ kubectl -n kyverno get secret kyverno-svc.kyverno.svc.kyverno-tls-ca -o jsonpath='{.data.tls\.crt}' | \
   base64 -d | openssl x509 -noout -text | grep "Public Key Algorithm"
         Public Key Algorithm: id-ecPublicKey
+```
+
+#### cert-manager Integration
+
+Kyverno can be configured to use [cert-manager](https://cert-manager.io/) for TLS certificate management. When enabled, the Helm chart will create cert-manager `Certificate` resources to provision the TLS certificates for both the admission controller and cleanup controller.
+
+##### Prerequisites
+
+- cert-manager must be installed in the cluster before installing Kyverno with this option enabled.
+
+##### Basic Configuration
+
+To enable cert-manager integration, set the following Helm values:
+
+```yaml
+admissionController:
+  certManager:
+    enabled: true
+
+cleanupController:
+  certManager:
+    enabled: true
+```
+
+By default, this creates a self-signed `ClusterIssuer` to generate CA certificates, which are then used to sign the TLS certificates for the webhooks.
+
+For more options, please see the Helm chart [README](https://github.com/kyverno/kyverno/tree/main/charts/kyverno).
+
+##### Verifying cert-manager Certificates
+
+After installing Kyverno with cert-manager integration, you can verify the certificates are managed by cert-manager:
+
+```sh
+$ kubectl -n kyverno get certificates
+NAME                              READY   SECRET                                         AGE
+kyverno-admission-controller-ca   True    kyverno-svc.kyverno.svc.kyverno-tls-ca         5m
+kyverno-admission-controller-tls  True    kyverno-svc.kyverno.svc.kyverno-tls-pair       5m
+kyverno-cleanup-controller-ca     True    kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca    5m
+kyverno-cleanup-controller-tls    True    kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair  5m
 ```
 
 #### Custom certificates
