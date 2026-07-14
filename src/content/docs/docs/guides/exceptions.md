@@ -472,7 +472,7 @@ Since Kyverno 1.14.0, **PolicyExceptions**, introduced in the new group `policie
 The following `ValidatingPolicy` enforce that all `Deployment` resources must include the label `env=prod`. If this condition is not met, the policy denies the request.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-prod-label
@@ -494,7 +494,7 @@ spec:
 To exclude a specific `Deployment` from the above policy enforcement, a `PolicyException` can be defined. This example uses a CEL expression to match the `Deployment` named `skipped-deployment`, allowing it to bypass the validation.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exclude-skipped-deployment
@@ -573,7 +573,7 @@ spec:
 The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: ivpol-sample
@@ -628,7 +628,7 @@ spec:
 This `PolicyException` is defined to exempt this pod from enforcement. The exception uses a CEL `expression—object.metadata.name == 'skipped-pod'`to identify the specific resource. It links to the `ImageValidatingPolicy` named `ivpol-sample`, and when the reports controller processes the pod, it detects that the exception applies. As a result, none of the image validation rules are executed for this resource.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: check-name
@@ -692,7 +692,7 @@ This enables fine-grained, declarative exemptions without modifying the core pol
 The following `GeneratingPolicy` is designed to automatically create a ConfigMap named `zk-kafka-address` in any newly created Namespace.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: generate-configmap
@@ -729,7 +729,7 @@ spec:
 To prevent this `ConfigMap` from being created in a specific namespace (e.g., a "testing" namespace), we can define a `PolicyException`. This exception uses a CEL expression to match any Namespace with the name `testing` and skips the `generate-configmap` policy for it.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exclude-namespace-by-name
