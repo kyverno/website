@@ -156,7 +156,7 @@ spec:
 
 ## HTTP library
 
-The **HTTP library** allows interaction with external HTTP/S endpoints using `http.Get()` and `http.Post()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
+The **HTTP library** allows interaction with external HTTP/S endpoints using `http.Get()`, `http.Post()`, and `http.Client()` within policies. These functions enable real-time validation against third-party systems, remote config APIs, or internal services, supporting secure communication via CA bundles for HTTPS endpoints.
 
 | **CEL Expression**                                                                                               | **Purpose**                                                      |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -164,6 +164,7 @@ The **HTTP library** allows interaction with external HTTP/S endpoints using `ht
 | `http.Get("https://service/data").metadata.team == object.metadata.labels.team `                                 | Enforce label matching from remote service metadata              |
 | `http.Post("https://audit.api/log", {"kind": object.kind}, {"Content-Type": "application/json"}).logged == true` | Confirm logging of the resource to an external system            |
 | `http.Get("https://certs.api/rootCA").cert == object.spec.cert`                                                  | Validate a certificate field in the object against external data |
+| `http.Client(variables.caBundle).Get("https://internal.svc/data").status == "ok"`                                | Call an HTTPS endpoint using a custom CA bundle for TLS trust    |
 
 The following policy fetches data from an external or internal HTTP(S) endpoint and makes it accessible within the policy:
 
@@ -219,10 +220,52 @@ spec:
         'External POST call did not return the expected response ' + string(variables.response.received)
 ```
 
-When communicating over HTTPS, Kyverno uses the provided CA bundle to validate the server's certificate.
+If an HTTPS endpoint uses a certificate signed by a private CA, use `http.Client(caBundle)` to create a client that trusts the supplied CA certificates, then call `Get` or `Post` on the result.
+
+The bundle must be a PEM string containing one or more `-----BEGIN CERTIFICATE-----` blocks. A non-empty bundle replaces the system root pool for that client, so it must include every CA required by the target endpoint. An empty string uses Kyverno's default HTTP client and system trust store.
+
+The same PEM format is accepted by [`apiCall.service.caBundle`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) in `ClusterPolicy` context entries.
+
+The following sample reads the CA bundle from a ConfigMap in the same namespace as the incoming Pod and uses it to call an internal HTTPS service. Kyverno's ServiceAccount must have permission to `get` ConfigMaps in the referenced namespace.
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: vpol-http-get-with-ca
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  variables:
+    - name: caBundle
+      expression: >-
+        resource.Get("v1", "configmaps", object.metadata.namespace, "internal-ca").data["ca.crt"]
+    - name: externalData
+      expression: >-
+        http.Client(variables.caBundle).Get("https://internal.api.svc.cluster.local/data")
+  validations:
+    - expression: >-
+        variables.externalData.metadata.labels.app == object.metadata.labels.app
+      messageExpression: >-
+        'label mismatch, expected ' + string(variables.externalData.metadata.labels.app)
+```
 
 :::note[Security Note]
-Kyverno's HTTP hardening controls for CEL HTTP calls (`http.get()`/`http.post()`) are configured with `--httpBlocklist`/`--httpAllowlist` and `--allowHTTPInNamespacedPolicies`.
+Kyverno's HTTP hardening controls apply to `http.Get()`, `http.Post()`, and requests made through `http.Client(caBundle)`.
+
+- `--httpBlocklist` blocks configured CIDRs and hostnames.
+- `--httpAllowlist` restricts requests to configured URL prefixes.
+- Cluster-scoped policies are subject to the configured blocklist and allowlist.
+- CEL HTTP calls in namespaced policies are disabled by default. Enable them with `--allowHTTPInNamespacedPolicies` only when appropriate network and URL restrictions are in place.
+
+See [Configuring Kyverno](/docs/installation/customization#http-calls) for details.
+:::
 
 - Namespaced policies: CEL HTTP is disabled by default and can be enabled explicitly.
 - Cluster-scoped policies: CEL HTTP bypasses the blocklist check by design.
