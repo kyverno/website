@@ -342,7 +342,11 @@ Egress requirements are shared across all four controllers:
 - **OCI registries** for [image verification](/docs/policy-types/cluster-policy/verify-images/overview) and [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries)
 - **External HTTPS endpoints** for [external service calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) and the [CEL HTTP library](/docs/policy-types/cel-libraries#http-library). If you use plain HTTP for either, add a port 80 rule to the egress policy below.
 
-The samples use the labels from a default Kyverno Helm installation: `app.kubernetes.io/instance: kyverno` and `app.kubernetes.io/part-of: kyverno` (the default Helm release name). 
+The samples use the labels from a default install, where `app.kubernetes.io/instance` and `app.kubernetes.io/part-of` are both `kyverno`. If you used a different release name, these values will differ. Check the actual labels on your pods and copy them into the manifests before applying:
+
+```sh
+kubectl get pods -n kyverno --show-labels
+```
 
 ##### Ingress: admission and cleanup controllers
 
