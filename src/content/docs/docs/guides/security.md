@@ -462,7 +462,19 @@ spec:
 :::caution[Replace before applying]
 
 - These samples use the same object names as the chart-generated NetworkPolicies. If you have `networkPolicy.enabled: true` in the chart, do not also apply the ingress samples above, or `kubectl apply` will conflict with the chart and the next `helm upgrade` will overwrite your changes.
-- `203.0.113.10/32` is a documentation placeholder from the [RFC 5737](https://datatracker.ietf.org/doc/html/rfc5737) TEST-NET-3 range. Replace it with your API server endpoint or control-plane subnet CIDR. This rule is only necessary when the API server sits inside an RFC1918 range (typical for private EKS/GKE/AKS control planes); on clusters with a public API endpoint the `0.0.0.0/0` rule already covers it.
+- `203.0.113.10/32` is a documentation placeholder from the [RFC 5737](https://datatracker.ietf.org/doc/html/rfc5737) TEST-NET-3 range. This rule is required for normal controller operation, not only when an [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) context variable is used. Replace it with the CIDR your CNI evaluates for traffic from Kyverno pods to the Kubernetes API server. Depending on the cluster and where NetworkPolicy is enforced relative to Service DNAT, this may be the `kubernetes.default` Service ClusterIP, the post-DNAT control-plane endpoint, or both. Use these commands to find the possible destinations:
+
+  ```sh
+  # Kubernetes Service ClusterIP
+  kubectl get service kubernetes -n default \
+    -o jsonpath='{.spec.clusterIP}{"\n"}'
+
+  # API server endpoints behind the Service
+  kubectl get endpoints kubernetes -n default -o wide
+  ```
+
+  After applying, verify all four Kyverno controllers retain API connectivity (pods stay `Ready`, no `dial tcp` timeouts in logs).
+
 - `monitoring` is a placeholder for the namespace hosting Prometheus. Replace it with your metrics-scrape namespace.
 - The DNS rule assumes `k8s-app: kube-dns` pods in `kube-system`. This matches kubeadm, GKE, EKS, and AKS. On OpenShift, replace the podSelector with `dns.operator.openshift.io/daemonset-dns: default` and the namespaceSelector with `kubernetes.io/metadata.name: openshift-dns`.
 - The `0.0.0.0/0` block excludes RFC1918 by default. RFC1918 typically covers your pod and service CIDRs. Add an explicit allow rule above it for in-cluster destinations such as a mirror registry or an [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls).
