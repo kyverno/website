@@ -483,14 +483,37 @@ spec:
 
 ##### Verification
 
-Confirm the policies are applied and that admission still works. `--dry-run=server` exercises the full admission path without scheduling a pod, so it does not depend on PodSecurity or other cluster-level admission plugins:
+Confirm that the NetworkPolicies are applied and that the API server can still reach the admission webhook:
 
 ```sh
 kubectl get networkpolicy -n kyverno
-kubectl run netpol-test --image=nginx --restart=Never --namespace=default --dry-run=server
+kubectl run netpol-test \
+  --image=nginx \
+  --restart=Never \
+  --namespace=default \
+  --dry-run=server
 ```
 
-If the dry run fails with a webhook error (`failed calling webhook ... connection refused` or a timeout), the webhook ingress rule or the API server egress rule is likely mismatched. Check your CNI logs for policy-drop events, and verify the API server CIDR placeholder was replaced.
+The server-side dry run exercises the admission path without scheduling a Pod. It verifies admission-webhook reachability only; it does not verify Kyverno's outbound access to the Kubernetes API, DNS, registries, or external services.
+
+After applying the egress policy, confirm that all Kyverno controller deployments remain available:
+
+```sh
+kubectl rollout status deployment -l app.kubernetes.io/part-of=kyverno -n kyverno
+kubectl get pods -n kyverno
+```
+
+Inspect the controller logs for Kubernetes API connection failures, list/watch errors, DNS failures, or request timeouts:
+
+```sh
+kubectl logs -n kyverno \
+  -l app.kubernetes.io/part-of=kyverno \
+  --all-containers \
+  --since=10m \
+  --prefix
+```
+
+If image verification, image registry context variables, or external service calls are configured, test those features separately to verify that their required outbound destinations remain reachable.
 
 ##### Using the Helm chart
 
