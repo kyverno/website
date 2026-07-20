@@ -562,8 +562,8 @@ When mutating existing resources, a policy is evaluated in two phases.
 **Trigger phase** (runs against the resource that triggered the policy):
 
 1. The trigger is matched against `matchConstraints`.
-2. `matchConditions` are evaluated against the trigger request. Conditions may reference `variables`; each variable is evaluated lazily, at most once, on first reference.
-3. `variables` evaluate from trigger context such as `request.object` and `request.oldObject`, and may perform context-library lookups.
+2. Lazy `variables` bindings are created. Variables are compiled ahead of time, read trigger context such as `request.object` and `request.oldObject`, and may perform context-library lookups. Each variable is evaluated at most once — on first reference — and only if referenced.
+3. `matchConditions` are evaluated against the trigger request. Conditions may reference `variables`, which evaluate on first reference.
 4. `targetMatchConstraints` are resolved, using trigger context and variables.
 
 **Target phase** (runs once per resolved target):
