@@ -553,6 +553,133 @@ spec:
           }
 ```
 
+The `targetMatchConstraints.expression` may also reference `variables` computed from the trigger request, allowing the trigger to determine which resources are resolved as targets.
+
+### Evaluation Order
+
+When mutating existing resources, a policy is evaluated in two phases.
+
+**Trigger phase** (runs against the resource that triggered the policy):
+
+1. The trigger is matched against `matchConstraints`.
+2. `matchConditions` are evaluated against the trigger request. Conditions may reference `variables`; each variable is evaluated lazily, at most once, on first reference.
+3. `variables` evaluate from trigger context such as `request.object` and `request.oldObject`, and may perform context-library lookups.
+4. `targetMatchConstraints` are resolved, using trigger context and variables.
+
+**Target phase** (runs once per resolved target):
+
+5. Each resolved target is matched against the `targetMatchConstraints` resource rules, when defined.
+6. `targetMatchConditions` are evaluated against the target. Here `object` refers to the resolved target resource, and `variables` remain available as the bridge to trigger data.
+7. Mutations are evaluated with `Object` referring to the target.
+8. The mutation is persisted through the target's declared API route, including a subresource when one is declared.
+
+:::caution[Note]
+A native Kubernetes `MutatingAdmissionPolicy` does not support referencing `variables` in `matchConditions`. Policies that generate a `MutatingAdmissionPolicy` through autogen should not reference variables in match conditions.
+:::
+
+### Filtering Targets with targetMatchConditions
+
+The `targetMatchConditions` field defines CEL conditions evaluated against each resolved target resource, after variables and target resolution. This allows filtering which targets are mutated, using both target state (`object`) and trigger data (through `variables`).
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: MutatingPolicy
+metadata:
+  name: filter-targets
+spec:
+  evaluation:
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
+  variables:
+    - name: triggerTeam
+      expression: request.object.metadata.labels['team']
+  targetMatchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['UPDATE']
+        resources: ['configmaps']
+  targetMatchConditions:
+    - name: same-team
+      expression: object.metadata.?labels['team'].orValue('') == variables.triggerTeam
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                reconciled: "true"
+              }
+            }
+          }
+```
+
+In this example, a Deployment event triggers mutation of only those existing ConfigMaps whose `team` label matches the trigger's. Targets that fail a condition are skipped without error.
+
+### Mutating Subresources
+
+Target resource rules may declare a subresource. Kyverno resolves the target through its parent resource and persists the mutation through the declared subresource endpoint. This enables use cases such as in-place Pod vertical scaling through the `pods/resize` subresource (Kubernetes 1.33+), where `spec.containers[*].resources` on a running Pod can only be changed via `/resize`:
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: MutatingPolicy
+metadata:
+  name: cap-cpu-requests
+spec:
+  evaluation:
+    admission:
+      enabled: false
+    mutateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  variables:
+    - name: targetNamespace
+      expression: request.namespace
+    - name: targetName
+      expression: request.name
+  targetMatchConstraints:
+    expression: resource.get("v1", "pods", variables.targetNamespace, variables.targetName)
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['UPDATE']
+        resources: ['pods/resize']
+  targetMatchConditions:
+    - name: exceeds-cpu-cap
+      expression: >-
+        object.spec.containers.exists(c,
+          quantity(c.resources.?requests['cpu'].orValue('0')).compareTo(quantity('500m')) > 0)
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |-
+          [
+            JSONPatch{
+              op: "replace",
+              path: "/spec/containers/0/resources/requests/cpu",
+              value: "500m"
+            }
+          ]
+```
+
+When this policy processes an existing Pod, the resolved Pod is read through its parent endpoint and the CPU request change is written through `pods/resize`, which Kubernetes requires for resource changes on running Pods.
+
+:::caution[Note]
+The background controller needs RBAC permission for the declared subresource, e.g. `update` on `pods/resize`. See [customizing permissions](/docs/installation/customization#customizing-permissions).
+:::
+
 ## Mutate Ordering
 
 The order of mutations is important when multiple mutations are applied. Kyverno processes mutations in the order they appear in the policy. However, **the order is not guaranteed across multiple MutatingPolicies** - if multiple policies apply to the same resource, their execution order is not deterministic.
