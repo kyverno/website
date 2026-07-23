@@ -120,6 +120,130 @@ spec:
 
 This policy is triggered whenever a Namespace is created. It captures the Namespace's name in `nsName` and defines the full ConfigMap object in `downstream`. Then, the `generator.Apply()` function creates the ConfigMap defined in `downstream` inside the target namespace.
 
+## YAML Templates
+
+<FeatureState state="beta" version="v1.19" />
+
+YAML templates provide an alternative, YAML-first way to declare downstream resources. Instead of constructing objects with nested CEL expressions and `dyn()` calls, you author the generated resources as plain YAML — optionally interpolated with CEL placeholders — directly in the `generate` entry.
+
+**When to Use:** Ideal when downstream resources are naturally manifest-shaped (NetworkPolicies, RoleBindings, LimitRanges, custom resources with deep nesting), and when migrating [generate rules](/docs/policy-types/cluster-policy/generate) that already declare resources as YAML.
+
+Each `generate[]` entry accepts exactly one of `expression` or `template`. Entries of both kinds may be mixed within the same policy.
+
+| Field                  | Description                                                                                                                                    |
+| :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `template.value`       | A YAML string containing one or more documents (separated by `---`), each describing a downstream resource.                                    |
+| `template.interpolate` | Controls placeholder evaluation: `none` (default) treats the value as plain YAML; `cel` evaluates `(( ... ))` placeholders as CEL expressions. |
+
+The following policy is equivalent to the Data Source example above, authored as a YAML template:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: zk-kafka-address
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: nsName
+      expression: 'object.metadata.name'
+  generate:
+    - template:
+        interpolate: cel
+        value: |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: zk-kafka-address
+            namespace: (( variables.nsName ))
+          data:
+            KAFKA_ADDRESS: 192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092
+            ZK_ADDRESS: 192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181
+```
+
+The rendered documents flow through the same generation runtime as `generator.Apply()`, so synchronization, generating for existing resources, orphaning behavior, and namespace scope enforcement are identical to expression mode.
+
+### Placeholder Semantics
+
+Placeholders are evaluated against the same context as generation expressions (`object`, `variables`, and the [CEL libraries](/docs/policy-types/cel-libraries)). Interpolation is structural, not textual:
+
+- A placeholder occupying an **entire value** is spliced natively and may evaluate to any CEL type — including maps and lists. No `dyn()` conversions are required.
+- A placeholder **embedded in a larger string** is interpolated and must evaluate to a scalar (string, number, or boolean).
+
+```yaml
+variables:
+  - name: selector
+    expression: >-
+      {"matchLabels": {"kubernetes.io/metadata.name": object.metadata.name}}
+generate:
+  - template:
+      interpolate: cel
+      value: |
+        apiVersion: cilium.io/v2
+        kind: CiliumNetworkPolicy
+        metadata:
+          name: (( object.metadata.name ))-scraping   # embedded: string interpolation
+          namespace: (( object.metadata.name ))
+        spec:
+          endpointSelector: (( variables.selector ))  # whole value: full map spliced
+          ingress:
+          - toPorts:
+            - ports:
+              - port: (( string(variables.port) ))    # evaluated
+                protocol: TCP                         # static, kept as-is
+```
+
+Static and interpolated content can be mixed freely within the same mapping or list. Only placeholder nodes are evaluated; everything else passes through unchanged.
+
+::::note[Note]
+Placeholders are not supported in mapping keys. To produce dynamic keys, use a whole-value placeholder on the parent field instead, e.g. `labels: (( variables.labels ))`.
+::::
+
+To include a literal `((` in an interpolated template, escape it as `\((`. With `interpolate: none` (the default), placeholders are never evaluated and the value is parsed as plain YAML.
+
+### Generating Multiple Resources
+
+A single template may contain multiple YAML documents. Each document is generated independently, targeting the namespace in its own `metadata.namespace`:
+
+```yaml
+generate:
+  - template:
+      interpolate: cel
+      value: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: (( variables.nsName ))-config
+          namespace: (( variables.nsName ))
+        data:
+          key: value
+        ---
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: (( variables.nsName ))-secret
+          namespace: (( variables.nsName ))
+        type: Opaque
+        stringData:
+          password: change-me
+```
+
+### Namespace Targeting
+
+The target namespace of each generated resource is taken from its rendered `metadata.namespace`. Resources without a namespace are treated as cluster-scoped. For a NamespacedGeneratingPolicy, documents without a namespace default to the policy's own namespace, and any other namespace is rejected.
+
+::::note[Note]
+Generating the same resource into a runtime-computed set of namespaces (fan-out) is not expressible with templates; use expression mode with `generator.Apply()` inside a CEL loop for that pattern. See [Looping](#looping).
+::::
+
 ## Clone Source
 
 This mode copies an existing Kubernetes resource (the source) to create a new resource (the downstream). It makes use of `resource.Get()` or `resource.List()` to fetch source resources and clone them into the target namespace using `generator.Apply()`.
