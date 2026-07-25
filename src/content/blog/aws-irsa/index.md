@@ -45,6 +45,96 @@ Once you have the cluster set up, you can use Helm to [install Kyverno into the 
 helm upgrade --install kyverno kyverno/kyverno --namespace kyverno --create-namespace
 ```
 
+## Enabling EKS Pod Identity
+
+EKS Pod Identity is an alternative to IAM Roles for Service Accounts (IRSA) for granting AWS permissions to pods running on Amazon EKS. It creates an association between an IAM role and a Kubernetes ServiceAccount. Unlike IRSA, EKS Pod Identity does not require you to create an IAM OIDC provider or annotate the ServiceAccount with `eks.amazonaws.com/role-arn`.
+
+For the image verification flow in this post, associate the IAM role with the Kyverno admission controller ServiceAccount. With the default Helm install shown above, that ServiceAccount is `kyverno-admission-controller` in the `kyverno` namespace. If you use custom Helm values, replace the namespace and ServiceAccount name with the values used by the Kyverno admission controller.
+
+First, check whether the EKS Pod Identity Agent add-on is already installed:
+
+```sh
+aws eks describe-addon \
+  --cluster-name kyverno-irsa \
+  --addon-name eks-pod-identity-agent
+```
+
+If the add-on is not installed, create it:
+
+```sh
+aws eks create-addon \
+  --cluster-name kyverno-irsa \
+  --addon-name eks-pod-identity-agent
+```
+
+Create an IAM role trust policy for EKS Pod Identity:
+
+```sh
+cat >pod-identity-trust-policy.json <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowEksAuthToAssumeRoleForPodIdentity",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "pods.eks.amazonaws.com"
+            },
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ]
+        }
+    ]
+}
+EOF
+```
+
+Create the IAM role and attach a policy that grants only the AWS permissions Kyverno needs. The permissions depend on the AWS services used by your image verification policy. The following example assumes you have already created the `notation-signer-policy` policy shown in the IRSA section below:
+
+```sh
+aws iam create-role \
+  --role-name kyverno-pod-identity \
+  --assume-role-policy-document file://pod-identity-trust-policy.json
+
+aws iam attach-role-policy \
+  --role-name kyverno-pod-identity \
+  --policy-arn arn:aws:iam::xxxxxxxxxxxx:policy/notation-signer-policy
+```
+
+Associate the IAM role with the Kyverno admission controller ServiceAccount:
+
+```sh
+aws eks create-pod-identity-association \
+  --cluster-name kyverno-irsa \
+  --namespace kyverno \
+  --service-account kyverno-admission-controller \
+  --role-arn arn:aws:iam::xxxxxxxxxxxx:role/kyverno-pod-identity
+```
+
+EKS Pod Identity associations apply to newly created Pods. Restart the Kyverno admission controller Pods so the credential environment variables are injected:
+
+```sh
+kubectl rollout restart deployment -n kyverno -l app.kubernetes.io/component=admission-controller
+```
+
+Confirm that the association exists:
+
+```sh
+aws eks list-pod-identity-associations \
+  --cluster-name kyverno-irsa \
+  --namespace kyverno \
+  --service-account kyverno-admission-controller
+```
+
+Confirm that the admission controller Pod has the EKS Pod Identity credential environment variables:
+
+```sh
+kubectl get pod -n kyverno -l app.kubernetes.io/component=admission-controller -o yaml | grep AWS_CONTAINER -A2
+```
+
+You should see `AWS_CONTAINER_CREDENTIALS_FULL_URI` and `AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE`.
+
 ## Enabling IAM roles for service accounts
 
 ### Creating an IAM OIDC Provider for the Cluster
@@ -285,4 +375,4 @@ test-irsa:
 
 ### Conclusion
 
-By leveraging Kyverno and IRSA, you can simplify the configuration of IAM role assumptions for Kubernetes service accounts in EKS. This approach enhances the security of the cluster by ensuring fine-grained access control to AWS resources. With the steps outlined in this blog post, you can easily set up and test IRSA in your EKS cluster.
+By leveraging Kyverno with EKS Pod Identity or IRSA, you can simplify the configuration of IAM role assumptions for Kubernetes service accounts in EKS. This approach enhances the security of the cluster by ensuring fine-grained access control to AWS resources. With the steps outlined in this blog post, you can set up and test either EKS Pod Identity or IRSA in your EKS cluster.
