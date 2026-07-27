@@ -634,7 +634,7 @@ Kyverno 1.13 introduces new changes in the policy CRDs:
 - These are replaced by more granular controls within the rule itself:
   - spec.rules[*].validate.failureAction
   - spec.rules[*].validate.failureActionOverrides
-  - spec.rules[*].verifyImages[*].failureAction
+  - spec.rules[_].verifyImages[_].failureAction
   - spec.rules[*].mutate.mutateExisting
   - spec.rules[*].generate.generateExisting
 
