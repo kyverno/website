@@ -41,6 +41,26 @@ const shouldShowToc = Astro.locals.starlightRoute?.toc && !isSupportPage
 </style>
 
 <style is:global>
+  :root {
+    --right-sidebar-width: 9rem;
+  }
+
+  @media (min-width: 72rem) {
+    .right-sidebar-container {
+      width: calc(
+        var(--right-sidebar-width) +
+          (100% - var(--sl-content-width) - var(--right-sidebar-width)) / 2
+      ) !important;
+    }
+
+    [data-has-sidebar][data-has-toc] .main-pane {
+      width: calc(
+        var(--sl-content-width) +
+          (100% - var(--sl-content-width) - var(--right-sidebar-width)) / 2
+      ) !important;
+    }
+  }
+
   /* Hide the entire right sidebar container on Support page */
   :global(body[data-slug='/support/'] .right-sidebar-container),
   :global(body[data-slug='/support'] .right-sidebar-container),
