@@ -145,7 +145,6 @@ spec:
               eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
           mirror: 'https://tuf.example.org' # Sigstore TUF mirror URL (optional)
 
-
   # ...
 ```
 
@@ -295,15 +294,16 @@ spec:
   matchImageReferences:
     - glob: 'ghcr.io/myorg/dev-*'
   attestors:
-    - name: dev-attestor
+    - name: devteam
       cosign:
         keyless:
           identities:
             - issuer: 'https://token.actions.githubusercontent.com'
               subject: '*@myorg.github.io'
   validations:
-    - message: 'image must be signed by the development team'
-      expression: 'imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)'
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.devteam])).all(e, e > 0)
+      message: 'image must be signed by the development team'
 ```
 
 The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.
