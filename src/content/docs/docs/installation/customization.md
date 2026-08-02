@@ -184,6 +184,10 @@ kubectl create secret generic kyverno-cleanup-controller.kyverno.svc.kyverno-tls
 
 Kyverno uses Secrets created above to setup TLS communication with the Kubernetes API server and specify the CA bundle to be used to validate the webhook server's certificate in the admission and cleanup webhook configurations.
 
+:::note[Note]
+The `-tls-pair` Secrets are created with type `kubernetes.io/tls` because Kyverno needs both the certificate and private key to serve TLS. The `-tls-ca` Secrets are created as type `generic` because only the CA certificate (`rootCA.crt`) is required to validate the chain; Kyverno reads this key directly and does not require (or need) the CA's private key to be stored in the cluster. This differs from Kyverno's own self-managed certificates (see [Default certificates](#default-certificates)), where all four Secrets, including the CA, are type `kubernetes.io/tls`, since Kyverno holds the CA private key itself in order to sign and rotate certificates automatically.
+:::
+
 ##### Install Kyverno
 
 You can now install Kyverno by selecting one of the available methods from the [installation section](/docs/installation/installation).
