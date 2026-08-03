@@ -208,6 +208,80 @@ A number of the GeneratingPolicy fields, such as the generated resource properti
 
 ## Verify Images Rule
 
+The `verifyImages` rule in `ClusterPolicy` is now migrated to the `ImageValidatingPolicy` (or `NamespacedImageValidatingPolicy`). 
+The new CEL-based policy simplifies image verification by moving properties like `imageReferences`, `attestors`, and `validations` to the `spec` level, and uses CEL expressions for evaluation.
+
+**ClusterPolicy verifyImages:**
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-image
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-image
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      verifyImages:
+        - imageReferences:
+            - 'ghcr.io/kyverno/test-verify-image*'
+          attestors:
+            - entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      ...
+                      -----END PUBLIC KEY-----
+```
+
+**ImageValidatingPolicy:**
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: check-image
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image*'
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            ...
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed for ghcr.io/kyverno/test-verify-image: signature not found'
+```
+
+Key mappings from `verifyImages`:
+| **ClusterPolicy** | **CEL-based ImageValidatingPolicy** |
+| ----------------- | ----------------------------------- |
+| `spec.rules.verifyImages[].imageReferences` | `spec.matchImageReferences[].glob` (or `expression`) |
+| `spec.rules.verifyImages[].skipImageReferences` | Use `matchImageReferences[].expression` with inverted logic |
+| `spec.rules.verifyImages[].attestors[].entries[].keys` | `spec.attestors[].cosign.key` |
+| `spec.rules.verifyImages[].attestors[].entries[].keyless` | `spec.attestors[].cosign.keyless` |
+| `spec.rules.verifyImages[].attestors[].entries[].certificates` | `spec.attestors[].cosign.certificate` |
+
+Refer to the [ImageValidatingPolicy documentation](/docs/policy-types/image-validating-policy/) for details and examples.
+
 ## CleanupPolicy
 
 | **CleanupPolicy**                  | **CEL-based policies**                             |
