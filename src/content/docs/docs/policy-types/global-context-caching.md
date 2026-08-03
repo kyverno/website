@@ -163,6 +163,7 @@ Use this mode to capture internal topology data, structural metadata, or shared 
 | `version`    | string          | **Yes**     | The explicit API version state (e.g., `v1`, `v1beta1`).                                                                                                                                                                                                                           |
 | `resource`   | string          | **Yes**     | **Must be lowercased and pluralized** (e.g., use `configmaps` or `secrets`, not `ConfigMap`).                                                                                                                                                                                     |
 | `namespace`  | string          | No          | The target namespace boundaries. If omitted, Kyverno tracks across **all namespaces** globally.                                                                                                                                                                                   |
+| `name`      | string          | No          | The name of a specific resource to cache. When set, returns a single object instead of a list. Leave empty to cache all resources of this type. |
 
 > **Important:** Ensure the Kyverno ServiceAccount has the necessary RBAC
 > permissions (`get`, `list`, `watch`) for the resources you are caching,
@@ -182,6 +183,37 @@ spec:
     resource: configmaps
     namespace: default
 ```
+
+#### Syntax Example: Single Resource Lookup
+
+When `name` is specified, the entry returns a single object instead of a list,
+simplifying CEL access in policies.
+
+```yaml
+apiVersion: kyverno.io/v2alpha1
+kind: GlobalContextEntry
+metadata:
+  name: service-registry-cache
+spec:
+  kubernetesResource:
+    group: ''
+    version: v1
+    resource: configmaps
+    namespace: kyverno
+    name: service-registry
+```
+
+In a policy, the data is now directly accessible without unwrapping a list:
+
+```yaml
+# Before (name not set — returns list)
+jmesPath: 'items[?metadata.name==`service-registry`].data.endpoint | [0]'
+
+# After (name set — returns single object)
+jmesPath: 'data.endpoint'
+```
+
+
 
 ### 2. External API Caching
 
