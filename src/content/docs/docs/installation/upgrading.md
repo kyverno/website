@@ -19,6 +19,35 @@ Direct upgrades from previous versions are not supported when using the YAML man
 
 An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the Helm chart v2 to v3 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
+## Upgrading to Kyverno v1.19
+
+### Deprecations
+
+Kyverno v1.19 achieves full feature parity between the CEL-based policy types in the `policies.kyverno.io` API group and the legacy policy types. As a result:
+
+1. **`ClusterPolicy` and `Policy` (`kyverno.io/v1`) are officially deprecated** and will be **removed in v1.20**. Migrate to the CEL-based [policy types](/docs/policy-types/overview) using the [migration guide](/docs/guides/migration-to-cel). v1.19 is the final release with full support for these types.
+2. **`CleanupPolicy` and `ClusterCleanupPolicy` (`kyverno.io/v2`)** are deprecated and will be **removed in v1.20**. Use [DeletingPolicy](/docs/policy-types/deleting-policy) instead.
+3. **The legacy PolicyException (`kyverno.io/v2`)** is deprecated and will be **removed in v1.20**. Use the [`policies.kyverno.io` PolicyException](/docs/guides/exceptions) instead.
+4. **The `v1alpha1` versions of the `policies.kyverno.io` policy types are deprecated.** Update your manifests to use `policies.kyverno.io/v1`.
+
+The following resource types are **not** deprecated and continue to be fully supported with CEL-based policies:
+
+- **GlobalContextEntry**: only the older `kyverno.io/v2alpha1` API version is deprecated; use `kyverno.io/v2`.
+- **UpdateRequest** (internal type): only the older `kyverno.io/v1beta1` API version is deprecated (no longer served).
+- **PolicyReport / ClusterPolicyReport** (`wgpolicyk8s.io/v1alpha2`) and **EphemeralReport / ClusterEphemeralReport** (`reports.kyverno.io/v1`).
+
+### Storage Versions
+
+In v1.19, the storage version for the `policies.kyverno.io` policy types remains `v1beta1`. It will move to `v1` in v1.20. After upgrading, you can use the [`kyverno migrate`](/docs/kyverno-cli/reference/kyverno_migrate) CLI command to rewrite existing stored objects to the current storage version, for example:
+
+```sh
+kyverno migrate --resource policyexceptions.kyverno.io
+```
+
+### Helm Chart Changes
+
+Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-api` chart dependency, controlled by the existing `crds.install` value. If you install CRDs separately or set `crds.install: false`, review your CRD management workflow before upgrading.
+
 ## Upgrading to Kyverno v1.13
 
 ### Breaking Changes
