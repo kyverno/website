@@ -14,6 +14,10 @@ import { lastestStableVersion } from '../../../../constants'
 
 <FeatureState state="deprecated" version={lastestStableVersion} />
 
+:::caution[Deprecation Notice]
+`CleanupPolicy` and `ClusterCleanupPolicy` are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. Use the CEL-based [DeletingPolicy](/docs/policy-types/deleting-policy) instead, which provides full feature parity. See the [migration guide](/docs/guides/migration-to-cel) to convert existing policies.
+:::
+
 Kyverno has the ability to cleanup (i.e., delete) existing resources in a cluster in two different ways. The first way is via a declarative policy definition in either a `CleanupPolicy` or `ClusterCleanupPolicy`. See the section on [cleanup policies](#cleanup-policy) below for more details. The second way is via a reserved time-to-live (TTL) label added to a resource. See the [cleanup label](#cleanup-label) section for further details.
 
 ## Cleanup Policy
