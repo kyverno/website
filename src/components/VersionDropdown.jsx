@@ -40,6 +40,25 @@ export const VersionDropdown = ({ className = '' }) => {
     }
   }, [isOpen])
 
+  const handleVersionSelect = async (e, targetHref, baseHref) => {
+    e.preventDefault()
+    setIsOpen(false)
+
+    if (targetHref === baseHref) {
+      window.location.href = baseHref
+      return
+    }
+
+    try {
+      const res = await fetch(targetHref, { method: 'HEAD' })
+      window.location.href = res.ok ? targetHref : baseHref
+    } catch {
+      // Network or CORS error — navigate to the path anyway; the version's
+      // 404 page will handle it if the page truly doesn't exist.
+      window.location.href = targetHref
+    }
+  }
+
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
@@ -82,6 +101,9 @@ export const VersionDropdown = ({ className = '' }) => {
                 <a
                   key={index}
                   href={version.href}
+                  onClick={(e) =>
+                    handleVersionSelect(e, version.href, version.baseHref)
+                  }
                   className={`block px-4 py-2 text-sm transition-colors ${
                     version.isCurrent
                       ? 'bg-primary-100/30 text-accent-100 font-medium'
