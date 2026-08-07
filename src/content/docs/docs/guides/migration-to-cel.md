@@ -116,7 +116,6 @@ Here is a mapping of each ClusterPolicy field to the CEL-based equivalent:
 | ----------------------------------------------- | ----------------------------------------------------------------------------------- |
 | **spec.rules.validate.allowExistingViolations** | not supported; use policy exceptions instead                                        |
 | **spec.rules.validate.anyPattern**              | `spec.validations`                                                                  |
-| **spec.rules.validate.assert**                  | `spec.validations`                                                                  |
 | **spec.rules.validate.cel**                     | `spec.validations`                                                                  |
 | **spec.rules.validate.deny**                    | `spec.validations` and invert the logic                                             |
 | **spec.rules.validate.failureAction**           | `spec.validationActions`                                                            |
