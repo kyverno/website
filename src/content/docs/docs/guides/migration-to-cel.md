@@ -6,6 +6,10 @@ excerpt: Complete guide for migrating from `ClusterPolicy` to CEL-based policy t
 
 This guide helps you migrate from `ClusterPolicy` to the new CEL-based [policy types](/docs/policy-types/overview/).
 
+:::caution[Deprecation Notice]
+`ClusterPolicy`, `Policy`, `CleanupPolicy`, and the legacy `kyverno.io` PolicyException are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. The CEL-based policy types provide full feature parity as of v1.19. Plan your migration now — see the [deprecation schedule](/docs/policy-types/overview#deprecation-schedule-for-legacy-types).
+:::
+
 :::note[Tip]
 Use `kubectl explain cpol.spec` for help on the ClusterPolicy schema.
 
@@ -208,6 +212,21 @@ A number of the GeneratingPolicy fields, such as the generated resource properti
 
 ## Verify Images Rule
 
+| **ClusterPolicy**                                    | **CEL-based policies**                                 |
+| ---------------------------------------------------- | ------------------------------------------------------ |
+| **spec.rules.verifyImages.imageReferences**          | `spec.matchImageReferences`                            |
+| **spec.rules.verifyImages.skipImageReferences**      | `spec.matchImageReferences` with CEL expressions       |
+| **spec.rules.verifyImages.type**                     | `spec.attestors[].cosign` or `spec.attestors[].notary` |
+| **spec.rules.verifyImages.attestors**                | `spec.attestors`                                       |
+| **spec.rules.verifyImages.attestations**             | `spec.attestations` and `spec.validations`             |
+| **spec.rules.verifyImages.imageRegistryCredentials** | `spec.credentials`                                     |
+| **spec.rules.verifyImages.mutateDigest**             | `spec.validationConfigurations.mutateDigest`           |
+| **spec.rules.verifyImages.verifyDigest**             | `spec.validationConfigurations.verifyDigest`           |
+| **spec.rules.verifyImages.required**                 | `spec.validationConfigurations.required`               |
+| **spec.rules.imageExtractors**                       | `spec.images`                                          |
+
+Refer to the [ImageValidatingPolicy documentation](/docs/policy-types/image-validating-policy/) for details and examples.
+
 ## CleanupPolicy
 
 | **CleanupPolicy**                  | **CEL-based policies**                             |
@@ -220,6 +239,35 @@ A number of the GeneratingPolicy fields, such as the generated resource properti
 | **spec.schedule**                  | `spec.schedule`                                    |
 
 Refer to the [DeletingPolicy documentation](/docs/policy-types/deleting-policy/) for details and examples.
+
+## PolicyException
+
+The legacy `kyverno.io` PolicyException must be migrated to the `policies.kyverno.io` PolicyException, which works with the CEL-based policy types:
+
+| **Legacy PolicyException (`kyverno.io`)** | **PolicyException (`policies.kyverno.io`)**             |
+| ----------------------------------------- | ------------------------------------------------------- |
+| **spec.exceptions.policyName**            | `spec.policyRefs.name`                                  |
+| **spec.exceptions.ruleNames**             | not applicable; CEL policies do not contain named rules |
+| **spec.match**                            | `spec.matchConditions`                                  |
+| **spec.conditions**                       | `spec.matchConditions`                                  |
+| **spec.podSecurity**                      | `spec.matchConditions` with CEL expressions             |
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: PolicyException
+metadata:
+  name: allow-team-tool
+  namespace: delta
+spec:
+  policyRefs:
+    - name: disallow-host-namespaces
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: match-pod-name
+      expression: object.metadata.name.startsWith('important-tool')
+```
+
+Refer to the [Policy Exceptions guide](/docs/guides/exceptions/) for details and examples.
 
 ## Context Variables
 
