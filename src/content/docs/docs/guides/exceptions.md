@@ -864,7 +864,7 @@ spec:
   policyRefs:
     - name: restrict-image-tag
       kind: ValidatingPolicy
-  images:
+  allowedImages:
     - 'ghcr.io/kyverno/*:latest'
   matchConditions:
     - expression: "has(object.metadata.labels.team) && object.metadata.labels.team == 'platform'"
