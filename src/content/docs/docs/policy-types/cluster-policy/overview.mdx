@@ -3,7 +3,14 @@ title: Overview
 excerpt: Get an overview of how Kyverno policies and rules work.
 sidebar:
   order: 1
+  badge:
+    text: Deprecated
+    variant: caution
 ---
+
+import FeatureState from '../../../../../components/FeatureState.astro'
+
+<FeatureState state="deprecated" version="v1.17" />
 
 A Kyverno ClusterPolicy contains a list of rules.
 
@@ -15,9 +22,13 @@ There is no ordering within or across policies and all matching policy rules wil
 
 Each rule consists of a [`match`](/docs/policy-types/cluster-policy/match-exclude) declaration, an optional [`exclude`](/docs/policy-types/cluster-policy/match-exclude) declaration, and one of a [`validate`](/docs/policy-types/cluster-policy/validate), [`mutate`](/docs/policy-types/cluster-policy/mutate), [`generate`](/docs/policy-types/cluster-policy/generate), or [`verifyImages`](/docs/policy-types/cluster-policy/verify-images/overview) declaration. Each rule can contain only a single `validate`, `mutate`, `generate`, or `verifyImages` child declaration.
 
-<img src="/images/Kyverno-Policy-Structure.png" alt="Kyverno Policy" width="65%"/>
-<br/>
-<br/>
+<img
+  src="/images/Kyverno-Policy-Structure.png"
+  alt="Kyverno Policy"
+  width="65%"
+/>
+<br />
+<br />
 
 Policies can be defined as cluster-wide resources (using the kind `ClusterPolicy`) or namespaced resources (using the kind `Policy`). As expected, namespaced policies will only apply to resources within the namespace in which they are defined while cluster-wide policies are applied to matching resources across all namespaces. Otherwise, there is no difference between the two types.
 
