@@ -11,11 +11,21 @@ The [Kyverno Policies](/policies/) repository contains several policies you can 
 
 ## In Clusters
 
-On installation, Kyverno runs as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) in a Kubernetes cluster. Kyverno receives validating and mutating admission webhook HTTP callbacks from the Kubernetes API server and applies matching policies to return results that enforce admission policies or reject requests.
+Kyverno primarily operates as a [dynamic admission controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) within a Kubernetes cluster. It processes admission webhook requests from the Kubernetes API server and applies policies to validate, mutate, or generate resources. Additionally, Kyverno can verify container images and manage resource lifecycles using cleanup policies.
+
+The following table summarizes these core capabilities and their expected outcomes when applying policies in a cluster:
+
+| Capability        | Outcome                                                                          |
+| :---------------- | :------------------------------------------------------------------------------- |
+| **Validate**      | Checks resource configurations and blocks non-compliant requests.                |
+| **Mutate**        | Modifies resources during admission to ensure they conform to standards.         |
+| **Generate**      | Automates the creation of additional resources based on lifecycle triggers.      |
+| **Verify Images** | Validates container image signatures and attestations for supply chain security. |
+| **Cleanup**       | Removes stale or unwanted resources according to defined criteria and schedules. |
+
+For observability, Kyverno generates [PolicyReports](/docs/guides/reports) that provide detailed results for each policy. These reports can be visualized using tools like [Policy Reporter](https://github.com/kyverno/policy-reporter).
 
 Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](/docs/guides/exceptions).
-
-[Cleanup policies](/docs/policy-types/cleanup-policy), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
 
 ## In Pipelines
 
