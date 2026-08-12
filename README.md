@@ -18,7 +18,7 @@ Made with [contributors-img](https://contrib.rocks).
 
 ## Contributing
 
-This site makes use of the [Starlight](https://starlight.astro.build/getting-started/) theme and [Node v22+](https://nodejs.org/en/blog/announcements/v22-release-announce) is required to render it.
+This site makes use of the [Starlight](https://starlight.astro.build/getting-started/) theme and [Node.js v24](https://nodejs.org/en/blog/announcements/v24-release-announce) is required to render it.
 
 For detailed development setup and workflow instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
@@ -78,7 +78,7 @@ All commands are run from the root of the project, from a terminal:
 
 ## Rendering Policies to Markdown
 
-Policies found at https://kyverno.io/policies/ are generated in Markdown from the source repository at [kyverno/policies](https://github.com/kyverno/policies). For any changes to appear on https://kyverno.io/policies/, edits must be made to the upstream policy YAML files at kyverno/policies, and the `render` tool run from this repository to generate the respective Markdown. See [render](/render/README.md) README for more details.
+Policies found at https://kyverno.io/policies/ are generated in Markdown from the source repository at [kyverno/policies](https://github.com/kyverno/policies). For any changes to appear on https://kyverno.io/policies/, edits must be made to the upstream policy YAML files at kyverno/policies, and the `render` tool run from this repository to generate the respective Markdown. See [scripts/README.md](./scripts/README.md) for more details.
 
 ## Style and typographical conventions
 
@@ -138,27 +138,17 @@ To create a new release branch:
 
 In the `main` branch:
 
-1. Add a new menu version corresponding to the new release branch in [params.toml](/config/_default/params.toml) that points to https://kyverno.io below these lines:
+1. Update `latestStableVersion` and `documentationVersions` in [`src/constants/version.ts`](./src/constants/version.ts). The newest stable release should point to `https://kyverno.io`, and the previous stable release should point to its release subdomain.
 
-```toml
-# version_menu = "Versions"
-# Add your release versions here
-[[menu.versions]]
-  version = "1.8.0"
-  url = "https://release-1-8-0.kyverno.io"
-  weight = 1
-```
+For example, when adding `v1.18.0`, the entries should look like:
 
-and change the older release version entry to point to its own versioned url, so for example if adding 1.13:
+```ts
+export const latestStableVersion = 'v1.18'
 
-```toml
-[[versions]] # New Line
-  version = "v1.13.0" # New Line
-  url = "https://kyverno.io" # New Line
-
-[[versions]]
-  version = "v1.12.0"
-  url = "https://release-1-12-0.kyverno.io" # Change this line
+export const documentationVersions: VersionLink[] = [
+  { label: 'v1.18.0', href: 'https://kyverno.io' },
+  { label: 'v1.17.0', href: 'https://release-1-17-0.kyverno.io' },
+]
 ```
 
 2. Clear the Netlify cache!
@@ -180,5 +170,5 @@ Use the cherry pick bot to request a PR be cherry picked to a target branch. Cal
 There are several ways to create multiple PRs, but here is one easy flow:
 
 1. Create a PR for the `main` branch, as usual.
-2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
+2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
 3. Submit PRs for each release branch.
