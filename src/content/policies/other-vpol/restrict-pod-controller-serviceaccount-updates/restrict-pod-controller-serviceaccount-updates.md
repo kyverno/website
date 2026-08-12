@@ -16,7 +16,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml" target="-blank">/other-vpol/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-pod-controller-serviceaccount-updates

@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-run-as-nonroot

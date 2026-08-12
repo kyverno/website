@@ -17,7 +17,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/disable-automountserviceaccounttoken/disable-automountserviceaccounttoken.yaml" target="-blank">/other-mpol/disable-automountserviceaccounttoken/disable-automountserviceaccounttoken.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: disable-automountserviceaccounttoken

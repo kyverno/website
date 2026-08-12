@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/metadata-match-regex/metadata-match-regex.yaml" target="-blank">/other-vpol/metadata-match-regex/metadata-match-regex.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: metadata-match-regex

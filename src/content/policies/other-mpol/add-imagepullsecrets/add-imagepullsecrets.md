@@ -16,7 +16,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-imagepullsecrets/add-imagepullsecrets.yaml" target="-blank">/other-mpol/add-imagepullsecrets/add-imagepullsecrets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-imagepullsecrets

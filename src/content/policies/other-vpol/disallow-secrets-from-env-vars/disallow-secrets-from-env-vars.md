@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/disallow-secrets-from-env-vars/disallow-secrets-from-env-vars.yaml" target="-blank">/other-vpol/disallow-secrets-from-env-vars/disallow-secrets-from-env-vars.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: secrets-not-from-env-vars
