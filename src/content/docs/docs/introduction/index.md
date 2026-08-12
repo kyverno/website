@@ -14,7 +14,7 @@ The <a href="https://github.com/kubernetes/sig-security/blob/main/sig-security-d
 
 ## Why is Policy Management necessary?
 
-Cloud native systems, like Kubernetes, have declarative configurations. Since these systems are very flexible, and support a large number of use cases, they support extensive detailed configurations. Additionally, these systems support multiple roles - developers, operations, and platform teams collaborate on and share configurations.Hence, these systems are highly flexible but also complex to configure and manage directly.
+Cloud native systems, like Kubernetes, have declarative configurations. Since these systems are very flexible, and support a large number of use cases, they support extensive detailed configurations. Additionally, these systems support multiple roles - developers, operations, and platform teams collaborate on and share configurations. Hence, these systems are highly flexible but also complex to configure and manage directly.
 
 Policies provide the right level of abstraction and seperation of concerns for cloud native infrastructure and applications.
 
