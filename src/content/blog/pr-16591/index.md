@@ -1,10 +1,10 @@
 ---
 date: 2026-08-12
-title: "Sigstore in an Isolated Environment: Cosign, RSTUF, Trust Root Distribution, and PR #16591 in Kyverno"
+title: 'Sigstore in an Isolated Environment: Cosign, RSTUF, Trust Root Distribution, and PR #16591 in Kyverno'
 tags:
   - General
   - Security
-excerpt: "Kyverno image verification fails with private RSTUF mirrors. PR #16591 fixes this. Includes a breakdown of TUF repository structure and Sigstore configuration internals."
+excerpt: 'Kyverno image verification fails with private RSTUF mirrors. PR #16591 fixes this. Includes a breakdown of TUF repository structure and Sigstore configuration internals.'
 authors:
   - name: Roman Petrov
 draft: false
@@ -19,6 +19,7 @@ In this article, I'll describe how I solved the task of signing OCI images in an
 At the beginning of this year, I started researching artifact signing. First and foremost, I was interested in signing OCI images. **Sigstore/Cosign** and the keyless approach were chosen as the main stack.
 
 The goals were as follows:
+
 - deploy Sigstore infrastructure inside an internal environment;
 - configure OCI image signing without long-lived user keys;
 - ensure signature validation on target environments;
@@ -28,6 +29,7 @@ The goals were as follows:
 ## Basic Sigstore Environment
 
 The following components were used in my environment:
+
 - [CTLog](https://github.com/sigstore/scaffolding);
 - [Fulcio](https://github.com/sigstore/fulcio);
 - [Rekor](https://github.com/sigstore/rekor);
@@ -63,6 +65,7 @@ cosign signing-config create \
 ```
 
 As a result:
+
 - `trusted_root.json` is required for signature validation;
 - `trusted_root.json` and `signing_config.json` are required for signing.
 
@@ -75,6 +78,7 @@ Manually distributing `trusted_root.json` and `signing_config.json` across all e
 For this task, the Sigstore project suggests using **TUF - The Update Framework**. TUF allows securely distributing the trust root, metadata, and target files, protecting clients against substitution and replay attacks.
 
 In the case of Sigstore, TUF is convenient for distributing:
+
 - `trusted_root.json`;
 - `signing_config.json`;
 - public keys;
@@ -92,6 +96,7 @@ Sigstore has a public TUF server at [tuf-repo-cdn.sigstore.dev](https://tuf-repo
 The next option was the TUF server from [sigstore/scaffolding](https://github.com/sigstore/scaffolding). However, in the Kubernetes context, it turned out to be of limited use for production operation.
 
 The main issues were:
+
 - the project does not allow using your own keys to sign the root;
 - new keys are generated on every Pod restart;
 - the root is signed with new keys after a restart;
@@ -103,16 +108,19 @@ The main issues were:
 Next, I looked at the **Repository Service for TUF** project, or **RSTUF**: [repository-service-tuf](https://github.com/repository-service-tuf). The project is under the OpenSSF umbrella. Its main idea is to implement the TUF specification not as a rigid manual process, but as a ready-made microservice backend with an API that can be integrated into existing automation.
 
 RSTUF fits well into the Kubernetes approach and assumes two main user scenarios:
+
 - **Public TUF repository.** HTTP access to the contents of a storage backend or S3 bucket, that is, to the output produced by worker Pods;
 - **Administrative API.** A server through which repository bootstrap, configuration, and root signing are performed.
 
 The following two domains will be used in the examples:
+
 - `rstuf.sigstore.example` - for serving the TUF repository;
 - `rstuf-api.sigstore.example` - for the administrative API.
 
 ## How the TUF Repository Is Structured
 
 Let's look at the structure of a TUF repository as applied to Sigstore. In the basic case, a TUF server provides a set of metadata and target files:
+
 - **`1.root.json`, `2.root.json`, ...** - the trust root of the TUF repository. It contains information about keys and roles trusted by the client: root, timestamp, snapshot, and targets. `root.json` also specifies signature thresholds and metadata expiration periods. This is the file from which the client starts building the chain of trust. The version number increases during rotation.
 - **`timestamp.json`** - this file contains the hash and size of `snapshot.json`. It allows the client to ensure that the downloaded snapshot has not been tampered with and is not outdated. `timestamp.json` is updated more frequently than other metadata and protects clients from replay attacks, where an attacker tries to serve them an outdated repository state.
 - **`1.snapshot.json`, `2.snapshot.json`, ...** - contains information about the versions and hashes of other metadata. Primarily `targets.json` and, if present, delegated target metadata. It is needed to verify the integrity and consistency of the repository state.
@@ -124,6 +132,7 @@ In other words, `targets.json` contains metadata: names, sizes, hashes, and so o
 ## First Attempt to Integrate RSTUF and Cosign
 
 A quick look at the documentation and Cosign source code showed that the TUF server must contain the following artifacts:
+
 - `trusted_root.json`;
 - `signing_config.json`.
 
@@ -223,6 +232,7 @@ cosign verify \
 To sign OCI images in an isolated environment, the minimum required Sigstore components are **CTLog**, **Fulcio**, **Rekor**, and **Trillian**. For convenient and secure operation, you also need a mechanism for distributing and rotating trust configurations. In my case, this role is performed by a TUF server based on **RSTUF**. It distributes `trusted_root.json` and `signing_config.v0.2.json`.
 
 As a result, the TUF server needs to keep both the metadata and the files themselves up to date:
+
 - `trusted_root.json`;
 - `signing_config.v0.2.json`.
 
@@ -250,32 +260,32 @@ spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
     namespaceSelector:
       matchExpressions:
         - key: kubernetes.io/metadata.name
           operator: In
           values: [ns-ko-app]
   matchImageReferences:
-    - glob: "oci-registry.example/*"
+    - glob: 'oci-registry.example/*'
   attestors:
     - name: cosign
       cosign:
         tuf:
-          mirror: "https://rstuf.sigstore.example"
+          mirror: 'https://rstuf.sigstore.example'
           root:
             # curl -s https://rstuf.sigstore.example/1.root.json | base64
             data: ...
         keyless:
           identities:
-            - issuer: "https://git.example"
+            - issuer: 'https://git.example'
               subjectRegExp: '^https://git\.example/.*'
   validations:
-    - message: "Failed image signature verification"
-      expression: "images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e, e > 0)"
+    - message: 'Failed image signature verification'
+      expression: 'images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e, e > 0)'
 ```
 
 The expectation was simple: when a Pod is created or updated in the `ns-ko-app` namespace, Kyverno should access the internal TUF repository, retrieve the trusted Sigstore materials, and verify the OCI image signature.
@@ -343,6 +353,7 @@ func initTUFAndFetch(ctx context.Context, t *v1beta1.TUF) (*sigstoreTrustMateria
 ```
 
 In other words, Kyverno sequentially tried to retrieve several types of trusted materials, or **trust material**:
+
 - Rekor public keys;
 - CTLog public keys;
 - `trusted_root.json`;
@@ -372,6 +383,7 @@ I did not want to reproduce this entire structure and additionally publish separ
 ### What Was Happening on the RSTUF Side
 
 RSTUF supports two delegation modes:
+
 - **Bins** - [TAP-15 succinct_roles](https://github.com/theupdateframework/taps/blob/master/tap15.md), that is, hash-bin delegations, where target files are distributed across N buckets, or bins, based on the hash of their name.
 - **Custom Delegations** - custom delegated roles with explicit path patterns instead of automatic hash-based distribution.
 
@@ -403,6 +415,7 @@ func (t *TUF) updateMetadataAndDownloadTargets() error {
 `updateClient()` called `client.Update()` from go-tuf v0.7.0. This method updated the metadata chain - root, timestamp, snapshot, targets - and returned `c.targets`, meaning only the target files from the top-level `targets.json`. In the case of Custom Delegations, `targets.json` was empty, so `updateClient()` returned an empty map. No target files from the delegated role were downloaded.
 
 As a result:
+
 - `tuf.Initialize()` completed successfully - the metadata chain root -> timestamp -> snapshot -> targets -> delegated role was validated;
 - But when trying to retrieve any target file from the delegated role, an error occurred: the file was missing from the local cache.
 
@@ -411,10 +424,12 @@ At this stage, I collected information about the behavior of Kyverno v1.18.2 and
 ## What Changed in PR #16591
 
 PR [#16591](https://github.com/kyverno/kyverno/pull/16591) solves two main problems:
+
 - A new TUF client based on **sigstore-go/pkg/tuf** and **go-tuf/v2** is used to retrieve `trusted_root.json`; it supports TAP-15 and works correctly with delegations;
 - A fallback mechanism has been added: if separate TUF targets are unavailable, Rekor, CTLog, and Fulcio materials are extracted from `trusted_root.json`.
 
 PR [#16591](https://github.com/kyverno/kyverno/pull/16591) was based on two preceding PRs:
+
 - [#16663](https://github.com/kyverno/kyverno/pull/16663) - introduced `pkg/sigstoretuf/` with a process-wide mutex for TUF, the `WithLock` function, and the `sigstoreTrustMaterial` structure
 - [#16666](https://github.com/kyverno/kyverno/pull/16666) - added `resolveTrustedMaterial` for inline `trustedRoot` and support for signed-timestamp bundles
 
