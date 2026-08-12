@@ -66,8 +66,10 @@ spec:
     targetRevision: <my.target.version>
     helm:
       values: |
-        webhookLabels:
-          app.kubernetes.io/managed-by: argocd
+        config:
+          preserve: false
+          webhookLabels:
+            app.kubernetes.io/managed-by: argocd
   syncPolicy:
     automated:
       prune: true
@@ -123,12 +125,21 @@ For considerations when using Argo CD along with Kyverno mutate policies, see th
 
 #### Resource Tracking and Ownership
 
-ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to determine which resources form the app. The Kyverno Helm chart also sets this label for the same purposes. To resolve this conflict:
+Argo CD resource tracking behavior depends on the version and configuration. Argo CD v3 uses annotation-based resource tracking by default, while older installations may still use label-based tracking with the `app.kubernetes.io/instance` label. If your Argo CD installation still uses label-based tracking, the Kyverno Helm chart's use of the same label can cause ownership conflicts. To resolve this conflict:
 
-1. Configure ArgoCD to use a different tracking mechanism as described in the [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).
-2. Add appropriate annotations to your Application manifest.
+1. Configure Argo CD to use annotation-based tracking as described in the [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).
+2. For older Argo CD versions, set the tracking method in the `argocd-cm` ConfigMap, for example:
 
-Argo CD users may also have Kyverno add labels to webhooks via the `webhookLabels` key in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys), helpful when viewing the Kyverno application in Argo CD.
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  application.resourceTrackingMethod: annotation
+```
+
+Argo CD users may also have Kyverno add labels to webhooks via the `webhookLabels` key in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys), configured through the Helm chart as `config.webhookLabels`. These labels are not required for Argo CD v3 resource tracking, but can be helpful when viewing the Kyverno application in Argo CD. The example above sets `app.kubernetes.io/managed-by: argocd` on webhook configurations to make that ownership clear without using Argo CD's application instance tracking label.
 
 ### Notes for OpenShift Users
 
