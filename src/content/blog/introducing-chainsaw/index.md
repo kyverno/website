@@ -84,8 +84,8 @@ For Linux users, Chainsaw can be installed using one of the following methods:
    Visit the [Chainsaw releases page](https://github.com/kyverno/chainsaw/releases) and download the appropriate binary for your system. Extract the binary and move it to a directory in your `PATH`.
 
    ```sh
-    wget https://github.com/kyverno/chainsaw/releases/download/v0.2.12/chainsaw-linux-amd64.tar.gz
-   tar -xvf chainsaw-linux-amd64.tar.gz
+    wget https://github.com/kyverno/chainsaw/releases/download/v0.2.12/chainsaw_linux_amd64.tar.gz
+   tar -xvf chainsaw_linux_amd64.tar.gz
    sudo mv chainsaw /usr/local/bin/
    ```
 
