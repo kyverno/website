@@ -305,7 +305,7 @@ Without a NetworkPolicy, the webhook is reachable from any pod and its outbound 
 - Data exfiltration (Threat ID 18): Policies can send admission-request data to any reachable endpoint, including cloud metadata and link-local addresses. This covers [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with `apiCall.service.url` and the CEL [HTTP library](/docs/policy-types/cel-libraries#http-library) (`http.Get()` / `http.Post()`).
 - Controller compromise (Threat ID 4): The controller can modify Kyverno policies and its own `MutatingWebhookConfiguration` / `ValidatingWebhookConfiguration`, so a compromised pod can silently change what the cluster enforces. With no egress policy, it can also reach the API server and other internal services.
 
-To mitigate, configure a NetworkPolicy allowing only the flows listed below. NetworkPolicies are only effective if the cluster's CNI enforces them, so confirm CNI support before relying on this control.
+To mitigate, configure a NetworkPolicy allowing only the flows listed below.
 
 Kyverno requires the following network communications to be allowed:
 
@@ -316,7 +316,212 @@ Kyverno requires the following network communications to be allowed:
 - egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/overview) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries) are used
 - egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) feature is used
 
-For defense in depth, pair the above with restrictive egress policies:
+The sample manifests in the next section implement these flows.
+
+#### Reference sample manifests
+
+These manifests are a **baseline reference**, not a production-ready default. NetworkPolicy behaviour varies by cluster type, CNI, and provider, so adapt selectors, CIDRs, and allowed egress destinations to your environment before applying.
+
+:::note[CNI enforcement]
+NetworkPolicies are only enforced if your cluster's CNI plugin supports them. Verify support before relying on these manifests as a security control.
+:::
+
+The samples assume Kyverno is installed in the `kyverno` namespace. Each controller uses these ports:
+
+| Controller              | Webhook | Metrics |
+| ----------------------- | ------- | ------- |
+| `admission-controller`  | 9443    | 8000    |
+| `cleanup-controller`    | 9443    | 8000    |
+| `background-controller` | —       | 8000    |
+| `reports-controller`    | —       | 8000    |
+
+Egress requirements are shared across all four controllers:
+
+- **Kubernetes API server** for list/watch and the [`apiCall` context variable](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls)
+- **DNS**
+- **OCI registries** for [image verification](/docs/policy-types/cluster-policy/verify-images/overview) and [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries)
+- **External HTTPS endpoints** for [external service calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) and the [CEL HTTP library](/docs/policy-types/cel-libraries#http-library). If you use plain HTTP for either, add a port 80 rule to the egress policy below.
+
+The samples use the labels from a default install, where `app.kubernetes.io/instance` and `app.kubernetes.io/part-of` are both `kyverno`. If you used a different release name, these values will differ. Check the actual labels on your pods and copy them into the manifests before applying:
+
+```sh
+kubectl get pods -n kyverno --show-labels
+```
+
+##### Ingress: admission and cleanup controllers
+
+Port 9443 accepts webhook traffic from the API server and health probes from the kubelet. Neither reliably matches a pod or namespace selector, so the rule below allows any source on port 9443. The `podSelector` on the policy already scopes it to the controller.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyverno-admission-controller
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/component: admission-controller
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 9443
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8000
+```
+
+Apply the same manifest for the cleanup controller: change `metadata.name` to `kyverno-cleanup-controller` and change `app.kubernetes.io/component` in `spec.podSelector.matchLabels` to `cleanup-controller`.
+
+##### Ingress: background and reports controllers
+
+These controllers do not run a webhook, so only the metrics port needs ingress.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyverno-background-controller
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/component: background-controller
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8000
+```
+
+Apply the same manifest for the reports controller: change `metadata.name` to `kyverno-reports-controller` and change `app.kubernetes.io/component` in `spec.podSelector.matchLabels` to `reports-controller`.
+
+##### Egress: all Kyverno controllers
+
+One egress policy covers all four controllers. It allows DNS, the Kubernetes API server, and outbound HTTPS to public endpoints. It blocks the cloud metadata range (`169.254.0.0/16`) and RFC1918 private ranges (which typically include your pod and service CIDRs).
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyverno-egress
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kyverno
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - ipBlock:
+            cidr: 203.0.113.10/32
+      ports:
+        - protocol: TCP
+          port: 443
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.0.0/16
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+```
+
+:::caution[Replace before applying]
+
+- These samples use the same object names as the chart-generated NetworkPolicies. If you have `networkPolicy.enabled: true` in the chart, do not also apply the ingress samples above, or `kubectl apply` will conflict with the chart and the next `helm upgrade` will overwrite your changes.
+- `203.0.113.10/32` is a documentation placeholder from the [RFC 5737](https://datatracker.ietf.org/doc/html/rfc5737) TEST-NET-3 range. This rule is required for normal controller operation, not only when an [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) context variable is used. Replace it with the CIDR your CNI evaluates for traffic from Kyverno pods to the Kubernetes API server. Depending on the cluster and where NetworkPolicy is enforced relative to Service DNAT, this may be the `kubernetes.default` Service ClusterIP, the post-DNAT control-plane endpoint, or both. Use these commands to find the possible destinations:
+
+  ```sh
+  # Kubernetes Service ClusterIP
+  kubectl get service kubernetes -n default \
+    -o jsonpath='{.spec.clusterIP}{"\n"}'
+
+  # API server endpoints behind the Service
+  kubectl get endpoints kubernetes -n default -o wide
+  ```
+
+  After applying, verify all four Kyverno controllers retain API connectivity (pods stay `Ready`, no `dial tcp` timeouts in logs).
+
+- `monitoring` is a placeholder for the namespace hosting Prometheus. Replace it with your metrics-scrape namespace.
+- The DNS rule assumes `k8s-app: kube-dns` pods in `kube-system`. This matches kubeadm, GKE, EKS, and AKS. On OpenShift, replace the podSelector with `dns.operator.openshift.io/daemonset-dns: default` and the namespaceSelector with `kubernetes.io/metadata.name: openshift-dns`.
+- The `0.0.0.0/0` block excludes RFC1918 by default. RFC1918 typically covers your pod and service CIDRs. Add an explicit allow rule above it for in-cluster destinations such as a mirror registry or an [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls).
+
+:::
+
+##### Verification
+
+Confirm that the NetworkPolicies are applied and that the API server can still reach the admission webhook:
+
+```sh
+kubectl get networkpolicy -n kyverno
+kubectl run netpol-test \
+  --image=nginx \
+  --restart=Never \
+  --namespace=default \
+  --dry-run=server
+```
+
+The server-side dry run exercises the admission path without scheduling a Pod. It verifies admission-webhook reachability only; it does not verify Kyverno's outbound access to the Kubernetes API, DNS, registries, or external services.
+
+After applying the egress policy, confirm that all Kyverno controller deployments remain available:
+
+```sh
+kubectl rollout status deployment -l app.kubernetes.io/part-of=kyverno -n kyverno
+kubectl get pods -n kyverno
+```
+
+Inspect the controller logs for Kubernetes API connection failures, list/watch errors, DNS failures, or request timeouts:
+
+```sh
+kubectl logs -n kyverno \
+  -l app.kubernetes.io/part-of=kyverno \
+  --all-containers \
+  --since=10m \
+  --prefix
+```
+
+If image verification, image registry context variables, or external service calls are configured, test those features separately to verify that their required outbound destinations remain reachable.
+
+##### Using the Helm chart
+
+The Helm chart can generate the four ingress policies via `networkPolicy.enabled` per controller (see [chart `values.yaml`](https://github.com/kyverno/kyverno/blob/main/charts/kyverno/values.yaml)). It does not emit egress rules, so apply `kyverno-egress` above alongside the chart, and skip the ingress samples to avoid conflicts.
+
+##### Defense in depth
+
+Pair the reference samples above with restrictive egress policies:
 
 - allow only approved external destinations used by policy HTTP calls
 - explicitly block metadata endpoints and private/link-local ranges unless required by your design
