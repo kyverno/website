@@ -50,7 +50,7 @@ Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-a
 
 ### CLI Changes
 
-The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](/docs/subprojects/kyverno-json) subproject directly.
+The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](https://kyverno.github.io/kyverno-json/) subproject directly.
 
 ## Upgrading to Kyverno v1.13
 
