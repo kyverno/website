@@ -1,5 +1,5 @@
 ---
-date: 2026-07-28
+date: 2026-08-18
 title: Announcing Kyverno 1.19!
 tags:
   - Releases

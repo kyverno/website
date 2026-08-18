@@ -48,6 +48,10 @@ kyverno migrate --resource policyexceptions.kyverno.io
 
 Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-api` chart dependency, controlled by the existing `crds.install` value. If you install CRDs separately or set `crds.install: false`, review your CRD management workflow before upgrading.
 
+### CLI Changes
+
+The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](/docs/subprojects/kyverno-json) subproject directly.
+
 ## Upgrading to Kyverno v1.13
 
 ### Breaking Changes
