@@ -756,15 +756,9 @@ the output `imageData` variable will have a structure which looks like the follo
   "registry": "ghcr.io",
   "repository": "kyverno/kyverno",
   "identifier": "latest",
-  "manifestList": [
-    /* manifestList */
-  ],
-  "manifest": {
-    /* manifest */
-  },
-  "configData": {
-    /* config */
-  }
+  "manifestList": [/* manifestList */],
+  "manifest": {/* manifest */},
+  "configData": {/* config */}
 }
 ```
 
