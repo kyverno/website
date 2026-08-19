@@ -47,10 +47,10 @@ Each type also has a namespaced variant (e.g. `NamespacedValidatingPolicy`) for 
 
 With feature parity achieved, the legacy policy types are now officially deprecated:
 
-| Release | Date (estimated) | Status                                                      |
-| ------- | ---------------- | ----------------------------------------------------------- |
-| v1.19   | Jul 2026         | **Officially deprecated — final release with full support** |
-| v1.20   | Oct 2026         | **Removed**                                                 |
+| Release | Date                 | Status                                                      |
+| ------- | -------------------- | ----------------------------------------------------------- |
+| v1.19   | Aug 2026             | **Officially deprecated — final release with full support** |
+| v1.20   | Nov 2026 (estimated) | **Removed**                                                 |
 
 This applies to `ClusterPolicy`, `Policy`, `CleanupPolicy`, `ClusterCleanupPolicy`, and the legacy `kyverno.io` PolicyException.
 

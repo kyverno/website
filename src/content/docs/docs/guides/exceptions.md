@@ -30,7 +30,7 @@ PolicyExceptions in the `policies.kyverno.io` group (introduced in Kyverno 1.14)
 
 ### Using PolicyException with ValidatingPolicy in Admission Mode
 
-The following `ValidatingPolicy` enforce that all `Deployment` resources must include the label `env=prod`. If this condition is not met, the policy denies the request.
+The following `ValidatingPolicy` enforces that all `Deployment` resources must include the label `env=prod`. If this condition is not met, the policy denies the request.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -115,7 +115,7 @@ Just like in admission mode, `PolicyException` also functions in background mode
 
 ### Using PolicyException with ImageValidatingPolicy in Background Mode
 
-In this example, a Pod named `skipped-pod` meets the match criteria of the policy. It is located in the default namespace, includes the label `prod: true`, and references an unsigned image from ghcr.io. as result,this image should fail the background policy evaluation due to missing or invalid attestations and signatures.
+In this example, a Pod named `skipped-pod` meets the match criteria of the policy. It is located in the default namespace, includes the label `prod: true`, and references an unsigned image from ghcr.io. As a result, this image should fail the background policy evaluation due to missing or invalid attestations and signatures.
 
 ```yaml
 apiVersion: v1
@@ -131,7 +131,7 @@ spec:
       image: 'ghcr.io/kyverno/test-verify-image:unsigned'
 ```
 
-The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
+The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources that have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -434,30 +434,28 @@ spec:
 The following `ValidatingPolicy` references `exceptions.allowedImages` to skip validation checks for whitelisted image(s).
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-image-tag
 spec:
-  rules:
-    - name: broker-config
-      matchConstraints:
-        resourceRules:
-          - apiGroups: [apps]
-            apiVersions: [v1]
-            operations: [CREATE, UPDATE]
-            resources: [pods]
-      validations:
-        - message: 'Containers must not allow privilege escalation unless they are in the allowed images list.'
-          expression: >-
-            object.spec.containers.all(container,
-              string(container.image) in exceptions.allowedImages ||
-              (
-                has(container.securityContext) &&
-                has(container.securityContext.allowPrivilegeEscalation) &&
-                container.securityContext.allowPrivilegeEscalation == false
-              )
-            )
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  validations:
+    - message: 'Containers must not allow privilege escalation unless they are in the allowed images list.'
+      expression: >-
+        object.spec.containers.all(container,
+          string(container.image) in exceptions.allowedImages ||
+          (
+            has(container.securityContext) &&
+            has(container.securityContext.allowPrivilegeEscalation) &&
+            container.securityContext.allowPrivilegeEscalation == false
+          )
+        )
 ```
 
 #### Value-based exceptions
