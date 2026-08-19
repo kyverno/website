@@ -16,11 +16,11 @@ The new CEL based Kyverno [ValidatingPolicy](/docs/policy-types/validating-polic
 
 | Policy Type                                                         | Description                                                                | API Version              | Status                                   |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------ | ---------------------------------------- |
-| [ValidatingPolicy](/docs/policy-types/validating-policy)            | Validate Kubernetes resources or JSON payloads                             | `policies.kyverno.io/v1` | Stable (since v1.18)                           |
-| [MutatingPolicy](/docs/policy-types/mutating-policy)                | Mutate new or existing resources                                           | `policies.kyverno.io/v1` | Stable (since v1.18)                           |
-| [GeneratingPolicy](/docs/policy-types/generating-policy)            | Create or clone resources based on flexible triggers                       | `policies.kyverno.io/v1` | Stable (since v1.18)                           |
-| [DeletingPolicy](/docs/policy-types/deleting-policy)                | Deletes matching resources based on a schedule                             | `policies.kyverno.io/v1` | Stable (since v1.18)                           |
-| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures and attestations                         | `policies.kyverno.io/v1` | Stable (since v1.18)                           |
+| [ValidatingPolicy](/docs/policy-types/validating-policy)            | Validate Kubernetes resources or JSON payloads                             | `policies.kyverno.io/v1` | Stable (since v1.18)                     |
+| [MutatingPolicy](/docs/policy-types/mutating-policy)                | Mutate new or existing resources                                           | `policies.kyverno.io/v1` | Stable (since v1.18)                     |
+| [GeneratingPolicy](/docs/policy-types/generating-policy)            | Create or clone resources based on flexible triggers                       | `policies.kyverno.io/v1` | Stable (since v1.18)                     |
+| [DeletingPolicy](/docs/policy-types/deleting-policy)                | Deletes matching resources based on a schedule                             | `policies.kyverno.io/v1` | Stable (since v1.18)                     |
+| [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) | Verify container image signatures and attestations                         | `policies.kyverno.io/v1` | Stable (since v1.18)                     |
 | [ClusterPolicy](/docs/policy-types/cluster-policy/overview)         | Legacy policy type with validate, mutate, generate, and verifyImages rules | `kyverno.io/v1`          | **Deprecated (v1.19), removed in v1.20** |
 | [CleanupPolicy](/docs/policy-types/cleanup-policy)                  | Legacy policy type that deletes matching resources based on a schedule     | `kyverno.io/v2`          | **Deprecated (v1.19), removed in v1.20** |
 
@@ -32,13 +32,13 @@ As of Kyverno v1.19, the CEL-based policy types provide full feature parity with
 
 The following resource types are used together with policies. They are **not** being deprecated and continue to be supported with the CEL-based policy types:
 
-| Resource Type                                                   | Description                                                         | API Version               | Status            |
-| --------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------- | ----------------- |
+| Resource Type                                                   | Description                                                         | API Version               | Status               |
+| --------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------- | -------------------- |
 | [PolicyException](/docs/guides/exceptions)                      | Exempt resources from one or more policies                          | `policies.kyverno.io/v1`  | Stable (since v1.19) |
-| [GlobalContextEntry](/docs/policy-types/global-context-caching) | Cache Kubernetes resources or external API data for use in policies | `kyverno.io/v2`           | Stable            |
-| UpdateRequest                                                   | Internal type used for background generate and mutate processing    | `kyverno.io/v2`           | Stable (internal) |
-| [PolicyReport / ClusterPolicyReport](/docs/guides/reports)      | Policy results reporting                                            | `wgpolicyk8s.io/v1alpha2` | Stable            |
-| EphemeralReport / ClusterEphemeralReport                        | Internal intermediary report type                                   | `reports.kyverno.io/v1`   | Stable (internal) |
+| [GlobalContextEntry](/docs/policy-types/global-context-caching) | Cache Kubernetes resources or external API data for use in policies | `kyverno.io/v2`           | Stable               |
+| UpdateRequest                                                   | Internal type used for background generate and mutate processing    | `kyverno.io/v2`           | Stable (internal)    |
+| [PolicyReport / ClusterPolicyReport](/docs/guides/reports)      | Policy results reporting                                            | `wgpolicyk8s.io/v1alpha2` | Stable               |
+| EphemeralReport / ClusterEphemeralReport                        | Internal intermediary report type                                   | `reports.kyverno.io/v1`   | Stable (internal)    |
 
 :::note
 The legacy `PolicyException` in the `kyverno.io` API group is deprecated together with `ClusterPolicy` and will be removed in v1.20. Use the `policies.kyverno.io` PolicyException instead.
