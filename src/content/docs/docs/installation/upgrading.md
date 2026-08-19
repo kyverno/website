@@ -29,6 +29,7 @@ Kyverno v1.19 achieves full feature parity between the CEL-based policy types in
 2. **`CleanupPolicy` and `ClusterCleanupPolicy` (`kyverno.io/v2`)** are deprecated and will be **removed in v1.20**. Use [DeletingPolicy](/docs/policy-types/deleting-policy) instead.
 3. **The legacy PolicyException (`kyverno.io/v2`)** is deprecated and will be **removed in v1.20**. Use the [`policies.kyverno.io` PolicyException](/docs/guides/exceptions) instead.
 4. **The `v1alpha1` versions of the `policies.kyverno.io` policy types are deprecated.** Update your manifests to use `policies.kyverno.io/v1`.
+5. **The `kyverno.io/v2beta1` API versions of `ClusterPolicy`, `Policy`, `PolicyException`, `CleanupPolicy`, and `ClusterCleanupPolicy` now emit deprecation warnings when used.** These versions remain fully served in v1.19 (non-breaking), but should be migrated to `kyverno.io/v1` (`ClusterPolicy`/`Policy`) or `kyverno.io/v2` (the others) ahead of their future removal. See [Migrating from v2beta1](#migrating-from-v2beta1).
 
 The following resource types are **not** deprecated and continue to be fully supported with CEL-based policies:
 
@@ -51,6 +52,41 @@ Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-a
 ### CLI Changes
 
 The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](https://kyverno.github.io/kyverno-json/) subproject directly.
+
+### Deprecation Warnings
+
+Starting in v1.19, Kyverno surfaces API and field deprecations proactively so clusters can inventory and migrate usage before removal:
+
+- **Admission webhooks**: creating or updating a resource that uses a deprecated API version or field returns a Kubernetes `warnings` entry in the admission response.
+- **Kyverno CLI**: `kubectl-kyverno apply` and `kubectl-kyverno test` print warnings such as `Warning: <file>: <message>` for deprecated versions and fields.
+- **`--warnings-as-errors`**: the CLI exposes a root-level `--warnings-as-errors` flag (applies to `apply` and `test`). When set, any detected deprecation causes the command to exit non-zero, making it easy to gate CI pipelines on deprecations.
+- **Metrics**: Kyverno increments the `kyverno_deprecated_api_requests_total{group,version,kind,field}` counter for each deprecated API request. The `field` label is the deprecated field path (empty for version-level deprecations). Use this metric to track adoption of deprecated versions across your clusters.
+
+### Migrating from v2beta1
+
+The `kyverno.io/v2beta1` schemas for `ClusterPolicy`, `Policy`, `PolicyException`, `CleanupPolicy`, and `ClusterCleanupPolicy` are identical to their `kyverno.io/v1` / `kyverno.io/v2` equivalents, so migration is a simple API version swap:
+
+1. Find resources still using the deprecated versions:
+
+   ```sh
+   kubectl get clusterpolicies,policies,policyexceptions,cleanuppolicies,clustercleanuppolicies -A \
+     -o custom-columns='KIND:.kind,NAME:.metadata.name,NS:.metadata.namespace,VER:.apiVersion'
+   ```
+
+2. Update each manifest's `apiVersion`:
+
+   | Kind                                    | From                  | To                 |
+   | --------------------------------------- | --------------------- | ------------------ |
+   | `ClusterPolicy`, `Policy`               | `kyverno.io/v2beta1`  | `kyverno.io/v1`    |
+   | `PolicyException`                       | `kyverno.io/v2beta1`  | `kyverno.io/v2`    |
+   | `CleanupPolicy`, `ClusterCleanupPolicy` | `kyverno.io/v2beta1`  | `kyverno.io/v2`    |
+   | `GlobalContextEntry`                    | `kyverno.io/v2alpha1` | `kyverno.io/v2`    |
+
+3. Re-apply the updated manifests. No `spec` changes are required.
+
+:::note
+These deprecations are independent of the separate [CEL migration](/docs/guides/migration-to-cel) of the legacy policy types (`kyverno.io/v1` → `policies.kyverno.io/v1`). Migrating `v2beta1` → `v1` is only the first step; consider migrating to the CEL-based types for the long term.
+:::
 
 ## Upgrading to Kyverno v1.13
 

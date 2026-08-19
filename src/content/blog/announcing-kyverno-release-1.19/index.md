@@ -26,6 +26,8 @@ Kyverno 1.19 delivers:
 
 - CRDs now managed through a dedicated **kyverno-api Helm chart** dependency
 
+- **Proactive deprecation warnings** for the older `kyverno.io/v2beta1` and `kyverno.io/v2alpha1` API versions of `ClusterPolicy`, `Policy`, `PolicyException`, `CleanupPolicy`, `ClusterCleanupPolicy`, and `GlobalContextEntry` — emitted via admission `warnings`, the Kyverno CLI, and the new `kyverno_deprecated_api_requests_total` metric. The CLI also gains a `--warnings-as-errors` flag to fail CI on deprecations.
+
 If you are still using `ClusterPolicy`, **now is the time to migrate**. v1.19 is the final release with full support for the legacy policy types.
 
 ## **CEL Policy Feature Parity**
