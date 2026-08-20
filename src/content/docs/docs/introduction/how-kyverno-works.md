@@ -33,7 +33,7 @@ For more details see the [Kyverno CLI](/docs/subprojects/kyverno-cli/) documenta
 
 ## Authorization Server
 
-Kyverno policies can be used for application authorization. It suppports Envoy and HTTP payloads, and can be run as a central service or as a sidecar container.
+Kyverno policies can be used for application authorization. It supports Envoy and HTTP payloads, and can be run as a central service or as a sidecar container.
 
 For more details see the <a href="https://kyverno.github.io/kyverno-authz/latest/" target="_blank" rel="noopener">Kyverno Authz</a> documentation.
 
