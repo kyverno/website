@@ -26,6 +26,6 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install dependencies
-        run: yarn install --immutable
+        run: npm ci
       - name: Run Prettier
-        run: yarn format:check
+        run: npm run format:check
