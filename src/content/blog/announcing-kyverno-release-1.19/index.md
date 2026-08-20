@@ -1,10 +1,10 @@
 ---
-date: 2026-08-18
+date: 2026-08-20
 title: Announcing Kyverno 1.19!
 tags:
   - Releases
 excerpt: Full feature parity for CEL-based policies and the official deprecation of ClusterPolicy in Kyverno 1.19
-draft: true
+draft: false
 featured: true
 ---
 
