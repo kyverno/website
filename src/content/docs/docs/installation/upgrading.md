@@ -75,12 +75,12 @@ The `kyverno.io/v2beta1` schemas for `ClusterPolicy`, `Policy`, `PolicyException
 
 2. Update each manifest's `apiVersion`:
 
-   | Kind                                    | From                  | To                 |
-   | --------------------------------------- | --------------------- | ------------------ |
-   | `ClusterPolicy`, `Policy`               | `kyverno.io/v2beta1`  | `kyverno.io/v1`    |
-   | `PolicyException`                       | `kyverno.io/v2beta1`  | `kyverno.io/v2`    |
-   | `CleanupPolicy`, `ClusterCleanupPolicy` | `kyverno.io/v2beta1`  | `kyverno.io/v2`    |
-   | `GlobalContextEntry`                    | `kyverno.io/v2alpha1` | `kyverno.io/v2`    |
+   | Kind                                    | From                  | To              |
+   | --------------------------------------- | --------------------- | --------------- |
+   | `ClusterPolicy`, `Policy`               | `kyverno.io/v2beta1`  | `kyverno.io/v1` |
+   | `PolicyException`                       | `kyverno.io/v2beta1`  | `kyverno.io/v2` |
+   | `CleanupPolicy`, `ClusterCleanupPolicy` | `kyverno.io/v2beta1`  | `kyverno.io/v2` |
+   | `GlobalContextEntry`                    | `kyverno.io/v2alpha1` | `kyverno.io/v2` |
 
 3. Re-apply the updated manifests. No `spec` changes are required.
 

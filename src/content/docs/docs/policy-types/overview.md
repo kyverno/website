@@ -48,14 +48,14 @@ The legacy `PolicyException` in the `kyverno.io` API group is deprecated togethe
 
 Independent of resource deprecation, older API _versions_ of retained resources are deprecated and rotate out following normal Kubernetes API version deprecation. The resources themselves are not going away — only re-apply your manifests with the newer API version:
 
-| Resource                               | Deprecated Version                | Use Instead     |
-| -------------------------------------- | --------------------------------- | --------------- |
-| All `policies.kyverno.io` policy types | `v1alpha1`                        | `v1`            |
-| `ClusterPolicy` / `Policy`             | `kyverno.io/v2beta1`              | `kyverno.io/v1` |
-| `PolicyException`                      | `kyverno.io/v2beta1`              | `kyverno.io/v2` |
-| `CleanupPolicy` / `ClusterCleanupPolicy` | `kyverno.io/v2beta1`           | `kyverno.io/v2` |
-| GlobalContextEntry                     | `kyverno.io/v2alpha1`             | `kyverno.io/v2` |
-| UpdateRequest                          | `kyverno.io/v1beta1` (not served) | `kyverno.io/v2` |
+| Resource                                 | Deprecated Version                | Use Instead     |
+| ---------------------------------------- | --------------------------------- | --------------- |
+| All `policies.kyverno.io` policy types   | `v1alpha1`                        | `v1`            |
+| `ClusterPolicy` / `Policy`               | `kyverno.io/v2beta1`              | `kyverno.io/v1` |
+| `PolicyException`                        | `kyverno.io/v2beta1`              | `kyverno.io/v2` |
+| `CleanupPolicy` / `ClusterCleanupPolicy` | `kyverno.io/v2beta1`              | `kyverno.io/v2` |
+| GlobalContextEntry                       | `kyverno.io/v2alpha1`             | `kyverno.io/v2` |
+| UpdateRequest                            | `kyverno.io/v1beta1` (not served) | `kyverno.io/v2` |
 
 :::note[Deprecation warnings (v1.19+)]
 Starting in Kyverno v1.19, resources still using the `kyverno.io/v2beta1` and `kyverno.io/v2alpha1` API versions emit **deprecation warnings** (via the admission `warnings` field and the Kyverno CLI). These versions remain fully served in v1.19 — the warnings are non-breaking and give you time to migrate before removal. See [Migrating from v2beta1](/docs/installation/upgrading#migrating-from-v2beta1).
