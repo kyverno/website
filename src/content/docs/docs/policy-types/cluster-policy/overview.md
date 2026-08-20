@@ -5,6 +5,10 @@ sidebar:
   order: 1
 ---
 
+:::caution[Deprecation Notice]
+`ClusterPolicy` and `Policy` are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. Use the CEL-based [policy types](/docs/policy-types/overview) instead, which provide full feature parity. See the [migration guide](/docs/guides/migration-to-cel) to convert existing policies.
+:::
+
 A Kyverno ClusterPolicy contains a list of rules.
 
 Policies with validation rules can be used to block insecure or non-compliant configurations by setting the [`failureAction`](/docs/policy-types/cluster-policy/validate#failure-action) to `Enforce`. Or, validation rules can be applied using periodic scans with results available as [policy reports](/docs/guides/reports).

@@ -6,10 +6,7 @@ interface Props {
 
 const { state, version } = Astro.props
 const normalizedState = (state?.toLowerCase() || 'beta') as
-  | 'alpha'
-  | 'beta'
-  | 'stable'
-  | 'deprecated'
+  'alpha' | 'beta' | 'stable' | 'deprecated'
 
 // State configuration with colors and labels
 const stateConfig = {
