@@ -94,6 +94,8 @@ spec:
               issuer: 'https://token.actions.githubusercontent.com'
               subjectRegExp: ".*github\\.com/.*/.*/.github/workflows/.*" # Optional regex for subject matching
               issuerRegExp: "https://token\\.actions\\.githubusercontent\\.com" # Optional regex for issuer matching
+          trustedRoot:
+            expression: variables.githubTrustedRoot # CEL expression resolving to trusted root JSON
           roots:
             | # Roots is an optional set of PEM encoded trusted root certificates. If not provided, the system roots are used.
             -----BEGIN CERTIFICATE-----
@@ -144,7 +146,6 @@ spec:
             data: | # Optional base64-encoded TUF root metadata (optional)
               eyJzaWduZWQiOiB7Li4ufSwgInNpZ25hdHVyZXMiOiBbLi4uXX0=
           mirror: 'https://tuf.example.org' # Sigstore TUF mirror URL (optional)
-
 
   # ...
 ```
@@ -268,51 +269,9 @@ spec:
       - 'my-registry-secret' # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
 ```
 
-## Policy Scope
-
-ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
-
-- **`ImageValidatingPolicy`**: Cluster-scoped, applies to image verification across all namespaces
-- **`NamespacedImageValidatingPolicy`**: Namespace-scoped, applies image verification only to resources within the same namespace
-
-Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
-
-### Example NamespacedImageValidatingPolicy
-
-```yaml
-apiVersion: policies.kyverno.io/v1
-kind: NamespacedImageValidatingPolicy
-metadata:
-  name: verify-team-images
-  namespace: development
-spec:
-  matchConstraints:
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: [CREATE, UPDATE]
-        resources: [pods]
-  matchImageReferences:
-    - glob: 'ghcr.io/myorg/dev-*'
-  attestors:
-    - name: dev-attestor
-      cosign:
-        keyless:
-          identities:
-            - issuer: 'https://token.actions.githubusercontent.com'
-              subject: '*@myorg.github.io'
-  validations:
-    - message: 'image must be signed by the development team'
-      expression: 'imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)'
-```
-
-The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.
-
-## Kyverno CEL Libraries
+## CEL Libraries
 
 Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features for image validation. In addition to common [Kyverno CEL Libraries](/docs/policy-types/cel-libraries/) the following additional libraries are supported for ImageValidatingPolicy types.
-
-### Image Verification Library
 
 Kyverno provides specialized functions for verifying image signatures and attestations:
 
@@ -370,11 +329,49 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
-:::note[Note]
-`extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
-:::
+## Namespaced Policies
 
-#### Cosign Keyless Signature and Attestation Verification
+ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
+
+- **`ImageValidatingPolicy`**: Cluster-scoped, applies to image verification across all namespaces
+- **`NamespacedImageValidatingPolicy`**: Namespace-scoped, applies image verification only to resources within the same namespace
+
+Both policy types have identical functionality and field structure. The only difference is the scope of resource selection.
+
+**Example NamespacedImageValidatingPolicy**
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: NamespacedImageValidatingPolicy
+metadata:
+  name: verify-team-images
+  namespace: development
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  matchImageReferences:
+    - glob: 'ghcr.io/myorg/dev-*'
+  attestors:
+    - name: dev-attestor
+      cosign:
+        keyless:
+          identities:
+            - issuer: 'https://token.actions.githubusercontent.com'
+              subject: '*@myorg.github.io'
+  validations:
+    - message: 'image must be signed by the development team'
+      expression: 'imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)'
+```
+
+The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.
+
+## Other Examples
+
+### Cosign Keyless Verification
 
 This sample policy demonstrates how to verify container image signatures using Cosign keyless signing and validate the presence of a vulnerability scan attestation.
 
@@ -430,7 +427,7 @@ attestations["cosign-attes"]
 Alternatively, prefer using camelCase or snake_case to avoid parsing issues in CEL expressions.
 :::
 
-#### Cosign Public Key Signature Verification
+### Cosign Key-based Verification
 
 This policy ensures that container images are signed with a specified Cosign public key before being admitted.
 
@@ -472,3 +469,56 @@ spec:
 
 Note: To learn how to sign container images using Cosign with keyless signing, refer to the [official Cosign documentation](https://docs.sigstore.dev/cosign/signing/signing_with_containers/).
 Policies are applied cluster-wide to help secure your cluster. However, there may be times when teams or users need to test specific tools or resources. In such cases, users can use [PolicyException](/docs/guides/exceptions#policyexceptions-with-cel-expressions) to bypass policies without modifying or tweaking the policies themselves. This ensures that your policies remain secure while providing the flexibility to bypass them when needed.
+
+### Sigstore Trusted Root
+
+For private Sigstore deployments, keyless verification can use a custom trusted root instead of the system roots. This is useful when the Fulcio, Rekor, or CT log trust material is managed internally and stored in a ConfigMap or other source accessible through CEL.
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-build-metadata
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/nirmata/demo-private-attestations*'
+  variables:
+    - name: githubTrustedRoot
+      expression: >-
+        resource.get("v1", "configmaps", "kyverno", "github-trusted-root").data["trusted_root.json"]
+  attestations:
+    - name: buildMeta
+      intoto:
+        type: 'https://nirmata.com/attestations/build-metadata/v1'
+  attestors:
+    - name: github
+      cosign:
+        keyless:
+          identities:
+            - issuer: 'https://token.actions.githubusercontent.com'
+              subjectRegExp: '^https://github\\.com/nirmata/demo-attestations-kyverno/\\.github/workflows/reusable-build-attest\\.yml@refs/(heads/main|tags/v.*)$'
+        trustedRoot:
+          expression: variables.githubTrustedRoot
+        ctlog:
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+  validations:
+    - expression: >-
+        images.containers.map(image,
+          verifyAttestationSignatures(image, attestations.buildMeta, [attestors.github]) > 0
+            ? extractPayload(image, attestations.buildMeta)
+            : dyn(null)).all(p, p != null)
+      message: 'Failed to verify build-metadata attestation'
+```
+
+The `trustedRoot` field lets you provide the full Sigstore trusted root JSON to the keyless verifier. In the example above, the trusted root is read from a ConfigMap and passed into the attestor through CEL.
+
+:::note[Note]
+`extractPayload()` requires prior attestation verification via `verifyAttestationSignatures()`. If not verified, it will return an error.
+:::
