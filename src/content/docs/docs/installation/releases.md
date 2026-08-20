@@ -6,16 +6,18 @@ sidebar:
   order: 10
 ---
 
+## Community Patch Support
+
 Kyverno provides approximately three (3) months of community patch support. Patches are strictly limited to fixes for critical bugs and critical-to-high severity CVEs.
 
-Patches are managed in a dedicated release branch (e.g. `release-1.18`). All patches are first submitted to `main`, where new features are also developed and tested, and then cherry-picked to the release branch.
+Patches are managed in a dedicated release branch (e.g. `release-1.19`). All patches are first submitted to `main`, where new features are also developed and tested, and then cherry-picked to the release branch.
 
 **Patch Support Schedule:**
 
 |                                    |                                     |
 | ---------------------------------- | ----------------------------------- |
-| **Supported Release:**             | v1.18 (released: April 29, 2026)    |
-| **Estimated End of Life:**         | v1.19 release (estimated: Jul 2026) |
+| **Supported Release:**             | v1.19 (released: Aug 2026)          |
+| **Estimated End of Life:**         | v1.20 release (estimated: Nov 2026) |
 | **Kubernetes Versions Supported:** | v1.33 - v1.35                       |
 
 Other Kubernetes versions may work, but are not tested and therefore no guarantees are made as to their full compatibility.
@@ -28,29 +30,29 @@ For long-term compatibility, production support, and maximizing your investment 
 
 ## Release Management
 
-This section provides guidelines on release timelines and release branch maintenance.
+This section provides guidelines on release timelines and release branch maintenance. You can view all available releases at [kyverno/kyverno releases](https://github.com/kyverno/kyverno/releases).
 
-### Release Timelines
+### Versioning
 
-Kyverno uses the [Semantic Versioning](https://semver.org/) scheme. Kyverno v1.0.0 was released in December 2019. This project follows a given version number MAJOR.MINOR.PATCH.
+Kyverno uses the [Semantic Versioning](https://semver.org/) scheme (MAJOR.MINOR.PATCH).
 
-#### MAJOR release
+#### MAJOR releases
 
 Major releases contain large features, design and architectural changes, and may include incompatible API changes. Major releases are low frequency and created as required e.g. once a year.
 
-#### MINOR release
+#### MINOR releases
 
 Minor releases contain features, enhancements, and fixes that are introduced in a backwards-compatible manner. Since Kyverno is a fast growing project, but is a critical component of the Kubernetes control plane, having a major release approximately every few months helps balance speed and stability. Vulnerabilities scored as either medium or low will be included in minor releases unless they coincide with an existing patch release.
 
 - Roughly every 3 months
 
-#### PATCH release
+#### PATCH releases
 
 Patch releases are for backwards-compatible bug fixes, very minor enhancements which do not impact stability or compatibility, or critical or high security vulnerabilities. Typically only critical fixes are selected for patch releases.
 
 - When critical fixes are required, or roughly each month
 
-### Versioning
+### Branches, Tags, and Versions
 
 Kyverno uses GitHub tags to manage versions. New releases and release candidates are published using the wildcard tag `v<major>.<minor>.<patch>*`.
 
