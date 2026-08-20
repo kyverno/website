@@ -174,13 +174,13 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | policy_validation_mode     | "Audit", "Deny"                                        | The policy's configured `validationActions`                                                                   |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
@@ -214,22 +214,22 @@ Counter - An only-increasing integer representing the number of results associat
 | policy_validation_mode     | "Audit", "Deny"                                        | The policy's configured `validationActions`                                                                   |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
-- The cluster admin wants to track the count of incoming resource requests which resulted in a PASS or FAIL status for a validating policy.
+- The cluster admin wants to track the count of incoming resource requests which resulted in a pass or fail result for a validating policy.
 - The cluster admin wants to compare admission-time enforcement against background-scan findings for the same policy.
 
 #### Useful Queries
 
 - Tracking the total number of validating policy failures in the last 24 hours, grouped by policy:<br>
-  `sum(increase(kyverno_validating_policy_results_total{result="FAIL"}[24h])) by (policy_name)`
+  `sum(increase(kyverno_validating_policy_results_total{result="fail"}[24h])) by (policy_name)`
 
 - Tracking the per-minute rate of validating policy results triggered by admission requests:<br>
   `rate(kyverno_validating_policy_results_total{execution_cause="admission_request"}[1m])*60`
@@ -256,12 +256,12 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
@@ -291,22 +291,22 @@ Counter - An only-increasing integer representing the number of results associat
 | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
-- The cluster admin wants to track the count of incoming resource requests which resulted in a PASS or FAIL status for a mutating policy.
+- The cluster admin wants to track the count of incoming resource requests which resulted in a pass or fail result for a mutating policy.
 - The cluster admin wants to know how many resources a specific mutating policy has actually mutated versus skipped.
 
 #### Useful Queries
 
 - Tracking the total number of mutating policy failures in the last 24 hours, grouped by policy:<br>
-  `sum(increase(kyverno_mutating_policy_results_total{result="FAIL"}[24h])) by (policy_name)`
+  `sum(increase(kyverno_mutating_policy_results_total{result="fail"}[24h])) by (policy_name)`
 
 - Tracking the per-minute rate of mutating policy results triggered by admission requests:<br>
   `rate(kyverno_mutating_policy_results_total{execution_cause="admission_request"}[1m])*60`
@@ -332,12 +332,12 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | Label                      | Allowed Values                                         | Description                                                                                                                                                                                          |
 | -------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | policy_name                |                                                        | Name of the policy                                                                                                                                                                                   |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                                                                                                          |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                                                                                                        |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                                                                                                                |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                                                                                                               |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                                                                                                                     |
 | execution_cause            | "background_scan"                                      | Generating policies are only ever processed asynchronously via UpdateRequest reconciliation, never inside a live admission response, so this label is currently always fixed to `"background_scan"`. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                                                                                                                     |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                                                                                                                     |
 
 #### Use cases
 
@@ -366,25 +366,25 @@ Counter - An only-increasing integer representing the number of results associat
 | Label                      | Allowed Values                                         | Description                                                                                                                                                                                          |
 | -------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | policy_name                |                                                        | Name of the policy                                                                                                                                                                                   |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                                                                                                          |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                                                                                                        |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of the trigger resource                                                                                                                                                                         |
 | resource_namespace         |                                                        | Namespace in which the trigger resource lives                                                                                                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the triggering resource request was a create, update, or delete.                                                                                                                                  |
 | execution_cause            | "background_scan"                                      | Generating policies are only ever processed asynchronously via UpdateRequest reconciliation, never inside a live admission response, so this label is currently always fixed to `"background_scan"`. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                                                                                                                     |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                                                                                                                     |
 
 #### Use cases
 
-- The cluster admin wants to track the count of generation results which resulted in a PASS or FAIL status for a generating policy.
+- The cluster admin wants to track the count of generation results which resulted in a pass or fail result for a generating policy.
 - The cluster admin wants to know how many downstream resources a specific generating policy has produced versus failed to produce.
 
 #### Useful Queries
 
 - Tracking the total number of generating policy failures in the last 24 hours, grouped by policy:<br>
-  `sum(increase(kyverno_generating_policy_results_total{result="FAIL"}[24h])) by (policy_name)`
+  `sum(increase(kyverno_generating_policy_results_total{result="fail"}[24h])) by (policy_name)`
 
 - Tracking the per-minute rate of generating policy results:<br>
-  `rate(kyverno_generating_policy_results_total{}[1m])*60`
+  `rate(kyverno_generating_policy_results_total[1m])*60`
 
 ---
 
@@ -408,13 +408,13 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | policy_validation_mode     | "Audit", "Deny"                                        | The policy's configured `validationActions`                                                                   |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
@@ -447,23 +447,23 @@ Counter - An only-increasing integer representing the number of results associat
 | -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | policy_background_mode     | "true", "false"                                        | Policy's set background mode                                                                                  |
 | policy_name                |                                                        | Name of the policy                                                                                            |
-| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be "-"                   |
+| policy_namespace           |                                                        | Namespace in which this policy resides. For cluster-scoped policies, this field will be empty                 |
 | policy_validation_mode     | "Audit", "Deny"                                        | The policy's configured `validationActions`                                                                   |
 | resource_kind              | "Pod", "Deployment", "StatefulSet", "ReplicaSet", etc. | Kind of this resource                                                                                         |
 | resource_namespace         |                                                        | Namespace in which this resource lives                                                                        |
 | resource_request_operation | "create", "update", "delete"                           | If the requested resource is being created, updated, or deleted.                                              |
 | execution_cause            | "admission_request", "background_scan"                 | Identifies whether the policy is executing in response to an admission request or a periodic background scan. |
-| result                     | "PASS", "FAIL"                                         | Result of the policy's execution                                                                              |
+| result                     | "pass", "fail", "warning", "error", "skip"             | Result of the policy's execution                                                                              |
 
 #### Use cases
 
-- The cluster admin wants to track the count of image verification results which resulted in a PASS or FAIL status for an image validating policy.
+- The cluster admin wants to track the count of image verification results which resulted in a pass or fail result for an image validating policy.
 - The cluster admin wants to compare admission-time image verification against background-scan findings for the same policy.
 
 #### Useful Queries
 
 - Tracking the total number of image validating policy failures in the last 24 hours, grouped by policy:<br>
-  `sum(increase(kyverno_image_validating_policy_results_total{result="FAIL"}[24h])) by (policy_name)`
+  `sum(increase(kyverno_image_validating_policy_results_total{result="fail"}[24h])) by (policy_name)`
 
 - Tracking the per-minute rate of image validating policy results triggered by admission requests:<br>
   `rate(kyverno_image_validating_policy_results_total{execution_cause="admission_request"}[1m])*60`
