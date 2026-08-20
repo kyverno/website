@@ -18,42 +18,47 @@ The rule mutates matching images to add the [image digest](https://docs.docker.c
 Here is a sample image verification policy which ensures an image from the `ghcr.io/kyverno/test-verify-image` repository, using any tag, is signed with the corresponding public key as defined in the policy:
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image
 spec:
   webhookConfiguration:
     failurePolicy: Fail
     timeoutSeconds: 30
-  background: false
-  rules:
-    - name: check-image
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image*'
-          failureAction: Enforce
-          attestors:
-            - count: 1
-              entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                      5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                      -----END PUBLIC KEY-----
-                    rekor:
-                      ignoreTlog: true
-                      url: https://rekor.sigstore.dev
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image*'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+            5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+            -----END PUBLIC KEY-----
+        ctlog:
+          url: https://rekor.sigstore.dev
+          insecureIgnoreTlog: true
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed for ghcr.io/kyverno/test-verify-image: signature not found' 
 ```
 
 :::note[Note]
-The public key may either be defined in the policy directly or reference a standard Kubernetes Secret elsewhere in the cluster by specifying it in the format `k8s://<namespace>/<secret_name>`. The named Secret must specify a key `cosign.pub` containing the public key used for verification. Secrets may also be referenced using the `secret{}` object. See `kubectl explain clusterpolicy.spec.rules.verifyImages.attestors.entries.keys` for more details on the supported key options.
+The public key may either be defined in the policy directly or reference a standard Kubernetes Secret elsewhere in the cluster by specifying it in the format `k8s://<namespace>/<secret_name>`. The named Secret must specify a key `cosign.pub` containing the public key used for verification. Secrets may also be referenced using the `secret{}` object. See `kubectl explain imagevalidatingpolicy.spec.attestors.cosign.key` for more details on the supported key options.
 :::
 
 A signed image can be run as follows:
@@ -96,41 +101,47 @@ check-image:
 Container images signatures that use [sigstore bundle format](https://github.com/sigstore/protobuf-specs/blob/main/protos/sigstore_bundle.proto) such as [GitHub Artifact Attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) can be verified using verification type `SigstoreBundle`. The following example verifies images containing SLSA Provenance created and signed using GitHub Artifact Attestation.
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
   name: sigstore-attestation-verification
 spec:
-  background: false
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  rules:
-    - match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      name: sigstore-attestation-verification
-      verifyImages:
-        - imageReferences:
-            - '*'
-          type: SigstoreBundle
-          attestations:
-            - attestors:
-                - entries:
-                    - keyless:
-                        issuer: https://token.actions.githubusercontent.com
-                        subject: https://github.com/vishal-chdhry/artifact-attestation-example/.github/workflows/build-attested-image.yaml@refs/heads/main
-                        rekor:
-                          url: https://rekor.sigstore.dev
-              conditions:
-                - all:
-                    - key: '{{ buildDefinition.buildType }}'
-                      operator: Equals
-                      value: https://actions.github.io/buildtypes/workflow/v1
-              type: https://slsa.dev/provenance/v1
+  evaluation:
+    background:
+      enabled: false
+  validationActions: [Deny]
+  webhookConfiguration:
+    timeoutSeconds: 30
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: '*'
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - issuer: https://token.actions.githubusercontent.com
+              subject: https://github.com/vishal-chdhry/artifact-attestation-example/.github/workflows/build-attested-image.yaml@refs/heads/main
+        ctlog:
+          url: https://rekor.sigstore.dev
+  attestations:
+    - name: slsaProvenance
+      intoto:
+        type: https://slsa.dev/provenance/v1
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.slsaProvenance, [attestors.cosign])).all(e ,e > 0)
+      message: 'attestation signature verification failed'
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.slsaProvenance).buildDefinition.buildType == 'https://actions.github.io/buildtypes/workflow/v1').all(e, e)
+      message: 'build type must be workflow/v1'
 ```
 
 ### Skipping Image References
@@ -138,36 +149,37 @@ spec:
 `skipImageReferences` can be used to precisely filter image references that should be verified by a policy. A list of references can be specified in `skipImageReferences` and images that match those references will be excluded from image verification process. The following example will match all images from `ghcr.io` but will skip images from `ghcr.io/trusted`.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: exclude-refs
 spec:
   webhookConfiguration:
     failurePolicy: Fail
     timeoutSeconds: 30
-  rules:
-    - name: exclude-refs
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/*'
-          skipImageReferences:
-            - 'ghcr.io/trusted/*'
-          failureAction: Enforce
-          attestors:
-            - count: 1
-              entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                      5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                      -----END PUBLIC KEY-----
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - expression: "image.reference.matches('^ghcr\\\\.io/.*') && !image.reference.matches('^ghcr\\\\.io/trusted/.*')"
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+            5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed: signature not found'
 ```
 
 ### Signing images
@@ -237,52 +249,58 @@ The [in-toto attestation format](https://github.com/in-toto/attestation) provide
 The `imageVerify` rule can contain one or more attestation checks that verify the contents of the `predicate`. Here is an example that verifies the repository URI, the branch, and the reviewers.
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: attest-code-review
 spec:
   webhookConfiguration:
     failurePolicy: Fail
     timeoutSeconds: 30
-  background: false
-  rules:
-    - name: attest
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'registry.io/org/app*'
-          failureAction: Enforce
-          attestations:
-            - predicateType: https://example.com/CodeReview/v1
-              attestors:
-                - entries:
-                    - keys:
-                        publicKeys: |-
-                          -----BEGIN PUBLIC KEY-----
-                          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
-                          3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
-                          -----END PUBLIC KEY-----
-              conditions:
-                - all:
-                    - key: '{{ repo.uri }}'
-                      operator: Equals
-                      value: 'https://git-repo.com/org/app'
-                    - key: '{{ repo.branch }}'
-                      operator: Equals
-                      value: 'main'
-                    - key: '{{ reviewers }}'
-                      operator: AnyIn
-                      value: ['ana@example.com', 'bob@example.com']
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'registry.io/org/app*'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzDB0FiCzAWf/BhHLpikFs6p853/G
+            3A/jt+GFbOJjpnr7vJyb28x4XnR1M5pwUUcpzIZkIgSsd+XcTnrBPVoiyw==
+            -----END PUBLIC KEY-----
+  attestations:
+    - name: codeReview
+      intoto:
+        type: https://example.com/CodeReview/v1
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.codeReview, [attestors.cosign])).all(e ,e > 0)
+      message: 'image attestation signature verification failed'
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.codeReview).repo.uri == 'https://git-repo.com/org/app').all(e ,e)
+      message: 'repository uri must be https://git-repo.com/org/app'
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.codeReview).repo.branch == 'main').all(e ,e)
+      message: 'repository branch must be main'
+    - expression: >-
+        images.containers.map(image, ['ana@example.com', 'bob@example.com'].exists(reviewer, reviewer in extractPayload(image, attestations.codeReview).reviewers)).all(e ,e)
+      message: 'reviewers must include ana@example.com or bob@example.com'
 ```
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](/docs/policy-types/cluster-policy/preconditions#any-and-all-statements) to the predicate.
 
-Each `verifyImages` rule can be used to verify signatures or attestations, but not both. This allows the flexibility of using separate signatures for attestations. The `attestors{}` object appears both under `verifyImages` as well as `verifyImages.attestations`. Use of it in the former location is for image signature validation while use in the latter is for attestations only.
+With `ImageValidatingPolicy`, you can verify both signatures and attestations flexibly by referencing the declared `attestors` in your `validations` expressions.
 
 :::note[Note]
 The structure of the predicate may differ slightly depending on the predicate type used during attestation. Use `cosign verify-attestation` by passing the expected predicate type with the `--type` flag and examine the predicate structure to ensure the expression you're writing is accurate.
@@ -339,27 +357,28 @@ This policy checks if an image is signed using a certificate. The root certifica
 
 ```yaml
 ---
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image
 spec:
-  rules:
-    - name: verify-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image:signed-cert'
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - certificates:
-                    cert: |-
-                      -----BEGIN CERTIFICATE-----
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image:signed-cert'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        certificate:
+          cert:
+            value: |-
+              -----BEGIN CERTIFICATE-----
                       MIIDuzCCAqOgAwIBAgIUDG7gFB8RMMOMGkDm6uEusOE8FWgwDQYJKoZIhvcNAQEL
                       BQAwbDELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMQwwCgYDVQQHDANTSkMxEDAO
                       BgNVBAoMB05pcm1hdGExEDAOBgNVBAMMB25pcm1hdGExHjAcBgkqhkiG9w0BCQEW
@@ -410,27 +429,28 @@ To verify using the root certificate only, the leaf certificate declaration `cer
 
 ```yaml
 ---
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image
 spec:
-  rules:
-    - name: verify-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image:signed-cert'
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - certificates:
-                    certChain: |-
-                      -----BEGIN CERTIFICATE-----
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image:signed-cert'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        certificate:
+          certChain:
+            value: |-
+              -----BEGIN CERTIFICATE-----
                       MIIDuTCCAqGgAwIBAgIUU1kkhcMc+7ci1qvkLCre5lbH68owDQYJKoZIhvcNAQEL
                       BQAwbDELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMQwwCgYDVQQHDANTSkMxEDAO
                       BgNVBAoMB05pcm1hdGExEDAOBgNVBAMMB25pcm1hdGExHjAcBgkqhkiG9w0BCQEW
@@ -465,40 +485,45 @@ Note: Ensure the Kyverno admission controller has get permissions for secrets to
 The following ClusterPolicy demonstrates how to verify an image signature using a certificate stored in a Kubernetes secret:
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: verify-image
 spec:
-  background: false
-  rules:
-    - name: verify-image
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      context:
-        - name: encodedCert
-          apiCall:
-            urlPath: '/api/v1/namespaces/default/secrets/my-ca-secret'
-            method: GET
-            jmesPath: 'data."root-ca.pem"'
-        - name: certChain
-          variable:
-            jmesPath: 'base64_decode(encodedCert)'
-      verifyImages:
-        - imageReferences:
-            - 'docker.io/mohdcode/signingtest@sha256:ae0563a2513992491b4e3e2e3e610249696097a2be7ca76c1ecd52a5702a192d'
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - certificates:
-                    certChain: '{{certChain}}'
-                    rekor:
-                      ignoreTlog: true
-                    ctlog:
-                      ignoreSCT: true
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  variables:
+    - name: encodedCert
+      apiCall:
+        urlPath: '/api/v1/namespaces/default/secrets/my-ca-secret'
+        method: GET
+        jmesPath: 'data."root-ca.pem"'
+    - name: certChain
+      expression: 'base64_decode(variables.encodedCert)'
+  matchImageReferences:
+    - glob: 'docker.io/mohdcode/signingtest@sha256:ae0563a2513992491b4e3e2e3e610249696097a2be7ca76c1ecd52a5702a192d'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        certificate:
+          certChain:
+            expression: variables.certChain
+        ctlog:
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed: signature not found' 
 ```
 
 - **Context Variables**:
@@ -531,60 +556,70 @@ This image can now be verified using the leaf or root certificates.
 The following policy verifies an image signed using ephemeral keys and signing data stored in a transparency log, known as [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/):
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image-keyless
 spec:
   webhookConfiguration:
     timeoutSeconds: 30
-  rules:
-    - name: check-image-keyless
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image:signed-keyless'
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - keyless:
-                    subject: '*@nirmata.com'
-                    issuer: 'https://accounts.google.com'
-                    rekor:
-                      url: https://rekor.sigstore.dev
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image:signed-keyless'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - subject: '*@nirmata.com'
+              issuer: 'https://accounts.google.com'
+        ctlog:
+          url: https://rekor.sigstore.dev
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed' 
 ```
 
 The following policy verifies an image signed using [keyless signing](https://docs.sigstore.dev/cosign/signing/overview/) with regular expressions for subject and issuer:
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image-keyless
 spec:
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
-  rules:
-    - name: check-image-keyless
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - 'ghcr.io/kyverno/test-verify-image:signed-keyless'
-          attestors:
-            - entries:
-                - keyless:
-                    subjectRegExp: https://github\.com/.+
-                    issuerRegExp: https://token\.actions\.githubusercontent.+
-                    rekor:
-                      url: https://rekor.sigstore.dev
+  validationActions: [Deny]
+  webhookConfiguration:
+    timeoutSeconds: 30
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image:signed-keyless'
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - subjectRegExp: .*@nirmata\.com
+              issuerRegExp: https://accounts\.google\.com
+        ctlog:
+          url: https://rekor.sigstore.dev
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed' 
 ```
 
 ### Keyless signing
@@ -607,17 +642,19 @@ The policy rule fragment checks for the `subject` and `issuer` from the certific
 
 ```yaml
 attestors:
-  - entries:
-      - keyless:
-          subject: 'https://github.com/{{ORGANIZATION}}/{{REPOSITORY}}/.github/workflows/{{WORKFLOW}}@refs/tags/*'
-          issuer: 'https://token.actions.githubusercontent.com'
-          additionalExtensions:
-            githubWorkflowTrigger: push
-            githubWorkflowSha: '{{WORKFLOW_COMMIT_SHA}}'
-            githubWorkflowName: '{{WORKFLOW_NAME}}'
-            githubWorkflowRepository: '{{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}'
-          rekor:
-            url: https://rekor.sigstore.dev
+  - name: cosign
+    cosign:
+      keyless:
+        identities:
+          - subject: 'https://github.com/{{ORGANIZATION}}/{{REPOSITORY}}/.github/workflows/{{WORKFLOW}}@refs/tags/*'
+            issuer: 'https://token.actions.githubusercontent.com'
+        additionalExtensions:
+          githubWorkflowTrigger: push
+          githubWorkflowSha: '{{WORKFLOW_COMMIT_SHA}}'
+          githubWorkflowName: '{{WORKFLOW_NAME}}'
+          githubWorkflowRepository: '{{WORKFLOW_ORGANIZATION}}/{{WORKFLOW_REPOSITORY}}'
+      ctlog:
+        url: https://rekor.sigstore.dev
 ```
 
 ## Using a Key Management Service (KMS)
@@ -688,36 +725,42 @@ Kyverno needs to know the AWS region for the KMS store in use. To provide this i
 Cosign has the ability to add annotations when signing an image, and Kyverno can be used to verify them. For example, this policy checks for the annotation of `sig: original`.
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: check-image
 spec:
-  background: false
+  evaluation:
+    background:
+      enabled: false
   webhookConfiguration:
     failurePolicy: Fail
     timeoutSeconds: 30
-  rules:
-    - name: check-image
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      verifyImages:
-        - imageReferences:
-            - ghcr.io/myorg/myimage*
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvy6wqHIx5JTxdDcbFIkb6boaxBBw
-                      FZmwwzag3ZrsfOLT+r5DOx2LSyoef+eTda/QOcooUEZo7r4HpNbFH/y7Eg==
-                      -----END PUBLIC KEY-----
-                  annotations:
-                    sig: original
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/myorg/myimage*'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvy6wqHIx5JTxdDcbFIkb6boaxBBw
+            FZmwwzag3ZrsfOLT+r5DOx2LSyoef+eTda/QOcooUEZo7r4HpNbFH/y7Eg==
+            -----END PUBLIC KEY-----
+        annotations:
+          sig: original
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed' 
 ```
 
 ## Using private registries
@@ -810,18 +853,19 @@ global:
 To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
 
 ```yaml
-verifyImages:
-  - imageReferences:
-      - ghcr.io/kyverno/test-verify-image*
-    repository: 'registry.io/signatures'
-    attestors:
-      - entries:
-          - keys:
-              publicKeys: >-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                -----END PUBLIC KEY-----
+matchImageReferences:
+  - glob: 'ghcr.io/kyverno/test-verify-image*'
+attestors:
+  - name: cosign
+    cosign:
+      source:
+        repository: 'registry.io/signatures'
+      key:
+        data: >-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
 ```
 
 ## Using a different signature algorithm
@@ -829,18 +873,18 @@ verifyImages:
 By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
 
 ```yaml
-verifyImages:
-  - imageReferences:
-      - ghcr.io/kyverno/test-verify-image*
-    attestors:
-      - entries:
-          - signatureAlgorithm: sha256
-            keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                -----END PUBLIC KEY-----
+matchImageReferences:
+  - glob: 'ghcr.io/kyverno/test-verify-image*'
+attestors:
+  - name: cosign
+    cosign:
+      key:
+        hashAlgorithm: sha256
+        data: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
 ```
 
 Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512`.
@@ -850,39 +894,39 @@ Allowed values for signature algorithm are `sha224`, `sha256`, `sha384`, `sha512
 Cosign uses Rekor, a transparency log service to store signatures. In Cosign 2.0 verifies Rekor entries for both key-based and identity-based signing. To disable this set `ignoreTlog: true` in Kyverno policies:
 
 ```yaml
-verifyImages:
-  - imageReferences:
-      - '*'
-    attestors:
-      - entries:
-          - keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                -----END PUBLIC KEY-----
-              rekor:
-                ignoreTlog: true
-                url: https://rekor.sigstore.dev
+matchImageReferences:
+  - glob: '*'
+attestors:
+  - name: cosign
+    cosign:
+      key:
+        data: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+      ctlog:
+        url: https://rekor.sigstore.dev
+        insecureIgnoreTlog: true
 ```
 
 Cosign also does SCT verification, a proof of inclusion in a certificate transparency log for verifying Fulcio certificates. In Cosign 2.0 it is done by default . To disable this, use `ignoreSCT: true`:
 
 ```yaml
-verifyImages:
-  - imageReferences:
-      - '*'
-    attestors:
-      - entries:
-          - keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                -----END PUBLIC KEY-----
-              rekor:
-                ignoreTlog: true
-                url: https://rekor.sigstore.dev
+matchImageReferences:
+  - glob: '*'
+attestors:
+  - name: cosign
+    cosign:
+      key:
+        data: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+      ctlog:
+        url: https://rekor.sigstore.dev
+        insecureIgnoreTlog: true
                 pubkey: |-
                   -----BEGIN PUBLIC KEY-----
                   MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
@@ -902,29 +946,28 @@ verifyImages:
 You can also provide the Rekor public key and ctlog public key instead of Rekor url to verify tlog entry and SCT entry. Use `rekor.pubkey` and `ctlog.pubkey` respectively for this.
 
 ```yaml
-verifyImages:
-  - imageReferences:
-      - '*'
-    attestors:
-      - entries:
-          - keys:
-              publicKeys: |-
-                -----BEGIN PUBLIC KEY-----
-                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
-                5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
-                -----END PUBLIC KEY-----
-              rekor:
-                pubkey: |-
-                  -----BEGIN PUBLIC KEY-----
-                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
-                  BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
-                  -----END PUBLIC KEY-----
-              ctlog:
-                pubkey: |-
-                  -----BEGIN PUBLIC KEY-----
-                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
-                  FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
-                  -----END PUBLIC KEY-----
+matchImageReferences:
+  - glob: '*'
+attestors:
+  - name: cosign
+    cosign:
+      key:
+        data: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+          5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+          -----END PUBLIC KEY-----
+      ctlog:
+        rekorPubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyQfmL5YwHbn9xrrgG3vgbU0KJxMY
+          BibYLJ5L4VSMvGxeMLnBGdM48w5IE//6idUPj3rscigFdHs7GDMH4LLAng==
+          -----END PUBLIC KEY-----
+        ctLogPubKey: |-
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE8uGVnyDWPPlB7M5KOHRzxzPHtAy
+          FdGxexVrR4YqO1pRViKxmD9oMu4I7K/4sM51nbH65ycB2uRiDfIdRoV/+A==
+          -----END PUBLIC KEY-----
 ```
 
 ## Using a Custom TSA cert chain
@@ -932,80 +975,87 @@ verifyImages:
 Cosign accepts custom timestamping authorities during image signing. To verify images signed with custom TSA, Use `ctlog.tsaCertChain` field to provide cert chain of the custom TSA.
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: keyed-tsa-policy
 spec:
-  background: false
-  failurePolicy: Fail
-  rules:
-    - match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      name: keyed-tsa-rule
-      verifyImages:
-        - attestors:
-            - entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEstG5Xl7UxkQsmLUxdmS85HLgYBFy
-                      c/P/oQ22iazkKm8P0sNlaZiaZC4TSEea3oh2Pim0+wxSubhKoK+7jq9Egg==
-                      -----END PUBLIC KEY-----
-                    ctlog:
-                      tsaCertChain: |-
-                        -----BEGIN CERTIFICATE-----
-                        MIIH/zCCBeegAwIBAgIJAMHphhYNqOmAMA0GCSqGSIb3DQEBDQUAMIGVMREwDwYD
-                        VQQKEwhGcmVlIFRTQTEQMA4GA1UECxMHUm9vdCBDQTEYMBYGA1UEAxMPd3d3LmZy
-                        ZWV0c2Eub3JnMSIwIAYJKoZIhvcNAQkBFhNidXNpbGV6YXNAZ21haWwuY29tMRIw
-                        EAYDVQQHEwlXdWVyemJ1cmcxDzANBgNVBAgTBkJheWVybjELMAkGA1UEBhMCREUw
-                        HhcNMTYwMzEzMDE1MjEzWhcNNDEwMzA3MDE1MjEzWjCBlTERMA8GA1UEChMIRnJl
-                        ZSBUU0ExEDAOBgNVBAsTB1Jvb3QgQ0ExGDAWBgNVBAMTD3d3dy5mcmVldHNhLm9y
-                        ZzEiMCAGCSqGSIb3DQEJARYTYnVzaWxlemFzQGdtYWlsLmNvbTESMBAGA1UEBxMJ
-                        V3VlcnpidXJnMQ8wDQYDVQQIEwZCYXllcm4xCzAJBgNVBAYTAkRFMIICIjANBgkq
-                        hkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtgKODjAy8REQ2WTNqUudAnjhlCrpE6ql
-                        mQfNppeTmVvZrH4zutn+NwTaHAGpjSGv4/WRpZ1wZ3BRZ5mPUBZyLgq0YrIfQ5Fx
-                        0s/MRZPzc1r3lKWrMR9sAQx4mN4z11xFEO529L0dFJjPF9MD8Gpd2feWzGyptlel
-                        b+PqT+++fOa2oY0+NaMM7l/xcNHPOaMz0/2olk0i22hbKeVhvokPCqhFhzsuhKsm
-                        q4Of/o+t6dI7sx5h0nPMm4gGSRhfq+z6BTRgCrqQG2FOLoVFgt6iIm/BnNffUr7V
-                        DYd3zZmIwFOj/H3DKHoGik/xK3E82YA2ZulVOFRW/zj4ApjPa5OFbpIkd0pmzxzd
-                        EcL479hSA9dFiyVmSxPtY5ze1P+BE9bMU1PScpRzw8MHFXxyKqW13Qv7LWw4sbk3
-                        SciB7GACbQiVGzgkvXG6y85HOuvWNvC5GLSiyP9GlPB0V68tbxz4JVTRdw/Xn/XT
-                        FNzRBM3cq8lBOAVt/PAX5+uFcv1S9wFE8YjaBfWCP1jdBil+c4e+0tdywT2oJmYB
-                        BF/kEt1wmGwMmHunNEuQNzh1FtJY54hbUfiWi38mASE7xMtMhfj/C4SvapiDN837
-                        gYaPfs8x3KZxbX7C3YAsFnJinlwAUss1fdKar8Q/YVs7H/nU4c4Ixxxz4f67fcVq
-                        M2ITKentbCMCAwEAAaOCAk4wggJKMAwGA1UdEwQFMAMBAf8wDgYDVR0PAQH/BAQD
-                        AgHGMB0GA1UdDgQWBBT6VQ2MNGZRQ0z357OnbJWveuaklzCBygYDVR0jBIHCMIG/
-                        gBT6VQ2MNGZRQ0z357OnbJWveuakl6GBm6SBmDCBlTERMA8GA1UEChMIRnJlZSBU
-                        U0ExEDAOBgNVBAsTB1Jvb3QgQ0ExGDAWBgNVBAMTD3d3dy5mcmVldHNhLm9yZzEi
-                        MCAGCSqGSIb3DQEJARYTYnVzaWxlemFzQGdtYWlsLmNvbTESMBAGA1UEBxMJV3Vl
-                        cnpidXJnMQ8wDQYDVQQIEwZCYXllcm4xCzAJBgNVBAYTAkRFggkAwemGFg2o6YAw
-                        MwYDVR0fBCwwKjAooCagJIYiaHR0cDovL3d3dy5mcmVldHNhLm9yZy9yb290X2Nh
-                        LmNybDCBzwYDVR0gBIHHMIHEMIHBBgorBgEEAYHyJAEBMIGyMDMGCCsGAQUFBwIB
-                        FidodHRwOi8vd3d3LmZyZWV0c2Eub3JnL2ZyZWV0c2FfY3BzLmh0bWwwMgYIKwYB
-                        BQUHAgEWJmh0dHA6Ly93d3cuZnJlZXRzYS5vcmcvZnJlZXRzYV9jcHMucGRmMEcG
-                        CCsGAQUFBwICMDsaOUZyZWVUU0EgdHJ1c3RlZCB0aW1lc3RhbXBpbmcgU29mdHdh
-                        cmUgYXMgYSBTZXJ2aWNlIChTYWFTKTA3BggrBgEFBQcBAQQrMCkwJwYIKwYBBQUH
-                        MAGGG2h0dHA6Ly93d3cuZnJlZXRzYS5vcmc6MjU2MDANBgkqhkiG9w0BAQ0FAAOC
-                        AgEAaK9+v5OFYu9M6ztYC+L69sw1omdyli89lZAfpWMMh9CRmJhM6KBqM/ipwoLt
-                        nxyxGsbCPhcQjuTvzm+ylN6VwTMmIlVyVSLKYZcdSjt/eCUN+41K7sD7GVmxZBAF
-                        ILnBDmTGJmLkrU0KuuIpj8lI/E6Z6NnmuP2+RAQSHsfBQi6sssnXMo4HOW5gtPO7
-                        gDrUpVXID++1P4XndkoKn7Svw5n0zS9fv1hxBcYIHPPQUze2u30bAQt0n0iIyRLz
-                        aWuhtpAtd7ffwEbASgzB7E+NGF4tpV37e8KiA2xiGSRqT5ndu28fgpOY87gD3ArZ
-                        DctZvvTCfHdAS5kEO3gnGGeZEVLDmfEsv8TGJa3AljVa5E40IQDsUXpQLi8G+UC4
-                        1DWZu8EVT4rnYaCw1VX7ShOR1PNCCvjb8S8tfdudd9zhU3gEB0rxdeTy1tVbNLXW
-                        99y90xcwr1ZIDUwM/xQ/noO8FRhm0LoPC73Ef+J4ZBdrvWwauF3zJe33d4ibxEcb
-                        8/pz5WzFkeixYM2nsHhqHsBKw7JPouKNXRnl5IAE1eFmqDyC7G/VT7OF669xM6hb
-                        Ut5G21JE4cNK6NNucS+fzg1JPX0+3VhsYZjj7D5uljRvQXrJ8iHgr/M6j2oLHvTA
-                        I2MLdq2qjZFDOCXsxBxJpbmLGBx9ow6ZerlUxzws2AWv2pk=
-                        -----END CERTIFICATE-----
-          imageReferences:
-            - ghcr.io/kyverno/test-verify-image:*
-  validationFailureAction: Enforce
-  webhookTimeoutSeconds: 30
+  evaluation:
+    background:
+      enabled: false
+  webhookConfiguration:
+    failurePolicy: Fail
+    timeoutSeconds: 30
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchImageReferences:
+    - glob: 'ghcr.io/kyverno/test-verify-image:*'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEstG5Xl7UxkQsmLUxdmS85HLgYBFy
+            c/P/oQ22iazkKm8P0sNlaZiaZC4TSEea3oh2Pim0+wxSubhKoK+7jq9Egg==
+            -----END PUBLIC KEY-----
+        ctlog:
+          tsaCertChain: |-
+            -----BEGIN CERTIFICATE-----
+            MIIH/zCCBeegAwIBAgIJAMHphhYNqOmAMA0GCSqGSIb3DQEBDQUAMIGVMREwDwYD
+            VQQKEwhGcmVlIFRTQTEQMA4GA1UECxMHUm9vdCBDQTEYMBYGA1UEAxMPd3d3LmZy
+            ZWV0c2Eub3JnMSIwIAYJKoZIhvcNAQkBFhNidXNpbGV6YXNAZ21haWwuY29tMRIw
+            EAYDVQQHEwlXdWVyemJ1cmcxDzANBgNVBAgTBkJheWVybjELMAkGA1UEBhMCREUw
+            HhcNMTYwMzEzMDE1MjEzWhcNNDEwMzA3MDE1MjEzWjCBlTERMA8GA1UEChMIRnJl
+            ZSBUU0ExEDAOBgNVBAsTB1Jvb3QgQ0ExGDAWBgNVBAMTD3d3dy5mcmVldHNhLm9y
+            ZzEiMCAGCSqGSIb3DQEJARYTYnVzaWxlemFzQGdtYWlsLmNvbTESMBAGA1UEBxMJ
+            V3VlcnpidXJnMQ8wDQYDVQQIEwZCYXllcm4xCzAJBgNVBAYTAkRFMIICIjANBgkq
+            hkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtgKODjAy8REQ2WTNqUudAnjhlCrpE6ql
+            mQfNppeTmVvZrH4zutn+NwTaHAGpjSGv4/WRpZ1wZ3BRZ5mPUBZyLgq0YrIfQ5Fx
+            0s/MRZPzc1r3lKWrMR9sAQx4mN4z11xFEO529L0dFJjPF9MD8Gpd2feWzGyptlel
+            b+PqT+++fOa2oY0+NaMM7l/xcNHPOaMz0/2olk0i22hbKeVhvokPCqhFhzsuhKsm
+            q4Of/o+t6dI7sx5h0nPMm4gGSRhfq+z6BTRgCrqQG2FOLoVFgt6iIm/BnNffUr7V
+            DYd3zZmIwFOj/H3DKHoGik/xK3E82YA2ZulVOFRW/zj4ApjPa5OFbpIkd0pmzxzd
+            EcL479hSA9dFiyVmSxPtY5ze1P+BE9bMU1PScpRzw8MHFXxyKqW13Qv7LWw4sbk3
+            SciB7GACbQiVGzgkvXG6y85HOuvWNvC5GLSiyP9GlPB0V68tbxz4JVTRdw/Xn/XT
+            FNzRBM3cq8lBOAVt/PAX5+uFcv1S9wFE8YjaBfWCP1jdBil+c4e+0tdywT2oJmYB
+            BF/kEt1wmGwMmHunNEuQNzh1FtJY54hbUfiWi38mASE7xMtMhfj/C4SvapiDN837
+            gYaPfs8x3KZxbX7C3YAsFnJinlwAUss1fdKar8Q/YVs7H/nU4c4Ixxxz4f67fcVq
+            M2ITKentbCMCAwEAAaOCAk4wggJKMAwGA1UdEwQFMAMBAf8wDgYDVR0PAQH/BAQD
+            AgHGMB0GA1UdDgQWBBT6VQ2MNGZRQ0z357OnbJWveuaklzCBygYDVR0jBIHCMIG/
+            gBT6VQ2MNGZRQ0z357OnbJWveuakl6GBm6SBmDCBlTERMA8GA1UEChMIRnJlZSBU
+            U0ExEDAOBgNVBAsTB1Jvb3QgQ0ExGDAWBgNVBAMTD3d3dy5mcmVldHNhLm9yZzEi
+            MCAGCSqGSIb3DQEJARYTYnVzaWxlemFzQGdtYWlsLmNvbTESMBAGA1UEBxMJV3Vl
+            cnpidXJnMQ8wDQYDVQQIEwZCYXllcm4xCzAJBgNVBAYTAkRFggkAwemGFg2o6YAw
+            MwYDVR0fBCwwKjAooCagJIYiaHR0cDovL3d3dy5mcmVldHNhLm9yZy9yb290X2Nh
+            LmNybDCBzwYDVR0gBIHHMIHEMIHBBgorBgEEAYHyJAEBMIGyMDMGCCsGAQUFBwIB
+            FidodHRwOi8vd3d3LmZyZWV0c2Eub3JnL2ZyZWV0c2FfY3BzLmh0bWwwMgYIKwYB
+            BQUHAgEWJmh0dHA6Ly93d3cuZnJlZXRzYS5vcmcvZnJlZXRzYV9jcHMucGRmMEcG
+            CCsGAQUFBwICMDsaOUZyZWVUU0EgdHJ1c3RlZCB0aW1lc3RhbXBpbmcgU29mdHdh
+            cmUgYXMgYSBTZXJ2aWNlIChTYWFTKTA3BggrBgEFBQcBAQQrMCkwJwYIKwYBBQUH
+            MAGGG2h0dHA6Ly93d3cuZnJlZXRzYS5vcmc6MjU2MDANBgkqhkiG9w0BAQ0FAAOC
+            AgEAaK9+v5OFYu9M6ztYC+L69sw1omdyli89lZAfpWMMh9CRmJhM6KBqM/ipwoLt
+            nxyxGsbCPhcQjuTvzm+ylN6VwTMmIlVyVSLKYZcdSjt/eCUN+41K7sD7GVmxZBAF
+            ILnBDmTGJmLkrU0KuuIpj8lI/E6Z6NnmuP2+RAQSHsfBQi6sssnXMo4HOW5gtPO7
+            gDrUpVXID++1P4XndkoKn7Svw5n0zS9fv1hxBcYIHPPQUze2u30bAQt0n0iIyRLz
+            aWuhtpAtd7ffwEbASgzB7E+NGF4tpV37e8KiA2xiGSRqT5ndu28fgpOY87gD3ArZ
+            DctZvvTCfHdAS5kEO3gnGGeZEVLDmfEsv8TGJa3AljVa5E40IQDsUXpQLi8G+UC4
+            1DWZu8EVT4rnYaCw1VX7ShOR1PNCCvjb8S8tfdudd9zhU3gEB0rxdeTy1tVbNLXW
+            99y90xcwr1ZIDUwM/xQ/noO8FRhm0LoPC73Ef+J4ZBdrvWwauF3zJe33d4ibxEcb
+            8/pz5WzFkeixYM2nsHhqHsBKw7JPouKNXRnl5IAE1eFmqDyC7G/VT7OF669xM6hb
+            Ut5G21JE4cNK6NNucS+fzg1JPX0+3VhsYZjj7D5uljRvQXrJ8iHgr/M6j2oLHvTA
+            I2MLdq2qjZFDOCXsxBxJpbmLGBx9ow6ZerlUxzws2AWv2pk=
+            -----END CERTIFICATE-----
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed' 
 ```
 
 ## Using a custom TUF for custom Sigstore deployments
@@ -1019,72 +1069,75 @@ In addition to Kubernetes Pods, custom resources such as Tekton Tasks, Argo Work
 Here is an example of a policy that verifies that Tekton task steps are signed using a private key that matches the specified public key:
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: signed-task-image
 spec:
-  rules:
-    - name: check-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - tekton.dev/v1beta1/TaskRun.status
-      imageExtractors:
-        TaskRun:
-          - name: 'taskrunstatus'
-            path: '/status/taskSpec/steps/*'
-            value: 'image'
-            key: 'name'
-      verifyImages:
-        - imageReferences:
-            - '*'
-          failureAction: Enforce
-          required: false
-          attestors:
-            - entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
-                      gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
-                      -----END PUBLIC KEY-----
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['tekton.dev']
+        apiVersions: ['v1beta1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['taskruns/status']
+  images:
+    - name: taskrunstatus
+      expression: "[object.status.taskSpec.steps[?].image]"
+  matchImageReferences:
+    - glob: '*'
+  validationConfigurations:
+    required: false
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
+            gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.custom.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed for task' 
 ```
 
 This policy rule checks that Tekton pipeline bundles are signed with a private key that matches the specified public key:
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
 metadata:
   name: signed-pipeline-bundle
 spec:
-  rules:
-    - name: check-signature
-      match:
-        any:
-          - resources:
-              kinds:
-                - PipelineRun
-      imageExtractors:
-        PipelineRun:
-          - name: 'pipelineruns'
-            path: /spec/pipelineRef
-            value: 'bundle'
-            key: 'name'
-      verifyImages:
-        - imageReferences:
-            - '*'
-          failureAction: Enforce
-          attestors:
-            - entries:
-                - keys:
-                    publicKeys: |-
-                      -----BEGIN PUBLIC KEY-----
-                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
-                      gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
-                      -----END PUBLIC KEY-----
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['tekton.dev']
+        apiVersions: ['v1beta1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pipelineruns']
+  images:
+    - name: pipelineruns
+      expression: "[object.spec.pipelineRef.bundle]"
+  matchImageReferences:
+    - glob: '*'
+  validationActions:
+    - Deny
+  attestors:
+    - name: cosign
+      cosign:
+        key:
+          data: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEahmSvGFmxMJABilV1usgsw6ImcQ/
+            gDaxw57Sq+uNGHW8Q3zUSx46PuRqdTI+4qE3Ng2oFZgLMpFN/qMrP0MQQg==
+            -----END PUBLIC KEY-----
+  validations:
+    - expression: >-
+        images.custom.map(image, verifyImageSignatures(image, [attestors.cosign])).all(e ,e > 0)
+      message: 'image verification failed for pipeline bundle' 
 ```
 
 For Custom Resources which reference container images in a non-standard way, an optional `jmesPath` field may be used to apply a filter to transform the value of the extracted field. For example, in the case of KubeVirt's `DataVolume` custom resource, the fielding referencing the image needing verification is located at `spec.source.registry.url` as seen below.
@@ -1117,7 +1170,7 @@ imageExtractors:
 
 ## Special Variables
 
-A pre-defined, reserved special variable named `image` is available for use only in verifyImages rules. The following fields are available under the `image` object and may be used in a rule to reference the named fields.
+A pre-defined, reserved special variable named `image` is available for use in `ImageValidatingPolicy` validations. The following fields are available under the `image` object and may be used in a rule to reference the named fields.
 
 - `reference`
 - `referenceWithTag`
