@@ -310,3 +310,33 @@ Although preconditions do not produce a blocking effect similar to deny rules, t
         value: monday
         message: You have a case of the Mondays.
 ```
+
+## Troubleshooting
+
+### Silent Failures with Boolean JMESPath Functions
+
+In Kyverno versions prior to v1.16, JMESPath functions that return booleans (such as `starts_with()`, `ends_with()`, or `contains()`) could fail silently in preconditions due to type coercion when compared with `value: true`. The rule would be skipped without generating errors in logs or PolicyReports, making it difficult to diagnose. While this has been addressed in newer versions, using the [`images` context variable](/docs/policy-types/cluster-policy/variables#variables-from-container-images) remains the recommended best practice for registry detection.
+
+**Example of pattern that may fail in older versions:**
+
+```yaml
+preconditions:
+  any:
+    - key: "{{ starts_with(element.image, 'quay.io/') }}"
+      operator: Equals
+      value: true
+```
+
+**Recommended pattern for image registry detection:**
+
+For registry-based conditions in mutation policies with `foreach`, use the `images` context which provides pre-parsed image components and reliable string-to-string comparisons:
+
+```yaml
+preconditions:
+  all:
+    - key: '{{images.containers."{{element.name}}".registry}}'
+      operator: Equals
+      value: 'quay.io'
+```
+
+The `images` context automatically parses container images into components like `registry`, `path`, `name`, `tag`, and `digest`, making it more explicit and avoiding potential type coercion issues.
