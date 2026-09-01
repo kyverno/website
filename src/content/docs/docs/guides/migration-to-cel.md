@@ -313,7 +313,7 @@ Warning: spec.validationFailureAction: Validation failure actions enforce/audit 
 
 **CLI Warnings**
 
-The [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) and [`kyverno test`](/docs/kyverno-cli/reference/kyverno_test) commands print the same deprecation warnings when loading legacy policies or policy exceptions. To enforce migration in CI pipelines, add the `--warnings-as-errors` flag to make these commands fail when any deprecation warning is found:
+The [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) and [`kyverno test`](/docs/kyverno-cli/reference/kyverno_test) commands print the same kind-level deprecation warnings when loading legacy policies or policy exceptions (field-level warnings are only emitted by the admission controller). To enforce migration in CI pipelines, add the `--warnings-as-errors` flag to make these commands fail when any deprecation warning is found:
 
 ```bash
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --warnings-as-errors
