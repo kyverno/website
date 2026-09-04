@@ -293,6 +293,37 @@ If you have existing [Kyverno CLI tests](/docs/kyverno-cli/reference/kyverno_tes
 
 If you have existing [Kyverno Chainsaw](/docs/subprojects/chainsaw/) tests, any policy type and status checks will need to be converted. The rest of the test logic can be reused.
 
+## Detecting Legacy Policy Usage
+
+Starting with Kyverno v1.19, the admission controller and the Kyverno CLI emit deprecation warnings to help you find remaining legacy policies before they are removed.
+
+**Admission Warnings**
+
+When a legacy `kyverno.io` policy type is created or updated, the response includes a warning identifying the replacement type:
+
+```
+Warning: kyverno.io/v1 ClusterPolicy is deprecated and will be removed in a future release; migrate to ValidatingPolicy, MutatingPolicy, GeneratingPolicy or ImageValidatingPolicy (policies.kyverno.io), see https://kyverno.io/docs/guides/migration-to-cel/
+```
+
+Warnings are also returned for deprecated field values, such as the lowercase `enforce`/`audit` validation failure actions:
+
+```
+Warning: spec.validationFailureAction: Validation failure actions enforce/audit are deprecated, use Enforce/Audit instead.
+```
+
+**CLI Warnings**
+
+The [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) and [`kyverno test`](/docs/kyverno-cli/reference/kyverno_test) commands print the same kind-level deprecation warnings when loading legacy policies or policy exceptions (field-level warnings are only emitted by the admission controller). To enforce migration in CI pipelines, add the `--warnings-as-errors` flag to make these commands fail when any deprecation warning is found:
+
+```bash
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --warnings-as-errors
+kyverno test . --warnings-as-errors
+```
+
+**Tracking Usage with Metrics**
+
+The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
+
 ## Troubleshooting
 
 **CEL Expression Errors**

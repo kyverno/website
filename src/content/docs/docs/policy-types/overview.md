@@ -68,3 +68,5 @@ The `ClusterPolicy`, `Policy`, and `CleanupPolicy` types, and the legacy `kyvern
 | v1.18   | Apr 2026             | Critical fixes only                                         |
 | v1.19   | Aug 2026             | **Officially deprecated — final release with full support** |
 | v1.20   | Nov 2026 (estimated) | **Removed**                                                 |
+
+As of v1.19, creating or updating a legacy policy type returns an admission warning, and the `kyverno_deprecated_api_requests_total` metric tracks deprecated API usage. The Kyverno CLI prints the same kind-level warnings and supports a `--warnings-as-errors` flag for CI enforcement. See [Detecting Legacy Policy Usage](/docs/guides/migration-to-cel#detecting-legacy-policy-usage) in the migration guide.
