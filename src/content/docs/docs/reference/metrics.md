@@ -589,6 +589,40 @@ See [Prometheus docs](https://prometheus.io/docs/practices/histograms/) for a de
 
 ---
 
+### Deprecated API Requests Count
+
+#### Metric Name(s)
+
+- `kyverno_deprecated_api_requests_total`
+
+#### Metric Value
+
+Counter - An only-increasing integer representing the count of admission requests that used deprecated Kyverno policy APIs or deprecated fields.
+
+#### Metric Labels
+
+| Label   | Allowed Values                                                              | Description                                                                                                                               |
+| ------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| group   | "kyverno.io"                                                                | API group of the deprecated resource                                                                                                      |
+| version | "v1", "v2", "v2beta1", etc.                                                 | API version of the deprecated resource                                                                                                    |
+| kind    | "ClusterPolicy", "Policy", "CleanupPolicy", "PolicyException", etc.         | Kind of the deprecated resource                                                                                                           |
+| field   | "spec.validationFailureAction", "spec.rules[].validate.failureAction", etc. | Normalized path of the deprecated field that was used. Empty when the request is counted for using a deprecated kind rather than a field. |
+
+#### Use cases
+
+- The cluster admin wants to verify that no workloads or pipelines are still creating or updating legacy `kyverno.io` policy types before upgrading to a release that removes them.
+- The cluster admin wants to find policies that still use deprecated field values, such as the lowercase `enforce`/`audit` validation failure actions.
+
+#### Useful Queries
+
+- Deprecated API requests seen in the last 7 days, grouped by kind and version:<br>
+  `sum(increase(kyverno_deprecated_api_requests_total{}[7d])) by (kind, version)`
+
+- Requests using deprecated fields, grouped by kind and field:<br>
+  `sum(kyverno_deprecated_api_requests_total{field!=""}) by (kind, field)`
+
+---
+
 ## HTTP Metrics
 
 ### HTTP Requests Count
