@@ -31,7 +31,6 @@ export const container = {
   maxWidth: 'max-w-7xl',
   center: 'mx-auto',
   standard: 'max-w-7xl mx-auto',
-  fluid: 'max-w-full mx-auto',
 }
 
 // Vertical Spacing
