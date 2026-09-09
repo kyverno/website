@@ -324,6 +324,28 @@ kyverno test . --warnings-as-errors
 
 The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
 
+The counter only records active requests, so it cannot report legacy policies that already exist but that nobody is currently writing. The `kyverno_legacy_policies_total` gauge, labeled by `group` and `kind`, reports the legacy policy resources present in the cluster at rest and returns to `0` once you migrate or delete them. Use it to answer "have I migrated everything yet?":
+
+```
+sum(kyverno_legacy_policies_total) by (kind)
+```
+
+Alert while any legacy policy remains, so the migration is completed before you upgrade to a release that removes the legacy types:
+
+```
+sum(kyverno_legacy_policies_total) > 0
+```
+
+See the [metrics reference](/docs/reference/metrics#legacy-policies-count) for details.
+
+**Startup Signals**
+
+When any legacy policy is present, `kyverno-init` (the `kyverno-pre` init container) logs an error and emits a `LegacyPolicyPresent` warning event on the admission controller Deployment as it starts, listing the legacy kinds it still finds and linking to this guide. These signals fire on install, upgrade, or a controller restart, so restarting the admission controller after migrating confirms that nothing remains:
+
+```bash
+kubectl get events -n <kyverno-namespace> --field-selector reason=LegacyPolicyPresent
+```
+
 ## Troubleshooting
 
 **CEL Expression Errors**
