@@ -19,6 +19,43 @@ Direct upgrades from previous versions are not supported when using the YAML man
 
 An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the Helm chart v2 to v3 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
+## Upgrading to Kyverno v1.20
+
+### Legacy policy resources block install and upgrade
+
+Kyverno v1.19 deprecated the legacy `kyverno.io` policy types (see [Deprecations](#deprecations) below). In v1.20, the Helm chart **blocks `helm install` and `helm upgrade` by default** while any legacy policy resources still exist on the cluster, so that you migrate them before completing the upgrade. The affected types are `ClusterPolicy` and `Policy` (`kyverno.io/v1`), `CleanupPolicy` and `ClusterCleanupPolicy` (`kyverno.io/v2`), and the legacy `PolicyException` (`kyverno.io/v2`).
+
+The gate has two layers:
+
+- A **render-time check** that runs during `helm install` and `helm upgrade` against a live cluster and fails with the offending resource counts and names.
+- A **`pre-install`/`pre-upgrade` hook Job** for GitOps tools that apply Helm hooks server-side, such as Argo CD and Flux.
+
+To complete the upgrade, first migrate your legacy policies to the CEL-based [policy types](/docs/policy-types/overview) using the [migration guide](/docs/guides/migration-to-cel), then confirm none remain:
+
+```bash
+kubectl get clusterpolicies,policies,cleanuppolicies,clustercleanuppolicies -A
+kubectl get policyexceptions.kyverno.io -A
+```
+
+If you must upgrade before completing the migration, set the opt-out value to disable the gate:
+
+```bash
+helm upgrade --install kyverno kyverno/kyverno -n kyverno --create-namespace \
+  --set upgrade.allowLegacyPolicies=true
+```
+
+`upgrade.allowLegacyPolicies=true` disables both layers. To disable only the hook Job while keeping the render-time check, set `upgrade.legacyPolicyCheck.enabled=false`.
+
+#### Bypasses
+
+Both layers require Helm to evaluate against a live cluster, so the following paths skip the gate:
+
+- `helm template`, client-side `helm install --dry-run` (`--dry-run=client`), and chart linting (`ct lint`) never populate the cluster `lookup`, so the render-time check passes. Server-side `helm install --dry-run=server` does connect to the cluster and is covered.
+- `helm install`/`helm upgrade --no-hooks`, Argo CD's `Skip Hooks` sync option, and Flux's `spec.install.disableHooks` / `spec.upgrade.disableHooks` skip the hook Job.
+- Installing from Kyverno's static YAML manifests skips both layers.
+
+If your install method bypasses the gate, run the preflight commands above before you upgrade.
+
 ## Upgrading to Kyverno v1.19
 
 ### Deprecations

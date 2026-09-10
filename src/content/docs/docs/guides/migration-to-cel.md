@@ -324,6 +324,10 @@ kyverno test . --warnings-as-errors
 
 The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
 
+**Blocking Upgrades Until Migration Is Complete**
+
+Starting with Kyverno v1.20, the Helm chart blocks `helm install` and `helm upgrade` by default while any legacy `kyverno.io` policy resources still exist, so an upgrade cannot silently leave them behind. See [Upgrading to Kyverno v1.20](/docs/installation/upgrading) for the opt-out value and the bypass details.
+
 ## Troubleshooting
 
 **CEL Expression Errors**
