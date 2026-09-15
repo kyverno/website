@@ -50,11 +50,11 @@ helm upgrade --install kyverno kyverno/kyverno -n kyverno --create-namespace \
 
 Some paths bypass both layers, while hook-disabling options bypass only the hook Job:
 
-- `helm template`, client-side `helm install --dry-run` (`--dry-run=client`), and chart linting (`ct lint`) never populate the cluster `lookup`, so the render-time check passes. Server-side `helm install --dry-run=server` does connect to the cluster and is covered.
+- Client-side rendering never populates the cluster `lookup`, so the render-time check passes: `helm template` and `helm install --dry-run` both default to `--dry-run=client`, and chart linting (`ct lint`) never connects. Their server-side forms, `helm template --dry-run=server` and `helm install --dry-run=server`, do connect to the cluster and are covered.
 - `helm install --no-hooks` / `helm upgrade --no-hooks`, Argo CD's `Skip Hooks` sync option, and Flux's `spec.install.disableHooks` / `spec.upgrade.disableHooks` skip only the hook Job; native Helm still runs the render-time check.
 - Installing from Kyverno's static YAML manifests skips both layers.
 
-If your install method bypasses the gate, run the preflight commands above before you upgrade.
+If your install method bypasses the gate, run the preflight commands above before you install or upgrade.
 
 ## Upgrading to Kyverno v1.19
 
