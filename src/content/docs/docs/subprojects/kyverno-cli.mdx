@@ -1345,7 +1345,7 @@ First, we define a `ValidatingPolicy` that ensures any `Deployment` has no more 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas
@@ -1480,7 +1480,7 @@ First, we define a `ValidatingPolicy` that uses `resource.Get()` to fetch a Conf
 Policy manifest (check-pod-name-from-configmap.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-pod-name-from-configmap
@@ -1618,7 +1618,7 @@ In this example, we will test a policy that disallows `hostPath` volumes, but we
 Policy manifest (disallow-host-path.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-path
@@ -1658,7 +1658,7 @@ Now, we create a PolicyException to exempt our specific Pod from this policy. Th
 Policy Exception manifest (exception.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: exempt-hostpath-pod
@@ -1914,13 +1914,6 @@ results:
     cloneSourceResource: <file_name.yaml> # when testing a generate rule that uses `clone` object this field is required.
     kind: <kind> # optional
     result: pass
-checks:
-  - match:
-      resource: {} # match results associated with a resource
-      policy: {} # match results associated with a policy
-      rule: {} # match results associated with a rule
-    assert: {} # assertion to validate the content of matched elements
-    error: {} # negative assertion to validate the content of matched elements
 ```
 
 The test declaration consists of the following parts:
@@ -1931,9 +1924,8 @@ The test declaration consists of the following parts:
 4. The `variables` element which defines a file in which variables and their values are stored for use in the policy test. Optional depending on policy content.
 5. The `userinfo` element which declares admission request data for subjects and roles. Optional depending on policy content.
 6. The `results` element which declares the expected results. Depending on the type of rule being tested, this section may vary.
-7. The `checks` element which declares the assertions to be evaluated against the results (see [Working with Assertion Trees](#working-with-assertion-trees)).
-8. The `apiCallResponses` element which declares static mock responses for `context.apiCall` and CEL `http.Get()`/`http.Post()` calls, enabling offline testing without a real HTTP server. Optional.
-9. The `globalContextEntries` element which declares mock data for `GlobalContextEntry` references, satisfying both `context.globalReference` (v1 ClusterPolicy) and `globalContext.Get()` (CEL ValidatingPolicy) calls offline. Each entry supports three mutually exclusive data sources: `data` (arbitrary JSON value), `resources` (inline Kubernetes resource manifests), or `resourceFiles` (paths to YAML files relative to the test directory). The `resources` and `resourceFiles` options decode manifests into the same `[]interface{}` shape as the real Kubernetes resource cache, making it possible to test `kubernetesResource`-backed GlobalContextEntries fully offline. Optional.
+7. The `apiCallResponses` element which declares static mock responses for `context.apiCall` and CEL `http.Get()`/`http.Post()` calls, enabling offline testing without a real HTTP server. Optional.
+8. The `globalContextEntries` element which declares mock data for `GlobalContextEntry` references, satisfying both `context.globalReference` (v1 ClusterPolicy) and `globalContext.Get()` (CEL ValidatingPolicy) calls offline. Each entry supports three mutually exclusive data sources: `data` (arbitrary JSON value), `resources` (inline Kubernetes resource manifests), or `resourceFiles` (paths to YAML files relative to the test directory). The `resources` and `resourceFiles` options decode manifests into the same `[]interface{}` shape as the real Kubernetes resource cache, making it possible to test `kubernetesResource`-backed GlobalContextEntries fully offline. Optional.
 
 If needing to pass variables, such as those from [external data sources](/docs/policy-types/cluster-policy/external-data-sources) like context variables built from [API calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) or others, a `variables.yaml` file can be defined with the same format as accepted with the `apply` command. If a variable needs to contain an array of strings, it must be formatted as JSON encoded. Like with the `apply` command, variables that begin with `request.object` normally do not need to be specified in the variables file as these will be sourced from the resource. Policies which trigger based upon `request.operation` equaling `CREATE` do not need a variables file. The CLI will assume a value of `CREATE` if no variable for `request.operation` is defined.
 
@@ -3370,7 +3362,7 @@ Below is an example of testing a ValidatingPolicy against two resources, one of 
 Policy manifest (check-deployment-replicas.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-replicas
@@ -3486,7 +3478,7 @@ Let's start with a policy that disallows creating certain Deployments in the `de
 Policy manifest (`disallow-default-deployment.yaml`):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deployment-namespace
@@ -3696,7 +3688,7 @@ Policy manifest (`check-pod-name-from-configmap.yaml`):
 
 ```yaml
 # policy.yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-pod-name-from-configmap
@@ -3880,6 +3872,12 @@ The `body` field of each `apiCallResponses` entry accepts any valid JSON value (
 For each `globalContextEntries` entry, `data`, `resources`, and `resourceFiles` are mutually exclusive — provide exactly one. The `resources` and `resourceFiles` options are designed for `kubernetesResource`-backed GlobalContextEntries: the CLI decodes the manifests into the same `[]interface{}` list shape returned by the real Kubernetes informer cache, so JMESPath and CEL projections work identically to production. The `data` option is for arbitrary JSON — useful for mocking any GlobalContextEntry that holds structured data rather than Kubernetes objects.
 :::
 
+:::note[Duplicate Key Validation]
+Each `apiCallResponses` entry is uniquely identified by its **method + URL** combination. Configuring two entries with the same `method` and `url` is an error — the CLI will reject the test manifest before any evaluation begins. This prevents silent non-deterministic behavior caused by duplicate mocks.
+
+Different HTTP methods to the same URL are valid distinct entries. For example, a `GET` entry and a `POST` entry that both point to `https://authz.example.com/validate` can coexist without conflict.
+:::
+
 #### Mocking CEL `http.Get()` calls
 
 The following example tests a `ValidatingPolicy` that calls an external configuration endpoint using Kyverno's CEL `http.Get()` library function.
@@ -3950,6 +3948,107 @@ Loading test  ( kyverno-test.yaml ) ...
 │ ID │ POLICY                │ RULE │ RESOURCE                    │ RESULT │ REASON │
 │────│───────────────────────│──────│─────────────────────────────│────────│────────│
 │ 1  │ check-external-config │      │ v1/Pod/default/test-pod     │ Pass   │ Ok     │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+
+Test Summary: 1 tests passed and 0 tests failed
+```
+
+#### Mocking CEL `http.Post()` calls
+
+The following example tests a `ValidatingPolicy` that calls an external authorization service using Kyverno's CEL `http.Post()` library function. Both a pass scenario (the service allows the request) and a deny scenario (the service rejects the request) are shown.
+
+Policy manifest (`policy.yaml`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: check-pod-admission
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  validations:
+    - expression: >-
+        http.Post("https://authz.example.com/validate",
+          {"namespace": object.metadata.namespace, "name": object.metadata.name}).body.allowed == true
+      message: 'External authorization service rejected this pod'
+```
+
+Test manifest — pass scenario (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel-http-post-mock
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+apiCallResponses:
+  - method: POST
+    url: https://authz.example.com/validate
+    response:
+      statusCode: 200
+      body:
+        allowed: true
+results:
+  - isValidatingPolicy: true
+    kind: Pod
+    policy: check-pod-admission
+    resources:
+      - default/test-pod
+    result: pass
+```
+
+Test manifest — deny scenario (`kyverno-test.yaml`):
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel-http-post-mock-deny
+policies:
+  - policy.yaml
+resources:
+  - resources.yaml
+apiCallResponses:
+  - method: POST
+    url: https://authz.example.com/validate
+    response:
+      statusCode: 200
+      body:
+        allowed: false
+results:
+  - isValidatingPolicy: true
+    kind: Pod
+    policy: check-pod-admission
+    resources:
+      - default/test-pod
+    result: fail
+```
+
+Run the test:
+
+```sh
+kyverno test .
+```
+
+Expected output (pass scenario):
+
+```
+Loading test  ( kyverno-test.yaml ) ...
+  Applying 1 policy to 1 resource with 0 exceptions ...
+  Checking results ...
+
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ ID │ POLICY                │ RULE │ RESOURCE                    │ RESULT │ REASON │
+│────│───────────────────────│──────│─────────────────────────────│────────│────────│
+│ 1  │ check-pod-admission   │      │ v1/Pod/default/test-pod     │ Pass   │ Ok     │
 │────│───────────────────────│──────│─────────────────────────────│────────│────────│
 
 Test Summary: 1 tests passed and 0 tests failed
@@ -4562,76 +4661,3 @@ ASTPipe {
 ```
 
 For more specific information on writing JMESPath for use in Kyverno, see the [JMESPath page](/docs/policy-types/cluster-policy/jmespath).
-
-## Working with assertion trees
-
-Kyverno 1.12 introduced assertion trees support in the `test` command.
-
-The purpose of assertion trees is to offer more flexibility than the traditional syntax in `results`.
-
-Assertion trees reside under the `checks` stanza as shown in the example below:
-
-```yaml
-checks:
-  - match:
-      resource:
-        kind: Namespace
-        metadata:
-          name: hello-world-namespace
-      policy:
-        kind: ClusterPolicy
-        metadata:
-          name: sync-secret
-      rule:
-        name: sync-my-secret
-    assert:
-      status: pass
-    error:
-      (status != 'pass'): true
-```
-
-### Composition of a check item
-
-A check is made of the following parts:
-
-- A `match` statement to select the elements considered by a check. This match can act on the resource, the policy and/or the rule. It is not limited to matching by kind or name but can match on anything in the payload (labels, annotations, etc...).
-- An `assert` statement defining the conditions to verify on the matched elements.
-- An `error` statement (the opposite of an `assert`) defining the conditions that must NOT evaluate to `true` on the matched elements.
-
-In the example above the `check` is matching Namespace elements named `hello-world-namespace` for the cluster policy named `sync-secret` and rule named `sync-my-secret`. For those elements the status is expected to be equal to `pass` and the expression `(status != 'pass')` is NOT expected to be true.
-
-### Examples
-
-Implementation is based on [Kyverno JSON - assertion trees](https://kyverno.github.io/kyverno-json/latest/policies/asserts/). Please refer to the documentation for more details on the syntax.
-
-#### Select all results
-
-To select all results, all you need to do is to provide an empty match statement:
-
-```yaml
-- match: {} # this will match everything
-  assert:
-    # ...
-  error:
-    # ...
-```
-
-#### Select based on labels
-
-To select results based on labels, specify those labels in the stanza where they apply:
-
-```yaml
-- match:
-    resource:
-      metadata:
-        labels:
-          foo: bar
-    policy:
-      metadata:
-        labels:
-          bar: baz
-  assert:
-    # ...
-  error:
-    # ...
-```

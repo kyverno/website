@@ -141,13 +141,10 @@ export const supportLinks = [
 ]
 
 export const ResourcesLinks = [
-  { href: '/docs/introduction', text: 'Documentation' },
-  {
-    href: 'https://kyverno.io/docs/kyverno-cli/reference/',
-    text: 'API Reference',
-  },
-  { href: '/policies', text: 'Policy Samples' },
-  { href: '#', text: 'Blog' },
+  { href: '/docs/introduction/', text: 'Documentation' },
+  { href: '/docs/crds/', text: 'API Reference' },
+  { href: '/policies/', text: 'Policy Samples' },
+  { href: '/blog/', text: 'Blog' },
 ]
 
 export const communityLinks = [

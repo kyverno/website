@@ -310,14 +310,15 @@ Based on extensive testing and development of the [cis-eks-kyverno](https://gith
 === CIS EKS Policy Test Results ===
 
 📊 Test Statistics
-| Metric | Value |
-|--------|-------|
-| Total Policies | 62 |
-| Total Tests | 62 |
-| ✅ Passed | 52 |
-| ❌ Failed | 8 |
-| ⏭️ Skipped | 2 |
-| Success Rate | 84% |
+
+| Metric         | Value |
+| -------------- | ----- |
+| Total Policies | 62    |
+| Total Tests    | 62    |
+| ✅ Passed      | 52    |
+| ❌ Failed      | 8     |
+| ⏭️ Skipped     | 2     |
+| Success Rate   | 84%   |
 
 📋 Policy Validation Results
 

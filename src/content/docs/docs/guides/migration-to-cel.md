@@ -6,6 +6,10 @@ excerpt: Complete guide for migrating from `ClusterPolicy` to CEL-based policy t
 
 This guide helps you migrate from `ClusterPolicy` to the new CEL-based [policy types](/docs/policy-types/overview/).
 
+:::caution[Deprecation Notice]
+`ClusterPolicy`, `Policy`, `CleanupPolicy`, and the legacy `kyverno.io` PolicyException are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. The CEL-based policy types provide full feature parity as of v1.19. Plan your migration now — see the [deprecation schedule](/docs/policy-types/overview#deprecation-schedule-for-legacy-types).
+:::
+
 :::note[Tip]
 Use `kubectl explain cpol.spec` for help on the ClusterPolicy schema.
 
@@ -116,7 +120,6 @@ Here is a mapping of each ClusterPolicy field to the CEL-based equivalent:
 | ----------------------------------------------- | ----------------------------------------------------------------------------------- |
 | **spec.rules.validate.allowExistingViolations** | not supported; use policy exceptions instead                                        |
 | **spec.rules.validate.anyPattern**              | `spec.validations`                                                                  |
-| **spec.rules.validate.assert**                  | `spec.validations`                                                                  |
 | **spec.rules.validate.cel**                     | `spec.validations`                                                                  |
 | **spec.rules.validate.deny**                    | `spec.validations` and invert the logic                                             |
 | **spec.rules.validate.failureAction**           | `spec.validationActions`                                                            |
@@ -208,6 +211,21 @@ A number of the GeneratingPolicy fields, such as the generated resource properti
 
 ## Verify Images Rule
 
+| **ClusterPolicy**                                    | **CEL-based policies**                                 |
+| ---------------------------------------------------- | ------------------------------------------------------ |
+| **spec.rules.verifyImages.imageReferences**          | `spec.matchImageReferences`                            |
+| **spec.rules.verifyImages.skipImageReferences**      | `spec.matchImageReferences` with CEL expressions       |
+| **spec.rules.verifyImages.type**                     | `spec.attestors[].cosign` or `spec.attestors[].notary` |
+| **spec.rules.verifyImages.attestors**                | `spec.attestors`                                       |
+| **spec.rules.verifyImages.attestations**             | `spec.attestations` and `spec.validations`             |
+| **spec.rules.verifyImages.imageRegistryCredentials** | `spec.credentials`                                     |
+| **spec.rules.verifyImages.mutateDigest**             | `spec.validationConfigurations.mutateDigest`           |
+| **spec.rules.verifyImages.verifyDigest**             | `spec.validationConfigurations.verifyDigest`           |
+| **spec.rules.verifyImages.required**                 | `spec.validationConfigurations.required`               |
+| **spec.rules.imageExtractors**                       | `spec.images`                                          |
+
+Refer to the [ImageValidatingPolicy documentation](/docs/policy-types/image-validating-policy/) for details and examples.
+
 ## CleanupPolicy
 
 | **CleanupPolicy**                  | **CEL-based policies**                             |
@@ -220,6 +238,35 @@ A number of the GeneratingPolicy fields, such as the generated resource properti
 | **spec.schedule**                  | `spec.schedule`                                    |
 
 Refer to the [DeletingPolicy documentation](/docs/policy-types/deleting-policy/) for details and examples.
+
+## PolicyException
+
+The legacy `kyverno.io` PolicyException must be migrated to the `policies.kyverno.io` PolicyException, which works with the CEL-based policy types:
+
+| **Legacy PolicyException (`kyverno.io`)** | **PolicyException (`policies.kyverno.io`)**             |
+| ----------------------------------------- | ------------------------------------------------------- |
+| **spec.exceptions.policyName**            | `spec.policyRefs.name`                                  |
+| **spec.exceptions.ruleNames**             | not applicable; CEL policies do not contain named rules |
+| **spec.match**                            | `spec.matchConditions`                                  |
+| **spec.conditions**                       | `spec.matchConditions`                                  |
+| **spec.podSecurity**                      | `spec.matchConditions` with CEL expressions             |
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: PolicyException
+metadata:
+  name: allow-team-tool
+  namespace: delta
+spec:
+  policyRefs:
+    - name: disallow-host-namespaces
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: match-pod-name
+      expression: object.metadata.name.startsWith('important-tool')
+```
+
+Refer to the [Policy Exceptions guide](/docs/guides/exceptions/) for details and examples.
 
 ## Context Variables
 
@@ -245,6 +292,37 @@ Alternatively, you can use the [Kyverno Playground](https://playground.kyverno.i
 If you have existing [Kyverno CLI tests](/docs/kyverno-cli/reference/kyverno_test), you can use them with the new policy with no changes, and validate it works as expected.
 
 If you have existing [Kyverno Chainsaw](/docs/subprojects/chainsaw/) tests, any policy type and status checks will need to be converted. The rest of the test logic can be reused.
+
+## Detecting Legacy Policy Usage
+
+Starting with Kyverno v1.19, the admission controller and the Kyverno CLI emit deprecation warnings to help you find remaining legacy policies before they are removed.
+
+**Admission Warnings**
+
+When a legacy `kyverno.io` policy type is created or updated, the response includes a warning identifying the replacement type:
+
+```
+Warning: kyverno.io/v1 ClusterPolicy is deprecated and will be removed in a future release; migrate to ValidatingPolicy, MutatingPolicy, GeneratingPolicy or ImageValidatingPolicy (policies.kyverno.io), see https://kyverno.io/docs/guides/migration-to-cel/
+```
+
+Warnings are also returned for deprecated field values, such as the lowercase `enforce`/`audit` validation failure actions:
+
+```
+Warning: spec.validationFailureAction: Validation failure actions enforce/audit are deprecated, use Enforce/Audit instead.
+```
+
+**CLI Warnings**
+
+The [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) and [`kyverno test`](/docs/kyverno-cli/reference/kyverno_test) commands print the same kind-level deprecation warnings when loading legacy policies or policy exceptions (field-level warnings are only emitted by the admission controller). To enforce migration in CI pipelines, add the `--warnings-as-errors` flag to make these commands fail when any deprecation warning is found:
+
+```bash
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --warnings-as-errors
+kyverno test . --warnings-as-errors
+```
+
+**Tracking Usage with Metrics**
+
+The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
 
 ## Troubleshooting
 
