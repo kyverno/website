@@ -27,28 +27,47 @@ Horizontal scaling refers to increasing the number of replicas of a given contro
 
 ### Scale Testing
 
-Testing was performed using KinD on an Ubuntu 20.04 system with an AMD EPYC 7502P 32-core processor @ 2.5GHz (max 3.35GHz) and 256GB of RAM.
-
 #### Admission Controller
 
-The following table shows the resource consumption (memory and CPU) and latency as a result of increased virtual users and iterations defined in [k6](https://k6.io/open-source/). k6 is an open-source load testing tool for performance testing. k6 has multiple executors, the most popular of which is the shared-iterations executor. This executor creates a number of concurrent connections called virtual users. The total number of iterations is then distributed among these virtual users.
+Kyverno admission controller benchmarks are measured using [k6](https://k6.io/open-source/) with the [xk6-kubernetes](https://github.com/grafana/xk6-kubernetes) extension. k6's shared-iterations executor distributes a fixed number of pod CREATE requests across a pool of concurrent virtual users (VUs). All latency values are end-to-end iteration duration measured from the k6 client (API server + webhook round-trip). [KWOK](https://kwok.sigs.k8s.io/) fake nodes are used so pod scheduling overhead does not inflate admission latency numbers.
 
-The test was conducted where we installed Kyverno policies to enforce the Kubernetes pod security standards using 17 policies. Subsequently, we developed a compatible Pod test to measure how long Kyverno takes to admit the admission request. For more details on these tests, refer to the load testing documentation [here](https://github.com/kyverno/load-testing/blob/main/README.md).
+##### ClusterPolicy (pre-v1.14, `kyverno.io/v1`)
 
-| replicas | # policies | Rule Type        | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max)  | Memory (max) | CPU (max) | Memory Limit    |
-| -------- | ---------- | ---------------- | ------- | ------- | ------------------------ | ------------------ | ------------ | --------- | --------------- |
-| 1        | 17         | Validate         | Enforce | Pods    | 100/1,000                | 37.71ms / 110.53ms | 152Mi        | 548m      | default (384Mi) |
-| 1        | 17         | Validate         | Enforce | Pods    | 200/5,000                | 80.74ms / 409.35ms | 182Mi        | 2885m     | default (384Mi) |
-| 1        | 17         | Validate         | Enforce | Pods    | 500/10,000               | 92.73ms / 3.15s    | 143Mi        | 3033m     | 512Mi           |
-| 3        | 17         | Validate         | Enforce | Pods    | 100/1,000                | 32.89ms / 121.19ms | 104Mi        | 262m      | default (384Mi) |
-| 3        | 17         | Validate         | Enforce | Pods    | 200/5,000                | 60.06ms / 1.01s    | 117Mi        | 1067m     | default (384Mi) |
-| 3        | 17         | Validate         | Enforce | Pods    | 500/10,000               | 151.97ms / 3.17s   | 107Mi        | 1182m     | 512Mi           |
-| 1        | 16         | ValidatingPolicy | Deny    | Pods    | 100/1,000                | 28.3ms / 108.36ms  | 142Mi        | 108m      | default (384Mi) |
-| 1        | 16         | ValidatingPolicy | Deny    | Pods    | 200/5,000                | 54.87ms / 346.74ms | 211Mi        | 2339m     | default (384Mi) |
-| 1        | 16         | ValidatingPolicy | Deny    | Pods    | 500/10,000               | 133.67ms / 1.63s   | 163Mi        | 4123m     | 512Mi           |
-| 3        | 16         | ValidatingPolicy | Deny    | Pods    | 100/1,000                | 24.87ms / 59.37ms  | 129Mi        | 135m      | default (384Mi) |
-| 3        | 16         | ValidatingPolicy | Deny    | Pods    | 200/5,000                | 45.97ms / 1.12s    | 159Mi        | 554m      | default (384Mi) |
-| 3        | 16         | ValidatingPolicy | Deny    | Pods    | 500/10,000               | 114.01ms / 3.28s   | 170Mi        | 810m      | 512Mi           |
+Tested on an AMD EPYC 7502P 32-core @ 2.5 GHz (max 3.35 GHz), 256 GB RAM, Ubuntu 20.04, KinD. Latency reported as avg / max. For more details refer to the load testing documentation [here](https://github.com/kyverno/load-testing/blob/main/README.md).
+
+| replicas | # policies | Rule Type | Mode    | Subject | Virtual Users/Iterations | Latency (avg/max)  | Memory (max) | CPU (max) | Memory Limit    |
+| -------- | ---------- | --------- | ------- | ------- | ------------------------ | ------------------ | ------------ | --------- | --------------- |
+| 1        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 37.71ms / 110.53ms | 152Mi        | 548m      | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 80.74ms / 409.35ms | 182Mi        | 2885m     | default (384Mi) |
+| 1        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 92.73ms / 3.15s    | 143Mi        | 3033m     | 512Mi           |
+| 3        | 17         | Validate  | Enforce | Pods    | 100/1,000                | 32.89ms / 121.19ms | 104Mi        | 262m      | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 200/5,000                | 60.06ms / 1.01s    | 117Mi        | 1067m     | default (384Mi) |
+| 3        | 17         | Validate  | Enforce | Pods    | 500/10,000               | 151.97ms / 3.17s   | 107Mi        | 1182m     | 512Mi           |
+
+##### CEL-Based Policies (v1.18.1, `policies.kyverno.io/v1`)
+
+Tested on Akamai Dedicated `g6-dedicated-32` (32 vCPU / 64 GB RAM), KinD 3-worker cluster, KWOK fake nodes, Kyverno v1.18.1 (Helm chart 3.8.1). Load generated from a separate `g6-dedicated-16` instance. Latency reported as avg / p95 / p99. Memory and CPU metrics were not captured in this run; use the `kyverno_admission_review_duration_seconds` Prometheus metric for runtime monitoring.
+
+The `vpol-pss` scenario installs 16 `ValidatingPolicy` resources mirroring the Pod Security Standards restricted profile (equivalent to the ClusterPolicy rows above). The `combined` scenario activates one `ValidatingPolicy` and one `MutatingPolicy` simultaneously, exercising both webhook paths per admission request.
+
+| replicas | # policies | Policy Type      | Scenario     | Subject | VUs / Iterations | avg   | p95   | p99       | fail% |
+| -------- | ---------- | ---------------- | ------------ | ------- | ---------------- | ----- | ----- | --------- | ----- |
+| 1        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 50 / 5,000       | 57ms  | 103ms | 182ms     | 0%    |
+| 1        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 200 / 10,000     | 156ms | 316ms | 487ms     | 0%    |
+| 1        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 500 / 10,000     | 366ms | 866ms | 1,247ms ⚠ | 0%    |
+| 3        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 50 / 5,000       | 57ms  | 95ms  | 106ms     | 0%    |
+| 3        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 200 / 10,000     | 145ms | 237ms | 284ms     | 0%    |
+| 3        | 16         | ValidatingPolicy | vpol-pss     | Pods    | 500 / 10,000     | 321ms | 536ms | 649ms     | 0%    |
+| 1        | 1          | MutatingPolicy   | mpol-complex | Pods    | 200 / 10,000     | 152ms | 221ms | 240ms     | 0%    |
+| 1        | 1          | MutatingPolicy   | mpol-complex | Pods    | 500 / 10,000     | 252ms | 378ms | 427ms     | 0%    |
+| 3        | 1          | MutatingPolicy   | mpol-complex | Pods    | 200 / 10,000     | 152ms | 220ms | 244ms     | 0%    |
+| 3        | 1          | MutatingPolicy   | mpol-complex | Pods    | 500 / 10,000     | 256ms | 386ms | 460ms     | 0%    |
+| 1        | 2          | combined         | vpol + mpol  | Pods    | 200 / 10,000     | 155ms | 295ms | 454ms     | 0%    |
+| 1        | 2          | combined         | vpol + mpol  | Pods    | 500 / 10,000     | 384ms | 777ms | 1,113ms ⚠ | 0%    |
+| 3        | 2          | combined         | vpol + mpol  | Pods    | 200 / 10,000     | 149ms | 241ms | 289ms     | 0%    |
+| 3        | 2          | combined         | vpol + mpol  | Pods    | 500 / 10,000     | 310ms | 491ms | 567ms     | 0%    |
+
+⚠ p99 > 1 s at single-replica under extreme load (500 concurrent creates). The `KyvernoAdmissionHighLatency` PrometheusRule alert fires at p99 > 1 s sustained for 5 minutes. With 3 replicas all scenarios remain below 650 ms p99 at 500 VU. Full results including simple/moderate complexity variants and per-VU-level breakdowns are available in [docs/perf-testing/v1.18.1/results/summary.md](https://github.com/kyverno/kyverno/blob/main/docs/perf-testing/v1.18.1/results/summary.md).
 
 #### Reports Controller
 

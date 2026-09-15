@@ -28,7 +28,7 @@ Add the policy below to your cluster. It contains a single validation rule that 
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-labels
@@ -133,7 +133,7 @@ Add this Kyverno mutate policy to your cluster. This policy will add the label `
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels
@@ -261,7 +261,7 @@ Next, create the following Kyverno policy. The `sync-secrets` policy will match 
 
 ```sh
 kubectl create -f- << EOF
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: sync-secrets

@@ -1,3 +1,6 @@
+import cncfLight from '../assets/images/cncf-light.png'
+import cncfDark from '../assets/images/cncf.png'
+
 export const CncfSection = () => {
   return (
     <section className="w-full p-12 sm:p-16 md:p-20 flex flex-col items-center space-y-8 text-center bg-dark-50">
@@ -8,7 +11,7 @@ export const CncfSection = () => {
 
         {/* Light mode logo */}
         <img
-          src="assets/images/cncf-light.png"
+          src={cncfLight.src}
           alt="CNCF logo"
           className="w-120 block dark:hidden"
           loading="lazy"
@@ -16,7 +19,7 @@ export const CncfSection = () => {
 
         {/* Dark mode logo */}
         <img
-          src="assets/images/cncf.png"
+          src={cncfDark.src}
           alt="CNCF logo"
           className="w-120 hidden dark:block"
           loading="lazy"

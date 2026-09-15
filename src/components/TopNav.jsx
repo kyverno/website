@@ -2,6 +2,7 @@ import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 
 import { Button } from '../components/Button.jsx'
+import { LayoutWidthToggle } from '../components/LayoutWidthToggle.jsx'
 import { SiteLogo } from '../components/SiteLogo.jsx'
 import { ThemeToggle } from '../components/ThemeToggle.jsx'
 import { TopNavLinks } from '../components/TopNavLinks.jsx'
@@ -52,28 +53,29 @@ export const TopNav = () => {
   return (
     <nav className="w-full top-10 py-3 backdrop-blur-lg border-b border-stroke">
       <div className="container px-4 md:w-full md:px-0 lg:px-4 mx-auto relative text-sm">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center xl:gap-6">
           <SiteLogo />
-          <div className="hidden xl:flex justify-between items-center md:text-sm lg:text-base xl:text-lg space-x-12">
+          <div className="hidden xl:flex justify-between items-center text-base">
             <TopNavLinks links={navItemsExternal} handleScroll={handleScroll} />
           </div>
           <div
-            className="hidden xl:flex xl:text-lg justify-center space-x-6 
+            className="hidden xl:flex text-base justify-center space-x-4 
                     items-center"
           >
             <VersionDropdown />
             <Button
               href="https://playground.kyverno.io/"
               variant="secondary"
-              size="large"
+              size="medium"
               target="_blank"
               rel="noopener noreferrer"
             >
               Playground
             </Button>
-            <Button href="/support" variant="accent" size="large">
+            <Button href="/support" variant="accent" size="medium">
               Support
             </Button>
+            <LayoutWidthToggle />
             <ThemeToggle />
           </div>
           <div className="xl:hidden flex flex-col justify-end">
@@ -104,6 +106,7 @@ export const TopNav = () => {
                   Support
                 </Button>
               </div>
+              <LayoutWidthToggle />
               <ThemeToggle />
             </div>
           </div>

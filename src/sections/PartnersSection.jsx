@@ -56,7 +56,7 @@ export const PartnersSection = () => {
         <p className="text-theme-secondary text-base sm:text-lg">
           Join 1000+ organizations using Kyverno in production environments
         </p>
-        <Button href="community/#join-kyverno-adopters" variant="accent">
+        <Button href="/community/#join-kyverno-adopters" variant="accent">
           Join the Policy as Code Revolution!
         </Button>
       </section>
