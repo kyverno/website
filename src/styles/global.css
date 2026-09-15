@@ -349,6 +349,7 @@ html[data-layout-width='fluid'] .content-panel {
   }
 
   html.sidebar-collapsed[data-has-sidebar] .sidebar-nav-content {
+    visibility: hidden;
     opacity: 0;
     transform: translateX(-1.25rem) scale(0.985);
     pointer-events: none;
@@ -386,7 +387,7 @@ html[data-layout-width='fluid'] .content-panel {
   }
 
   html[data-has-sidebar][data-has-toc] .main-pane {
-    width: calc(100% - var(--kyverno-toc-column-width));
+    width: calc(100% - var(--kyverno-toc-column-width)) !important;
   }
 
   html.sidebar-collapsed[data-has-sidebar] .main-pane .sl-container {
