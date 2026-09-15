@@ -340,7 +340,7 @@ See the [metrics reference](/docs/reference/metrics#legacy-policies-count) for d
 
 **Startup Signals**
 
-When any legacy policy is present, `kyverno-init` (the `kyverno-pre` init container) logs an error and emits a `LegacyPolicyPresent` warning event on the admission controller Deployment as it starts, listing the legacy kinds it still finds and linking to this guide. These signals fire on install, upgrade, or a controller restart, so restarting the admission controller after migrating confirms that nothing remains:
+When any legacy policy is present, `kyverno-init` (the `kyverno-pre` init container) logs an error and emits a `LegacyPolicyPresent` warning event on the admission controller Deployment as it starts, listing the legacy kinds it still finds and linking to this guide. These signals fire on install, upgrade, or a controller restart. Use the gauge to confirm that no legacy policies remain; the event query below can also show warnings from earlier startup checks until Kubernetes garbage-collects them:
 
 ```bash
 kubectl get events -n <kyverno-namespace> --field-selector reason=LegacyPolicyPresent
