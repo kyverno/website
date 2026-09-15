@@ -1,0 +1,65 @@
+---
+import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter'
+import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro'
+import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro'
+
+const { sidebar } = Astro.locals.starlightRoute
+---
+
+<button
+  type="button"
+  class="sidebar-collapse-toggle"
+  aria-label="Collapse sidebar"
+  aria-pressed="false"
+>
+  <span class="sidebar-collapse-toggle__icon" aria-hidden="true">❮</span>
+</button>
+
+<div class="sidebar-nav-content">
+  <SidebarPersister>
+    <SidebarSublist sublist={sidebar} />
+  </SidebarPersister>
+
+  <div class="md:sl-hidden">
+    <MobileMenuFooter />
+  </div>
+</div>
+
+<script>
+  const storageKey = 'kyverno-docs-sidebar-collapsed'
+  const collapsedClass = 'sidebar-collapsed'
+  const toggle = document.querySelector<HTMLButtonElement>(
+    '.sidebar-collapse-toggle',
+  )
+
+  const setCollapsed = (isCollapsed: boolean) => {
+    document.documentElement.classList.toggle(collapsedClass, isCollapsed)
+
+    if (!toggle) return
+
+    toggle.setAttribute(
+      'aria-label',
+      isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
+    )
+    toggle.setAttribute('aria-pressed', String(isCollapsed))
+  }
+
+  try {
+    setCollapsed(localStorage.getItem(storageKey) === 'true')
+  } catch {
+    setCollapsed(false)
+  }
+
+  toggle?.addEventListener('click', () => {
+    const isCollapsed =
+      !document.documentElement.classList.contains(collapsedClass)
+
+    setCollapsed(isCollapsed)
+
+    try {
+      localStorage.setItem(storageKey, String(isCollapsed))
+    } catch {
+      // Ignore storage failures; the current page still reflects the change.
+    }
+  })
+</script>
