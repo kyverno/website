@@ -623,6 +623,42 @@ Counter - An only-increasing integer representing the count of admission request
 
 ---
 
+### Legacy Policies Count
+
+#### Metric Name(s)
+
+- `kyverno_legacy_policies_total`
+
+#### Metric Value
+
+Gauge - The number of legacy `kyverno.io` policy resources currently present in the cluster, per kind. The value is recomputed at scrape time, so it reflects the live count and returns to `0` once the resources are migrated or deleted.
+
+This gauge complements `kyverno_deprecated_api_requests_total`: the request counter records admission requests to deprecated APIs (flow), while this gauge reports the legacy resources that exist at rest, which the request counter cannot show when no client is currently writing them.
+
+#### Metric Labels
+
+| Label | Allowed Values                                                                        | Description                      |
+| ----- | ------------------------------------------------------------------------------------- | -------------------------------- |
+| group | "kyverno.io"                                                                          | API group of the legacy resource |
+| kind  | "ClusterPolicy", "Policy", "PolicyException", "CleanupPolicy", "ClusterCleanupPolicy" | Kind of the legacy resource      |
+
+The `ClusterPolicy`, `Policy`, and `PolicyException` series are exposed by the admission controller; the `CleanupPolicy` and `ClusterCleanupPolicy` series are exposed by the cleanup controller. The `PolicyException` series is only exposed when the admission controller runs with `--enablePolicyException=true`.
+
+#### Use cases
+
+- The cluster admin wants to confirm no legacy `kyverno.io` policies remain before upgrading to a release that removes them.
+- The cluster admin wants to alert while any legacy policy still exists, so the migration is completed in time.
+
+#### Useful Queries
+
+- Legacy policies still present, grouped by kind:<br>
+  `sum(kyverno_legacy_policies_total) by (kind)`
+
+- Alerting expression that fires while any legacy policy remains:<br>
+  `sum(kyverno_legacy_policies_total) > 0`
+
+---
+
 ## HTTP Metrics
 
 ### HTTP Requests Count
