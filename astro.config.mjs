@@ -30,6 +30,7 @@ export default defineConfig({
       components: {
         Header: './src/components/StarlightHeader.astro',
         PageSidebar: './src/components/PageSidebar.astro',
+        Sidebar: './src/components/Sidebar.astro',
         ThemeSelect: './src/components/ThemeSelect.astro',
       },
       editLink: {
