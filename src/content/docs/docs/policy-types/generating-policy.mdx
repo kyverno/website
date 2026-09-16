@@ -575,7 +575,7 @@ The following table shows the behavior of events on components of a GeneratingPo
 
 ### Periodic Reconciliation
 
-In addition to reacting to admission and watch events, the background controller periodically re-evaluates every GeneratingPolicy and re-applies its downstream resources. The interval is controlled by the `BACKGROUND_SCAN_INTERVAL` environment variable on the background controller Deployment. The default is `1h`, measured from the time the controller process started. A shorter value such as `10m` is useful when testing synchronization behavior.
+For GeneratingPolicies with `evaluation.synchronize.enabled: true`, the background controller does not only react to admission and watch events: it also periodically re-evaluates each synchronized policy and re-applies its downstream resources. Policies without synchronization are not affected by this reconciliation, so their downstream resources keep the NoSync behavior described above. The interval is controlled by the `BACKGROUND_SCAN_INTERVAL` environment variable on the background controller Deployment. The default is `1h`, measured from the time the controller process started. A shorter value such as `10m` is useful when testing synchronization behavior.
 
 :::note[Note]
 Kyverno 1.19.0 deleted and re-created synchronized downstream resources on every reconciliation pass, which left a short gap during which the downstream did not exist. This was fixed in 1.19.1, where reconciliation updates downstream resources in place.
