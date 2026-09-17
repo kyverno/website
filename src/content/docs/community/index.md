@@ -14,11 +14,11 @@ Kyverno maintains a thriving community with two different opportunities to parti
 
 ## Meetings
 
-The Kyverno project holds two weekly meetings:
+The Kyverno project holds two recurring meetings:
 
 ### Community Meeting
 
-This is a public, weekly for Kyverno the full community. First time participants, new contributors, or anyone interested in Kyverno are welcome! This forum allows community members to propose agenda items of any sort, including but not limited to releases, roadmap, any contributor PRs or issues on which they are working.
+This is a public, monthly meeting for the full Kyverno community. First time participants, new contributors, or anyone interested in Kyverno are welcome! This forum allows community members to propose agenda items of any sort, including but not limited to releases, roadmap, any contributor PRs or issues on which they are working.
 
 - Monthly every third Wednesday at 9:00 CET
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
@@ -27,7 +27,7 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 
 ### Maintainers Meeting
 
-This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap.
+This is a public, weekly meeting for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap.
 
 Topics are proposed by maintainers. All in the community are welcome to attend, but non-maintainers may not propose new agenda items in this forum, they can instead add to the [community meeting](#community-meeting) agenda.
 
