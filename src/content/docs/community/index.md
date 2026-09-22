@@ -20,7 +20,8 @@ The Kyverno project holds two recurring meetings:
 
 This is a public, monthly meeting for the full Kyverno community. First time participants, new contributors, or anyone interested in Kyverno are welcome! This forum allows community members to propose agenda items of any sort, including but not limited to releases, roadmap, any contributor PRs or issues on which they are working.
 
-- Monthly every third Wednesday at 9:00 CET
+- Monthly every third Wednesday at 9:00 AM PST (changes to be APAC friendly every alternate month)
+- [Meeting calendar](https://zoom-lfx.platform.linuxfoundation.org/meetings/kyverno?view=month)
 - [Agenda and meeting notes](https://docs.google.com/document/d/1kFd4fpAoHS56mRHr73AZp9wknk1Ehy_hTB_KA7gJuy0/)
 
 To attend our community meetings, join the [Kyverno group](https://groups.google.com/g/kyverno). You will then be sent a meeting invite and will have access to the agenda and meeting notes. Any member may suggest topics for discussion.
