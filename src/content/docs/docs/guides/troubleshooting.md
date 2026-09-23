@@ -11,7 +11,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
 
-**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy-types/cluster-policy/policy-settings) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
+**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configured to [fail-closed](/docs/policy-types/cluster-policy/policy-settings) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
 
 **Solution**: Delete the Kyverno validating and mutating webhook configurations. When Kyverno recovers, check your Namespace exclusions. Follow the steps below. Also consider running the admission controller component with 3 replicas.
 
@@ -95,7 +95,7 @@ Use [Namespace selectors](/docs/installation/customization#namespace-selectors) 
 
 **Symptom**: Kyverno is using too much memory or CPU. How can I understand what is causing this?
 
-**Solution**: It is important to understand how Kyverno experiences and processes work to determine if what you deem as "too much" is, in fact, too much. Kyverno dynamically configures its webhooks (by default but configurable) according the policies which are loaded and on what resources they match. There is no straightforward formula where resource requirements are directly proportional to, for example, number of Pods or Nodes in a cluster. The following questions need to be asked and answered to build a full picture of the resources consumed by Kyverno.
+**Solution**: It is important to understand how Kyverno experiences and processes work to determine if what you deem as "too much" is, in fact, too much. Kyverno dynamically configures its webhooks (by default but configurable) according to the policies which are loaded and on what resources they match. There is no straightforward formula where resource requirements are directly proportional to, for example, number of Pods or Nodes in a cluster. The following questions need to be asked and answered to build a full picture of the resources consumed by Kyverno.
 
 1. What policies are in the cluster and on what types of resources do they match? Policies which match on wildcards (`"*"`) cause a tremendous load on Kyverno and should be avoided if possible as they instruct the Kubernetes API server to send to Kyverno _every action on every resource_ in the cluster. Even if Kyverno does not have matching policies for most of these resources, it is _required_ to respond to every single one. If even one policy matches on a wildcard, expect the resources needed by Kyverno to easily double, triple, or more.
 2. Which controller is experiencing the load? Each Kyverno controller has different responsibilities. See the [controller guide](/docs/guides/high-availability#controllers-in-kyverno) for more details. Each controller can be independently scaled, but before immediately scaling in any direction take the time to study the load.
@@ -173,7 +173,7 @@ The second most common reason policies may fail to operate per design is due to 
 
 **Diagnose**: Please follow the [troubleshooting docs](https://github.com/kyverno/kyverno/blob/main/docs/dev/troubleshooting/reports.md) to determine if you are affected by this issue.
 
-**Solution**: Admission reports can accumulate if the reports controller is not working properly so the first thing to check is if the reports controller is running and does not continuously restarts. If the controller works as expected, another potential cause is that it fails to aggregate admission reports fast enough. This usually happens when the controller is throttled. You can fix this by increasing QPS and burst rates for the controller by setting `--clientRateLimitQPS=500` and `--clientRateLimitBurst=500`.
+**Solution**: Admission reports can accumulate if the reports controller is not working properly so the first thing to check is if the reports controller is running and does not continuously restart. If the controller works as expected, another potential cause is that it fails to aggregate admission reports fast enough. This usually happens when the controller is throttled. You can fix this by increasing QPS and burst rates for the controller by setting `--clientRateLimitQPS=500` and `--clientRateLimitBurst=500`.
 Note that starting with Kyverno 1.10, two cron jobs are responsible for deleting admission reports automatically if they accumulate over a certain threshold.
 
 ## Kyverno says it does not have permissions when creating a policy
