@@ -180,7 +180,7 @@ Disabling select metrics with [DataDog OpenMetrics](https://docs.datadoghq.com/i
 - [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
 - [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
 - [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_policy_results_total`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
 
 ```yaml
 apiVersion: v1
@@ -208,7 +208,7 @@ metadata:
               "openmetrics_endpoint": "http://%%host%%:8000/metrics",                                                                                        
               "namespace": "kyverno",                                                                                                                        
               "metrics": [                                                                                                                                   
-                {"kyverno_policy_results": "policy_results"}                                                                                                 
+                {"kyverno_policy_results_total": "policy_results"}                                                                                                 
               ]                                                                                                                                              
             }                                                                                                                                                
           ]                                                                                                                                                  
@@ -223,7 +223,7 @@ The Kyverno Helm chart supports including additional Pod annotations in the valu
 - [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
 - [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
 - [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_policy_results_total`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
 
 ```yaml
 podAnnotations:
@@ -250,7 +250,7 @@ podAnnotations:
             "openmetrics_endpoint": "http://%%host%%:8000/metrics",
             "namespace": "kyverno",
             "metrics": [
-              {"kyverno_policy_results": "policy_results"}
+              {"kyverno_policy_results_total": "policy_results"}
             ]
           }
         ]
