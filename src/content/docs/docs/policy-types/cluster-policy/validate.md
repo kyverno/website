@@ -9,6 +9,23 @@ Validation rules are probably the most common and practical types of rules you w
 
 To validate resource data, define a [pattern](#patterns) in the validation rule. For more advanced processing using tripartite expressions (key-operator-value), define a [deny](#deny-rules) element in the validation rule along with a set of conditions that control when to allow or deny the request.
 
+## When to Use Validate Rules
+
+Use validate rules when a policy needs to check whether a Kubernetes resource meets an expected configuration before it is created or updated. They are useful for enforcing required labels, restricting unsafe fields, checking image references, requiring security settings, and guiding teams toward consistent workload configuration.
+
+Validate rules can be introduced gradually. A policy can start in `Audit` mode to report violations without blocking resources, then move to `Enforce` mode once the expected behavior is understood.
+
+## Validation Approaches
+
+Kyverno supports several ways to express validation logic:
+
+- Use `pattern` when the resource should match a desired structure or value.
+- Use `anyPattern` when more than one valid structure should be accepted.
+- Use `deny` rules when validation depends on conditions or comparisons.
+- Use CEL expressions when validation needs expression-based checks over admission request data, including comparisons and conditions that are easier to express in CEL than in `pattern`, `anyPattern`, or `deny`. See [Common Expression Language (CEL)](#common-expression-language-cel) for details.
+
+These approaches can be used to write simple checks as well as more advanced validation policies, depending on how much control the policy requires.
+
 ## Basic Validations
 
 As a basic example, consider the below `ClusterPolicy` which validates that any new Namespace that is created has the label `purpose` with the value of `production`.
