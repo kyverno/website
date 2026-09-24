@@ -136,7 +136,7 @@ spec:
 
         source: # Optional metadata to constrain image source (optional)
           repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
-          pullSecrets: # Kubernetes secrets used to access the registry
+          PullSecrets: # Kubernetes secrets used to access the registry
             - name: my-registry-secret
           tagPrefix: 'v1.' # Restrict verification to images starting with this tag
 
