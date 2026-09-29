@@ -537,7 +537,7 @@ spec:
 
 ### Compensating Controls
 
-By default, a `PolicyException` that matches a resource bypasses the referenced policy unconditionally. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same fields as `ValidatingPolicy` validations (`expression`, `message`, and `messageExpression`). A matched resource must satisfy all of them for the exception to be granted.
+By default, a matched `PolicyException` applies unconditionally: it either exempts the resource from the referenced policy outright, or, in the case of the [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions above, contributes its `allowedImages` and `allowedValues` to policy evaluation. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same fields as `ValidatingPolicy` validations (`expression`, `message`, and `messageExpression`). A matched resource must satisfy all of them for the exception to be granted.
 
 :::note
 Compensating controls are only evaluated for exceptions that reference a `ValidatingPolicy` or `NamespacedValidatingPolicy`. For other policy kinds, the field is ignored and Kyverno returns a warning when the exception is created or updated.
@@ -590,7 +590,7 @@ spec:
   validations:
     - expression: "object.metadata.?annotations[?'security.company.com/ticket-id'].orValue('') != ''"
       message: >-
-        Compensating Control Failure: Exception requires a valid security ticket
+        Compensating Control Failure: Exception requires a security ticket
         annotation ('security.company.com/ticket-id').
     - expression: "object.metadata.?annotations[?'security.company.com/network-isolation'].orValue('') == 'strict'"
       message: >-
@@ -628,7 +628,7 @@ With the policy and exception above, which uses `validationActions: [Deny]`, Kyv
 | Pod                                                            | Matches exception | Controls satisfied | Result                                                                                                |
 | -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
 | `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                            |
-| `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a valid security ticket annotation ...` |
+| `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a security ticket annotation ...` |
 | `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                                    |
 | `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                      |
 
@@ -646,7 +646,7 @@ Compensating controls also apply to [image-based](#image-based-exceptions) and [
 
 #### Interpreting PolicyReport Results for Compensating Controls
 
-- When an exception is granted, the result is `skip` (or `pass` when `reportResult: pass` is set), just like an exception without controls.
+- When an exception that exempts the resource outright is granted, the result is `skip` (or `pass` when `reportResult: pass` is set), just like an exception without controls. An image- or value-based exception does not exempt the resource, so the policy still runs and its own result is reported.
 - When an exception is refused and the policy fails, the result is `fail`, the `message` is the failing control's message, and `properties.exceptions` names the refused exception.
 
 #### ValidatingAdmissionPolicy generation
