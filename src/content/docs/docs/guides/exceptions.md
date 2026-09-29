@@ -561,7 +561,9 @@ spec:
         resources: ['pods']
   validations:
     - expression: >-
-        object.spec.containers.all(container,
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
           container.?securityContext.?runAsNonRoot.orValue(false) == true)
       message: >-
         Running as root is not allowed. Every container must set
@@ -590,7 +592,7 @@ spec:
       message: >-
         Compensating Control Failure: Exception requires a valid security ticket
         annotation ('security.company.com/ticket-id').
-    - expression: "object.metadata.?annotations['security.company.com/network-isolation'].orValue('') == 'strict'"
+    - expression: "object.metadata.?annotations[?'security.company.com/network-isolation'].orValue('') == 'strict'"
       message: >-
         Compensating Control Failure: Workload must run with 'network-isolation: strict'
         annotation to bypass non-root checks.
@@ -617,11 +619,11 @@ spec:
 
 1. Kyverno evaluates the exception's `matchConditions` first. If the resource does not match, the exception and its controls are ignored.
 2. If the resource matches, Kyverno evaluates the entries in `validations` in order. The exception is granted only if every entry evaluates to `true`.
-3. If an entry evaluates to `false`, the exception is **not** granted and the policy is evaluated as if the exception did not exist. If the policy then fails, the resource is rejected with the failing control's message instead of the policy's message, so the submitter can see what the exception requires.
+3. If an entry evaluates to `false`, the exception is **not** granted and the policy is evaluated as if the exception did not exist. If the policy then fails, the failing control's message is reported instead of the policy's message, so the submitter can see what the exception requires. What that means for the request depends on the policy's `validationActions`: with `Deny` the resource is rejected with that message, while with `Audit` it is admitted and the message is recorded in the PolicyReport.
 
 Compensating controls decide whether the exception is granted. They do not validate the resource on their own. A resource that already complies with the policy does not need the exception, so it is admitted even if it fails the controls.
 
-With the policy and exception above, Kyverno handles Pods as follows:
+With the policy and exception above, which uses `validationActions: [Deny]`, Kyverno handles Pods as follows:
 
 | Pod                                                            | Matches exception | Controls satisfied | Result                                                                                                |
 | -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
