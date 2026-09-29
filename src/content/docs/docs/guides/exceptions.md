@@ -27,6 +27,7 @@ PolicyExceptions in the `policies.kyverno.io` group (introduced in Kyverno 1.14)
 - A **CEL expression** under `matchConditions` dynamically matches target resources (e.g., by name, namespace, or labels).
 - The `policyRefs` field specifies the **policy name** and **policy kind** being excluded from enforcement.
 - If the match condition evaluates to `true`, the referenced rule is **skipped** and logged accordingly in **PolicyReports**.
+- Optional **CEL validations** under `validations` define [compensating controls](#compensating-controls) that a matched resource must also satisfy before the exception is granted.
 
 ### Using PolicyException with ValidatingPolicy in Admission Mode
 
@@ -533,6 +534,122 @@ spec:
 - The report for the `production` namespace shows a `result: pass`, and the `properties.generated-resources` field confirms that the `ConfigMap` was successfully created.
 
 - Conversely, the report for the `testing` namespace shows a `result: skip`. The `properties.exceptions` field references `exclude-namespace-by-name`, indicating that the `PolicyException` was successfully applied, and no resource was generated.
+
+### Compensating Controls
+
+By default, a `PolicyException` that matches a resource bypasses the referenced policy unconditionally. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same fields as `ValidatingPolicy` validations (`expression`, `message`, and `messageExpression`). A matched resource must satisfy all of them for the exception to be granted.
+
+:::note
+Compensating controls are only evaluated for exceptions that reference a `ValidatingPolicy` or `NamespacedValidatingPolicy`. For other policy kinds, the field is ignored and Kyverno returns a warning when the exception is created or updated.
+:::
+
+The following `ValidatingPolicy` requires every container in a Pod to run as a non-root user.
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-root-user
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          container.?securityContext.?runAsNonRoot.orValue(false) == true)
+      message: >-
+        Running as root is not allowed. Every container must set
+        securityContext.runAsNonRoot to true.
+```
+
+The `PolicyException` below lets Pods whose names start with `legacy-app` run as root. The exception is only granted when the Pod also has a security ticket annotation and declares strict network isolation.
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: PolicyException
+metadata:
+  name: allow-root-legacy-app
+  namespace: legacy-apps
+spec:
+  policyRefs:
+    - name: disallow-root-user
+      kind: ValidatingPolicy
+  # Step 1: select the resources that may use this exception
+  matchConditions:
+    - name: check-app-name
+      expression: "object.metadata.name.startsWith('legacy-app')"
+  # Step 2: compensating controls that must hold for the exception to be granted
+  validations:
+    - expression: "object.metadata.?annotations[?'security.company.com/ticket-id'].orValue('') != ''"
+      message: >-
+        Compensating Control Failure: Exception requires a valid security ticket
+        annotation ('security.company.com/ticket-id').
+    - expression: "object.metadata.?annotations['security.company.com/network-isolation'].orValue('') == 'strict'"
+      message: >-
+        Compensating Control Failure: Workload must run with 'network-isolation: strict'
+        annotation to bypass non-root checks.
+```
+
+This Pod matches the exception and satisfies both controls, so the exception is granted and the Pod is admitted even though it runs as root.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: legacy-app-granted
+  namespace: legacy-apps
+  annotations:
+    security.company.com/ticket-id: SEC-1234
+    security.company.com/network-isolation: strict
+spec:
+  containers:
+    - name: app
+      image: busybox:1.35
+```
+
+#### How compensating controls are evaluated
+
+1. Kyverno evaluates the exception's `matchConditions` first. If the resource does not match, the exception and its controls are ignored.
+2. If the resource matches, Kyverno evaluates the entries in `validations` in order. The exception is granted only if every entry evaluates to `true`.
+3. If an entry evaluates to `false`, the exception is **not** granted and the policy is evaluated as if the exception did not exist. If the policy then fails, the resource is rejected with the failing control's message instead of the policy's message, so the submitter can see what the exception requires.
+
+Compensating controls decide whether the exception is granted. They do not validate the resource on their own. A resource that already complies with the policy does not need the exception, so it is admitted even if it fails the controls.
+
+With the policy and exception above, Kyverno handles Pods as follows:
+
+| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                                |
+| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                            |
+| `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a valid security ticket annotation ...` |
+| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                                    |
+| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                      |
+
+When more than one exception matches a resource, Kyverno considers each one separately. An exception whose controls fail grants nothing, but another matching exception whose controls pass (or which has no controls) still grants the bypass. If every matching exception is refused and the policy fails, Kyverno reports the message from the first refused exception, ordered by namespace and then by name.
+
+Compensating controls also apply to [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions. A refused exception adds nothing to `exceptions.allowedImages` or `exceptions.allowedValues`.
+
+#### Writing compensating controls
+
+- Expressions can use `object`, `oldObject`, `request`, `namespaceObject`, and the [Kyverno CEL libraries](/docs/policy-types/cel-libraries/). The policy's `variables` and `exceptions` are not available, because an exception is written separately from the policies that reference it.
+- Kyverno compiles the expressions when the `PolicyException` is created or updated, and rejects the exception if any of them is invalid.
+- `messageExpression` takes precedence over `message`. If neither is set, the failure message is `compensating control at index <index> failed for policy exception <namespace>/<name>`.
+- If a control cannot be evaluated because of a runtime error, the exception is not granted. If the policy then fails, the result is reported as an `error`.
+- For [auto-generated pod controller rules](/docs/policy-types/validating-policy#autogen), the failure message includes the path of the pod template that was evaluated.
+
+#### Interpreting PolicyReport Results for Compensating Controls
+
+- When an exception is granted, the result is `skip` (or `pass` when `reportResult: pass` is set), just like an exception without controls.
+- When an exception is refused and the policy fails, the result is `fail`, the `message` is the failing control's message, and `properties.exceptions` names the refused exception.
+
+#### ValidatingAdmissionPolicy generation
+
+A generated `ValidatingAdmissionPolicy` cannot evaluate compensating controls. If an exception that references a `ValidatingPolicy` defines `validations`, Kyverno does not generate a `ValidatingAdmissionPolicy` for that policy, and deletes one that was previously generated. The reason is recorded in the policy status, and the policy continues to be enforced by the Kyverno admission webhook.
 
 ## Legacy PolicyExceptions (Deprecated)
 
