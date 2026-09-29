@@ -537,7 +537,7 @@ spec:
 
 ### Compensating Controls
 
-By default, a matched `PolicyException` applies unconditionally: it either exempts the resource from the referenced policy outright, or, in the case of the [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions above, contributes its `allowedImages` and `allowedValues` to policy evaluation. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same schema as `ValidatingPolicy` validations. Kyverno evaluates `expression`, `message`, and `messageExpression`; `reason` is accepted by the schema but has no effect here, because a policy whose exceptions define controls is never offloaded to a `ValidatingAdmissionPolicy`. A matched resource must satisfy all of them for the exception to be granted.
+By default, a matched `PolicyException` applies unconditionally: it either exempts the resource from the referenced policy outright, or, in the case of the [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions above, contributes its `allowedImages` and `allowedValues` to policy evaluation. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same schema as `ValidatingPolicy` validations (`expression`, `message`, and `messageExpression`). A matched resource must satisfy all of them for the exception to be granted.
 
 :::note
 Compensating controls are only evaluated for exceptions that reference a `ValidatingPolicy` or `NamespacedValidatingPolicy`. For other policy kinds, the field is ignored and Kyverno returns a warning when the exception is created or updated.
@@ -625,12 +625,12 @@ Compensating controls decide whether the exception is granted. They do not valid
 
 With the policy and exception above, which uses `validationActions: [Deny]`, Kyverno handles Pods as follows:
 
-| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                                |
-| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
-| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                            |
+| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                          |
+| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------- |
+| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                      |
 | `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a security ticket annotation ...` |
-| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                                    |
-| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                      |
+| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                              |
+| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                |
 
 When more than one exception matches a resource, Kyverno considers each one separately. An exception whose controls fail grants nothing, but another matching exception whose controls pass (or which has no controls) still grants the bypass. If every matching exception is refused and the policy fails, Kyverno reports the message from the first refused exception, ordered by namespace and then by name.
 
@@ -641,6 +641,7 @@ Compensating controls also apply to [image-based](#image-based-exceptions) and [
 - Expressions can use `object`, `oldObject`, `request`, `namespaceObject`, and the [Kyverno CEL libraries](/docs/policy-types/cel-libraries/). The policy's `variables` and `exceptions` are not available, because an exception is written separately from the policies that reference it.
 - Kyverno compiles the expressions when the `PolicyException` is created or updated, and rejects the exception if any of them is invalid.
 - `messageExpression` takes precedence over `message`. If neither is set, the failure message is `compensating control at index <index> failed for policy exception <namespace>/<name>`.
+- `reason` is accepted by the validation schema but has no effect on a compensating control, because a policy whose exceptions define controls is never offloaded to a `ValidatingAdmissionPolicy`.
 - If a control cannot be evaluated because of a runtime error, the exception is not granted. If the policy then fails, the result is reported as an `error`.
 - For [auto-generated pod controller rules](/docs/policy-types/validating-policy#autogen), the failure message includes the path of the pod template that was evaluated.
 

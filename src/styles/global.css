@@ -386,8 +386,12 @@ html[data-layout-width='fluid'] .content-panel {
     transition: none !important;
   }
 
+  /* Starlight pairs `--sl-content-margin-inline: auto 0` with a narrower pane so the
+     right-aligned content still reads centred. We widen the pane here, so reset the
+     margin to auto or the content strands against the TOC. */
   html[data-has-sidebar][data-has-toc] .main-pane {
     width: calc(100% - var(--kyverno-toc-column-width)) !important;
+    --sl-content-margin-inline: auto;
   }
 
   html.sidebar-collapsed[data-has-sidebar] .main-pane .sl-container {
