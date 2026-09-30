@@ -6,7 +6,19 @@ sidebar:
   order: 7
 ---
 
-Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. These libraries are available in both ValidatingPolicy and MutatingPolicy.
+Kyverno enhances Kubernetes' CEL environment with libraries enabling complex policy logic and advanced features. Library availability varies across Kyverno's CEL-based policy types.
+
+## Policy type support
+
+| Policy type                                                            | Libraries documented on this page | Additional libraries or functions                                                         |
+| ---------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------- |
+| [`ValidatingPolicy`](/docs/policy-types/validating-policy/)            | All                               | —                                                                                         |
+| [`MutatingPolicy`](/docs/policy-types/mutating-policy/)                | All                               | —                                                                                         |
+| [`GeneratingPolicy`](/docs/policy-types/generating-policy/)            | All except User                   | [Generator library](/docs/policy-types/generating-policy/#generator-library)              |
+| [`DeletingPolicy`](/docs/policy-types/deleting-policy/)                | All except User                   | —                                                                                         |
+| [`ImageValidatingPolicy`](/docs/policy-types/image-validating-policy/) | All except X.509                  | [Image verification functions](/docs/policy-types/image-validating-policy/#cel-libraries) |
+
+Each policy type's namespaced variant has the same CEL library support as its cluster-scoped counterpart.
 
 ## Resource library
 
