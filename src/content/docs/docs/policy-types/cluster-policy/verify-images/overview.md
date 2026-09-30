@@ -34,6 +34,8 @@ The imageVerify rule is also executed as part of the validation webhook to apply
 - When `required` is set to `true` (default) each image in the resource is checked to ensure that an immutable annotation that marks the image as verified is present.
 - When `verifyDigest` rule is set to `true` (default) each image is checked for a digest.
 
+The `verifyDigest` check is applied during admission validation. Although classic `verifyImages` rules can participate in background scanning, background-scan reports do not include this check for existing resources and do not persist `mutateDigest` changes. Therefore, a tag-only image in an existing resource will not be reported as a digest violation by the background scan; a new resource is checked during admission and can be mutated to a digest before validation.
+
 The `imageVerify` rule can be combined with [auto-gen](/docs/policy-types/cluster-policy/autogen) so that policy rule checks are applied to Pod controllers.
 
 The `attestors` declaration specifies one or more ways of checking image signatures or attestations. The `attestors.count` specifies the required count of attestors in the `entries` list that must be verified. By default, and when not specified, all attestors are verified.
