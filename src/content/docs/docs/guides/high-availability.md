@@ -55,7 +55,7 @@ The Admission Controller is a required component of any Kyverno installation reg
 
 The admission controller does not use leader election for inbound webhook requests which means AdmissionReview requests can be distributed and processed by all available replicas. The minimum supported replica count for a highly-available admission controller deployment is three. Leader election is required for certificate and webhook management functions so therefore only one replica will handle these tasks at a given time.
 
-Multiple replicas configured for the admission controller can be used for both availability and scale. Vertical scaling of the individual replicas' resources may also be performed to increase combined throughput.
+Multiple replicas configured for the admission controller can be used for both availability and scale of AdmissionReview processing. They do not shard the in-memory policy cache: every replica loads the full policy set. Vertical scaling of the individual replicas' resources may also be performed to increase combined throughput and to hold a large policy cache. See [Scaling Kyverno](/docs/installation/scaling#horizontal-scale) for how this interacts with policy count.
 
 ### Reports Controller
 
