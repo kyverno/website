@@ -137,7 +137,11 @@ spec:
 
 ## Kyverno CEL Libraries
 
-Kyverno extends the standard CEL environment with built-in libraries to support advanced deletion logic. While it includes the standard Kyverno Kyverno CEL Libraries, the **DeletingPolicy** explicitly excludes support for **user** CEL library (user-lib), which are available in other policy types such ImageValidatingPolicy. For comprehensive documentation of all available CEL libraries, see the [Kyverno CEL Libraries documentation](/docs/policy-types/cel-libraries/)
+Kyverno extends the standard CEL environment with built-in libraries to support advanced deletion logic. While it includes the standard Kyverno CEL Libraries (such as the Image and ImageData libraries), the **DeletingPolicy** explicitly excludes support for the **user** CEL library (user-lib), which is available in other policy types such as ImageValidatingPolicy. For comprehensive documentation of all available CEL libraries, see the [Kyverno CEL Libraries documentation](/docs/policy-types/cel-libraries/).
+
+:::note[Private Registry Authentication]
+When evaluating CEL image expressions (e.g., `image.GetMetadata()`) in deletion policies, the Kyverno cleanup controller can authenticate against private image registries. Configure credentials on the cleanup controller container using the `--imagePullSecrets` and `--registryCredentialHelpers` [container flags](/docs/installation/customization#container-flags).
+:::
 
 ## Tracking Deletion Events
 
