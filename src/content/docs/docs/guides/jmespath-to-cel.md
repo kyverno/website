@@ -15,7 +15,8 @@ The following JMESPath filters are not yet fully supported in the CEL engine:
 - **`multiply()` / `divide()`** — Kubernetes quantity-aware multiplication and division are not yet available in CEL. Support is being developed as an upstream Kubernetes contribution.
 - **`sum()`** — Summing an array of quantities has no direct CEL equivalent. The Kubernetes CEL quantity type supports pairwise `add()`, but there is no array-reduce equivalent.
 - **`compare()`** — This filter for string lexicographical comparison is not carried forward to the CEL engine.
-- **`regex_replace_all()` / `regex_replace_all_literal()`** — CEL string extensions support regex matching (`matches()`, `find()`, `findAll()`) but not regex-based replacement. Support is being developed as an upstream Kubernetes contribution.
+- **`regex_replace_all_literal()`** — CEL's `str.replace(old, new, -1)` is the equivalent for literal string replacement without regex.
+Support is being developed as an upstream Kubernetes contribution.
   :::
 
 ## Quick Reference
@@ -41,8 +42,8 @@ The following JMESPath filters are not yet fully supported in the CEL engine:
 | `pattern_match()`             | Use `regex_match` / `str.matches(regex)` instead                   |
 | `random()`                    | `random(pattern)` (Random library)                                 |
 | `regex_match()`               | `str.matches(pattern)`                                             |
-| `regex_replace_all()`         | Not yet supported (upstream contribution in progress)              |
-| `regex_replace_all_literal()` | Not yet supported (upstream contribution in progress)              |
+| `regex_replace_all()`         | `regex.replace(src, pattern, repl)` |
+| `regex_replace_all_literal()` | `str.replace(old, new, -1)` |
 | `replace()`                   | `str.replace(old, new, n)`                                         |
 | `replace_all()`               | `str.replace(old, new, -1)`                                        |
 | `round()`                     | `math.round(num, places)` (Math library)                           |
@@ -650,7 +651,57 @@ validations:
 
 ### Regex Replace All / Regex Replace All Literal
 
-The JMESPath `regex_replace_all()` and `regex_replace_all_literal()` filters perform regex-based string replacement, with the former supporting capture group references in the replacement string. The CEL string extensions include `matches()`, `find()`, and `findAll()` for pattern detection but do not yet support regex replacement. Support is being developed as an upstream Kubernetes contribution.
+---
+
+### Regex Replace / Regex Replace All
+
+The JMESPath `regex_replace_all()` function replaces all matches of a regex pattern with a replacement string, supporting capture group backreferences using `${1}`, `${2}` syntax. In CEL, use `regex.replace()` with `\1`, `\2` backreference syntax.
+
+| JMESPath | CEL |
+| -------- | --- |
+| `regex_replace_all(pattern, src, repl)` | `regex.replace(src, pattern, repl)` |
+| `regex_replace_all_literal(pattern, src, repl)` | `str.replace(old, new, -1)` |
+
+**Example:** This policy rewrites container image registries from `docker.io` to an internal registry.
+
+JMESPath (`ClusterPolicy`):
+
+```yaml
+mutate:
+  patchStrategicMerge:
+    spec:
+      containers:
+        - (name): "*"
+          image: "{{ regex_replace_all('^docker\\.io/', '{{element.image}}', 'myregistry.io/') }}"
+```
+
+CEL (`MutatingPolicy`):
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: rewrite-image-registry
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE"]
+      resources: ["pods"]
+  mutations:
+  - patchType: ApplyConfiguration
+    applyConfiguration:
+      expression: |
+        Object{
+          spec: Object.spec{
+            containers: object.spec.containers.map(c, Object.spec.containers{
+              name: c.name,
+              image: regex.replace(c.image, "^docker\\.io/", "myregistry.io/")
+            })
+          }
+        }
+```
 
 ---
 
