@@ -2622,7 +2622,7 @@ spec:
 
 The `time_to_cron()` filter takes in a time in RFC 3339 format and outputs the equivalent Cron-style expression.
 
-The expression `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 1"`.
+The expression `time_to_cron('2022-04-11T03:14:05-07:00')` results in the output `"14 3 11 4 *"`. The day-of-week field is always `*`, so the schedule only fires on the given date.
 
 | Input 1       | Output                   |
 | ------------- | ------------------------ |
