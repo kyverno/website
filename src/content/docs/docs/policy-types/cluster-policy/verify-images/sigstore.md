@@ -581,8 +581,8 @@ spec:
           attestors:
             - entries:
                 - keyless:
-                    subjectRegExp: https://github\.com/.+
-                    issuerRegExp: https://token\.actions\.githubusercontent.+
+                    subjectRegExp: .+@nirmata\.com
+                    issuerRegExp: https://accounts\.google\.com
                     rekor:
                       url: https://rekor.sigstore.dev
 ```
