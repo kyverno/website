@@ -9,7 +9,7 @@ excerpt: A beginner-friendly guide to setting up Kyverno locally using kind, kub
 draft: true
 ---
 
-When newcomers start exploring Kyverno, may have reported that they had to jump between different docs, tools and setup steps to gain an understanding of how things connect.
+When newcomers start exploring Kyverno, they may find that they have to jump between different docs, tools, and setup steps to understand how things connect.
 
 This guide is intended to make that experience simpler for new users getting started locally on macOS.
 
