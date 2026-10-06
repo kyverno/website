@@ -57,7 +57,7 @@ docker --version
 ```
 
 Expected output:
-`Docker version 27.x.x, build xxxxxxx`
+```Docker version 27.x.x, build xxxxxxx```
 
 ```bash
 docker ps
