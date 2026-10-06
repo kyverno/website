@@ -37,7 +37,7 @@ Here's everything we're installing and what each one actually does:
 
 1. [**Docker Desktop**](https://docs.docker.com/get-docker/): Runs the containers that make up your local cluster
 2. **Homebrew**: Package manager for your terminal — like the App Store but for dev tools
-3. [**kubectlCLI**](https://kubernetes.io/docs/tasks/tools/): for talking to your Kubernetes cluster
+3. [**kubectl CLI**](https://kubernetes.io/docs/tasks/tools/): for talking to your Kubernetes cluster
 4. [**kind**](https://kind.sigs.k8s.io/docs/user/quick-start/): Spins up a real Kubernetes cluster locally inside Docker
 5. [**Helm**](https://helm.sh/docs/intro/install/): Package manager for Kubernetes — like Homebrew but for Kubernetes tools
 
@@ -57,7 +57,12 @@ docker --version
 ```
 
 Expected output:
-```Docker version 27.x.x, build xxxxxxx```
+
+```text
+Docker version 27.x.x, build xxxxxxx
+```
+
+Verify Docker is running by executing the following command:
 
 ```bash
 docker ps
@@ -75,11 +80,17 @@ Check if it's already installed:
 brew --version
 ```
 
+````markdown
 If it's not installed:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+````
+
+If Homebrew is newly installed, follow the `brew shellenv` instructions printed by the installer to add Homebrew to your 'PATH'. The exact command depends on whether the Mac uses Apple Silicon or an Intel processor.
+
+````
 
 ## Step 3: Install kubectl
 
@@ -88,7 +99,7 @@ applying policies, checking resources, reading output.
 
 ```bash
 brew install kubectl
-```
+````
 
 Verify:
 
@@ -158,7 +169,7 @@ Then install Kyverno into its own dedicated namespace:
 
 ```bash
 helm install kyverno kyverno/kyverno \
-  -n kyverno --create-namespace
+  -n kyverno --create-namespace --version 3.7.0
 ```
 
 ## Step 8: Verify the installation
@@ -167,7 +178,7 @@ helm install kyverno kyverno/kyverno \
 kubectl get pods -n kyverno
 ```
 
-Don't worry if things take a little time at first. That's completely normal. Because Kubernetes spins up containers in stages, so the pods move through different states before they settle:
+Don't worry if things take a little time at first. That's completely normal because Kubernetes spins up containers in stages, so the pods move through different states before they settle:
 
 ### What you'll see while it's starting up:
 
@@ -245,7 +256,7 @@ spec:
     resourceRules:
       - apiGroups: ['']
         apiVersions: ['v1']
-        operations: ['CREATE']
+        operations: ['CREATE', 'UPDATE']
         resources: ['pods'] # This policy only applies to Pods
   validations:
     - message: "label 'app' is required"
@@ -289,7 +300,7 @@ kubectl apply -f pod.yaml
 **You should see:**
 
 ```text
-Error from server: admission webhook "validate.kyverno.svc" denied the request:
+Error from server: admission webhook "vpol.validate.kyverno.svc-fail" denied the request:
 label 'app' is required
 ```
 
@@ -343,13 +354,13 @@ testing CEL expressions before applying them to a real cluster.
 
 ### What's next - the five policy types
 
-This guide covered `ValidatingPolicy` which the most fundamental one. Kyverno can do a lot more than just validate.
+This guide covered `ValidatingPolicy`, which is the most fundamental one. Kyverno can do a lot more than just validate.
 
-- **ValidatingPolicy:** Enforce rules like allow or deny resources
-- **MutatingPolicy:** Automatically modify resources before they're stored
-- **GeneratingPolicy:** Create new resources when something happens
-- **DeletingPolicy:** Clean up resources on a schedule
-- **ImageValidatingPolicy:** Verify container image signatures for supply chain security
+- [**ValidatingPolicy:**](https://kyverno.io/docs/policy-types/validating-policy/) Enforce rules like allow or deny resources
+- [**MutatingPolicy:**](https://kyverno.io/docs/policy-types/mutating-policy/) Automatically modify resources before they're stored
+- [**GeneratingPolicy:**](https://kyverno.io/docs/policy-types/generating-policy/) Create new resources when something happens
+- [**DeletingPolicy:**](https://kyverno.io/docs/policy-types/deleting-policy/) Clean up resources on a schedule
+- [**ImageValidatingPolicy:**](https://kyverno.io/docs/policy-types/image-validating-policy/) Verify container image signatures for supply chain security
 
 ## The best way to learn from here
 
