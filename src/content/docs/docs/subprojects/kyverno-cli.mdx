@@ -654,6 +654,163 @@ echo $?
 3
 ```
 
+### Explaining Policy Decisions
+
+<FeatureState state="alpha" version="v1.20" />
+
+The `--explain` flag prints, for each CEL policy and resource, how the policy reached its result: whether it applied to the resource, what each match condition and variable evaluated to, the result of each validation, and, for a check that did not pass, the value of each part of the expression that decided it. It does not change the results, the summary or the exit code.
+
+`--explain` is supported for `ValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy` and `ImageValidatingPolicy`.
+
+```sh
+kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --explain
+```
+
+For example, this `ValidatingPolicy` requires `team` and `app` labels and no `:latest` images, and skips the `kube-system` namespace.
+
+Policy manifest (require-team-and-app.yaml):
+
+```yaml
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: require-team-and-app
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchConditions:
+    - name: not-kube-system
+      expression: "object.metadata.namespace != 'kube-system'"
+  variables:
+    - name: labels
+      expression: 'object.metadata.?labels.orValue({})'
+  validations:
+    - expression: "'team' in variables.labels"
+      message: 'every pod needs a team label'
+    - expression: "'app' in variables.labels"
+      message: 'every pod needs an app label'
+    - expression: "!object.spec.containers.exists(c, c.image.endsWith(':latest'))"
+      message: 'images must not use the latest tag'
+```
+
+Resource manifest (pods.yaml):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: good-pod
+  namespace: prod
+  labels:
+    team: payments
+    app: api
+spec:
+  containers:
+    - name: api
+      image: nginx:1.27
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: missing-app
+  namespace: prod
+  labels:
+    team: payments
+spec:
+  containers:
+    - name: api
+      image: nginx:1.27
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: system-pod
+  namespace: kube-system
+spec:
+  containers:
+    - name: dns
+      image: coredns:1.11
+```
+
+```sh
+kyverno apply require-team-and-app.yaml --resource pods.yaml --explain
+```
+
+The following output will be generated:
+
+```bash
+Applying 1 policy rule(s) to 3 resource(s)...
+Policy:   require-team-and-app (ValidatingPolicy)
+Resource: Pod/good-pod (namespace: prod)
+
+SCOPE      applied  matched kind Pod, namespace prod, operation CREATE
+MATCH               not-kube-system: object.metadata.namespace != 'kube-system'  ->  true
+VARIABLES           labels: object.metadata.?labels.orValue({})  ->  map[app:api team:payments]
+VALIDATION PASS     [0] 'team' in variables.labels  ->  true
+VALIDATION PASS     [1] 'app' in variables.labels  ->  true
+VALIDATION PASS     [2] !object.spec.containers.exists(c, c.image.endsWith(':latest'))  ->  true
+VERDICT    PASS     all 3 validations passed
+
+Policy:   require-team-and-app (ValidatingPolicy)
+Resource: Pod/missing-app (namespace: prod)
+
+SCOPE      applied  matched kind Pod, namespace prod, operation CREATE
+MATCH               not-kube-system: object.metadata.namespace != 'kube-system'  ->  true
+VARIABLES           labels: object.metadata.?labels.orValue({})  ->  map[team:payments]
+VALIDATION PASS     [0] 'team' in variables.labels  ->  true
+VALIDATION FAIL     [1] 'app' in variables.labels  ->  false
+VALIDATION NOT RUN  [2] !object.spec.containers.exists(c, c.image.endsWith(':latest'))  (an earlier validation did not pass)
+VERDICT    FAIL     'app' in variables.labels  ->  false
+                    message: "every pod needs an app label"
+                    evaluated:
+                      "app" in variables.labels  ->  false
+                      variables.labels  ->  map[team:payments]
+
+Policy:   require-team-and-app (ValidatingPolicy)
+Resource: Pod/system-pod (namespace: kube-system)
+
+SCOPE      applied  matched kind Pod, namespace kube-system, operation CREATE
+MATCH               not-kube-system: object.metadata.namespace != 'kube-system'  ->  false
+VERDICT    SKIP     match condition "not-kube-system" did not pass, so the policy was skipped
+
+policy require-team-and-app -> resource prod/Pod/missing-app failed:
+1 - validation every pod needs an app label
+
+pass: 1, fail: 1, warn: 0, error: 0, skip: 1
+```
+
+Each line of the trace belongs to one layer of the decision, in the order Kyverno evaluates them:
+
+| Layer        | What it shows                                                                                                                                                                             |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SCOPE`      | Whether the policy's `matchConstraints` select the resource (`applied`) or not (`skipped`), and if not, which constraint excluded it.                                                     |
+| `MATCH`      | Each match condition and its result. For a `DeletingPolicy`, its `conditions`.                                                                                                            |
+| `VARIABLES`  | Each variable the policy read, and its value.                                                                                                                                             |
+| `IMAGES`     | For an `ImageValidatingPolicy`, each image found on the resource, and whether `matchImageReferences` selected it for checking (`checked`) or not (`skipped`).                             |
+| `VALIDATION` | Each validation and its result. Validations run in order and stop at the first that does not pass, so the ones after it are listed as `NOT RUN`.                                          |
+| `MUTATIONS`  | For a `MutatingPolicy`, each mutation that ran and what it produced.                                                                                                                      |
+| `GENERATE`   | For a `GeneratingPolicy`, each generate entry and the resources it generated.                                                                                                             |
+| `VERDICT`    | The outcome: `PASS`, `FAIL`, `ERROR` or `SKIP`, with the message. For an outcome other than `PASS`, the `evaluated:` lines show the value of each part of the expression that decided it. |
+
+For a `DeletingPolicy`, `PASS` means the resource would be deleted and `FAIL` that it is kept.
+
+:::caution[Sensitive values]
+The trace prints the values that expressions read, including resource fields and variables. A policy that reads a Secret's `data` prints that data. Treat the output as sensitive, for example in CI logs or when sharing it.
+:::
+
+`--explain` cannot be combined with `--policy-report`, `--generate-exceptions` or `--stdin`, whose output must stay machine-readable.
+
+Some values are not shown:
+
+- Inside loops such as `all()`, `exists()`, `map()` and `filter()`, CEL keeps only the value from the last item, so values inside a loop are left out rather than shown for the wrong item. The trace says so when it leaves them out.
+- For an `ImageValidatingPolicy`, an expression that verifies images (`verifyImageSignatures`, `verifyAttestationSignatures`, `getImageData`, `extractPayload`) shows its result but no breakdown, because verification is never run a second time to explain it. The failure message includes the verification details instead.
+- For a `GeneratingPolicy`, a `template` entry shows the resources it generated, but not the value of each placeholder.
+- A resource the policy's `matchConstraints` do not select is shown with `SCOPE skipped`, but, as without `--explain`, it is not counted in the summary.
+
 ### Generating Policy Reports
 
 Policy reports provide information about policy execution and violations. Use `--policy-report` with the `apply` command to generate a policy report for `validate` policies. `mutate` and `generate` policies do not trigger policy reports.
