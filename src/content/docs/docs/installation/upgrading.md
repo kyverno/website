@@ -19,6 +19,22 @@ Direct upgrades from previous versions are not supported when using the YAML man
 
 An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher using Helm requires manual intervention and cannot be performed via a direct upgrade process. Please see the Helm chart v2 to v3 migration guide [here](https://github.com/kyverno/kyverno/blob/release-1.13/charts/kyverno/README.md#migrating-from-v2-to-v3) for more complete information.
 
+## Upgrading to Kyverno v1.20
+
+### Helm Chart Changes
+
+The [user-facing roles](/docs/installation/customization#user-facing-roles) aggregated into the Kubernetes default `view` and `admin` roles have changed:
+
+- The `kyverno.io` PolicyExceptions are now aggregated into the `view` and `admin` roles.
+- GlobalContextEntries now have aggregated `kyverno:rbac:view:globalcontextentries` and `kyverno:rbac:admin:globalcontextentries` ClusterRoles.
+- **Breaking:** the `kyverno:rbac:view:updaterequests` ClusterRole has been removed, as UpdateRequests embed the full admission request. Users relying on the `view` role to read UpdateRequests need to be granted access explicitly.
+
+A Helm upgrade removes the old ClusterRole. When applying the install manifest with `kubectl apply` without pruning, the old ClusterRole is kept and must be deleted manually:
+
+```sh
+kubectl delete clusterrole kyverno:rbac:view:updaterequests
+```
+
 ## Upgrading to Kyverno v1.19
 
 ### Deprecations
