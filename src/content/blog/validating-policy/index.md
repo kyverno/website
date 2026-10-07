@@ -5,7 +5,7 @@ tags:
   - General
 authors:
   - name: Kirti Goyal
-excerpt: Learn how Kyverno ValidatingPolicy works with real-world examples for enforcing labels, resource limits, trusted registries, and production safeguards in Kubernetes.
+excerpt: Learn how Kyverno ValidatingPolicy works with real-world examples for enforcing labels, resource limits, and production safeguards in Kubernetes.
 draft: true
 ---
 
@@ -21,9 +21,9 @@ But in a real shared cluster, one bad manifest can:
 - bypass security controls
 - create deployments that become impossible to manage later
 
-Kubernetes doesn't judge. It just runs whatever it's told to. That's why rules become necessary.
+Kubernetes doesn't judge instructions, rather it responds to instructions and runs whatever it's told to run. Because of this, using rules to establish what and how things run is necessary.
 
-This is when Kyverno's `ValidatingPolicy` comes in to play.
+This is when Kyverno's `ValidatingPolicy` comes into play.
 
 ## What ValidatingPolicy actually does
 
@@ -50,9 +50,7 @@ validationActions:
   - Audit # allows the request but logs the violation in a PolicyReport
 ```
 
-This matters more than it seems. When introducing a new policy to an existing cluster,
-starting with `Deny` is almost never the right move. It'll block things that are already
-running and cause incidents.
+This matters more than it seems. Starting with `Deny` can block new request or updates that violate the policy, but it does not block or evict resources that are already running.
 
 **The safer approach**: start with `Audit` first. Let it run for a few days, see what it
 catches, fix the existing violations, then switch to `Deny`.
@@ -175,12 +173,12 @@ spec:
         resources: ['pods']
   validations:
     - expression: >
-        object.spec.containers.all(c,
-          has(c.resources) &&
-          has(c.resources.limits) &&
-          has(c.resources.limits.cpu) &&
-          has(c.resources.limits.memory)
-        )
+        (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).all(c,
+           has(c.resources) &&
+           has(c.resources.limits) &&
+           has(c.resources.limits.cpu) &&
+           has(c.resources.limits.memory)
+         )
       message: 'All containers must define both CPU and memory limits.'
 ```
 
@@ -236,38 +234,7 @@ kubectl apply -f good-pod.yaml
 
 This one is **allowed**.
 
-## Use case 3: Block images from untrusted registries
-
-A cluster that pulls images from anywhere is a security risk. Someone accidentally uses
-`image: somerandomperson/nginx-modified:latest` and what's actually in that image? Nobody
-knows.
-This policy enforces that all images must come from a **trusted registry.**
-
-```yaml
-apiVersion: policies.kyverno.io/v1
-kind: ValidatingPolicy
-metadata:
-  name: restrict-image-registry
-spec:
-  validationActions:
-    - Deny
-  matchConstraints:
-    resourceRules:
-      - apiGroups: ['']
-        apiVersions: ['v1']
-        operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
-  validations:
-    - expression: >
-        object.spec.containers.all(c,
-          c.image.startsWith('ghcr.io/myorg/')
-        )
-      message: 'Images must be pulled from ghcr.io/myorg/ only.'
-```
-
-Replace `ghcr.io/myorg/` with the trusted registry for the specific cluster.
-
-## Use case 4: Minimum replicas for production Deployments
+## Use case 3: Minimum replicas for production Deployments
 
 A Deployment running one replica is a single point of failure. If that pod crashes,
 the service goes down. This policy ensures production Deployments always run at least
@@ -310,6 +277,9 @@ running on it.
 ```yaml
 validationActions:
   - Audit
+evaluation:
+  background:
+    enabled: true
 ```
 
 Apply the policy. Let it run for a few days. Then check what it caught:
@@ -418,23 +388,18 @@ Modifying the policy itself would weaken it for everyone. That's when `PolicyExc
 comes into the picture:
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
   name: allow-legacy-app
   namespace: legacy-namespace
 spec:
-  exceptions:
-    - policyName: require-resource-limits
-      ruleNames:
-        - require-resource-limits
-  match:
-    any:
-      - resources:
-          kinds:
-            - Pod
-          namespaces:
-            - legacy-namespace
+  policyRefs:
+    - name: require-resource-limits
+      kind: ValidatingPolicy
+  matchConditions:
+    - name: legacy-app
+      expression: "object.metadata.name == 'legacy-app'"
 ```
 
 Here the policy stays intact. The exception is a separate resource. Which is auditable, reviewable, and revocable. The legacy app gets its exception. But everyone else still follows the rule.
@@ -448,14 +413,14 @@ Here the policy stays intact. The exception is a separate resource. Which is aud
 object.metadata.?labels['team'].orValue('') != ''
 
 #Explicit check: same result, more verbose
-has(object.metadata.labels) && 'team' in object.metadata.labels
+has(object.metadata.labels) && 'team' in object.metadata.labels && object.metadata.labels['team'] != ''
 ```
 
 ### Checking all containers in a Pod:
 
 ```yaml
 # Must be true for every container
-object.spec.containers.all(c, has(c.resources.limits))
+(object.spec.containers + object.spec.?initContainers.orValue([])).all(c, has(c.resources.limits))
 ```
 
 ### Checking if any container matches:
@@ -512,5 +477,5 @@ You just have to apply one rule. Kyverno handles the rest.
 Try any of the policies in this guide directly in the browser:
 https://playground.kyverno.io/
 
-Want to try out `ValidatingPolicy`along with the other new Kyverno policy types? Jump in to the playground. Paste the policy on the left side, paste any of the test pods on the right, and see exactly
+Want to try out `ValidatingPolicy`along with the other new Kyverno policy types? Jump into the playground. Paste the policy on the left side, paste any of the test pods on the right, and see exactly
 what Kyverno can do!
