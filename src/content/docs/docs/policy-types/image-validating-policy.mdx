@@ -248,17 +248,14 @@ spec:
 
 Credentials specify the authentication information required to securely access and interact with a private registry. The `credentials` field supports two mechanisms: ambient cloud credential **providers** and Kubernetes **secrets** containing registry login data.
 
-:::caution[No global credential helpers]
-The `--registryCredentialHelpers` Helm/CLI flag (e.g. `features.registryCredentialHelpers.enabled`) has **no effect** on `ImageValidatingPolicy`. `spec.credentials` on each policy is the **only** way to configure registry authentication for IVPOL, there is no global fallback.
-:::
+When `spec.credentials` is omitted, image verification retains the controller's global registry credential configuration. Set `spec.credentials` to configure credentials for a particular policy.
 
 #### Known limitations
 
 The following credential features are **not yet supported** by `ImageValidatingPolicy`:
 
 - **No automatic pod `imagePullSecrets`**: IVPOL does not automatically pick up `imagePullSecrets` declared on the Pod/Deployment being admitted. You must explicitly list secrets in `spec.credentials.secrets`.
-- **No cross-namespace secrets**: secrets must exist in the Kyverno namespace (typically `kyverno`). The `namespace/name` notation is not supported; you must copy or sync the secret into the Kyverno namespace.
-- **No global credential helpers**: providers must be declared per-policy (see above).
+- **Namespaced policy references stay in the policy namespace**: a `NamespacedImageValidatingPolicy` accepts a bare Secret name or a `namespace/name` reference to its own namespace. See [credential lookup and migration](/docs/installation/registry-access/#secret-references-in-namespaced-policies).
 
 #### providers
 
@@ -278,9 +275,7 @@ When using cloud IAM (e.g. IRSA on AWS, Workload Identity on GKE), you only need
 
 The `secrets` field accepts a list of Kubernetes `Secret` names (of type `kubernetes.io/dockerconfigjson`) used to authenticate against private registries.
 
-:::caution[Secrets must be in the Kyverno namespace]
-Secrets must exist in the **Kyverno namespace** (typically `kyverno`), not in the namespace of the resource being admitted. IVPOL does not read `imagePullSecrets` from the pod spec, and cross-namespace references (`namespace/name`) are not supported. If your registry secret lives in a workload namespace, you must copy or sync it into the Kyverno namespace.
-:::
+For a cluster-scoped `ImageValidatingPolicy`, bare names resolve in the Kyverno namespace; explicit `namespace/name` references retain their existing behavior. For a `NamespacedImageValidatingPolicy`, bare names resolve in the policy namespace and explicit references must use that same namespace. The same rule applies to Cosign attestor signature pull Secrets, including attestors passed directly to CEL functions. See [required RBAC and migration steps](/docs/installation/registry-access/#grant-access-to-a-named-secret).
 
 #### Example: public registry (no credentials needed)
 
