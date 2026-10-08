@@ -346,6 +346,10 @@ When any legacy policy is present, `kyverno-init` (the `kyverno-pre` init contai
 kubectl get events -n <kyverno-namespace> --field-selector reason=LegacyPolicyPresent
 ```
 
+**Blocking Upgrades Until Migration Is Complete**
+
+Starting with Kyverno v1.20, the Helm chart blocks `helm install` and `helm upgrade` by default while any legacy `kyverno.io` policy resources still exist, so an upgrade cannot silently leave them behind. See [Upgrading to Kyverno v1.20](/docs/installation/upgrading) for the opt-out value and the bypass details.
+
 ## Troubleshooting
 
 **CEL Expression Errors**
