@@ -34,11 +34,11 @@ Both modes reject loopback, link-local, metadata, unspecified, multicast, and br
 
 The settings cover registry requests, authentication token services, redirects, and HTTP services used for signature verification, including public-key URLs and TUF mirrors. Private redirect and token destinations need their own entries in enforce mode. KMS provider SDK connections are outside these settings.
 
-The Helm chart passes these settings to the admission, background, and reports controllers. To override a controller, use its `featuresOverride.registryClient` values. Cleanup receives neither argument.
+The Helm chart passes these settings to the admission, background, reports, and cleanup controllers. To override a controller, use its `featuresOverride.registryClient` values. Cleanup applies the egress mode and allowlist to DeletingPolicy image lookups without enabling registry credential helpers or image-pull Secret informers.
 
 Before enabling enforce mode:
 
-1. Exercise image lookups, signature verification, and relevant background scans in audit mode.
+1. Exercise image lookups, signature verification, relevant background scans, and DeletingPolicy image conditions in audit mode.
 2. Review the logs and list every required private registry, token, redirect, and signature-service destination.
 3. Enable enforce mode and repeat the same operations.
 
