@@ -98,6 +98,6 @@ Use the actual namespace and ServiceAccount names from your installation. Add th
 
 ## Parameters in legacy Policy CEL rules
 
-The 1.19 update also confines `Policy.spec.rules[].validate.cel` parameters to the policy namespace. An omitted `paramRef.namespace` defaults there; an explicit namespace must match. This applies to both named references and selectors. The `paramKind` must describe a namespaced resource in the requested served API version, so install its CRD before creating the Policy.
+The 1.19 update also confines `Policy.spec.rules[].validate.cel` parameters to the policy namespace. An omitted `paramRef.namespace` defaults there; an explicit namespace must match. This applies to both named references and selectors. The `paramKind` must describe a namespaced resource in the requested served API version. Built-in resources such as `ConfigMap` are supported without a CRD. For custom-resource parameter kinds, install the CRD before creating the Policy.
 
 Use an administrator-managed `ClusterPolicy` when cluster-wide parameter access is required. Native Kubernetes `ValidatingAdmissionPolicy` and `MutatingAdmissionPolicy` parameter behavior is unchanged.
