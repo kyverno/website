@@ -625,12 +625,12 @@ Compensating controls decide whether the exception is granted. They do not valid
 
 With the policy and exception above, which uses `validationActions: [Deny]`, Kyverno handles Pods as follows:
 
-| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                                |
-| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
-| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                            |
+| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                          |
+| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------- |
+| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                      |
 | `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a security ticket annotation ...` |
-| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                                    |
-| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                      |
+| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                              |
+| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                |
 
 When more than one exception matches a resource, Kyverno considers each one separately. An exception whose controls fail grants nothing, but another matching exception whose controls pass (or which has no controls) still grants the bypass. If every matching exception is refused and the policy fails, Kyverno reports the message from the first refused exception, ordered by namespace and then by name.
 
