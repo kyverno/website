@@ -441,6 +441,21 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
+:::note[Note]
+The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`:
+
+```yaml
+attestations:
+  - name: sbom
+    intoto:
+      type: https://cyclonedx.org/bom
+validations:
+  - expression: >-
+      images.containers.map(image, extractPayload(image, attestations.sbom).predicate.bomFormat == 'CycloneDX').all(e, e)
+    message: sbom is not a cyclone dx sbom
+```
+:::
+
 ## Namespaced Policies
 
 ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
