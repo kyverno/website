@@ -442,17 +442,28 @@ This policy ensures that:
 3. All SBOMs are in CycloneDX format
 
 :::note[Note]
-The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`:
+The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`. The same check for an SBOM attested with cosign keyless, as a fragment of `spec`:
 
 ```yaml
-attestations:
-  - name: sbom
-    intoto:
-      type: https://cyclonedx.org/bom
-validations:
-  - expression: >-
-      images.containers.map(image, extractPayload(image, attestations.sbom).predicate.bomFormat == 'CycloneDX').all(e, e)
-    message: sbom is not a cyclone dx sbom
+spec:
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+              issuer: 'https://token.actions.githubusercontent.com'
+        ctlog:
+          url: 'https://rekor.sigstore.dev'
+  attestations:
+    - name: sbom
+      intoto:
+        type: https://cyclonedx.org/bom
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom, [attestors.cosign])).all(e, e > 0) &&
+        images.containers.map(image, extractPayload(image, attestations.sbom).predicate.bomFormat == 'CycloneDX').all(e, e)
+      message: sbom is not a signed cyclone dx sbom
 ```
 :::
 
