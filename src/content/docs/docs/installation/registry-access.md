@@ -32,7 +32,9 @@ Entries can be exact hostnames, IP addresses, or CIDRs. URLs, wildcard names, pa
 
 Both modes reject loopback, link-local, metadata, unspecified, multicast, and broadcast destinations. An allowlist entry does not override these restrictions. Move a registry using one of those addresses to an ordinary private or public address before upgrading.
 
-The settings cover registry requests, authentication token services, redirects, and HTTP services used for signature verification, including public-key URLs and TUF mirrors. Private redirect and token destinations need their own entries in enforce mode. KMS provider SDK connections are outside these settings.
+The settings cover registry requests, authentication token services, redirects, and signature-verification HTTP requests sent through Kyverno's guarded transport, including public-key URLs and TUF mirrors. Private redirect and token destinations need their own entries in enforce mode. KMS provider SDK connections are outside these settings.
+
+Azure credential exchanges retain their existing behavior. Kyverno checks the initial Azure Container Registry (ACR) destination before invoking the credential provider, but the provider's internal token-exchange requests do not inherit the guarded transport, proxy checks, DNS pinning, or evaluation cancellation. Applying these controls to the provider's internal requests is deferred until custom client and context support is available upstream.
 
 The Helm chart passes these settings to the admission, background, reports, and cleanup controllers. To override a controller, use its `featuresOverride.registryClient` values. Cleanup applies the egress mode and allowlist to DeletingPolicy image lookups without enabling registry credential helpers or image-pull Secret informers.
 
