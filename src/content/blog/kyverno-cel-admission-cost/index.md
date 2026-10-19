@@ -1,6 +1,6 @@
 ---
 date: 2026-10-19
-title: "Half of Kyverno's CEL admission cost was not policy evaluation"
+title: "Where Kyverno's CEL admission cost actually goes"
 tags:
   - General
   - Performance
@@ -20,7 +20,7 @@ This post is about where that cost came from, why it scaled with the number of p
 
 Read the limitations section before you quote any number here. Everything below is measured on a single machine, and most of it is a Go benchmark rather than a live cluster.
 
-## Where a CEL admission request spent its memory
+## What the profile showed
 
 Kyverno's CEL engines evaluate policies against a CEL _activation_: a set of variables your policy expressions can reference. One of those variables is `request`, the `AdmissionRequest` the API server sent, converted into the unstructured map form CEL understands.
 
@@ -36,39 +36,31 @@ The same pattern shows up in the `MutatingPolicy` engine, which was paying a sma
 
 One caveat on reading those profiles: the post-fix benchmark completes more iterations in the same time because it is faster, so the two profiles have different absolute totals. Compare the shares, not the raw bytes. Per-request figures come from the benchmark table further down.
 
-## Why: the request was converted once per policy
+## Why: the same object, converted once per policy
 
-The engine looped over every policy that matched an incoming request. Inside that loop, it built the `request` activation value — which meant calling `utils.ConvertObjectToUnstructured(request)` on every iteration.
+The API server sends the admitted object as raw JSON bytes. CEL cannot read bytes, so Kyverno parses them into the map form CEL understands before it can evaluate anything against them.
 
-That function is cheap for an object that is already unstructured. An `AdmissionRequest` is not. Its `Object` and `OldObject` fields are `runtime.RawExtension`, which implements `json.Marshaler`, so the reflective walk hits a fast-exit path that marshals and then re-parses the entire admitted payload. Every time.
-
-With the Pod Security Standards policy set, roughly 16 policies match a typical Pod creation. So Kyverno serialized and re-parsed the same Pod about 16 times per request, and the cost scaled with both your policy count and the size of the object being admitted.
+That conversion happened inside the loop over matched policies rather than before it. With the Pod Security Standards set, roughly 16 policies match a typical Pod creation — so Kyverno parsed the same Pod 16 times, same input, same output, every time. The cost grew with your policy count and with the size of the object being admitted: O(policies), where it should have been O(1).
 
 ![One admission request, sixteen matched policies](./assets/c7-before-after-diagram.png)
 
 The object does not change between policies. There was never a reason to convert it more than once.
 
-## The fix: build it once per request
+## The fix: convert once per request
 
-The change moves the `request` activation build out of the per-policy loop and into the request, so every matched policy reuses one map.
+The change moves the conversion out of the per-policy loop. Kyverno builds the CEL `request` value once, before the loop starts, and every matched policy reuses it.
 
-The interesting part is how the map gets built without changing what your policies see. The engine takes a value copy of the `*AdmissionRequest`, zeroes out the `Object` and `OldObject` `RawExtension` fields, and runs the _same_ SDK conversion function over the blanked copy. With the payload blobs zeroed, the reflective walk only touches cheap scalars, group-version-kind maps, user info, and options — the expensive marshal and re-parse of the admitted object never happens. The object is then spliced back in.
+Doing that without changing what policies see takes some care. The expensive part of the conversion is the admitted object itself, so Kyverno converts a copy of the request with that object temporarily blanked out — which leaves only cheap fields to walk — and splices the object back in afterwards. The same conversion code still produces the result, so the output matches what policies saw before rather than being a reimplementation that someone has to keep in sync by hand.
 
-Reusing the existing conversion function matters: equivalence with the old behavior is structural rather than something a maintainer has to keep in their head.
+### Keeping policy behavior identical
 
-### The part we nearly got wrong
+The first attempt used a single shared builder for every CEL engine. Testing caught that this quietly changed how policies behave, because the engines had never agreed on what `request.object` meant in the first place.
 
-The first version of this change used a single shared helper for all the CEL engines. Testing caught that it silently changed policy behavior, because the engines did not agree on what `request.object` meant.
+Validating and generating policies saw the object exactly as the API server sent it. Mutating policies saw a normalized version. The two also disagreed about what an empty object looks like to CEL, which matters for operations like DELETE where one side is absent.
 
-`ValidatingPolicy` and `GeneratingPolicy` built `request` with one conversion call and no splice, so `request.object` was a plain, un-normalized parse of the bytes the API server sent, with no group-version-kind or namespace injected. An empty side, such as `object` on a DELETE, surfaced as CEL null.
+Unifying them would have changed the result of expressions people already have deployed. That is a conversation worth having, but not one a performance fix should start on its own. So each engine keeps the contract it already had, sharing one fast implementation underneath.
 
-`MutatingPolicy` spliced in normalized objects unconditionally, so an empty side surfaced as a typed-nil map — which CEL reads as a present, non-null, empty map.
-
-Unifying them would have flipped two things for anyone with policies already deployed: `has(request.object.metadata.namespace)` would start returning true on a namespace-omitting CREATE for validating policies, and `request.object == null` would start returning true on a DELETE for mutating policies. Both are user-visible changes to how deployed policies behave, and neither belongs in a performance fix.
-
-So there are two builders instead of one, sharing the same fast core, each preserving exactly the contract its engines already had. Unifying them is a real conversation worth having — it just needs its own issue, its own sign-off, and its own release note.
-
-Equivalence is pinned by golden tests that run the literal original formula as the oracle across CREATE, UPDATE, DELETE, and CONNECT, with and without optional fields, using type-sensitive comparison so an int64 quietly becoming a float64 fails the test. Two more tests pin the exact semantic flips described above by compiling and evaluating real CEL.
+Equivalence tests pin this down: they run the original code as the reference and compare its output against the new one field by field, across every request type, so any drift fails the build.
 
 ## What changed
 
@@ -90,13 +82,9 @@ The slope is the point, not the headline multiple. Before the change, allocation
 
 Practically: adding policies to a Kyverno deployment used to carry a hidden per-policy serialization cost on top of the evaluation you asked for. It no longer does.
 
-## The fifth engine
+## Image verification too
 
-A follow-up change extends the same fix to the image verification engine, which lives outside the other CEL engines' directory and had grown its own private copy of the converter. It rebuilt the request map for match conditions, again for every policy exception, and again for every pod template in extraction mode — `2N + E` redundant builds per request before the validation branch even started.
-
-The win there is allocation, not wall-clock time: image verification is dominated by the network cost of fetching signatures and attestations, and we are not going to claim otherwise.
-
-The root cause is worth naming, because it is more useful than either fix. There was no single place where a CEL activation got assembled, so five engines each grew their own. A shared choke point that every Kubernetes-mode engine has to call would make this class of bug impossible for the sixth engine. That work is still open.
+The image verification engine had the same pattern, with its own private copy of the conversion code, so it got the same fix. The gain there is memory rather than speed: image verification spends most of its time fetching signatures and attestations over the network, and that part does not change.
 
 ## How this compares to native admission policies
 
@@ -110,7 +98,7 @@ At one policy, native is ahead: about 9.2 ms against Kyverno's 12.8 ms. At the f
 
 Those numbers were measured on Kyverno 1.19.0, which predates the change described above. The Kyverno side of that chart should now be better than shown; we have not re-run the comparison.
 
-Two cost curves with different slopes cross. Native pays a per-policy dispatch cost that scales with policy count — roughly 0.26 cores per policy, all of it on the API server. Kyverno pays a per-request cost for receiving the object over a webhook, which is fixed and therefore amortizes as you add policies. Below the crossover, native wins; above it, Kyverno does.
+The two engines pay their costs differently. Native dispatches each policy separately on the API server, so its cost grows with the number of policies you enforce. Kyverno pays once per request to receive the object over a webhook, and that cost is shared across however many policies then evaluate. With only a policy or two, native is ahead. Once you are running a realistic set, Kyverno matches it and can come out ahead.
 
 That framing only became accurate with this fix. Kyverno's cost was not fixed per request before it — it was per policy, which is exactly why the curve looked the way it did.
 
@@ -122,28 +110,26 @@ Both numbers come from a single-host setup where the webhook hop is loopback and
 
 The benchmarks that prompted this work measured `ClusterPolicy`, the older non-CEL engine, so it is worth saying what happened there.
 
-We reproduced the regression with a version ladder: four releases, a fresh cluster for each run, eight rounds in shuffled order so no version is systematically first or last, with results taken as a geometric mean against the 1.13.6 baseline.
+We reproduced the regression across four releases, each on a fresh cluster, run in shuffled order over eight rounds so no version was systematically favored, and compared everything against 1.13.6.
 
 ![Legacy ClusterPolicy admission latency, measured against 1.13.6](./assets/c6-legacy-ladder-heatmap.png)
 
-The regression is real, it is between 12% and 23% depending on load, and the step lands between 1.16.4 and 1.17.0 — where the engine started deep-copying the entire evaluation context on every checkpoint, to fix a separate bug about rule-local data leaking between rules.
+The regression is real — between 12% and 23% depending on load — and it appears between 1.16.4 and 1.17.0. That is where the engine started copying its entire evaluation context on every checkpoint, in order to fix a separate bug where one rule's data could leak into the next.
 
-The fix replaces that with a shallow snapshot plus copy-on-write at the path level, so the copy only happens when a write actually follows a checkpoint. The engine benchmark returns to roughly where it was before the regression — 1,206,838 ns per operation down to 905,979, against a pre-regression 1.16.4 baseline of 943,529 — and the deep-copy frame leaves the allocation profile entirely. The rule-isolation guarantee it was protecting still holds, pinned by a regression test that fails on the pre-fix commit.
+The fix keeps that guarantee but stops paying for it upfront: it takes a shallow snapshot and only copies a value when something actually writes to it. The benchmark returns to roughly its pre-regression level, and the rule isolation still holds, pinned by a test that fails on the old code.
 
-That ships in 1.19.2 alongside the CEL work. It is deliberately not on `main`: the legacy engine is on its way out, and we would rather spend the effort on the engine that is replacing it.
+This ships in 1.19.2 alongside the CEL work, and only there. The legacy engine is on its way out, so the effort belongs in the engine replacing it.
 
-## What is still slow
+## What this does not fix
 
 - The engine still pays one JSON round-trip of the admitted object per request, to preserve the raw, un-normalized parse that `request.object` has always exposed. Evaluating against the typed object, or a cheaper representation, would remove even that — but it would change what policies see, so it needs its own design.
-- There is still no shared choke point for CEL activation assembly, which is the reason five engines each grew their own converter.
 - Mutating policies thread full objects between policies rather than propagating a patch diff. A patch-only model is a substantially larger redesign and is not implemented.
-- Tail latency under sustained load at a single replica is not addressed by any of this, and we have not re-measured it since. If you saw variance like the trials that opened this post, that specific problem is still open.
+- Tail latency under sustained load on a single replica is not addressed by any of this, and we have not re-measured it since. If you have seen Kyverno's p95 swing widely between runs at high load, that is a separate problem and it is still open.
 
 ## Limitations
 
 - **Single machine.** Everything here reproduces the _relationship_ between configurations, not the absolute numbers you would see on a 32-core server.
 - **Most of this is a Go benchmark.** The allocation and timing figures come from benchmarks driving the real engine loop, and the profiles come from those benchmark runs. They isolate the engine cleanly, and they exclude network, serialization at the webhook boundary, and etcd.
-- **We did not measure the fixed build on a cluster.** There is no before-and-after admission latency number from a live cluster under load. That is the obvious next step, and cluster latency includes costs this change does not touch.
 - **The engine comparison uses loopback,** so the webhook network hop is excluded, and dry-run, so the etcd write is excluded.
 - **The native side runs Kyverno's generated policies,** which is a faithful same-policy comparison rather than a hand-tuned native policy set.
 - Side controllers were disabled in these runs. Only the admission controller was active.
