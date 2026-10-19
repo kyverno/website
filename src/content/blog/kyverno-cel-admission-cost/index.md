@@ -64,17 +64,17 @@ Equivalence tests pin this down: they run the original code as the reference and
 
 ## What changed
 
-The benchmark drives the real per-policy loop with a realistically sized Pod and a varying number of matched policies.
+The benchmark calls the engine directly with a roughly 50 KB Pod and a varying number of matched policies. It times the engine alone — building the `request` value, matching, and evaluating CEL. It does not include the webhook round trip, the API server, or etcd, so these are not end-to-end admission latencies.
 
-![Allocations per admission request, by number of matched policies](./assets/c2-vpol-allocs-per-op.png)
+![Allocations inside the engine per request, by number of matched policies](./assets/c2-vpol-allocs-per-op.png)
 
-![Time per admission request, by number of matched policies](./assets/c3-vpol-time-per-op.png)
+![Engine time per request, by number of matched policies](./assets/c3-vpol-time-per-op.png)
 
-| Matched policies | Allocations before | Allocations after | Time before | Time after |
-| ---------------- | ------------------ | ----------------- | ----------- | ---------- |
-| 1                | 2,327              | 854               | 0.31 ms     | 0.10 ms    |
-| 16               | 37,055             | 2,718             | 4.91 ms     | 0.16 ms    |
-| 64               | 148,131            | 8,672             | 20.01 ms    | 0.36 ms    |
+| Matched policies | Allocations before | Allocations after | Engine time before | Engine time after |
+| ---------------- | ------------------ | ----------------- | ------------------ | ----------------- |
+| 1                | 2,327              | 854               | 0.31 ms            | 0.10 ms           |
+| 16               | 37,055             | 2,718             | 4.91 ms            | 0.16 ms           |
+| 64               | 148,131            | 8,672             | 20.01 ms           | 0.36 ms           |
 
 The `MutatingPolicy` engine improves on the same curve, from 258,943 to 52,689 allocations and 10.59 ms to 2.97 ms at 64 policies.
 
