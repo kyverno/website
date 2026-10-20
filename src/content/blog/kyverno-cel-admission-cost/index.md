@@ -1,6 +1,6 @@
 ---
 date: 2026-10-19
-title: "Where Kyverno's CEL admission cost actually goes"
+title: "Optimizing Kubernetes Admission Control: Where Kyverno's CEL admission cost actually goes"
 tags:
   - General
   - Performance
@@ -10,15 +10,15 @@ authors:
 draft: false
 ---
 
-Kyverno's CEL engines exist to evaluate policy expressions. So when we profiled the admission path, we expected to find the cost in CEL evaluation.
+Kyverno's CEL (Common Expression Language) based engines exist to evaluate policy expressions. So when we profiled the admission path, we expected to find buk of the cost in CEL evaluation.
 
 It was not there. **About 86% of what the engine allocated went into preparing the object for evaluation, and almost none of it into evaluating policy.**
 
-We went looking because public benchmarks kept putting Kyverno behind the alternatives. Those benchmarks measured the legacy `ClusterPolicy` engine, which did have a real regression at the time, and the usual answer was to point people at the newer CEL-based engine instead. That answer was right and incomplete: nobody had checked what the CEL engine itself was spending its time on.
+We went looking because a public benchmark put Kyverno behind the alternatives. Those benchmarks measured the legacy `ClusterPolicy` JMESPath engine, which did have a real regression at the time, and the usual answer was to point people at the newer CEL-based engine instead. That answer was right and incomplete: but we had not checked what the CEL engine itself was spending its time on.
 
-This post is about where that cost came from, why it scaled with the number of policies you deploy, and what removing it did. The fix ships in Kyverno 1.19.2.
+This post is about where that performance cost came from, why it grew with the number of policies you deploy, and what removing it did. The fix ships in Kyverno 1.19.2.
 
-Read the limitations section before you quote any number here. Everything below is measured on a single machine, and most of it is a Go benchmark rather than a live cluster.
+Please read the limitations section before you quote any number here. And as always, run your own tests in your environments, for real-world accuracy.
 
 ## What the profile showed
 
