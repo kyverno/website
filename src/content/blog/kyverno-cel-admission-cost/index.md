@@ -10,11 +10,11 @@ authors:
 draft: false
 ---
 
-Kyverno's CEL (Common Expression Language) based engines exist to evaluate policy expressions. So when we profiled the admission path, we expected to find buk of the cost in CEL evaluation.
+Kyverno's CEL (Common Expression Language) based engines exist to evaluate policy expressions. So when we profiled the admission path, we expected to find the bulk of the cost in CEL evaluation.
 
 It was not there. **About 86% of what the engine allocated went into preparing the object for evaluation, and almost none of it into evaluating policy.**
 
-We went looking because a public benchmark put Kyverno behind the alternatives. Those benchmarks measured the legacy `ClusterPolicy` JMESPath engine, which did have a real regression at the time, and the usual answer was to point people at the newer CEL-based engine instead. That answer was right and incomplete: but we had not checked what the CEL engine itself was spending its time on.
+We went looking because a public benchmark put Kyverno behind the alternatives. Those benchmarks measured the legacy `ClusterPolicy` JMESPath engine, which did have a real regression at the time, and the usual answer was to point people at the newer CEL-based engine instead. That answer was right but incomplete: we had not checked what the CEL engine itself was spending its time on.
 
 This post is about where that performance cost came from, why it grew with the number of policies you deploy, and what removing it did. The fix ships in Kyverno 1.19.2.
 
@@ -138,9 +138,11 @@ This ships in 1.19.2 alongside the CEL work, and only there. The legacy engine i
 
 The harness is in the Kyverno repository under `docs/perf-testing/`: the version ladder, the pinned Pod Security Standards policy set, the k6 scripts, and the cluster setup. The engine benchmarks live beside the code they measure, in `pkg/cel/policies/vpol/engine` and `pkg/engine/context`.
 
-If you benchmark Kyverno and get a result you do not like, please publish it — with the method, the caveats, and the per-trial numbers. That is how this work started.
+If you benchmark Kyverno and get a result you do not like, please publish it — with the method, the caveats, and the per-trial numbers.
 
-## Thanks
+## Conclusion
+
+Our mission at Kyverno is to be the best policy engine for Kubernetes and beyond. Admission control is a critical process in Kubernetes clusters, and a slow or misconfigured controller can impact cluster operations. Thanks to our community, we have fixed performance issues and added more tests. For future releases, we will be looking at improving concurrency and further optimization.
 
 Thanks to [Mert Erdinç](https://merdincz.com/en/comparing-kubernetes-policy-engines/), whose careful, well-documented comparison of policy engines prompted us to go looking.
 
