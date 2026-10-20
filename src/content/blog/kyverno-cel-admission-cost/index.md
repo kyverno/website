@@ -144,7 +144,7 @@ If you benchmark Kyverno and get a result you do not like, please publish it —
 
 Our mission at Kyverno is to be the best policy engine for Kubernetes and beyond. Admission control is a critical process in Kubernetes clusters, and a slow or misconfigured controller can impact cluster operations. Thanks to our community, we have fixed performance issues and added more tests. For future releases, we will be looking at improving concurrency and further optimization.
 
-Thanks to [Mert Erdinç](https://merdincz.com/en/comparing-kubernetes-policy-engines/), whose careful, well-documented comparison of policy engines prompted us to go looking.
+Thanks to [Mustafa Erdinç](https://merdincz.com/en/comparing-kubernetes-policy-engines/), whose comparison of different Kubernetes policy engines motivated this work.
 
 ## References
 
