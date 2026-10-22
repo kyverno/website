@@ -365,15 +365,15 @@ Arithmetic filters like `add()` currently accept inputs in the following formats
 
 Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
 
-| Input 1            | Input 2            | Output   |
-| ------------------ | ------------------ | -------- |
-| Number             | Number             | Number   |
-| Quantity or Number | Quantity or Number | Quantity |
-| Duration or Number | Duration or Number | Duration |
+| Input 1  | Input 2  | Output   |
+| -------- | -------- | -------- |
+| Number   | Number   | Number   |
+| Quantity | Quantity | Quantity |
+| Duration | Duration | Duration |
 
 Some specific behaviors to note:
 
-- If a duration ('1h') and a number (\`5\`) are the inputs, the number will be interpreted as seconds resulting in a sum of `1h0m5s`.
+- Both inputs must be of the same type. A duration ('1h') and a number (\`5\`) return a `Types mismatch` error, so give the number a unit instead: `add('1h', '5s')` returns `1h0m5s`.
 - Because of durations being a string just like [resource quantities](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), and the minutes unit of "m" also present in quantities interpreted as the "milli" prefix, there is no support for minutes.
 
 **Example:** This policy denies a Pod if any of its containers specify memory requests and limits in excess of 200Mi.
@@ -1135,9 +1135,11 @@ Arithmetic filters like `modulo()` currently accept inputs in the following form
 
 Note that how the inputs are enclosed determines how Kyverno interprets their type. Numbers enclosed in back ticks are scalar values while quantities and durations are enclosed in single quotes thus treating them as strings. Using the correct enclosing character is important because, in Kubernetes "regular" numbers are treated implicitly as units of measure. The number written \`10\` is interpreted as an integer or "the number ten" whereas '10' is interpreted as a string or "ten bytes". See the [Formatting](#formatting) section above for more details.
 
-| Input 1 | Input 2 | Output |
-| ------- | ------- | ------ |
-| Number  | Number  | Number |
+| Input 1  | Input 2  | Output   |
+| -------- | -------- | -------- |
+| Number   | Number   | Number   |
+| Quantity | Quantity | Quantity |
+| Duration | Duration | Duration |
 
 :::caution
 The inputs list is currently under construction.
@@ -2084,7 +2086,7 @@ Note that how the inputs are enclosed determines how Kyverno interprets their ty
 | Input 1  | Input 2  | Output   |
 | -------- | -------- | -------- |
 | Number   | Number   | Number   |
-| Quantity | Quantity | Number   |
+| Quantity | Quantity | Quantity |
 | Duration | Duration | Duration |
 
 **Example:** This policy sets the value of a new label called `lessreplicas` to the value of the current number of replicas in a Deployment minus two so long as there are more than two replicas to start with.
