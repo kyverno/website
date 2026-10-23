@@ -223,7 +223,7 @@ Image verification requires multiple network calls and can be time consuming. Ky
 In Kyverno's admission controller deployment, users can configure the cache using the following flags:
 
 `imageVerifyCacheEnabled`: Enable a TTL cache for verified images. Default is `true`.
-`imageVerifyCacheMaxSize`: Maximum number of keys that can be stored in the TTL cache. Keys are a combination of policy elements along with the image reference. Default is `1000`. `0` sets the value to default.
+`imageVerifyCacheMaxSize`: Maximum total cost of the entries in the TTL cache. Keys are a combination of policy elements along with the image reference. An entry that only records a successful verification costs 1, so the value then acts as a maximum number of entries; an entry that also stores a verified in-toto attestation payload costs about the size of that payload in bytes. Default is `1000`. `0` sets the value to default.
 `imageVerifyCacheTTLDuration`: Maximum TTL value for a cache expressed as duration. Default is `60m`. `0` sets the value to default.
 
 The cache is enabled by default and significantly helps with execution time of verify image policies by making not accessing remote repository on every verification attempt. It should be noted that any change to the image/signature in the remote repository will not be reflected till the cache entry expires.
