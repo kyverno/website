@@ -3,7 +3,7 @@ date: 2026-10-23
 title: 'From Playground to MCP: Bringing Kyverno Policy Testing into AI Workflows'
 tags:
   - General
-excerpt: 'Use the Kyverno Playground straight forward in your AI workflows using the new integrated MCP server.'
+excerpt: 'Use the Kyverno Playground directly in your AI workflows with the new integrated MCP server.'
 authors:
   - name: Frank Jogeleit
 draft: false
