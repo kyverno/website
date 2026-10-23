@@ -100,7 +100,7 @@ Those numbers were measured on Kyverno 1.19.0, which predates the change describ
 
 The two engines pay their costs differently. Native dispatches each policy separately on the API server, so its cost grows with the number of policies you enforce. Kyverno pays once per request to receive the object over a webhook, and that cost is shared across however many policies then evaluate. With only a policy or two, native is ahead. Once you are running a realistic set, Kyverno matches it and can come out ahead.
 
-That framing only became accurate with this fix. Kyverno's cost was not fixed per request before it — it was per policy, which is exactly why the curve looked the way it did.
+That framing only became accurate with this fix. Kyverno's object-preparation cost was not fixed per request before it — it was per policy, which is exactly why the curve looked the way it did.
 
 The CPU side is more one-sided. Under matched load, Kyverno's engine used about 3.2 cores against the API server's 8.2 for native. The surprise in the API server profile is that 67% of its CPU sits in the policy dispatch machinery while the actual CEL bytecode execution is about 5.5% — the cost is dispatching 16 policies and building an input for each, not evaluating them. And that load lands on the control plane, which you cannot scale horizontally the way you can scale a Kyverno deployment.
 
