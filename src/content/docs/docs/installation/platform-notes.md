@@ -167,3 +167,22 @@ Alternatively, pass the flag `--protectGenerationLabels=false` (or set environme
 :::caution[Important]
 Disabling `protectGenerationLabels` removes admission-time protection against unauthorized tampering with Kyverno's generation tracking labels. If this toggle is disabled temporarily to permit AKS cluster stop or start operations, remember to re-enable it post-maintenance (`features.protectGenerationLabels.enabled=true`) to restore protection.
 :::
+
+##### Verifying Webhook Registration
+
+To confirm after cluster startup (or post-maintenance) that `protect-generation-labels.kyverno.svc` is registered again with `failurePolicy: Fail`:
+
+```bash
+kubectl get validatingwebhookconfigurations kyverno-resource-validating-webhook-cfg \
+  -o jsonpath='{range .webhooks[?(@.name=="protect-generation-labels.kyverno.svc")]}{.name}{": failurePolicy="}{.failurePolicy}{"\n"}{end}'
+```
+
+- **Active (protected):** Returns `protect-generation-labels.kyverno.svc: failurePolicy=Fail`.
+- **Disabled or pruned:** Returns empty output.
+
+Alternatively, using `jq`:
+
+```bash
+kubectl get validatingwebhookconfigurations kyverno-resource-validating-webhook-cfg -o json \
+  | jq '.webhooks[] | select(.name=="protect-generation-labels.kyverno.svc") | {name, failurePolicy}'
+```
