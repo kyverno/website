@@ -141,3 +141,29 @@ For EKS clusters built with the VPC CNI plug-in, if you wish to opt for the oper
 ### Notes for AKS Users
 
 AKS uses an Admission Enforcer control the webhooks in an AKS cluster and will remove those that may impact system Namespaces. Since Kyverno registers as a webhook, this Admission Enforcer may remove Kyverno's webhook causing the two to fight over webhook reconciliation. See [this Microsoft Azure FAQ](https://learn.microsoft.com/en-us/azure/aks/faq#can-admission-controller-webhooks-impact-kube-system-and-internal-aks-namespaces) for further information. When deploying Kyverno on an AKS cluster, set the Helm option `config.webhookAnnotations` to include the necessary annotation to disable the Admission Enforcer. Kyverno will configure its webhooks with this annotation to prevent their removal by AKS. The annotation that should be used is `"admissions.enforcer/disabled": true`. See the chart [README](https://github.com/kyverno/kyverno/blob/release-1.12/charts/kyverno/README.md) for more information. As of Kyverno 1.12, this annotation has already been set for you.
+
+#### Cluster Stop/Start Operations
+
+Azure AKS strictly inspects admission webhooks prior to cluster stop and start operations. If any admission webhook configuration has `failurePolicy: Fail` combined with wildcards (`*`) across both `apiGroups` and `resources`, AKS blocks the stop/start operation to prevent potential cluster bootstrap deadlocks during restart.
+
+Kyverno includes a validating webhook named `protect-generation-labels.kyverno.svc` to prevent non-controller accounts from modifying Kyverno generation metadata (`generate.kyverno.io/policy-name`). Because this webhook targets universal wildcards with `failurePolicy: Fail` by default, stopping an AKS cluster running Kyverno Helm chart 3.9.2+ may fail with the following error:
+
+```text
+Failed to stop the Kubernetes service '<cluster_name>'. Error: The managed cluster has the following webhooks, that might prevent stop/start cluster operations, Please remove them before the operation. 1. Webhook configuration 'kyverno-resource-validating-webhook-cfg': 'protect-generation-labels.kyverno.svc' Rule 1 has wildcard in both APIGroups and Resources.
+```
+
+##### Workaround and Configuration
+
+To unblock AKS cluster stop/start operations, disable the generation label protection webhook in your Helm values:
+
+```yaml
+features:
+  protectGenerationLabels:
+    enabled: false
+```
+
+Alternatively, pass the flag `--protectGenerationLabels=false` (or set environment variable `FLAG_PROTECT_GENERATION_LABELS=false`) to the Kyverno admission controller. When disabled, the webhook is automatically omitted and pruned from `kyverno-resource-validating-webhook-cfg` during reconciliation.
+
+:::caution[Important]
+Disabling `protectGenerationLabels` removes admission-time protection against unauthorized tampering with Kyverno's generation tracking labels. If this toggle is disabled temporarily to permit AKS cluster stop or start operations, remember to re-enable it post-maintenance (`features.protectGenerationLabels.enabled=true`) to restore protection.
+:::
