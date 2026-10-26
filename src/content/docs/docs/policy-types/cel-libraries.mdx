@@ -415,6 +415,10 @@ The **ImageData library** extends image inspection with OCI registry metadata li
 
 The `image.GetMetadata()` function extracts key metadata from OCI images, allowing validation based on various attributes.
 
+:::tip[Private Registry Authentication]
+To allow `image.GetMetadata()` to access private container registries, credentials can be supplied to Kyverno controllers using the `--imagePullSecrets` and `--registryCredentialHelpers` container flags. This registry credential support is available across Kyverno controllers, including the admission controller, background controller, reports controller, and cleanup controller.
+:::
+
 This sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
 
 ```yaml
