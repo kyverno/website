@@ -44,11 +44,13 @@ The `imageRegistryCredentials` attribute allows configuration of registry creden
 
 The `imageRegistryCredentials.helpers` is an array of credential helpers that can be used for this policy. Allowed values are `default`,`google`,`azure`,`amazon`,`github`.
 
-The `imageRegistryCredentials.secrets` specifies a list of secrets that are provided for credentials. Secrets must be in the Kyverno namespace. Starting with Kyverno 1.18, a `namespace/name` notation is also accepted to reference secrets from other namespaces.
+The `imageRegistryCredentials.secrets` specifies a list of Secrets used for credentials. In a `ClusterPolicy`, bare names resolve in the Kyverno namespace. Starting with Kyverno 1.18, a `namespace/name` notation is also accepted.
+
+The 1.19 namespaced-policy update resolves a `Policy`'s bare Secret names in the policy namespace and requires explicit references to use that same namespace. This also applies to `imageRegistry` context credentials. Before upgrading, review [credential lookup and migration](/docs/installation/registry-access/#secret-references-in-namespaced-policies).
 
 #### Namespaced Secrets (1.18+)
 
-Prior to 1.18, all secrets in `imageRegistryCredentials.secrets` had to live in the Kyverno namespace. Starting with 1.18, you can use `namespace/name` notation to reference a secret from any namespace:
+Prior to 1.18, all secrets in `imageRegistryCredentials.secrets` had to live in the Kyverno namespace. Starting with 1.18, a `ClusterPolicy` can use `namespace/name` notation to reference a Secret from another namespace:
 
 - **Plain name** (e.g., `my-registry-secret`): Kyverno looks for the secret in the Kyverno namespace (unchanged behavior).
 - **`namespace/name`** (e.g., `production/my-registry-secret`): Kyverno reads the secret from the specified namespace.

@@ -9,6 +9,8 @@ sidebar:
 
 Kyverno has many different functions and supports a wide range of possible customizations. This section provides more information on Kyverno's supporting resources and how they can be customized to tune certain behaviors.
 
+For private registry destination settings and policy Secret lookup rules, see [Registry access and policy credentials](/docs/installation/registry-access/).
+
 ### Certificate Management
 
 The Kyverno policy engine runs as an admission webhook and requires a CA-signed certificate and key to setup secure TLS communication with the Kubernetes API server. There are two ways to configure secure communications between Kyverno and the API server.
