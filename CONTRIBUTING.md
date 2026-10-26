@@ -73,8 +73,8 @@ after 7 days instead of being closed. Drafts, Dependabot PRs, and PRs labeled
 `no-stale` or `hold` are exempt from stale handling and reminders.
 
 Maintainers can review previews in **Actions > PR lifecycle**, then manually run
-either operation with `dry_run` disabled. Before doing so, run **PR Labeler** to
-provision lifecycle labels. To enable scheduled readiness after reviewing its
+either operation with `dry_run` disabled. Before doing so, run **Actions > Sync
+labels** with `dry_run` disabled to provision lifecycle labels. To enable scheduled readiness after reviewing its
 preview, replace that job's `dry-run` expression with `"false"` in
 `.github/workflows/pr-management.yaml`. Enable the stale job separately only
 after reviewing the backlog and exemptions. Reviewer reminders use
