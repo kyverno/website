@@ -69,13 +69,15 @@ awaiting maintainer approval are not the author's responsibility.
 Author-blocked PRs become `stale` after 7 days without a new commit and may close
 after 14 days, but never before a 7-day warning period has elapsed. A new commit
 resets the cycle; a comment alone does not. Ready PRs receive a reviewer reminder
-after 7 days instead of being closed. Drafts, Dependabot PRs, and PRs labeled
+after 7 days instead of being closed. PRs idle for 30 days or more
+(`backlog_days`) get no reviewer reminder or reviewer ping in stale warnings;
+only the author is notified. Drafts, Dependabot PRs, and PRs labeled
 `no-stale` or `hold` are exempt from stale handling and reminders.
 
 Maintainers can review previews in **Actions > PR lifecycle**, then manually run
 either operation with `dry_run` disabled. Before doing so, run **Actions > Sync
-labels** with `dry_run` disabled to provision lifecycle labels. To enable scheduled readiness after reviewing its
-preview, replace that job's `dry-run` expression with `"false"` in
+labels** with `dry_run` disabled to provision lifecycle labels. To enable
+scheduled readiness after reviewing its preview, replace that job's `dry-run` expression with `"false"` in
 `.github/workflows/pr-management.yaml`. Enable the stale job separately only
 after reviewing the backlog and exemptions. Reviewer reminders use
 `@kyverno/website-maintainers` when no reviewer or assignee is available.
