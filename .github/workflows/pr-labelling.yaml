@@ -1,26 +1,37 @@
 name: PR Labeler
 
 on:
+  push:
+    branches: [main]
   pull_request_target:
     types:
       - opened
       - reopened
       - synchronize
+  workflow_dispatch:
 
 permissions:
   contents: read
   pull-requests: write
 
+concurrency:
+  group: pr-labels-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   labeler:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Label PR based on changed files
-        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: '.github/labels.yml'
-          sync-labels: true
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Apply path labels and refresh merge-conflict labels
+        uses: kyverno/kyverno/.github/actions/pr-management@ef3224c602da764b2c2fd8b361ae6a28f9b3b0e8
+        with:
+          mode: labels
+          dry-run: 'false'
