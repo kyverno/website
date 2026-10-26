@@ -225,17 +225,29 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` profile of PSS) using the following command:
+Apply a [ValidatingPolicy](/docs/policy-types/validating-policy) with `validationActions: [Deny]` so validation happens during admission:
 
-```shell
-helm install kyverno-policies --namespace kyverno --create-namespace --wait \
-  --repo https://kyverno.github.io/kyverno kyverno-policies \
-  --values - <<EOF
-validationFailureAction: Enforce
-EOF
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-privileged-containers
+spec:
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          !has(container.securityContext) ||
+          !has(container.securityContext.privileged) ||
+          !container.securityContext.privileged)
+      message: Privileged containers are not allowed.
 ```
-
-Note that we are setting `validationFailureAction` to `Enforce` because `Audit`-mode policies are processed asynchronously and will produce a separate trace from the main one (both traces are linked together though, but not with a parent/child relationship).
 
 ### Create a Pod and observe the corresponding trace
 
@@ -442,17 +454,29 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-We are going to deploy the `kyverno-policies` Helm chart (with the `Baseline` profile of PSS) using the following command:
+Apply a [ValidatingPolicy](/docs/policy-types/validating-policy) with `validationActions: [Deny]` so validation happens during admission:
 
-```shell
-helm install kyverno-policies --namespace kyverno --create-namespace --wait \
-  --repo https://kyverno.github.io/kyverno kyverno-policies \
-  --values - <<EOF
-validationFailureAction: Enforce
-EOF
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-privileged-containers
+spec:
+  validationActions: [Deny]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          !has(container.securityContext) ||
+          !has(container.securityContext.privileged) ||
+          !container.securityContext.privileged)
+      message: Privileged containers are not allowed.
 ```
-
-Note that we are setting `validationFailureAction` to `Enforce` because `Audit`-mode policies are processed asynchronously and will produce a separate trace from the main one (both traces are linked together though, but not with a parent/child relationship).
 
 ### Create a Pod and observe the corresponding trace
 

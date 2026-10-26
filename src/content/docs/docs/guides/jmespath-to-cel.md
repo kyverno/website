@@ -5,7 +5,7 @@ sidebar:
   order: 131
 ---
 
-This page maps each JMESPath custom filter from the [JMESPath guide](/docs/policy-types/cluster-policy/jmespath) to its equivalent in Kyverno's CEL-based policy engine (`ValidatingPolicy` and `MutatingPolicy`). Use it as a companion reference when migrating `ClusterPolicy` rules to the newer CEL-based policy types.
+This page maps each JMESPath custom filter from the [JMESPath guide](https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/jmespath) to its equivalent in Kyverno's CEL-based policy engine (`ValidatingPolicy` and `MutatingPolicy`). Use it as a companion reference when migrating `ClusterPolicy` rules to the newer CEL-based policy types.
 
 For background on the CEL libraries available in Kyverno, see [CEL Libraries](/docs/policy-types/cel-libraries).
 

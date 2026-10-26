@@ -2,66 +2,31 @@
 title: Resource Definitions
 sidebar:
   order: 120
-excerpt: Custom Resource Definitions (CRDs) for Kyverno policies and other types.
+excerpt: Custom Resource Definitions (CRDs) for Kyverno policies and supporting types.
 ---
 
-Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for policy definitions, policy reports, and other internal types.
+Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for [policies and supporting resources](/docs/policy-types/overview).
 
-The complete Kyverno CRD reference can be viewed [here](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html).
-
-The HTML source is available in the [Kyverno GitHub repository](https://github.com/kyverno/kyverno/tree/main/docs) and generated from type definitions stored [here](https://github.com/kyverno/kyverno/tree/main/api).
+The complete [Kyverno CRD reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html) is generated from [API type definitions](https://github.com/kyverno/kyverno/tree/main/api). Use the documentation version selector when you need the schemas for an older release.
 
 ## kubectl explain
 
-When operating in a Kubernetes cluster with Kyverno installed, you can always inspect Kyverno types natively using `kubectl explain`.
+Inspect the schemas installed in your cluster using `kubectl explain`:
 
-For example, this is the definition of a Kyverno Policy resource at `policy.spec`:
-
-```shell
-KIND:     Policy
-VERSION:  kyverno.io/v1
-
-RESOURCE: spec <Object>
-
-DESCRIPTION:
-     Spec defines policy behaviors and contains one or more rules.
-
-FIELDS:
-   background   <boolean>
-     Background controls if rules are applied to existing resources during a
-     background scan. Optional. Default value is "true". The value must be set
-     to "false" if the policy rule uses variables that are only available in the
-     admission review request (e.g. user name).
-
-   failurePolicy        <string>
-     FailurePolicy defines how unrecognized errors from the admission endpoint
-     are handled. Rules within the same policy share the same failure behavior.
-     Allowed values are Ignore or Fail. Defaults to Fail.
-
-   rules        <[]Object>
-     Rules is a list of Rule instances. A Policy contains multiple rules and
-     each rule can validate, mutate, or generate resources.
-
-   schemaValidation     <boolean>
-     Deprecated.
-
-   validationFailureAction      <string>
-     ValidationFailureAction controls if a validation policy rule failure should
-     disallow the admission review request (enforce), or allow (audit) the
-     admission review request and report an error in a policy report. Optional.
-     Allowed values are `Audit` or `Enforce`. The default value is `Audit`.
-
-   validationFailureActionOverrides     <[]Object>
-     ValidationFailureActionOverrides is a Cluter Policy attribute that
-     specifies ValidationFailureAction namespace-wise. It overrides
-     ValidationFailureAction for the specified namespaces.
-
-   webhookTimeoutSeconds        <integer>
-     WebhookTimeoutSeconds specifies the maximum time in seconds allowed to
-     apply this policy. After the configured time expires, the admission request
-     may fail, or may simply ignore the policy results, based on the failure
-     policy. The default timeout is 10s, the value must be between 1 and 30
-     seconds.
+```sh
+kubectl explain validatingpolicy.spec --api-version=policies.kyverno.io/v1
+kubectl explain mutatingpolicy.spec --api-version=policies.kyverno.io/v1
+kubectl explain generatingpolicy.spec --api-version=policies.kyverno.io/v1
+kubectl explain deletingpolicy.spec --api-version=policies.kyverno.io/v1
+kubectl explain imagevalidatingpolicy.spec --api-version=policies.kyverno.io/v1
+kubectl explain policyexception.spec --api-version=policies.kyverno.io/v1
+kubectl explain globalcontextentry.spec --api-version=kyverno.io/v2
 ```
 
-Kyverno's support for structural schemas also enables integrated help in Kubernetes enabled Integrated Development Environments (IDEs) like [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes#_install-the-kubernetes-extension) installed.
+To inspect an individual field, append its path, for example:
+
+```sh
+kubectl explain validatingpolicy.spec.validationActions --api-version=policies.kyverno.io/v1
+```
+
+Kyverno's structural schemas also enable integrated help in Kubernetes-enabled IDEs such as [VS Code](https://code.visualstudio.com/) with the [Kubernetes Extension](https://code.visualstudio.com/docs/azure/kubernetes#_install-the-kubernetes-extension).

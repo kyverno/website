@@ -210,37 +210,86 @@
 # Policy types reorganization
 [[redirects]]
   from = "/docs/policy-types/cel-policies/cleanup-policy"
-  to = "/docs/policy-types/cleanup-policy"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cleanup-policy/"
   status = 301
   force = true
 
 [[redirects]]
   from = "/docs/policy-types/cluster-policy/policy-rules"
-  to = "/docs/policy-types/cluster-policy/overview"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/"
   status = 301
   force = true
 
 [[redirects]]
   from = "/docs/policy-types/cluster-policy/policy-rules/*"
-  to = "/docs/policy-types/cluster-policy/overview"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/"
   status = 301
   force = true
 
 [[redirects]]
   from = "/docs/policy-types/cluster-policy/verify-images"
-  to = "/docs/policy-types/cluster-policy/verify-images/overview"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/verify-images/overview/"
   status = 301
   force = true
 
 [[redirects]]
   from = "/docs/policy-types/cluster-policy/verify-images/notary/*"
-  to = "/docs/policy-types/cluster-policy/verify-images/notary"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/verify-images/notary/"
   status = 301
   force = true
 
 [[redirects]]
   from = "/docs/policy-types/cluster-policy/verify-images/sigstore/*"
-  to = "/docs/policy-types/cluster-policy/verify-images/sigstore"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/verify-images/sigstore/"
+  status = 301
+  force = true
+
+# Removed reference pages remain available on the versioned documentation site.
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cluster-policy/*"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cleanup-policy"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cleanup-policy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/cleanup-policy/*"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cleanup-policy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/reference/kyverno_jp"
+  to = "https://release-1-18-0.kyverno.io/docs/kyverno-cli/reference/kyverno_jp/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/reference/kyverno_jp_function"
+  to = "https://release-1-18-0.kyverno.io/docs/kyverno-cli/reference/kyverno_jp_function/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/reference/kyverno_jp_parse"
+  to = "https://release-1-18-0.kyverno.io/docs/kyverno-cli/reference/kyverno_jp_parse/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/kyverno-cli/reference/kyverno_jp_query"
+  to = "https://release-1-18-0.kyverno.io/docs/kyverno-cli/reference/kyverno_jp_query/"
   status = 301
   force = true
 

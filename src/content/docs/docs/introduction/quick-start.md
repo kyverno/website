@@ -35,6 +35,10 @@ metadata:
 spec:
   validationActions:
     - Deny
+  autogen:
+    podControllers:
+      controllers:
+        - deployments
   matchConstraints:
     resourceRules:
       - apiGroups: ['']
@@ -53,17 +57,7 @@ Try creating a Deployment without the required label.
 kubectl create deployment nginx --image=nginx
 ```
 
-You should see an error.
-
-```sh
-error: failed to create deployment: admission webhook "validate.kyverno.svc-fail" denied the request:
-
-resource Deployment/default/nginx was blocked due to the following policies:
-
-require-labels:
-  autogen-check-team: 'validation error: label ''team'' is
-    required. Rule autogen-check-team failed at path /spec/template/metadata/labels/team/'
-```
+The admission request should be denied with the message `label 'team' is required`.
 
 In addition to the error returned, Kyverno also produces an Event in the same Namespace which contains this information.
 
@@ -71,7 +65,7 @@ In addition to the error returned, Kyverno also produces an Event in the same Na
 Kyverno may be configured to exclude system Namespaces like `kube-system` and `kyverno`. Make sure you create the Deployment in a user-defined Namespace or the `default` Namespace (for testing only).
 :::
 
-Note that how although the policy matches on Pods, Kyverno blocked the Deployment you just created. This is because Kyverno intelligently applies policies written exclusively for Pods, using its [rule auto-generation](/docs/policy-types/cluster-policy/autogen) feature, to all standard Kubernetes Pod controllers including the Deployment above.
+Although the policy matches on Pods, Kyverno can also apply it to Pod controllers such as Deployments using [auto-generation](/docs/policy-types/validating-policy#autogen).
 
 Now, create a Pod with the required label.
 
@@ -94,26 +88,7 @@ NAME                                   KIND         NAME     PASS   FAIL   WARN 
 89044d72-8a1e-4af0-877b-9be727dc3ec4   Pod          nginx    1      0      0      0       0      15s
 ```
 
-If you were to describe the above policy report you would see more information about the policy and resource.
-
-```yaml
-Results:
-  Message: validation rule 'check-team' passed.
-  Policy: require-labels
-  Resources:
-    API Version: v1
-    Kind: Pod
-    Name: nginx
-    Namespace: default
-    UID: 07d04dc0-fbb4-479a-b049-a3d63342b354
-  Result: pass
-  Rule: check-team
-  Scored: true
-  Source: kyverno
-  Timestamp:
-    Nanos: 0
-    Seconds: 1683759146
-```
+Use `kubectl get policyreport -o yaml` to inspect the result. Its `scope` identifies the Pod, and its `results` list identifies the `require-labels` policy with `result: pass`.
 
 Policy reports are helpful in that they are both user- and tool-friendly, based upon an open standard, and separated from the policies which produced them. This separation has the benefit of report access being easy to grant and manage for other users who may not need or have access to Kyverno policies.
 

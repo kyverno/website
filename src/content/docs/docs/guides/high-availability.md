@@ -18,7 +18,7 @@ Kyverno consists of four different Deployments where each Deployment runs a cont
 - Processes validate, mutate, and image validating rules.
 - Manages and renews certificates as Kubernetes Secrets for webhook use through the embedded Cert Renewer.
 - Manages and configures webhook rules dynamically based on installed policies through the embedded Webhook Controller.
-- Performs policy validation for the `Policy`, `ClusterPolicy`, `ValidatingPolicy`, `ImageValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy`, and `PolicyException` custom resources.
+- Performs policy validation for the `ValidatingPolicy`, `ImageValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy`, and `PolicyException` custom resources and their namespaced variants.
 - Processes Policy Exceptions.
 - Generates `EphemeralReport` and `ClusterEphemeralReport` intermediary resources for further processing by the Reports Controller.
 - Generates `UpdateRequest` intermediary resources for further processing by the Background Controller.
@@ -30,7 +30,7 @@ Kyverno consists of four different Deployments where each Deployment runs a cont
 
 ### Background Controller
 
-- Processes generate and mutate-existing rules of the `Policy` or `ClusterPolicy`, and the mutate-existing functionality of the `MutatingPolicy` and `GeneratingPolicy`.
+- Processes resource generation for `GeneratingPolicy` and mutation of existing resources for `MutatingPolicy`.
 - Processes policy add, update, and delete events.
 - Processes and generates `UpdateRequest` intermediary resources to generate or mutate the final resource.
 - Generates `EphemeralReport` and `ClusterEphemeralReport` intermediary resources for further processing by the Reports Controller.
@@ -38,12 +38,9 @@ Kyverno consists of four different Deployments where each Deployment runs a cont
 
 ### Cleanup Controller
 
-- Processes `CleanupPolicy` and `DeletingPolicy` resources.
-- Performs policy validation for the CleanupPolicy and ClusterCleanupPolicy custom resources through a webhook server.
-- Reconciles its webhook through a webhook controller.
-- Manages and renews certificates as Kubernetes Secrets for use in the webhook.
-- Creates and reconciles CronJobs used as the mechanism to trigger cleanup.
-- Handles the cleanup by deleting resources from the Kubernetes API.
+- Processes scheduled resource deletion for [DeletingPolicy](/docs/policy-types/deleting-policy).
+- Handles [TTL cleanup](/docs/guides/ttl-cleanup) of labeled resources.
+- Deletes matching resources through the Kubernetes API, subject to the controller's permissions.
 
 ## How HA works in Kyverno
 
@@ -71,9 +68,7 @@ Multiple replicas configured for the background controller can only be used for 
 
 ### Cleanup Controller
 
-The Cleanup Controller is responsible for handling of the cleanup policies via creation of the intermediate CronJobs and performing the actual deletions against the API server. It has components which require leader election (certificate and webhook management) and those which do not (cleanup handler).
-
-Multiple replicas configured for the cleanup controller can be used for both availability and scale. Clusters with many concurrent cleanup invocations will see increased throughput when multiple replicas are configured, however only a single replica will handle a given deletion according to a cleanup rule as CronJobs are created and managed on a 1:1 basis. Vertical scaling of the individual replicas' resources may also be performed to increase combined job throughput.
+The Cleanup Controller processes scheduled deletions and TTL cleanup against the Kubernetes API. Configure replicas for availability and monitor deletion latency and controller resource usage when sizing this component. Additional replicas do not imply that the same scheduled deletion should run more than once.
 
 ## Installing Kyverno in HA mode
 

@@ -302,7 +302,7 @@ By default, a Kyverno installation does not configure NetworkPolicies (see [this
 Without a NetworkPolicy, the webhook is reachable from any pod and its outbound traffic is unrestricted. Several mitigations in the [Threat Model](#threat-model) below assume a NetworkPolicy is in place, leaving these risks:
 
 - Direct webhook access (Threat IDs 1, 2, 8, 9): Kyverno does not authenticate the API server, so any pod that reaches port 9443 can flood the webhook or send arbitrary `AdmissionReview` requests.
-- Data exfiltration (Threat ID 18): Policies can send admission-request data to any reachable endpoint, including cloud metadata and link-local addresses. This covers [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) with `apiCall.service.url` and the CEL [HTTP library](/docs/policy-types/cel-libraries#http-library) (`http.Get()` / `http.Post()`).
+- Data exfiltration (Threat ID 18): Policies can send admission-request data to any reachable endpoint, including cloud metadata and link-local addresses, using the CEL [HTTP library](/docs/policy-types/cel-libraries#http-library) (`http.Get()` / `http.Post()`). [GlobalContextEntry](/docs/policy-types/global-context-caching) can also contact external endpoints to refresh cached data.
 - Controller compromise (Threat ID 4): The controller can modify Kyverno policies and its own `MutatingWebhookConfiguration` / `ValidatingWebhookConfiguration`, so a compromised pod can silently change what the cluster enforces. With no egress policy, it can also reach the API server and other internal services.
 
 To mitigate, configure a NetworkPolicy allowing only the flows listed below.
@@ -312,9 +312,9 @@ Kyverno requires the following network communications to be allowed:
 - ingress traffic to port 9443 from the API server
 - ingress traffic to port 9443 from the host for health checks
 - ingress traffic to port 8000 if metrics are collected by Prometheus or other metrics collectors
-- egress traffic to the API server if the [API Call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) feature is used
-- egress (HTTPS) traffic to OCI registries if [image verification](/docs/policy-types/cluster-policy/verify-images/overview) policy rules are configured or if [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries) are used
-- egress (HTTP or HTTPS) traffic to external services if the [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) feature is used
+- egress traffic to the API server for normal controller operation and [resource lookups](/docs/policy-types/cel-libraries#resource-library)
+- egress (HTTPS) traffic to OCI registries for [image verification](/docs/policy-types/image-validating-policy) or [image metadata lookups](/docs/policy-types/cel-libraries#image-library)
+- egress (HTTP or HTTPS) traffic to external services if the [HTTP library](/docs/policy-types/cel-libraries#http-library) or external [global context sources](/docs/policy-types/global-context-caching) are used
 
 The sample manifests in the next section implement these flows.
 
@@ -337,10 +337,10 @@ The samples assume Kyverno is installed in the `kyverno` namespace. Each control
 
 Egress requirements are shared across all four controllers:
 
-- **Kubernetes API server** for list/watch and the [`apiCall` context variable](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls)
+- **Kubernetes API server** for list/watch and CEL [resource lookups](/docs/policy-types/cel-libraries#resource-library)
 - **DNS**
-- **OCI registries** for [image verification](/docs/policy-types/cluster-policy/verify-images/overview) and [image registry context variables](/docs/policy-types/cluster-policy/external-data-sources#variables-from-image-registries)
-- **External HTTPS endpoints** for [external service calls](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) and the [CEL HTTP library](/docs/policy-types/cel-libraries#http-library). If you use plain HTTP for either, add a port 80 rule to the egress policy below.
+- **OCI registries** for [image verification](/docs/policy-types/image-validating-policy) and [image metadata lookups](/docs/policy-types/cel-libraries#image-library)
+- **External HTTPS endpoints** for [global context sources](/docs/policy-types/global-context-caching) and the [CEL HTTP library](/docs/policy-types/cel-libraries#http-library). If you use plain HTTP for either, add a port 80 rule to the egress policy below.
 
 The samples use the labels from a default install, where `app.kubernetes.io/instance` and `app.kubernetes.io/part-of` are both `kyverno`. If you used a different release name, these values will differ. Check the actual labels on your pods and copy them into the manifests before applying:
 
@@ -462,7 +462,7 @@ spec:
 :::caution[Replace before applying]
 
 - These samples use the same object names as the chart-generated NetworkPolicies. If you have `networkPolicy.enabled: true` in the chart, do not also apply the ingress samples above, or `kubectl apply` will conflict with the chart and the next `helm upgrade` will overwrite your changes.
-- `203.0.113.10/32` is a documentation placeholder from the [RFC 5737](https://datatracker.ietf.org/doc/html/rfc5737) TEST-NET-3 range. This rule is required for normal controller operation, not only when an [`apiCall`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-kubernetes-api-server-calls) context variable is used. Replace it with the CIDR your CNI evaluates for traffic from Kyverno pods to the Kubernetes API server. Depending on the cluster and where NetworkPolicy is enforced relative to Service DNAT, this may be the `kubernetes.default` Service ClusterIP, the post-DNAT control-plane endpoint, or both. Use these commands to find the possible destinations:
+- `203.0.113.10/32` is a documentation placeholder from the [RFC 5737](https://datatracker.ietf.org/doc/html/rfc5737) TEST-NET-3 range. This rule is required for normal controller operation, not only for CEL [resource lookups](/docs/policy-types/cel-libraries#resource-library). Replace it with the CIDR your CNI evaluates for traffic from Kyverno pods to the Kubernetes API server. Depending on the cluster and where NetworkPolicy is enforced relative to Service DNAT, this may be the `kubernetes.default` Service ClusterIP, the post-DNAT control-plane endpoint, or both. Use these commands to find the possible destinations:
 
   ```sh
   # Kubernetes Service ClusterIP
@@ -477,7 +477,7 @@ spec:
 
 - `monitoring` is a placeholder for the namespace hosting Prometheus. Replace it with your metrics-scrape namespace.
 - The DNS rule assumes `k8s-app: kube-dns` pods in `kube-system`. This matches kubeadm, GKE, EKS, and AKS. On OpenShift, replace the podSelector with `dns.operator.openshift.io/daemonset-dns: default` and the namespaceSelector with `kubernetes.io/metadata.name: openshift-dns`.
-- The `0.0.0.0/0` block excludes RFC1918 by default. RFC1918 typically covers your pod and service CIDRs. Add an explicit allow rule above it for in-cluster destinations such as a mirror registry or an [external service call](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls).
+- The `0.0.0.0/0` block excludes RFC1918 by default. RFC1918 typically covers your pod and service CIDRs. Add an explicit allow rule above it for in-cluster destinations such as a mirror registry or a service contacted using the [HTTP library](/docs/policy-types/cel-libraries#http-library).
 
 :::
 
@@ -551,7 +551,7 @@ Kyverno creates the following validating webhook configurations:
 
 #### Webhook Failure Mode
 
-Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings). Kyverno uses the configured policy set to automatically configure webhooks.
+Kyverno policies are configured to **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/installation/customization#webhooks). Kyverno uses the configured policy set to automatically configure webhooks.
 
 #### Webhook authentication and encryption
 
@@ -581,7 +581,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/installation/customization#webhooks). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 2 - Attacker passes workloads which require complex processing causing timeouts
 
@@ -591,7 +591,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/installation/customization#webhooks). Kyverno uses the configured policy set to automatically configure webhooks.
 
 - [Mitigation ID 3 - Webhook authenticates callers](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-3---webhook-authenticates-callers)
 
@@ -625,7 +625,7 @@ The sections below list each threat, mitigation, and provide Kyverno specific de
 
 - [Mitigation ID 2 - Webhook fails closed](https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/admission-control/kubernetes-admission-control-threat-model.md#mitigation-id-2---webhook-fails-closed)
 
-  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/policy-types/cluster-policy/policy-settings). Kyverno uses the configured policy set to automatically configure webhooks.
+  Kyverno policies are configured **fail-closed** by default. This setting can be tuned on a [per policy basis](/docs/installation/customization#webhooks). Kyverno uses the configured policy set to automatically configure webhooks.
 
 ### Threat ID 6 - Attacker gains access to a cluster admin credential
 

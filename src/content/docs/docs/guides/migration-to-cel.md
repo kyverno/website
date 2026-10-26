@@ -7,7 +7,7 @@ excerpt: Complete guide for migrating from `ClusterPolicy` to CEL-based policy t
 This guide helps you migrate from `ClusterPolicy` to the new CEL-based [policy types](/docs/policy-types/overview/).
 
 :::caution[Deprecation Notice]
-`ClusterPolicy`, `Policy`, `CleanupPolicy`, and the legacy `kyverno.io` PolicyException are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. The CEL-based policy types provide full feature parity as of v1.19. Plan your migration now — see the [deprecation schedule](/docs/policy-types/overview#deprecation-schedule-for-legacy-types).
+`ClusterPolicy`, `Policy`, `CleanupPolicy`, and the legacy `kyverno.io` PolicyException are deprecated as of Kyverno v1.19 and will be **removed in v1.20**. The CEL-based policy types provide full feature parity as of v1.19. Plan your migration now — see the [deprecation schedule](https://release-1-18-0.kyverno.io/docs/policy-types/overview#deprecation-schedule-for-legacy-types).
 :::
 
 :::note[Tip]
@@ -24,7 +24,7 @@ Use `kubectl explain cpol.spec` for help on the ClusterPolicy schema.
 
 **ClusterPolicy Structure**
 
-A ClusterPolicy contains an [orderered list of rules](/docs/policy-types/cluster-policy/overview/) and [common settings](/docs/policy-types/cluster-policy/policy-settings/).
+A ClusterPolicy contains an [orderered list of rules](https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/) and [common settings](https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/policy-settings/).
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -322,7 +322,7 @@ kyverno test . --warnings-as-errors
 
 **Tracking Usage with Metrics**
 
-The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
+The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](https://release-1-18-0.kyverno.io/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
 
 The counter only records active requests, so it cannot report legacy policies that already exist but that nobody is currently writing. The `kyverno_legacy_policies_total` gauge, labeled by `group` and `kind`, reports the legacy policy resources present in the cluster at rest and returns to `0` once you migrate or delete them. Use it to answer "have I migrated everything yet?":
 
@@ -336,7 +336,7 @@ Alert while any legacy policy remains, so the migration is completed before you 
 sum(kyverno_legacy_policies_total) > 0
 ```
 
-See the [metrics reference](/docs/reference/metrics#legacy-policies-count) for details.
+See the [metrics reference](https://release-1-18-0.kyverno.io/docs/reference/metrics#legacy-policies-count) for details.
 
 **Startup Signals**
 

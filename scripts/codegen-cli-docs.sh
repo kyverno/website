@@ -70,7 +70,6 @@ find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r
   # Convert external https://kyverno.io/docs/... links to relative /docs/... links
   # Convert https://kyverno.io/docs/kyverno-cli/usage/apply/ to /docs/kyverno-cli/reference/kyverno_apply
   sed_in_place 's|https://kyverno.io/docs/kyverno-cli/usage/apply/|/docs/kyverno-cli/reference/kyverno_apply|g' "$file"
-  sed_in_place 's|https://kyverno.io/docs/kyverno-cli/usage/jp/|/docs/kyverno-cli/reference/kyverno_jp|g' "$file"
   sed_in_place 's|https://kyverno.io/docs/kyverno-cli/usage/test/|/docs/kyverno-cli/reference/kyverno_test|g' "$file"
   # Convert https://kyverno.io/docs/kyverno-cli (with optional hash) to /docs/subprojects/kyverno-cli
   # Use extended regex (-E) for the optional group
@@ -79,3 +78,18 @@ find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r
   # Remove "For more information visit..." lines
   sed_in_place '/^[[:space:]]*For more information visit/d' "$file"
 done
+
+# The jp command reference is exclusively about JMESPath. Strip its generated
+# reference pages and links so running this generator cannot reintroduce that guidance.
+rm -f ./src/content/docs/docs/kyverno-cli/reference/kyverno_jp*.md
+find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r file; do
+  sed_in_place '\|^\* \[kyverno jp\](/docs/kyverno-cli/reference/kyverno_jp)|d' "$file"
+done
+
+# Keep the migrate example focused on a supported CEL policy resource. Generated CLI
+# versions may document a legacy PolicyException here, so normalize it explicitly.
+if [[ -f ./src/content/docs/docs/kyverno-cli/reference/kyverno_migrate.md ]]; then
+  sed_in_place -E \
+    's/^[[:space:]]*# Migrate policy exceptions$/  # Migrate CEL policies/; s/kyverno migrate --resource policyexceptions\.kyverno\.io/kyverno migrate --resource validatingpolicies.policies.kyverno.io/' \
+    ./src/content/docs/docs/kyverno-cli/reference/kyverno_migrate.md
+fi

@@ -142,8 +142,8 @@ metricsConfig:
   # For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics)
   metricsExposure:
     # Counter disabled
-    # See [Policies and Rules Count](/docs/reference/metrics#policies-and-rules-count) for details
-    kyverno_policy_rule_info_total:
+    # See [Validating Policy Results](/docs/reference/metrics#validating-policy-results) for details
+    kyverno_validating_policy_results:
       enabled: false
     # Histogram disabled
     # See [Admission Review Latency](/docs/reference/metrics#admission-review-latency) for details
@@ -155,8 +155,8 @@ metricsConfig:
       disabledLabelDimensions:
         ['resource_namespace', 'resource_kind', 'resource_request_operation']
     # Histogram with custom boundaries and dimensions
-    # See [Policy Rule Execution Latency](/docs/reference/metrics#policy-rule-execution-latency) for details
-    kyverno_policy_execution_duration_seconds:
+    # See [Validating Policy Execution Latency](/docs/reference/metrics#validating-policy-execution-latency) for details
+    kyverno_validating_policy_execution_duration_seconds:
       disabledLabelDimensions:
         ['resource_kind', 'resource_namespace', 'resource_request_operation']
       bucketBoundaries: [0.005, 0.01, 0.025]
@@ -177,10 +177,8 @@ Disabling select metrics with [DataDog OpenMetrics](https://docs.datadoghq.com/i
 
 **Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics):
 
-- [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
 - [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
-- [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_validating_policy_results_total`](/docs/reference/metrics#validating-policy-results) - Validating Policy Results
 
 ```yaml
 apiVersion: v1
@@ -196,9 +194,7 @@ metadata:
               "openmetrics_endpoint": "http://%%host%%:8000/metrics",                                                                                        
               "namespace": "kyverno",                                                                                                                        
               "metrics": [                                                                                                                                   
-                {"kyverno_policy_rule_info_total": "policy_rule_info"},                                                                                      
-                {"kyverno_admission_requests": "admission_requests"},                                                                                        
-                {"kyverno_policy_changes": "policy_changes"}                                                                                                 
+                {"kyverno_admission_requests": "admission_requests"}
               ],                                                                                                                                             
               "exclude_labels": [                                                                                                                            
                 "resource_namespace"                                                                                                                         
@@ -208,7 +204,7 @@ metadata:
               "openmetrics_endpoint": "http://%%host%%:8000/metrics",                                                                                        
               "namespace": "kyverno",                                                                                                                        
               "metrics": [                                                                                                                                   
-                {"kyverno_policy_results": "policy_results"}                                                                                                 
+                {"kyverno_validating_policy_results": "validating_policy_results"}
               ]                                                                                                                                              
             }                                                                                                                                                
           ]                                                                                                                                                  
@@ -220,10 +216,8 @@ The Kyverno Helm chart supports including additional Pod annotations in the valu
 
 **Note:** For detailed information about these metrics, see the [Metrics Reference](/docs/reference/metrics):
 
-- [`kyverno_policy_rule_info_total`](/docs/reference/metrics#policies-and-rules-count) - Policies and Rules Count
 - [`kyverno_admission_requests`](/docs/reference/metrics#admission-requests-count) - Admission Requests Count
-- [`kyverno_policy_changes`](/docs/reference/metrics#policy-changes-count) - Policy Changes Count
-- [`kyverno_policy_results`](/docs/reference/metrics#policy-and-rule-execution) - Policy and Rule Execution
+- [`kyverno_validating_policy_results_total`](/docs/reference/metrics#validating-policy-results) - Validating Policy Results
 
 ```yaml
 podAnnotations:
@@ -238,9 +232,7 @@ podAnnotations:
             "openmetrics_endpoint": "http://%%host%%:8000/metrics",
             "namespace": "kyverno",
             "metrics": [
-              {"kyverno_policy_rule_info_total": "policy_rule_info"},
-              {"kyverno_admission_requests": "admission_requests"},
-              {"kyverno_policy_changes": "policy_changes"}
+              {"kyverno_admission_requests": "admission_requests"}
             ],
             "exclude_labels": [
               "resource_namespace"
@@ -250,7 +242,7 @@ podAnnotations:
             "openmetrics_endpoint": "http://%%host%%:8000/metrics",
             "namespace": "kyverno",
             "metrics": [
-              {"kyverno_policy_results": "policy_results"}
+              {"kyverno_validating_policy_results": "validating_policy_results"}
             ]
           }
         ]
@@ -730,12 +722,12 @@ Additional commented-out example rules are in the chart's `values.yaml` under `p
 
 ### Key Metrics
 
-| Metric                                      | Type      | Description                                                                                            |
-| ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ |
-| `kyverno_admission_review_duration_seconds` | Histogram | End-to-end admission review latency (all policies combined)                                            |
-| `kyverno_policy_execution_duration_seconds` | Histogram | Per-rule execution latency, labelled by `rule_type`                                                    |
-| `kyverno_admission_requests_total`          | Counter   | Total admission requests, labelled by `resource_kind`, `resource_request_operation`, `request_allowed` |
-| `kyverno_policy_results_total`              | Counter   | Policy evaluation results, labelled by `rule_result`, `rule_execution_cause`                           |
+| Metric                                                 | Type      | Description                                                                                            |
+| ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------ |
+| `kyverno_admission_review_duration_seconds`            | Histogram | End-to-end admission review latency (all policies combined)                                            |
+| `kyverno_validating_policy_execution_duration_seconds` | Histogram | ValidatingPolicy evaluation latency, labelled by `policy_name`                                         |
+| `kyverno_admission_requests_total`                     | Counter   | Total admission requests, labelled by `resource_kind`, `resource_request_operation`, `request_allowed` |
+| `kyverno_validating_policy_results_total`              | Counter   | ValidatingPolicy results, labelled by `result` and `execution_cause`                                   |
 
 Both histogram metrics expose `_bucket`, `_sum`, and `_count` series, so `histogram_quantile` is supported.
 
@@ -748,7 +740,7 @@ Both histogram metrics expose `_bucket`, `_sum`, and `_count` series, so `histog
 **Possible causes:**
 
 - Surge in admission request volume (check `sum(rate(kyverno_admission_requests_total[5m]))`)
-- Policy count or complexity increased recently (check `kyverno_policy_changes_total`)
+- Policy count or complexity increased recently (inspect installed policies and recent GitOps changes)
 - Kyverno pods under-resourced (check CPU throttling and memory pressure)
 - External data source calls (global context entries, API calls) adding latency
 
@@ -773,18 +765,18 @@ kubectl get events -n kyverno --sort-by='.lastTimestamp' | tail -20
 
 **Possible causes:**
 
-- Complex CEL or JMESPath expressions with large context
+- Complex CEL expressions with large context
 - Global context entry fetches (external API calls per rule evaluation)
 
 **Diagnosis:**
 
 ```sh
 kubectl exec -n kyverno deploy/kyverno -c kyverno -- \
-  curl -s localhost:8000/metrics | grep policy_execution_duration
+  curl -s localhost:8000/metrics | grep -E '(validating|mutating|generating|image_validating)_policy_execution_duration'
 ```
 
 **Mitigations:**
 
-1. Identify the slow rule type from the `rule_type` label on the alert
-2. For `generate` rules: ensure deferred generation is enabled (`spec.generateExisting: false` where appropriate)
-3. For `mutate` rules with external lookups: cache context data or move to background processing
+1. Identify the policy from the `policy_name` label and the policy-specific execution metric
+2. For [GeneratingPolicy](/docs/policy-types/generating-policy): review resource matching and existing-resource generation settings
+3. For [MutatingPolicy](/docs/policy-types/mutating-policy) with external lookups: cache context data or move to background processing where appropriate
