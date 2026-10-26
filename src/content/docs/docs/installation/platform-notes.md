@@ -184,5 +184,6 @@ Alternatively, using `jq`:
 
 ```bash
 kubectl get validatingwebhookconfigurations kyverno-resource-validating-webhook-cfg -o json \
-  | jq '.webhooks[] | select(.name=="protect-generation-labels.kyverno.svc") | {name, failurePolicy}'
+  | jq -e '.webhooks[] | select(.name=="protect-generation-labels.kyverno.svc" and .failurePolicy=="Fail")' >/dev/null \
+  || echo "protect-generation-labels is missing or not Fail" >&2
 ```
