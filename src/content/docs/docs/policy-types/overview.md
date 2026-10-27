@@ -6,9 +6,9 @@ sidebar:
   order: 1
 ---
 
-Kyverno offers multiple policy types decribed below. Kyverno's mission is to be the best policy engine for Kubernetes, and allow applying Kubernetes style policies everywhere incuding outside of Kubernetes.
+Kyverno offers multiple policy types described below. Kyverno's mission is to be the best policy engine for Kubernetes, and allow applying Kubernetes style policies everywhere including outside of Kubernetes.
 
-As Kubernetes has evolved, Kyverno has also evolved its APIs. Kyverno initially supported JMESPath as a fast and effecient JSON processing language. Since 2022, Kubernetes has added [extensive support for Common Expression Language (CEL)](https://kubernetes.io/docs/reference/using-api/cel/). Hence, Kyverno has also evolved to fully support CEL. This shift allows Kyverno to maintain native compatibility and reduces the cognitive load for platform teams as there is one less thing to learn!
+As Kubernetes has evolved, Kyverno has also evolved its APIs. Kyverno initially supported JMESPath as a fast and efficient JSON processing language. Since 2022, Kubernetes has added [extensive support for Common Expression Language (CEL)](https://kubernetes.io/docs/reference/using-api/cel/). Hence, Kyverno has also evolved to fully support CEL. This shift allows Kyverno to maintain native compatibility and reduces the cognitive load for platform teams as there is one less thing to learn!
 
 The new CEL based Kyverno [ValidatingPolicy](/docs/policy-types/validating-policy) and [ImageValidatingPolicy](/docs/policy-types/image-validating-policy) types were introduced in v1.14 (April 2025), and [MutatingPolicy](/docs/policy-types/mutating-policy), [GeneratingPolicy](/docs/policy-types/generating-policy), and [DeletingPolicy](/docs/policy-types/deleting-policy) were added in v1.15 (July 2025).
 
