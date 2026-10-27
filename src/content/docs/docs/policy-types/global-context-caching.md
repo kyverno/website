@@ -24,8 +24,9 @@ variable and reference it through `variables.<name>`.
 
 Before configuring a `GlobalContextEntry`, ensure the following:
 
-- **Kyverno >= 1.12.0** is installed in your cluster (`GlobalContextEntry`
-  was introduced in this release). Verify your version with:
+- **Kyverno >= 1.18.0** is installed in your cluster for the
+  `policies.kyverno.io/v1` CEL policy examples on this page.
+  `GlobalContextEntry` itself was introduced in v1.12.0. Verify your version with:
 
   ```bash
   # Linux/macOS
