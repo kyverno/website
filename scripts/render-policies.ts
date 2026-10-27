@@ -4,7 +4,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as yaml from 'js-yaml'
 
-import simpleGit from 'simple-git'
+import { simpleGit } from 'simple-git'
 
 // Schema constants - keep these in sync with src/content.config.ts
 // These can be easily updated if the schema changes
