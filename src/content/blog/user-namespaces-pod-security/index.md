@@ -53,7 +53,7 @@ The policy version comes from the `pod-security.kubernetes.io/<MODE>-version` Na
 
 The Kyverno `kyverno-policies` Helm chart didn't look at `hostUsers`, so its policies kept rejecting these Pods. The chart now has a `podSecurityUserNamespaces` setting. It defaults to `false` because it accepts Pods that were rejected before, and loosening a security policy should be a deliberate choice. Upgrading the chart alone changes nothing.
 
-When you set it to `true`, three `ValidatingPolicy` resources skip their check for Pods that use a user namespace:
+When you set it to `true`, up to three `ValidatingPolicy` resources skip their check for Pods that use a user namespace. `disallow-proc-mount` relaxes only when Restricted policies aren't installed, as explained in the next section.
 
 | Policy                         | Profile    | Relaxed field  |
 | ------------------------------ | ---------- | -------------- |
@@ -61,7 +61,7 @@ When you set it to `true`, three `ValidatingPolicy` resources skip their check f
 | `require-run-as-non-root-user` | Restricted | `runAsUser`    |
 | `disallow-proc-mount`          | Baseline   | `procMount`    |
 
-Each policy gets one guard at the start of its CEL expression:
+Only policies that support user namespace relaxation get the following guard at the start of their CEL expression:
 
 ```cel
 object.spec.?hostUsers.orValue(true) == false ||
@@ -164,13 +164,14 @@ The other cases follow the same pattern. Here's how PSA (policy v1.35+) and Kyve
 | Unmasked `/proc` with user namespace (Restricted) | Denied  | Denied            | Denied            |
 | Unmasked `/proc` with user namespace (Baseline)   | Allowed | Denied            | **Allowed**       |
 
-Once enabled, Kyverno matches PSA in every row.
+When each row is evaluated with only its corresponding profile's Kyverno policies installed, Kyverno matches PSA in every row.
 
 For more options, see the [Kyverno Pod Security guide](https://kyverno.io/docs/guides/pod-security/).
 
 ## Check these limits before production
 
 - **Kubernetes version:** The chart doesn't check your Pod Security Standards version. Turn the setting on only for clusters at Kubernetes v1.35 or later whose Namespaces don't pin an older `pod-security.kubernetes.io/<MODE>-version`, or Kyverno will allow Pods that PSA denies.
+- **PSA version pinning:** An upcoming chart release adds a `podSecurityVersion` setting ([kyverno/kyverno#18268](https://github.com/kyverno/kyverno/pull/18268)) to pin policy checks to a specific PSA version. With `latest` (the default), the relaxation works as described in this post. With a pinned version, it applies only to `v1.35` or later, matching PSA behavior. The relaxation remains opt-in: if you pin `v1.35` or later but leave `podSecurityUserNamespaces` set to `false`, Kyverno denies Pods with `hostUsers: false` that PSA allows.
 - **Policy type:** The setting applies only when `policyType` is `ValidatingPolicy`, the chart default. It has no effect on the deprecated `ClusterPolicy` templates or on policies installed with Kustomize. The `validate.podSecurity` rule in `ClusterPolicy` doesn't use this setting either. Starting with Kyverno v1.19.2, that rule applies the same relaxation on its own when its `version` is `latest` or v1.35 or later.
 - **Node support:** Admission can accept a Pod that a node can't start. Nodes need Linux 6.3 or later, filesystems with ID-mapped mount support, and a runtime such as containerd 2.0 or later or CRI-O 1.25 or later. Pods that use a user namespace also have their own [limitations](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations), such as no host networking or NFS volumes.
 
