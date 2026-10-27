@@ -14,6 +14,8 @@ Having the Node's zone information available to the Pods running on it can be im
 
 [Mutation](https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/mutate) of Pods is no great feat and Kyverno was one of the first admission controllers to offer it. Making calls to the Kubernetes API server is also well known and [Kyverno does that too](https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/external-data-sources). But, as those who have tried this before and failed, you don't know _what_ to ask for when you make that call. This is because the Kubernetes scheduler is the one to make the decision on which Node will receive the Pod. And understanding how and where the scheduler fits into the Pod lifecycle is both nuanced and not well documented, even in the official docs. So, without further ado, we'd like to present the complete(r) guide to how Pod scheduling actually works because this will be critical in understanding both why this is problematic and how you can do it with Kyverno. Pay attention to the step numbers on the sequence diagram as we'll reference these in the further discussion.
 
+<a id="pod-scheduling-in-kubernetes"></a>
+
 ## Pod Scheduling in Kubernetes
 
 Thanks to the magic of [Mermaid](https://mermaid.js.org/) for enabling a diagram like this written out of pure Markdown!
