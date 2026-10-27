@@ -1,5 +1,5 @@
 ---
-date: 2026-10-13
+date: 2026-10-27
 title: 'Enhancing Kyverno Pod Security with User Namespace Support'
 tags:
   - Security
@@ -79,19 +79,33 @@ Because each control is a separate Kyverno policy, relaxing `disallow-proc-mount
 
 ## Enable and test the setting
 
-You need Kyverno and a `kyverno-policies` chart release that includes the setting. The setting is available in `kyverno-policies` chart version 3.9.2 (Kyverno v1.19.2) and later. Use a cluster at Kubernetes v1.35 or later, so that PSA makes the same decisions.
+You need [Kyverno](/docs/installation/installation) and `kyverno-policies` chart version 3.9.2 (Kyverno v1.19.2) or later. If you also enforce PSA, its policy version must be v1.35 or later for both to make the same decisions.
 
-To check whether your Helm repository has the setting, run:
+Add the Kyverno Helm repository and check that it has the setting:
 
 ```sh
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
 helm show values kyverno/kyverno-policies | grep podSecurityUserNamespaces
 ```
 
-On a test cluster, install the Restricted policies in `Enforce` mode with the setting turned on. If you already use the chart, upgrade your existing release with `--reset-then-reuse-values --set policyType=ValidatingPolicy --set podSecurityUserNamespaces=true` instead. This keeps your current values, and setting `policyType` makes sure a release first installed with `ClusterPolicy` picks up the change. The `--reset-then-reuse-values` flag needs Helm 3.14 or later.
+On a test cluster, install the Restricted policies in `Enforce` mode with the setting turned on:
 
 ```sh
-helm upgrade --install kyverno-pss kyverno/kyverno-policies \
+helm install kyverno-pss kyverno/kyverno-policies \
   --namespace kyverno-policies --create-namespace \
+  --set podSecurityStandard=restricted \
+  --set validationFailureAction=Enforce \
+  --set podSecurityUserNamespaces=true
+```
+
+On a test cluster that already uses the chart, upgrade your existing release instead. The `--reset-then-reuse-values` flag keeps your current values and needs Helm 3.14 or later. Setting `policyType` makes sure that a release first installed with `ClusterPolicy` picks up the change.
+
+```sh
+helm upgrade kyverno-pss kyverno/kyverno-policies \
+  --namespace kyverno-policies \
+  --reset-then-reuse-values \
+  --set policyType=ValidatingPolicy \
   --set podSecurityStandard=restricted \
   --set validationFailureAction=Enforce \
   --set podSecurityUserNamespaces=true
