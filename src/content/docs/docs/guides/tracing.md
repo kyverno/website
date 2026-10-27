@@ -225,7 +225,7 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-Apply a [ValidatingPolicy](/docs/policy-types/validating-policy) with `validationActions: [Deny]` so validation happens during admission:
+Save the following [ValidatingPolicy](/docs/policy-types/validating-policy) as `disallow-privileged-containers.yaml`. Its `validationActions: [Deny]` setting enforces validation during admission:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -239,14 +239,22 @@ spec:
       - apiGroups: ['']
         apiVersions: ['v1']
         operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
+        resources: ['pods', 'pods/ephemeralcontainers']
   validations:
     - expression: >-
-        object.spec.containers.all(container,
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
           !has(container.securityContext) ||
           !has(container.securityContext.privileged) ||
           !container.securityContext.privileged)
       message: Privileged containers are not allowed.
+```
+
+Apply the policy to the cluster:
+
+```shell
+kubectl apply -f disallow-privileged-containers.yaml
 ```
 
 ### Create a Pod and observe the corresponding trace
@@ -454,7 +462,7 @@ EOF
 
 Finally we need to deploy some policies in the cluster so that Kyverno can configure admission webhooks accordingly.
 
-Apply a [ValidatingPolicy](/docs/policy-types/validating-policy) with `validationActions: [Deny]` so validation happens during admission:
+Save the following [ValidatingPolicy](/docs/policy-types/validating-policy) as `disallow-privileged-containers.yaml`. Its `validationActions: [Deny]` setting enforces validation during admission:
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -468,14 +476,22 @@ spec:
       - apiGroups: ['']
         apiVersions: ['v1']
         operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
+        resources: ['pods', 'pods/ephemeralcontainers']
   validations:
     - expression: >-
-        object.spec.containers.all(container,
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
           !has(container.securityContext) ||
           !has(container.securityContext.privileged) ||
           !container.securityContext.privileged)
       message: Privileged containers are not allowed.
+```
+
+Apply the policy to the cluster:
+
+```shell
+kubectl apply -f disallow-privileged-containers.yaml
 ```
 
 ### Create a Pod and observe the corresponding trace
