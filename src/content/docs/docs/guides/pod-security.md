@@ -42,22 +42,60 @@ _You can adjust the namespace as needed for your environment._
 
 For more options and advanced configuration, refer to the [Kyverno Policies Helm chart documentation](https://github.com/kyverno/kyverno/tree/main/charts/kyverno-policies).
 
+## PSA version pinning
+
+Kubernetes [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/) (PSA) checks can vary between Kubernetes versions. You can pin a Namespace to a specific version using the `pod-security.kubernetes.io/<MODE>-version` label. Set the `podSecurityVersion` Helm chart setting to the same version so that Kyverno applies the same checks as PSA.
+
+This setting will be available in a `kyverno-policies` chart release after version `3.9.2`. The setting also requires `policyType: ValidatingPolicy`, the chart default.
+
+The `podSecurityVersion` setting accepts the following values:
+
+- **`latest` (default):** Uses the cluster's Kubernetes minor version when the chart is rendered, while preserving allow-lists from earlier chart releases. As a result, it may allow Pods that PSA denies. After upgrading Kubernetes, run `helm upgrade` to update the rendered policies.
+- **A pinned version, such as `v1.30`:** Applies the checks for the specified PSA version. If the requested version is newer than the chart supports, the chart uses its newest supported version.
+
+For the policies that change between versions, see the [Kyverno Policies Helm chart documentation](https://github.com/kyverno/kyverno/tree/main/charts/kyverno-policies).
+
+To pin the version for an existing release, run:
+
+```sh
+helm upgrade kyverno-pss kyverno/kyverno-policies \
+  --namespace kyverno-policies \
+  --reset-then-reuse-values \
+  --set podSecurityVersion=v1.30
+```
+
+In a values file, quote the version:
+
+```yaml
+podSecurityVersion: 'v1.30'
+```
+
+To see which version each policy uses, inspect its `kyverno.io/pod-security-version` annotation:
+
+```sh
+kubectl get validatingpolicies.policies.kyverno.io \
+  -o custom-columns='NAME:.metadata.name,PSA_VERSION:.metadata.annotations.kyverno\.io/pod-security-version'
+```
+
 ## User namespaces
 
-A Pod that sets `spec.hostUsers` to `false` runs in its own [user namespace](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/), where root inside the container maps to an unprivileged user on the host. Kubernetes Pod Security Admission [relaxes some Pod Security Standards checks](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#integration-with-pod-security-admission-checks) for these Pods when the Pod Security Standards policy version is v1.35 or later. This is the policy version that the `pod-security.kubernetes.io/<MODE>-version` Namespace label selects, not the Kubernetes server version. When you set `podSecurityUserNamespaces` to `true`, the `kyverno-policies` chart relaxes the matching Kyverno policies regardless of policy version. The setting is disabled by default.
+A Pod that sets `spec.hostUsers: false` runs in its own [user namespace](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/), where root inside the container maps to an unprivileged user on the host. PSA [relaxes certain Pod Security Standards checks](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#integration-with-pod-security-admission-checks) for these Pods when the Pod Security Standards policy version is v1.35 or later. This is the policy version selected by the Namespace's `pod-security.kubernetes.io/<MODE>-version` label, not the Kubernetes server version.
+
+When `podSecurityUserNamespaces` is set to `true`, the `kyverno-policies` chart relaxes the corresponding Kyverno policy checks. This setting is disabled by default. In chart versions that support [`podSecurityVersion`](#psa-version-pinning), whether the relaxation applies also depends on that setting:
+
+- **`latest` (default):** The relaxation applies regardless of the Kubernetes version.
+- **A pinned version of `v1.35` or later:** The relaxation applies, matching PSA behavior for that policy version.
+- **A pinned version earlier than `v1.35`:** The relaxation does not apply, matching PSA behavior for that policy version.
+
+If you pin `podSecurityVersion` to `v1.35` or later but leave `podSecurityUserNamespaces` set to `false`, Kyverno denies Pods with `hostUsers: false` that PSA allows.
 
 ### Requirements
 
 - **Kubernetes support:** Linux nodes must support user namespaces. User namespaces are stable as of Kubernetes v1.36. For kernel, filesystem, and container runtime requirements, see [User Namespaces](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#before-you-begin) in the Kubernetes documentation.
 
-- **Helm chart version:** Use a `kyverno-policies` chart version that supports `podSecurityUserNamespaces`. Published chart versions up to and including `3.9.1` do not expose this setting. To check whether the setting is available, run:
+- **Helm chart version:** Use `kyverno-policies` chart version 3.9.2 (Kyverno v1.19.2) or later. Policies installed using Kustomize do not include this chart setting.
 
-  ```sh
-  helm repo update kyverno
-  helm show values kyverno/kyverno-policies | grep podSecurityUserNamespaces
-  ```
-
-  Policies installed using Kustomize do not include this chart setting.
+- **PSA policy version:** If you also enforce PSA, its policy version must be `v1.35` or later for both to make the same decisions.
 
 - **Policy type:** Set `policyType` to `ValidatingPolicy`, the chart default, which installs the policies as CEL-based `ValidatingPolicy` resources. The `podSecurityUserNamespaces` setting has no effect when `policyType` is `ClusterPolicy`, which installs the deprecated `ClusterPolicy` resources instead. For details, see [Migrating to CEL Policies](/docs/guides/migration-to-cel).
 
@@ -85,7 +123,7 @@ The `--reset-then-reuse-values` flag requires Helm v3.14 or later. It keeps the 
 
 ### Relaxed policies
 
-When `podSecurityUserNamespaces` is set to `true`, the following policies relax specific checks for Pods that set `spec.hostUsers: false`.
+When `podSecurityUserNamespaces` is set to `true` and `podSecurityVersion` is `latest` or a pinned `v1.35` or later, the following policies relax specific checks for Pods that set `spec.hostUsers: false`.
 
 | Policy                         | Profile    | Relaxed check                                |
 | ------------------------------ | ---------- | -------------------------------------------- |
@@ -96,7 +134,7 @@ When `podSecurityUserNamespaces` is set to `true`, the following policies relax 
 Pods that omit `spec.hostUsers` or set it to `true` remain subject to these checks. All other applicable policy checks continue to apply.
 
 :::note[Note]
-The **Restricted** profile requires the default `/proc` mount type, even for Pods using user namespaces. When `podSecurityUserNamespaces` is set to `true`, the chart enforces this requirement through the `disallow-proc-mount-strict` policy, which is never relaxed.
+The **Restricted** profile requires the default `/proc` mount type, even for Pods using user namespaces. When the relaxation applies, the chart enforces this requirement through the `disallow-proc-mount-strict` policy, which is never relaxed.
 
 The chart installs this policy when `podSecurityStandard` is set to `restricted`, when enabled through `includeRestrictedPolicies`, or when explicitly listed in `podSecurityPolicies` with the `custom` profile. If `disallow-proc-mount-strict` is installed, the `disallow-proc-mount` policy is not relaxed either.
 :::
@@ -161,7 +199,7 @@ Remove `hostUsers: false` from the manifest and run the same command again.
 
 **Expected result:** Kyverno denies the Pod because it violates the `require-run-as-nonroot` and `require-run-as-non-root-user` policies.
 
-If the results differ, check whether either policy uses `Audit` through `validationFailureActionByPolicy`, or whether the test Namespace is excluded through `vpolExclude` or `vpolExcludeByPolicy`. By default, Kyverno also excludes the `kube-system` Namespace and its own Namespace from these policies.
+If the results differ, check whether `podSecurityVersion` is pinned earlier than `v1.35`, whether either policy uses `Audit` through `validationFailureActionByPolicy`, or whether the test Namespace is excluded through `vpolExclude` or `vpolExcludeByPolicy`. By default, Kyverno also excludes the `kube-system` Namespace and its own Namespace from these policies.
 
 ## PSP migration
 
