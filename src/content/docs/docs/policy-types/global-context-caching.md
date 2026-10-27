@@ -430,7 +430,7 @@ spec:
 
 > **How the registry is extracted:** The CEL [image library](/docs/policy-types/cel-libraries#image-library) parses the image reference and returns its registry hostname.
 >
-> Ensure your `allowed_registries` list contains registry hostnames only
+> Ensure `variables.allowedRegistries` contains registry hostnames only
 > (e.g., `"internal-registry.io"`, `"gcr.io"`), not full image paths.
 
 ### 3. Caching RBAC or Organizational Metadata

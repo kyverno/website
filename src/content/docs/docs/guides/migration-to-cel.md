@@ -322,7 +322,13 @@ kyverno test . --warnings-as-errors
 
 **Tracking Usage with Metrics**
 
-The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. See the [metrics reference](https://release-1-18-0.kyverno.io/docs/reference/metrics#deprecated-api-requests-count) for details and example queries.
+The `kyverno_deprecated_api_requests_total` counter, labeled by `group`, `version`, `kind`, and `field`, tracks admission requests that use deprecated policy types or fields. Use it to confirm that nothing in the cluster still creates or updates legacy policies before upgrading. The `field` label is empty for requests using a deprecated kind; otherwise it identifies the deprecated field, such as `spec.validationFailureAction`.
+
+To count deprecated API requests over the last seven days, grouped by kind and version:
+
+```
+sum(increase(kyverno_deprecated_api_requests_total[7d])) by (kind, version)
+```
 
 The counter only records active requests, so it cannot report legacy policies that already exist but that nobody is currently writing. The `kyverno_legacy_policies_total` gauge, labeled by `group` and `kind`, reports the legacy policy resources present in the cluster at rest and returns to `0` once you migrate or delete them. Use it to answer "have I migrated everything yet?":
 
@@ -336,7 +342,7 @@ Alert while any legacy policy remains, so the migration is completed before you 
 sum(kyverno_legacy_policies_total) > 0
 ```
 
-See the [metrics reference](https://release-1-18-0.kyverno.io/docs/reference/metrics#legacy-policies-count) for details.
+The gauge is recomputed at scrape time. Its `group` label is `kyverno.io`, and its `kind` label identifies `ClusterPolicy`, `Policy`, `PolicyException`, `CleanupPolicy`, or `ClusterCleanupPolicy`. The admission controller exposes the first three kinds; the cleanup controller exposes the cleanup kinds. The `PolicyException` series requires the admission controller's `--enablePolicyException=true` flag.
 
 **Startup Signals**
 
