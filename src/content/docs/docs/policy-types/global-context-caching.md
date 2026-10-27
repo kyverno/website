@@ -414,13 +414,15 @@ spec:
       - apiGroups: ['']
         apiVersions: ['v1']
         operations: ['CREATE', 'UPDATE']
-        resources: ['pods']
+        resources: ['pods', 'pods/ephemeralcontainers']
   variables:
     - name: allowedRegistries
       expression: globalContext.Get("approved-registries-cache", "").allowed
   validations:
     - expression: >-
-        object.spec.containers.all(container,
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
           image(container.image).registry() in variables.allowedRegistries)
       message: 'The container image registry is not approved by enterprise security policy.'
 ```
