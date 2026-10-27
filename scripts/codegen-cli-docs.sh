@@ -83,7 +83,7 @@ done
 # reference pages and links so running this generator cannot reintroduce that guidance.
 rm -f ./src/content/docs/docs/kyverno-cli/reference/kyverno_jp*.md
 find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r file; do
-  sed_in_place '\|^\* \[kyverno jp\](/docs/kyverno-cli/reference/kyverno_jp)|d' "$file"
+  sed_in_place '/^\* \[kyverno jp\](\/docs\/kyverno-cli\/reference\/kyverno_jp)/d' "$file"
 done
 
 # Keep the migrate example focused on a supported CEL policy resource. Generated CLI
