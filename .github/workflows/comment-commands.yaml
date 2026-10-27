@@ -16,6 +16,7 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
+      statuses: write
     steps:
       - uses: jpmcb/prow-github-actions@187c5e3cd95a329c43448e1bdb3b1f5249232e44 # v3.0.1
         with:
