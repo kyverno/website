@@ -789,4 +789,35 @@ While GitOps is great at managing configurations, some changes such as label pro
 
 Kyverno's MutatingPolicies are designed to interoperate nicely with GitOps solutions.
 
-For comprehensive guidance on GitOps integration, including specific configurations for Flux and ArgoCD, see the [GitOps Considerations section](/docs/policy-types/cluster-policy/mutate#gitops-considerations) in the ClusterPolicy mutate documentation.
+Mutation changes a resource from the state stored in Git. Configure your GitOps controller to account for those changes so it does not repeatedly undo mutations and reconcile the same resource.
+
+### Flux
+
+[Flux](https://fluxcd.io/) uses server-side apply and dry-run requests to calculate differences. Kyverno processes mutation webhooks during dry runs, so Flux can compare the desired state with mutations included. This usually requires no special configuration.
+
+Dry runs still require policy evaluation. Balance the Flux synchronization interval against the additional admission load.
+
+### ArgoCD
+
+For Argo CD v2.10 and later, use Server-Side Diff and include mutation webhooks in the comparison:
+
+```yaml
+metadata:
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+```
+
+See [Notes for ArgoCD Users](/docs/installation/platform-notes#notes-for-argocd-users) and the [Argo CD diff documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/diff-strategies/).
+
+If server-side diff is unavailable, configure the Application's `ignoreDifferences` for fields owned by Kyverno. For example, to ignore a label added to Deployments:
+
+```yaml
+spec:
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - .metadata.labels.foo
+```
+
+Keep exclusions narrow so unrelated configuration drift remains visible.

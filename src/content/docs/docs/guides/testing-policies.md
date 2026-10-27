@@ -73,7 +73,7 @@ jobs:
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@v0.2.0
         with:
-          release: 'v1.11.0'
+          release: 'v1.19.0'
       - name: Check install
         run: kyverno version
       - name: Test new resources against existing policies

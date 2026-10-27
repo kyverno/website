@@ -119,7 +119,7 @@ spec:
      - Configure appropriate resource limits
      - Enable background processing where applicable
 
-For considerations when using Argo CD along with Kyverno mutate policies, see the documentation [here](/docs/policy-types/cluster-policy/mutate#argocd).
+For considerations when using Argo CD along with Kyverno mutating policies, see [GitOps Considerations](/docs/policy-types/mutating-policy#argocd).
 
 #### Resource Tracking and Ownership
 

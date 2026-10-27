@@ -86,7 +86,7 @@ The Kyverno website has established several writing conventions in the interest 
 
 ### Voice
 
-Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mutates incoming Pods..." and not "incoming Pods are mutated by this ClusterPolicy".
+Active voice is preferred in most writing examples. Ex., "this MutatingPolicy mutates incoming Pods..." and not "incoming Pods are mutated by this MutatingPolicy".
 
 ### Code styling
 

@@ -224,8 +224,6 @@ If an HTTPS endpoint uses a certificate signed by a private CA, use `http.Client
 
 The bundle must be a PEM string containing one or more `-----BEGIN CERTIFICATE-----` blocks. A non-empty bundle replaces the system root pool for that client, so it must include every CA required by the target endpoint. An empty string uses Kyverno's default HTTP client and system trust store.
 
-The same PEM format is accepted by [`apiCall.service.caBundle`](/docs/policy-types/cluster-policy/external-data-sources#variables-from-service-calls) in `ClusterPolicy` context entries.
-
 The following sample reads the CA bundle from a ConfigMap in the same namespace as the incoming Pod and uses it to call an internal HTTPS service. Kyverno's ServiceAccount must have permission to `get` ConfigMaps in the referenced namespace.
 
 ```yaml
@@ -465,7 +463,7 @@ The **GlobalContext library** introduces shared variables across policies throug
 To use this feature, first a `GlobalContextEntry` must be defined:
 
 ```yaml
-apiVersion: kyverno.io/v2alpha1
+apiVersion: kyverno.io/v2
 kind: GlobalContextEntry
 metadata:
   name: gctxentry-apicall-correct
@@ -481,7 +479,7 @@ The following policy ensures that a specific deployment exists before allowing P
 apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
-  name: cpol-apicall-correct
+  name: vpol-apicall-correct
 spec:
   matchConstraints:
     resourceRules:
