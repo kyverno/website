@@ -46,7 +46,7 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - name: Preview readiness classification
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
+        uses: kyverno/kyverno/.github/actions/pr-management@205e7368e7f6f52daf0bb405f32be6c22f65317a
         with:
           mode: readiness
           dry-run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
@@ -73,7 +73,7 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - name: Preview stale handling and reviewer reminders
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
+        uses: kyverno/kyverno/.github/actions/pr-management@205e7368e7f6f52daf0bb405f32be6c22f65317a
         with:
           mode: stale
           dry-run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
