@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - name: Apply path labels and refresh merge-conflict labels
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
+        uses: kyverno/kyverno/.github/actions/pr-management@79927727e928aaf0d3ce08f1bb256cd02c693696
         with:
           mode: labels
           dry-run: 'false'
