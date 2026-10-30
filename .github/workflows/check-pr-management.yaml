@@ -34,6 +34,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate configuration without API access
-        uses: kyverno/assistant/actions/pr-management@0d89b5d1a4e0394153274a37fcee00318340dd7d
+        uses: kyverno/assistant/.github/actions/pr-management@ff202be472ba7999004f785d0db1750cb4e78c8b
         with:
           mode: validate
