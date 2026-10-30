@@ -21,19 +21,10 @@ on:
       - '.github/workflows/check-pr-management.yaml'
       - '.github/workflows/sync-labels.yaml'
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout configuration under test
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Validate configuration without API access
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
-        with:
-          mode: validate
+    permissions:
+      contents: read
+    uses: kyverno/assistant/.github/workflows/pr-management-validate.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d

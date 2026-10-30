@@ -26,54 +26,28 @@ jobs:
       github.event_name == 'pull_request_target' ||
       (github.event_name == 'schedule' && github.event.schedule == '13 * * * *') ||
       (github.event_name == 'workflow_dispatch' && inputs.mode == 'readiness')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    concurrency:
-      group: pr-readiness
-      cancel-in-progress: false
     permissions:
       contents: read
       pull-requests: write
       issues: write
       checks: read
       actions: read
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout trusted configuration
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          persist-credentials: false
-      - name: Preview readiness classification
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
-        with:
-          mode: readiness
-          dry-run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d
+    with:
+      mode: readiness
+      dry-run: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run) && 'true' || 'false' }}
 
   stale:
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '23 6 * * *') ||
       (github.event_name == 'workflow_dispatch' && inputs.mode == 'stale')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    concurrency:
-      group: pr-stale-author-action
-      cancel-in-progress: false
     permissions:
       contents: read
       pull-requests: write
       issues: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout trusted configuration
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          persist-credentials: false
-      - name: Preview stale handling and reviewer reminders
-        uses: kyverno/kyverno/.github/actions/pr-management@338fbd1a2cd2470e29fdb64a44c28d4b63f2c906
-        with:
-          mode: stale
-          dry-run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
+      checks: read
+      actions: read
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d
+    with:
+      mode: stale
+      dry-run: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run) && 'true' || 'false' }}
