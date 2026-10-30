@@ -12,28 +12,19 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: read
-  issues: write
-
-concurrency:
-  group: sync-labels
-  cancel-in-progress: false
+permissions: {}
 
 jobs:
   sync-labels:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout trusted default branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          persist-credentials: false
-      - name: Sync label metadata
-        uses: kyverno/assistant/.github/actions/pr-management@ff202be472ba7999004f785d0db1750cb4e78c8b
-        env:
-          GH_TOKEN: ${{ github.token }}
-        with:
-          mode: sync-labels
-          dry-run: ${{ inputs.dry_run && 'true' || 'false' }}
+    # The shared workflow holds several jobs, so the caller grants their union; this job's own token is limited to
+    # contents: read and issues: write.
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: read
+      actions: read
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d
+    with:
+      mode: sync-labels
+      dry-run: ${{ inputs.dry_run && 'true' || 'false' }}
