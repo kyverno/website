@@ -10,7 +10,7 @@ This section is intended to provide you with some quick guides on how to get Kyv
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/installation) for more complete information on how to install Kyverno in production.
 
-First, install the latest Kyverno release using Helm:
+First,install the latest Kyverno release using Helm:
 
 ```sh
 helm repo add kyverno https://kyverno.github.io/kyverno/
@@ -25,6 +25,10 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/guides/reports) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different policy types to validate, mutate, generate, cleanup, and verify image configurations. The `validationActions` field is set to `Deny` to block Pods that are non-compliant.
+
+:::note[Version Note]
+This policy uses `policies.kyverno.io/v1` and requires Kyverno v1.12 or later.
+:::
 
 ```sh
 kubectl create -f- << EOF
