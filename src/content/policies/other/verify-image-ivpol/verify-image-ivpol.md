@@ -18,7 +18,7 @@ createdAt: "2025-03-27T21:20:10.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other/verify-image-ivpol/verify-image-ivpol.yaml" target="-blank">/other/verify-image-ivpol/verify-image-ivpol.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol
