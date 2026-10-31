@@ -35,7 +35,7 @@ jobs:
     uses: kyverno/assistant/.github/workflows/pr-management.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d
     with:
       mode: readiness
-      dry-run: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run) && 'true' || 'false' }}
+      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
 
   stale:
     if: >-
@@ -50,4 +50,4 @@ jobs:
     uses: kyverno/assistant/.github/workflows/pr-management.yml@b3dc405bb84f8903d28754c00254df6ce0fbbe8d
     with:
       mode: stale
-      dry-run: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run) && 'true' || 'false' }}
+      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
