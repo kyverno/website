@@ -512,7 +512,7 @@ spec:
       cosign:
         keyless:
           identities:
-            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+            - subjectRegExp: '^https://github\\.com/myorg/myrepo/\\.github/workflows/[^@]+@refs/heads/main$'
               issuer: 'https://token.actions.githubusercontent.com'
         ctlog:
           url: 'https://rekor.sigstore.dev'
