@@ -84,6 +84,8 @@ spec:
 
 - **`mutateExisting.enabled`**: When set to `true`, the policy is applied to existing resources in the cluster through background processing. This allows you to mutate resources that already exist without requiring them to be recreated or updated.
 
+- **`mode`**: Either `Kubernetes` (default) or `JSON`. In `JSON` mode the policy uses JSONPatch expressions against object-root JSON payloads, which do not require Kubernetes metadata. See [JSON Payloads](#json-payloads).
+
 Refer to the [API Reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html#policies.kyverno.io/v1.EvaluationConfiguration) for details.
 
 ### webhookConfiguration
@@ -782,6 +784,82 @@ mutations:
 
 - **`Never`**: Apply mutation once per binding (default)
 - **`IfNeeded`**: Re-apply if a previous mutation modifies the object
+
+## JSON Payloads
+
+A MutatingPolicy can mutate JSON objects, not only Kubernetes resources. Set `spec.evaluation.mode` to `JSON` and use `JSONPatch` mutations to modify configuration files, Terraform plans, API payloads, or other JSON data. Inputs and outputs must have object roots. Nested arrays and mixed JSON values are supported; array, scalar, and `null` roots are not.
+
+Here is an example of a policy that adds a default region to a document and tags it when it does not already have an owner:
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: add-defaults
+spec:
+  evaluation:
+    mode: JSON
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: |
+          [
+            JSONPatch{op: "add", path: "/region", value: "west"}
+          ] + (has(object.owner) ? [] : [
+            JSONPatch{op: "add", path: "/" + jsonpatch.escapeKey("owner/team"), value: "platform"}
+          ])
+```
+
+To write a policy for JSON payloads:
+
+1. Set `spec.evaluation.mode` to `JSON`.
+2. Optionally, define `spec.matchConditions` with CEL expressions to select which documents are mutated. The CLI's JSON payload path does not require `spec.matchConstraints`; policy admission in a cluster still requires normal resource constraints.
+3. Define your mutations in `spec.mutations` using `patchType: JSONPatch`.
+
+### Evaluating JSON mutations
+
+Use the [Kyverno CLI](/docs/subprojects/kyverno-cli) to apply JSON mutations:
+
+```sh
+kyverno apply policy.yaml --json input.json
+```
+
+The mutated object uses the existing YAML mutation-output format on standard output. Use `--output-file` to write it to a file, or `--output-dir` to append YAML documents to `<policy-name>-mutated.yaml`. Output follows normal mutation conventions; there is no batch-wide output transaction across inputs.
+
+When `--json` is used with both mutating and validating policies, JSON-mode mutations run first, in policy order, and validation then runs on the mutated object. Image-validating and deleting policies also receive the updated object. Like JSON-mode ValidatingPolicies, JSON-mode MutatingPolicies can also be evaluated against Kubernetes resource inputs in the CLI.
+
+Mutations can also be verified with `kyverno test` using `jsonPayloads` and `patchedResources`:
+
+```yaml
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: add-defaults
+policies:
+  - policy.yaml
+jsonPayloads:
+  - input.json
+results:
+  - isMutatingPolicy: true
+    policy: add-defaults
+    resources:
+      - input.json
+    patchedResources: expected.json
+    result: pass
+```
+
+In a test, `resources` entries are the exact paths listed under `jsonPayloads`.
+
+### Behavior and limitations
+
+- **Available variables**: CEL expressions can use `object` (the current document), `variables`, and `exceptions`, and can create `JSONPatch` values and call `jsonpatch.escapeKey`. Admission and cluster-dependent variables and libraries such as `request`, `oldObject`, `namespaceObject`, `http`, `resource`, `globalContext`, and `image` are not available.
+- **Patch semantics**: Patches follow [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The whole object can be replaced with `path: ""`, but it cannot be removed, and each mutation must produce an object root. If a `test` operation fails, every patch from that policy is rolled back and the policy is reported as skipped.
+- **Numbers**: The JSON payload path preserves integers within the int64 range exactly, including values above 2<sup>53</sup>. Integers outside that range produce errors. Fractional numbers use double precision, and patch `test` compares numbers without conflating adjacent large integers.
+- **Ordering and results**: Policies are applied in order, and each one sees the output of the previous policy. If any policy errors, no mutated document is produced.
+- **Limits**: Documents can be up to 1 MiB, and each policy can produce up to 1024 patch operations.
+- **Unsupported settings**: `ApplyConfiguration` patches, `mutateExisting`, `targetMatchConstraints`, `useServerSideApply`, a `reinvocationPolicy` other than `Never`, pod controller autogen, and MutatingAdmissionPolicy generation are rejected in JSON mode.
+- **In-cluster lifecycle**: JSON-mode MutatingPolicies follow the same lifecycle as JSON-mode ValidatingPolicies. JSON mode does not separately disable policy storage, providers, webhooks, reporting, or normal resource matching. Policies submitted to a cluster still need normal `matchConstraints`; admission evaluates the JSON expressions against the matched resource object.
+- **Exceptions**: [PolicyExceptions](/docs/guides/exceptions) can exempt documents from a JSON-mode policy using `matchConditions`.
 
 ## GitOps Considerations
 
