@@ -88,7 +88,6 @@ The Kubernetes CEL quantity type also exposes `.sign()` (returns `1`, `-1`, or `
 | -------------------- | --------------------------------------- |
 | `add(`10`, `5`)`     | `10 + 5`                                |
 | `add('10Mi', '5Mi')` | `quantity("10Mi").add(quantity("5Mi"))` |
-| `add('10Mi', `5`)`   | `quantity("10Mi").add(5)`               |
 | `add('1h', '30s')`   | `duration("1h") + duration("30s")`      |
 
 **Example:** This policy ensures that a container's memory request, plus a fixed 256Mi overhead reserved for an injected sidecar, does not exceed 2Gi.
@@ -130,7 +129,6 @@ The JMESPath `subtract()` filter mirrors `add()` and is equally unit-aware. In C
 | ------------------------- | --------------------------------------- |
 | `subtract(`10`, `2`)`     | `10 - 2`                                |
 | `subtract('10Mi', '5Ki')` | `quantity("10Mi").sub(quantity("5Ki"))` |
-| `subtract('10Mi', `5`)`   | `quantity("10Mi").sub(5)`               |
 | `subtract('2h', '30s')`   | `duration("2h") - duration("30s")`      |
 
 ---
