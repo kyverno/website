@@ -6,6 +6,7 @@ type: ValidatingPolicy
 subjects: []
 tags:
   - Best Practices
+version: 1.19.1
 description: 'This policy validates that all containers have CPU and memory resource requests and memory limits defined.'
 createdAt: "2026-02-12T12:56:39.000Z"
 ---
@@ -19,6 +20,7 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: This policy validates that all containers have CPU and memory resource requests and memory limits defined.
     policies.kyverno.io/severity: medium
@@ -42,7 +44,7 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: variables.allContainers.all(c, has(c.resources) && has(c.resources.requests) && has(c.resources.requests.memory) && c.resources.requests.memory != '' && has(c.resources.requests.cpu) && c.resources.requests.cpu != '' && has(c.resources.limits) && has(c.resources.limits.memory) && c.resources.limits.memory != '')
+    - expression: variables.allContainers.all(c, (has(exceptions.allowedImages) && c.image in exceptions.allowedImages) || (has(c.resources) && has(c.resources.requests) && has(c.resources.requests.memory) && c.resources.requests.memory != '' && has(c.resources.requests.cpu) && c.resources.requests.cpu != '' && has(c.resources.limits) && has(c.resources.limits.memory) && c.resources.limits.memory != ''))
       message: CPU and memory resource requests and memory limits are required for containers.
   variables:
     - expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])

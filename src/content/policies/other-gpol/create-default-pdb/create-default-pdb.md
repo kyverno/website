@@ -7,7 +7,7 @@ subjects:
   - Deployment
 tags:
   - Sample
-version: 1.15.0
+version: 1.17.0
 description: 'A PodDisruptionBudget limits the number of Pods of a replicated application that are down simultaneously from voluntary disruptions. For example, a quorum-based application would like to ensure that the number of replicas running is never brought below the number needed for a quorum. As an application owner, you can create a PodDisruptionBudget (PDB) for each application. This policy will create a PDB resource whenever a new Deployment is created.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-gpol/create-default-pdb/create-default-pdb.yaml" target="-blank">/other-gpol/create-default-pdb/create-default-pdb.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: create-default-pdb
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Add Pod Disruption Budget
     policies.kyverno.io/category: Sample
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/description: A PodDisruptionBudget limits the number of Pods of a replicated application that are down simultaneously from voluntary disruptions. For example, a quorum-based application would like to ensure that the number of replicas running is never brought below the number needed for a quorum. As an application owner, you can create a PodDisruptionBudget (PDB) for each application. This policy will create a PDB resource whenever a new Deployment is created.
 spec:

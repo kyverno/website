@@ -16,7 +16,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-container-port-names/require-container-port-names.yaml" target="-blank">/other-vpol/require-container-port-names/require-container-port-names.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-container-port-names
@@ -45,8 +45,11 @@ spec:
           - UPDATE
         resources:
           - pods
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: object.spec.containers.all(container, container.?ports.orValue([]).all(port, has(port.name)))
+    - expression: variables.allContainers.all(container, container.?ports.orValue([]).all(port, has(port.name) && port.name != ''))
       message: Name is required for every containerPort.
 
 ```

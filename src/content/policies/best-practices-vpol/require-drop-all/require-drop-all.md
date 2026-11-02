@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Best Practices in VPOL
-version: 1.14.0
+version: 1.19.1
 description: 'Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.'
 createdAt: "2026-02-23T00:26:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2026-02-23T00:26:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-drop-all/require-drop-all.yaml" target="-blank">/best-practices-vpol/require-drop-all/require-drop-all.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: drop-all-capabilities
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Best Practices in VPOL
     policies.kyverno.io/severity: medium
     kyverno.io/kubernetes-version: "1.30"
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: "Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: [\"ALL\"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards."
 spec:
@@ -50,7 +50,7 @@ spec:
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability.upperAscii() == 'ALL'))
+    - expression: variables.allContainers.all(container, (has(exceptions.allowedImages) && container.image in exceptions.allowedImages) || container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability.upperAscii() == 'ALL'))
       message: Containers must drop `ALL` capabilities.
 
 ```

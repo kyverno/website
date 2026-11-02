@@ -8,6 +8,7 @@ subjects:
   - Secret
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use wildcards in resource names. This policy ensures that only Secrets beginning with the name `safe-` can be consumed by Pods. In order to work effectively, this policy needs to be paired with a separate policy or rule to require `automountServiceAccountToken=false` since this would otherwise result in a Secret being mounted.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-secrets-by-name/restrict-secrets-by-name.yaml" target="-blank">/other-vpol/restrict-secrets-by-name/restrict-secrets-by-name.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-secrets-by-name
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/title: Restrict Secrets by Name in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/subject: Pod, Secret
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Secrets often contain sensitive information and their access should be carefully controlled. Although Kubernetes RBAC can be effective at restricting them in several ways, it lacks the ability to use wildcards in resource names. This policy ensures that only Secrets beginning with the name `safe-` can be consumed by Pods. In order to work effectively, this policy needs to be paired with a separate policy or rule to require `automountServiceAccountToken=false` since this would otherwise result in a Secret being mounted.
@@ -51,11 +53,13 @@ spec:
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: variables.allContainers.all(container,  container.?env.orValue([]).all(env, env.?valueFrom.?secretKeyRef.?name.orValue('safe-').startsWith("safe-")))
+    - expression: variables.allContainers.all(container,  container.?env.orValue([]).all(env, env.?valueFrom.?secretKeyRef.?name.orValue('safe-').startsWith("safe-") || exceptions.allowedValues.exists(value, value == 'env.secretKeyRef:' + env.?valueFrom.?secretKeyRef.?name.orValue(''))))
       message: Only Secrets beginning with `safe-` may be consumed in env statements.
-    - expression: variables.allc.all(container,  container.?envFrom.orValue([]).all(env, env.?secretRef.?name.orValue('safe-').startsWith("safe-")))
+    - expression: variables.allc.all(container,  container.?envFrom.orValue([]).all(env, env.?secretRef.?name.orValue('safe-').startsWith("safe-") || exceptions.allowedValues.exists(value, value == 'envFrom.secretRef:' + env.?secretRef.?name.orValue(''))))
       message: Only Secrets beginning with `safe-` may be consumed in envFrom statements.
-    - expression: object.spec.?volumes.orValue([]).all(volume, volume.?secret.?secretName.orValue('safe-').startsWith("safe-"))
+    - expression: object.spec.?volumes.orValue([]).all(volume, volume.?secret.?secretName.orValue('safe-').startsWith("safe-") || exceptions.allowedValues.exists(value, value == 'volume.secret:' + volume.?secret.?secretName.orValue('')))
       message: Only Secrets beginning with `safe-` may be consumed in volumes.
+    - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.projected) || volume.projected.?sources.orValue([]).all(source, !has(source.secret) || source.secret.?name.orValue('safe-').startsWith("safe-") || exceptions.allowedValues.exists(value, value == 'projected.secret:' + source.secret.?name.orValue(''))))
+      message: Only Secrets beginning with `safe-` may be consumed in projected volumes.
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod''s liveness exec probe.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml" target="-blank">/other-vpol/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-commands-in-exec-probe
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod's liveness exec probe.
 spec:
@@ -50,7 +50,7 @@ spec:
     - name: check-liveness-probes-commands-exist
       expression: object.spec.containers.exists(container, size(container.?livenessProbe.?exec.?command.orValue([])) > 0)
   validations:
-    - expression: object.spec.containers.all(container,  !container.?livenessProbe.?exec.?command.orValue([]).exists(command,  command.matches('\\bjcmd\\b') || command.matches('\\bps\\b') || command.matches('\\bls\\b')))
+    - expression: object.spec.containers.all(container,  !container.?livenessProbe.?exec.?command.orValue([]).exists(command,  (command.matches('\\bjcmd\\b') || command.matches('\\bps\\b') || command.matches('\\bls\\b')) && !('probe-command:' + command in exceptions.allowedValues)))
       message: Cannot use commands `jcmd`, `ps`, or `ls` in liveness probes.
 
 ```

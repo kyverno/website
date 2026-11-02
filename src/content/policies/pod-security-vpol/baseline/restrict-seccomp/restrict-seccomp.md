@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml" target="-blank">/pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-seccomp
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/description: The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.
@@ -47,17 +47,52 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
     - name: allowedProfileTypes
       expression: "['RuntimeDefault', 'Localhost']"
     - name: hasValidSeccompProfile
-      expression: object.spec.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes
+      expression: variables.podSpec.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes
   validations:
     - expression: |-
         variables.hasValidSeccompProfile && variables.allContainers.all(container, 
-          container.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes)
+          container.image in exceptions.allowedImages ||
+          container.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes ||
+          ('seccomp.type:' + container.?securityContext.?seccompProfile.?type.orValue('')) in exceptions.allowedValues)
       message: Use of custom Seccomp profiles is disallowed. The field  `securityContext.seccompProfile.type` must be unset or set to `RuntimeDefault` or `Localhost`.
 
 ```

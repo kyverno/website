@@ -8,7 +8,7 @@ subjects:
   - Annotation
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don''t set reserved annotations or to force them to use a newer version of an annotation.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,14 +18,14 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-annotations/restrict-annotations.yaml" target="-blank">/other-vpol/restrict-annotations/restrict-annotations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-annotations
   annotations:
     policies.kyverno.io/title: Restrict Annotations in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod, Annotation
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation.
@@ -71,7 +71,7 @@ spec:
           - cronjobs
           - jobs
   validations:
-    - expression: "!object.metadata.?annotations.orValue([]).exists(annotation, annotation.startsWith('fluxcd.io/'))"
+    - expression: "!object.metadata.?annotations.orValue([]).exists(annotation, annotation.startsWith('fluxcd.io/') && !(has(exceptions.allowedValues) && string(annotation) in exceptions.allowedValues))"
       message: Cannot use Flux v1 annotation.
 
 ```

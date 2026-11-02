@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Confidential Computing
-version: 1.11.0
+version: 1.19.1
 description: 'Injects sealed secret configuration environment variables into pods with the ''coco=enabled'' label and ''coco.io/sealed-secret-config'' annotation. Retrieves configuration from a ConfigMap to enable containers to retrieve secrets from KBS (Key Broker Service) for Confidential Containers.'
 createdAt: "2026-04-09T07:23:52.000Z"
 ---
@@ -23,7 +23,7 @@ metadata:
   annotations:
     policies.kyverno.io/category: Confidential Computing
     policies.kyverno.io/description: Injects sealed secret configuration environment variables into pods with the 'coco=enabled' label and 'coco.io/sealed-secret-config' annotation. Retrieves configuration from a ConfigMap to enable containers to retrieve secrets from KBS (Key Broker Service) for Confidential Containers.
-    policies.kyverno.io/minversion: 1.11.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/title: Inject Sealed Secret Configuration
@@ -51,6 +51,7 @@ spec:
           Object{
             spec: Object.spec{
               containers: object.spec.containers.map(container,
+                exceptions.allowedImages.exists(image, image == container.image) ? container :
                 Object.spec.containers{
                   name: container.name,
                   env: has(container.env) ?
@@ -76,8 +77,9 @@ spec:
                     ]
                 }
               ),
-              initContainers: has(object.spec.initContainers) ?
+                initContainers: has(object.spec.initContainers) ?
                 object.spec.initContainers.map(container,
+                  exceptions.allowedImages.exists(image, image == container.image) ? container :
                   Object.spec.initContainers{
                     name: container.name,
                     env: has(container.env) ?
@@ -103,8 +105,9 @@ spec:
                       ]
                   }
                 ) : [],
-              ephemeralContainers: has(object.spec.ephemeralContainers) ?
+                ephemeralContainers: has(object.spec.ephemeralContainers) ?
                 object.spec.ephemeralContainers.map(container,
+                  exceptions.allowedImages.exists(image, image == container.image) ? container :
                   Object.spec.ephemeralContainers{
                     name: container.name,
                     env: has(container.env) ?

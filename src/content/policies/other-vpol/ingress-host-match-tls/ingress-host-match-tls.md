@@ -7,7 +7,7 @@ subjects:
   - Ingress
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/ingress-host-match-tls/ingress-host-match-tls.yaml" target="-blank">/other-vpol/ingress-host-match-tls/ingress-host-match-tls.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: ingress-host-match-tls
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: Ingress resources which name a host name that is not present in the TLS section can produce ingress routing failures as a TLS certificate may not correspond to the destination host. This policy ensures that the host name in an Ingress rule is also found in the list of TLS hosts.
@@ -51,7 +51,7 @@ spec:
     - name: tls
       expression: object.spec.?tls.orValue([])
   validations:
-    - expression: object.spec.rules.all(rule,  !has(rule.host) ||  variables.tls.exists(tls, tls.?hosts.orValue([]).exists(tlsHost, tlsHost == rule.host)))
+    - expression: object.spec.rules.all(rule,  !has(rule.host) ||  variables.tls.exists(tls, tls.?hosts.orValue([]).exists(tlsHost, tlsHost == rule.host)) || rule.host in exceptions.allowedValues.orValue([]))
       message: The host(s) in spec.rules[].host must match those in spec.tls[].hosts[].
 
 ```

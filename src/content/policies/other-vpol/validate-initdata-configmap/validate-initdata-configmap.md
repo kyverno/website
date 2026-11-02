@@ -7,6 +7,7 @@ subjects:
   - ConfigMap
 tags:
   - Confidential Computing
+version: 1.19.1
 description: 'Validates that ConfigMaps with a label key "coco.io/type" and value "initdata" contain all required fields with proper values.'
 createdAt: "2026-04-09T07:23:52.000Z"
 ---
@@ -20,6 +21,7 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Confidential Computing
     policies.kyverno.io/description: Validates that ConfigMaps with a label key "coco.io/type" and value "initdata" contain all required fields with proper values.
     policies.kyverno.io/severity: medium
@@ -47,15 +49,15 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: "'version' in variables.configData && variables.configData['version'] != ''"
+    - expression: ('version' in variables.configData && variables.configData['version'] != '') || 'missing-key:version' in exceptions.allowedValues
       messageExpression: "'ConfigMap must contain a non-empty version field'"
-    - expression: "'algorithm' in variables.configData && variables.configData['algorithm'] in variables.allowedAlgorithms"
+    - expression: ('algorithm' in variables.configData && variables.configData['algorithm'] in variables.allowedAlgorithms) || ('algorithm' in variables.configData && 'algorithm:' + variables.configData['algorithm'] in exceptions.allowedValues)
       messageExpression: "'ConfigMap must contain an algorithm field with value sha256, sha384, or sha512, found: ' + ('algorithm' in variables.configData ? variables.configData['algorithm'] : 'missing')"
-    - expression: "'policy.rego' in variables.configData && variables.configData['policy.rego'] != ''"
+    - expression: ('policy.rego' in variables.configData && variables.configData['policy.rego'] != '') || 'missing-key:policy.rego' in exceptions.allowedValues
       messageExpression: "'ConfigMap must contain a non-empty policy.rego field'"
-    - expression: "'aa.toml' in variables.configData && variables.configData['aa.toml'] != ''"
+    - expression: ('aa.toml' in variables.configData && variables.configData['aa.toml'] != '') || 'missing-key:aa.toml' in exceptions.allowedValues
       messageExpression: "'ConfigMap must contain a non-empty aa.toml field'"
-    - expression: "'cdh.toml' in variables.configData && variables.configData['cdh.toml'] != ''"
+    - expression: ('cdh.toml' in variables.configData && variables.configData['cdh.toml'] != '') || 'missing-key:cdh.toml' in exceptions.allowedValues
       messageExpression: "'ConfigMap must contain a non-empty cdh.toml field'"
   variables:
     - expression: object.data.orValue({})

@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
+version: 1.19.1
 description: 'Images coming from certain registries require authentication in order to pull them, and the kubelet uses this information in the form of an imagePullSecret to pull those images on behalf of your Pod. This policy searches for images coming from a registry called `corp.reg.com` and, if found, will mutate the Pod to add an imagePullSecret called `my-secret`.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-imagepullsecrets/add-imagepullsecrets.yaml" target="-blank">/other-mpol/add-imagepullsecrets/add-imagepullsecrets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-imagepullsecrets
@@ -24,6 +25,7 @@ metadata:
     policies.kyverno.io/title: Add imagePullSecrets
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: Images coming from certain registries require authentication in order to pull them, and the kubelet uses this information in the form of an imagePullSecret to pull those images on behalf of your Pod. This policy searches for images coming from a registry called `corp.reg.com` and, if found, will mutate the Pod to add an imagePullSecret called `my-secret`.
 spec:
   matchConstraints:
@@ -62,23 +64,23 @@ spec:
     - name: HasCorpRegImage
       expression: |-
         (object.kind == "Pod" &&
-        object.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) &&
+        object.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
         !(has(object.spec.imagePullSecrets) && object.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ||
         (object.kind in ["Deployment", "DaemonSet", "StatefulSet"] &&
-        object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) &&
+        object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
         !(has(object.spec.template.spec.imagePullSecrets) && object.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ||
         (object.kind == "Job" &&
-        object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) &&
+        object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
         !(has(object.spec.template.spec.imagePullSecrets) && object.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ||
         (object.kind == "CronJob" &&
-        object.spec.jobTemplate.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) &&
+        object.spec.jobTemplate.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
         !(has(object.spec.jobTemplate.spec.template.spec.imagePullSecrets) && object.spec.jobTemplate.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret')))
   mutations:
     - patchType: JSONPatch
       jsonPatch:
         expression: |-
           object.kind == "Pod" &&
-          (object.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) && 
+          (object.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
           !(has(object.spec.imagePullSecrets) && object.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ?
           (has(object.spec.imagePullSecrets) ?
             [JSONPatch{
@@ -96,7 +98,7 @@ spec:
       jsonPatch:
         expression: |-
           object.kind in ["Deployment", "DaemonSet", "StatefulSet"] &&
-          (object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) && 
+          (object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
           !(has(object.spec.template.spec.imagePullSecrets) && object.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ?
           (has(object.spec.template.spec.imagePullSecrets) ?
             [JSONPatch{
@@ -114,7 +116,7 @@ spec:
       jsonPatch:
         expression: |-
           object.kind == "Job" &&
-          (object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) && 
+          (object.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
           !(has(object.spec.template.spec.imagePullSecrets) && object.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ?
           (has(object.spec.template.spec.imagePullSecrets) ?
             [JSONPatch{
@@ -132,7 +134,7 @@ spec:
       jsonPatch:
         expression: |-
           object.kind == "CronJob" &&
-          (object.spec.jobTemplate.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/')) && 
+          (object.spec.jobTemplate.spec.template.spec.containers.exists(c, c.image.startsWith('corp.reg.com/') && !exceptions.allowedImages.exists(image, image == c.image)) &&
           !(has(object.spec.jobTemplate.spec.template.spec.imagePullSecrets) && object.spec.jobTemplate.spec.template.spec.imagePullSecrets.exists(s, s.name == 'my-secret'))) ?
           (has(object.spec.jobTemplate.spec.template.spec.imagePullSecrets) ?
             [JSONPatch{

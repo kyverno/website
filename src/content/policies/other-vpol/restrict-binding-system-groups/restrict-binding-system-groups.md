@@ -10,7 +10,7 @@ subjects:
 tags:
   - Security
   - EKS Best Practices in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -20,7 +20,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml" target="-blank">/other-vpol/restrict-binding-system-groups/restrict-binding-system-groups.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-binding-system-groups
@@ -30,7 +30,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Certain system groups exist in Kubernetes which grant permissions that are used for certain system-level functions yet typically never appropriate for other users. This policy prevents creating bindings to some of these groups including system:anonymous, system:unauthenticated, and system:masters.
 spec:
@@ -52,11 +52,11 @@ spec:
           - rolebindings
           - clusterrolebindings
   validations:
-    - expression: object.subjects.all(subject, subject.name != 'system:anonymous')
+    - expression: object.?subjects.orValue([]).all(subject, subject.name != 'system:anonymous' || subject.name in exceptions.allowedValues.orValue([]))
       message: Binding to system:anonymous is not allowed.
-    - expression: object.subjects.all(subject, subject.name != 'system:unauthenticated')
+    - expression: object.?subjects.orValue([]).all(subject, subject.name != 'system:unauthenticated' || subject.name in exceptions.allowedValues.orValue([]))
       message: Binding to system:unauthenticated is not allowed.
-    - expression: object.subjects.all(subject, subject.name != 'system:masters')
+    - expression: object.?subjects.orValue([]).all(subject, subject.name != 'system:masters' || subject.name in exceptions.allowedValues.orValue([]))
       message: Binding to system:masters is not allowed.
 
 ```

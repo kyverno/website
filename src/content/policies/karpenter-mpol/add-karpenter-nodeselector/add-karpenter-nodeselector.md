@@ -8,7 +8,7 @@ subjects:
 tags:
   - Karpenter
   - EKS Best Practices
-version: 1.6.0
+version: 1.17.0
 description: 'Selecting the correct Node(s) provisioned by Karpenter is a way to specify the appropriate resource landing zone for a workload. This policy injects a nodeSelector map into the Pod based on the Namespace type where it is deployed.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml" target="-blank">/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-karpenter-nodeselector
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Karpenter, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Selecting the correct Node(s) provisioned by Karpenter is a way to specify the appropriate resource landing zone for a workload. This policy injects a nodeSelector map into the Pod based on the Namespace type where it is deployed.
 spec:
   evaluation:

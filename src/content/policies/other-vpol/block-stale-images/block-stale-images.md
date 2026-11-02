@@ -6,6 +6,7 @@ type: ValidatingPolicy
 subjects: []
 tags:
   - Best Practices
+version: 1.19.1
 description: 'This policy blocks pods that use container images built more than 6 months ago to ensure deployments use recent, maintained images.'
 createdAt: "2026-02-12T11:17:00.000Z"
 ---
@@ -19,6 +20,7 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: This policy blocks pods that use container images built more than 6 months ago to ensure deployments use recent, maintained images.
     policies.kyverno.io/severity: medium
@@ -41,7 +43,7 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: variables.allContainers.all(container, !has(image.GetMetadata(container.image).config.created) || timestamp(image.GetMetadata(container.image).config.created) >= variables.cutoffTime)
+    - expression: variables.allContainers.all(container, container.image in exceptions.allowedValues || !has(image.GetMetadata(container.image).config.created) || timestamp(image.GetMetadata(container.image).config.created) >= variables.cutoffTime)
       messageExpression: "'Images built more than 6 months ago are prohibited. Found stale images: ' + variables.allContainers.filter(container, has(image.GetMetadata(container.image).config.created) && timestamp(image.GetMetadata(container.image).config.created) < variables.cutoffTime).map(container, container.image).join(', ')"
   variables:
     - expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])

@@ -8,7 +8,7 @@ subjects:
   - Label
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/metadata-match-regex/metadata-match-regex.yaml" target="-blank">/other-vpol/metadata-match-regex/metadata-match-regex.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: metadata-match-regex
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Label
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.
 spec:
@@ -48,7 +48,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: object.metadata.?labels[?'corp.org/version'].orValue('default').matches('^v[0-9].[0-9].[0-9]$')
-      message: "The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$"
+    - expression: object.metadata.?labels[?'corp.org/version'].orValue('default').matches('^v[0-9]\\.[0-9]\\.[0-9]$') || object.metadata.?labels[?'corp.org/version'].orValue('') in exceptions.allowedValues
+      message: "The label `corp.org/version` is required and must match the specified regex: ^v[0-9]\\\\.[0-9]\\\\.[0-9]$"
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-version: 1.15.0
+version: 1.17.0
 description: 'A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-bare-pods/cleanup-bare-pods.yaml" target="-blank">/cleanup-dpol/cleanup-bare-pods/cleanup-bare-pods.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: clean-bare-pods
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     pod-policies.kyverno.io/autogen-controllers: none
     kyverno.io/kubernetes-version: 1.27+
     policies.kyverno.io/description: A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.
@@ -38,6 +38,8 @@ spec:
           - ""
         apiVersions:
           - v1
+        operations:
+          - DELETE
         resources:
           - pods
   conditions:

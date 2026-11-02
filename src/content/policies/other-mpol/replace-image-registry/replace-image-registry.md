@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
+version: 1.19.1
 description: 'Rather than blocking Pods which come from outside registries, it is also possible to mutate them so the pulls are directed to approved registries. In some cases, those registries may function as pull-through proxies and can fetch the image if not cached. This policy mutates all images either in the form ''image:tag'' or ''registry.corp.com/image:tag'' to be ''myregistry.corp.com/''. Any path in the image name will be preserved.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -16,12 +17,13 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/replace-image-registry/replace-image-registry.yaml" target="-blank">/other-mpol/replace-image-registry/replace-image-registry.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: replace-image-registry
   annotations:
     policies.kyverno.io/title: Replace Image Registry
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
@@ -45,6 +47,7 @@ spec:
           Object{
             spec: Object.spec{
               containers: object.spec.containers.map(c,
+                exceptions.allowedImages.exists(image, image == c.image) ? c :
                 Object.spec.containers{
                   name: c.name,
                   image: 'myregistry.corp.com/' + 
@@ -55,6 +58,7 @@ spec:
               ),
               initContainers: has(object.spec.initContainers) ?
                 object.spec.initContainers.map(c,
+                  exceptions.allowedImages.exists(image, image == c.image) ? c :
                   Object.spec.initContainers{
                     name: c.name,
                     image: 'myregistry.corp.com/' + 

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Best Practices in VPOL
-version: 1.14.0
+version: 1.19.1
 description: 'Capabilities permit privileged actions without giving full root access. The CAP_NET_RAW capability, enabled by default, allows processes in a container to forge packets and bind to any interface potentially leading to MitM attacks. This policy ensures that all containers explicitly drop the CAP_NET_RAW ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.'
 createdAt: "2026-02-23T00:26:12.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2026-02-23T00:26:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-drop-cap-net-raw/require-drop-cap-net-raw.yaml" target="-blank">/best-practices-vpol/require-drop-cap-net-raw/require-drop-cap-net-raw.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: drop-cap-net-raw
   annotations:
     policies.kyverno.io/title: Drop CAP_NET_RAW in VPOL
     policies.kyverno.io/category: Best Practices in VPOL
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
@@ -52,7 +52,7 @@ spec:
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability.upperAscii() in variables.mustDropCapabilities))
+    - expression: variables.allContainers.all(container, (has(exceptions.allowedImages) && container.image in exceptions.allowedImages) || container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability.upperAscii() in variables.mustDropCapabilities))
       message: Containers must drop the `CAP_NET_RAW` capability.
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/ensure-probes-different/ensure-probes-different.yaml" target="-blank">/other-vpol/ensure-probes-different/ensure-probes-different.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: validate-probes
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Validate Probes in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.
@@ -52,7 +52,7 @@ spec:
           - CREATE
           - UPDATE
   validations:
-    - expression: "!object.spec.template.spec.containers.exists(container,  has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe)"
+    - expression: "!object.spec.template.spec.containers.exists(container, has(container.readinessProbe) && has(container.livenessProbe) && container.readinessProbe == container.livenessProbe && !(container.name in exceptions.allowedValues))"
       message: Liveness and readiness probes cannot be the same.
 
 ```

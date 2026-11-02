@@ -7,7 +7,7 @@ subjects:
   - Ingress
 tags:
   - Best Practices in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'An Ingress with no rules sends all traffic to a single default backend. The defaultBackend is conventionally a configuration option of the Ingress controller and is not specified in your Ingress resources. If none of the hosts or paths match the HTTP request in the Ingress objects, the traffic is routed to your default backend. In a multi-tenant environment, you want users to use explicit hosts, they should not be able to overwrite the global default backend service. This policy prohibits the use of the defaultBackend field.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-ingress-defaultbackend/restrict-ingress-defaultbackend.yaml" target="-blank">/other-vpol/restrict-ingress-defaultbackend/restrict-ingress-defaultbackend.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-ingress-defaultbackend
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Best Practices in vpol
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: An Ingress with no rules sends all traffic to a single default backend. The defaultBackend is conventionally a configuration option of the Ingress controller and is not specified in your Ingress resources. If none of the hosts or paths match the HTTP request in the Ingress objects, the traffic is routed to your default backend. In a multi-tenant environment, you want users to use explicit hosts, they should not be able to overwrite the global default backend service. This policy prohibits the use of the defaultBackend field.
@@ -48,7 +48,7 @@ spec:
         resources:
           - ingresses
   validations:
-    - expression: "!has(object.spec.defaultBackend)"
+    - expression: "!has(object.spec.defaultBackend) || 'defaultBackend' in exceptions.allowedValues"
       message: Setting the defaultBackend field is prohibited.
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Pods which have memory limits equal to requests could be given a QoS class of Guaranteed if they also set CPU limits equal to requests. Guaranteed is the highest schedulable class.  This policy checks that all containers in a given Pod have memory requests equal to limits.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml" target="-blank">/other-vpol/memory-requests-equal-limits/memory-requests-equal-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: memory-requests-equal-limits
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Pods which have memory limits equal to requests could be given a QoS class of Guaranteed if they also set CPU limits equal to requests. Guaranteed is the highest schedulable class.  This policy checks that all containers in a given Pod have memory requests equal to limits.
 spec:
@@ -46,8 +46,11 @@ spec:
           - UPDATE
         resources:
           - pods
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: object.spec.containers.all(container,  !container.?resources.?requests.?memory.hasValue() || container.resources.requests.memory == container.resources.?limits.?memory.orValue('-1'))
+    - expression: variables.allContainers.all(container, container.image in exceptions.allowedImages.orValue([]) || container.?resources.?requests.?memory == container.?resources.?limits.?memory || (container.?resources.?requests.?memory.hasValue() && container.?resources.?limits.?memory.hasValue() && quantity(container.resources.requests.memory) == quantity(container.resources.limits.memory)))
       message: resources.requests.memory must be equal to resources.limits.memory
 
 ```

@@ -8,6 +8,7 @@ subjects:
   - Label
 tags:
   - Other
+version: 1.17.0
 description: 'CRI engines log in different formats. Loggers deployed as DaemonSets don''t know which format to apply because they can''t see this information. By Kyverno writing a label to each node with its runtime, loggers can use node label selectors to know which parsing logic to use. This policy detects the CRI engine in use and writes a label to the Node called `runtime` with it. Users may need to grant the Kyverno ServiceAccount permission to update Nodes.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -17,13 +18,14 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/label-nodes-cri/label-nodes-cri.yaml" target="-blank">/other-mpol/label-nodes-cri/label-nodes-cri.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: label-nodes-cri
   annotations:
     policies.kyverno.io/title: Label Nodes with CRI Runtime
     policies.kyverno.io/category: Other
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Node, Label
     policies.kyverno.io/description: CRI engines log in different formats. Loggers deployed as DaemonSets don't know which format to apply because they can't see this information. By Kyverno writing a label to each node with its runtime, loggers can use node label selectors to know which parsing logic to use. This policy detects the CRI engine in use and writes a label to the Node called `runtime` with it. Users may need to grant the Kyverno ServiceAccount permission to update Nodes.

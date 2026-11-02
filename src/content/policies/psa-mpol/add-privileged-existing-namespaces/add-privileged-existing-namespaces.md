@@ -7,7 +7,7 @@ subjects:
   - Namespace
 tags:
   - Pod Security Admission
-version: 1.7.0
+version: 1.17.0
 description: 'When Pod Security Admission is configured with a cluster-wide AdmissionConfiguration file which sets either baseline or restricted, for example in many PaaS CIS profiles, it may be necessary to relax this to privileged on a per-Namespace basis so that more granular control can be provided. This policy labels new and existing Namespaces, except that of kube-system, with the `pod-security.kubernetes.io/enforce: privileged` label.'
 createdAt: "2025-10-30T08:57:55.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml" target="-blank">/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-privileged-existing-namespaces
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.8.0
-    policies.kyverno.io/minversion: 1.7.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: "When Pod Security Admission is configured with a cluster-wide AdmissionConfiguration file which sets either baseline or restricted, for example in many PaaS CIS profiles, it may be necessary to relax this to privileged on a per-Namespace basis so that more granular control can be provided. This policy labels new and existing Namespaces, except that of kube-system, with the `pod-security.kubernetes.io/enforce: privileged` label."
 spec:
