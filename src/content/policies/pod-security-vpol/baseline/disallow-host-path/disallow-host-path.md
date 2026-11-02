@@ -8,7 +8,7 @@ subjects:
   - Volume
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-path
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,Volume
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/description: HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.
 spec:
@@ -47,8 +47,42 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
+  variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
   validations:
-    - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
+    - expression: variables.podSpec.?volumes.orValue([]).all(volume, !has(volume.hostPath) || string(volume.hostPath.path) in exceptions.allowedValues)
       message: HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
 
 ```

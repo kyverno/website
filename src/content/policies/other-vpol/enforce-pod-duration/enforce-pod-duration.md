@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'This validation is valuable when annotations are used to define durations, such as to ensure a Pod lifetime annotation does not exceed some site specific max threshold. Pod lifetime annotation can be no greater than 8 hours.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/enforce-pod-duration/enforce-pod-duration.yaml" target="-blank">/other-vpol/enforce-pod-duration/enforce-pod-duration.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: pod-lifetime
   annotations:
     policies.kyverno.io/title: Enforce pod duration in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: This validation is valuable when annotations are used to define durations, such as to ensure a Pod lifetime annotation does not exceed some site specific max threshold. Pod lifetime annotation can be no greater than 8 hours.
@@ -51,7 +51,7 @@ spec:
     - name: lifetimeAnnotationValue
       expression: "variables.hasLifetimeAnnotation ? object.metadata.annotations['pod.kubernetes.io/lifetime'] : '0s'"
   validations:
-    - expression: "!(duration(variables.lifetimeAnnotationValue) > duration('8h'))"
+    - expression: "!(duration(variables.lifetimeAnnotationValue) > duration('8h')) || ('pod-duration:' + variables.lifetimeAnnotationValue) in exceptions.allowedValues"
       message: Pod lifetime exceeds limit of 8h
 
 ```

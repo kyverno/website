@@ -8,7 +8,7 @@ subjects:
   - Volume
 tags:
   - Sample
-version: 1.5.0
+version: 1.19.1
 description: 'In some cases you would need to trust custom CA certificates for all the containers of a Pod. It makes sense to be in a ConfigMap so that you can automount them by only setting an annotation. This policy adds a volume to all containers in a Pod containing the certificate if the annotation called `inject-certs` with value `enabled` is found.'
 createdAt: "2025-10-29T09:59:30.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-certificates-volume/add-certificates-volume.yaml" target="-blank">/other-mpol/add-certificates-volume/add-certificates-volume.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-certificates-volume
@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/subject: Pod,Volume
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
-    policies.kyverno.io/minversion: 1.5.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: In some cases you would need to trust custom CA certificates for all the containers of a Pod. It makes sense to be in a ConfigMap so that you can automount them by only setting an annotation. This policy adds a volume to all containers in a Pod containing the certificate if the annotation called `inject-certs` with value `enabled` is found.
 spec:
   autogen:
@@ -61,7 +61,7 @@ spec:
         expression: |
           Object{
             spec: Object.spec{
-              containers: object.spec.containers.map(container, Object.spec.containers{
+              containers: object.spec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container, Object.spec.containers{
                 name: container.name,
                 volumeMounts: (has(container.volumeMounts) && container.volumeMounts.exists(vm, vm.name == "etc-ssl-certs")) 
                   ? container.volumeMounts 

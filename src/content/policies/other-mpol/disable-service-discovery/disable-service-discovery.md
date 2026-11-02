@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
   - EKS Best Practices
-version: 1.15.0
+version: 1.17.0
 description: 'Not all Pods require communicating with other Pods or resolving in-cluster Services. For those, disabling service discovery can increase security as the Pods are limited to what they can see. This policy mutates Pods to set dnsPolicy to `Default` and enableServiceLinks to `false`.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/disable-service-discovery/disable-service-discovery.yaml" target="-blank">/other-mpol/disable-service-discovery/disable-service-discovery.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: disable-service-discovery
@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.15.0
     kyverno.io/kubernetes-version: "1.24"
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Not all Pods require communicating with other Pods or resolving in-cluster Services. For those, disabling service discovery can increase security as the Pods are limited to what they can see. This policy mutates Pods to set dnsPolicy to `Default` and enableServiceLinks to `false`.
 spec:
   matchConstraints:

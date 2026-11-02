@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other
   - Multi-Tenancy in vpol
+version: 1.19.1
 description: 'Pod Quality of Service (QoS) is a mechanism to ensure Pods receive certain priority guarantees based upon the resources they define. When a Pod has at least one container which defines either requests or limits for either memory or CPU, Kubernetes grants the QoS class as burstable if it does not otherwise qualify for a QoS class of guaranteed. This policy requires that a Pod meet the criteria qualify for a QoS of burstable. This policy is provided with the intention that users will need to control its scope by using exclusions, preconditions, and other policy language mechanisms.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,12 +18,13 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-qos-burstable/require-qos-burstable.yaml" target="-blank">/other-vpol/require-qos-burstable/require-qos-burstable.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-qos-burstable
   annotations:
     policies.kyverno.io/title: Require QoS Burstable in ValidatingPolicy
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Other, Multi-Tenancy in vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
@@ -46,8 +48,17 @@ spec:
           - UPDATE
         resources:
           - pods
+  variables:
+    - name: qosContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([])
+    - name: hasPositiveCPUOrMemory
+      expression: variables.qosContainers.exists(container, (has(container.resources) && ((has(container.resources.requests) && ((has(container.resources.requests.cpu) && quantity(container.resources.requests.cpu) != quantity('0')) || (has(container.resources.requests.memory) && quantity(container.resources.requests.memory) != quantity('0')))) || (has(container.resources.limits) && ((has(container.resources.limits.cpu) && quantity(container.resources.limits.cpu) != quantity('0')) || (has(container.resources.limits.memory) && quantity(container.resources.limits.memory) != quantity('0')))))))
+    - name: isGuaranteed
+      expression: variables.qosContainers.all(container, has(container.resources) && has(container.resources.requests) && has(container.resources.limits) && has(container.resources.requests.cpu) && has(container.resources.limits.cpu) && has(container.resources.requests.memory) && has(container.resources.limits.memory) && quantity(container.resources.requests.cpu) != quantity('0') && quantity(container.resources.requests.memory) != quantity('0') && quantity(container.resources.limits.cpu) != quantity('0') && quantity(container.resources.limits.memory) != quantity('0') && quantity(container.resources.requests.cpu) == quantity(container.resources.limits.cpu) && quantity(container.resources.requests.memory) == quantity(container.resources.limits.memory))
+    - name: qosClass
+      expression: "variables.isGuaranteed ? 'Guaranteed' : (variables.hasPositiveCPUOrMemory ? 'Burstable' : 'BestEffort')"
   validations:
-    - expression: object.spec.containers.exists(container,  has(container.resources) && (has(container.resources.requests) || has(container.resources.limits)))
-      message: At least one container in the Pod must define either requests or limits for either CPU or memory.
+    - expression: variables.qosClass == 'Burstable' || ('qos.class:' + variables.qosClass) in exceptions.allowedValues
+      message: The Pod must have Burstable QoS.
 
 ```

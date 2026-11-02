@@ -8,6 +8,7 @@ subjects:
   - Annotation
 tags:
   - PSP Migration
+version: 1.19.1
 description: 'In the earlier Pod Security Policy controller, it was possible to define a setting which would enable AppArmor for all the containers within a Pod so they may be assigned the desired profile. Assigning an AppArmor profile, accomplished via an annotation, is useful in that it allows secure defaults to be defined and may also result in passing other validation rules such as those in the Pod Security Standards. This policy mutates Pods to add an annotation for every container to enabled AppArmor at the runtime/default level.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -17,12 +18,13 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-apparmor/add-apparmor.yaml" target="-blank">/psp-migration-mpol/add-apparmor/add-apparmor.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-apparmor-annotations
   annotations:
     policies.kyverno.io/title: Add AppArmor Annotations
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: PSP Migration
     policies.kyverno.io/subject: Pod,Annotation
     pod-policies.kyverno.io/autogen-controllers: none
@@ -45,6 +47,8 @@ spec:
   variables:
     - name: allContainers
       expression: "object.spec.containers +  (has(object.spec.initContainers) ? object.spec.initContainers : []) +  (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])"
+    - name: containersToMutate
+      expression: variables.allContainers.filter(c, !(c.image in exceptions.allowedImages))
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -60,7 +64,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.allContainers.map(c,
+          variables.containersToMutate.map(c,
             JSONPatch{
               op: "add",
               path: "/metadata/annotations/" + jsonpatch.escapeKey("container.apparmor.security.beta.kubernetes.io/" + c.name),

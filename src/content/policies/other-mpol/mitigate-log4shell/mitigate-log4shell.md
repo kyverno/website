@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
+version: 1.19.1
 description: 'In response to CVE-2021-44228 referred to as Log4Shell, this policy automatically adds LOG4J_FORMAT_MSG_NO_LOOKUPS=true to all containers and initContainers in Pods and pod controllers as a partial mitigation measure.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -16,12 +17,13 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/mitigate-log4shell/mitigate-log4shell.yaml" target="-blank">/other-mpol/mitigate-log4shell/mitigate-log4shell.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: log4shell-mitigation
   annotations:
     policies.kyverno.io/title: Log4Shell Mitigation
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/category: Sample
     policies.kyverno.io/description: In response to CVE-2021-44228 referred to as Log4Shell, this policy automatically adds LOG4J_FORMAT_MSG_NO_LOOKUPS=true to all containers and initContainers in Pods and pod controllers as a partial mitigation measure.
@@ -83,7 +85,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.podSpec.containers.map(c,
+          variables.podSpec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
             has(c.env) && c.env.exists(e, e.name == "LOG4J_FORMAT_MSG_NO_LOOKUPS") ?
               JSONPatch{
                 op: "replace",
@@ -103,7 +105,7 @@ spec:
               }
           ) +
           (has(variables.podSpec.initContainers) ?
-            variables.podSpec.initContainers.map(c,
+            variables.podSpec.initContainers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
               has(c.env) && c.env.exists(e, e.name == "LOG4J_FORMAT_MSG_NO_LOOKUPS") ?
                 JSONPatch{
                   op: "replace",

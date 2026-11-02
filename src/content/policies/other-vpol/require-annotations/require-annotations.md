@@ -8,6 +8,7 @@ subjects:
   - Annotation
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'Define and use annotations that identify semantic attributes of your application or Deployment. A common set of annotations allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended annotations describe applications in a way that can be queried. This policy validates that the annotation `corp.org/department` is specified with some value.      '
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-annotations/require-annotations.yaml" target="-blank">/other-vpol/require-annotations/require-annotations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-annotations
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/title: Require Annotations in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod, Annotation
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
@@ -47,7 +49,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: object.metadata.?annotations[?'corp.org/department'].orValue('') != ''
+    - expression: object.metadata.?annotations[?'corp.org/department'].orValue('') != '' || 'missing-annotation:corp.org/department' in exceptions.allowedValues
       message: The annotation `corp.org/department` is required.
 
 ```

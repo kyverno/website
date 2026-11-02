@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml" target="-blank">/pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-capabilities-strict
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Disallow Capabilities (Strict) in ValidatingPolicy
     policies.kyverno.io/category: Pod Security Standards (Restricted) in ValidatingPolicy
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/subject: Pod
@@ -47,17 +47,54 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: object.spec.containers +  (object.spec.?initContainers.orValue([])) +  (object.spec.?ephemeralContainers.orValue([]))
+      expression: variables.podSpec.?containers.orValue([]) + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
+    - name: isWindowsPod
+      expression: variables.podSpec.?os.?name.orValue('') == 'windows'
   validations:
-    - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?drop.orValue([]).exists_one(capability, capability == 'ALL'))
-      message: Containers must drop `ALL` capabilities.
     - expression: |-
-        variables.allContainers.all(container, 
-          container.?securityContext.?capabilities.?add.orValue([]).size() == 0 || 
-          (container.securityContext.capabilities.add.orValue([]).size() == 1 && 
-          container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE'))
-      message: Any capabilities added other than NET_BIND_SERVICE are disallowed.
+        variables.isWindowsPod || variables.allContainers.all(container,
+          container.?securityContext.?capabilities.?drop.orValue([]).exists(capability, capability == 'ALL'))
+      message: Containers must drop `ALL` capabilities. Windows Pods are exempt.
+    - expression: |-
+        variables.isWindowsPod || variables.allContainers.all(container,
+          container.image in exceptions.allowedImages ||
+          container.?securityContext.?capabilities.?add.orValue([]).all(capability,
+            capability == 'NET_BIND_SERVICE' || capability in exceptions.allowedValues))
+      message: Any capabilities added other than NET_BIND_SERVICE are disallowed. Windows Pods are exempt.
 
 ```

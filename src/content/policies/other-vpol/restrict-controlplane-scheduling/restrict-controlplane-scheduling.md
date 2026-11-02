@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable because it takes away resources from the control plane components and can represent a possible security threat vector. This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key `node-role.kubernetes.io/master`.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-controlplane-scheduling/restrict-controlplane-scheduling.yaml" target="-blank">/other-vpol/restrict-controlplane-scheduling/restrict-controlplane-scheduling.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-controlplane-scheduling
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Restrict control plane scheduling in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Scheduling non-system Pods to control plane nodes (which run kubelet) is often undesirable because it takes away resources from the control plane components and can represent a possible security threat vector. This policy prevents users from setting a toleration in a Pod spec which allows running on control plane nodes with the taint key `node-role.kubernetes.io/master`.
 spec:
@@ -46,7 +46,11 @@ spec:
         resources:
           - pods
   validations:
-    - expression: "!has(object.spec.tolerations) ||  !object.spec.tolerations.exists(toleration, toleration.?key.orValue('') in ['node-role.kubernetes.io/master', 'node-role.kubernetes.io/control-plane'])"
+    - expression: |-
+        !has(object.spec.tolerations) ||  !object.spec.tolerations.exists(toleration,
+          (!has(toleration.key) ||
+          toleration.key in ['node-role.kubernetes.io/master', 'node-role.kubernetes.io/control-plane']) &&
+          !exceptions.allowedValues.exists(value, value == 'toleration:' + toleration.?key.orValue('')))
       message: Pods may not use tolerations which schedule on control plane nodes.
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'All processes inside a Pod can be made to run with specific user and groupID by setting `runAsUser` and `runAsGroup` respectively. `fsGroup` can be specified to make sure any file created in the volume will have the specified groupID. This policy validates that these fields are set to the defined values.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-usergroup-fsgroup-id/restrict-usergroup-fsgroup-id.yaml" target="-blank">/other-vpol/restrict-usergroup-fsgroup-id/restrict-usergroup-fsgroup-id.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: validate-userid-groupid-fsgroup
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: All processes inside a Pod can be made to run with specific user and groupID by setting `runAsUser` and `runAsGroup` respectively. `fsGroup` can be specified to make sure any file created in the volume will have the specified groupID. This policy validates that these fields are set to the defined values.
@@ -48,11 +48,11 @@ spec:
         resources:
           - pods
   validations:
-    - expression: object.spec.?securityContext.?runAsUser.orValue(1) == 1000
+    - expression: object.spec.?securityContext.?runAsUser.orValue(1) == 1000 || exceptions.allowedValues.exists(value, value == 'runAsUser:' + string(object.spec.?securityContext.?runAsUser.orValue(1)))
       message: User ID should be 1000.
-    - expression: object.spec.?securityContext.?runAsGroup.orValue(1) == 3000
+    - expression: object.spec.?securityContext.?runAsGroup.orValue(1) == 3000 || exceptions.allowedValues.exists(value, value == 'runAsGroup:' + string(object.spec.?securityContext.?runAsGroup.orValue(1)))
       message: Group ID should be 3000.
-    - expression: object.spec.?securityContext.?fsGroup.orValue(1) == 2000
+    - expression: object.spec.?securityContext.?fsGroup.orValue(1) == 2000 || exceptions.allowedValues.exists(value, value == 'fsGroup:' + string(object.spec.?securityContext.?fsGroup.orValue(1)))
       message: fs Group should be 2000.
 
 ```

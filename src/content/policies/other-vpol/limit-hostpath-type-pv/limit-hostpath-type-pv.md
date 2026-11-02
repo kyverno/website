@@ -7,7 +7,7 @@ subjects:
   - PersistentVolume
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'hostPath persistentvolumes consume the underlying node''s file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-type-pv/limit-hostpath-type-pv.yaml" target="-blank">/other-vpol/limit-hostpath-type-pv/limit-hostpath-type-pv.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-hostpath-type-pv
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: PersistentVolume
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: hostPath persistentvolumes consume the underlying node's file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data.
 spec:
@@ -47,7 +47,7 @@ spec:
         resources:
           - persistentvolumes
   validations:
-    - expression: "!has(object.spec.hostPath) || object.spec.hostPath.path.startsWith('/data')"
+    - expression: "!has(object.spec.hostPath) || (has(exceptions.allowedValues) && object.spec.hostPath.path in exceptions.allowedValues) || object.spec.hostPath.path == '/data' || object.spec.hostPath.path.startsWith('/data/')"
       message: hostPath type persistent volumes are confined to /data.
 
 ```

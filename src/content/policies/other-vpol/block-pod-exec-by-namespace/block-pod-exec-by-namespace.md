@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.15.0
+version: 1.19.1
 description: 'The `exec` command may be used to gain shell access, or run other commands, in a Pod''s container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to Pods in a Namespace called `pci`.'
 createdAt: "2025-12-02T17:45:25.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-12-02T17:45:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-namespace/block-pod-exec-by-namespace.yaml" target="-blank">/other-vpol/block-pod-exec-by-namespace/block-pod-exec-by-namespace.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-exec-by-namespace-name
   annotations:
     policies.kyverno.io/title: Block Pod Exec by Namespace Name
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to Pods in a Namespace called `pci`.
 spec:
@@ -47,6 +47,6 @@ spec:
     - message: |
         Pods in this namespace may not be exec'd into.
       expression: |
-        request.namespace != "pci"
+        request.namespace != "pci" || exceptions.allowedValues.exists(value, value == 'pod:' + request.namespace + '/' + request.name)
 
 ```

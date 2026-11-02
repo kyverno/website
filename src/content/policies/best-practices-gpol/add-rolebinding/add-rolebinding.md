@@ -7,7 +7,7 @@ subjects:
   - RoleBinding
 tags:
   - Multi-Tenancy
-version: 1.15.0
+version: 1.17.0
 description: 'Typically in multi-tenancy and other use cases, when a new Namespace is created, users and other principals must be given some permissions to create and interact with resources in the Namespace. Very commonly, Roles and RoleBindings are used to grant permissions at the Namespace level. This policy generates a RoleBinding called `<userName>-admin-binding` in the new Namespace which binds to the ClusterRole `admin` as long as a `cluster-admin` did not create the Namespace. Additionally, an annotation named `kyverno.io/user` is added to the RoleBinding recording the name of the user responsible for the Namespace''s creation.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-gpol/add-rolebinding/add-rolebinding.yaml" target="-blank">/best-practices-gpol/add-rolebinding/add-rolebinding.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-rolebinding
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Add RoleBinding
     policies.kyverno.io/category: Multi-Tenancy
     policies.kyverno.io/subject: RoleBinding
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Typically in multi-tenancy and other use cases, when a new Namespace is created, users and other principals must be given some permissions to create and interact with resources in the Namespace. Very commonly, Roles and RoleBindings are used to grant permissions at the Namespace level. This policy generates a RoleBinding called `<userName>-admin-binding` in the new Namespace which binds to the ClusterRole `admin` as long as a `cluster-admin` did not create the Namespace. Additionally, an annotation named `kyverno.io/user` is added to the RoleBinding recording the name of the user responsible for the Namespace's creation.
 spec:
   evaluation:

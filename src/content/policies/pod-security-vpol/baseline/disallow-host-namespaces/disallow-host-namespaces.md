@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-namespaces
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Disallow Host Namespaces in ValidatingPolicy
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.
@@ -46,15 +46,48 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: hostNetwork
-      expression: object.spec.?hostNetwork.orValue(false)
+      expression: object.spec.?hostNetwork.orValue(false) || object.spec.?template.?spec.?hostNetwork.orValue(false) || object.spec.?jobTemplate.?spec.?template.?spec.?hostNetwork.orValue(false)
     - name: hostIPC
-      expression: object.spec.?hostIPC.orValue(false)
+      expression: object.spec.?hostIPC.orValue(false) || object.spec.?template.?spec.?hostIPC.orValue(false) || object.spec.?jobTemplate.?spec.?template.?spec.?hostIPC.orValue(false)
     - name: hostPID
-      expression: object.spec.?hostPID.orValue(false)
+      expression: object.spec.?hostPID.orValue(false) || object.spec.?template.?spec.?hostPID.orValue(false) || object.spec.?jobTemplate.?spec.?template.?spec.?hostPID.orValue(false)
   validations:
-    - expression: "!(variables.hostNetwork || variables.hostIPC || variables.hostPID)"
+    - expression: (!variables.hostNetwork || 'control:hostNetwork' in exceptions.allowedValues) && (!variables.hostIPC || 'control:hostIPC' in exceptions.allowedValues) && (!variables.hostPID || 'control:hostPID' in exceptions.allowedValues)
       message: "Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.         "
 
 ```

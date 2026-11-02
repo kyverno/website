@@ -8,6 +8,7 @@ subjects:
 tags:
   - Multi-Tenancy
   - EKS Best Practices in vpol
+version: 1.19.1
 description: 'A Pod may optionally specify a priorityClassName which indicates the scheduling priority relative to others. This requires creation of a PriorityClass object in advance. With this created, a Pod may set this field to that value. In a multi-tenant environment, it is often desired to require this priorityClassName be set to make certain tenant scheduling guarantees. This policy requires that a Pod defines the priorityClassName field with some value.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-pod-priorityclassname/require-pod-priorityclassname.yaml" target="-blank">/other-vpol/require-pod-priorityclassname/require-pod-priorityclassname.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-pod-priorityclassname
@@ -27,6 +28,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: A Pod may optionally specify a priorityClassName which indicates the scheduling priority relative to others. This requires creation of a PriorityClass object in advance. With this created, a Pod may set this field to that value. In a multi-tenant environment, it is often desired to require this priorityClassName be set to make certain tenant scheduling guarantees. This policy requires that a Pod defines the priorityClassName field with some value.
 spec:
@@ -47,7 +49,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: object.spec.?priorityClassName.orValue('') != ''
+    - expression: object.spec.?priorityClassName.orValue('') != '' || object.spec.?priorityClassName.orValue('') in exceptions.allowedValues.orValue([])
       message: Pods must define the priorityClassName field.
 
 ```

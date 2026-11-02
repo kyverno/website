@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.15.0
+version: 1.19.1
 description: 'The kubectl cp command is used to copy files between a local machine and a Pod''s container.  While this functionality is useful for transferring data, it may introduce security risks,  such as unauthorized data exfiltration or modification. This policy blocks the use of the  kubectl cp command on all Pods with label `block-kubectl-cp=true`, ensuring that sensitive  workloads are protected from unintended file transfers. Other kubectl operations are unaffected,  allowing for normal Pod management while preventing potential misuse of file copy capabilities.'
 createdAt: "2025-12-02T17:45:25.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-12-02T17:45:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-kubectl-cp/block-kubectl-cp.yaml" target="-blank">/other-vpol/block-kubectl-cp/block-kubectl-cp.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-kubectl-cp
   annotations:
     policies.kyverno.io/title: Block kubectl cp command by Pod Label
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The kubectl cp command is used to copy files between a local machine and a Pod's container.  While this functionality is useful for transferring data, it may introduce security risks,  such as unauthorized data exfiltration or modification. This policy blocks the use of the  kubectl cp command on all Pods with label `block-kubectl-cp=true`, ensuring that sensitive  workloads are protected from unintended file transfers. Other kubectl operations are unaffected,  allowing for normal Pod management while preventing potential misuse of file copy capabilities.
 spec:
@@ -47,6 +47,6 @@ spec:
     - message: |
         Cannot use `kubectl cp` on pods
       expression: |
-        object.command.size() >= 2 && object.command[0] != "tar" && object.command[1] != "cf"
+        !(object.command.size() >= 2 && object.command[0] == "tar" && (object.command[1] == "cf" || object.command[1] == "xf"))
 
 ```

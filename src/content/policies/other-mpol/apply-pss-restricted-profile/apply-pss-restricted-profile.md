@@ -8,6 +8,7 @@ subjects:
 tags:
   - Other
   - PSP Migration
+version: 1.19.1
 description: 'Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile. Note that it does not attempt to remove non-compliant volumes and volumeMounts. Additional policies may be employed for this purpose.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/apply-pss-restricted-profile/apply-pss-restricted-profile.yaml" target="-blank">/other-mpol/apply-pss-restricted-profile/apply-pss-restricted-profile.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: apply-pss-restricted-profile
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/title: Apply PSS Restricted Profile
     policies.kyverno.io/category: Other, PSP Migration
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: Pod Security Standards define the fields and their options which are allowable for Pods to achieve certain security best practices. While these are typically validation policies, workloads will either be accepted or rejected based upon what has already been defined. It is also possible to mutate incoming Pods to achieve the desired PSS level rather than reject. This policy sets all the fields necessary to pass the PSS Restricted profile. Note that it does not attempt to remove non-compliant volumes and volumeMounts. Additional policies may be employed for this purpose.
 spec:
   matchConstraints:
@@ -119,7 +121,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.podSpec.containers.map(c, 
+          variables.podSpec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
             !has(c.securityContext) ?
             JSONPatch{
               op: "add",
@@ -130,7 +132,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.podSpec.containers.map(c, 
+          variables.podSpec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
             JSONPatch{
               op: "add",
               path: variables.podSpecPath + "/containers/" + string(variables.podSpec.containers.indexOf(c)) + "/securityContext/privileged",
@@ -140,7 +142,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.podSpec.containers.map(c, 
+          variables.podSpec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
             JSONPatch{
               op: "add",
               path: variables.podSpecPath + "/containers/" + string(variables.podSpec.containers.indexOf(c)) + "/securityContext/capabilities",
@@ -150,7 +152,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.podSpec.containers.map(c, 
+          variables.podSpec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
             JSONPatch{
               op: "add",
               path: variables.podSpecPath + "/containers/" + string(variables.podSpec.containers.indexOf(c)) + "/securityContext/allowPrivilegeEscalation",
