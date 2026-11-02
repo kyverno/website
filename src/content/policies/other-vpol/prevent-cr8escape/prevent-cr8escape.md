@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/prevent-cr8escape/prevent-cr8escape.yaml" target="-blank">/other-vpol/prevent-cr8escape/prevent-cr8escape.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: prevent-cr8escape
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: A vulnerability "cr8escape" (CVE-2022-0811) in CRI-O the container runtime engine underpinning Kubernetes allows attackers to escape from a Kubernetes container and gain root access to the host. The recommended remediation is to disallow sysctl settings with + or = in their value.
@@ -48,7 +48,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: "object.spec.?securityContext.?sysctls.orValue([]).all(sysctl,  !has(sysctl.value) || (!sysctl.value.contains('+') && !sysctl.value.contains('='))) "
+    - expression: object.spec.?securityContext.?sysctls.orValue([]).all(sysctl,  !has(sysctl.value) || (has(exceptions.allowedValues) && string(sysctl.value) in exceptions.allowedValues) || (!sysctl.value.contains('+') && !sysctl.value.contains('=')))
       message: characters '+' or '=' are not allowed in sysctls values
 
 ```

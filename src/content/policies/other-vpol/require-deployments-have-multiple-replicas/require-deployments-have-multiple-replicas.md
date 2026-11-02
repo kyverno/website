@@ -7,7 +7,7 @@ subjects:
   - Deployment
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml" target="-blank">/other-vpol/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deployment-has-multiple-replicas
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
 spec:
@@ -47,7 +47,7 @@ spec:
         resources:
           - deployments
   validations:
-    - expression: object.spec.replicas > 1
+    - expression: object.spec.replicas > 1 || string(object.spec.replicas) in exceptions.allowedValues
       message: Deployments should have more than one replica to ensure availability.
 
 ```

@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Confidential Computing
+version: 1.17.0
 description: 'Injects the CoCo initdata annotation into pods with the label ''coco=enabled'' and reference to an initdata ConfigMap. Retrieves initdata from the specified ConfigMap and injects it as the ''io.katacontainers.config.runtime.cc_init_data'' annotation.'
 createdAt: "2026-04-09T07:23:52.000Z"
 ---
@@ -24,6 +25,7 @@ metadata:
     policies.kyverno.io/description: Injects the CoCo initdata annotation into pods with the label 'coco=enabled' and reference to an initdata ConfigMap. Retrieves initdata from the specified ConfigMap and injects it as the 'io.katacontainers.config.runtime.cc_init_data' annotation.
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/title: Inject CoCo InitData Annotation
   name: inject-coco-initdata
 spec:

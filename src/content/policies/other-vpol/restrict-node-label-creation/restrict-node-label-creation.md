@@ -8,6 +8,7 @@ subjects:
   - Label
 tags:
   - Sample in Vpol
+version: 1.19.1
 description: 'Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. Many cloud providers also use Node labels to signal specific functions to applications. This policy prevents setting of a new label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-node-label-creation/restrict-node-label-creation.yaml" target="-blank">/other-vpol/restrict-node-label-creation/restrict-node-label-creation.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-node-label-creation
@@ -25,7 +26,8 @@ metadata:
     policies.kyverno.io/title: Restrict node label creation in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
     policies.kyverno.io/subject: Node, Label
-    kyverno.io/kyverno-version: 1.12.1
+    kyverno.io/kyverno-version: 1.19.1
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: "Node labels are critical pieces of metadata upon which many other applications and logic may depend and should not be altered or removed by regular users. Many cloud providers also use Node labels to signal specific functions to applications. This policy prevents setting of a new label called `foo` on cluster Nodes. Use of this policy requires removal of the Node resource filter in the Kyverno ConfigMap ([Node,*,*]). Due to Kubernetes CVE-2021-25735, this policy requires, at minimum, one of the following versions of Kubernetes: v1.18.18, v1.19.10, v1.20.6, or v1.21.0."
 spec:
@@ -49,9 +51,12 @@ spec:
     - name: operation-should-be-update
       expression: request.operation == 'UPDATE'
     - name: has-foo-label
-      expression: oldObject.metadata.?labels.?foo != object.metadata.?labels.?foo
+      expression: oldObject.metadata.?labels.?foo.orValue('') != object.metadata.?labels.?foo.orValue('')
+  variables:
+    - name: fooExceptionValue
+      expression: "object.metadata.?labels.?foo.hasValue() ? 'foo:' + object.metadata.labels.foo : 'foo:<absent>'"
   validations:
-    - expression: "false"
+    - expression: variables.fooExceptionValue in exceptions.allowedValues
       message: Setting the `foo` label on a Node is not allowed.
 
 ```

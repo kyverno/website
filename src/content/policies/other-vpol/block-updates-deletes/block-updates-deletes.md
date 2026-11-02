@@ -7,6 +7,7 @@ subjects:
   - RBAC
 tags:
   - Sample
+version: 1.19.1
 description: 'Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.'
 createdAt: "2025-12-11T12:49:35.000Z"
 ---
@@ -16,13 +17,14 @@ createdAt: "2025-12-11T12:49:35.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-updates-deletes/block-updates-deletes.yaml" target="-blank">/other-vpol/block-updates-deletes/block-updates-deletes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-updates-deletes
   annotations:
     policies.kyverno.io/title: Block Updates and Deletes
     policies.kyverno.io/category: Sample
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: RBAC
     policies.kyverno.io/description: Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.
 spec:
@@ -49,6 +51,6 @@ spec:
           - v1
   validations:
     - message: This resource is protected and changes are not allowed. Please seek a cluster-admin.
-      expression: "!(variables.isProtectedService && !variables.hasClusterAdminRole)"
+      expression: "!(variables.isProtectedService && !variables.hasClusterAdminRole) || exceptions.allowedValues.exists(value, value == 'protected-service:true')"
 
 ```

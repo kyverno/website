@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-version: 1.7.0
+version: 1.19.1
 description: 'A base image used to construct a container image is not accessible by any Kubernetes component and not a field in a Pod spec as it must be fetched from a registry. Having this information available in the resource referencing the containers helps to provide a clearer understanding of its contents. This policy adds an annotation to a Pod or its controllers with the base image used for each container if present in an OCI annotation.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/annotate-base-images/annotate-base-images.yaml" target="-blank">/other-mpol/annotate-base-images/annotate-base-images.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: annotate-base-images
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     pod-policies.kyverno.io/autogen-controllers: none
-    policies.kyverno.io/minversion: 1.7.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: A base image used to construct a container image is not accessible by any Kubernetes component and not a field in a Pod spec as it must be fetched from a registry. Having this information available in the resource referencing the containers helps to provide a clearer understanding of its contents. This policy adds an annotation to a Pod or its controllers with the base image used for each container if present in an OCI annotation.
 spec:
@@ -46,7 +46,10 @@ spec:
           - pods
   variables:
     - name: imageMetadata
-      expression: object.spec.containers.map(c, image.GetMetadata(c.image))
+      expression: |-
+        object.spec.containers.map(c,
+          exceptions.allowedImages.exists(image, image == c.image) ? {} : image.GetMetadata(c.image)
+        )
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -62,7 +65,9 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          variables.imageMetadata.map(img, variables.imageMetadata.indexOf(img)).map(idx,
+          object.spec.containers.map(container, object.spec.containers.indexOf(container)).filter(idx,
+            !exceptions.allowedImages.exists(image, image == object.spec.containers[idx].image)
+          ).map(idx,
             has(variables.imageMetadata[idx].manifest) && 
             has(variables.imageMetadata[idx].manifest.annotations) &&
             "org.opencontainers.image.base.name" in variables.imageMetadata[idx].manifest.annotations ?

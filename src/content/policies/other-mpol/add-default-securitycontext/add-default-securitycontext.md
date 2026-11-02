@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.6.0
+version: 1.17.0
 description: 'A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, `runAsUser`, `runAsGroup`, and  `fsGroup` fields within the Pod securityContext if they are not already set.'
 createdAt: "2025-10-29T09:59:30.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-default-securitycontext/add-default-securitycontext.yaml" target="-blank">/other-mpol/add-default-securitycontext/add-default-securitycontext.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-default-securitycontext
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Add Default securityContext
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, `runAsUser`, `runAsGroup`, and  `fsGroup` fields within the Pod securityContext if they are not already set.
 spec:
   matchConstraints:

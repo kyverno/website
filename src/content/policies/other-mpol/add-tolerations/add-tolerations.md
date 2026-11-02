@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-version: 1.6.0
+version: 1.17.0
 description: 'Pod tolerations are used to schedule on Nodes which have a matching taint. This policy adds the toleration `org.com/role=service:NoSchedule` if existing tolerations do not contain the key `org.com/role`.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-tolerations/add-tolerations.yaml" target="-blank">/other-mpol/add-tolerations/add-tolerations.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-tolerations
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Pod tolerations are used to schedule on Nodes which have a matching taint. This policy adds the toleration `org.com/role=service:NoSchedule` if existing tolerations do not contain the key `org.com/role`.
 spec:

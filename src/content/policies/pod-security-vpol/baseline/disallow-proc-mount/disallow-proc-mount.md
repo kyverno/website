@@ -7,8 +7,8 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
-description: 'The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.'
+version: 1.19.1
+description: 'The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them. The API server accepts a procMount of `Unmasked` only when `spec.hostUsers` is `false`, and only with the `ProcMountType` feature gate, which is on by default from Kubernetes 1.33.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml" target="-blank">/pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-proc-mount
@@ -26,10 +26,10 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.
+    policies.kyverno.io/description: "The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them. The API server accepts a procMount of `Unmasked` only when `spec.hostUsers` is `false`, and only with the `ProcMountType` feature gate, which is on by default from Kubernetes 1.33."
 spec:
   validationActions:
     - Audit
@@ -47,14 +47,50 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: |-
-        object.spec.containers + 
-          object.spec.?initContainers.orValue([]) + 
-          object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
+    - name: userNamespacePod
+      expression: variables.podSpec.?hostUsers.orValue(true) == false
   validations:
-    - expression: variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')
-      message: Changing the proc mount from the default is not allowed.
+    - expression: |-
+        variables.userNamespacePod || variables.allContainers.all(container,
+          container.image in exceptions.allowedImages ||
+          container.?securityContext.?procMount.orValue('Default') == 'Default' ||
+          ('procMount:' + container.?securityContext.?procMount.orValue('')) in exceptions.allowedValues)
+      message: Changing the proc mount from the default is not allowed, unless the Pod sets spec.hostUsers to `false`.
 
 ```

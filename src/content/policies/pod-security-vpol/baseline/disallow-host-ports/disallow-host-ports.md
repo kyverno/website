@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. '
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-ports
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/description: "Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. "
 spec:
@@ -46,16 +46,49 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: |-
-        object.spec.containers + 
-         object.spec.?initContainers.orValue([]) + 
-         object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
   validations:
     - expression: |-
         variables.allContainers.all(container, 
-          container.?ports.orValue([]).all(port, port.?hostPort.orValue(0) == 0))
+          container.?ports.orValue([]).all(port,
+          container.image in exceptions.allowedImages ||
+          port.?hostPort.orValue(0) == 0 ||
+          string(port.?hostPort.orValue(0)) in exceptions.allowedValues))
       message: Use of host ports is disallowed. The field spec.containers[*].ports[*].hostPort must either be unset or set to `0`.
 
 ```

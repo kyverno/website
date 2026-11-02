@@ -7,6 +7,7 @@ subjects:
   - VirtualMachineInstance
 tags:
   - KubeVirt
+version: 1.17.0
 description: 'Add an SSH Service to every VirtualMachineInstance which is getting created. This Service will use a ClusterIP, thus the admin has to ensure that the IP space is large enough and ClusterIP type can be met.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -16,12 +17,13 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/kubevirt-gpol/add-services/add-services.yaml" target="-blank">/kubevirt-gpol/add-services/add-services.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: k6t-add-services
   annotations:
     policies.kyverno.io/title: Add Services
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/category: KubeVirt
     policies.kyverno.io/subject: VirtualMachineInstance
     policies.kyverno.io/description: Add an SSH Service to every VirtualMachineInstance which is getting created. This Service will use a ClusterIP, thus the admin has to ensure that the IP space is large enough and ClusterIP type can be met.

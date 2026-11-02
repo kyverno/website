@@ -7,8 +7,8 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
-version: 1.14.0
-description: 'Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.'
+version: 1.19.1
+description: 'Containers must run as non-root users. This policy ensures that every container sets `runAsNonRoot` to `true` or inherits it from the Pod, and that neither sets it to `false`. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-run-as-nonroot
@@ -26,10 +26,10 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Restricted) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.
+    policies.kyverno.io/description: "Containers must run as non-root users. This policy ensures that every container sets `runAsNonRoot` to `true` or inherits it from the Pod, and that neither sets it to `false`. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them."
 spec:
   validationActions:
     - Audit
@@ -47,14 +47,51 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: ctnrs
-      expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
+    - name: userNamespacePod
+      expression: variables.podSpec.?hostUsers.orValue(true) == false
   validations:
     - expression: |-
-        (object.spec.?securityContext.?runAsNonRoot.orValue(false) == true
-          && variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(true) == true))
-          || variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(false) == true)
-      message: Running as root is not allowed. Either spec.securityContext.runAsNonRoot  must be set to true, or all containers (spec.containers[*], spec.initContainers[*],  spec.ephemeralContainers[*]) must have securityContext.runAsNonRoot set to true.
+        variables.userNamespacePod || (variables.podSpec.?securityContext.?runAsNonRoot.orValue(true) == true &&
+          variables.ctnrs.all(c,
+            c.image in exceptions.allowedImages ||
+            c.?securityContext.?runAsNonRoot.orValue(
+              variables.podSpec.?securityContext.?runAsNonRoot.orValue(false)) == true))
+      message: Running as root is not allowed. Every container (spec.containers[*], spec.initContainers[*], and spec.ephemeralContainers[*]) must set securityContext.runAsNonRoot to `true`, or inherit `true` from spec.securityContext.runAsNonRoot. Neither spec.securityContext.runAsNonRoot nor container-level securityContext.runAsNonRoot may be set to `false`, unless the Pod sets spec.hostUsers to `false`.
 
 ```

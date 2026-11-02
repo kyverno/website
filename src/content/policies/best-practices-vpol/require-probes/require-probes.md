@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Best Practices
-version: 1.14.0
+version: 1.19.1
 description: 'Liveness and readiness probes are essential for managing Pod lifecycle during deployments, restarts, and upgrades. Liveness probes help the kubelet determine when to restart containers, while readiness probes help Services and Deployments determine when Pods are ready to receive traffic. Startup probes provide additional control during container startup. This policy validates that all containers have at least one of livenessProbe, readinessProbe, or startupProbe defined.      '
 createdAt: "2026-02-12T11:17:00.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2026-02-12T11:17:00.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-probes/require-probes.yaml" target="-blank">/best-practices-vpol/require-probes/require-probes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-pod-probes
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: "Liveness and readiness probes are essential for managing Pod lifecycle during deployments, restarts, and upgrades. Liveness probes help the kubelet determine when to restart containers, while readiness probes help Services and Deployments determine when Pods are ready to receive traffic. Startup probes provide additional control during container startup. This policy validates that all containers have at least one of livenessProbe, readinessProbe, or startupProbe defined.      "
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
 spec:
   validationActions:
     - Deny
@@ -75,20 +75,32 @@ spec:
         operations:
           - CREATE
           - UPDATE
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        resources:
+          - replicationcontrollers
+        operations:
+          - CREATE
+          - UPDATE
   variables:
     - name: allContainers
       expression: |-
-        has(object.spec.containers) ? 
-          object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]) : 
-          object.spec.template.spec.containers + object.spec.template.spec.?initContainers.orValue([]) + object.spec.template.spec.?ephemeralContainers.orValue([])      
+        has(object.spec.containers) ?
+          object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]) :
+          has(object.spec.template) ?
+            object.spec.template.spec.containers + object.spec.template.spec.?initContainers.orValue([]) + object.spec.template.spec.?ephemeralContainers.orValue([]) :
+            object.spec.jobTemplate.spec.template.spec.containers + object.spec.jobTemplate.spec.template.spec.?initContainers.orValue([]) + object.spec.jobTemplate.spec.template.spec.?ephemeralContainers.orValue([])
   validations:
     - expression: |-
-        variables.allContainers.all(container, 
+        variables.allContainers.all(container,
+          (has(exceptions.allowedImages) && container.image in exceptions.allowedImages) ||
           has(container.livenessProbe) || has(container.readinessProbe) || has(container.startupProbe)
         )      
       messageExpression: |-
         'All containers must have at least one probe (livenessProbe, readinessProbe, or startupProbe) defined. Missing probes in containers: ' +  variables.allContainers.filter(container, 
           !(has(container.livenessProbe) || has(container.readinessProbe) || has(container.startupProbe))
-        ).map(container, container.name).join(', ')  
+        ).map(container, container.name).join(', ')
 
 ```

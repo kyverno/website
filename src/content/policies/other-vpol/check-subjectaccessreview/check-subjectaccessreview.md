@@ -7,7 +7,7 @@ subjects:
   - SubjectAccessReview
 tags:
   - Other
-version: 1.15.0
+version: 1.19.1
 description: 'In some cases a validation check for one type of resource may need to take into consideration the requesting user''s permissions on a different type of resource. Rather than parsing through all Roles and/or ClusterRoles to check if these permissions are held, Kyverno can perform a SubjectAccessReview request to the Kubernetes API server and have it figure out those permissions. This policy illustrates how to perform a POST request to the API server to subject a SubjectAccessReview for a user creating/updating a ConfigMap. It is intended to be used as a component in a more functional rule.'
 createdAt: "2025-12-16T13:58:08.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-12-16T13:58:08.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-subjectaccessreview/check-subjectaccessreview.yaml" target="-blank">/other-vpol/check-subjectaccessreview/check-subjectaccessreview.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-subjectaccessreview
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: SubjectAccessReview
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: In some cases a validation check for one type of resource may need to take into consideration the requesting user's permissions on a different type of resource. Rather than parsing through all Roles and/or ClusterRoles to check if these permissions are held, Kyverno can perform a SubjectAccessReview request to the Kubernetes API server and have it figure out those permissions. This policy illustrates how to perform a POST request to the API server to subject a SubjectAccessReview for a user creating/updating a ConfigMap. It is intended to be used as a component in a more functional rule.
 spec:
@@ -66,6 +66,6 @@ spec:
           - v1
   validations:
     - message: User is not authorized.
-      expression: has(variables.subjectaccessreview.status) && variables.subjectaccessreview.status.allowed == true
+      expression: has(exceptions.allowedValues) && request.userInfo.username in exceptions.allowedValues || has(variables.subjectaccessreview.status) && variables.subjectaccessreview.status.allowed == true
 
 ```

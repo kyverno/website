@@ -7,7 +7,7 @@ subjects:
   - Application
 tags:
   - Argo in CEL
-version: 1.14.0
+version: 1.19.1
 description: 'This policy prevents the use of the default project in an Application.'
 createdAt: "2026-04-12T16:53:01.000Z"
 ---
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Argo in CEL
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.17.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.34-1.35
     policies.kyverno.io/subject: Application
     policies.kyverno.io/description: This policy prevents the use of the default project in an Application.
@@ -47,8 +47,13 @@ spec:
           - UPDATE
         resources:
           - applications
+  variables:
+    - name: canonicalProject
+      expression: "has(object.spec.project) && object.spec.project != '' ? object.spec.project : 'default'"
+    - name: allowedProjects
+      expression: exceptions.allowedValues
   validations:
     - message: The default project may not be used in an Application.
-      expression: object.spec.?project.orValue('') != 'default'
+      expression: variables.canonicalProject != 'default' || variables.canonicalProject in variables.allowedProjects
 
 ```

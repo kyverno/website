@@ -6,6 +6,7 @@ type: MutatingPolicy
 subjects: []
 tags:
   - Other
+version: 1.19.1
 description: 'Image tags are mutable and the change of an image can result in the same tag. This policy resolves the image digest of each image in a container and replaces the image with the fully resolved reference which includes the digest rather than tag.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -15,12 +16,13 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml" target="-blank">/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: resolve-image-to-digest
   annotations:
     policies.kyverno.io/title: Resolve Image to Digest
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: Image tags are mutable and the change of an image can result in the same tag. This policy resolves the image digest of each image in a container and replaces the image with the fully resolved reference which includes the digest rather than tag.
@@ -78,7 +80,9 @@ spec:
       expression: |-
         variables.containers.map(container, {
           'name': container.name,
-          'image': image.GetMetadata(container.image).resolvedImage
+          'originalImage': container.image,
+          'image': exceptions.allowedImages.exists(image, image == container.image) ?
+            container.image : image.GetMetadata(container.image).resolvedImage
         })
   mutations:
     - patchType: ApplyConfiguration
@@ -87,6 +91,7 @@ spec:
           variables.isPod ? Object{
             spec: Object.spec{
               containers: variables.resolvedContainers.map(rc,
+                exceptions.allowedImages.exists(image, image == rc.originalImage) ? object.spec.containers[variables.resolvedContainers.indexOf(rc)] :
                 Object.spec.containers{
                   name: rc.name,
                   image: rc.image
@@ -100,8 +105,9 @@ spec:
           variables.isController ? Object{
             spec: Object.spec{
               template: Object.spec.template{
-                spec: Object.spec.template.spec{
+                  spec: Object.spec.template.spec{
                   containers: variables.resolvedContainers.map(rc,
+                    exceptions.allowedImages.exists(image, image == rc.originalImage) ? object.spec.template.spec.containers[variables.resolvedContainers.indexOf(rc)] :
                     Object.spec.template.spec.containers{
                       name: rc.name,
                       image: rc.image
@@ -119,8 +125,9 @@ spec:
               jobTemplate: Object.spec.jobTemplate{
                 spec: Object.spec.jobTemplate.spec{
                   template: Object.spec.jobTemplate.spec.template{
-                    spec: Object.spec.jobTemplate.spec.template.spec{
+                      spec: Object.spec.jobTemplate.spec.template.spec{
                       containers: variables.resolvedContainers.map(rc,
+                        exceptions.allowedImages.exists(image, image == rc.originalImage) ? object.spec.jobTemplate.spec.template.spec.containers[variables.resolvedContainers.indexOf(rc)] :
                         Object.spec.jobTemplate.spec.template.spec.containers{
                           name: rc.name,
                           image: rc.image

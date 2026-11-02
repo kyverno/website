@@ -7,7 +7,7 @@ subjects:
   - Ingress
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Ingress hosts optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given Ingress resource. This policy enforces that any Ingress host does not contain a wildcard character.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-ingress-wildcard/restrict-ingress-wildcard.yaml" target="-blank">/other-vpol/restrict-ingress-wildcard/restrict-ingress-wildcard.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-ingress-wildcard
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: Ingress hosts optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given Ingress resource. This policy enforces that any Ingress host does not contain a wildcard character.
@@ -48,7 +48,7 @@ spec:
         resources:
           - ingresses
   validations:
-    - expression: "!object.spec.?rules.orValue([]).exists(rule, has(rule.host) && rule.host.contains('*'))"
+    - expression: "!object.spec.?rules.orValue([]).exists(rule, has(rule.host) && rule.host.contains('*') && !exceptions.allowedValues.exists(value, value == 'host:' + rule.host))"
       message: Wildcards are not permitted as hosts.
 
 ```
