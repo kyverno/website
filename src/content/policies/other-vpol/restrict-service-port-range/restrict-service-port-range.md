@@ -7,7 +7,7 @@ subjects:
   - Service
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-service-port-range/restrict-service-port-range.yaml" target="-blank">/other-vpol/restrict-service-port-range/restrict-service-port-range.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-service-port-range
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: Services which are allowed to expose any port number may be able to impact other applications running on the Node which require them, or may make specifying security policy externally more challenging. This policy enforces that only the port range 32000 to 33000 may be used for Service resources.
@@ -45,7 +45,7 @@ spec:
         resources:
           - services
   validations:
-    - expression: object.spec.ports.all(p, p.port >= 32000 && p.port <= 33000)
+    - expression: object.spec.ports.all(p, (p.port >= 32000 && p.port <= 33000) || string(p.port) in exceptions.allowedValues.orValue([]))
       message: Ports must be between 32000-33000
 
 ```

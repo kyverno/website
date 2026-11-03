@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.6.0
+version: 1.19.1
 description: 'In restricted environments, Pods may not be allowed to egress directly to all destinations and some overrides to specific addresses may need to go through a corporate proxy. This policy adds proxy information to Pods in the form of environment variables. It will add the `env` array if not present. If any Pods have any of these env vars, they will be overwritten with the value(s) in this policy.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-pod-proxies/add-pod-proxies.yaml" target="-blank">/other-mpol/add-pod-proxies/add-pod-proxies.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-pod-proxies
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Add Pod Proxies
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: In restricted environments, Pods may not be allowed to egress directly to all destinations and some overrides to specific addresses may need to go through a corporate proxy. This policy adds proxy information to Pods in the form of environment variables. It will add the `env` array if not present. If any Pods have any of these env vars, they will be overwritten with the value(s) in this policy.
     kyverno.io/kyverno-version: 1.15.0
     kyverno.io/kubernetes-version: "1.21"
@@ -67,7 +67,7 @@ spec:
       jsonPatch:
         expression: |
           object.kind == "Pod" ?
-          object.spec.containers.map(container,
+          object.spec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
             object.spec.containers.indexOf(container)
           ).map(idx,
             JSONPatch{
@@ -91,7 +91,7 @@ spec:
       jsonPatch:
         expression: |
           object.kind in ["Deployment", "DaemonSet", "StatefulSet"] ?
-          object.spec.template.spec.containers.map(container,
+          object.spec.template.spec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
             object.spec.template.spec.containers.indexOf(container)
           ).map(idx,
             JSONPatch{
@@ -115,7 +115,7 @@ spec:
       jsonPatch:
         expression: |
           object.kind == "Job" ?
-          object.spec.template.spec.containers.map(container,
+          object.spec.template.spec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
             object.spec.template.spec.containers.indexOf(container)
           ).map(idx,
             JSONPatch{
@@ -139,7 +139,7 @@ spec:
       jsonPatch:
         expression: |
           object.kind == "CronJob" ?
-          object.spec.jobTemplate.spec.template.spec.containers.map(container,
+          object.spec.jobTemplate.spec.template.spec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
             object.spec.jobTemplate.spec.template.spec.containers.indexOf(container)
           ).map(idx,
             JSONPatch{

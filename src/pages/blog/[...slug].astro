@@ -106,6 +106,10 @@ const image = getCoverImage(data.coverImage)
 // Use static path (without date) for images since that's where files are actually copied
 const postStaticPath = getPostStaticPath()
 const processedContent = body ? processImagePaths(body, postStaticPath) : ''
+const discussesLegacyPolicies =
+  /\b(?:ClusterPolic(?:y|ies)|(?:Cluster)?CleanupPolic(?:y|ies))\b|\bkind:\s*Policy\b|\/docs\/policy-types\/(?:cluster-policy|cleanup-policy)/.test(
+    body || '',
+  )
 ---
 
 <DefaultLayout>
@@ -194,6 +198,30 @@ const processedContent = body ? processImagePaths(body, postStaticPath) : ''
       }
 
       <!-- Blog Post Content -->
+      {
+        discussesLegacyPolicies && (
+          <aside
+            aria-label="Legacy policy documentation"
+            class="mb-8 rounded-lg border border-stroke bg-primary-100/10 p-4"
+          >
+            This post discusses legacy policy APIs. See the{' '}
+            <a
+              href="/docs/policy-types/overview"
+              class="text-primary-100 underline"
+            >
+              current policy types
+            </a>{' '}
+            and{' '}
+            <a
+              href="/docs/guides/migration-to-cel"
+              class="text-primary-100 underline"
+            >
+              migration guide
+            </a>
+            . Use the documentation version selector for historical reference.
+          </aside>
+        )
+      }
       {
         processedContent && (
           <BlogMarkdown client:load content={processedContent} />

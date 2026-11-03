@@ -84,40 +84,7 @@ export default defineConfig({
             'docs/policy-types/deleting-policy',
             'docs/policy-types/image-validating-policy',
             'docs/policy-types/cel-libraries',
-            {
-              label: 'ClusterPolicy',
-              items: [
-                'docs/policy-types/cluster-policy/overview',
-                'docs/policy-types/cluster-policy/policy-settings',
-                'docs/policy-types/cluster-policy/match-exclude',
-                'docs/policy-types/cluster-policy/validate',
-                'docs/policy-types/cluster-policy/mutate',
-                'docs/policy-types/cluster-policy/generate',
-                {
-                  label: 'Verify Image Rules',
-                  collapsed: true,
-                  items: [
-                    {
-                      autogenerate: {
-                        directory:
-                          'docs/policy-types/cluster-policy/verify-images',
-                      },
-                    },
-                  ],
-                },
-                'docs/policy-types/cluster-policy/autogen',
-                'docs/policy-types/cluster-policy/variables',
-                'docs/policy-types/cluster-policy/jmespath',
-                'docs/policy-types/cluster-policy/preconditions',
-                'docs/policy-types/cluster-policy/external-data-sources',
-              ],
-              collapsed: true,
-              badge: {
-                text: 'Deprecated',
-                variant: 'caution',
-              },
-            },
-            'docs/policy-types/cleanup-policy',
+            'docs/policy-types/global-context-caching',
           ],
           collapsed: false,
         },
@@ -126,8 +93,10 @@ export default defineConfig({
           collapsed: true,
           items: [
             'docs/guides/migration-to-cel',
+            'docs/guides/jmespath-to-cel',
             'docs/guides/applying-policies',
             'docs/guides/testing-policies',
+            'docs/guides/ttl-cleanup',
             'docs/guides/exceptions',
             'docs/guides/reports',
             'docs/guides/monitoring',

@@ -6,6 +6,7 @@ type: ValidatingPolicy
 subjects: []
 tags:
   - Best Practices
+version: 1.19.1
 description: 'This policy restricts the use of externalIPs in Service resources. External IPs can pose security risks and should be carefully controlled.'
 createdAt: "2026-02-12T12:56:39.000Z"
 ---
@@ -19,6 +20,7 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: This policy restricts the use of externalIPs in Service resources. External IPs can pose security risks and should be carefully controlled.
     policies.kyverno.io/severity: medium
@@ -42,7 +44,7 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: "!has(object.spec.externalIPs) || size(object.spec.externalIPs) == 0"
+    - expression: "'externalIPs' in exceptions.allowedValues || !has(object.spec.externalIPs) || size(object.spec.externalIPs) == 0"
       message: externalIPs are not allowed.
 
 ```

@@ -8,7 +8,7 @@ subjects:
 tags:
   - Pod Security Admission
   - EKS Best Practices
-version: 1.6.0
+version: 1.17.0
 description: 'Pod Security Admission (PSA) can be controlled via the assignment of labels at the Namespace level which define the Pod Security Standard (PSS) profile in use and the action to take. If not using a cluster-wide configuration via an AdmissionConfiguration file, Namespaces must be explicitly labeled. This policy assigns the labels `pod-security.kubernetes.io/enforce=baseline` and `pod-security.kubernetes.io/warn=restricted` to all new Namespaces if those labels are not included.'
 createdAt: "2025-10-30T08:57:55.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-psa-labels/add-psa-labels.yaml" target="-blank">/psa-mpol/add-psa-labels/add-psa-labels.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-psa-labels
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Admission, EKS Best Practices
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.1
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: Pod Security Admission (PSA) can be controlled via the assignment of labels at the Namespace level which define the Pod Security Standard (PSS) profile in use and the action to take. If not using a cluster-wide configuration via an AdmissionConfiguration file, Namespaces must be explicitly labeled. This policy assigns the labels `pod-security.kubernetes.io/enforce=baseline` and `pod-security.kubernetes.io/warn=restricted` to all new Namespaces if those labels are not included.

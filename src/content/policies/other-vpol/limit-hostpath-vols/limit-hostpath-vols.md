@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'hostPath volumes consume the underlying node''s file system. If hostPath volumes are not to be universally disabled, they should be restricted to only certain host paths so as not to allow access to sensitive information. This policy ensures the only directory that can be mounted as a hostPath volume is /data. It is strongly recommended to pair this policy with a second to ensure readOnly access is enforced preventing directory escape.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml" target="-blank">/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-hostpath-vols
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Limit hostPath Volumes to Specific Directories in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
@@ -51,7 +51,7 @@ spec:
     - name: has-host-path-volume
       expression: object.spec.?volumes.orValue([]).exists(volume, has(volume.hostPath))
   validations:
-    - expression: object.spec.volumes.all(volume, !has(volume.hostPath) || volume.hostPath.path.split('/')[1] == 'data')
+    - expression: object.spec.volumes.all(volume, !has(volume.hostPath) || volume.hostPath.path.split('/')[1] == 'data' || volume.hostPath.path in exceptions.allowedValues)
       message: hostPath volumes are confined to /data.
 
 ```

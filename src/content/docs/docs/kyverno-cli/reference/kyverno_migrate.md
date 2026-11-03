@@ -18,8 +18,8 @@ kyverno migrate [flags]
 ### Examples
 
 ```
-  # Migrate policy exceptions
-  kyverno migrate --resource policyexceptions.kyverno.io
+  # Migrate CEL policies
+  kyverno migrate --resource validatingpolicies.policies.kyverno.io
 ```
 
 ### Options
@@ -54,4 +54,3 @@ kyverno migrate [flags]
 ### SEE ALSO
 
 * [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
-

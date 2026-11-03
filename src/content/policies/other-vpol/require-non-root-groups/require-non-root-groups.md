@@ -8,7 +8,7 @@ subjects:
 tags:
   - Sample
   - EKS Best Practices in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root). A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-non-root-groups/require-non-root-groups.yaml" target="-blank">/other-vpol/require-non-root-groups/require-non-root-groups.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-non-root-groups
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/title: Require Non-Root Groups in ValidatingPolicy
     policies.kyverno.io/category: Sample, EKS Best Practices in vpol
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
@@ -51,17 +51,17 @@ spec:
   validations:
     - expression: |-
         (
-          object.spec.?securityContext.?runAsGroup.orValue(-1) > 0 &&
+          (object.spec.?securityContext.?runAsGroup.orValue(-1) > 0 || ('runAsGroup:' + string(object.spec.?securityContext.?runAsGroup.orValue(-1))) in exceptions.allowedValues) &&
           (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]))
-          .all(container, container.?securityContext.?runAsGroup.orValue(1) > 0)
+          .all(container, container.?securityContext.?runAsGroup.orValue(1) > 0 || ('runAsGroup:' + string(container.?securityContext.?runAsGroup.orValue(1))) in exceptions.allowedValues)
         ) || (
           (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]))
-          .all(container, container.?securityContext.?runAsGroup.orValue(-1) > 0)
+          .all(container, container.?securityContext.?runAsGroup.orValue(-1) > 0 || ('runAsGroup:' + string(container.?securityContext.?runAsGroup.orValue(-1))) in exceptions.allowedValues)
         )
       message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup, spec.containers[*].securityContext.runAsGroup, spec.initContainers[*].securityContext.runAsGroup, and spec.ephemeralContainers[*].securityContext.runAsGroup must be set to a value greater than zero.
-    - expression: object.spec.?securityContext.?supplementalGroups.orValue([]).all(group, group > 0)
+    - expression: object.spec.?securityContext.?supplementalGroups.orValue([]).all(group, group > 0 || ('supplementalGroups:' + string(group)) in exceptions.allowedValues)
       message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.supplementalGroups must be unset or set to a value greater than zero.
-    - expression: object.spec.?securityContext.?fsGroup.orValue(1) > 0
+    - expression: object.spec.?securityContext.?fsGroup.orValue(1) > 0 || ('fsGroup:' + string(object.spec.?securityContext.?fsGroup.orValue(1))) in exceptions.allowedValues
       message: Containers cannot run with a root primary or supplementary GID. The field spec.securityContext.fsGroup must be unset or set to a value greater than zero.
 
 ```

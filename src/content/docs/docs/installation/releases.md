@@ -18,7 +18,7 @@ Patches are managed in a dedicated release branch (e.g. `release-1.19`). All pat
 | ---------------------------------- | ----------------------------------- |
 | **Supported Release:**             | v1.19 (released: Aug 2026)          |
 | **Estimated End of Life:**         | v1.20 release (estimated: Nov 2026) |
-| **Kubernetes Versions Supported:** | v1.33 - v1.35                       |
+| **Kubernetes Versions Supported:** | v1.33 - v1.36                       |
 
 Other Kubernetes versions may work, but are not tested and therefore no guarantees are made as to their full compatibility.
 

@@ -1,0 +1,72 @@
+---
+title: 'Restrict AppArmor in ValidatingPolicy'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - Pod
+  - Annotation
+tags:
+  - Pod Security Standards (Baseline) in ValidatingPolicy
+version: 1.17.0
+description: 'On supported hosts, the `RuntimeDefault` AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles. This policy ensures that the `appArmorProfile.type` fields are unset, `RuntimeDefault`, or `Localhost`, and that the deprecated `container.apparmor.security.beta.kubernetes.io/*` annotations are empty, `runtime/default`, or start with `localhost/`.'
+createdAt: "2026-10-22T06:25:41.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml" target="-blank">/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-apparmor-profiles
+  annotations:
+    policies.kyverno.io/title: Restrict AppArmor in ValidatingPolicy
+    policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod, Annotation
+    policies.kyverno.io/minversion: 1.17.0
+    kyverno.io/kyverno-version: 1.14.0
+    kyverno.io/kubernetes-version: 1.30+
+    policies.kyverno.io/description: On supported hosts, the `RuntimeDefault` AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles. This policy ensures that the `appArmorProfile.type` fields are unset, `RuntimeDefault`, or `Localhost`, and that the deprecated `container.apparmor.security.beta.kubernetes.io/*` annotations are empty, `runtime/default`, or start with `localhost/`.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
+    - name: allowedTypes
+      expression: "['RuntimeDefault', 'Localhost']"
+    - name: annotations
+      expression: "has(object.metadata) ? object.metadata.?annotations.orValue({}) : {}"
+  validations:
+    - expression: |-
+        (!has(object.spec.securityContext) || !has(object.spec.securityContext.appArmorProfile) ||
+          object.spec.securityContext.appArmorProfile.?type.orValue('') in variables.allowedTypes) &&
+        variables.allContainers.all(container,
+          !has(container.securityContext) || !has(container.securityContext.appArmorProfile) ||
+          container.securityContext.appArmorProfile.?type.orValue('') in variables.allowedTypes) &&
+        variables.annotations.all(key,
+          !key.startsWith('container.apparmor.security.beta.kubernetes.io/') ||
+          variables.annotations[key] == '' ||
+          variables.annotations[key] == 'runtime/default' ||
+          variables.annotations[key].startsWith('localhost/'))
+      message: AppArmor profiles must be restricted. The fields spec.securityContext.appArmorProfile.type, spec.containers[*].securityContext.appArmorProfile.type, spec.initContainers[*].securityContext.appArmorProfile.type, and spec.ephemeralContainers[*].securityContext.appArmorProfile.type must be unset, `RuntimeDefault`, or `Localhost`. The annotations metadata.annotations['container.apparmor.security.beta.kubernetes.io/*'] must be empty, `runtime/default`, or start with `localhost/`.
+
+```

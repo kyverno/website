@@ -7,7 +7,7 @@ subjects:
   - Job
 tags:
   - Other
-version: 1.6.0
+version: 1.19.1
 description: 'Jobs which are user created can often pile up and consume excess space in the cluster. In Kubernetes 1.23, the TTL-after-finished controller is stable and will automatically clean up these Jobs if the ttlSecondsAfterFinished is specified. This policy adds the ttlSecondsAfterFinished field to an Job that does not have an ownerReference set if not already specified.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-ttl-jobs/add-ttl-jobs.yaml" target="-blank">/other-mpol/add-ttl-jobs/add-ttl-jobs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-ttl-jobs
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Job
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Jobs which are user created can often pile up and consume excess space in the cluster. In Kubernetes 1.23, the TTL-after-finished controller is stable and will automatically clean up these Jobs if the ttlSecondsAfterFinished is specified. This policy adds the ttlSecondsAfterFinished field to an Job that does not have an ownerReference set if not already specified.
 spec:
@@ -44,7 +44,7 @@ spec:
           - jobs
   matchConditions:
     - name: Check if ttlSecondsAfterFinished is missing and ownerReferences is empty
-      expression: "!has(object.metadata.ownerReferences) && !has(object.spec.ttlSecondsAfterFinished)"
+      expression: object.metadata.?ownerReferences.orValue([]).size() == 0 && !has(object.spec.ttlSecondsAfterFinished) && !exceptions.allowedValues.exists(value, value == 'ttlSecondsAfterFinished')
   mutations:
     - patchType: JSONPatch
       jsonPatch:

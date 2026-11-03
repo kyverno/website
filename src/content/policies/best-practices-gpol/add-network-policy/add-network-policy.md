@@ -8,7 +8,7 @@ subjects:
 tags:
   - Multi-Tenancy
   - EKS Best Practices
-version: 1.15.0
+version: 1.17.0
 description: 'By default, Kubernetes allows communications across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict communications. A default NetworkPolicy should be configured for each Namespace to default deny all ingress and egress traffic to the Pods in the Namespace. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application Pods from select sources. This policy will create a new NetworkPolicy resource named `default-deny` which will deny all traffic anytime a new Namespace is created.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-gpol/add-network-policy/add-network-policy.yaml" target="-blank">/best-practices-gpol/add-network-policy/add-network-policy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-networkpolicy
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/title: Add Network Policy
     policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
     policies.kyverno.io/subject: NetworkPolicy
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: By default, Kubernetes allows communications across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in that supports NetworkPolicy must be used to restrict communications. A default NetworkPolicy should be configured for each Namespace to default deny all ingress and egress traffic to the Pods in the Namespace. Application teams can then configure additional NetworkPolicy resources to allow desired traffic to application Pods from select sources. This policy will create a new NetworkPolicy resource named `default-deny` which will deny all traffic anytime a new Namespace is created.
 spec:
   evaluation:

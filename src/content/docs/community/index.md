@@ -61,6 +61,10 @@ The goal of this adopters program is to gather real-world usage examples and hel
 
 To participate, fill out the [Kyverno adopters form](https://forms.gle/K5CApcBAD5D4H1AG8).
 
+## CNCF Annual Survey
+
+Read the [2025 CNCF Annual Survey Report](https://www.cncf.io/wp-content/uploads/2026/01/CNCF_Annual_Survey_Report_final.pdf) for insights into cloud native adoption and trends.
+
 ## Project Governance
 
 [Kyverno and its sub-projects](https://github.com/kyverno#projects) follow the governance published and maintained at https://github.com/kyverno/community/blob/main/GOVERNANCE.md.

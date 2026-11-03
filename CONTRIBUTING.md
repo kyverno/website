@@ -53,6 +53,38 @@ If you are new to the git contribution flow or GitHub in general, please see the
 
 First time contributing to open source? Don't worry, maintainers and community members are happy to help guide you through the contribution process.
 
+#### Pull request automation
+
+PR automation uses the shared action maintained in
+[kyverno/kyverno](https://github.com/kyverno/kyverno/tree/main/.github/actions/pr-management).
+Path labels continue to apply automatically. The hourly readiness check and daily
+stale sweep initially run in **preview mode**: they log proposed changes but do
+not label, comment on, or close PRs.
+
+Once enabled, readiness checks classify DCO, CI (including Netlify), merge
+conflicts, and review threads awaiting the author. `ready-for-review` means no
+author action is outstanding, not that the PR is approved for merge. Workflows
+awaiting maintainer approval are not the author's responsibility.
+
+Author-blocked PRs become `stale` after 7 days without a new commit and may close
+after 14 days, but never before a 7-day warning period has elapsed. A new commit
+resets the cycle; a comment alone does not. Ready PRs receive a reviewer reminder
+after 7 days instead of being closed. PRs idle for 30 days or more
+(`backlog_days`) get no reviewer reminder or reviewer ping in stale warnings;
+only the author is notified. Drafts, Dependabot PRs, and PRs labeled
+`no-stale` or `hold` are exempt from stale handling and reminders.
+
+Maintainers can review previews in **Actions > PR lifecycle**, then manually run
+either operation with `dry_run` disabled. Before doing so, run **Actions > Sync
+labels** with `dry_run` disabled to provision lifecycle labels. To enable
+scheduled readiness after reviewing its preview, replace that job's `dry-run` expression with `"false"` in
+`.github/workflows/pr-management.yaml`. Enable the stale job separately only
+after reviewing the backlog and exemptions. Reviewer reminders use
+`@kyverno/website-maintainers` when no reviewer or assignee is available.
+Repository settings live in `.github/pr-management.json`, readiness rules in
+`.github/pr-readiness-checks.yml`, and label definitions in `.github/labels.yml`.
+Action updates must remain pinned to a reviewed commit SHA.
+
 #### Overview
 
 The Kyverno website is a static site designed and built using [Astro](https://astro.build/). It uses the [Starlight](https://starlight.astro.build/) documentation theme and is built and hosted on [Netlify](https://www.netlify.com/). The contents of the website are written as standard Markdown and MDX files allowing easy editing and contribution. For more detailed development information, see [DEVELOPMENT.md](./DEVELOPMENT.md).

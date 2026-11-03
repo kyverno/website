@@ -8,6 +8,7 @@ subjects:
   - Volume
 tags:
   - Other
+version: 1.17.0
 description: 'Pods which mount hostPath volumes are provided access to the underlying filesystem of the Node on which they run. In most scenarios, this should be forbidden. In others, it may be useful to silently remove those hostPath volumes rather than blocking the Pod. This policy removes all hostPath volumes and their volumeMount references from all containers within a Pod.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/remove-hostpath-volumes/remove-hostpath-volumes.yaml" target="-blank">/other-mpol/remove-hostpath-volumes/remove-hostpath-volumes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: remove-hostpath-volumes
@@ -26,6 +27,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,Volume
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Pods which mount hostPath volumes are provided access to the underlying filesystem of the Node on which they run. In most scenarios, this should be forbidden. In others, it may be useful to silently remove those hostPath volumes rather than blocking the Pod. This policy removes all hostPath volumes and their volumeMount references from all containers within a Pod.
 spec:
   evaluation:

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.17.0
 description: 'Pods can have many different containers which are tightly coupled. It may be desirable to limit the amount of containers that can be in a single Pod to control best practice application or so policy can be applied consistently. This policy checks all Pods to ensure they have no more than four containers.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-containers-per-pod/limit-containers-per-pod.yaml" target="-blank">/other-vpol/limit-containers-per-pod/limit-containers-per-pod.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: limit-containers-per-pod
   annotations:
     policies.kyverno.io/title: Limit Containers per Pod in ValidatingPolicy
     policies.kyverno.io/category: Sample in Vpol
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods can have many different containers which are tightly coupled. It may be desirable to limit the amount of containers that can be in a single Pod to control best practice application or so policy can be applied consistently. This policy checks all Pods to ensure they have no more than four containers.
@@ -34,6 +34,9 @@ spec:
   evaluation:
     background:
       enabled: false
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   matchConstraints:
     resourceRules:
       - apiGroups:
@@ -46,7 +49,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: size(object.spec.containers) <= 4
+    - expression: size(variables.allContainers) <= 4
       message: Pods can only have a maximum of 4 containers.
 
 ```

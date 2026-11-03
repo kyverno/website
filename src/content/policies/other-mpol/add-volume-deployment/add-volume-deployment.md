@@ -8,7 +8,7 @@ subjects:
   - Volume
 tags:
   - Sample
-version: 1.6.0
+version: 1.17.0
 description: 'Some Kubernetes applications like HashiCorp Vault must perform some modifications to resources in order to invoke their specific functionality. Often times, that functionality is controlled by the presence of a label or specific annotation. This policy, based on HashiCorp Vault, adds a volume and volumeMount to a Deployment if there is an annotation called "vault.k8s.corp.net/inject=enabled" present.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-volume-deployment/add-volume-deployment.yaml" target="-blank">/other-mpol/add-volume-deployment/add-volume-deployment.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-volume
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/title: Add Volume to Deployment
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Deployment, Volume
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Some Kubernetes applications like HashiCorp Vault must perform some modifications to resources in order to invoke their specific functionality. Often times, that functionality is controlled by the presence of a label or specific annotation. This policy, based on HashiCorp Vault, adds a volume and volumeMount to a Deployment if there is an annotation called "vault.k8s.corp.net/inject=enabled" present.
 spec:
   matchConstraints:

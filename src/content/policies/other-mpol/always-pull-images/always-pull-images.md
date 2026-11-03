@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.15.0
+version: 1.19.1
 description: 'By default, images that have already been pulled can be accessed by other Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios, this may be undesirable. This policy mutates all incoming Pods to set their imagePullPolicy to Always. An alternative to the Kubernetes admission controller AlwaysPullImages.'
 createdAt: "2025-10-30T07:20:03.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/always-pull-images/always-pull-images.yaml" target="-blank">/other-mpol/always-pull-images/always-pull-images.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: always-pull-images
@@ -26,17 +26,9 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: By default, images that have already been pulled can be accessed by other Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios, this may be undesirable. This policy mutates all incoming Pods to set their imagePullPolicy to Always. An alternative to the Kubernetes admission controller AlwaysPullImages.
 spec:
-  autogen:
-    podControllers:
-      controllers:
-        - deployments
-        - daemonsets
-        - statefulsets
-        - jobs
-        - cronjobs
   matchConstraints:
     resourceRules:
       - apiGroups:
@@ -48,19 +40,95 @@ spec:
           - UPDATE
         resources:
           - pods
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - replicationcontrollers
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
+  variables:
+    - name: isEphemeralUpdate
+      expression: has(request.subResource) && request.subResource == "ephemeralcontainers"
+    - name: isPod
+      expression: object.kind == "Pod"
+    - name: isCronJob
+      expression: object.kind == "CronJob"
+    - name: isPodController
+      expression: has(object.spec.template.spec)
+    - name: podSpec
+      expression: |
+        variables.isPod ? object.spec :
+        variables.isCronJob ? object.spec.jobTemplate.spec.template.spec :
+        variables.isPodController ? object.spec.template.spec :
+        {}
+    - name: specPath
+      expression: |
+        variables.isPod ? "/spec" :
+        variables.isCronJob ? "/spec/jobTemplate/spec/template/spec" :
+        "/spec/template/spec"
   mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
+    - patchType: JSONPatch
+      jsonPatch:
         expression: |
-          Object{
-            spec: Object.spec{
-              containers: object.spec.containers.map(container, 
-                Object.spec.containers{
-                  name: container.name,
-                  imagePullPolicy: "Always"
-                }
-              )
+          (variables.isEphemeralUpdate ? [] : variables.podSpec.containers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
+            JSONPatch{
+              op: "add",
+              path: variables.specPath + "/containers/" + string(variables.podSpec.containers.indexOf(container)) + "/imagePullPolicy",
+              value: "Always"
             }
-          }
+          )) +
+          (!variables.isEphemeralUpdate && has(variables.podSpec.initContainers) ?
+            variables.podSpec.initContainers.filter(container, !exceptions.allowedImages.exists(image, image == container.image)).map(container,
+              JSONPatch{
+                op: "add",
+                path: variables.specPath + "/initContainers/" + string(variables.podSpec.initContainers.indexOf(container)) + "/imagePullPolicy",
+                value: "Always"
+              }
+            ) : []) +
+          (has(variables.podSpec.ephemeralContainers) ?
+            variables.podSpec.ephemeralContainers.filter(container,
+              !exceptions.allowedImages.exists(image, image == container.image) &&
+              !(oldObject != null && has(oldObject.spec.ephemeralContainers) &&
+                oldObject.spec.ephemeralContainers.exists(existing, existing.name == container.name))
+            ).map(container,
+              JSONPatch{
+                op: "add",
+                path: variables.specPath + "/ephemeralContainers/" + string(variables.podSpec.ephemeralContainers.indexOf(container)) + "/imagePullPolicy",
+                value: "Always"
+              }
+            ) : [])
 
 ```

@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - PSP Migration
+version: 1.17.0
 description: 'In the earlier Pod Security Policy controller, it was possible to configure a policy to add capabilities to containers within a Pod. This made it easier to assign some basic defaults rather than blocking Pods or to simply provide capabilities for certain workloads if not specified. This policy mutates Pods to add the capabilities SETFCAP and SETUID so long as they are not listed as dropped capabilities first.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -16,12 +17,13 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-capabilities/add-capabilities.yaml" target="-blank">/psp-migration-mpol/add-capabilities/add-capabilities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-capabilities
   annotations:
     policies.kyverno.io/title: Add Capabilities
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/category: PSP Migration
     policies.kyverno.io/subject: Pod
     pod-policies.kyverno.io/autogen-controllers: none

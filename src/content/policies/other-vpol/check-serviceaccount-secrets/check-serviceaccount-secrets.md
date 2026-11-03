@@ -8,6 +8,7 @@ subjects:
   - ServiceAccount
 tags:
   - Security in vpol
+version: 1.19.1
 description: 'Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount''s secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-serviceaccount-secrets/check-serviceaccount-secrets.yaml" target="-blank">/other-vpol/check-serviceaccount-secrets/check-serviceaccount-secrets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-serviceaccount-secrets
@@ -28,6 +29,7 @@ metadata:
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Secret,ServiceAccount
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: Before version 1.24, Kubernetes automatically generated Secret-based tokens  for ServiceAccounts. To distinguish between automatically generated tokens  and manually created ones, Kubernetes checks for a reference from the  ServiceAccount's secrets field. If the Secret is referenced in the secrets  field, it is considered an auto-generated legacy token. These legacy Tokens can be of security concern and should be audited.
 spec:
   validationActions:
@@ -47,7 +49,7 @@ spec:
         resources:
           - serviceaccounts
   validations:
-    - expression: "!has(object.secrets)"
+    - expression: object.?secrets.orValue([]).size() == 0 || object.secrets.all(secret, exceptions.allowedValues.exists(value, value == 'serviceaccount-secret:' + secret.name))
       message: Long-lived API tokens are not allowed.
 
 ```

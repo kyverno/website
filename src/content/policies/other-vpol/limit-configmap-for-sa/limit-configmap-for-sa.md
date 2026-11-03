@@ -3,9 +3,11 @@ title: 'Limit ConfigMap for ServiceAccount'
 category: validate
 severity: medium
 type: ValidatingPolicy
-subjects: []
+subjects:
+  - ConfigMap
 tags:
   - Security
+version: 1.19.1
 description: 'This policy demonstrates how to restrict operations on specific ConfigMaps based on the requesting ServiceAccount and other request attributes, in order to protect sensitive ConfigMaps from unauthorized changes.'
 createdAt: "2026-02-12T11:17:00.000Z"
 ---
@@ -23,6 +25,9 @@ metadata:
     policies.kyverno.io/description: This policy demonstrates how to restrict operations on specific ConfigMaps based on the requesting ServiceAccount and other request attributes, in order to protect sensitive ConfigMaps from unauthorized changes.
     policies.kyverno.io/severity: medium
     policies.kyverno.io/title: Limit ConfigMap for ServiceAccount
+    policies.kyverno.io/minversion: 1.19.1
+    kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/subject: ConfigMap
   name: limit-configmap-for-sa
 spec:
   evaluation:
@@ -49,7 +54,7 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: "false"
+    - expression: exceptions.allowedValues.exists(value, value == 'serviceAccount:' + request.userInfo.username)
       messageExpression: request.namespace + '/' + request.kind.kind + '/' + request.name + ' resource is protected. Admin or allowed users can change the resource'
 
 ```

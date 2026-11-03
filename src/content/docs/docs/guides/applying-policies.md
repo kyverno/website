@@ -15,7 +15,7 @@ On installation, Kyverno runs as a [dynamic admission controller](https://kubern
 
 Exceptions to policies may be defined in the rules themselves or with a separate [PolicyException resource](/docs/guides/exceptions).
 
-[Cleanup policies](/docs/policy-types/cleanup-policy), another separate resource type, can be used to remove existing resources based upon a definition and schedule.
+[DeletingPolicy](/docs/policy-types/deleting-policy) can remove existing resources based on CEL matching criteria and a schedule. Individual resources can also be expired using [TTL cleanup](/docs/guides/ttl-cleanup).
 
 ## In Pipelines
 

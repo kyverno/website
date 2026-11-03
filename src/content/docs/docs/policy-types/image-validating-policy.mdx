@@ -136,7 +136,7 @@ spec:
 
         source: # Optional metadata to constrain image source (optional)
           repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
-          pullSecrets: # Kubernetes secrets used to access the registry
+          PullSecrets: # Kubernetes secrets used to access the registry
             - name: my-registry-secret
           tagPrefix: 'v1.' # Restrict verification to images starting with this tag
 
@@ -494,7 +494,7 @@ spec:
   matchImageReferences:
     - glob: 'ghcr.io/myorg/dev-*'
   attestors:
-    - name: dev-attestor
+    - name: devteam
       cosign:
         keyless:
           identities:
@@ -502,7 +502,8 @@ spec:
               subject: '*@myorg.github.io'
   validations:
     - message: 'image must be signed by the development team'
-      expression: 'imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)'
+      expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.devteam])).all(e, e > 0)
 ```
 
 The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.

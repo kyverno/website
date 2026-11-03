@@ -11,7 +11,7 @@ Although Kyverno's goal is to make policy simple, sometimes trouble still strike
 
 **Symptom**: Kyverno Pods are not running and the API server is timing out due to webhook timeouts. My cluster appears "broken".
 
-**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configure to [fail-closed](/docs/policy-types/cluster-policy/policy-settings) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
+**Cause**: This can happen if all Kyverno Pods are down, due typically to a cluster outage or improper scaling/killing of full node groups, and policies were configured to [fail-closed](/docs/installation/customization#webhooks) while matching on Pods. This is usually only the case when the Kyverno Namespace has not been excluded (not the default behavior) or potentially system Namespaces which have cluster-critical components such as `kube-system`.
 
 **Solution**: Delete the Kyverno validating and mutating webhook configurations. When Kyverno recovers, check your Namespace exclusions. Follow the steps below. Also consider running the admission controller component with 3 replicas.
 
@@ -47,9 +47,8 @@ Use [Namespace selectors](/docs/installation/customization#namespace-selectors) 
 2. Check all the policies installed in the cluster to ensure they are all reporting `true` under the `READY` column.
 
    ```sh
-   $ kubectl get cpol,pol -A
-   NAME                BACKGROUND   VALIDATE ACTION   READY   AGE   MESSAGE
-   inject-entrypoint   true         Audit             True    15s   Ready
+   kubectl get validatingpolicies,mutatingpolicies,generatingpolicies,deletingpolicies,imagevalidatingpolicies
+   kubectl get namespacedvalidatingpolicies,namespacedmutatingpolicies,namespacedgeneratingpolicies,namespaceddeletingpolicies,namespacedimagevalidatingpolicies -A
    ```
 
 3. Kyverno registers as two types of webhooks with Kubernetes. Check the status of registered webhooks to ensure Kyverno is among them.
@@ -178,11 +177,7 @@ Note that starting with Kyverno 1.10, two cron jobs are responsible for deleting
 
 ## Kyverno says it does not have permissions when creating a policy
 
-**Symptom**: Attempting to create a [mutate existing](/docs/policy-types/cluster-policy/mutate#mutate-existing-resources) or [generate](/docs/policy-types/cluster-policy/generate) policy and Kyverno throws an error similar to the one below:
-
-```
-Error from server: error when creating "my_cluster_policy.yaml": admission webhook "validate-policy.kyverno.svc" denied the request: path: spec.rules[0].generate..: system:serviceaccount:kyverno:kyverno-background-controller does not have permissions to 'create' resource source.toolkit.fluxcd.io/v1beta2/helmrepository//{{request.object.metadata.name}}. Grant proper permissions to the background controller
-```
+**Symptom**: Creating a [MutatingPolicy](/docs/policy-types/mutating-policy) that updates existing resources or a [GeneratingPolicy](/docs/policy-types/generating-policy) fails because the background controller lacks permission to access the target resource.
 
 **Diagnose**: Use `kubectl` to assess whether the Kyverno background controller has the necessary permissions: `kubectl auth can-i create helmrepositories --as system:serviceaccount:kyverno:kyverno-background-controller`. If the response you get from this command is "no" then Kyverno will also receive the same.
 

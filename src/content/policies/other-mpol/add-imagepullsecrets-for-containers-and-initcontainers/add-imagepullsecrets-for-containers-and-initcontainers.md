@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.6.0
+version: 1.19.1
 description: 'Images coming from certain registries require authentication in order to pull them, and the kubelet uses this information in the form of an imagePullSecret to pull those images on behalf of your Pod. This policy searches for images coming from a registry called `corp.reg.com` referenced by either one of the containers or one  of the init containers and, if found, will mutate the Pod to add an imagePullSecret called `my-secret`.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-imagepullsecrets-for-containers-and-initcontainers/add-imagepullsecrets-for-containers-and-initcontainers.yaml" target="-blank">/other-mpol/add-imagepullsecrets-for-containers-and-initcontainers/add-imagepullsecrets-for-containers-and-initcontainers.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-imagepullsecrets-for-containers-and-initcontainers
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Add imagePullSecrets for Containers and InitContainers
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: Images coming from certain registries require authentication in order to pull them, and the kubelet uses this information in the form of an imagePullSecret to pull those images on behalf of your Pod. This policy searches for images coming from a registry called `corp.reg.com` referenced by either one of the containers or one  of the init containers and, if found, will mutate the Pod to add an imagePullSecret called `my-secret`.
@@ -87,10 +87,12 @@ spec:
         expression: |
           object.kind == "Pod" &&
           (
-            object.spec.containers.exists(container, 
+            object.spec.containers.exists(container,
+              !exceptions.allowedImages.exists(image, image == container.image) &&
               image(container.image).registry() == "corp.reg.com"
             ) ||
             object.spec.?initContainers.orValue([]).exists(initContainer,
+              !exceptions.allowedImages.exists(image, image == initContainer.image) &&
               image(initContainer.image).registry() == "corp.reg.com"
             )
           ) &&
@@ -115,10 +117,12 @@ spec:
         expression: |
           object.kind in ["Deployment", "DaemonSet", "StatefulSet"] &&
           (
-            object.spec.template.spec.containers.exists(container, 
+            object.spec.template.spec.containers.exists(container,
+              !exceptions.allowedImages.exists(image, image == container.image) &&
               image(container.image).registry() == "corp.reg.com"
             ) ||
             object.spec.template.spec.?initContainers.orValue([]).exists(initContainer,
+              !exceptions.allowedImages.exists(image, image == initContainer.image) &&
               image(initContainer.image).registry() == "corp.reg.com"
             )
           ) &&
@@ -143,10 +147,12 @@ spec:
         expression: |
           object.kind == "Job" &&
           (
-            object.spec.template.spec.containers.exists(container, 
+            object.spec.template.spec.containers.exists(container,
+              !exceptions.allowedImages.exists(image, image == container.image) &&
               image(container.image).registry() == "corp.reg.com"
             ) ||
             object.spec.template.spec.?initContainers.orValue([]).exists(initContainer,
+              !exceptions.allowedImages.exists(image, image == initContainer.image) &&
               image(initContainer.image).registry() == "corp.reg.com"
             )
           ) &&
@@ -171,10 +177,12 @@ spec:
         expression: |
           object.kind == "CronJob" &&
           (
-            object.spec.jobTemplate.spec.template.spec.containers.exists(container, 
+            object.spec.jobTemplate.spec.template.spec.containers.exists(container,
+              !exceptions.allowedImages.exists(image, image == container.image) &&
               image(container.image).registry() == "corp.reg.com"
             ) ||
             object.spec.jobTemplate.spec.template.spec.?initContainers.orValue([]).exists(initContainer,
+              !exceptions.allowedImages.exists(image, image == initContainer.image) &&
               image(initContainer.image).registry() == "corp.reg.com"
             )
           ) &&

@@ -21,27 +21,18 @@ An upgrade from versions prior to Kyverno 1.10 to versions at 1.10 or higher usi
 
 ## Upgrading to Kyverno v1.19
 
-### Deprecations
+### Policy APIs
 
-Kyverno v1.19 achieves full feature parity between the CEL-based policy types in the `policies.kyverno.io` API group and the legacy policy types. As a result:
+Use the supported [CEL-based policy types](/docs/policy-types/overview) and [PolicyException](/docs/guides/exceptions) in `policies.kyverno.io/v1`. Complete [policy migration](/docs/guides/migration-to-cel) before upgrading to a release that no longer serves your existing policy APIs. Use the version selector for version-specific migration instructions.
 
-1. **`ClusterPolicy` and `Policy` (`kyverno.io/v1`) are officially deprecated** and will be **removed in v1.20**. Migrate to the CEL-based [policy types](/docs/policy-types/overview) using the [migration guide](/docs/guides/migration-to-cel). v1.19 is the final release with full support for these types.
-2. **`CleanupPolicy` and `ClusterCleanupPolicy` (`kyverno.io/v2`)** are deprecated and will be **removed in v1.20**. Use [DeletingPolicy](/docs/policy-types/deleting-policy) instead.
-3. **The legacy PolicyException (`kyverno.io/v2`)** is deprecated and will be **removed in v1.20**. Use the [`policies.kyverno.io` PolicyException](/docs/guides/exceptions) instead.
-4. **The `v1alpha1` versions of the `policies.kyverno.io` policy types are deprecated.** Update your manifests to use `policies.kyverno.io/v1`.
-
-The following resource types are **not** deprecated and continue to be fully supported with CEL-based policies:
-
-- **GlobalContextEntry**: only the older `kyverno.io/v2alpha1` API version is deprecated; use `kyverno.io/v2`.
-- **UpdateRequest** (internal type): only the older `kyverno.io/v1beta1` API version is deprecated (no longer served).
-- **PolicyReport / ClusterPolicyReport** (`wgpolicyk8s.io/v1alpha2`) and **EphemeralReport / ClusterEphemeralReport** (`reports.kyverno.io/v1`).
+Supporting resources such as GlobalContextEntry, UpdateRequest, PolicyReport, and ClusterPolicyReport remain supported. Use `kyverno.io/v2` for GlobalContextEntry and UpdateRequest.
 
 ### Storage Versions
 
 In v1.19, the storage version for the `policies.kyverno.io` policy types remains `v1beta1`. It will move to `v1` in v1.20. After upgrading, you can use the [`kyverno migrate`](/docs/kyverno-cli/reference/kyverno_migrate) CLI command to rewrite existing stored objects to the current storage version, for example:
 
 ```sh
-kyverno migrate --resource policyexceptions.kyverno.io
+kyverno migrate --resource validatingpolicies.policies.kyverno.io
 ```
 
 ### Helm Chart Changes
@@ -52,79 +43,4 @@ Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-a
 
 The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](https://kyverno.github.io/kyverno-json/) subproject directly.
 
-## Upgrading to Kyverno v1.13
-
-### Breaking Changes
-
-Kyverno version 1.13 contains the following breaking configuration changes:
-
-1. **Removal of wildcard permissions**: prior versions contained wildcard view permissions, which allowed Kyverno controllers to view all resources including secrets and other sensitive information. In 1.13 the wildcard view permission was removed and a role binding to the default `view` role was added. See the documentation section on [Role Based Access Controls](/docs/installation/customization#role-based-access-controls) for more details. This change will not impact policies during admission controls but may impact reports, and may impact users with mutate and generate policies on custom resources as the controller may no longer be able to view these custom resources.
-
-To upgrade to 1.13 and continue to allow wildcard view permissions for all Kyverno controllers, use a [Helm values file](https://github.com/kyverno/kyverno/blob/v1.13.0/charts/kyverno/values.yaml) that grants these permissions as specified below:
-
-```yaml
-admissionController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
-backgroundController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
-reportsController:
-  rbac:
-    clusterRole:
-      extraResources:
-        - apiGroups:
-            - '*'
-          resources:
-            - '*'
-          verbs:
-            - get
-            - list
-            - watch
-```
-
-**NOTE**: using wildcard permissions is not recommended. Use explicit permissions instead.
-
-2. **Default exception settings**: the Helm chart values of the prior versions enabled exceptions by default for all namespaces. This creates a potential security issue. See [CVE-2024-48921](https://github.com/kyverno/kyverno/security/advisories/GHSA-qjvc-p88j-j9rm) for more details. This change will impact users who were relying on policy exceptions to be enabled in all namespaces.
-
-To maintain backwards compatibility, you can configure the Helm chart values to allow the same settings as the prior version. To upgrade to 1.13 and continue to allow configuring exceptions in all namespaces, set the Helm value `features.policyExceptions.namespace` to `*`:
-
-```sh
-helm upgrade kyverno kyverno/kyverno -n kyverno --set features.policyExceptions.enabled=true --set features.policyExceptions.namespace="*"
-```
-
-**NOTE**: limiting exceptions to a specific namespace is recommended.
-
-### Dropped API versions
-
-Kyverno 1.13 drops deprecated API versions for its managed CustomResourceDefinitions. The migration is handled automatically through Helm hook. To upgrade Kyverno without Helm, or Helm hook, you can migrate existing resources via [kube-storage-version-migrator](https://github.com/kubernetes-sigs/kube-storage-version-migrator).
-
-See affected CRDs:
-
-```
-- cleanuppolicies.kyverno.io
-- clustercleanuppolicies.kyverno.io
-- clusterpolicies.kyverno.io
-- globalcontextentries.kyverno.io
-- policies.kyverno.io
-- policyexceptions.kyverno.io
-- updaterequests.kyverno.io
-```
+For upgrades from older releases, select the corresponding documentation version and follow its release-specific upgrade instructions.

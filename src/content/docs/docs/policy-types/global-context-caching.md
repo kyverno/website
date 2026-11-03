@@ -8,9 +8,9 @@ sidebar:
 # Global Context Caching
 
 By centralizing and pre-fetching heavy datasets, multiple policies can evaluate
-incoming mutation, validation, or generation requests instantly by adding a
-`context` entry using `globalReference`. The cached data is then accessible
-via the variable name assigned in that context entry (e.g., `cached_configmaps`).
+incoming mutation, validation, or generation requests using
+`globalContext.Get()` in a CEL expression. Store the result in a policy
+variable and reference it through `variables.<name>`.
 
 > **HA Note:** In high-availability deployments, each Kyverno replica maintains
 > its own independent in-memory cache. Admission requests may be served by
@@ -24,8 +24,9 @@ via the variable name assigned in that context entry (e.g., `cached_configmaps`)
 
 Before configuring a `GlobalContextEntry`, ensure the following:
 
-- **Kyverno >= 1.12.0** is installed in your cluster (`GlobalContextEntry`
-  was introduced in this release). Verify your version with:
+- **Kyverno >= 1.18.0** is installed in your cluster for the
+  `policies.kyverno.io/v1` CEL policy examples on this page.
+  `GlobalContextEntry` itself was introduced in v1.12.0. Verify your version with:
 
   ```bash
   # Linux/macOS
@@ -90,7 +91,7 @@ Kyverno operates natively as a Kubernetes Admission Controller webhook. When a r
 
 ### The Problem: Reactive Inline Lookup Bottlenecks
 
-Traditionally, when a policy requires data outside the immediate admission review payload—such as comparing an incoming image tag against an allowed private enterprise registry list stored in a cluster `ConfigMap`—it relies on an inline `apiCall` context variable.
+When a policy requires data outside the immediate admission review payload, such as an allowed registry list stored in a ConfigMap, it can use the CEL [resource library](/docs/policy-types/cel-libraries#resource-library) or [HTTP library](/docs/policy-types/cel-libraries#http-library) for an inline lookup.
 
 Under high cluster density, if a continuous integration or continuous deployment (CI/CD) engine (e.g., Argo CD or Flux) executes a massive batch deployment of 200 microservices simultaneously:
 
@@ -132,14 +133,13 @@ spec:
 ### Step 2: Reference it in a Policy
 
 ```yaml
-context:
-  - name: cached_configmaps
-    globalReference:
-      name: my-first-cache
-      jmesPath: '[].metadata.name'
+spec:
+  variables:
+    - name: cachedConfigmaps
+      expression: globalContext.Get("my-first-cache", "")
 ```
 
-`{{ cached_configmaps }}` is now available inside your policy rules with zero inline API call overhead. See [Configuration Modes](#configuration-modes) for the full schema reference.
+`variables.cachedConfigmaps` is now available to CEL expressions without an inline API call. See the [complete policy example](#step-2-bind-a-policy-to-the-entry) and [Configuration Modes](#configuration-modes).
 
 ---
 
@@ -276,15 +276,13 @@ spec:
 
 ### Referencing Cached Data in a Policy
 
-Reference a `GlobalContextEntry` in your policy context using `globalReference`.
-Use the `jmesPath` field to filter the cached payload at reference time:
+Reference a `GlobalContextEntry` using `globalContext.Get()`. The first argument names the entry, and the second names a projection defined in that entry. Use an empty string to retrieve the full cached payload, then filter it using CEL:
 
 ```yaml
-context:
-  - name: cached_configmaps
-    globalReference:
-      name: shared-config-cache # GlobalContextEntry name
-      jmesPath: '[].metadata.name' # filter applied at reference time
+spec:
+  variables:
+    - name: configmapNames
+      expression: globalContext.Get("shared-config-cache", "").map(cm, cm.metadata.name)
 ```
 
 > **JMESPath shape reminder:**
@@ -292,13 +290,13 @@ context:
 > - `kubernetesResource` mode → use `[].metadata.name`
 > - `apiCall.urlPath` mode → use `items[].metadata.name`
 
-If you defined `projections` in your `GlobalContextEntry` spec, reference a projection by appending `.<projection-name>` to `globalReference.name`:
+If you defined `projections` in your `GlobalContextEntry` spec, pass the projection name as the second argument:
 
 ```yaml
-context:
-  - name: myData
-    globalReference:
-      name: my-k8s-cached-data.config-names # <GlobalContextEntry>.<projections[].name>
+spec:
+  variables:
+    - name: configmapNames
+      expression: globalContext.Get("my-k8s-cached-data", "config-names")
 ```
 
 ## Eventual Consistency & Operational Notes
@@ -310,9 +308,9 @@ context:
 - Store credentials in Kubernetes `Secrets`, never hardcoded in the resource spec.
 - Ensure all external endpoints are protected with valid TLS certificates.
 
-**Inline `apiCall` vs. `GlobalContextEntry` — When to Use Which:**
+**Inline Lookup vs. `GlobalContextEntry` — When to Use Which:**
 
-| Feature            | Inline `apiCall`                     | `GlobalContextEntry`                     |
+| Feature            | CEL resource or HTTP lookup          | `GlobalContextEntry`                     |
 | :----------------- | :----------------------------------- | :--------------------------------------- |
 | **Performance**    | High overhead (one call per request) | High performance (served from RAM cache) |
 | **Use Case**       | Real-time, volatile data             | Static or slowly changing data           |
@@ -321,7 +319,7 @@ context:
 
 ### Behavior on Cache Failure
 
-If a `GlobalContextEntry` cannot be loaded or refreshed (for example, the external endpoint is unreachable and `retryLimit` is exhausted), policies referencing it via `globalReference` may hit a context/variable evaluation error until a successful sync occurs.
+If a `GlobalContextEntry` cannot be loaded or refreshed (for example, the external endpoint is unreachable and `retryLimit` is exhausted), policies referencing it via `globalContext.Get()` may encounter an evaluation error until a successful sync occurs.
 
 Monitor `status.conditions` and `status.lastRefreshTime` on the resource, and check Kyverno controller logs for `globalcontext` errors in production clusters.
 
@@ -346,44 +344,37 @@ spec:
     namespace: default
 ```
 
-> **JMESPath Structure Note:** The shape of cached data differs by mode:
+> **Payload Structure:** The shape of cached data differs by mode:
 >
-> - **`kubernetesResource` mode** returns a raw array. Use `[].metadata.name`
-> - **`apiCall.urlPath` mode** returns a Kubernetes API envelope with `items[]`. Use `items[].metadata.name`
+> - **`kubernetesResource` mode** returns an array. In CEL, use `.map(cm, cm.metadata.name)`.
+> - **`apiCall.urlPath` mode** returns a Kubernetes API envelope. In CEL, use `.items.map(cm, cm.metadata.name)`.
 >
-> Using the wrong shape silently returns an empty result. Check your cached
-> payload first with `kubectl get globalcontextentries <name> -o yaml`.
+> Inspect the source payload using the commands in [Verification](#verification) before writing expressions.
 
 #### Step 2: Bind a Policy to the Entry
 
 ```yaml
-apiVersion: kyverno.io/v1 # ClusterPolicy stays on v1 — this is correct
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: require-configmap-via-gctx
 spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-    - name: configmap-must-exist
-      match:
-        any:
-          - resources:
-              kinds:
-                - Deployment
-      context:
-        - name: cached_configmaps
-          globalReference:
-            name: shared-config-cache
-            jmesPath: '[].metadata.name'
-      validate:
-        message: "Deployment initialization rejected. Required 'app-config' asset missing from GlobalContext cache."
-        deny:
-          conditions:
-            any:
-              - key: 'app-config'
-                operator: NotIn
-                value: '{{ cached_configmaps }}'
+  validationActions: [Deny]
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
+  variables:
+    - name: configmaps
+      expression: globalContext.Get("shared-config-cache", "")
+  validations:
+    - expression: variables.configmaps.exists(cm, cm.metadata.name == "app-config")
+      message: "Required 'app-config' ConfigMap is missing from the cache."
 ```
 
 ### 2. Caching Approved Container Registries (External API)
@@ -407,46 +398,39 @@ spec:
 
 #### Step 2: Bind a Policy to the Entry
 
-Assuming the API returns: `{"allowed": ["internal-registry.io", "gcr.io/vetted-project"]}`
+Assuming the API returns: `{"allowed": ["internal-registry.io", "gcr.io"]}`
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: restrict-registries-global
 spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-    - name: check-image-registry
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      context:
-        - name: allowed_registries
-          globalReference:
-            name: approved-registries-cache
-            jmesPath: 'allowed'
-      validate:
-        message: 'The container image registry is not approved by enterprise security policy.'
-        foreach:
-          - list: 'request.object.spec.containers'
-            deny:
-              conditions:
-                any:
-                  - key: "{{ split(element.image, '/')[0] }}"
-                    operator: NotIn
-                    value: '{{ allowed_registries }}'
+  validationActions: [Deny]
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods', 'pods/ephemeralcontainers']
+  variables:
+    - name: allowedRegistries
+      expression: globalContext.Get("approved-registries-cache", "").allowed
+  validations:
+    - expression: >-
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
+          image(container.image).registry() in variables.allowedRegistries)
+      message: 'The container image registry is not approved by enterprise security policy.'
 ```
 
-> **How the registry is extracted:** `split(element.image, '/')[0]` splits the
-> full image string (e.g., `internal-registry.io/myapp:v1`) on `/` and takes
-> the first segment as the registry hostname. This avoids nested template
-> expressions which Kyverno cannot evaluate inside a `foreach` loop.
+> **How the registry is extracted:** The CEL [image library](/docs/policy-types/cel-libraries#image-library) parses the image reference and returns its registry hostname.
 >
-> Ensure your `allowed_registries` list contains registry hostnames only
+> Ensure `variables.allowedRegistries` contains registry hostnames only
 > (e.g., `"internal-registry.io"`, `"gcr.io"`), not full image paths.
 
 ### 3. Caching RBAC or Organizational Metadata
@@ -470,33 +454,30 @@ spec:
 #### Step 2: Bind a Policy to the Entry
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: validate-team-namespace-access
 spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-    - name: restrict-namespace-creation
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-      context:
-        - name: cluster_bindings
-          globalReference:
-            name: rbac-team-cache
-            jmesPath: "[].subjects[?kind=='User'][].name"
-      validate:
-        message: 'User initiating namespace creation is not registered in cluster role metadata.'
-        deny:
-          conditions:
-            any:
-              - key: '{{ request.userInfo.username }}'
-                operator: NotIn
-                value: '{{ cluster_bindings }}'
+  validationActions: [Deny]
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: bindings
+      expression: globalContext.Get("rbac-team-cache", "")
+  validations:
+    - expression: >-
+        variables.bindings.exists(binding,
+          has(binding.subjects) && binding.subjects.exists(subject,
+            subject.kind == "User" && subject.name == request.userInfo.username))
+      message: 'User initiating namespace creation is not registered in cluster role metadata.'
 ```
 
 ## Verification

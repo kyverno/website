@@ -7,8 +7,8 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
-description: 'Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.'
+version: 1.19.1
+description: 'Windows Pods can run HostProcess containers, which have privileged access to the Windows node. The Baseline profile disallows this. This policy ensures that the `hostProcess` field is unset or `false` at both the Pod and the container level.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-host-process/disallow-host-process.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-process/disallow-host-process.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-host-process
@@ -26,9 +26,9 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.
+    policies.kyverno.io/description: Windows Pods can run HostProcess containers, which have privileged access to the Windows node. The Baseline profile disallows this. This policy ensures that the `hostProcess` field is unset or `false` at both the Pod and the container level.
 spec:
   validationActions:
     - Audit
@@ -46,14 +46,49 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
+    - name: podHostProcess
+      expression: variables.podSpec.?securityContext.?windowsOptions.?hostProcess.orValue(false)
     - name: allContainers
-      expression: |-
-        object.spec.containers + 
-          object.spec.?initContainers.orValue([]) + 
-          object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
   validations:
-    - expression: variables.allContainers.all(container, container.?securityContext.?windowsOptions.?hostProcess.orValue(false) == false)
-      message: "HostProcess containers are disallowed. The field spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`. "
+    - expression: |-
+        (!variables.podHostProcess || 'control:podHostProcess' in exceptions.allowedValues) && variables.allContainers.all(container,
+          container.image in exceptions.allowedImages ||
+          container.?securityContext.?windowsOptions.?hostProcess.orValue(false) == false)
+      message: HostProcess Pods and containers are disallowed. The fields spec.securityContext.windowsOptions.hostProcess, spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`.
 
 ```

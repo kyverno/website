@@ -7,7 +7,7 @@ subjects:
   - ReplicaSet
 tags:
   - Other
-version: 1.15.0
+version: 1.17.0
 description: 'ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster. Note: This simplified version cleans up all empty ReplicaSets without a time delay. The schedule runs every minute, so very recent ReplicaSets should survive at least one cycle before deletion.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml" target="-blank">/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: DeletingPolicy
 metadata:
   name: cleanup-empty-replicasets
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ReplicaSet
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: 1.27+
     policies.kyverno.io/description: "ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster. Note: This simplified version cleans up all empty ReplicaSets without a time delay. The schedule runs every minute, so very recent ReplicaSets should survive at least one cycle before deletion."
 spec:
@@ -37,6 +37,8 @@ spec:
           - apps
         apiVersions:
           - v1
+        operations:
+          - DELETE
         resources:
           - replicasets
     namespaceSelector:

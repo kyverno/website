@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-version: 1.15.0
+version: 1.19.1
 description: 'Containers which request use of an NVIDIA GPU often need to be authored to consume them via a CUDA environment variable called NVIDIA_VISIBLE_DEVICES. This policy checks the containers which request a GPU to ensure they have been authored with this environment variable.'
 createdAt: "2025-12-16T13:58:08.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-12-16T13:58:08.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-nvidia-gpu/check-nvidia-gpu.yaml" target="-blank">/other-vpol/check-nvidia-gpu/check-nvidia-gpu.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-nvidia-gpus
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Containers which request use of an NVIDIA GPU often need to be authored to consume them via a CUDA environment variable called NVIDIA_VISIBLE_DEVICES. This policy checks the containers which request a GPU to ensure they have been authored with this environment variable.
@@ -52,6 +52,7 @@ spec:
     - message: Images which reserve NVIDIA GPUs must be built to use them.
       expression: |
         variables.allContainers.all(container,
+          container.image in exceptions.allowedValues ||
           !container.?resources.?limits[?'nvidia.com/gpu'].hasValue() ||
           (
             container.resources.limits['nvidia.com/gpu'] > 0

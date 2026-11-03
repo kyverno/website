@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml" target="-blank">/other-vpol/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-pod-controller-serviceaccount-updates
@@ -24,6 +25,7 @@ metadata:
     policies.kyverno.io/title: Restrict Pod Controller ServiceAccount Updates in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: Medium
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.12.1
     kyverno.io/kubernetes-version: "1.30"
@@ -53,7 +55,7 @@ spec:
         resources:
           - cronjobs
   validations:
-    - expression: object.spec.template.?spec.?serviceAccountName.orValue('') == oldObject.spec.template.?spec.?serviceAccountName.orValue('') || object.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue('') == oldObject.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue('')
+    - expression: exceptions.allowedValues.exists(value, value == 'serviceAccountName') || (object.kind == 'Deployment' && object.spec.template.?spec.?serviceAccountName.orValue('') == oldObject.spec.template.?spec.?serviceAccountName.orValue('')) || (object.kind == 'CronJob' && object.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue('') == oldObject.spec.jobTemplate.?spec.?template.?spec.?serviceAccountName.orValue(''))
       message: The serviceAccountName field may not be changed once created.
 
 ```

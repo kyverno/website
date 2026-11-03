@@ -6,7 +6,8 @@ type: ValidatingPolicy
 subjects: []
 tags:
   - Security
-description: 'This policy inspects all CertificateSigningRequest resources and records detailed information about the requester including their identity, permissions, and the CSR content for auditing purposes.'
+version: 1.19.1
+description: 'This policy inspects all CertificateSigningRequest resources and records detailed information about the requester including their identity, permissions, and the CSR content for auditing purposes. It intentionally remains Audit-only because this is an informational report, not a denial policy.'
 createdAt: "2026-02-12T12:56:39.000Z"
 ---
 
@@ -19,8 +20,9 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Security
-    policies.kyverno.io/description: This policy inspects all CertificateSigningRequest resources and records detailed information about the requester including their identity, permissions, and the CSR content for auditing purposes.
+    policies.kyverno.io/description: This policy inspects all CertificateSigningRequest resources and records detailed information about the requester including their identity, permissions, and the CSR content for auditing purposes. It intentionally remains Audit-only because this is an informational report, not a denial policy.
     policies.kyverno.io/severity: medium
     policies.kyverno.io/title: Inspect Certificate Signing Requests
   name: inspect-csr

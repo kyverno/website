@@ -8,7 +8,7 @@ subjects:
   - Volume
 tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes. This policy blocks any other type of volume other than those in the allow list.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml" target="-blank">/pod-security-vpol/restricted/restrict-volume-types/restrict-volume-types.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-volume-types
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Restricted) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,Volume
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/description: In addition to restricting HostPath volumes, the restricted pod security profile limits usage of non-core volume types to those defined through PersistentVolumes. This policy blocks any other type of volume other than those in the allow list.
@@ -48,8 +48,42 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
+  variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
   validations:
-    - expression: "!has(object.spec.volumes) || object.spec.volumes.all(vol, has(vol.configMap) || has(vol.csi) || has(vol.downwardAPI) || has(vol.emptyDir) || has(vol.ephemeral) || has(vol.persistentVolumeClaim) || has(vol.projected) || has(vol.secret))"
-      message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret."
+    - expression: "!has(variables.podSpec.volumes) || variables.podSpec.volumes.all(vol, has(vol.configMap) || has(vol.csi) || has(vol.downwardAPI) || has(vol.emptyDir) || has(vol.ephemeral) || has(vol.image) || has(vol.persistentVolumeClaim) || has(vol.projected) || has(vol.secret) || (has(vol.hostPath) && string(vol.hostPath.path) in exceptions.allowedValues))"
+      message: "Only the following types of volumes may be used: configMap, csi, downwardAPI, emptyDir, ephemeral, image, persistentVolumeClaim, projected, and secret."
 
 ```

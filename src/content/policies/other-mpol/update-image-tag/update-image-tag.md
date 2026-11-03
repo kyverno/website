@@ -7,6 +7,7 @@ subjects:
   - Deployment
 tags:
   - Other
+version: 1.19.1
 description: 'For use cases like sidecar injection, it is often the case where existing Deployments need the sidecar image updated without destroying the whole Deployment or Pods. This policy updates the image tag on containers named vault-agent for existing Deployments which have the annotation vault.hashicorp.com/agent-inject="true". It may be necessary to grant additional privileges to the Kyverno ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so it can modify Deployments.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -16,11 +17,12 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/update-image-tag/update-image-tag.yaml" target="-blank">/other-mpol/update-image-tag/update-image-tag.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: update-image-tag
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/title: Update Image Tag
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
@@ -57,7 +59,7 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |-
-          variables.hasVaultAgent ? [
+          variables.hasVaultAgent && !exceptions.allowedImages.exists(image, image == variables.containers[variables.vaultAgentIndex].image) && has(object.metadata.annotations) && object.metadata.annotations['vault.hashicorp.com/agent-inject'] == 'true' ? [
             JSONPatch{
               op: "replace",
               path: "/spec/template/spec/containers/" + string(variables.vaultAgentIndex) + "/image",

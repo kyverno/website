@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'Adding capabilities beyond those listed in the policy must be disallowed.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/disallow-capabilities/disallow-capabilities.yaml" target="-blank">/pod-security-vpol/baseline/disallow-capabilities/disallow-capabilities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: disallow-capabilities
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Disallow Capabilities in ValidatingPolicy
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Adding capabilities beyond those listed in the policy must be disallowed.
@@ -46,13 +46,50 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allowedCapabilities
       expression: "['AUDIT_WRITE','CHOWN','DAC_OVERRIDE','FOWNER','FSETID','KILL','MKNOD','NET_BIND_SERVICE','SETFCAP','SETGID','SETPCAP','SETUID','SYS_CHROOT']"
     - name: allContainers
-      expression: (object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([]))
+      expression: (object.spec.?containers.orValue([]) + object.spec.?template.?spec.?containers.orValue([]) + object.spec.?jobTemplate.?spec.?template.?spec.?containers.orValue([]) + object.spec.?initContainers.orValue([]) + object.spec.?template.?spec.?initContainers.orValue([]) + object.spec.?jobTemplate.?spec.?template.?spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([]))
   validations:
-    - expression: variables.allContainers.all(container,  container.?securityContext.?capabilities.?add.orValue([]).all(capability, capability == '' || capability in variables.allowedCapabilities))
+    - expression: |-
+        variables.allContainers.all(container,
+          container.image in exceptions.allowedImages ||
+          container.?securityContext.?capabilities.?add.orValue([]).all(capability,
+            capability in variables.allowedCapabilities || capability in exceptions.allowedValues))
       message: Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER, FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT) are disallowed.
 
 ```

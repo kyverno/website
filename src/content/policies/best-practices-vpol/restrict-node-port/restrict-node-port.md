@@ -7,6 +7,7 @@ subjects:
   - Service
 tags:
   - Best Practices
+version: 1.19.1
 description: 'This policy restricts the creation of Services with type NodePort. NodePort services expose applications on a static port on each node, which can pose security risks and complicate network management.'
 createdAt: "2026-02-12T12:56:39.000Z"
 ---
@@ -20,6 +21,7 @@ apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/description: This policy restricts the creation of Services with type NodePort. NodePort services expose applications on a static port on each node, which can pose security risks and complicate network management.
     policies.kyverno.io/severity: medium
@@ -44,7 +46,7 @@ spec:
   validationActions:
     - Audit
   validations:
-    - expression: object.spec.type != 'NodePort'
+    - expression: "'service-type:NodePort' in exceptions.allowedValues || object.spec.type != 'NodePort'"
       message: Services of type NodePort are not allowed.
 
 ```
