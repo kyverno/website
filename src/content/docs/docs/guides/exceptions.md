@@ -16,10 +16,6 @@ For example, in organizations where multiple teams must interact with the same c
 
 A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. The current PolicyException is defined in the `policies.kyverno.io` API group and works with all CEL-based [policy types](/docs/policy-types/overview) such as `ValidatingPolicy` and `ImageValidatingPolicy`.
 
-:::caution[Deprecation Notice]
-The legacy PolicyException in the `kyverno.io` API group is deprecated as of Kyverno v1.19 and will be **removed in v1.20** together with `ClusterPolicy`. Use the `policies.kyverno.io` [PolicyException](#policyexceptions-for-cel-policies) instead. The [legacy PolicyException](#legacy-policyexceptions-deprecated) is documented below for existing users.
-:::
-
 ## PolicyExceptions for CEL Policies
 
 PolicyExceptions in the `policies.kyverno.io` group (introduced in Kyverno 1.14) support **CEL expressions** to selectively skip policy enforcement for policy types like `ValidatingPolicy` and `ImageValidatingPolicy` in both **admission** and **background** modes.
@@ -27,6 +23,7 @@ PolicyExceptions in the `policies.kyverno.io` group (introduced in Kyverno 1.14)
 - A **CEL expression** under `matchConditions` dynamically matches target resources (e.g., by name, namespace, or labels).
 - The `policyRefs` field specifies the **policy name** and **policy kind** being excluded from enforcement.
 - If the match condition evaluates to `true`, the referenced rule is **skipped** and logged accordingly in **PolicyReports**.
+- Optional **CEL validations** under `validations` define [compensating controls](#compensating-controls) that a matched resource must also satisfy before the exception is granted.
 
 ### Using PolicyException with ValidatingPolicy in Admission Mode
 
@@ -534,457 +531,120 @@ spec:
 
 - Conversely, the report for the `testing` namespace shows a `result: skip`. The `properties.exceptions` field references `exclude-namespace-by-name`, indicating that the `PolicyException` was successfully applied, and no resource was generated.
 
-## Legacy PolicyExceptions (Deprecated)
+### Compensating Controls
 
-:::caution
-This section describes the legacy PolicyException in the `kyverno.io` API group, which is deprecated as of Kyverno v1.19 and will be removed in v1.20. It only applies to the legacy `ClusterPolicy` and `Policy` types.
+By default, a matched `PolicyException` applies unconditionally: it either exempts the resource from the referenced policy outright, or, in the case of the [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions above, contributes its `allowedImages` and `allowedValues` to policy evaluation. When an exception should only be granted if other safeguards are in place, such as a tracked security ticket or a stricter network posture, list those safeguards under `spec.validations`. These **compensating controls** are CEL validations that use the same schema as `ValidatingPolicy` validations. Kyverno evaluates `expression`, `message`, and `messageExpression`; `reason` is accepted by the schema but has no effect here, because a policy whose exceptions define controls is never offloaded to a `ValidatingAdmissionPolicy`. A matched resource must satisfy all of them for the exception to be granted.
+
+:::note
+Compensating controls are only evaluated for exceptions that reference a `ValidatingPolicy` or `NamespacedValidatingPolicy`. For other policy kinds, the field is ignored and Kyverno returns a warning when the exception is created or updated.
 :::
 
-Although Kyverno policies contain multiple methods to provide fine-grained control as to which resources they act upon in the form of [`match`/`exclude` blocks](/docs/policy-types/cluster-policy/match-exclude#match-statements), [preconditions](/docs/policy-types/cluster-policy/preconditions) at multiple hierarchies, [anchors](/docs/policy-types/cluster-policy/validate#anchors), and more, all these mechanisms have in common that the resources which they are intended to exclude must occur in the same rule definition. This may be limiting in situations where policies may not be directly editable, or doing so imposes an operational burden.
-
-For example, in organizations where multiple teams must interact with the same cluster, a team responsible for policy authoring and administration may not be the same team responsible for submission of resources. In these cases, it can be advantageous to decouple the policy definition from certain exclusions. Additionally, there are often times where an organization or team must allow certain exceptions which would violate otherwise valid rules but on a one-time basis if the risks are known and acceptable.
-
-Imagine a validate policy exists in `Enforce` mode which mandates all Pods must not mount host namespaces. A separate team has a legitimate need to run a specific tool in this cluster for a limited time which violates this policy. Normally, the policy would block such a "bad" Pod if the policy was not previously altered in such a way to allow said Pod to run. Rather than making adjustments to the policy, an exception may be granted. Both of these examples are use cases for a **PolicyException** resource described below.
-
-A `PolicyException` is a Namespaced Custom Resource which allows a resource(s) to be allowed past a given policy and rule combination. It can be used to exempt any resource from any Kyverno rule type although it is primarily intended for use with validate rules. A PolicyException encapsulates the familiar `match`/`exclude` statements used in `Policy` and `ClusterPolicy` resources but adds an `exceptions{}` object to select the policy and rule name(s) used to form the exception. A `conditions{}` block (optional) uses common expressions similar to those found in [preconditions](/docs/policy-types/cluster-policy/preconditions) and [deny rules](/docs/policy-types/cluster-policy/validate#deny-rules) to query the contents of the selected resources in order to refine the selection process. The logical flow of how a PolicyException works in tandem with a validate policy is depicted below.
-
-```mermaid
-graph TD
-  Start --> id1["Validate policy in enforce mode exists"]
-  id1 --> id2["User/process sends violating resource"]
-  id2 --> Need{"Matching PolicyException exists?"}
-  Need -- No --> id3["Resource blocked"]
-  Need -- Yes --> id4["Resource allowed"]
-```
-
-An example set of resources is shown below.
-
-A ClusterPolicy exists containing a single validate rule in `Enforce` mode which requires all Pods must not use any host namespaces via the fields `hostPID`, `hostIPC`, or `hostNetwork`. If any of these fields are defined, they must be set to a value of `false`.
+The following `ValidatingPolicy` requires every container in a Pod to run as a non-root user.
 
 ```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
-  name: disallow-host-namespaces
+  name: disallow-root-user
 spec:
-  background: false
-  rules:
-    - name: host-namespaces
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        failureAction: Enforce
-        message: >-
-          Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
-          spec.hostIPC, and spec.hostPID must be unset or set to `false`.
-        pattern:
-          spec:
-            =(hostPID): 'false'
-            =(hostIPC): 'false'
-            =(hostNetwork): 'false'
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - expression: >-
+        (object.spec.containers
+          + object.spec.?initContainers.orValue([])
+          + object.spec.?ephemeralContainers.orValue([])).all(container,
+          container.?securityContext.?runAsNonRoot.orValue(false) == true)
+      message: >-
+        Running as root is not allowed. Every container must set
+        securityContext.runAsNonRoot to true.
 ```
 
-A cluster administrator wishes to grant an exception to a Pod or Deployment named `important-tool` which will be created in the `delta` Namespace. A PolicyException resource is created which specifies the policy name and rule name which should be bypassed as well as the resource kind, Namespace, and name which may bypass it.
-
-:::note[Note]
-Auto-generated rules for Pod controllers must be specified along with the Pod controller requesting exception, if applicable. Since Kyverno's auto-generated rules are additive in nature, when specifying specific resource names of Pod controllers, it may be necessary to use a wildcard (`*`) to allow the Pods emitted from those controllers to be exempted as components of the Pod name include ReplicaSet hash and Pod hash.
-:::
+The `PolicyException` below lets Pods whose names start with `legacy-app` run as root. The exception is only granted when the Pod also has a security ticket annotation and declares strict network isolation.
 
 ```yaml
-apiVersion: kyverno.io/v2
+apiVersion: policies.kyverno.io/v1
 kind: PolicyException
 metadata:
-  name: delta-exception
-  namespace: delta
+  name: allow-root-legacy-app
+  namespace: legacy-apps
 spec:
-  exceptions:
-    - policyName: disallow-host-namespaces
-      ruleNames:
-        - host-namespaces
-        - autogen-host-namespaces
-  match:
-    any:
-      - resources:
-          kinds:
-            - Pod
-            - Deployment
-          namespaces:
-            - delta
-          names:
-            - important-tool*
-  conditions:
-    any:
-      - key: "{{ request.object.metadata.labels.app || '' }}"
-        operator: Equals
-        value: busybox
+  policyRefs:
+    - name: disallow-root-user
+      kind: ValidatingPolicy
+  # Step 1: select the resources that may use this exception
+  matchConditions:
+    - name: check-app-name
+      expression: "object.metadata.name.startsWith('legacy-app')"
+  # Step 2: compensating controls that must hold for the exception to be granted
+  validations:
+    - expression: "object.metadata.?annotations[?'security.company.com/ticket-id'].orValue('') != ''"
+      message: >-
+        Compensating Control Failure: Exception requires a security ticket
+        annotation ('security.company.com/ticket-id').
+    - expression: "object.metadata.?annotations[?'security.company.com/network-isolation'].orValue('') == 'strict'"
+      message: >-
+        Compensating Control Failure: Workload must run with 'network-isolation: strict'
+        annotation to bypass non-root checks.
 ```
 
-A Deployment matching the characteristics defined in the PolicyException, shown below, will be allowed creation even though it technically violates the rule's definition.
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: important-tool
-  namespace: delta
-  labels:
-    app: busybox
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: busybox
-  template:
-    metadata:
-      labels:
-        app: busybox
-    spec:
-      hostIPC: true
-      containers:
-        - image: busybox:1.35
-          name: busybox
-          command: ['sleep', '1d']
-```
-
-PolicyExceptions are always Namespaced yet may provide an exception for a cluster-scoped resource as well. There is no correlation between the Namespace in which the PolicyException exists and the Namespace where resources may be excepted.
-
-Exceptions against a ClusterPolicy and those against a (Namespaced) Policy can be disambiguated by specifying the value of the `exceptions[].policyName` field in the format `<namespace>/<policy-name>`.
-
-```yaml
-exceptions:
-  - policyName: team-a/disallow-host-namespaces
-    ruleNames:
-      - host-namespaces
-```
-
-PolicyExceptions also support background scanning, enabled by default. An exception which either explicitly defines `spec.background=true` or does not define the field at all, will influence [Policy Reports](/docs/guides/reports) when the exception is processed, allowing report results to change from a `Fail` to a `Skip` result. When background scans are enabled, PolicyExceptions forbid matching on the same types of fields as those forbidden by validate rules including Roles, ClusterRoles, and user information.
-
-Wildcards (`"*"`) are supported in the value of the `ruleNames[]` field allowing exception from any/all rules in the policy without having to name them explicitly.
-
-Since PolicyExceptions are just another Custom Resource, their use can and should be controlled by a number of different mechanisms to ensure their creation in a cluster is authorized including:
-
-- Kubernetes RBAC
-- Specific Namespace for PolicyExceptions (see [Container Flags](/docs/installation/customization#container-flags))
-- Existing GitOps governance processes
-- [Kyverno validate rules](/docs/policy-types/cluster-policy/validate)
-- [YAML manifest validation](/docs/policy-types/cluster-policy/validate#manifest-validation)
-
-PolicyExceptions may be subjected to Kyverno validate policies which can be used to provide additional guardrails around how they may be crafted. For example, it is considered a best practice to only allow very narrow exceptions to a much broader rule. Given the case shown earlier, only a Pod or Deployment with the name `important-tool` would be allowed by the exception, not any Pod or Deployment. Kyverno policy can help ensure, both in the cluster and in a CI/CD process via the [CLI](/docs/subprojects/kyverno-cli), that PolicyExceptions conform to your design standards. Below is an example of a sample policy to illustrate how a Kyverno validate rule ensure that a specific name must be used when creating an exception. For other samples, see the [policy library](/policies/).
-
-```yaml
-apiVersion: kyverno.io/v2beta1
-kind: ClusterPolicy
-metadata:
-  name: policy-for-exceptions
-spec:
-  background: false
-  rules:
-    - name: require-match-name
-      match:
-        any:
-          - resources:
-              kinds:
-                - PolicyException
-      validate:
-        failureAction: Enforce
-        message: >-
-          An exception must explicitly specify a name for a resource match.
-        pattern:
-          spec:
-            match:
-              =(any):
-                - resources:
-                    names: '?*'
-              =(all):
-                - resources:
-                    names: '?*'
-```
-
-### Pod Security Exemptions
-
-Kyverno policies can be used to apply Pod Security Standards profiles and controls via the [validate.podSecurity](/docs/policy-types/cluster-policy/validate#pod-security) subrule. However, there are cases where certain Pods need to be exempted from these policies. For example, a Pod may need to run as `root` or require privileged access. In such cases, a PolicyException can be used to define an exemption for the Pod through the `podSecurity{}` block. It can be used to define controls that are exempted from the policy.
-
-Given the following policy that enforces the latest version of the Pod Security Standards restricted profile in a single rule across the entire cluster.
-
-```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: psa
-spec:
-  background: true
-  rules:
-    - name: restricted
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        failureAction: Enforce
-        podSecurity:
-          level: restricted
-          version: latest
-```
-
-In this use case, all Pods in the `delta` Namespace need to run as a root. A PolicyException can be used to exempt all Pods whose Namespace is `delta` from the policy by excluding the `runAsNonRoot` control.
-
-```yaml
-apiVersion: kyverno.io/v2
-kind: PolicyException
-metadata:
-  name: pod-security-exception
-  namespace: policy-exception-ns
-spec:
-  exceptions:
-    - policyName: psa
-      ruleNames:
-        - restricted
-  match:
-    any:
-      - resources:
-          namespaces:
-            - delta
-  podSecurity:
-    - controlName: 'Running as Non-root'
-```
-
-The following Pod satisfies all controls in the restricted profile except the `Running as Non-root` control but it matches the exception. Hence, it will be successfully created.
+This Pod matches the exception and satisfies both controls, so the exception is granted and the Pod is admitted even though it runs as root.
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-pod
-  namespace: delta
+  name: legacy-app-granted
+  namespace: legacy-apps
+  annotations:
+    security.company.com/ticket-id: SEC-1234
+    security.company.com/network-isolation: strict
 spec:
   containers:
-    - name: nginx
-      image: nginx
-      args:
-        - sleep
-        - 1d
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
-        runAsNonRoot: false
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-```
-
-PolicyExceptions `podSecurity{}` block has the same functionality as the [validate.podSecurity.exclude](/docs/policy-types/cluster-policy/validate#exemptions) block in the policy itself. They can be used to exempt controls that can only be defined in the container level fields.
-
-For example, the following PolicyException exempts the containers running either the `nginx` or `redis` image from following the Capabilities control.
-
-```yaml
-apiVersion: kyverno.io/v2
-kind: PolicyException
-metadata:
-  name: pod-security-exception
-  namespace: policy-exception-ns
-spec:
-  exceptions:
-    - policyName: psa
-      ruleNames:
-        - restricted
-  match:
-    any:
-      - resources:
-          namespaces:
-            - delta
-  podSecurity:
-    - controlName: Capabilities
-      images:
-        - nginx*
-        - redis*
-```
-
-There might be a case where it is required to have specific values for the controls in the PodSecurity profile. In such cases, the `podSecurity.restrictedField` field can be used to define these values for the controls that are exempted from the policy.
-
-For example, service meshes like Istio and Linkerd employ an `initContainer` that requires some privileges which are very often problematic in security-conscious clusters. Minimally, these initContainers must add two [Linux capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html) which allow them to make modifications to the networking stack: `NET_ADMIN` and `NET_RAW`. These initContainers may go even further by running as a root user, something which is a big no-no in the world of containers.
-
-In this case, the `podSecurity.restrictedField` can be used to enforce the entire baseline profile of the Pod Security Standards but only exclude Istio's and Linkerd's images from specifically the initContainers list.
-
-The following PolicyException grants an exemption to the `initContainers` that use Istio or Linkerd images, allowing them to bypass the `Capabilities` control. This is achieved by permitting the values of `NET_ADMIN` and `NET_RAW` in the `securityContext.capabilities.add` field.
-
-```yaml
-apiVersion: kyverno.io/v2
-kind: PolicyException
-metadata:
-  name: pod-security-exception
-  namespace: policy-exception-ns
-spec:
-  exceptions:
-    - policyName: psa
-      ruleNames:
-        - baseline
-  match:
-    any:
-      - resources:
-          kinds:
-            - Pod
-  podSecurity:
-    - controlName: Capabilities
-      images:
-        - '*/istio/proxyv2*'
-        - '*/linkerd/proxy-init*'
-      restrictedField: spec.initContainers[*].securityContext.capabilities.add
-      values:
-        - NET_ADMIN
-        - NET_RAW
-```
-
-The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer`. However, it matches the exception that permits the configuration of `spec.initContainers[*].securityContext.capabilities.add` to include `NET_ADMIN` and `NET_RAW`. Hence, it will be successfully created.
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: istio-pod
-spec:
-  initContainers:
-    - name: istio-init
-      image: docker.io/istio/proxyv2:1.20.2
-      args:
-        - istio-iptables
-        - -p
-        - '15001'
-        - -z
-        - '15006'
-        - -u
-        - '1337'
-        - -m
-        - REDIRECT
-        - -i
-        - '*'
-        - -x
-        - ''
-        - -b
-        - '*'
-        - -d
-        - 15090,15021,15020
-        - --log_output_level=default:info
-      securityContext:
-        allowPrivilegeEscalation: false
-        capabilities:
-          add:
-            - NET_ADMIN
-            - NET_RAW
-          drop:
-            - ALL
-        privileged: false
-        readOnlyRootFilesystem: false
-        runAsGroup: 0
-        runAsNonRoot: false
-        runAsUser: 0
-  containers:
-    - name: busybox
+    - name: app
       image: busybox:1.35
-      args:
-        - sleep
-        - infinity
 ```
 
-The following Pod meets all requirements outlined in the baseline profile, except the `Capabilities` control in the `initContainer` and it matches the exception but it sets the `spec.initContainers[*].securityContext.capabilities.add` to `SYS_ADMIN` which isn't an allowed value. Hence, it will be rejected.
+#### How compensating controls are evaluated
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: istio-pod
-spec:
-  initContainers:
-    - name: istio-init
-      image: docker.io/istio/proxyv2:1.20.2
-      args:
-        - istio-iptables
-        - -p
-        - '15001'
-        - -z
-        - '15006'
-        - -u
-        - '1337'
-        - -m
-        - REDIRECT
-        - -i
-        - '*'
-        - -x
-        - ''
-        - -b
-        - '*'
-        - -d
-        - 15090,15021,15020
-        - --log_output_level=default:info
-      securityContext:
-        allowPrivilegeEscalation: false
-        capabilities:
-          add:
-            - NET_ADMIN
-            - NET_RAW
-            - SYS_ADMIN
-          drop:
-            - ALL
-        privileged: false
-        readOnlyRootFilesystem: false
-        runAsGroup: 0
-        runAsNonRoot: false
-        runAsUser: 0
-  containers:
-    - name: busybox
-      image: busybox:1.35
-      args:
-        - sleep
-        - infinity
-```
+1. Kyverno evaluates the exception's `matchConditions` first. If the resource does not match, the exception and its controls are ignored.
+2. If the resource matches, Kyverno evaluates the entries in `validations` in order. The exception is granted only if every entry evaluates to `true`.
+3. If an entry evaluates to `false`, the exception is **not** granted and the policy is evaluated as if the exception did not exist. If the policy then fails, the failing control's message is reported instead of the policy's message, so the submitter can see what the exception requires. What that means for the request depends on the policy's `validationActions`: with `Deny` the resource is rejected with that message, with `Warn` it is admitted and the message is returned as an admission warning, and with `Audit` it is admitted and the message is recorded in the PolicyReport.
 
-#### Using PolicyException with (Namespace-)Selectors
+Compensating controls decide whether the exception is granted. They do not validate the resource on their own. A resource that already complies with the policy does not need the exception, so it is admitted even if it fails the controls.
 
-Using selectors inside `match` statements (`selector` and `namespaceSelector`) of a PolicyException offers an even more granular approach, for example to exclude the initContainers of Istio.
+With the policy and exception above, which uses `validationActions: [Deny]`, Kyverno handles Pods as follows:
 
-:::note[Note]
-Due to a bug in the past (see [#13941](https://github.com/kyverno/kyverno/issues/13941)), `namespaceSelector` are now fully working since **Kyverno 1.15.2**.
-:::
+| Pod                                                            | Matches exception | Controls satisfied | Result                                                                                          |
+| -------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------------------------------------------------------------------- |
+| `legacy-app-granted`: runs as root, has both annotations       | Yes               | Yes                | Admitted, because the exception is granted                                                      |
+| `legacy-app-no-ticket`: runs as root, has no ticket annotation | Yes               | No                 | Denied with `Compensating Control Failure: Exception requires a security ticket annotation ...` |
+| `legacy-app-compliant`: runs as non-root, has no annotations   | Yes               | No                 | Admitted, because the Pod complies with the policy                                              |
+| `web-app`: runs as root                                        | No                | Not evaluated      | Denied with `Running as root is not allowed ...`                                                |
 
-```yaml
-apiVersion: kyverno.io/v2
-kind: PolicyException
-metadata:
-  name: pod-security-exception
-  namespace: policy-exception-ns
-spec:
-  exceptions:
-    - policyName: psa
-      ruleNames:
-        - baseline
-  match:
-    any:
-      # Istio Sidecar injection at namespace level
-      # https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/#controlling-the-injection-policy
-      - resources:
-          kinds:
-            - Pod
-        namespaceSelector:
-          matchLabels:
-            istio-injection: enabled
-      # Sidecar injection can also be controlled on a per-pod basis, by configuring
-      # the `sidecar.istio.io/inject` label on a pod
-      - resources:
-          kinds:
-            - Pod
-        selector:
-          matchLabels:
-            sidecar.istio.io/inject: 'true'
-  podSecurity:
-    - controlName: Capabilities
-      images:
-        - '*/istio/proxyv2*'
-      restrictedField: spec.initContainers[*].securityContext.capabilities.add
-      values:
-        - NET_ADMIN
-        - NET_RAW
-```
+When more than one exception matches a resource, Kyverno considers each one separately. An exception whose controls fail grants nothing, but another matching exception whose controls pass (or which has no controls) still grants the bypass. If every matching exception is refused and the policy fails, Kyverno reports the message from the first refused exception, ordered by namespace and then by name.
+
+Compensating controls also apply to [image-based](#image-based-exceptions) and [value-based](#value-based-exceptions) exceptions. A refused exception adds nothing to `exceptions.allowedImages` or `exceptions.allowedValues`.
+
+#### Writing compensating controls
+
+- Expressions can use `object`, `oldObject`, `request`, `namespaceObject`, and the [Kyverno CEL libraries](/docs/policy-types/cel-libraries/). The policy's `variables` and `exceptions` are not available, because an exception is written separately from the policies that reference it.
+- Kyverno compiles the expressions when the `PolicyException` is created or updated, and rejects the exception if any of them is invalid.
+- `messageExpression` takes precedence over `message`. If neither is set, the failure message is `compensating control at index <index> failed for policy exception <namespace>/<name>`.
+- If a control cannot be evaluated because of a runtime error, the exception is not granted. If the policy then fails, the result is reported as an `error`.
+- For [auto-generated pod controller rules](/docs/policy-types/validating-policy#autogen), the failure message includes the path of the pod template that was evaluated.
+
+#### Interpreting PolicyReport Results for Compensating Controls
+
+- When an exception that exempts the resource outright is granted, the result is `skip` (or `pass` when `reportResult: pass` is set), just like an exception without controls. An image- or value-based exception does not exempt the resource, so the policy still runs and its own result is reported.
+- When an exception is refused and the policy fails, the result is `fail`, the `message` is the failing control's message, and `properties.exceptions` names the refused exception.
+
+#### ValidatingAdmissionPolicy generation
+
+A generated `ValidatingAdmissionPolicy` cannot evaluate compensating controls. If an exception that references a `ValidatingPolicy` defines `validations`, Kyverno does not generate a `ValidatingAdmissionPolicy` for that policy, and deletes one that was previously generated. The reason is recorded in the policy status, and the policy continues to be enforced by the Kyverno admission webhook.

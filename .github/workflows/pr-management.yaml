@@ -1,0 +1,53 @@
+name: PR lifecycle
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  schedule:
+    - cron: '13 * * * *'
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Lifecycle operation
+        type: choice
+        options: [readiness, stale]
+        default: readiness
+      dry_run:
+        description: Only preview changes (leave enabled during rollout)
+        type: boolean
+        default: true
+
+permissions: {}
+
+jobs:
+  readiness:
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      (github.event_name == 'schedule' && github.event.schedule == '13 * * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'readiness')
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: read
+      actions: read
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@d7fdc881c9757201a852a28d99eaa795ce0762bf
+    with:
+      mode: readiness
+      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+
+  stale:
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '23 6 * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'stale')
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: read
+      actions: read
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@d7fdc881c9757201a852a28d99eaa795ce0762bf
+    with:
+      mode: stale
+      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}

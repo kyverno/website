@@ -5,6 +5,7 @@ severity: medium
 type: MutatingPolicy
 subjects: []
 tags: []
+version: 1.19.1
 createdAt: "2025-10-29T09:59:30.000Z"
 ---
 
@@ -13,10 +14,12 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-default-resources/add-default-resources.yaml" target="-blank">/other-mpol/add-default-resources/add-default-resources.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-default-resources
+  annotations:
+    policies.kyverno.io/minversion: 1.19.1
 spec:
   autogen:
     podControllers:
@@ -49,6 +52,7 @@ spec:
           Object{
             spec: Object.spec{
               containers: object.spec.containers.map(c,
+                exceptions.allowedImages.exists(image, image == c.image) ? c :
                 Object.spec.containers{
                   name: c.name,
                   resources: Object.spec.containers.resources{

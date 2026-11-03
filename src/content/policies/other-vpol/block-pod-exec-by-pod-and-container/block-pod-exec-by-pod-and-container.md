@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample
-version: 1.14.0
+version: 1.19.1
 description: 'The `exec` command may be used to gain shell access, or run other commands, in a Pod''s container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to containers named `nginx` in Pods starting with name `myapp-maintenance`.'
 createdAt: "2025-12-11T12:49:35.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-12-11T12:49:35.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-pod-and-container/block-pod-exec-by-pod-and-container.yaml" target="-blank">/other-vpol/block-pod-exec-by-pod-and-container/block-pod-exec-by-pod-and-container.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: deny-exec-by-pod-and-container
   annotations:
     policies.kyverno.io/title: Block Pod Exec by Pod and Container
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can be useful for troubleshooting purposes, it could represent an attack vector and is discouraged. This policy blocks Pod exec commands to containers named `nginx` in Pods starting with name `myapp-maintenance`.
 spec:
@@ -45,6 +45,6 @@ spec:
           - v1
   validations:
     - message: Nginx containers inside myapp-maintenance Pods may not be exec'd into.
-      expression: "!(request.name.startsWith('myapp-maintenance') && has(object.container) && object.container == 'nginx')"
+      expression: "!(request.name.startsWith('myapp-maintenance') && has(object.container) && object.container == 'nginx') || (has(exceptions.allowedValues) && object.container in exceptions.allowedValues)"
 
 ```

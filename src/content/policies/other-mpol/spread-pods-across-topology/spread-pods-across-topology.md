@@ -8,6 +8,7 @@ subjects:
   - Pod
 tags:
   - Sample
+version: 1.17.0
 description: 'Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.'
 createdAt: "2025-11-18T07:36:13.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/spread-pods-across-topology/spread-pods-across-topology.yaml" target="-blank">/other-mpol/spread-pods-across-topology/spread-pods-across-topology.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: spread-pods
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/title: Spread Pods Across Nodes
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Deployment, Pod
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.
 spec:
   matchConstraints:

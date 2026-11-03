@@ -1,71 +1,117 @@
 documentation:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/content/docs/**/*.{md,mdx}'
-          - 'src/content/policies/**/*.md'
-          - 'content/**/*.md'
-          - 'README.md'
-          - 'CONTRIBUTING.md'
-          - 'DEVELOPMENT.md'
-          - 'OWNERS.md'
+  color: '0075ca'
+  description: Improvements or additions to documentation
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'src/content/docs/**/*.{md,mdx}'
+            - 'src/content/policies/**/*.md'
+            - 'content/**/*.md'
+            - 'README.md'
+            - 'CONTRIBUTING.md'
+            - 'DEVELOPMENT.md'
+            - 'OWNERS.md'
 
 blog:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/content/blog/**/*'
+  color: ededed
+  description: Blog content
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'src/content/blog/**/*'
 
 website-redesign:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/components/**/*.{astro,css,js,jsx,ts,tsx}'
-          - 'src/layouts/**/*.astro'
-          - 'src/sections/**/*.{astro,css,js,jsx,ts,tsx}'
-          - 'src/styles/**/*.css'
-          - 'public/assets/**/*'
+  color: '24d0fd'
+  description: Website content, design, and implementation
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'src/components/**/*.{astro,css,js,jsx,ts,tsx}'
+            - 'src/layouts/**/*.astro'
+            - 'src/sections/**/*.{astro,css,js,jsx,ts,tsx}'
+            - 'src/styles/**/*.css'
+            - 'public/assets/**/*'
 
 github_actions:
-  - changed-files:
-      - any-glob-to-any-file:
-          - '.github/workflows/**/*.{yml,yaml}'
-          - '.github/actions/**/*.{yml,yaml}'
+  color: '000000'
+  description: Pull requests that update GitHub Actions code
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - '.github/workflows/**/*.{yml,yaml}'
+            - '.github/actions/**/*.{yml,yaml}'
 
 dependencies:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'package.json'
-          - 'package-lock.json'
-          - '.github/dependabot.yml'
+  color: '0366d6'
+  description: Pull requests that update a dependency file
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'package.json'
+            - 'package-lock.json'
+            - '.github/dependabot.yml'
 
 config:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'astro.config.mjs'
-          - 'markdoc.config.mjs'
-          - 'src/content.config.ts'
-          - 'netlify.toml'
-          - 'tsconfig.json'
-          - 'lychee.toml'
+  color: ededed
+  description: Website configuration
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'astro.config.mjs'
+            - 'markdoc.config.mjs'
+            - 'src/content.config.ts'
+            - 'netlify.toml'
+            - 'tsconfig.json'
+            - 'lychee.toml'
 
 javascript:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/constants/**/*.{js,ts}'
-          - 'src/hooks/**/*.{js,jsx,ts,tsx}'
-          - 'src/utils/**/*.{js,ts}'
-          - 'scripts/**/*.{js,ts,mjs,cjs}'
+  color: '168700'
+  description: Pull requests that update javascript code
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'src/constants/**/*.{js,ts}'
+            - 'src/hooks/**/*.{js,jsx,ts,tsx}'
+            - 'src/utils/**/*.{js,ts}'
+            - 'scripts/**/*.{js,ts,mjs,cjs}'
 
 go:
-  - changed-files:
-      - any-glob-to-any-file:
-          - '**/*.go'
-          - 'go.mod'
-          - 'go.sum'
+  color: '16e2e2'
+  description: Pull requests that update Go code
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - '**/*.go'
+            - 'go.mod'
+            - 'go.sum'
 
 webhook:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/content/docs/**/admission-controllers.md'
-          - 'src/content/docs/**/validating-policy.mdx'
-          - 'src/content/docs/**/mutating-policy.mdx'
-          - 'src/content/docs/**/image-validating-policy.mdx'
-          - 'src/content/policies/**/admission-webhooks/**/*'
+  color: b8f803
+  description: Admission webhook documentation and policies
+  rules:
+    - changed-files:
+        - any-glob-to-any-file:
+            - 'src/content/docs/**/admission-controllers.md'
+            - 'src/content/docs/**/validating-policy.mdx'
+            - 'src/content/docs/**/mutating-policy.mdx'
+            - 'src/content/docs/**/image-validating-policy.mdx'
+            - 'src/content/policies/**/admission-webhooks/**/*'
+
+merge-conflicts:
+  color: e65100
+  description: PR has merge conflicts
+needs-author-action:
+  color: b60205
+  description: Failing DCO or CI, merge conflicts, or review threads awaiting the author
+ready-for-review:
+  color: '0e8a16'
+  description: Checks are settled and no author action is outstanding; not a merge approval
+workflow-approval-required:
+  color: fbca04
+  description: Workflows are waiting for a maintainer to approve running them
+stale:
+  color: cfd3d7
+  description: Waiting on the author with no new commit for 7 days
+no-stale:
+  color: c2e0c6
+  description: Exempt from stale marking, automatic closure, and reviewer reminders

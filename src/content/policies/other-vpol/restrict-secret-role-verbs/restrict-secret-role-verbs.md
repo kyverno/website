@@ -9,7 +9,7 @@ subjects:
   - RBAC
 tags:
   - Security in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively allows Secrets to be read which may expose sensitive information. This policy prevents a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to fully implement this control, it is recommended to pair this policy with another which also prevents use of the wildcard (''*'') in the verbs list either when explicitly naming Secrets or when also using a wildcard in the base API group.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -19,7 +19,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml" target="-blank">/other-vpol/restrict-secret-role-verbs/restrict-secret-role-verbs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-secret-role-verbs
@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: The verbs `get`, `list`, and `watch` in a Role or ClusterRole, when paired with the Secrets resource, effectively allows Secrets to be read which may expose sensitive information. This policy prevents a Role or ClusterRole from using these verbs in tandem with Secret resources. In order to fully implement this control, it is recommended to pair this policy with another which also prevents use of the wildcard ('*') in the verbs list either when explicitly naming Secrets or when also using a wildcard in the base API group.
 spec:
@@ -54,7 +54,7 @@ spec:
     - name: forbiddenVerbs
       expression: "['get','list','watch']"
   validations:
-    - expression: object.rules == null ||  !object.rules.exists(rule,  'secrets' in rule.resources && rule.verbs.exists(verb, verb in variables.forbiddenVerbs))
+    - expression: object.rules == null ||  !object.rules.exists(rule,  'secrets' in rule.resources && rule.verbs.exists(verb, verb in variables.forbiddenVerbs && !(has(exceptions.allowedValues) && verb in exceptions.allowedValues)))
       message: Requesting verbs `get`, `list`, or `watch` on Secrets is forbidden.
 
 ```

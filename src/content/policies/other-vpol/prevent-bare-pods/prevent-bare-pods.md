@@ -8,7 +8,7 @@ subjects:
 tags:
   - Other
   - EKS Best Practices in vpol
-version: 1.14.0
+version: 1.17.0
 description: 'Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/prevent-bare-pods/prevent-bare-pods.yaml" target="-blank">/other-vpol/prevent-bare-pods/prevent-bare-pods.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: prevent-bare-pods
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Other, EKS Best Practices in vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.17.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Pods not created by workload controllers such as Deployments have no self-healing or scaling abilities and are unsuitable for production. This policy prevents such "bare" Pods from being created unless they originate from a higher-level workload controller of some sort.
@@ -52,7 +52,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: "'ownerReferences' in object.metadata"
+    - expression: object.metadata.?ownerReferences.orValue([]).size() > 0
       message: Bare Pods are not allowed. They must be created by Pod controllers.
 
 ```

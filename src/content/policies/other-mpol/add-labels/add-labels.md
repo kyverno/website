@@ -7,7 +7,7 @@ subjects:
   - Label
 tags:
   - Sample
-version: 1.6.0
+version: 1.19.1
 description: 'Labels are used as an important source of metadata describing objects in various ways or triggering other functionality. Labels are also a very basic concept and should be used throughout Kubernetes. This policy performs a simple mutation which adds a label `foo=bar` to Pods, Services, ConfigMaps, and Secrets.'
 createdAt: "2025-10-29T09:59:30.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-labels/add-labels.yaml" target="-blank">/other-mpol/add-labels/add-labels.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-labels
   annotations:
     policies.kyverno.io/title: Add Labels
     policies.kyverno.io/category: Sample
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Label
     policies.kyverno.io/description: Labels are used as an important source of metadata describing objects in various ways or triggering other functionality. Labels are also a very basic concept and should be used throughout Kubernetes. This policy performs a simple mutation which adds a label `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
@@ -47,6 +47,8 @@ spec:
     - patchType: ApplyConfiguration
       applyConfiguration:
         expression: |
+          exceptions.allowedValues.exists(value, value == "label:foo") ?
+          Object{} :
           Object{
             metadata: Object.metadata{
               labels: Object.metadata.labels{

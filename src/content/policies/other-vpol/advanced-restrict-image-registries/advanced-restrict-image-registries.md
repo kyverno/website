@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'This policy restricts Pod images to approved registries defined globally in a ConfigMap as a single string, newline-separated list, or YAML list with hyphens, and optionally at the Namespace level via annotations. Uses contains() for compatibility with Kyverno 1.14.0.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml" target="-blank">/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: advanced-restrict-image-registries
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: This policy restricts Pod images to approved registries defined globally in a ConfigMap as a single string, newline-separated list, or YAML list with hyphens, and optionally at the Namespace level via annotations. Uses contains() for compatibility with Kyverno 1.14.0.
@@ -53,12 +53,13 @@ spec:
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
     - name: nsRegistries
-      expression: namespaceObject.metadata.?annotations["corp.com/allowed-registries"] .orValue("") .split(",").filter(reg, reg != "")
+      expression: namespaceObject.?metadata.?annotations["corp.com/allowed-registries"] .orValue("") .split(",").filter(reg, reg != "")
     - name: cmRegistries
       expression: variables.cm.data[?'registries'].orValue("").split(",").filter(reg, reg != "")
   validations:
     - expression: |-
-        variables.allContainers.all(container, 
+        variables.allContainers.all(container,
+          (has(exceptions.allowedValues) && string(container.image) in exceptions.allowedValues) ||
           (
             variables.cmRegistries.exists(cmRegistry,
               container.image.startsWith(cmRegistry.trim()))

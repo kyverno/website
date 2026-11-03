@@ -136,7 +136,7 @@ spec:
 
         source: # Optional metadata to constrain image source (optional)
           repository: 'ghcr.io/myorg/myimage' # Limit to specific image repo
-          pullSecrets: # Kubernetes secrets used to access the registry
+          PullSecrets: # Kubernetes secrets used to access the registry
             - name: my-registry-secret
           tagPrefix: 'v1.' # Restrict verification to images starting with this tag
 
@@ -441,6 +441,32 @@ This policy ensures that:
 2. All images have valid SBOM attestations
 3. All SBOMs are in CycloneDX format
 
+:::note[Note]
+The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`. The same check for an SBOM attested with cosign keyless, as a fragment of `spec`:
+
+```yaml
+spec:
+  attestors:
+    - name: cosign
+      cosign:
+        keyless:
+          identities:
+            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+              issuer: 'https://token.actions.githubusercontent.com'
+        ctlog:
+          url: 'https://rekor.sigstore.dev'
+  attestations:
+    - name: sbom
+      intoto:
+        type: https://cyclonedx.org/bom
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image, attestations.sbom, [attestors.cosign])).all(e, e > 0) &&
+        images.containers.map(image, extractPayload(image, attestations.sbom).predicate.bomFormat == 'CycloneDX').all(e, e)
+      message: sbom is not a signed cyclone dx sbom
+```
+:::
+
 ## Namespaced Policies
 
 ImageValidatingPolicy comes in both cluster-scoped and namespaced versions:
@@ -468,7 +494,7 @@ spec:
   matchImageReferences:
     - glob: 'ghcr.io/myorg/dev-*'
   attestors:
-    - name: dev-attestor
+    - name: devteam
       cosign:
         keyless:
           identities:
@@ -476,7 +502,8 @@ spec:
               subject: '*@myorg.github.io'
   validations:
     - message: 'image must be signed by the development team'
-      expression: 'imageverify.verify(images.containers, attestors.devAttestor).all(result, result.verified)'
+      expression: >-
+        images.containers.map(image, verifyImageSignatures(image, [attestors.devteam])).all(e, e > 0)
 ```
 
 The `NamespacedImageValidatingPolicy` allows namespace owners to manage image verification policies without requiring cluster-admin permissions. This enables development teams to enforce their own image security requirements, such as verifying images are signed by their CI/CD pipeline, without affecting other namespaces or requiring cluster-level access.

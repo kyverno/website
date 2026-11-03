@@ -5,6 +5,7 @@ severity: medium
 type: ValidatingPolicy
 subjects: []
 tags: []
+version: 1.19.1
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
 
@@ -13,10 +14,12 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml" target="-blank">/other-vpol/block-ephemeral-containers/block-ephemeral-containers.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: block-ephemeral-containers
+  annotations:
+    policies.kyverno.io/minversion: 1.19.1
 spec:
   validationActions:
     - Audit
@@ -36,7 +39,9 @@ spec:
           - pods
           - pods/ephemeralcontainers
   validations:
-    - expression: object.spec.?ephemeralContainers.orValue([]).size() == 0
+    - expression: |-
+        object.spec.?ephemeralContainers.orValue([]).all(container,
+          has(exceptions.allowedValues) && string(container.name) in exceptions.allowedValues)
       message: Ephemeral (debug) containers are not permitted.
 
 ```

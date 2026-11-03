@@ -164,17 +164,17 @@ Documentation pages are written in Markdown (`.md`) or MDX (`.mdx`) and located 
 
 **Link Formatting Guidelines:**
 
-- **Use absolute paths** for internal documentation links (e.g., `/docs/policy-types/cluster-policy/validate`)
+- **Use absolute paths** for internal documentation links (e.g., `/docs/policy-types/validating-policy`)
 - **Avoid relative links** (e.g., `../validate.md` or `./validate.md`) as they can break when pages are moved or reorganized
 - **Remove file extensions** from links (use `/docs/path/to/page` instead of `/docs/path/to/page.md`)
-- **Use anchor links** for specific sections (e.g., `/docs/policy-types/cluster-policy/validate#anchors`)
+- **Use anchor links** for specific sections (e.g., `/docs/policy-types/validating-policy#evaluation`)
 
 **Examples:**
 
 ✅ **Good:**
 
 ```markdown
-[Validate Policy](/docs/policy-types/cluster-policy/validate)
+[Validating Policy](/docs/policy-types/validating-policy)
 [Installation Guide](/docs/installation#methods)
 ```
 

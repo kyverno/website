@@ -8,6 +8,7 @@ subjects:
   - Annotation
 tags:
   - Linkerd
+version: 1.17.0
 description: 'Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. In addition, a second annotation may be applied which controls the Pod startup behavior. This policy sets the annotations, if not present, `linkerd.io/inject` and `config.linkerd.io/proxy-await` to `enabled` on all new Namespaces.'
 createdAt: "2025-10-30T08:57:55.000Z"
 ---
@@ -17,12 +18,13 @@ createdAt: "2025-10-30T08:57:55.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/linkerd-mpol/add-linkerd-mesh-injection/add-linkerd-mesh-injection.yaml" target="-blank">/linkerd-mpol/add-linkerd-mesh-injection/add-linkerd-mesh-injection.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-linkerd-mesh-injection
   annotations:
     policies.kyverno.io/title: Add Linkerd Mesh Injection
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/category: Linkerd
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Namespace, Annotation

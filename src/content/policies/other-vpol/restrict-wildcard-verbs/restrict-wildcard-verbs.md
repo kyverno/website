@@ -10,7 +10,7 @@ subjects:
 tags:
   - Security
   - EKS Best Practices in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Wildcards (''*'') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -20,7 +20,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml" target="-blank">/other-vpol/restrict-wildcard-verbs/restrict-wildcard-verbs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-wildcard-verbs
@@ -30,7 +30,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Wildcards ('*') in verbs grants all access to the resources referenced by it and does not follow the principal of least privilege. As much as possible, avoid such open verbs unless scoped to perhaps a custom API group. This policy blocks any Role or ClusterRole that contains a wildcard entry in the verbs list found in any rule.
 spec:
@@ -52,7 +52,7 @@ spec:
           - roles
           - clusterroles
   validations:
-    - expression: object.rules == null || !object.rules.exists(rule, '*' in rule.verbs)
+    - expression: object.rules == null || !object.rules.exists(rule, '*' in rule.verbs && rule.resources.exists(resource, !(has(exceptions.allowedValues) && resource + ':*' in exceptions.allowedValues)))
       message: Use of a wildcard ('*') in any verbs is forbidden.
 
 ```

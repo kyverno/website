@@ -9,6 +9,7 @@ subjects:
 tags:
   - Ingress
   - Security
+version: 1.19.1
 description: 'This policy ensures that Ingress resources do not have certain disallowed annotations and that the ingress-nginx controller Pod is running an appropriate version of the image. It checks for the presence of the  `nginx.ingress.kubernetes.io/server-snippet` annotation and disallows its usage, enforces specific values  for `auth-tls-verify-client`, and ensures that the ingress-nginx controller image is of the required version.'
 createdAt: "2025-12-15T09:53:18.000Z"
 ---
@@ -18,7 +19,7 @@ createdAt: "2025-12-15T09:53:18.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml" target="-blank">/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-ingress-nginx-controller-version-and-annotation-policy
@@ -26,6 +27,7 @@ metadata:
     policies.kyverno.io/title: Ensure Valid Ingress NGINX Controller and Annotations
     policies.kyverno.io/category: Ingress, Security
     policies.kyverno.io/severity: high
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.15.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Ingress, Pod
@@ -69,12 +71,28 @@ spec:
   validations:
     - reason: Invalid
       messageExpression: "'server-snippet annotation is not allowed in Ingress resources'"
-      expression: "!variables.isIngress || !has(object.metadata.annotations) || !object.metadata.annotations.exists(a, a == 'nginx.ingress.kubernetes.io/server-snippet')"
+      expression: "!variables.isIngress || !has(object.metadata.annotations) || !object.metadata.annotations.exists(a, a == 'nginx.ingress.kubernetes.io/server-snippet') || 'annotation:nginx.ingress.kubernetes.io/server-snippet' in exceptions.allowedValues"
     - reason: Invalid
       messageExpression: "'auth-tls-verify-client annotation must be one of: ' + variables.validAuthTlsValues.join(', ') + ', received: ' + variables.authTlsAnnotation"
-      expression: "!variables.isIngress || variables.authTlsAnnotation == '' || variables.authTlsAnnotation in variables.validAuthTlsValues"
+      expression: "!variables.isIngress || variables.authTlsAnnotation == '' || variables.authTlsAnnotation in variables.validAuthTlsValues || ('annotation:nginx.ingress.kubernetes.io/auth-tls-verify-client:' + variables.authTlsAnnotation) in exceptions.allowedValues"
     - reason: Invalid
       messageExpression: "'controller container must use ingress-nginx version 1.11.2 or higher, excluding v1.11.0 and v1.11.1'"
-      expression: "!variables.isPod || variables.controllerContainers.all(c, c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.0') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.1') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.10.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.9.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.8.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.7.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.6.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.5.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.4.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.3.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.2.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.1.') && !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.0.'))"
+      expression: |-
+        !variables.isPod || variables.controllerContainers.all(c,
+          (has(exceptions.allowedImages) && c.image in exceptions.allowedImages) ||
+          (c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.0') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.11.1') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.10.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.9.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.8.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.7.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.6.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.5.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.4.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.3.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.2.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.1.') &&
+          !c.image.startsWith('registry.k8s.io/ingress-nginx/controller:v1.0.')))
 
 ```

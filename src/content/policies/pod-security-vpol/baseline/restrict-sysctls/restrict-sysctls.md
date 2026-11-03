@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Baseline) in ValidatingPolicy
-version: 1.14.0
+version: 1.19.1
 description: 'Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node. This policy ensures that only those "safe" subsets can be specified in a Pod.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-sysctls/restrict-sysctls.yaml" target="-blank">/pod-security-vpol/baseline/restrict-sysctls/restrict-sysctls.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-sysctls
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
     policies.kyverno.io/description: Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node. This policy ensures that only those "safe" subsets can be specified in a Pod.
@@ -47,13 +47,54 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allowedSysctls
-      expression: "['kernel.shm_rmid_forced','net.ipv4.ip_local_port_range','net.ipv4.ip_unprivileged_port_start','net.ipv4.tcp_syncookies','net.ipv4.ping_group_range']"
+      expression: |-
+        ['kernel.shm_rmid_forced', 'net.ipv4.ip_local_port_range',
+         'net.ipv4.ip_local_reserved_ports', 'net.ipv4.ip_unprivileged_port_start',
+         'net.ipv4.ping_group_range', 'net.ipv4.tcp_fin_timeout',
+         'net.ipv4.tcp_keepalive_intvl', 'net.ipv4.tcp_keepalive_probes',
+         'net.ipv4.tcp_keepalive_time', 'net.ipv4.tcp_notsent_lowat',
+         'net.ipv4.tcp_rmem', 'net.ipv4.tcp_slow_start_after_idle',
+         'net.ipv4.tcp_syncookies', 'net.ipv4.tcp_wmem']
   validations:
     - expression: |-
-        object.spec.?securityContext.?sysctls.orValue([]).all(sysctl, 
-          sysctl.?name.orValue('') in variables.allowedSysctls)
-      message: Setting additional sysctls above the allowed type is disallowed. The field spec.securityContext.sysctls must be unset or not use any other names than kernel.shm_rmid_forced, net.ipv4.ip_local_port_range, net.ipv4.ip_unprivileged_port_start, net.ipv4.tcp_syncookies and net.ipv4.ping_group_range.
+        variables.podSpec.?securityContext.?sysctls.orValue([]).all(sysctl,
+          sysctl.?name.orValue('') in variables.allowedSysctls ||
+          sysctl.?name.orValue('') in exceptions.allowedValues)
+      message: "Setting additional sysctls above the allowed type is disallowed. The field spec.securityContext.sysctls must be unset or use only the safe sysctls allowed by the Pod Security Standards: kernel.shm_rmid_forced, net.ipv4.ip_local_port_range, net.ipv4.ip_local_reserved_ports, net.ipv4.ip_unprivileged_port_start, net.ipv4.ping_group_range, net.ipv4.tcp_fin_timeout, net.ipv4.tcp_keepalive_intvl, net.ipv4.tcp_keepalive_probes, net.ipv4.tcp_keepalive_time, net.ipv4.tcp_notsent_lowat, net.ipv4.tcp_rmem, net.ipv4.tcp_slow_start_after_idle, net.ipv4.tcp_syncookies, and net.ipv4.tcp_wmem."
 
 ```

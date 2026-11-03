@@ -9,7 +9,7 @@ subjects:
 tags:
   - Multi-Tenancy
   - EKS Best Practices
-version: 1.15.0
+version: 1.19.1
 description: 'To better control the number of resources that can be created in a given Namespace and provide default resource consumption limits for Pods, ResourceQuota and LimitRange resources are recommended. This policy will generate ResourceQuota and LimitRange resources when a new Namespace is created.'
 createdAt: "2025-11-04T10:13:04.000Z"
 ---
@@ -19,7 +19,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-gpol/add-ns-quota/add-ns-quota.yaml" target="-blank">/best-practices-gpol/add-ns-quota/add-ns-quota.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
 metadata:
   name: add-ns-quota
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/title: Add Quota
     policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
     policies.kyverno.io/subject: ResourceQuota, LimitRange
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: To better control the number of resources that can be created in a given Namespace and provide default resource consumption limits for Pods, ResourceQuota and LimitRange resources are recommended. This policy will generate ResourceQuota and LimitRange resources when a new Namespace is created.
 spec:
   evaluation:
@@ -87,7 +87,11 @@ spec:
             })
           }
         ]
+    - name: excludedDownstreamResources
+      expression: |-
+        variables.downstream.filter(resource,
+          !(string(resource.kind) + '/' + string(resource.metadata.name) in exceptions.allowedValues))
   generate:
-    - expression: generator.Apply(variables.targetNs, variables.downstream)
+    - expression: generator.Apply(variables.targetNs, variables.excludedDownstreamResources)
 
 ```

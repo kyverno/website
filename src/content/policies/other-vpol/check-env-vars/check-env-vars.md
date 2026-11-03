@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'Environment variables control many aspects of a container''s execution and are often the source of many different configuration settings. Being able to ensure that the value of a specific environment variable either is or is not set to a specific string is useful to maintain such controls. This policy checks every container to ensure that if the `DISABLE_OPA` environment variable is defined, it must not be set to a value of `"true"`.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-env-vars/check-env-vars.yaml" target="-blank">/other-vpol/check-env-vars/check-env-vars.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-env-vars
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     kyverno.io/kyverno-version: 1.14.0
     policies.kyverno.io/description: Environment variables control many aspects of a container's execution and are often the source of many different configuration settings. Being able to ensure that the value of a specific environment variable either is or is not set to a specific string is useful to maintain such controls. This policy checks every container to ensure that if the `DISABLE_OPA` environment variable is defined, it must not be set to a value of `"true"`.
@@ -45,8 +47,11 @@ spec:
           - UPDATE
         resources:
           - pods
+  variables:
+    - name: allContainers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: "!object.spec.containers.exists(container,  container.?env.orValue([]).exists(e, e.name == 'DISABLE_OPA' && e.value == 'true'))"
+    - expression: "!variables.allContainers.exists(container, container.?env.orValue([]).exists(e, e.name == 'DISABLE_OPA' && e.value == 'true')) || exceptions.allowedValues.exists(value, value == 'DISABLE_OPA=true')"
       message: DISABLE_OPA must not be set to true.
 
 ```

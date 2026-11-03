@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
+version: 1.19.1
 description: 'The Kubernetes downward API only has the ability to express so many options as environment variables. The image consumed in a Pod is commonly needed to make the application aware of some logic it must take. This policy takes the value of the `image` field and adds it as an environment variable to Pods.'
 createdAt: "2025-10-29T09:59:30.000Z"
 ---
@@ -16,12 +17,13 @@ createdAt: "2025-10-29T09:59:30.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-image-as-env-var/add-image-as-env-var.yaml" target="-blank">/other-mpol/add-image-as-env-var/add-image-as-env-var.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: add-image-as-env-var
   annotations:
     policies.kyverno.io/title: Add Image as Environment Variable
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
@@ -45,8 +47,14 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |-
-          object.spec.containers.map(c, 
-            !has(c.env) ? 
+          object.spec.containers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
+            has(c.env) && c.env.exists(e, e.name == "K8S_IMAGE") ?
+            JSONPatch{
+              op: "replace",
+              path: "/spec/containers/" + string(object.spec.containers.indexOf(c)) + "/env/" + string(c.env.map(e, e.name).indexOf("K8S_IMAGE")),
+              value: {"name": "K8S_IMAGE", "value": string(c.image)}
+            } :
+            !has(c.env) ?
             JSONPatch{
               op: "add",
               path: "/spec/containers/" + string(object.spec.containers.indexOf(c)) + "/env",
@@ -57,6 +65,25 @@ spec:
               path: "/spec/containers/" + string(object.spec.containers.indexOf(c)) + "/env/-",
               value: {"name": "K8S_IMAGE", "value": string(c.image)}
             }
-          )
+          ) +
+          (has(object.spec.initContainers) ? object.spec.initContainers.filter(c, !exceptions.allowedImages.exists(image, image == c.image)).map(c,
+            has(c.env) && c.env.exists(e, e.name == "K8S_IMAGE") ?
+            JSONPatch{
+              op: "replace",
+              path: "/spec/initContainers/" + string(object.spec.initContainers.indexOf(c)) + "/env/" + string(c.env.map(e, e.name).indexOf("K8S_IMAGE")),
+              value: {"name": "K8S_IMAGE", "value": string(c.image)}
+            } :
+            !has(c.env) ?
+            JSONPatch{
+              op: "add",
+              path: "/spec/initContainers/" + string(object.spec.initContainers.indexOf(c)) + "/env",
+              value: [{"name": "K8S_IMAGE", "value": string(c.image)}]
+            } :
+            JSONPatch{
+              op: "add",
+              path: "/spec/initContainers/" + string(object.spec.initContainers.indexOf(c)) + "/env/-",
+              value: {"name": "K8S_IMAGE", "value": string(c.image)}
+            }
+          ) : [])
 
 ```

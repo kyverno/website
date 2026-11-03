@@ -7,6 +7,7 @@ subjects:
   - Kubernetes APIs
 tags:
   - Best Practices in VPOL
+version: 1.19.1
 description: 'Kubernetes APIs are sometimes deprecated and removed after a few releases. As a best practice, older API versions should be replaced with newer versions. This policy validates for APIs that are deprecated or scheduled for removal.'
 createdAt: "2026-02-23T00:26:12.000Z"
 ---
@@ -16,11 +17,12 @@ createdAt: "2026-02-23T00:26:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/check-deprecated-apis/check-deprecated-apis.yaml" target="-blank">/best-practices-vpol/check-deprecated-apis/check-deprecated-apis.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-deprecated-apis
   annotations:
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/title: Check deprecated APIs in VPOL
     policies.kyverno.io/category: Best Practices in VPOL
     policies.kyverno.io/subject: Kubernetes APIs
@@ -136,7 +138,7 @@ spec:
            'storage.k8s.io/v1beta1'
          ]
   validations:
-    - expression: "false"
+    - expression: "'deprecated-api' in exceptions.allowedValues || false"
       messageExpression: "string(object.apiVersion) + '/' + string(object.kind) + ' is deprecated and will be removed in a future Kubernetes version. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'"
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other
-version: 1.15.0
+version: 1.19.1
 description: 'Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container''s base, found in an OCI annotation, is in a cluster-wide allow list.'
 createdAt: "2025-11-25T07:18:35.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-11-25T07:18:35.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-base-images/allowed-base-images.yaml" target="-blank">/other-vpol/allowed-base-images/allowed-base-images.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: allowed-base-images
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Building images which specify a base as their origin is a good start to improving supply chain security, but over time organizations may want to build an allow list of specific base images which are allowed to be used when constructing containers. This policy ensures that a container's base, found in an OCI annotation, is in a cluster-wide allow list.
@@ -44,6 +44,8 @@ spec:
       expression: variables.baseImageConfigMap.data.?allowedbaseimages.orValue("").split(",").filter(img, img.trim() != "")
     - name: allContainers
       expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
+    - name: baseImages
+      expression: variables.allContainers.map(container, image.GetMetadata(container.image).manifest.?annotations[?"org.opencontainers.image.base.name"].orValue(""))
   matchConstraints:
     resourceRules:
       - resources:
@@ -56,12 +58,7 @@ spec:
         apiVersions:
           - v1
   validations:
-    - expression: |
-        variables.allContainers.all(container, 
-          has(image.GetMetadata(container.image).manifest.annotations) && 
-          image.GetMetadata(container.image).manifest.annotations != null && 
-          'org.opencontainers.image.base.name' in image.GetMetadata(container.image).manifest.annotations && 
-          image.GetMetadata(container.image).manifest.annotations['org.opencontainers.image.base.name'] in variables.allowedBaseImages
-        )
+    - expression: variables.baseImages.all(base, base in variables.allowedBaseImages)
+      message: Container images must have a base image, specified in the org.opencontainers.image.base.name annotation, that is in the allow list.
 
 ```

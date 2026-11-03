@@ -13,7 +13,7 @@ subjects:
 tags:
   - Karpenter
   - EKS Best Practices
-version: 1.6.0
+version: 1.17.0
 description: 'For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -23,7 +23,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/set-karpenter-non-cpu-limits/set-karpenter-non-cpu-limits.yaml" target="-blank">/karpenter-mpol/set-karpenter-non-cpu-limits/set-karpenter-non-cpu-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: set-karpenter-non-cpu-limits
@@ -32,7 +32,7 @@ metadata:
     policies.kyverno.io/subject: Pod, Deployment, StatefulSet, DaemonSet, Job, CronJob
     policies.kyverno.io/category: Karpenter, EKS Best Practices
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.17.0
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/description: For correct node provisioning Karpenter should know exactly what the non-CPU resources are  that the pods will need. Otherwise Karpenter will put as many pods on a node as possible,  which may lead to memory pressure on nodes. This is especially important in consolidation  mode.
 spec:

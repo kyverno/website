@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Sample in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. In certain cases where not all users in a cluster are trusted, a malicious user could create Pods at the highest possible priorities, causing other Pods to be evicted/not get scheduled. This policy checks the defined `priorityClassName` in a Pod spec to a dictionary of allowable PriorityClasses for the given Namespace stored in a ConfigMap. If the `priorityClassName` is not among them, the Pod is blocked.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,14 +17,14 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-pod-priorities/allowed-pod-priorities.yaml" target="-blank">/other-vpol/allowed-pod-priorities/allowed-pod-priorities.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: allowed-podpriorities
   annotations:
     policies.kyverno.io/title: Allowed Pod Priorities in cel expressions
     policies.kyverno.io/category: Sample in vpol
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: A Pod PriorityClass is used to provide a guarantee on the scheduling of a Pod relative to others. In certain cases where not all users in a cluster are trusted, a malicious user could create Pods at the highest possible priorities, causing other Pods to be evicted/not get scheduled. This policy checks the defined `priorityClassName` in a Pod spec to a dictionary of allowable PriorityClasses for the given Namespace stored in a ConfigMap. If the `priorityClassName` is not among them, the Pod is blocked.
@@ -53,7 +53,7 @@ spec:
     - name: priorities
       expression: "variables.namespaceName in variables.prior.data ? variables.prior.data[variables.namespaceName].split(', ') : []"
   validations:
-    - expression: variables.priorities == [] || object.spec.priorityClassName in variables.priorities
+    - expression: variables.priorities == [] || object.spec.priorityClassName in variables.priorities || exceptions.allowedValues.exists(value, value == 'priorityClass:' + object.spec.?priorityClassName.orValue(''))
       message: "'The Pod PriorityClass ' + object.spec.priorityClassName + ' is not in the list of the following PriorityClasses allowed in this Namespace: ' + variables.prior.data[variables.namespaceName]"
 
 ```

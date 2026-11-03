@@ -1,26 +1,26 @@
 name: PR Labeler
 
 on:
+  push:
+    branches: [main]
   pull_request_target:
     types:
       - opened
       - reopened
       - synchronize
+  workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: write
+permissions: {}
 
 jobs:
   labeler:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Label PR based on changed files
-        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: '.github/labels.yml'
-          sync-labels: true
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: read
+      actions: read
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@d7fdc881c9757201a852a28d99eaa795ce0762bf
+    with:
+      mode: labels
+      dry-run: 'false'
