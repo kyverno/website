@@ -21,6 +21,17 @@ The `ImageValidatingPolicy` extends the [Kyverno ValidatingPolicy](/docs/policy-
 
 When `Kubernetes` resources are evaluated images for pods and pod templates are automatically extracted for processing. For custom resources, or for `JSON` payloads, the `images` field can be used to declare CEL expressions that extract images from the payload.
 
+For Pods, Jobs, CronJobs, Deployments, StatefulSets, DaemonSets, ReplicaSets and ReplicationControllers, the built-in extractors read these fields from the pod spec or the pod template:
+
+| Extractor             | Field                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `containers`          | `containers[].image`                                                                                      |
+| `initContainers`      | `initContainers[].image`                                                                                  |
+| `ephemeralContainers` | `ephemeralContainers[].image`                                                                             |
+| `imageVolumes`        | `volumes[].image.reference` ([image volumes](https://kubernetes.io/docs/concepts/storage/volumes/#image)) |
+
+Each extractor is available in CEL by its name, for example `images.imageVolumes`. Image volumes are pulled from a registry like container images, so their references go through `matchImageReferences` and `validationConfigurations` the same way: a policy that matches `*` with `required` or `verifyDigest` set also applies to image volumes, and `mutateDigest` pins their references to digests.
+
 For example, this policy declaration will process the image specified in the `imageReference` field:
 
 ```yaml
