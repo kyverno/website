@@ -10,6 +10,7 @@ subjects:
   - DaemonSet
 tags:
   - Other
+version: 1.19.1
 description: 'This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.'
 createdAt: "2025-12-15T09:53:18.000Z"
 ---
@@ -19,7 +20,7 @@ createdAt: "2025-12-15T09:53:18.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-hpa-exists/check-hpa-exists.yaml" target="-blank">/other-vpol/check-hpa-exists/check-hpa-exists.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-hpa-exists
@@ -28,6 +29,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kubernetes-version: "1.30"
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/subject: Deployment,ReplicaSet,StatefulSet,DaemonSet
     policies.kyverno.io/description: This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.
 spec:
@@ -52,6 +54,6 @@ spec:
           - v1
   validations:
     - message: Resource is not allowed without a corresponding HPA.
-      expression: variables.hpaList.exists(hpa, hpa.spec.scaleTargetRef.name == object.metadata.name)
+      expression: has(exceptions.allowedValues) && object.metadata.name in exceptions.allowedValues || variables.hpaList.exists(hpa, hpa.spec.scaleTargetRef.name == object.metadata.name)
 
 ```

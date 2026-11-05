@@ -7,6 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/forbid-cpu-limits/forbid-cpu-limits.yaml" target="-blank">/other-vpol/forbid-cpu-limits/forbid-cpu-limits.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: forbid-cpu-limits
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.
 spec:
@@ -32,7 +34,7 @@ spec:
     background:
       enabled: true
   validationActions:
-    - Audit
+    - Deny
   matchConstraints:
     resourceRules:
       - apiGroups:
@@ -45,7 +47,7 @@ spec:
         resources:
           - pods
   validations:
-    - expression: "!object.spec.containers.exists(container,  container.?resources.?limits.?cpu.hasValue())"
+    - expression: "!object.spec.containers.exists(container, container.?resources.?limits.?cpu.hasValue() && !(has(exceptions.allowedValues) && string(container.name) in exceptions.allowedValues))"
       message: Containers may not define CPU limits.
 
 ```

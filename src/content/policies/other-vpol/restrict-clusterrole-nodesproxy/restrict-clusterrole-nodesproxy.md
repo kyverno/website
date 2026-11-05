@@ -8,7 +8,7 @@ subjects:
   - RBAC
 tags:
   - Sample in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. '
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml" target="-blank">/other-vpol/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-clusterrole-nodesproxy
@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: "A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. "
 spec:
@@ -49,7 +49,7 @@ spec:
         resources:
           - clusterroles
   validations:
-    - expression: object.rules == null ||  !object.rules.exists(rule,  rule.resources.exists(resource, resource == 'nodes/proxy') &&  rule.apiGroups.exists(apiGroup, apiGroup == ''))
+    - expression: "'nodes/proxy' in exceptions.allowedValues || object.rules == null || !object.rules.exists(rule,  rule.resources.exists(resource, resource == 'nodes/proxy') &&  rule.apiGroups.exists(apiGroup, apiGroup == ''))"
       message: A ClusterRole containing the nodes/proxy resource is not allowed.
 
 ```

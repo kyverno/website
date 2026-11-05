@@ -8,7 +8,7 @@ subjects:
   - ServiceAccount
 tags:
   - Sample
-version: 1.15.0
+version: 1.19.1
 description: 'ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.'
 createdAt: "2025-12-16T13:58:08.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-12-16T13:58:08.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-serviceaccount/check-serviceaccount.yaml" target="-blank">/other-vpol/check-serviceaccount/check-serviceaccount.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: check-sa
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Sample
     policies.kyverno.io/subject: Pod,ServiceAccount
     kyverno.io/kyverno-version: 1.15.0
-    policies.kyverno.io/minversion: 1.15.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.
 spec:
@@ -53,6 +53,6 @@ spec:
           - v1
   validations:
     - message: The ServiceAccount used to create this Pod is confined to using the same account when running the Pod.
-      expression: "!request.userInfo.username.startsWith('system:serviceaccount:') || variables.creatorServiceAccount.Name == variables.podServiceAccountName"
+      expression: "!request.userInfo.username.startsWith('system:serviceaccount:') || variables.creatorServiceAccount.Name == variables.podServiceAccountName || exceptions.allowedValues.exists(value, value == 'serviceAccount:' + variables.creatorServiceAccount.Namespace + '/' + variables.creatorServiceAccount.Name)"
 
 ```

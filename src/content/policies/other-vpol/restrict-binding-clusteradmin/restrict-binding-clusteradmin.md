@@ -9,7 +9,7 @@ subjects:
   - RBAC
 tags:
   - Security in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -19,7 +19,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml" target="-blank">/other-vpol/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-binding-clusteradmin
@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.
 spec:
@@ -51,7 +51,7 @@ spec:
           - rolebindings
           - clusterrolebindings
   validations:
-    - expression: object.roleRef.name != 'cluster-admin'
+    - expression: object.roleRef.name != 'cluster-admin' || 'roleRef.name:cluster-admin' in exceptions.allowedValues
       message: Binding to cluster-admin is not allowed.
 
 ```

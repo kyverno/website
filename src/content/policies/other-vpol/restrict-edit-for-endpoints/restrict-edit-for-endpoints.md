@@ -7,6 +7,7 @@ subjects:
   - ClusterRole
 tags:
   - Security in vpol
+version: 1.19.1
 description: 'Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue defined in CVE-2021-25740 which could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack. This was due to the system:aggregate-to-edit ClusterRole having edit permission of Endpoints. This policy, intended to run in background mode, checks if your cluster is vulnerable to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have the edit permission of Endpoints.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-edit-for-endpoints/restrict-edit-for-endpoints.yaml" target="-blank">/other-vpol/restrict-edit-for-endpoints/restrict-edit-for-endpoints.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-edit-for-endpoints
@@ -26,6 +27,7 @@ metadata:
     policies.kyverno.io/severity: low
     policies.kyverno.io/subject: ClusterRole
     kyverno.io/kyverno-version: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue defined in CVE-2021-25740 which could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack. This was due to the system:aggregate-to-edit ClusterRole having edit permission of Endpoints. This policy, intended to run in background mode, checks if your cluster is vulnerable to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have the edit permission of Endpoints.
 spec:
@@ -48,7 +50,7 @@ spec:
         resourceNames:
           - system:aggregate-to-edit
   validations:
-    - expression: "!object.rules.exists(rule, 'endpoints' in rule.resources && 'edit' in rule.verbs)"
+    - expression: "!object.rules.exists(rule, ('endpoints' in rule.resources || '*' in rule.resources) && (('*' in rule.verbs && !(has(exceptions.allowedValues) && '*' in exceptions.allowedValues)) || rule.verbs.exists(verb, verb in ['create', 'update', 'patch', 'delete'] && !(has(exceptions.allowedValues) && verb in exceptions.allowedValues))))"
       message: This cluster may still be vulnerable to CVE-2021-25740. The system:aggregate-to-edit ClusterRole should not have edit permission over Endpoints.
 
 ```

@@ -7,7 +7,7 @@ subjects:
   - Ingress
 tags:
   - Sample in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Just like the need to ensure uniqueness among Ingress hosts, there is a need to have the paths be unique as well. This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml" target="-blank">/other-vpol/unique-ingress-paths/unique-ingress-paths.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: unique-ingress-path
@@ -26,7 +26,7 @@ metadata:
     policies.kyverno.io/category: Sample in vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Ingress
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: Just like the need to ensure uniqueness among Ingress hosts, there is a need to have the paths be unique as well. This policy checks an incoming Ingress to ensure its root path does not conflict with another root path in a different Namespace. It requires that incoming Ingress resources have a single rule with a single path only and assumes the root path is specified explicitly in an existing Ingress rule (ex., when blocking /foo/bar /foo must exist by itself and not part of /foo/baz).
 spec:
   validationActions:
@@ -55,10 +55,12 @@ spec:
         !object.spec.rules.orValue([]).exists(rule, 
             rule.http.paths.orValue([]).exists(path, 
               (
+                !(path.path in exceptions.allowedValues.orValue([])) &&
                 variables.allpaths.orValue([]).exists(existing_ingress, 
                   existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
                     existing_rule.http.paths.orValue([]).exists(existing_path, 
-                      existing_path.path == path.path 
+                      existing_path.path == path.path &&
+                      existing_ingress.metadata.uid != object.metadata.uid
                     )
                   )
                 )
@@ -68,11 +70,12 @@ spec:
 
                   existing_ingress.spec.rules.orValue([]).exists(existing_rule, 
                     existing_rule.http.paths.orValue([]).exists(existing_path, 
-                    existing_path.path == path.path
+                    existing_path.path == path.path &&
+                    existing_ingress.metadata.uid != object.metadata.uid
                     )
                   )
                 )
-              )
+                )
             )
           )
       message: The root path already exists in the cluster but not in the namespace.

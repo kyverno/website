@@ -8,6 +8,7 @@ subjects:
   - ServiceAccount
 tags:
   - Security in vpol
+version: 1.19.1
 description: 'Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      '
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml" target="-blank">/other-vpol/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-sa-automount-sa-token
@@ -28,6 +29,7 @@ metadata:
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret,ServiceAccount
+    policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/description: "Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      "
 spec:
   validationActions:
@@ -47,7 +49,7 @@ spec:
         resources:
           - serviceaccounts
   validations:
-    - expression: object.?automountServiceAccountToken.orValue(true) == false
+    - expression: object.?automountServiceAccountToken.orValue(true) == false || exceptions.allowedValues.exists(value, value == 'automountServiceAccountToken:' + string(object.?automountServiceAccountToken.orValue(true)))
       message: ServiceAccounts must set automountServiceAccountToken to false.
 
 ```

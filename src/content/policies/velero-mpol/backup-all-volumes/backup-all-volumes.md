@@ -10,6 +10,7 @@ subjects:
   - Annotation
 tags:
   - Velero
+version: 1.17.0
 description: 'In order for Velero to backup volumes in a Pod using an opt-in approach, it requires an annotation on the Pod called `backup.velero.io/backup-volumes` with the value being a comma-separated list of the volumes mounted to that Pod. This policy automatically annotates Pods (and Pod controllers) which refer to a PVC so that all volumes are listed in the aforementioned annotation if a Namespace with the label `velero-backup-pvc=true`.'
 createdAt: "2025-11-14T18:23:14.000Z"
 ---
@@ -19,12 +20,13 @@ createdAt: "2025-11-14T18:23:14.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/velero-mpol/backup-all-volumes/backup-all-volumes.yaml" target="-blank">/velero-mpol/backup-all-volumes/backup-all-volumes.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: backup-all-volumes
   annotations:
     policies.kyverno.io/title: Backup All Volumes
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/category: Velero
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Deployment, CronJob, Annotation

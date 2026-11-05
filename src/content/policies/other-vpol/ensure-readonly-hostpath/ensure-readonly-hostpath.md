@@ -7,7 +7,7 @@ subjects:
   - Pod
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Pods which are allowed to mount hostPath volumes in read/write mode pose a security risk even if confined to a "safe" file system on the host and may escape those confines (see https://blog.aquasec.com/kubernetes-security-pod-escape-log-mounts). The only true way to ensure safety is to enforce that all Pods mounting hostPath volumes do so in read only mode. This policy checks all containers for any hostPath volumes and ensures they are explicitly mounted in readOnly mode.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -17,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/ensure-readonly-hostpath/ensure-readonly-hostpath.yaml" target="-blank">/other-vpol/ensure-readonly-hostpath/ensure-readonly-hostpath.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: ensure-readonly-hostpath
@@ -25,7 +25,7 @@ metadata:
     policies.kyverno.io/title: Ensure Read Only hostPath in ValidatingPolicy
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/subject: Pod
@@ -53,7 +53,7 @@ spec:
     - name: hostPathVolumes
       expression: object.spec.?volumes.orValue([]).filter(volume, has(volume.hostPath))
   validations:
-    - expression: variables.hostPathVolumes.all(hostPath, variables.allContainers.all(container,  container.volumeMounts.orValue([]).all(volume, (hostPath.name != volume.name) || volume.?readOnly.orValue(false) == true)))
+    - expression: variables.hostPathVolumes.all(hostPath, variables.allContainers.all(container,  container.volumeMounts.orValue([]).all(volume, (hostPath.name != volume.name) || volume.?readOnly.orValue(false) == true || exceptions.allowedValues.exists(value, value == 'hostPath:' + hostPath.name))))
       message: All hostPath volumes must be mounted as readOnly.
 
 ```

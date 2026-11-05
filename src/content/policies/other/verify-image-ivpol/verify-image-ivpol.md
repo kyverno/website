@@ -8,7 +8,7 @@ subjects:
 tags:
   - Software Supply Chain Security
   - EKS Best Practices
-version: 1.14.0
+version: 1.17.0
 description: 'Using the Cosign project, OCI images may be signed to ensure supply chain security is maintained. Those signatures can be verified before pulling into a cluster. This policy checks the signature of an image repo called ghcr.io/kyverno/test-verify-image to ensure it has been signed by verifying its signature against the provided public key. This policy serves as an illustration for how to configure a similar rule and will require replacing with your image(s) and keys.'
 createdAt: "2025-03-27T21:20:10.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-03-27T21:20:10.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other/verify-image-ivpol/verify-image-ivpol.yaml" target="-blank">/other/verify-image-ivpol/verify-image-ivpol.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-image-ivpol
@@ -27,7 +27,7 @@ metadata:
     policies.kyverno.io/category: Software Supply Chain Security, EKS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.17.0
     policies.kyverno.io/description: Using the Cosign project, OCI images may be signed to ensure supply chain security is maintained. Those signatures can be verified before pulling into a cluster. This policy checks the signature of an image repo called ghcr.io/kyverno/test-verify-image to ensure it has been signed by verifying its signature against the provided public key. This policy serves as an illustration for how to configure a similar rule and will require replacing with your image(s) and keys.
 spec:
   webhookConfiguration:

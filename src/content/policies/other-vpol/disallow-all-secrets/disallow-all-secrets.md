@@ -8,7 +8,7 @@ subjects:
   - Secret
 tags:
   - Other in Vpol
-version: 1.14.0
+version: 1.19.1
 description: 'Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +18,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/disallow-all-secrets/disallow-all-secrets.yaml" target="-blank">/other-vpol/disallow-all-secrets/disallow-all-secrets.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: no-secrets
@@ -28,7 +28,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Secret
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Secrets often contain sensitive information which not all Pods need consume. This policy disables the use of all Secrets in a Pod definition. In order to work effectively, this Policy needs a separate Policy or rule to require `automountServiceAccountToken=false` at the Pod level or ServiceAccount level since this would otherwise result in a Secret being mounted.
 spec:
@@ -51,11 +51,12 @@ spec:
   validations:
     - expression: |-
         variables.allContainers.all(container,  container.?env.orValue([]).all(env, 
-          !has(env.valueFrom) || !has(env.valueFrom.secretKeyRef)))
+          !has(env.valueFrom) || !has(env.valueFrom.secretKeyRef) ||
+          ('secret:' + env.valueFrom.secretKeyRef.name) in exceptions.allowedValues))
       message: No Secrets from env.
-    - expression: variables.allContainers.all(container,  container.?envFrom.orValue([]).all(envFrom, !has(envFrom.secretRef)))
+    - expression: variables.allContainers.all(container,  container.?envFrom.orValue([]).all(envFrom, !has(envFrom.secretRef) || ('secret:' + envFrom.secretRef.name) in exceptions.allowedValues))
       message: No Secrets from envFrom.
-    - expression: object.spec.?volumes.orValue([]).all(volume, !has(volume.secret))
+    - expression: object.spec.?volumes.orValue([]).all(volume, (!has(volume.secret) || ('secret:' + volume.secret.secretName) in exceptions.allowedValues) && (!has(volume.projected) || volume.projected.?sources.orValue([]).all(source, !has(source.secret) || ('secret:' + source.secret.name) in exceptions.allowedValues)))
       message: No Secrets from volumes.
 
 ```

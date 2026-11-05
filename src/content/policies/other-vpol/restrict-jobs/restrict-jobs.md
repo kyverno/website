@@ -7,6 +7,7 @@ subjects:
   - Job
 tags:
   - Other in Vpol
+version: 1.19.1
 description: 'Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -16,7 +17,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-jobs/restrict-jobs.yaml" target="-blank">/other-vpol/restrict-jobs/restrict-jobs.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-jobs
@@ -25,6 +26,7 @@ metadata:
     policies.kyverno.io/category: Other in Vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Job
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.12.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: Jobs can be created directly and indirectly via a CronJob controller. In some cases, users may want to only allow Jobs if they are created via a CronJob. This policy restricts Jobs so they may only be created by a CronJob.
@@ -44,9 +46,9 @@ spec:
           - jobs
   matchConditions:
     - name: not-created-by-cronjob
-      expression: "!has(object.metadata.ownerReferences) || object.metadata.ownerReferences[0].kind != 'CronJob'"
+      expression: "!object.metadata.?ownerReferences.orValue([]).exists(owner, owner.kind == 'CronJob' && owner.?controller.orValue(false))"
   validations:
-    - expression: "false"
+    - expression: exceptions.allowedValues.exists(value, value == 'job-owner:' + object.metadata.name)
       message: Jobs are only allowed if spawned from CronJobs.
 
 ```

@@ -9,6 +9,7 @@ subjects:
 tags:
   - Other
   - Multi-Tenancy in vpol
+version: 1.19.1
 description: 'PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -18,7 +19,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-storageclass/require-storageclass.yaml" target="-blank">/other-vpol/require-storageclass/require-storageclass.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-storageclass
@@ -27,6 +28,7 @@ metadata:
     policies.kyverno.io/category: Other, Multi-Tenancy in vpol
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: PersistentVolumeClaim, StatefulSet
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.
@@ -58,8 +60,8 @@ spec:
           - statefulsets
   validations:
     - expression: |-
-        object.kind == 'PersistentVolumeClaim' ?  object.spec.?storageClassName.orValue('') != '' :  object.spec.?volumeClaimTemplates.orValue([]).all(volumeClaimTemplate, 
-          volumeClaimTemplate.spec.?storageClassName.orValue('') != '')
+        object.kind == 'PersistentVolumeClaim' ?  (object.spec.?storageClassName.orValue('') != '' || exceptions.allowedValues.exists(value, value == object.spec.?storageClassName.orValue(''))) : object.spec.?volumeClaimTemplates.orValue([]).all(volumeClaimTemplate,
+          volumeClaimTemplate.spec.?storageClassName.orValue('') != '' || exceptions.allowedValues.exists(value, value == volumeClaimTemplate.spec.?storageClassName.orValue('')))
       message: "\"Storage class name is required: PersistentVolumeClaims must have a non-empty storageClassName,  and StatefulSets must define a non-empty storageClassName for all volumeClaimTemplates.\""
 
 ```

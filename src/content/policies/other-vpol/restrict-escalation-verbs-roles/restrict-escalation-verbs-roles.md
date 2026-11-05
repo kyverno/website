@@ -9,7 +9,7 @@ subjects:
   - RBAC
 tags:
   - Security in vpol
-version: 1.14.0
+version: 1.19.1
 description: 'The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.'
 createdAt: "2025-09-04T05:15:25.000Z"
 ---
@@ -19,7 +19,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml" target="-blank">/other-vpol/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: restrict-escalation-verbs-roles
@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.14.0
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kubernetes-version: "1.30"
     policies.kyverno.io/description: The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.
 spec:
@@ -58,7 +58,7 @@ spec:
     - name: verbs
       expression: "['*', 'bind', 'escalate', 'impersonate']"
   validations:
-    - expression: object.rules == null ||  !object.rules.exists(rule, rule.apiGroups.exists(apiGroup, apiGroup in variables.apiGroups) && rule.resources.exists(resource, resource in variables.resources) && rule.verbs.exists(verb, verb in variables.verbs))
+    - expression: object.rules == null ||  !object.rules.exists(rule, rule.apiGroups.exists(apiGroup, apiGroup in variables.apiGroups) && rule.resources.exists(resource, resource in variables.resources) && rule.verbs.exists(verb, verb in variables.verbs && !('verb:' + verb in exceptions.allowedValues)))
       message: Use of verbs `escalate`, `bind`, and `impersonate` are forbidden.
 
 ```

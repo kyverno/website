@@ -7,8 +7,8 @@ subjects:
   - Pod
 tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
-version: 1.14.0
-description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.'
+version: 1.19.1
+description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
@@ -17,7 +17,7 @@ createdAt: "2025-06-26T07:48:12.000Z"
 <a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml</a>
 
 ```yaml
-apiVersion: policies.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-run-as-non-root-user
@@ -26,10 +26,10 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Restricted) in ValidatingPolicy
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    policies.kyverno.io/minversion: 1.14.0
+    policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.
+    policies.kyverno.io/description: "Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them."
 spec:
   validationActions:
     - Audit
@@ -47,15 +47,51 @@ spec:
           - UPDATE
         resources:
           - pods
+          - replicationcontrollers
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - daemonsets
+          - statefulsets
+          - replicasets
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+          - cronjobs
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - UPDATE
+        resources:
+          - pods/ephemeralcontainers
   variables:
+    - name: podSpec
+      expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: object.spec.containers +  object.spec.?initContainers.orValue([]) +  object.spec.?ephemeralContainers.orValue([])
+      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
+    - name: userNamespacePod
+      expression: variables.podSpec.?hostUsers.orValue(true) == false
   validations:
-    - expression: object.spec.?securityContext.?runAsUser.orValue(1) > 0
-      message: Running as root is not allowed. The field spec.securityContext.runAsUser  must be unset or set to a number greater than zero.
+    - expression: variables.userNamespacePod || variables.podSpec.?securityContext.?runAsUser.orValue(1) > 0
+      message: Running as root is not allowed. The field spec.securityContext.runAsUser  must be unset or set to a number greater than zero, unless the Pod sets spec.hostUsers to `false`.
     - expression: |-
-        variables.allContainers.all(container, 
+        variables.userNamespacePod || variables.allContainers.all(container,
+          container.image in exceptions.allowedImages ||
           container.?securityContext.?runAsUser.orValue(1) > 0)
-      message: Running as root is not allowed. The field spec.containers[*].securityContext.runAsUser,  spec.initContainers[*].securityContext.runAsUser, and  spec.ephemeralContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero.
+      message: Running as root is not allowed. The field spec.containers[*].securityContext.runAsUser,  spec.initContainers[*].securityContext.runAsUser, and  spec.ephemeralContainers[*].securityContext.runAsUser must be unset or set to a number greater than zero, unless the Pod sets spec.hostUsers to `false`.
 
 ```

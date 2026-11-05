@@ -323,6 +323,63 @@
   status = 301
   force = true
 
+# Legacy "Writing Policies" section (Kyverno 1.13 and earlier).
+# These pages moved under policy-types/cluster-policy and are now served
+# from the versioned documentation site.
+[[redirects]]
+  from = "/docs/writing-policies"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/overview/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/cleanup"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cleanup-policy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/cleanup/*"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cleanup-policy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/exceptions"
+  to = "/docs/guides/exceptions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/exceptions/*"
+  to = "/docs/guides/exceptions"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/writing-policies/*"
+  to = "https://release-1-18-0.kyverno.io/docs/policy-types/cluster-policy/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types"
+  to = "/docs/policy-types/overview/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/policy-types/"
+  to = "/docs/policy-types/overview/"
+  status = 301
+  force = true
+
 # Subprojects reorganization
 [[redirects]]
   from = "/docs/subprojects/kyverno-authz"
