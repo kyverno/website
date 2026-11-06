@@ -120,7 +120,13 @@ helm upgrade kyverno-pss kyverno/kyverno-policies \
   --set podSecurityUserNamespaces=true
 ```
 
-The `--reset-then-reuse-values` flag requires Helm v3.14 or later. It keeps the values from your existing release and picks up values that are new in the chart version, which `--reuse-values` doesn't do.
+The `--reset-then-reuse-values` flag requires Helm v3.14 or later. It preserves values from your existing release while applying defaults introduced in the new chart version. Without this flag, `helm upgrade --set` resets values you don't explicitly pass to their chart defaults. For example, if your release uses `podSecurityStandard=restricted` and `validationFailureAction=Enforce`, upgrading without this flag resets them to the chart defaults: **Baseline** and **Audit**.
+
+To check the custom values configured for your release, run:
+
+```sh
+helm get values kyverno-pss --namespace kyverno-policies
+```
 
 ### Relaxed policies
 
