@@ -16,7 +16,10 @@ export const PartnersBrand = ({ name, image, isDuplicate = false }) => {
         loading="lazy"
       />
 
-      <span className="text-sm text-theme-secondary hidden md:inline-block select-none">
+      <span
+        aria-hidden="true"
+        className="text-sm text-theme-secondary hidden md:inline-block select-none"
+      >
         {name}
       </span>
     </div>

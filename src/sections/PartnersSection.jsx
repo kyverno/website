@@ -224,36 +224,38 @@ export const PartnersSection = () => {
 
   return (
     <>
-      <noscript>
-        <style>{`
-          .partner-carousel-track {
-            --carousel-gap: 2rem;
-            gap: var(--carousel-gap);
-            animation: scroll-logos 30s linear infinite;
-          }
-          @media (min-width: 768px) {
+      <noscript
+        dangerouslySetInnerHTML={{
+          __html: `<style>
             .partner-carousel-track {
-              --carousel-gap: 3rem;
+              --carousel-gap: 2rem;
+              gap: var(--carousel-gap);
+              animation: scroll-logos 30s linear infinite;
             }
-          }
-          .partner-carousel-track:hover {
-            animation-play-state: paused;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .partner-carousel-track {
-              animation: none;
+            @media (min-width: 768px) {
+              .partner-carousel-track {
+                --carousel-gap: 3rem;
+              }
             }
-          }
-          @keyframes scroll-logos {
-            0% {
-              transform: translateX(0);
+            .partner-carousel-track:hover {
+              animation-play-state: paused;
             }
-            100% {
-              transform: translateX(calc(-25% - var(--carousel-gap) / 4));
+            @media (prefers-reduced-motion: reduce) {
+              .partner-carousel-track {
+                animation: none;
+              }
             }
-          }
-        `}</style>
-      </noscript>
+            @keyframes scroll-logos {
+              0% {
+                transform: translateX(0);
+              }
+              100% {
+                transform: translateX(calc(-25% - var(--carousel-gap) / 4));
+              }
+            }
+          </style>`,
+        }}
+      />
       <section className="w-full flex flex-col items-center text-center space-y-8 p-12 sm:p-16 md:p-20">
         <div className="w-full max-w-7xl mx-auto flex flex-col items-center space-y-4">
           <HeadingContent
