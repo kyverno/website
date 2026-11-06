@@ -227,17 +227,29 @@ export const PartnersSection = () => {
       <noscript>
         <style>{`
           .partner-carousel-track {
+            --carousel-gap: 2rem;
+            gap: var(--carousel-gap);
             animation: scroll-logos 30s linear infinite;
+          }
+          @media (min-width: 768px) {
+            .partner-carousel-track {
+              --carousel-gap: 3rem;
+            }
           }
           .partner-carousel-track:hover {
             animation-play-state: paused;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .partner-carousel-track {
+              animation: none;
+            }
           }
           @keyframes scroll-logos {
             0% {
               transform: translateX(0);
             }
             100% {
-              transform: translateX(-50%);
+              transform: translateX(calc(-25% - var(--carousel-gap) / 4));
             }
           }
         `}</style>
