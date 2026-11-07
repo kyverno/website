@@ -44,3 +44,26 @@ Starting with v1.19, the Kyverno CRDs are managed through a dedicated `kyverno-a
 The experimental `kyverno json scan` command has been removed from the Kyverno CLI in v1.19. To validate JSON payloads, use [ValidatingPolicy](/docs/policy-types/validating-policy) with the [`kyverno apply`](/docs/kyverno-cli/reference/kyverno_apply) command, or the [kyverno-json](https://kyverno.github.io/kyverno-json/) subproject directly.
 
 For upgrades from older releases, select the corresponding documentation version and follow its release-specific upgrade instructions.
+
+## Upgrading to Kyverno v1.20
+
+Kyverno v1.20 no longer executes the deprecated `ClusterPolicy`, `Policy`, `CleanupPolicy`, `ClusterCleanupPolicy`, or legacy `kyverno.io` `PolicyException` types. Their APIs remain available to read, list, export, and delete existing resources, but those resources are not enforced. Migrate policies to the supported `policies.kyverno.io` types before upgrading. See the [CEL policy migration guide](/docs/guides/migration-to-cel).
+
+### Upgrade with Helm
+
+If no deprecated policy resources exist, upgrade normally. If any are present, the Kyverno Helm chart blocks the upgrade and reports the kinds and resources it found. This prevents an upgrade that would silently stop enforcing those policies.
+
+After reviewing and accepting that the legacy policies will no longer be enforced, you can acknowledge the behavior and proceed:
+
+```sh
+helm upgrade kyverno kyverno/kyverno -n kyverno \
+  --set upgrade.acknowledgeLegacyPoliciesNotEnforced=true
+```
+
+The acknowledgement does not migrate or delete the legacy resources, and it does not keep them enforced. They remain available for inspection, export, or deletion. Because they are retained, you can downgrade to a release that still supports them.
+
+### Install or upgrade with YAML manifests
+
+When the v1.20 YAML installation manifests are applied to a cluster containing deprecated policy resources, installation is not blocked and the resources are not deleted. Kyverno marks the legacy policies `NotReady` and emits warnings during installation and when those policies are fetched. The policies are still not enforced in v1.20. Retaining them allows a downgrade to a release that supports the legacy types.
+
+This behavior does not change the general YAML upgrade guidance above: direct upgrades from previous versions using YAML are not supported. If you use an uninstall/reinstall workflow and may need to downgrade, export or back up the legacy policy resources first. Deleting a policy CRD also deletes its stored resources.
