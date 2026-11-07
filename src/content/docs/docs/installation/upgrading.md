@@ -64,6 +64,6 @@ The acknowledgement does not migrate or delete the legacy resources, and it does
 
 ### Install or upgrade with YAML manifests
 
-When the v1.20 YAML installation manifests are applied to a cluster containing deprecated policy resources, installation is not blocked and the resources are not deleted. Kyverno marks the legacy policies `NotReady` and emits warnings during installation and when those policies are fetched. The policies are still not enforced in v1.20. Retaining them allows a downgrade to a release that supports the legacy types.
+When the v1.20 YAML installation manifests are applied to a cluster containing deprecated policy resources, installation is not blocked and the resources are not deleted. Legacy `ClusterPolicy` and `Policy` resources are marked `NotReady`; warnings are also emitted during installation and when deprecated policies are fetched. Kyverno does not execute deprecated policy types in v1.20. Retaining the resources allows a downgrade to a release that supports the legacy types.
 
 This behavior does not change the general YAML upgrade guidance above: direct upgrades from previous versions using YAML are not supported. If you use an uninstall/reinstall workflow and may need to downgrade, export or back up the legacy policy resources first. Deleting a policy CRD also deletes its stored resources.
