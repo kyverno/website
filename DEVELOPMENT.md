@@ -249,7 +249,8 @@ npm run codegen:policies -- <policies-ref|repo-url> <output-dir>
 
 **Branch mapping (auto mode only):**
 
-- `release-x-y` or `release-x-y-z` → fetches `release-x.y` branch from kyverno/policies
+- `release-x.y` → fetches the matching `release-x.y` branch from kyverno/policies
+- Legacy `release-x-y` or `release-x-y-z` branches → fetches the corresponding `release-x.y` branch
 - Any other branch → fetches `main`
 
 When a positional argument is provided, it is used directly as the distant repo ref (e.g. `main`, `release-1.17`).
@@ -300,8 +301,8 @@ npm run codegen:cli-docs
 With optional override:
 
 ```bash
-# Auto mode: WEBSITE_BRANCH or git branch (release-1-17 → release-1.17 image)
-WEBSITE_BRANCH=release-1-17 npm run codegen:cli-docs
+# Auto mode: WEBSITE_BRANCH or git branch (release-1.20 → release-1.20 image)
+WEBSITE_BRANCH=release-1.20 npm run codegen:cli-docs
 
 # Explicit: positional arg is the distant image tag directly (no transformation)
 npm run codegen:cli-docs -- release-1.17
@@ -310,7 +311,8 @@ npm run codegen:cli-docs -- release-1.17
 
 **Branch mapping (auto mode only):**
 
-- `release-x-y` or `release-x-y-z` → uses `ghcr.io/kyverno/kyverno-cli:release-x.y` image
+- `release-x.y` → uses the matching `ghcr.io/kyverno/kyverno-cli:release-x.y` image
+- Legacy `release-x-y` or `release-x-y-z` branches → uses the corresponding `release-x.y` image
 - Any other branch → uses `latest` image
 
 When a positional argument is provided, it is used directly as the image tag.

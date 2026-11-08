@@ -124,13 +124,13 @@ Here are the rules for managing release versions:
 
 1. All fixes and feature changes go to the `main` branch (we may in a few rare cases make fixes to prior versions of the documentation.) The main branch can be accessed at `https://main.kyverno.io`.
 
-2. When a new release is ready for GA, a new release branch is created (see steps below). Release branches are named `release-{major}-{minor}-{patch}` for example `release-1-4-2`. The release branch can be accessed using the `{branch}.kyverno.io` and the latest release is available at `kyverno.io`.
+2. When a new release is ready for GA, a new release branch is created (see steps below). Starting with Kyverno 1.20, release branches follow the `release-{major}.{minor}` convention used across Kyverno repositories (for example, `release-1.20`). Existing branches for earlier releases retain their legacy `release-{major}-{minor}-{patch}` names (for example, `release-1-19-0`). Published hostnames are configured separately from branch names; the latest release is available at `kyverno.io`.
 
 ### Creating a release branch
 
 To create a new release branch:
 
-1. Create and push the branch using `git checkout -b release-{major}-{minor}-{patch}` or via [GitHub](https://github.com/kyverno/website/branches).
+1. Create and push the branch using `git checkout -b release-{major}.{minor}` (for example, `git checkout -b release-1.20`) or via [GitHub](https://github.com/kyverno/website/branches).
 
 2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release branch.
 
@@ -175,7 +175,7 @@ In the current release branch:
 
 Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
 
-Use the cherry pick bot to request a PR be cherry picked to a target branch. Call for the bot with a comment on the desired PR with `/cherry-pick release-1-12-0` to cherry pick this PR to the `release-1-12-0` branch. A new PR will be opened with `release-1-12-0` as the target branch.
+Use the cherry pick bot to request a PR be cherry picked to a target branch. For example, comment `/cherry-pick release-1.20` on the desired PR to cherry-pick it to the `release-1.20` branch. Older release branches such as `release-1-19-0` remain valid targets. A new PR will be opened against the target branch.
 
 There are several ways to create multiple PRs, but here is one easy flow:
 
