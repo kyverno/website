@@ -246,8 +246,15 @@ rules:
   - ''
   resources:
   - secrets
+  resourceNames:
+  - regcred
   verbs:
   - get
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
   - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -266,7 +273,7 @@ roleRef:
 EOF
 ```
 
-The source Role is limited to reading `regcred`. The destination Role allows the controller to read and create Secrets only in `quick-start-generated`. Create the policy below after both Roles and RoleBindings exist. It matches updates to only the named destination namespace, so the final label command triggers generation after permissions are ready.
+The source Role is limited to reading `regcred`. In the destination namespace, the controller can read only `regcred` and create Secrets. Kubernetes RBAC cannot restrict `create` by resource name, so keep this namespace dedicated to the example. Create the policy below after both Roles and RoleBindings exist. It matches only the update that first adds the readiness label as `true`, so later namespace updates do not rerun generation.
 
 ```sh
 kubectl create -f- << EOF
@@ -282,8 +289,8 @@ spec:
         operations: ['UPDATE']
         resources: ['namespaces']
   matchConditions:
-    - name: destination-namespace
-      expression: "object.metadata.name == 'quick-start-generated'"
+    - name: destination-namespace-ready
+      expression: "object.metadata.name == 'quick-start-generated' && object.metadata.labels.exists(k, k == 'quick-start.kyverno.io/ready' && object.metadata.labels[k] == 'true') && (!has(oldObject.metadata.labels) || !oldObject.metadata.labels.exists(k, k == 'quick-start.kyverno.io/ready'))"
   variables:
     - name: targetNs
       expression: 'object.metadata.name'
@@ -304,6 +311,7 @@ kubectl label namespace quick-start-generated quick-start.kyverno.io/ready=true
 Get the generated Secret:
 
 ```sh
+kubectl wait --for=create secret/regcred -n quick-start-generated --timeout=120s
 kubectl -n quick-start-generated get secret
 ```
 
