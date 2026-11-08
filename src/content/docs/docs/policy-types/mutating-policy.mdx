@@ -813,8 +813,16 @@ spec:
 To write a policy for JSON payloads:
 
 1. Set `spec.evaluation.mode` to `JSON`.
-2. Optionally, define `spec.matchConditions` with CEL expressions to select which documents are mutated. The CLI's JSON payload path does not require `spec.matchConstraints`; policy admission in a cluster still requires normal resource constraints.
+2. Optionally, define `spec.matchConditions` with CEL expressions to select which inputs are mutated.
 3. Define your mutations in `spec.mutations` using `patchType: JSONPatch`.
+
+Matching requirements depend on the evaluation path:
+
+| Evaluation path                               | `spec.matchConstraints`              | `spec.matchConditions`            |
+| --------------------------------------------- | ------------------------------------ | --------------------------------- |
+| CLI JSON payload (`--json` or `jsonPayloads`) | Not required                         | Optional; filters payloads        |
+| CLI Kubernetes resource (`--resource`)        | Required to select resources         | Optional; further filters matches |
+| In-cluster admission                          | Required for normal policy admission | Optional; further filters matches |
 
 ### Evaluating JSON mutations
 
@@ -860,6 +868,8 @@ In a test, `resources` entries are the exact paths listed under `jsonPayloads`.
 - **Unsupported settings**: `ApplyConfiguration` patches, `mutateExisting`, `targetMatchConstraints`, `targetMatchConditions`, a `reinvocationPolicy` other than `Never`, pod controller autogen, and MutatingAdmissionPolicy generation are rejected in JSON mode. `useServerSideApply` is not used in JSON mode, which requires `JSONPatch` mutations.
 - **In-cluster lifecycle**: JSON-mode MutatingPolicies follow the same lifecycle as JSON-mode ValidatingPolicies. JSON mode does not separately disable policy storage, providers, webhooks, reporting, or normal resource matching. Policies submitted to a cluster still need normal `matchConstraints`; admission evaluates the JSON expressions against the matched resource object.
 - **Exceptions**: [PolicyExceptions](/docs/guides/exceptions) can exempt documents from a JSON-mode policy using `matchConditions`.
+
+These limits and supported settings reflect the current implementation; see the [JSON patcher](https://github.com/kyverno/kyverno/blob/main/pkg/cel/policies/mpol/compiler/json.go), [JSON policy validation](https://github.com/kyverno/kyverno/blob/main/pkg/cel/policies/mpol/compiler/json_policy.go), and [CLI resource matching](https://github.com/kyverno/kyverno/blob/main/cmd/cli/kubectl-kyverno/commands/apply/command.go).
 
 ## GitOps Considerations
 
