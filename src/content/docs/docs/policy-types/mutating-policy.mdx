@@ -824,7 +824,7 @@ Use the [Kyverno CLI](/docs/subprojects/kyverno-cli) to apply JSON mutations:
 kyverno apply policy.yaml --json input.json
 ```
 
-The mutated object uses the existing YAML mutation-output format on standard output. Use `--output-file` to write it to a file, or `--output-dir` to write JSON payload results as `<basename>-<hash8>-mutated.json`, where `<hash8>` is the first four bytes of the input path's SHA-256 hash, formatted as eight lowercase hexadecimal characters. Output follows normal mutation conventions; there is no batch-wide output transaction across inputs.
+The mutated object uses the existing YAML mutation-output format on standard output. Use `--output-file` to write it to a file, or `--output-dir` to append YAML documents to `<policy-name>-mutated.yaml`. Output follows normal mutation conventions; there is no batch-wide output transaction across inputs.
 
 When `--json` is used with both mutating and validating policies, JSON-mode mutations run first, in policy order, and validation then runs on the mutated object. Image-validating and deleting policies also receive the updated object. Like JSON-mode ValidatingPolicies, JSON-mode MutatingPolicies can also be evaluated against Kubernetes resource inputs in the CLI.
 
