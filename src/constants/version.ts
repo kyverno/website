@@ -23,6 +23,7 @@ export const documentationVersions: VersionLink[] = [
 
 // Keep compatibility data centralized so docs/components can import from here.
 export const compatibilityMatrix: CompatibilityMatrixEntry[] = [
-  { kyverno: '1.19.x', minKubernetes: '1.33', maxKubernetes: '1.35' },
+  { kyverno: '1.20.x', minKubernetes: '1.34', maxKubernetes: '1.37' },
+  { kyverno: '1.19.x', minKubernetes: '1.33', maxKubernetes: '1.36' },
   { kyverno: '1.18.x', minKubernetes: '1.33', maxKubernetes: '1.35' },
 ]
