@@ -3,12 +3,6 @@ export interface VersionLink {
   href: string
 }
 
-export interface CompatibilityMatrixEntry {
-  kyverno: string
-  minKubernetes: string
-  maxKubernetes: string
-}
-
 // Single source of truth for release/version updates across the site.
 export const latestStableVersion = 'v1.20.0'
 
@@ -17,13 +11,5 @@ export const documentationVersions: VersionLink[] = [
   { label: 'v1.19.0', href: 'https://release-1-19-0.kyverno.io' },
   { label: 'v1.18.0', href: 'https://release-1-18-0.kyverno.io' },
   { label: 'v1.17.0', href: 'https://release-1-17-0.kyverno.io' },
-  { label: 'v1.16.0', href: 'https://release-1-16-0.kyverno.io' },
   { label: 'main', href: 'https://main.kyverno.io' },
-]
-
-// Keep compatibility data centralized so docs/components can import from here.
-export const compatibilityMatrix: CompatibilityMatrixEntry[] = [
-  { kyverno: '1.20.x', minKubernetes: '1.34', maxKubernetes: '1.37' },
-  { kyverno: '1.19.x', minKubernetes: '1.33', maxKubernetes: '1.36' },
-  { kyverno: '1.18.x', minKubernetes: '1.33', maxKubernetes: '1.35' },
 ]
