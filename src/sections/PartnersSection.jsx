@@ -75,8 +75,13 @@ export const PartnersSection = () => {
       resizeObserver.observe(firstSetRef.current)
     }
 
-    let animationFrameId
+    let animationFrameId = null
     let lastTime = performance.now()
+    let isIntersecting = false
+    let isDocumentVisible =
+      typeof document !== 'undefined'
+        ? document.visibilityState !== 'hidden'
+        : true
 
     const animate = (currentTime) => {
       const dt = (currentTime - lastTime) / 1000
@@ -103,7 +108,39 @@ export const PartnersSection = () => {
       animationFrameId = requestAnimationFrame(animate)
     }
 
-    animationFrameId = requestAnimationFrame(animate)
+    const updateAnimationLoop = () => {
+      const shouldRun = isIntersecting && isDocumentVisible
+      if (shouldRun) {
+        if (!animationFrameId) {
+          lastTime = performance.now()
+          animationFrameId = requestAnimationFrame(animate)
+        }
+      } else {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId)
+          animationFrameId = null
+        }
+      }
+    }
+
+    const handleVisibilityChange = () => {
+      isDocumentVisible = document.visibilityState !== 'hidden'
+      updateAnimationLoop()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    let intersectionObserver = null
+    if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
+      intersectionObserver = new IntersectionObserver(([entry]) => {
+        isIntersecting = entry.isIntersecting
+        updateAnimationLoop()
+      })
+      intersectionObserver.observe(containerRef.current)
+    } else {
+      isIntersecting = true
+      updateAnimationLoop()
+    }
 
     // Wheel event handler with non-passive listener to prevent horizontal scroll chaining
     const container = containerRef.current
@@ -132,9 +169,15 @@ export const PartnersSection = () => {
     }
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
       mediaQuery.removeEventListener('change', handleMotionChange)
       resizeObserver.disconnect()
+      if (intersectionObserver) {
+        intersectionObserver.disconnect()
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (container) {
         container.removeEventListener('wheel', handleWheel)
       }
