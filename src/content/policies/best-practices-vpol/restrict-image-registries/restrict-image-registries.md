@@ -15,7 +15,7 @@ createdAt: "2026-02-23T00:26:12.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml" target="-blank">/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml" target="_blank" rel="noopener noreferrer">/best-practices-vpol/restrict-image-registries/restrict-image-registries.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

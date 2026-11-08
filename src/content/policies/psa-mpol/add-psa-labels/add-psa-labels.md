@@ -15,7 +15,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-psa-labels/add-psa-labels.yaml" target="-blank">/psa-mpol/add-psa-labels/add-psa-labels.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-psa-labels/add-psa-labels.yaml" target="_blank" rel="noopener noreferrer">/psa-mpol/add-psa-labels/add-psa-labels.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2026-04-09T07:23:52.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-sealed-secret-config/inject-sealed-secret-config.yaml" target="-blank">/other-mpol/inject-sealed-secret-config/inject-sealed-secret-config.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-sealed-secret-config/inject-sealed-secret-config.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/inject-sealed-secret-config/inject-sealed-secret-config.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -16,7 +16,7 @@ createdAt: "2025-11-27T16:20:28.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml" target="-blank">/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/block-cluster-admin-from-ns/block-cluster-admin-from-ns.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -13,7 +13,7 @@ createdAt: "2026-02-12T11:17:00.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-stale-images/block-stale-images.yaml" target="-blank">/other-vpol/block-stale-images/block-stale-images.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-stale-images/block-stale-images.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/block-stale-images/block-stale-images.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

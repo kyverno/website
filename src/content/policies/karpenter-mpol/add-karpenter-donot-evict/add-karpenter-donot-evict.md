@@ -14,7 +14,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml" target="-blank">/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml" target="_blank" rel="noopener noreferrer">/karpenter-mpol/add-karpenter-donot-evict/add-karpenter-donot-evict.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

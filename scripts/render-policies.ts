@@ -273,7 +273,7 @@ function generateMarkdown(
 
   frontmatterLines.push('---', '', '## Policy Definition', '')
   frontmatterLines.push(
-    `<a href="${rawUrl}" target="-blank">${displayPath}</a>`,
+    `<a href="${rawUrl}" target="_blank" rel="noopener noreferrer">${displayPath}</a>`,
     '',
   )
   frontmatterLines.push('```yaml')

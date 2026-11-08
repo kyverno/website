@@ -1,0 +1,58 @@
+---
+title: 'Synchronize Namespace Configuration'
+category: generate
+severity: medium
+type: GeneratingPolicy
+subjects:
+  - Namespace
+  - ConfigMap
+tags:
+  - Other
+version: 1.20.0
+description: 'Clone the namespace-defaults ConfigMap from the platform-system namespace into namespaces labeled platform.example.com/managed=true. Keep clones synchronized with the source, including repairing downstream changes. Create the source namespace and ConfigMap before installing this policy.'
+createdAt: "2026-11-08T02:12:54.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/other-gpol/sync-namespace-config/sync-namespace-config.yaml" target="_blank" rel="noopener noreferrer">/other-gpol/sync-namespace-config/sync-namespace-config.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: sync-namespace-config
+  annotations:
+    policies.kyverno.io/title: Synchronize Namespace Configuration
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/subject: Namespace, ConfigMap
+    policies.kyverno.io/minversion: 1.20.0
+    policies.kyverno.io/description: Clone the namespace-defaults ConfigMap from the platform-system namespace into namespaces labeled platform.example.com/managed=true. Keep clones synchronized with the source, including repairing downstream changes. Create the source namespace and ConfigMap before installing this policy.
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - namespaces
+    objectSelector:
+      matchLabels:
+        platform.example.com/managed: "true"
+  matchConditions:
+    - name: exclude-source
+      expression: object.metadata.name != 'platform-system'
+  variables:
+    - name: source
+      expression: resource.Get("v1", "configmaps", "platform-system", "namespace-defaults")
+  generate:
+    - expression: generator.Apply(object.metadata.name, [variables.source])
+
+```
