@@ -51,5 +51,7 @@ kyverno [flags]
 * [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
 * [kyverno docs](/docs/kyverno-cli/reference/kyverno_docs)	 - Generates reference documentation.
 * [kyverno migrate](/docs/kyverno-cli/reference/kyverno_migrate)	 - Migrate one or more resources to the stored version.
+* [kyverno oci](/docs/kyverno-cli/reference/kyverno_oci)	 - Pushes, pulls, validates, inspects, and resolves Kyverno CEL Policy Bundles in OCI registries. See "kyverno oci <subcommand> --help" for each subcommand's own flags and examples.
 * [kyverno test](/docs/kyverno-cli/reference/kyverno_test)	 - Run tests from a local filesystem or a remote git repository.
 * [kyverno version](/docs/kyverno-cli/reference/kyverno_version)	 - Prints the version of Kyverno CLI.
+
