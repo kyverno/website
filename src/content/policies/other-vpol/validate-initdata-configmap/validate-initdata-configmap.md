@@ -14,7 +14,7 @@ createdAt: "2026-04-09T07:23:52.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/validate-initdata-configmap/validate-initdata-configmap.yaml" target="-blank">/other-vpol/validate-initdata-configmap/validate-initdata-configmap.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/validate-initdata-configmap/validate-initdata-configmap.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/validate-initdata-configmap/validate-initdata-configmap.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

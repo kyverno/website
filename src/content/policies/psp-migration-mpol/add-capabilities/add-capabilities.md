@@ -14,7 +14,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-capabilities/add-capabilities.yaml" target="-blank">/psp-migration-mpol/add-capabilities/add-capabilities.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-capabilities/add-capabilities.yaml" target="_blank" rel="noopener noreferrer">/psp-migration-mpol/add-capabilities/add-capabilities.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

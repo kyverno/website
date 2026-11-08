@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml" target="-blank">/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/docker-socket-requires-label/docker-socket-requires-label.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

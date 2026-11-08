@@ -14,7 +14,7 @@ createdAt: "2025-11-25T07:18:35.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-image-repos/allowed-image-repos.yaml" target="-blank">/other-vpol/allowed-image-repos/allowed-image-repos.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/allowed-image-repos/allowed-image-repos.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/allowed-image-repos/allowed-image-repos.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

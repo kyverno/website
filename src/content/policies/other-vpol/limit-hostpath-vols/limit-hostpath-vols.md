@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml" target="-blank">/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/limit-hostpath-vols/limit-hostpath-vols.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
