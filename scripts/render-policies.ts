@@ -503,7 +503,7 @@ async function main() {
       }
     }
 
-    const match = branchName?.match(/^release-([0-9]+)-([0-9]+)(-[0-9]+)?$/)
+    const match = branchName?.match(/^release-([0-9]+)[.-]([0-9]+)(-[0-9]+)?$/)
     if (match) {
       policiesRef = `release-${match[1]}.${match[2]}`
     } else {
