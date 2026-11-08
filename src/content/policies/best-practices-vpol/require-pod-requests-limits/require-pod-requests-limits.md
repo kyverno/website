@@ -7,7 +7,7 @@ subjects: []
 tags:
   - Best Practices
 version: 1.19.1
-description: 'This policy validates that all containers have CPU and memory resource requests and memory limits defined.'
+description: 'This policy validates that regular and init containers have CPU and memory resource requests and memory limits defined. Ephemeral containers are excluded because Kubernetes does not support resource requests or limits for them.'
 createdAt: "2026-02-12T12:56:39.000Z"
 ---
 
@@ -22,7 +22,7 @@ metadata:
   annotations:
     policies.kyverno.io/minversion: 1.19.1
     policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/description: This policy validates that all containers have CPU and memory resource requests and memory limits defined.
+    policies.kyverno.io/description: This policy validates that regular and init containers have CPU and memory resource requests and memory limits defined. Ephemeral containers are excluded because Kubernetes does not support resource requests or limits for them.
     policies.kyverno.io/severity: medium
     policies.kyverno.io/title: Require Requests and Limits
   name: require-requests-limits
@@ -47,7 +47,7 @@ spec:
     - expression: variables.allContainers.all(c, (has(exceptions.allowedImages) && c.image in exceptions.allowedImages) || (has(c.resources) && has(c.resources.requests) && has(c.resources.requests.memory) && c.resources.requests.memory != '' && has(c.resources.requests.cpu) && c.resources.requests.cpu != '' && has(c.resources.limits) && has(c.resources.limits.memory) && c.resources.limits.memory != ''))
       message: CPU and memory resource requests and memory limits are required for containers.
   variables:
-    - expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
+    - expression: object.spec.containers + object.spec.?initContainers.orValue([])
       name: allContainers
 
 ```

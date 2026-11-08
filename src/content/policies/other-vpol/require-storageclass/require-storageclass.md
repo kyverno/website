@@ -60,7 +60,7 @@ spec:
           - statefulsets
   validations:
     - expression: |-
-        object.kind == 'PersistentVolumeClaim' ?  (object.spec.?storageClassName.orValue('') != '' || exceptions.allowedValues.exists(value, value == object.spec.?storageClassName.orValue(''))) : object.spec.?volumeClaimTemplates.orValue([]).all(volumeClaimTemplate,
+        object.kind == 'PersistentVolumeClaim' ?  (object.spec.?storageClassName.orValue('') != '' || exceptions.allowedValues.exists(value, value == object.spec.?storageClassName.orValue(''))) : object.spec.?volumeClaimTemplates.orValue([]).all(volumeClaimTemplate, 
           volumeClaimTemplate.spec.?storageClassName.orValue('') != '' || exceptions.allowedValues.exists(value, value == volumeClaimTemplate.spec.?storageClassName.orValue('')))
       message: "\"Storage class name is required: PersistentVolumeClaims must have a non-empty storageClassName,  and StatefulSets must define a non-empty storageClassName for all volumeClaimTemplates.\""
 
