@@ -2,7 +2,7 @@ export const PartnersBrand = ({ name, image, isDuplicate = false }) => {
   return (
     <div
       className="flex flex-col justify-center items-center space-y-3 flex-shrink-0 min-w-[100px] md:min-w-[140px] select-none"
-      aria-hidden={isDuplicate ? 'true' : undefined}
+      aria-hidden={isDuplicate || undefined}
     >
       <img
         src={image}
