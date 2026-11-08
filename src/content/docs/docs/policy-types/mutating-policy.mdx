@@ -803,9 +803,9 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         expression: |
-          [
+          ("region" in object ? [] : [
             JSONPatch{op: "add", path: "/region", value: "west"}
-          ] + ("owner/team" in object ? [] : [
+          ]) + ("owner/team" in object ? [] : [
             JSONPatch{op: "add", path: "/" + jsonpatch.escapeKey("owner/team"), value: "platform"}
           ])
 ```
