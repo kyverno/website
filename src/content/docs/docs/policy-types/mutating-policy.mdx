@@ -787,7 +787,7 @@ mutations:
 
 ## JSON Payloads
 
-A MutatingPolicy can mutate JSON objects, not only Kubernetes resources. Set `spec.evaluation.mode` to `JSON` and use `JSONPatch` mutations to modify configuration files, Terraform plans, API payloads, or other JSON data. Inputs and outputs must have object roots. Nested arrays and mixed JSON values are supported; array, scalar, and `null` roots are not.
+A MutatingPolicy can mutate JSON objects, not only Kubernetes resources. Set `spec.evaluation.mode` to `JSON` and use `JSONPatch` mutations to modify configuration files, Terraform plans, API payloads, or other JSON data. For JSON-payload evaluation, the input document and mutated result must have an object root. JSON values of any type can be nested inside that object, but top-level arrays, scalars, and `null` are not supported.
 
 Here is an example of a policy that adds a default region to a document and tags it when it does not already have an `owner/team` key:
 
@@ -864,7 +864,7 @@ In a test, `resources` entries are the exact paths listed under `jsonPayloads`.
 - **Patch semantics**: Patches follow [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The whole object can be replaced with `path: ""`, but it cannot be removed, and each mutation must produce an object root. If a `test` operation fails, every patch from that policy is rolled back and the policy is reported as skipped.
 - **Numbers**: The JSON payload path preserves signed int64 integers exactly, including values above 2<sup>53</sup>; integer literals outside the signed int64 range produce errors. Fractional and exponent-form numbers use IEEE-754 double precision, and patch `test` compares numbers without conflating adjacent large integers.
 - **Ordering and results**: Policies are applied in order, and each one sees the output of the previous policy. If any policy errors, no mutated document is produced.
-- **Limits**: Documents can be up to 1 MiB, and each policy can produce up to 1024 patch operations.
+- **Limits**: JSON payload documents can be up to 1 MiB, and each `JSONPatch` mutation expression can produce up to 1024 patch operations.
 - **Unsupported settings**: `ApplyConfiguration` patches, `mutateExisting`, `targetMatchConstraints`, `targetMatchConditions`, a `reinvocationPolicy` other than `Never`, pod controller autogen, and MutatingAdmissionPolicy generation are rejected in JSON mode. `useServerSideApply` is not used in JSON mode, which requires `JSONPatch` mutations.
 - **In-cluster lifecycle**: JSON-mode MutatingPolicies follow the same lifecycle as JSON-mode ValidatingPolicies. JSON mode does not separately disable policy storage, providers, webhooks, reporting, or normal resource matching. Policies submitted to a cluster still need normal `matchConstraints`; admission evaluates the JSON expressions against the matched resource object.
 - **Exceptions**: [PolicyExceptions](/docs/guides/exceptions) can exempt documents from a JSON-mode policy using `matchConditions`.
