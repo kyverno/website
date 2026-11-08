@@ -140,7 +140,7 @@ In the `main` branch, update `src/constants/version.ts`, the source of truth for
 
 1. Set `latestStableVersion` to the new version label (for example, `v1.20.0`) and add that version at the top of `documentationVersions`, pointing to `https://kyverno.io`.
 2. Move the former latest version to its archived hostname (for example, `https://release-1-19-0.kyverno.io`). Keep existing archived hostnames unchanged.
-3. Update `compatibilityMatrix` using the Kubernetes versions confirmed for the release.
+3. Update the Kubernetes compatibility range in the **Supported Release** table in `src/content/docs/docs/installation/releases.md`.
 4. Clear the Netlify build cache and deploy.
 
 Ensure the same version data is present on the new release branch. The version label must exactly match `latestStableVersion`.
