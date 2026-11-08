@@ -136,40 +136,14 @@ To create a new release branch:
 
 3. Also in Netlify, go into the Domain management settings of the site and add a new subdomain for the branch representing the previous version. For example, if the release to be cut is 1.8.0, there will not be a `release-1-7-0.kyverno.io` record which exists. One must be created for `release-1-7-0.kyverno.io`.
 
-In the `main` branch:
+In the `main` branch, update `src/constants/version.ts`, the source of truth for the site's version selectors:
 
-1. Add a new menu version corresponding to the new release branch in [params.toml](/config/_default/params.toml) that points to https://kyverno.io below these lines:
+1. Set `latestStableVersion` to the new version label (for example, `v1.20.0`) and add that version at the top of `documentationVersions`, pointing to `https://kyverno.io`.
+2. Move the former latest version to its archived hostname (for example, `https://release-1-19-0.kyverno.io`). Keep existing archived hostnames unchanged.
+3. Update `compatibilityMatrix` using the Kubernetes versions confirmed for the release.
+4. Clear the Netlify build cache and deploy.
 
-```toml
-# version_menu = "Versions"
-# Add your release versions here
-[[menu.versions]]
-  version = "1.8.0"
-  url = "https://release-1-8-0.kyverno.io"
-  weight = 1
-```
-
-and change the older release version entry to point to its own versioned url, so for example if adding 1.13:
-
-```toml
-[[versions]] # New Line
-  version = "v1.13.0" # New Line
-  url = "https://kyverno.io" # New Line
-
-[[versions]]
-  version = "v1.12.0"
-  url = "https://release-1-12-0.kyverno.io" # Change this line
-```
-
-2. Clear the Netlify cache!
-
-In the current release branch:
-
-1. Do the same as above.
-
-2. Update `version` to the new release version. Following our example from above that would be `v1.13.0`.
-
-3. Update `version_menu` to the same release version.
+Ensure the same version data is present on the new release branch. The version label must exactly match `latestStableVersion`.
 
 #### Submitting a PR to multiple release branches
 
