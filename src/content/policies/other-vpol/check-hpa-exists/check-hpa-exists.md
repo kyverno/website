@@ -17,7 +17,7 @@ createdAt: "2025-12-15T09:53:18.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-hpa-exists/check-hpa-exists.yaml" target="-blank">/other-vpol/check-hpa-exists/check-hpa-exists.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-hpa-exists/check-hpa-exists.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/check-hpa-exists/check-hpa-exists.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

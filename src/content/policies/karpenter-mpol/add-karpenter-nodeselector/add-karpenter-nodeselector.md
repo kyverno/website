@@ -15,7 +15,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml" target="-blank">/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml" target="_blank" rel="noopener noreferrer">/karpenter-mpol/add-karpenter-nodeselector/add-karpenter-nodeselector.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

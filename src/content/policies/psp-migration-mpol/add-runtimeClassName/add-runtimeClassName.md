@@ -14,7 +14,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-runtimeClassName/add-runtimeClassName.yaml" target="-blank">/psp-migration-mpol/add-runtimeClassName/add-runtimeClassName.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/psp-migration-mpol/add-runtimeClassName/add-runtimeClassName.yaml" target="_blank" rel="noopener noreferrer">/psp-migration-mpol/add-runtimeClassName/add-runtimeClassName.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -16,7 +16,7 @@ createdAt: "2025-12-15T09:53:18.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml" target="-blank">/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/check-ingress-nginx-controller-version-and-annotation-policy/check-ingress-nginx-controller-version-and-annotation-policy.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

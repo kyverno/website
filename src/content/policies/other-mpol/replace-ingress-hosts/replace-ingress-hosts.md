@@ -13,7 +13,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/replace-ingress-hosts/replace-ingress-hosts.yaml" target="-blank">/other-mpol/replace-ingress-hosts/replace-ingress-hosts.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/replace-ingress-hosts/replace-ingress-hosts.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/replace-ingress-hosts/replace-ingress-hosts.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

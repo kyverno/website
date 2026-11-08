@@ -14,7 +14,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/prepend-image-registry/prepend-image-registry.yaml" target="-blank">/other-mpol/prepend-image-registry/prepend-image-registry.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/prepend-image-registry/prepend-image-registry.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/prepend-image-registry/prepend-image-registry.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

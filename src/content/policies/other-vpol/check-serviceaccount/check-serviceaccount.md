@@ -15,7 +15,7 @@ createdAt: "2025-12-16T13:58:08.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-serviceaccount/check-serviceaccount.yaml" target="-blank">/other-vpol/check-serviceaccount/check-serviceaccount.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/check-serviceaccount/check-serviceaccount.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/check-serviceaccount/check-serviceaccount.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

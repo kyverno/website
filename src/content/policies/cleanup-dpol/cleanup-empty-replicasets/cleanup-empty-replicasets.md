@@ -14,7 +14,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml" target="-blank">/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml" target="_blank" rel="noopener noreferrer">/cleanup-dpol/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
