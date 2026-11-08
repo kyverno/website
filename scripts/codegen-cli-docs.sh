@@ -77,6 +77,7 @@ find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r
   
   # Remove "For more information visit..." lines
   sed_in_place '/^[[:space:]]*For more information visit/d' "$file"
+  sed_in_place 's/policie(s)/policies/g; s/[[:blank:]]*$//' "$file"
 done
 
 # The jp command reference is exclusively about JMESPath. Strip its generated

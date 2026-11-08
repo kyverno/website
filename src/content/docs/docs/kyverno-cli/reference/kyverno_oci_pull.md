@@ -4,11 +4,11 @@ weight: 35
 ---
 ## kyverno oci pull
 
-Pulls policie(s) that are included in an OCI image from OCI registry and saves them to a local directory.
+Pulls policies that are included in an OCI image from OCI registry and saves them to a local directory.
 
 ### Synopsis
 
-Pulls policie(s) that are included in an OCI image from OCI registry and saves them to a local directory.
+Pulls policies that are included in an OCI image from OCI registry and saves them to a local directory.
 
 
 ```

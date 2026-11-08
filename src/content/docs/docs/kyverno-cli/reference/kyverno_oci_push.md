@@ -4,11 +4,11 @@ weight: 35
 ---
 ## kyverno oci push
 
-Push policie(s) that are included in an OCI image to OCI registry.
+Push policies that are included in an OCI image to OCI registry.
 
 ### Synopsis
 
-Push policie(s) that are included in an OCI image to OCI registry.
+Push policies that are included in an OCI image to OCI registry.
   An optional kyverno-bundle.yaml at the root of the directory names the bundle and assigns resources to named sets.
 
 

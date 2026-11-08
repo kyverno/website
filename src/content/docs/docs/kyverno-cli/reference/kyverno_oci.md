@@ -65,8 +65,8 @@ kyverno oci [flags]
 
 * [kyverno](/docs/kyverno-cli/reference/kyverno)	 - Kubernetes Native Policy Management.
 * [kyverno oci inspect](/docs/kyverno-cli/reference/kyverno_oci_inspect)	 - Show a pushed bundle's resolved digest, resource index, sets, source and revision metadata, manifest annotations, and Kyverno compatibility.
-* [kyverno oci pull](/docs/kyverno-cli/reference/kyverno_oci_pull)	 - Pulls policie(s) that are included in an OCI image from OCI registry and saves them to a local directory.
-* [kyverno oci push](/docs/kyverno-cli/reference/kyverno_oci_push)	 - Push policie(s) that are included in an OCI image to OCI registry.
+* [kyverno oci pull](/docs/kyverno-cli/reference/kyverno_oci_pull)	 - Pulls policies that are included in an OCI image from OCI registry and saves them to a local directory.
+* [kyverno oci push](/docs/kyverno-cli/reference/kyverno_oci_push)	 - Push policies that are included in an OCI image to OCI registry.
 * [kyverno oci resolve](/docs/kyverno-cli/reference/kyverno_oci_resolve)	 - Resolve a bundle tag to its immutable digest and print a digest-pinned reference you can pass to "kyverno test", "kyverno apply", "kyverno oci pull", or a Flux OCIRepository.
 * [kyverno oci validate](/docs/kyverno-cli/reference/kyverno_oci_validate)	 - Validate a bundle directory or file, or a pushed OCI image, without pushing anything. By default, local validate succeeds exactly when "kyverno oci push" would reach its upload step; --kyverno-version and --strict both change that contract (see below).
 
