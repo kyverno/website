@@ -48,8 +48,13 @@ export const PartnersSection = () => {
 
     const handleMotionChange = (e) => {
       reducedMotionRef.current = e.matches
+      updateAnimationLoop()
     }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMotionChange)
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleMotionChange)
+    }
 
     const updateSetWidth = () => {
       if (firstSetRef.current && secondSetRef.current) {
@@ -63,16 +68,20 @@ export const PartnersSection = () => {
 
     updateSetWidth()
 
-    const resizeObserver = new ResizeObserver(() => {
+    const handleResize = () => {
       updateSetWidth()
       if (singleSetWidthRef.current > 0) {
         xRef.current = wrapOffset(xRef.current, singleSetWidthRef.current)
         applyTransform(xRef.current)
       }
-    })
+    }
 
-    if (firstSetRef.current) {
+    let resizeObserver = null
+    if (typeof ResizeObserver !== 'undefined' && firstSetRef.current) {
+      resizeObserver = new ResizeObserver(handleResize)
       resizeObserver.observe(firstSetRef.current)
+    } else if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
     }
 
     let animationFrameId = null
@@ -109,7 +118,8 @@ export const PartnersSection = () => {
     }
 
     const updateAnimationLoop = () => {
-      const shouldRun = isIntersecting && isDocumentVisible
+      const shouldRun =
+        isIntersecting && isDocumentVisible && !reducedMotionRef.current
       if (shouldRun) {
         if (!animationFrameId) {
           lastTime = performance.now()
@@ -172,8 +182,16 @@ export const PartnersSection = () => {
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId)
       }
-      mediaQuery.removeEventListener('change', handleMotionChange)
-      resizeObserver.disconnect()
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMotionChange)
+      } else if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(handleMotionChange)
+      }
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      } else if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
       if (intersectionObserver) {
         intersectionObserver.disconnect()
       }
