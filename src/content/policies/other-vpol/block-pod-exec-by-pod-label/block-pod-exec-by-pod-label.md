@@ -14,7 +14,7 @@ createdAt: "2025-12-02T17:45:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-pod-label/block-pod-exec-by-pod-label.yaml" target="-blank">/other-vpol/block-pod-exec-by-pod-label/block-pod-exec-by-pod-label.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-pod-exec-by-pod-label/block-pod-exec-by-pod-label.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/block-pod-exec-by-pod-label/block-pod-exec-by-pod-label.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

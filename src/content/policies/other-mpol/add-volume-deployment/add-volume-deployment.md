@@ -15,7 +15,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-volume-deployment/add-volume-deployment.yaml" target="-blank">/other-mpol/add-volume-deployment/add-volume-deployment.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-volume-deployment/add-volume-deployment.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/add-volume-deployment/add-volume-deployment.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2026-11-08T02:12:54.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-slsa-build-type/verify-slsa-build-type.yaml" target="-blank">/other-ivpol/verify-slsa-build-type/verify-slsa-build-type.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-slsa-build-type/verify-slsa-build-type.yaml" target="_blank" rel="noopener noreferrer">/other-ivpol/verify-slsa-build-type/verify-slsa-build-type.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

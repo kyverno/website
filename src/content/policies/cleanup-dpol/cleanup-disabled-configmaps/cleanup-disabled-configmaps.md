@@ -14,7 +14,7 @@ createdAt: "2026-11-08T02:12:54.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-disabled-configmaps/cleanup-disabled-configmaps.yaml" target="-blank">/cleanup-dpol/cleanup-disabled-configmaps/cleanup-disabled-configmaps.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/cleanup-dpol/cleanup-disabled-configmaps/cleanup-disabled-configmaps.yaml" target="_blank" rel="noopener noreferrer">/cleanup-dpol/cleanup-disabled-configmaps/cleanup-disabled-configmaps.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

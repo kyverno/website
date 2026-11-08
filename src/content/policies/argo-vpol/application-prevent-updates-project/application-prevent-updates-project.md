@@ -14,7 +14,7 @@ createdAt: "2026-10-25T00:12:22.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-prevent-updates-project/application-prevent-updates-project.yaml" target="-blank">/argo-vpol/application-prevent-updates-project/application-prevent-updates-project.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-prevent-updates-project/application-prevent-updates-project.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/application-prevent-updates-project/application-prevent-updates-project.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml" target="-blank">/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/advanced-restrict-image-registries/advanced-restrict-image-registries.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -15,7 +15,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml" target="-blank">/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/exclude-namespaces-dynamically/exclude-namespaces-dynamically.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

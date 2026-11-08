@@ -14,7 +14,7 @@ createdAt: "2026-11-02T19:15:42.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/flux-vpol/verify-git-repositories/verify-git-repositories.yaml" target="-blank">/flux-vpol/verify-git-repositories/verify-git-repositories.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/flux-vpol/verify-git-repositories/verify-git-repositories.yaml" target="_blank" rel="noopener noreferrer">/flux-vpol/verify-git-repositories/verify-git-repositories.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2026-11-08T02:12:54.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-cosign-keyless/verify-cosign-keyless.yaml" target="-blank">/other-ivpol/verify-cosign-keyless/verify-cosign-keyless.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-cosign-keyless/verify-cosign-keyless.yaml" target="_blank" rel="noopener noreferrer">/other-ivpol/verify-cosign-keyless/verify-cosign-keyless.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

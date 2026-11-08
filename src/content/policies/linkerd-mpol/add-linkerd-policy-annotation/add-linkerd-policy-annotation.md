@@ -15,7 +15,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml" target="-blank">/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml" target="_blank" rel="noopener noreferrer">/linkerd-mpol/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

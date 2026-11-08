@@ -15,7 +15,7 @@ createdAt: "2026-10-22T06:25:41.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml" target="-blank">/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml" target="_blank" rel="noopener noreferrer">/pod-security-vpol/baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

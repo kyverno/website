@@ -14,7 +14,7 @@ createdAt: "2026-11-03T06:26:43.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml" target="-blank">/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/kubevirt-gpol/add-services/add-services.yaml" target="-blank">/kubevirt-gpol/add-services/add-services.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/kubevirt-gpol/add-services/add-services.yaml" target="_blank" rel="noopener noreferrer">/kubevirt-gpol/add-services/add-services.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

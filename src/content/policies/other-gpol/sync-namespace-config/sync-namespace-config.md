@@ -15,7 +15,7 @@ createdAt: "2026-11-08T02:12:54.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-gpol/sync-namespace-config/sync-namespace-config.yaml" target="-blank">/other-gpol/sync-namespace-config/sync-namespace-config.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-gpol/sync-namespace-config/sync-namespace-config.yaml" target="_blank" rel="noopener noreferrer">/other-gpol/sync-namespace-config/sync-namespace-config.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

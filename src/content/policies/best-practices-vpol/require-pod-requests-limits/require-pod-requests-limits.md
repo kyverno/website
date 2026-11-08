@@ -13,7 +13,7 @@ createdAt: "2026-02-12T12:56:39.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-pod-requests-limits/require-pod-requests-limits.yaml" target="-blank">/best-practices-vpol/require-pod-requests-limits/require-pod-requests-limits.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-pod-requests-limits/require-pod-requests-limits.yaml" target="_blank" rel="noopener noreferrer">/best-practices-vpol/require-pod-requests-limits/require-pod-requests-limits.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

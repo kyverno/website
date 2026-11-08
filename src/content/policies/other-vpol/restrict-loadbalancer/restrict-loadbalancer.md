@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml" target="-blank">/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/restrict-loadbalancer/restrict-loadbalancer.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

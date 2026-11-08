@@ -14,7 +14,7 @@ createdAt: "2025-11-27T19:01:41.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-large-images/block-large-images.yaml" target="-blank">/other-vpol/block-large-images/block-large-images.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-large-images/block-large-images.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/block-large-images/block-large-images.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
