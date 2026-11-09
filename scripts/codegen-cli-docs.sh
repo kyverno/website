@@ -41,7 +41,7 @@ docker run --user root -v "${PWD}":/work --rm "ghcr.io/kyverno/kyverno-cli:${CLI
 # Function to run sed in-place (handles macOS vs Linux differences)
 sed_in_place() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i'' "$@"
+    sed -i '' "$@"
   else
     sed -i "$@"
   fi
@@ -77,6 +77,7 @@ find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r
   
   # Remove "For more information visit..." lines
   sed_in_place '/^[[:space:]]*For more information visit/d' "$file"
+  sed_in_place 's/policie(s)/policies/g; s/[[:blank:]]*$//' "$file"
 done
 
 # The jp command reference is exclusively about JMESPath. Strip its generated

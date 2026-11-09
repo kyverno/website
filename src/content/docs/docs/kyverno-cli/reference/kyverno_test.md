@@ -9,10 +9,10 @@ Run tests from a local filesystem or a remote git repository.
 ### Synopsis
 
 Run tests from a local filesystem or a remote git repository.
-  
+
   The test command provides a facility to test resources against policies by comparing expected results,
   declared ahead of time in a test manifest file, to actual results reported by Kyverno.
-  
+
   Users provide the path to the folder containing a kyverno-test.yaml file where the location could be
   on a local filesystem or a remote git repository.
 
