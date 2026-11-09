@@ -4,6 +4,8 @@ import { PartnersBrand } from '../components/PartnersBrand'
 import { Button } from '../components/Button'
 import { HeadingContent } from '../components/HeadingContent'
 
+const KEYBOARD_STEP = 140
+
 export const PartnersSection = () => {
   const { headingText, paragraphText } = partnersSectionHeadingContent
 
@@ -23,6 +25,7 @@ export const PartnersSection = () => {
   const isWheelingRef = useRef(false)
   const wheelTimeoutRef = useRef(null)
   const reducedMotionRef = useRef(false)
+  const updateAnimationLoopRef = useRef(null)
 
   const [isDraggingState, setIsDraggingState] = useState(false)
 
@@ -92,35 +95,42 @@ export const PartnersSection = () => {
         ? document.visibilityState !== 'hidden'
         : true
 
-    const animate = (currentTime) => {
-      const dt = (currentTime - lastTime) / 1000
-      lastTime = currentTime
-
+    const checkShouldRun = () => {
       const isInteracting =
         isHoveredRef.current ||
         isDraggingRef.current ||
         isFocusedRef.current ||
         isWheelingRef.current
 
-      if (
-        !isInteracting &&
+      return (
+        isIntersecting &&
+        isDocumentVisible &&
         !reducedMotionRef.current &&
+        !isInteracting &&
         singleSetWidthRef.current > 0
-      ) {
-        // Scroll through one full cycle of logos every 30 seconds
-        const speed = singleSetWidthRef.current / 30
-        xRef.current -= speed * dt
-        xRef.current = wrapOffset(xRef.current, singleSetWidthRef.current)
-        applyTransform(xRef.current)
+      )
+    }
+
+    const animate = (currentTime) => {
+      if (!checkShouldRun()) {
+        animationFrameId = null
+        return
       }
+
+      const dt = (currentTime - lastTime) / 1000
+      lastTime = currentTime
+
+      // Scroll through one full cycle of logos every 30 seconds
+      const speed = singleSetWidthRef.current / 30
+      xRef.current -= speed * dt
+      xRef.current = wrapOffset(xRef.current, singleSetWidthRef.current)
+      applyTransform(xRef.current)
 
       animationFrameId = requestAnimationFrame(animate)
     }
 
     const updateAnimationLoop = () => {
-      const shouldRun =
-        isIntersecting && isDocumentVisible && !reducedMotionRef.current
-      if (shouldRun) {
+      if (checkShouldRun()) {
         if (!animationFrameId) {
           lastTime = performance.now()
           animationFrameId = requestAnimationFrame(animate)
@@ -132,6 +142,8 @@ export const PartnersSection = () => {
         }
       }
     }
+
+    updateAnimationLoopRef.current = updateAnimationLoop
 
     const handleVisibilityChange = () => {
       isDocumentVisible = document.visibilityState !== 'hidden'
@@ -164,12 +176,13 @@ export const PartnersSection = () => {
         }
 
         isWheelingRef.current = true
+        updateAnimationLoop()
         if (wheelTimeoutRef.current) {
           clearTimeout(wheelTimeoutRef.current)
         }
         wheelTimeoutRef.current = setTimeout(() => {
           isWheelingRef.current = false
-          lastTime = performance.now()
+          updateAnimationLoop()
         }, 500)
       }
     }
@@ -179,6 +192,7 @@ export const PartnersSection = () => {
     }
 
     return () => {
+      updateAnimationLoopRef.current = null
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId)
       }
@@ -214,6 +228,7 @@ export const PartnersSection = () => {
     pointerStartXRef.current = e.clientX
     dragStartXRef.current = xRef.current
     hasDraggedRef.current = false
+    updateAnimationLoopRef.current?.()
 
     try {
       e.currentTarget.setPointerCapture(e.pointerId)
@@ -245,6 +260,7 @@ export const PartnersSection = () => {
     if (e.pointerType === 'touch') {
       isHoveredRef.current = false
     }
+    updateAnimationLoopRef.current?.()
 
     try {
       e.currentTarget.releasePointerCapture(e.pointerId)
@@ -262,20 +278,18 @@ export const PartnersSection = () => {
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowLeft') {
       e.preventDefault()
-      const step = 140
       if (singleSetWidthRef.current > 0) {
         xRef.current = wrapOffset(
-          xRef.current + step,
+          xRef.current + KEYBOARD_STEP,
           singleSetWidthRef.current,
         )
         applyTransform(xRef.current)
       }
     } else if (e.key === 'ArrowRight') {
       e.preventDefault()
-      const step = 140
       if (singleSetWidthRef.current > 0) {
         xRef.current = wrapOffset(
-          xRef.current - step,
+          xRef.current - KEYBOARD_STEP,
           singleSetWidthRef.current,
         )
         applyTransform(xRef.current)
@@ -333,21 +347,26 @@ export const PartnersSection = () => {
           aria-label="Partner and customer logos"
           aria-roledescription="carousel"
           aria-keyshortcuts="ArrowLeft ArrowRight"
+          aria-describedby="partner-carousel-instructions"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUpOrCancel}
           onPointerCancel={handlePointerUpOrCancel}
           onMouseEnter={() => {
             isHoveredRef.current = true
+            updateAnimationLoopRef.current?.()
           }}
           onMouseLeave={() => {
             isHoveredRef.current = false
+            updateAnimationLoopRef.current?.()
           }}
           onFocus={() => {
             isFocusedRef.current = true
+            updateAnimationLoopRef.current?.()
           }}
           onBlur={() => {
             isFocusedRef.current = false
+            updateAnimationLoopRef.current?.()
           }}
           onKeyDown={handleKeyDown}
           onClickCapture={handleClickCapture}
@@ -360,7 +379,7 @@ export const PartnersSection = () => {
             WebkitUserSelect: 'none',
           }}
         >
-          <span className="sr-only">
+          <span id="partner-carousel-instructions" className="sr-only">
             Interactive customer and partner logo carousel. Use left and right
             arrow keys to scroll manually.
           </span>
