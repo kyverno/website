@@ -6,6 +6,8 @@ sidebar:
 excerpt: An introduction to Kyverno policy and rule types
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components'
+
 This section is intended to provide you with some quick guides on how to get Kyverno up and running and demonstrate a few of Kyverno's seminal features. There are quick start guides which focus on validation, mutation, as well as generation allowing you to select the one (or all) which is most relevant to your use case.
 
 These guides are intended for proof-of-concept or lab demonstrations only and not recommended as a guide for production. Please see the [installation page](/docs/installation/installation) for more complete information on how to install Kyverno in production.
@@ -25,6 +27,11 @@ Next, select the quick start guide in which you are interested. Alternatively, s
 In the validation guide, you will see how simple an example Kyverno policy can be which ensures a label called `team` is present on every Pod. Validation is the most common use case for policy and functions as a "yes" or "no" decision making process. Resources which are compliant with the policy are allowed to pass ("yes, this is allowed") and those which are not compliant may not be allowed to pass ("no, this is not allowed"). An additional effect of these validate policies is to produce Policy Reports. A [Policy Report](/docs/guides/reports) is a custom Kubernetes resource, produced and managed by Kyverno, which shows the results of policy decisions upon allowed resources in a user-friendly way.
 
 Add the policy below to your cluster. It contains a single validation rule that requires that all Pods have the `team` label. Kyverno supports different policy types to validate, mutate, generate, cleanup, and verify image configurations. The `validationActions` field is set to `Deny` to block Pods that are non-compliant.
+
+Select your shell in the examples below. Bash uses a here-document, Fish pipes a quoted string, and PowerShell uses a here-string to pass the same manifest to `kubectl`.
+
+<Tabs syncKey="shell">
+<TabItem label="Bash">
 
 ```sh
 kubectl create -f- << EOF
@@ -46,6 +53,56 @@ spec:
       expression: "has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''"
 EOF
 ```
+
+</TabItem>
+<TabItem label="Fish">
+
+```fish
+printf '%s\n' "apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - message: \"label 'team' is required\"
+      expression: \"has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''\"
+" | kubectl create -f -
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-labels
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  validations:
+    - message: "label 'team' is required"
+      expression: "has(object.metadata.labels) && has(object.metadata.labels.team) && object.metadata.labels.team != ''"
+"@ | kubectl create -f -
+```
+
+</TabItem>
+</Tabs>
 
 Try creating a Deployment without the required label.
 
@@ -131,6 +188,9 @@ Mutation is the ability to change or "mutate" a resource in some way prior to it
 
 Add this Kyverno mutate policy to your cluster. This policy will add the label `team` to any new Pod and give it the value of `bravo` but only if a Pod does not already have this label assigned. Kyverno uses CEL expressions to perform conditional logic, making policies easy to write and read.
 
+<Tabs syncKey="shell">
+<TabItem label="Bash">
+
 ```sh
 kubectl create -f- << EOF
 apiVersion: policies.kyverno.io/v1
@@ -160,6 +220,74 @@ spec:
           }
 EOF
 ```
+
+</TabItem>
+<TabItem label="Fish">
+
+```fish
+printf '%s\n' "apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: add-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchConditions:
+    - name: team-label-missing
+      expression: '!has(object.metadata.labels) || !has(object.metadata.labels.team)'
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                team: \"bravo\"
+              }
+            }
+          }
+" | kubectl create -f -
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
+metadata:
+  name: add-labels
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
+  matchConditions:
+    - name: team-label-missing
+      expression: '!has(object.metadata.labels) || !has(object.metadata.labels.team)'
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >
+          Object{
+            metadata: Object.metadata{
+              labels: Object.metadata.labels{
+                team: "bravo"
+              }
+            }
+          }
+"@ | kubectl create -f -
+```
+
+</TabItem>
+</Tabs>
 
 Let's now create a new Pod which does not have the desired label defined.
 
@@ -209,6 +337,9 @@ We will use a Kyverno generate policy to generate an image pull secret in a new 
 
 First, create this Kubernetes Secret in your cluster which will simulate a real image pull secret.
 
+<Tabs syncKey="shell">
+<TabItem label="Bash">
+
 ```sh
 kubectl -n default create secret docker-registry regcred \
   --docker-server=myinternalreg.corp.com \
@@ -217,7 +348,35 @@ kubectl -n default create secret docker-registry regcred \
   --docker-email=john.doe@corp.com
 ```
 
+</TabItem>
+<TabItem label="Fish">
+
+```fish
+kubectl -n default create secret docker-registry regcred \
+  --docker-server=myinternalreg.corp.com \
+  --docker-username=john.doe \
+  --docker-password=Passw0rd123! \
+  --docker-email=john.doe@corp.com
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+```powershell
+kubectl -n default create secret docker-registry regcred `
+  --docker-server=myinternalreg.corp.com `
+  --docker-username=john.doe `
+  --docker-password=Passw0rd123! `
+  --docker-email=john.doe@corp.com
+```
+
+</TabItem>
+</Tabs>
+
 By default, Kyverno is [configured with minimal permissions](/docs/installation/customization#role-based-access-controls) and does not have access to security sensitive resources like Secrets. You can provide additional permissions using cluster role aggregation. The following role permits the Kyverno background-controller to create (clone) secrets.
+
+<Tabs syncKey="shell">
+<TabItem label="Bash">
 
 ```sh
 kubectl apply -f- << EOF
@@ -257,7 +416,94 @@ rules:
 EOF
 ```
 
+</TabItem>
+<TabItem label="Fish">
+
+```fish
+printf '%s\n' "apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:view
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: \"true\"
+    rbac.kyverno.io/aggregate-to-reports-controller: \"true\"
+    rbac.kyverno.io/aggregate-to-background-controller: \"true\"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:manage
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: \"true\"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - create
+  - update
+  - delete
+" | kubectl apply -f -
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+```powershell
+@"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:view
+  labels:
+    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:secrets:manage
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - create
+  - update
+  - delete
+"@ | kubectl apply -f -
+```
+
+</TabItem>
+</Tabs>
+
 Next, create the following Kyverno policy. The `sync-secrets` policy will match on any newly-created Namespace and will clone the Secret we just created earlier into that new Namespace.
+
+<Tabs syncKey="shell">
+<TabItem label="Bash">
 
 ```sh
 kubectl create -f- << EOF
@@ -284,6 +530,66 @@ spec:
     - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
 EOF
 ```
+
+</TabItem>
+<TabItem label="Fish">
+
+```fish
+printf '%s\n' "apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: sync-secrets
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: targetNs
+      expression: 'object.metadata.name'
+    - name: sourceSecret
+      expression: 'resource.Get(\"v1\", \"secrets\", \"default\", \"regcred\")'
+  generate:
+    - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
+" | kubectl create -f -
+```
+
+</TabItem>
+<TabItem label="PowerShell">
+
+```powershell
+@"
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: sync-secrets
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
+  variables:
+    - name: targetNs
+      expression: 'object.metadata.name'
+    - name: sourceSecret
+      expression: 'resource.Get("v1", "secrets", "default", "regcred")'
+  generate:
+    - expression: 'generator.Apply(variables.targetNs, [variables.sourceSecret])'
+"@ | kubectl create -f -
+```
+
+</TabItem>
+</Tabs>
 
 Create a new Namespace to test the policy.
 
