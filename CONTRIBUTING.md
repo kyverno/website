@@ -56,7 +56,7 @@ First time contributing to open source? Don't worry, maintainers and community m
 #### Pull request automation
 
 PR automation uses the shared action maintained in
-[kyverno/kyverno](https://github.com/kyverno/kyverno/tree/main/.github/actions/pr-management).
+[kyverno/assistant](https://github.com/kyverno/assistant/tree/main/.github/actions/pr-management).
 Path labels continue to apply automatically. The hourly readiness check and daily
 stale sweep initially run in **preview mode**: they log proposed changes but do
 not label, comment on, or close PRs.
