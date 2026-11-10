@@ -59,6 +59,24 @@ export const PartnersSection = () => {
       mediaQuery.addListener(handleMotionChange)
     }
 
+    const container = containerRef.current
+    if (container) {
+      try {
+        if (typeof container.matches === 'function') {
+          if (container.matches(':hover')) {
+            isHoveredRef.current = true
+          }
+          if (
+            container.matches(':focus-within') ||
+            (typeof document !== 'undefined' &&
+              document.activeElement === container)
+          ) {
+            isFocusedRef.current = true
+          }
+        }
+      } catch {}
+    }
+
     const updateSetWidth = () => {
       if (firstSetRef.current && secondSetRef.current) {
         const measured =
@@ -165,7 +183,6 @@ export const PartnersSection = () => {
     }
 
     // Wheel event handler with non-passive listener to prevent horizontal scroll chaining
-    const container = containerRef.current
     const handleWheel = (e) => {
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault()
