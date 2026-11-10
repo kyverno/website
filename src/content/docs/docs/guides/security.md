@@ -11,7 +11,7 @@ Kyverno serves as an admission controller and is a critical component of the Kub
 
 Security vulnerabilities are best handled swiftly and discretely with the goal of minimizing the total time users remain vulnerable to exploits.
 
-If you find or suspect a vulnerability, please [report it privately through GitHub](https://github.com/kyverno/kyverno/security/advisories/new). Private vulnerability reporting is the preferred channel for reporting potential vulnerabilities and coordinating their resolution with the Kyverno security response team.
+If you find or suspect a vulnerability, please [report it privately through GitHub](https://github.com/kyverno/kyverno/security/advisories/new). GitHub private vulnerability reporting is the single reporting channel for potential vulnerabilities. Keep all follow-up discussion in the private GitHub Security Advisory (GHSA) thread so that the Kyverno security response team can track the report, coordinate a fix, and plan disclosure in one place.
 
 Include the following information in your report:
 
@@ -22,7 +22,7 @@ Include the following information in your report:
 
 Keep vulnerability details private while the security response team investigates and coordinates a fix and disclosure. Do not report potential vulnerabilities in public GitHub issues, pull requests, or Slack channels.
 
-If you cannot use GitHub private vulnerability reporting, email the security group at [kyverno-security@googlegroups.com](mailto:kyverno-security@googlegroups.com) with the same information. You do not need to submit the same report through both channels.
+The security mailing list is no longer used for vulnerability reports. If you previously reported an unresolved issue by email, submit a private GitHub vulnerability report and include the relevant details and prior correspondence to continue the discussion there.
 
 The Kyverno security response team will send an initial acknowledgement of the disclosure in 3-5 working days. Once the vulnerability and mitigation are confirmed, the team will plan to release any necessary changes based on the severity and complexity. Additional details on the security policy and processes are available in the Kyverno [git repo](https://github.com/kyverno/kyverno/blob/main/SECURITY.md).
 
