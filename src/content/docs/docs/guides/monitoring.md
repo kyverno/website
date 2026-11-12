@@ -757,7 +757,7 @@ kubectl get events -n kyverno --sort-by='.lastTimestamp' | tail -20
 
 1. If CPU-bound: increase `admissionController.resources.limits.cpu` and scale replicas
 2. If policy-complexity-bound: review recently added policies; consider background mode for non-urgent validate rules
-3. If approaching the Kubernetes timeout: follow the [temporary disable runbook](https://kyverno.io/docs/operational-runbook/) to reduce scope while investigating
+3. If approaching the Kubernetes timeout: follow the [API server is blocked](/docs/guides/troubleshooting#api-server-is-blocked) troubleshooting steps to reduce scope while investigating
 
 #### Policy execution latency high {#policy-execution-latency-high}
 
