@@ -276,7 +276,7 @@ When using cloud IAM (e.g. IRSA on AWS, Workload Identity on GKE), you only need
 
 By default Kyverno will attempt to use credentials specified in the `imageRegistryCredentials` and the `imagePullSecrets` defined in the resource.
 The `secrets` field accepts a list of Kubernetes `Secret` names (of type `kubernetes.io/dockerconfigjson`) used to authenticate against private registries.
-The `namespace/name` notation is not supported. Make sure that the admission-controller is able to read the Secret.
+The `namespace/name` notation is supported, make sure that the admission-controller is able to read the Secret.
 
 #### Example: public registry (no credentials needed)
 
