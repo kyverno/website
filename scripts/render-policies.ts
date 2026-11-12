@@ -273,7 +273,7 @@ function generateMarkdown(
 
   frontmatterLines.push('---', '', '## Policy Definition', '')
   frontmatterLines.push(
-    `<a href="${rawUrl}" target="-blank">${displayPath}</a>`,
+    `<a href="${rawUrl}" target="_blank" rel="noopener noreferrer">${displayPath}</a>`,
     '',
   )
   frontmatterLines.push('```yaml')
@@ -503,7 +503,7 @@ async function main() {
       }
     }
 
-    const match = branchName?.match(/^release-([0-9]+)-([0-9]+)(-[0-9]+)?$/)
+    const match = branchName?.match(/^release-([0-9]+)[.-]([0-9]+)(-[0-9]+)?$/)
     if (match) {
       policiesRef = `release-${match[1]}.${match[2]}`
     } else {

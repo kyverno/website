@@ -14,7 +14,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml" target="-blank">/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml" target="_blank" rel="noopener noreferrer">/psa-mpol/add-privileged-existing-namespaces/add-privileged-existing-namespaces.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -17,7 +17,7 @@ createdAt: "2025-11-14T18:23:14.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/velero-mpol/backup-all-volumes/backup-all-volumes.yaml" target="-blank">/velero-mpol/backup-all-volumes/backup-all-volumes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/velero-mpol/backup-all-volumes/backup-all-volumes.yaml" target="_blank" rel="noopener noreferrer">/velero-mpol/backup-all-volumes/backup-all-volumes.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

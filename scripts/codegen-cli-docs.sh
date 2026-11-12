@@ -5,7 +5,7 @@ set -euo pipefail
 # Determine the kyverno-cli image tag:
 # - If positional arg is provided: use it directly as the distant repo tag (no transformation)
 # - Otherwise (auto mode): derive from WEBSITE_BRANCH or current git branch, then map:
-#   - release-x-y or release-x-y-z  -> release-x.y
+#   - release-x.y, release-x-y, or release-x-y-z -> release-x.y
 #   - anything else                 -> latest
 if [[ -n "${1:-}" ]]; then
   CLI_REF="$1"
@@ -20,7 +20,7 @@ else
     fi
   fi
 
-  if [[ "$branch_name" =~ ^release-([0-9]+)-([0-9]+)(-[0-9]+)?$ ]]; then
+  if [[ "$branch_name" =~ ^release-([0-9]+)[.-]([0-9]+)(-[0-9]+)?$ ]]; then
     CLI_REF="release-${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
   else
     CLI_REF="latest"
@@ -41,7 +41,7 @@ docker run --user root -v "${PWD}":/work --rm "ghcr.io/kyverno/kyverno-cli:${CLI
 # Function to run sed in-place (handles macOS vs Linux differences)
 sed_in_place() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i'' "$@"
+    sed -i '' "$@"
   else
     sed -i "$@"
   fi
@@ -77,6 +77,7 @@ find ./src/content/docs/docs/kyverno-cli/reference/ -name '*.md' | while read -r
   
   # Remove "For more information visit..." lines
   sed_in_place '/^[[:space:]]*For more information visit/d' "$file"
+  sed_in_place 's/policie(s)/policies/g; s/[[:blank:]]*$//' "$file"
 done
 
 # The jp command reference is exclusively about JMESPath. Strip its generated
