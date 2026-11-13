@@ -378,6 +378,22 @@ rules:
       - delete
 ```
 
+#### Using an existing ServiceAccount
+
+By default, the Helm chart creates a ServiceAccount for each controller. To use a ServiceAccount you manage yourself, for example one with a cloud IAM annotation for verifying images in a private registry, set `rbac.serviceAccount.create` to `false` and set `rbac.serviceAccount.name` to its name. The chart still creates the controller's Roles, ClusterRoles and bindings, and binds them to that ServiceAccount.
+
+```yaml
+admissionController:
+  rbac:
+    serviceAccount:
+      create: false
+      name: my-admission-controller
+```
+
+`rbac.serviceAccount.name` is required when `create` is `false`, and the ServiceAccount must exist in the Kyverno Namespace before the controller starts. The same option is available for `backgroundController`, `cleanupController` and `reportsController`.
+
+To skip both the ServiceAccount and the RBAC, set `rbac.create` to `false` instead.
+
 ### ConfigMap Keys
 
 The following keys are used to control the behavior of Kyverno and must be set in the Kyverno ConfigMap. Kyverno watches for changes to this ConfigMap and will load any updates which occur.
