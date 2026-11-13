@@ -13,7 +13,7 @@ coverImage: kyverno-1-20-release.jpg
 
 We're excited to announce **Kyverno 1.20**, the first release where the CEL-based policy types are _the_ way to write Kyverno policy. In 1.19 the CEL types reached full feature parity with `ClusterPolicy`; in 1.20 they replace the legacy `ClusterPolicy` and `CleanupPolicy` types outright.
 
-Around that milestone, 1.20 adds private Sigstore and GitHub attestation support for image verification, a much more capable CLI, explainable decisions, richer policy exceptions, and JSON mutation for any payload, including Terraform.
+Around that milestone, 1.20 adds private Sigstore and GitHub attestation support for image verification, a much more capable CLI, explainable decisions, richer policy exceptions, and JSON mutation for object-rooted JSON documents, including Terraform plans.
 
 ## TL;DR
 
@@ -22,7 +22,7 @@ Around that milestone, 1.20 adds private Sigstore and GitHub attestation support
 - **CLI**: `kyverno test` supports mocks, `apiCall` and context; new `kyverno oci` packages policy sets
 - **Decision log**: `kyverno apply --explain` shows why a CEL decision was made
 - **Policy exceptions** gain expiration, metadata and compensating controls
-- **JSON mutation** for any payload, including Terraform plans
+- **JSON mutation** for JSON documents with object roots, including Terraform plans
 - **Simpler GeneratingPolicy** with inline YAML templates
 - Supports **Kubernetes v1.34 to v1.37**
 
@@ -44,11 +44,11 @@ Each type also has a namespaced variant, such as `NamespacedValidatingPolicy`, f
 What changes in 1.20:
 
 - **Legacy execution removed** from the admission, background and reports controllers, and the legacy engine and Go API are deleted ([#18164](https://github.com/kyverno/kyverno/pull/18164), [#18187](https://github.com/kyverno/kyverno/pull/18187), [#18195](https://github.com/kyverno/kyverno/pull/18195), [#18265](https://github.com/kyverno/kyverno/pull/18265), [#18282](https://github.com/kyverno/kyverno/pull/18282)).
-- **Creates and spec updates of legacy policies are blocked** ([#17535](https://github.com/kyverno/kyverno/pull/17535)), and the CLI rejects legacy manifests in `apply` and `test`, with a migration escape hatch ([#17553](https://github.com/kyverno/kyverno/pull/17553)).
+- **Creates and spec updates of legacy policies are blocked** ([#17535](https://github.com/kyverno/kyverno/pull/17535)), and the CLI rejects legacy manifests in `apply` and `test` unconditionally ([#17553](https://github.com/kyverno/kyverno/pull/17553)). The CLI has no escape hatch; if you still need to evaluate legacy policies, use a pre-1.20 CLI.
 - **Your existing objects are preserved.** The legacy CRD schemas are frozen and protected from Helm prune ([#17494](https://github.com/kyverno/kyverno/pull/17494), [#18231](https://github.com/kyverno/kyverno/pull/18231)), so a stray upgrade does not delete policies you haven't migrated yet. They show as not ready instead of silently enforcing.
 - **Guardrails on upgrade.** The Helm chart adds a default-on gate that stops an install or upgrade while legacy policy resources exist ([#17534](https://github.com/kyverno/kyverno/pull/17534)). Kyverno reports any remaining legacy policies on startup and through metrics ([#17519](https://github.com/kyverno/kyverno/pull/17519)) and warns about orphaned legacy webhook configurations ([#17678](https://github.com/kyverno/kyverno/pull/17678)).
 
-The legacy CRDs themselves are planned for full removal in **v1.21**. Supporting resources such as `GlobalContextEntry`, `UpdateRequest` and policy reports are unaffected.
+The legacy CRDs themselves are planned for full removal in **v1.21**. The `GlobalContextEntry`, `UpdateRequest` and policy report APIs remain, but legacy data in them does not survive the upgrade: results from legacy policies are pruned from reports, reports that only hold legacy results are deleted ([#18195](https://github.com/kyverno/kyverno/pull/18195)), and outstanding legacy `UpdateRequest` objects are deleted rather than processed ([#18187](https://github.com/kyverno/kyverno/pull/18187)). Export any report history you need before you upgrade, and expect queued legacy generate and mutate-existing work not to finish.
 
 ## Image verification: more sources, stronger guarantees
 
@@ -86,11 +86,13 @@ Smaller quality-of-life changes:
 
 ### Policy exceptions that carry their justification
 
-Policy exceptions now support expiration, metadata and **compensating controls** ([#17690](https://github.com/kyverno/kyverno/pull/17690)). An exception can record what mitigates the risk it accepts, and when it should lapse, so reports and audits show _why_ a workload is exempt, not just _that_ it is.
+Policy exceptions now support expiration, metadata and **compensating controls** ([#17690](https://github.com/kyverno/kyverno/pull/17690)). Expiration and metadata record when an exception lapses and why it exists, so reports and audits show _why_ a workload is exempt, not just _that_ it is.
 
-### JSON mutation for any payload
+Compensating controls do more than record a justification: they are CEL checks in `spec.validations` that a resource must pass before the exception applies. They are evaluated only for `ValidatingPolicy` and `NamespacedValidatingPolicy`. Mutating, generating, deleting and image-validating policies ignore them, so don't rely on them to protect exemptions from those policy types.
 
-`MutatingPolicy` gains a JSON mode that mutates arbitrary JSON documents ([#17871](https://github.com/kyverno/kyverno/pull/17871)). The same CEL policies that shape Kubernetes resources can now set defaults or inject config in Terraform plans, API payloads or any other JSON input.
+### JSON mutation beyond Kubernetes
+
+`MutatingPolicy` gains a JSON mode that mutates JSON documents ([#17871](https://github.com/kyverno/kyverno/pull/17871)). The same CEL policies that shape Kubernetes resources can now set defaults or inject config in Terraform plans, API payloads and other JSON input. Inputs and outputs must have an object at the root: nested arrays work, but top-level arrays and scalars are not supported.
 
 ### Simpler GeneratingPolicy
 
@@ -108,7 +110,7 @@ The bundled PSS policies support Pod user namespaces ([#17693](https://github.co
 
 ### Security and performance
 
-1.20 includes the hardening shipped in v1.19.2: bounded CEL evaluation cost ([#17988](https://github.com/kyverno/kyverno/pull/17988)), a bounded wildcard matcher ([#17990](https://github.com/kyverno/kyverno/pull/17990)), bounded registry reads ([#17995](https://github.com/kyverno/kyverno/pull/17995)), API path validation and namespace confinement ([#17985](https://github.com/kyverno/kyverno/pull/17985)), and PolicyException gates in generated admission policies ([#17986](https://github.com/kyverno/kyverno/pull/17986)). It moves to Go 1.27.3 and Kubernetes libraries v0.37, and resolves several dependency CVEs.
+1.20 includes the hardening shipped in [v1.19.2](https://github.com/kyverno/kyverno/releases/tag/v1.19.2): bounded CEL evaluation cost ([#17988](https://github.com/kyverno/kyverno/pull/17988)), a bounded wildcard matcher ([#17990](https://github.com/kyverno/kyverno/pull/17990)), bounded registry reads ([#17995](https://github.com/kyverno/kyverno/pull/17995)), API path validation and namespace confinement ([#17985](https://github.com/kyverno/kyverno/pull/17985)), and PolicyException gates in generated admission policies ([#17986](https://github.com/kyverno/kyverno/pull/17986)). It moves to Go 1.27.3 and Kubernetes libraries v0.37, and resolves several dependency CVEs.
 
 On the hot path, CEL request activations are built once per admission request ([#17572](https://github.com/kyverno/kyverno/pull/17572)), backed by a CI gate that catches allocation regressions ([#17573](https://github.com/kyverno/kyverno/pull/17573)).
 
