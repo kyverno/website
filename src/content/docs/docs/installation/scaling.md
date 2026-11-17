@@ -25,6 +25,20 @@ We recommend conducting tests in your own environment to determine real-world ut
 
 Horizontal scaling refers to increasing the number of replicas of a given controller. Kyverno supports multiple replicas for each of its controllers, but the effect of multiple replicas is handled differently according to the controller. See the [high availability section](/docs/guides/high-availability#how-ha-works-in-kyverno) for more details.
 
+### Policy count and admission controller memory
+
+Adding admission controller replicas spreads AdmissionReview requests across more Pods, but it does not split the policy set between them. Each replica watches every policy in the cluster, cluster-scoped and namespaced alike, and holds a full, compiled copy of all of them in its own memory. As a result, the memory required by each admission controller Pod grows with the number of policies installed, and horizontal scaling does not lower it.
+
+This matters most in clusters that store a large number of policies, for example one namespaced policy per tenant or per workload. In such clusters:
+
+- Size the memory requests and limits of each admission controller replica for the total number of policies, and revisit them as policies are added. Adding replicas multiplies the same memory footprint rather than dividing it.
+- Monitor the memory usage of the admission controller Pods and alert well before they reach their limit.
+- Be aware that if the webhooks use `failurePolicy: Fail` and every replica is terminated because it ran out of memory, for example under a burst of admission traffic, matching API requests are rejected across the whole cluster until a replica becomes ready again.
+
+:::note[Note]
+Where possible, prefer fewer policies that apply to many namespaces, for example by using `matchConditions` or namespace selectors, over many near-identical namespaced policies. This keeps the in-memory policy set, and the memory of each replica, smaller.
+:::
+
 ### Scale Testing
 
 #### Admission Controller

@@ -54,6 +54,8 @@ The admission controller does not use leader election for inbound webhook reques
 
 Multiple replicas configured for the admission controller can be used for both availability and scale. Vertical scaling of the individual replicas' resources may also be performed to increase combined throughput.
 
+Scaling out the admission controller increases the number of AdmissionReview requests the deployment can handle, but it does not partition the policy set across replicas. Every replica watches all policies in the cluster, including namespaced policies, and keeps its own compiled copy of each of them in memory. Memory usage of each replica therefore grows with the number of policies, and adding replicas does not reduce it. See [Policy count and admission controller memory](/docs/installation/scaling#policy-count-and-admission-controller-memory) for sizing guidance.
+
 ### Reports Controller
 
 The Reports Controller is responsible for all report processing logic. Since this is a stateful service, the reports controller requires leader election. Regardless of the number of replicas, only a single replica will handle reports processing at any given time.
