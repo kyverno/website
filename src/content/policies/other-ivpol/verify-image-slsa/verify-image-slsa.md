@@ -14,7 +14,7 @@ createdAt: "2026-05-20T07:15:05.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-image-slsa/verify-image-slsa.yaml" target="-blank">/other-ivpol/verify-image-slsa/verify-image-slsa.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-ivpol/verify-image-slsa/verify-image-slsa.yaml" target="_blank" rel="noopener noreferrer">/other-ivpol/verify-image-slsa/verify-image-slsa.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

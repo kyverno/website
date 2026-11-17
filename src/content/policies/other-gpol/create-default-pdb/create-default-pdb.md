@@ -14,7 +14,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-gpol/create-default-pdb/create-default-pdb.yaml" target="-blank">/other-gpol/create-default-pdb/create-default-pdb.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-gpol/create-default-pdb/create-default-pdb.yaml" target="_blank" rel="noopener noreferrer">/other-gpol/create-default-pdb/create-default-pdb.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

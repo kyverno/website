@@ -14,7 +14,7 @@ createdAt: "2026-10-25T00:12:26.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/applicationset-name-matches-project/applicationset-name-matches-project.yaml" target="-blank">/argo-vpol/applicationset-name-matches-project/applicationset-name-matches-project.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/applicationset-name-matches-project/applicationset-name-matches-project.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/applicationset-name-matches-project/applicationset-name-matches-project.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

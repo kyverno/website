@@ -99,7 +99,7 @@ npm run codegen:cli-docs -- release-1.17
 ./scripts/codegen-cli-docs.sh
 ```
 
-When a positional argument is provided, it is used directly as the image tag (e.g. `release-1.17`, `latest`). In auto mode, the website branch is mapped: `release-x-y` → `release-x.y`, else `latest`.
+When a positional argument is provided, it is used directly as the image tag (e.g. `release-1.20`, `latest`). In auto mode, `release-x.y` branches use the matching image tag. Legacy `release-x-y` and `release-x-y-z` branch names are also mapped to `release-x.y`; other branches use `latest`.
 
 ### How it works
 

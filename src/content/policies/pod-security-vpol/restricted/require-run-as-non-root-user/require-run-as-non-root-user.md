@@ -8,13 +8,13 @@ subjects:
 tags:
   - Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.19.1
-description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them.'
+description: 'Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them. Missing or null init and ephemeral container lists are treated as empty.'
 createdAt: "2025-06-26T07:48:12.000Z"
 ---
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml" target="_blank" rel="noopener noreferrer">/pod-security-vpol/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -29,7 +29,7 @@ metadata:
     policies.kyverno.io/minversion: 1.19.1
     kyverno.io/kyverno-version: 1.14.0
     kyverno.io/kubernetes-version: 1.30+
-    policies.kyverno.io/description: "Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them."
+    policies.kyverno.io/description: "Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero. Pods that set `spec.hostUsers: false` are exempt, as in Pod Security Standards v1.35 and later. Pod Security Admission on earlier Kubernetes versions does not exempt them. Missing or null init and ephemeral container lists are treated as empty."
 spec:
   validationActions:
     - Audit
@@ -82,7 +82,7 @@ spec:
     - name: podSpec
       expression: object.spec.?jobTemplate.?spec.?template.?spec.orValue( object.spec.?template.?spec.orValue(object.spec))
     - name: allContainers
-      expression: variables.podSpec.containers + variables.podSpec.?initContainers.orValue([]) + variables.podSpec.?ephemeralContainers.orValue([])
+      expression: "variables.podSpec.containers + (variables.podSpec.?initContainers.orValue([]) == null ? [] : variables.podSpec.?initContainers.orValue([])) + (variables.podSpec.?ephemeralContainers.orValue([]) == null ? [] : variables.podSpec.?ephemeralContainers.orValue([]))"
     - name: userNamespacePod
       expression: variables.podSpec.?hostUsers.orValue(true) == false
   validations:

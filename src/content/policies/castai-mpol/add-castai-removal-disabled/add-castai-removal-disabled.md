@@ -15,7 +15,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/castai-mpol/add-castai-removal-disabled/add-castai-removal-disabled.yaml" target="-blank">/castai-mpol/add-castai-removal-disabled/add-castai-removal-disabled.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/castai-mpol/add-castai-removal-disabled/add-castai-removal-disabled.yaml" target="_blank" rel="noopener noreferrer">/castai-mpol/add-castai-removal-disabled/add-castai-removal-disabled.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

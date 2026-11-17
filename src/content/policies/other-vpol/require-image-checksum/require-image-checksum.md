@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-image-checksum/require-image-checksum.yaml" target="-blank">/other-vpol/require-image-checksum/require-image-checksum.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/require-image-checksum/require-image-checksum.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/require-image-checksum/require-image-checksum.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

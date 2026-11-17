@@ -14,7 +14,7 @@ createdAt: "2026-02-12T12:56:39.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-node-port/restrict-node-port.yaml" target="-blank">/best-practices-vpol/restrict-node-port/restrict-node-port.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-node-port/restrict-node-port.yaml" target="_blank" rel="noopener noreferrer">/best-practices-vpol/restrict-node-port/restrict-node-port.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

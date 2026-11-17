@@ -13,7 +13,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/label-existing-namespaces/label-existing-namespaces.yaml" target="-blank">/other-mpol/label-existing-namespaces/label-existing-namespaces.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/label-existing-namespaces/label-existing-namespaces.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/label-existing-namespaces/label-existing-namespaces.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

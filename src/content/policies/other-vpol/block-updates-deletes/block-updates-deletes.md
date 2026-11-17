@@ -14,7 +14,7 @@ createdAt: "2025-12-11T12:49:35.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-updates-deletes/block-updates-deletes.yaml" target="-blank">/other-vpol/block-updates-deletes/block-updates-deletes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/block-updates-deletes/block-updates-deletes.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/block-updates-deletes/block-updates-deletes.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

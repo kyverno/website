@@ -1,0 +1,56 @@
+---
+title: 'Enforce AppProject with clusterResourceBlacklist in CEL expressions'
+category: validate
+severity: medium
+type: ValidatingPolicy
+subjects:
+  - AppProject
+tags:
+  - Argo in CEL
+version: 1.17.0
+description: 'An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy enforces that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.'
+createdAt: "2026-11-03T06:26:43.000Z"
+---
+
+## Policy Definition
+
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml</a>
+
+```yaml
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: appproject-clusterresourceblacklist
+  annotations:
+    policies.kyverno.io/title: Enforce AppProject with clusterResourceBlacklist in CEL expressions
+    policies.kyverno.io/category: Argo in CEL
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.17.0
+    policies.kyverno.io/minversion: 1.17.0
+    kyverno.io/kubernetes-version: 1.34-1.35
+    policies.kyverno.io/subject: AppProject
+    policies.kyverno.io/description: An AppProject may optionally specify clusterResourceBlacklist which is a blacklisted group of cluster resources. This is often a good practice to ensure AppProjects do not allow more access than needed. This policy enforces that all AppProjects specify clusterResourceBlacklist and that their group and kind have wildcards as values.
+spec:
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - argoproj.io
+        apiVersions:
+          - v1alpha1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - appprojects
+  validations:
+    - message: AppProject must specify a non-empty clusterResourceBlacklist.
+      expression: has(object.spec.clusterResourceBlacklist) && size(object.spec.clusterResourceBlacklist) > 0
+    - message: Wildcards must be present in group and kind for clusterResourceBlacklist.
+      expression: "!has(object.spec.clusterResourceBlacklist) || object.spec.clusterResourceBlacklist.all(element, element.group.contains('*') && element.kind.contains('*'))"
+
+```

@@ -15,7 +15,6 @@ import wayfairIcon from '../assets/product-icons/wayfair-icon.svg'
 import yahooIcon from '../assets/product-icons/yahoo-icon.svg'
 
 export {
-  compatibilityMatrix,
   documentationVersions,
   latestStableVersion as lastestStableVersion,
 } from './version'

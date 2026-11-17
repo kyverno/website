@@ -1,37 +1,40 @@
 ---
-title: "kyverno create exception"
+title: "kyverno oci resolve"
 weight: 35
 ---
-## kyverno create exception
+## kyverno oci resolve
 
-Create a Kyverno policy exception file.
+Resolve a bundle tag to its immutable digest and print a digest-pinned reference you can pass to "kyverno test", "kyverno apply", "kyverno oci pull", or a Flux OCIRepository.
 
 ### Synopsis
 
-Create a Kyverno policy exception file.
+Resolve a bundle tag to its immutable digest and print a digest-pinned reference you can pass to "kyverno test", "kyverno apply", "kyverno oci pull", or a Flux OCIRepository.
+  The command fetches the manifest and config, checks that it is a Kyverno bundle, and prints exactly one line to stdout; it never downloads the content layer. Use --digest-only for the bare digest.
 
 
 ```
-kyverno create exception [name] [flags]
+kyverno oci resolve [flags]
 ```
 
 ### Examples
 
 ```
-  # Create a policy exception file
-  kyverno create exception my-exception --namespace my-ns --policy-rules "policy,rule-1,rule-2" --any "kind=Pod,kind=Deployment,name=test-*"
+  # Resolve a tag to its digest-pinned reference
+  kyverno oci resolve -i ghcr.io/acme/baseline:v1.0.0
+
+  # Run kyverno test against the resolved, digest-pinned bundle
+  kyverno test oci://$(kyverno oci resolve -i ghcr.io/acme/baseline:v1.0.0)
+
+  # Print only the bare digest
+  kyverno oci resolve -i ghcr.io/acme/baseline:v1.0.0 --digest-only
 ```
 
 ### Options
 
 ```
-      --all stringArray                                        List of resource filters
-      --any stringArray                                        List of resource filters
-  -b, --background                                             Set to false when policy shouldn't be considered in background scans (default true)
-  -h, --help                                                   help for exception
-      --namespace string                                       Policy exception namespace
-  -o, --output string                                          Output path (uses standard console output if not set)
-      --policy-rules --policy-rules=policy,rule-1,rule-2,...   Policy name, followed by rule names (--policy-rules=policy,rule-1,rule-2,...)
+      --digest-only    print only the digest (sha256:...) instead of the full digest-pinned reference
+  -h, --help           help for resolve
+  -i, --image string   image reference (tag or digest) of a pushed bundle to resolve
 ```
 
 ### Options inherited from parent commands
@@ -57,5 +60,5 @@ kyverno create exception [name] [flags]
 
 ### SEE ALSO
 
-* [kyverno create](/docs/kyverno-cli/reference/kyverno_create)	 - Helps with the creation of various Kyverno resources.
+* [kyverno oci](/docs/kyverno-cli/reference/kyverno_oci)	 - Pushes, pulls, validates, inspects, and resolves Kyverno CEL Policy Bundles in OCI registries. See "kyverno oci <subcommand> --help" for each subcommand's own flags and examples.
 

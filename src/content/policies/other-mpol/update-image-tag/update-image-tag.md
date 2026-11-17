@@ -14,7 +14,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/update-image-tag/update-image-tag.yaml" target="-blank">/other-mpol/update-image-tag/update-image-tag.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/update-image-tag/update-image-tag.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/update-image-tag/update-image-tag.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2025-11-04T10:13:04.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-ndots/add-ndots.yaml" target="-blank">/other-mpol/add-ndots/add-ndots.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/add-ndots/add-ndots.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/add-ndots/add-ndots.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

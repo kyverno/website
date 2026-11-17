@@ -14,7 +14,7 @@ createdAt: "2026-10-25T00:09:09.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-gpol/argo-cluster-generation-from-rancher-capi/argo-cluster-generation-from-rancher-capi.yaml" target="-blank">/argo-gpol/argo-cluster-generation-from-rancher-capi/argo-cluster-generation-from-rancher-capi.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-gpol/argo-cluster-generation-from-rancher-capi/argo-cluster-generation-from-rancher-capi.yaml" target="_blank" rel="noopener noreferrer">/argo-gpol/argo-cluster-generation-from-rancher-capi/argo-cluster-generation-from-rancher-capi.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

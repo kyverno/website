@@ -15,7 +15,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml" target="-blank">/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml" target="_blank" rel="noopener noreferrer">/kubecost-mpol/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

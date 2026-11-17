@@ -14,7 +14,7 @@ createdAt: "2026-10-25T00:05:07.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-field-validation/application-field-validation.yaml" target="-blank">/argo-vpol/application-field-validation/application-field-validation.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-field-validation/application-field-validation.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/application-field-validation/application-field-validation.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

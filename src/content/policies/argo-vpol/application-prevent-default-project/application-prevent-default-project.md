@@ -14,7 +14,7 @@ createdAt: "2026-04-12T16:53:01.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-prevent-default-project/application-prevent-default-project.yaml" target="-blank">/argo-vpol/application-prevent-default-project/application-prevent-default-project.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/argo-vpol/application-prevent-default-project/application-prevent-default-project.yaml" target="_blank" rel="noopener noreferrer">/argo-vpol/application-prevent-default-project/application-prevent-default-project.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2026-04-09T07:23:52.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-coco-initdata/inject-coco-initdata.yaml" target="-blank">/other-mpol/inject-coco-initdata/inject-coco-initdata.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-coco-initdata/inject-coco-initdata.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/inject-coco-initdata/inject-coco-initdata.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

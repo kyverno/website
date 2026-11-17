@@ -14,7 +14,7 @@ createdAt: "2026-02-12T11:17:00.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-probes/require-probes.yaml" target="-blank">/best-practices-vpol/require-probes/require-probes.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/require-probes/require-probes.yaml" target="_blank" rel="noopener noreferrer">/best-practices-vpol/require-probes/require-probes.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -14,7 +14,7 @@ createdAt: "2026-10-22T06:16:20.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/disallow-proc-mount-strict/disallow-proc-mount-strict.yaml" target="-blank">/pod-security-vpol/restricted/disallow-proc-mount-strict/disallow-proc-mount-strict.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/pod-security-vpol/restricted/disallow-proc-mount-strict/disallow-proc-mount-strict.yaml" target="_blank" rel="noopener noreferrer">/pod-security-vpol/restricted/disallow-proc-mount-strict/disallow-proc-mount-strict.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

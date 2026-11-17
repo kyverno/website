@@ -14,7 +14,7 @@ createdAt: "2026-04-09T07:23:52.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-kata-cc-runtime/inject-kata-cc-runtime.yaml" target="-blank">/other-mpol/inject-kata-cc-runtime/inject-kata-cc-runtime.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-kata-cc-runtime/inject-kata-cc-runtime.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/inject-kata-cc-runtime/inject-kata-cc-runtime.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

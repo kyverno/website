@@ -9,13 +9,13 @@ Generate the autocompletion script for kyverno for the specified shell.
 ### Synopsis
 
 Generate the autocompletion script for kyverno for the specified shell.
-  
+
   Shell autocompletion enables tab completion for kyverno commands, subcommands, flags, and arguments.
   This significantly improves CLI usability by providing command suggestions and reducing typing.
-  
+
   The generated script contains shell-specific functions that integrate with your shell's
   completion system to provide intelligent command completion when you press the Tab key.
-  
+
   To enable autocompletion, source the generated script in your shell profile or save it
   to your shell's completion directory. See the examples below for shell-specific instructions.
 

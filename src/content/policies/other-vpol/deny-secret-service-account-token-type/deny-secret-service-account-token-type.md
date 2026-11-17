@@ -15,7 +15,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml" target="-blank">/other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/deny-secret-service-account-token-type/deny-secret-service-account-token-type.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

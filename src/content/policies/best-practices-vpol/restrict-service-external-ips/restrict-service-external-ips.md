@@ -13,7 +13,7 @@ createdAt: "2026-02-12T12:56:39.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-service-external-ips/restrict-service-external-ips.yaml" target="-blank">/best-practices-vpol/restrict-service-external-ips/restrict-service-external-ips.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-vpol/restrict-service-external-ips/restrict-service-external-ips.yaml" target="_blank" rel="noopener noreferrer">/best-practices-vpol/restrict-service-external-ips/restrict-service-external-ips.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

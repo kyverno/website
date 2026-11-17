@@ -13,7 +13,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml" target="-blank">/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/resolve-image-to-digest/resolve-image-to-digest.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

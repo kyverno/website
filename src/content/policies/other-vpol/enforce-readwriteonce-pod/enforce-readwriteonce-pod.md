@@ -14,7 +14,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml" target="-blank">/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

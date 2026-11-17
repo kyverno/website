@@ -13,7 +13,7 @@ createdAt: "2026-04-09T07:23:52.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-coco-mtls-sidecar/inject-coco-mtls-sidecar.yaml" target="-blank">/other-mpol/inject-coco-mtls-sidecar/inject-coco-mtls-sidecar.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/inject-coco-mtls-sidecar/inject-coco-mtls-sidecar.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/inject-coco-mtls-sidecar/inject-coco-mtls-sidecar.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -9,9 +9,9 @@ Generates reference documentation.
 ### Synopsis
 
 Generates reference documentation.
-  
+
   The docs command generates Kyverno CLI reference documentation.
-  
+
   It can be used to generate simple markdown files or markdown to be used for the website.
 
 

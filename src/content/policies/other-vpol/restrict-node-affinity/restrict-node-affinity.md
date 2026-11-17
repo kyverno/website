@@ -13,7 +13,7 @@ createdAt: "2025-09-04T05:15:25.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml" target="-blank">/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/restrict-node-affinity/restrict-node-affinity.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -15,7 +15,7 @@ createdAt: "2025-11-18T07:36:13.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/label-nodes-cri/label-nodes-cri.yaml" target="-blank">/other-mpol/label-nodes-cri/label-nodes-cri.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/label-nodes-cri/label-nodes-cri.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/label-nodes-cri/label-nodes-cri.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

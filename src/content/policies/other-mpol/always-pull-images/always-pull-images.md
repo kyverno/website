@@ -14,7 +14,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/always-pull-images/always-pull-images.yaml" target="-blank">/other-mpol/always-pull-images/always-pull-images.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/always-pull-images/always-pull-images.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/always-pull-images/always-pull-images.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

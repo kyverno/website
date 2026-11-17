@@ -15,7 +15,7 @@ createdAt: "2025-10-30T08:57:55.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml" target="-blank">/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml" target="_blank" rel="noopener noreferrer">/best-practices-mpol/add-safe-to-evict/add-safe-to-evict.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

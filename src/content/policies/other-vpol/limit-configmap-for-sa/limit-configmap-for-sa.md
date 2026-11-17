@@ -14,7 +14,7 @@ createdAt: "2026-02-12T11:17:00.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-configmap-for-sa/limit-configmap-for-sa.yaml" target="-blank">/other-vpol/limit-configmap-for-sa/limit-configmap-for-sa.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-vpol/limit-configmap-for-sa/limit-configmap-for-sa.yaml" target="_blank" rel="noopener noreferrer">/other-vpol/limit-configmap-for-sa/limit-configmap-for-sa.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

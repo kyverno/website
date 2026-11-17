@@ -15,7 +15,7 @@ createdAt: "2025-10-30T07:20:03.000Z"
 
 ## Policy Definition
 
-<a href="https://github.com/kyverno/policies/raw/main/other-mpol/disable-service-discovery/disable-service-discovery.yaml" target="-blank">/other-mpol/disable-service-discovery/disable-service-discovery.yaml</a>
+<a href="https://github.com/kyverno/policies/raw/main/other-mpol/disable-service-discovery/disable-service-discovery.yaml" target="_blank" rel="noopener noreferrer">/other-mpol/disable-service-discovery/disable-service-discovery.yaml</a>
 
 ```yaml
 apiVersion: policies.kyverno.io/v1

@@ -56,7 +56,7 @@ First time contributing to open source? Don't worry, maintainers and community m
 #### Pull request automation
 
 PR automation uses the shared action maintained in
-[kyverno/kyverno](https://github.com/kyverno/kyverno/tree/main/.github/actions/pr-management).
+[kyverno/assistant](https://github.com/kyverno/assistant/tree/main/.github/actions/pr-management).
 Path labels continue to apply automatically. The hourly readiness check and daily
 stale sweep initially run in **preview mode**: they log proposed changes but do
 not label, comment on, or close PRs.
@@ -81,8 +81,8 @@ scheduled readiness after reviewing its preview, replace that job's `dry-run` ex
 `.github/workflows/pr-management.yaml`. Enable the stale job separately only
 after reviewing the backlog and exemptions. Reviewer reminders use
 `@kyverno/website-maintainers` when no reviewer or assignee is available.
-Repository settings live in `.github/pr-management.json`, readiness rules in
-`.github/pr-readiness-checks.yml`, and label definitions in `.github/labels.yml`.
+Repository settings live in `.github/pr-management.json`, label definitions in `.github/labels.yml`, and
+readiness uses the shared action's built-in checks (add `.github/pr-readiness-checks.yml` to change them).
 Action updates must remain pinned to a reviewed commit SHA.
 
 #### Overview
