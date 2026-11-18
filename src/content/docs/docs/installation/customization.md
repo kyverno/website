@@ -264,6 +264,14 @@ The following `ClusterRoles` provide Kyverno with permissions to policies and ot
 The Kyverno admission, background, and reports controller have a role binding to the built-in `view` role. This allows these Kyverno controllers view access to most namespaced resources. You can customize this role during Helm installation using the variables `admissionController.rbac.viewRoleName`, `backgroundController.rbac.viewRoleName`, and `reportsController.rbac.viewRoleName`.
 :::
 
+#### User-facing Roles
+
+Kyverno also installs ClusterRoles named `kyverno:rbac:admin:*` and `kyverno:rbac:view:*`. These are aggregated into the Kubernetes default user-facing [`admin` and `view` roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles), granting users holding those roles access to Kyverno resources such as policies, PolicyExceptions (both the `kyverno.io` and `policies.kyverno.io` API groups), GlobalContextEntries, and reports.
+
+UpdateRequests embed the full admission request, which may contain sensitive data. They are therefore only aggregated into the `admin` role and not into the `view` role.
+
+You can disable the aggregation during Helm installation using the variables `rbac.roles.aggregate.view` and `rbac.roles.aggregate.admin`, both of which default to `true`.
+
 #### Customizing Permissions
 
 Kyverno's default permissions are designed to cover commonly used and security non-critical resources. Hence, Kyverno will need to be configured with additional permissions for CRDs, or to allow access to security critical resources.
