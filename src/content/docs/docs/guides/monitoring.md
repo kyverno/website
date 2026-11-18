@@ -731,9 +731,9 @@ Additional commented-out example rules are in the chart's `values.yaml` under `p
 
 Both histogram metrics expose `_bucket`, `_sum`, and `_count` series, so `histogram_quantile` is supported.
 
-### Alert Runbook {#alerting-runbook}
+### Alert Runbook
 
-#### Admission latency high {#admission-latency-high}
+#### Admission latency high
 
 **Symptom:** p99 admission review duration is above threshold for more than 5 minutes.
 
@@ -759,7 +759,7 @@ kubectl get events -n kyverno --sort-by='.lastTimestamp' | tail -20
 2. If policy-complexity-bound: review recently added policies; consider background mode for non-urgent validate rules
 3. If approaching the Kubernetes timeout: follow the [API server is blocked](/docs/guides/troubleshooting#api-server-is-blocked) troubleshooting steps to reduce scope while investigating
 
-#### Policy execution latency high {#policy-execution-latency-high}
+#### Policy execution latency high
 
 **Symptom:** p99 per-rule execution duration is above threshold for more than 5 minutes.
 
