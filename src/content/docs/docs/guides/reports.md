@@ -177,6 +177,8 @@ OpenReports integration was introduced as an alpha feature in Kyverno 1.15.
 
 Kyverno can report results for Kubernetes `ValidatingAdmissionPolicy` resources and their bindings. Enable `--validatingAdmissionPolicyReports=true` on the reports controller; this flag is disabled by default.
 
+Reporting is opt-in per policy. Each `ValidatingAdmissionPolicy` (or `MutatingAdmissionPolicy`) that should appear in reports must carry the `reports.kyverno.io/enabled: 'true'` label. Policies without this label are ignored by the reports controller, even when the flag is enabled.
+
 For example, apply a policy and binding that check Deployment replica counts:
 
 ```yaml
@@ -184,6 +186,8 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: check-deployment-replicas
+  labels:
+    reports.kyverno.io/enabled: 'true'
 spec:
   matchConstraints:
     resourceRules:
@@ -217,3 +221,27 @@ kubectl get policyreport -n staging -o yaml
 ```
 
 After the background scan, the report records a failed `check-deployment-replicas` result for the Deployment because it exceeds five replicas.
+
+### Policies with a paramKind
+
+The reports controller needs `get`, `list`, and `watch` permissions for the resources it evaluates. When a `ValidatingAdmissionPolicy` sets `spec.paramKind`, the controller also reads the parameter resources referenced by its bindings. If the paramKind is not covered by the controller's role, the controller logs `failed to collect params` errors for that policy, and the report for every resource the policy matches stops updating, including the results of other policies on those resources.
+
+Grant read access with a ClusterRole that carries the `rbac.kyverno.io/aggregate-to-reports-controller: 'true'` label, which aggregates it into the reports controller's role. For example, for a cluster-scoped paramKind of `ValidatingWebhookConfiguration`:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:reports-controller:webhook-configurations
+  labels:
+    rbac.kyverno.io/aggregate-to-reports-controller: 'true'
+rules:
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+```
