@@ -6,10 +6,10 @@ tags:
 excerpt: Kyverno 1.20 makes CEL-based policy types the only engine, and adds private Sigstore and GitHub attestations, kyverno oci policy bundles, explainable decisions and JSON mutation for any payload
 draft: false
 featured: true
-coverImage: kyverno-1-20-release.jpg
+coverImage: assets/kyverno-1-20-release.jpg
 ---
 
-![Kyverno 1.20: 397 PRs merged, 48 new features, 178 bug fixes, 7 CVEs resolved, 81 contributors, 43 first-time contributors](./kyverno-1-20-release.jpg)
+![Kyverno 1.20: 397 PRs merged, 48 new features, 178 bug fixes, 7 CVEs resolved, 81 contributors, 43 first-time contributors](assets/kyverno-1-20-release.jpg)
 
 We're excited to announce **Kyverno 1.20**, the first release where the CEL-based policy types are _the_ way to write Kyverno policy. In 1.19 the CEL types reached full feature parity with `ClusterPolicy`; in 1.20 they replace the legacy `ClusterPolicy` and `CleanupPolicy` types outright.
 
