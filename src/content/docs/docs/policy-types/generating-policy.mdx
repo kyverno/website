@@ -29,6 +29,14 @@ Key Benefits:
 
 For example, the following policy automatically clones an image pull secret from the default namespace into any newly created Namespace:
 
+- **Kubernetes-Native Alignment:** Uses a familiar, CEL-based approach that integrates smoothly with the broader Kubernetes ecosystem.
+
+:::note
+The policy author check relies exclusively on Kubernetes RBAC. If you are using an EKS access entry (e.g., `AmazonEKSClusterAdminPolicy`), the check will not automatically recognize those permissions. You must create a `ClusterRoleBinding` for the Kubernetes group associated with the access entry to successfully apply generating policies.
+:::
+
+For example, the following policy automatically clones an image pull secret from the default namespace into any newly created Namespace:
+
 ```yaml
 apiVersion: policies.kyverno.io/v1
 kind: GeneratingPolicy
