@@ -7,7 +7,7 @@ excerpt: Custom Resource Definitions (CRDs) for Kyverno policies and supporting 
 
 Kyverno uses Kubernetes Custom Resource Definitions (CRDs) for [policies and supporting resources](/docs/policy-types/overview).
 
-The complete [Kyverno CRD reference](https://htmlpreview.github.io/?https://github.com/kyverno/kyverno/blob/main/docs/user/crd/index.html) is generated from [API type definitions](https://github.com/kyverno/kyverno/tree/main/api). Use the documentation version selector when you need the schemas for an older release.
+The complete [Kyverno CRD reference](https://kubespec.dev/kyverno) is generated from API type definitions in the [kyverno](https://github.com/kyverno/kyverno/tree/main/api) and [kyverno/api](https://github.com/kyverno/api) repositories. Use the documentation version selector when you need the schemas for an older release.
 
 ## kubectl explain
 
