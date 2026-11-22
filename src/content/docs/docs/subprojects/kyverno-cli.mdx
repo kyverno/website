@@ -75,6 +75,27 @@ make build-cli
 sudo mv ./cmd/cli/kubectl-kyverno/kubectl-kyverno /usr/local/bin/
 ```
 
+## Shell completion
+
+To enable Tab completion in the current Bash session, load the completion script:
+
+```bash
+source <(kyverno completion bash)
+```
+
+For other shells and instructions on enabling completion in future sessions, see the [`kyverno completion` reference](/docs/kyverno-cli/reference/kyverno_completion).
+
+### Completing an output format
+
+In CLI builds that include [output format completion](https://github.com/kyverno/kyverno/pull/18756), pressing Tab after either flag suggests only supported format names and suppresses filename suggestions.
+
+| Command           | Flag                    | Supported formats                   |
+| ----------------- | ----------------------- | ----------------------------------- |
+| `kyverno version` | `--output`, `-o`        | `json`, `yaml`                      |
+| `kyverno test`    | `--output-format`, `-o` | `json`, `yaml`, `markdown`, `junit` |
+
+To complete a partial value, type `kyverno test . --output-format=ju` and press Tab. The shell completes `ju` to `junit`.
+
 ## Apply Command
 
 The `apply` command evaluates supported CEL-based Kyverno policies and Kubernetes-native admission policies against resource manifests, or against resources in a cluster when `--cluster` is specified. It can also show mutations and generate policy reports for supported policy types.
