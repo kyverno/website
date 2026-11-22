@@ -166,6 +166,85 @@ If the EKS cluster uses your own security group, some of the network traffic fro
 
 The second most common reason policies may fail to operate per design is due to variables. To see the values Kyverno is substituting for variables, increase logging to level `4` by setting the container flag `-v=4`. You can `grep` for the string `variable` (or use tools such as [stern](https://github.com/stern/stern)) and only see the values being substituted for those variables.
 
+For a ValidatingPolicy, MutatingPolicy or ImageValidatingPolicy, decision traces show how the policy reached its result, including the value of each variable. See [Explaining policy decisions in a cluster](#explaining-policy-decisions-in-a-cluster), or run the policy against the resource with [`kyverno apply --explain`](/docs/subprojects/kyverno-cli#explaining-policy-decisions).
+
+## Explaining policy decisions in a cluster
+
+**Symptom**: A ValidatingPolicy, MutatingPolicy or ImageValidatingPolicy allows, denies or changes a resource, and it is not clear why.
+
+**Solution**: Turn on decision traces in the admission controller (alpha, from Kyverno 1.20). For each admission decision, the admission controller then logs a trace: whether the policy applied to the resource, what each match condition and variable resolved to, the result of each validation or mutation, and, for a decision that did not pass, the value of each part of the expression that decided it. Traces only go to the log: the admission response, policy reports and events are the same as without them.
+
+Set the `enableDecisionTraces` [container flag](/docs/installation/customization#container-flags) on the admission controller. With Helm, JSON logs make the traces easier to read:
+
+```sh
+helm upgrade kyverno kyverno/kyverno -n kyverno --reuse-values \
+  --set admissionController.container.extraArgs.enableDecisionTraces=true \
+  --set features.logging.format=json \
+  --set features.logging.verbosity=3
+```
+
+The flag is read at startup, so changing it restarts the admission controller. Policies are not affected.
+
+Which decisions are logged depends on the verbosity:
+
+| Verbosity     | Decisions logged                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| `2` (default) | `FAIL` and `ERROR`                                                                          |
+| `3`           | also `PASS` and `SKIP`                                                                      |
+| `4`           | also policies whose `matchConstraints` do not select the resource, which most requests have |
+
+Each trace is one log line, under a logger whose name ends in `decision-trace`, with the message `policy decision`. To follow only the traces:
+
+```sh
+kubectl -n kyverno logs deploy/kyverno-admission-controller -c kyverno -f \
+  | jq -Rc 'fromjson? | select((.logger // "") | endswith("decision-trace"))'
+```
+
+A line has `policy`, `policyKind` and `verdict` fields, and the trace itself under `trace`. For example, abridged:
+
+```json
+{
+  "message": "policy decision",
+  "policy": "require-team-and-app",
+  "policyKind": "ValidatingPolicy",
+  "verdict": "FAIL",
+  "trace": {
+    "scope": "matched kind Pod, namespace prod, operation CREATE",
+    "match": [
+      {
+        "name": "not-kube-system",
+        "expression": "object.metadata.namespace != 'kube-system'",
+        "result": "true"
+      }
+    ],
+    "variables": [
+      {
+        "name": "labels",
+        "expression": "object.metadata.?labels.orValue({})",
+        "result": "map[team:payments]"
+      }
+    ],
+    "verdict": {
+      "status": "FAIL",
+      "expression": "'app' in variables.labels",
+      "result": "false",
+      "message": "every pod needs an app label",
+      "evaluated": [
+        { "expression": "\"app\" in variables.labels", "value": "false" },
+        { "expression": "variables.labels", "value": "map[team:payments]" }
+      ]
+    }
+  }
+}
+```
+
+Keep in mind:
+
+- This is a debug mode. Every expression is evaluated a second time to explain it, so leave it off once you are done. An expression that calls a function that reaches outside the evaluation or returns a different value on each call, such as `http.Post`, `resource.Get` or `time.now()`, is not run a second time and shows its result without a breakdown.
+- A trace contains values read from the admitted resource, each cut to 100 characters, so treat the log as sensitive. No values are logged for a resource of kind Secret. Starting in v1.21, any value that may come from a Secret is also hidden, for example one read with `resource.Get`.
+- GeneratingPolicy and DeletingPolicy decisions are made by the background and cleanup controllers, so the admission controller does not trace them. Use `kyverno apply --explain` for those.
+- The API server only sends Kyverno the requests its webhooks select. A request that a webhook's namespace selector or match conditions leave out, or that the API server rejects first (for example, for a Namespace that does not exist), never reaches Kyverno and has no trace.
+
 ## Admission reports are stacking up
 
 **Symptom**: Admission reports keep accumulating in the cluster, taking more and more etcd space and slowing down requests.

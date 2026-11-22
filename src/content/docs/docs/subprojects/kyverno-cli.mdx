@@ -878,7 +878,7 @@ The output confirms that the CEL PolicyException worked as intended:
 
 The `--explain` flag prints, for each CEL policy and resource, how the policy reached its result: whether it applied to the resource, what each match condition and variable evaluated to, the result of each validation, and, for a check that did not pass, the value of each part of the expression that decided it. It does not change the results, the summary or the exit code.
 
-`--explain` is supported for `ValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy` and `ImageValidatingPolicy`.
+`--explain` is supported for `ValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`, `DeletingPolicy` and `ImageValidatingPolicy`. To see the same traces for the requests a cluster's admission controller decides, see [Explaining policy decisions in a cluster](/docs/guides/troubleshooting#explaining-policy-decisions-in-a-cluster).
 
 ```sh
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --explain
@@ -1017,7 +1017,15 @@ Each line of the trace belongs to one layer of the decision, in the order Kyvern
 For a `DeletingPolicy`, `PASS` means the resource would be deleted and `FAIL` that it is kept.
 
 :::caution[Sensitive values]
-The trace prints the values that expressions read, including resource fields and variables. A policy that reads a Secret's `data` prints that data. Treat the output as sensitive, for example in CI logs or when sharing it.
+The trace prints the values that expressions read, including resource fields and variables. Treat the output as sensitive, for example in CI logs or when sharing it.
+
+Starting in v1.21, a value that may come from a Secret is shown as `(redacted)`:
+
+- every value, when the resource itself is a Secret;
+- the result of `resource.Get`, `resource.List` or `resource.Post` for `secrets`, or for a resource that is not written as a literal string, and any value worked out from it, such as a variable that reads it;
+- the error of such an expression, which can quote the value it failed on.
+
+`true` and `false` are still shown, so the trace still says which checks held. In v1.20, these values are printed as they are.
 :::
 
 `--explain` cannot be combined with `--policy-report`, `--generate-exceptions` or `--stdin`, whose output must stay machine-readable.
