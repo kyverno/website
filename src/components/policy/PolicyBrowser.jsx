@@ -11,7 +11,7 @@ import {
   formatSeverityLabel,
   getSeverityOrder,
 } from './utils'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { PolicyCard } from './PolicyCard'
 import { useUrlState } from '../../hooks/useUrlState'
@@ -30,7 +30,8 @@ export const PolicyBrowser = ({ policies }) => {
   const [selectedTags, setSelectedTags] = useUrlState('tag', [])
   const [selectedTypes, setSelectedTypes] = useUrlState('type', [])
   const [activeCategoryButton, setActiveCategoryButton] = useState('all')
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useUrlState('page', 1)
+  const isInitialMount = useRef(true)
   const itemsPerPage = 24
 
   // Helper function to check if a policy matches filters (excluding a specific filter type)
@@ -225,8 +226,12 @@ export const PolicyBrowser = ({ policies }) => {
     selectedTypes,
   ])
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters change after initial mount
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
     setCurrentPage(1)
   }, [
     searchQuery,
@@ -235,6 +240,7 @@ export const PolicyBrowser = ({ policies }) => {
     selectedResources,
     selectedTags,
     selectedTypes,
+    setCurrentPage,
   ])
 
   // Keep the category tab bar in sync when selectedCategories is restored from URL
@@ -249,6 +255,13 @@ export const PolicyBrowser = ({ policies }) => {
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const paginatedPolicies = filteredPolicies.slice(startIndex, endIndex)
+
+  // Clamp currentPage if filtered results shrink totalPages below current page
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [totalPages, currentPage, setCurrentPage])
 
   const goToPage = (page) => {
     const validPage = Math.max(1, Math.min(page, totalPages))

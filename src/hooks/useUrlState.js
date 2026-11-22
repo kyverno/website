@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from 'react'
  * SSG-safe: window/history are accessed only inside useEffect (client-only).
  * Follows the VersionDropdown.jsx pattern for client-side state restore.
  *
- * @param {string} key - URL query param name (e.g. 'q', 'category')
- * @param {string|string[]} defaultValue - value used on SSR and initial CSR render
- * @returns {[string|string[], Function]} - [value, setValue] identical to useState
+ * @param {string} key - URL query param name (e.g. 'q', 'category', 'page')
+ * @param {string|string[]|number} defaultValue - value used on SSR and initial CSR render
+ * @returns {[string|string[]|number, Function]} - [value, setValue] identical to useState
  */
 export function useUrlState(key, defaultValue) {
   const isArray = Array.isArray(defaultValue)
+  const isNumber = typeof defaultValue === 'number'
   const [value, setValue] = useState(defaultValue)
   const hasMounted = useRef(false)
 
@@ -20,7 +21,16 @@ export function useUrlState(key, defaultValue) {
     const params = new URLSearchParams(window.location.search)
     const raw = params.get(key)
     if (raw !== null) {
-      setValue(isArray ? (raw ? raw.split(',') : []) : raw)
+      if (isArray) {
+        setValue(raw ? raw.split(',') : [])
+      } else if (isNumber) {
+        const parsed = parseInt(raw, 10)
+        if (!isNaN(parsed) && parsed > 0) {
+          setValue(parsed)
+        }
+      } else {
+        setValue(raw)
+      }
     }
     hasMounted.current = true
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -31,11 +41,15 @@ export function useUrlState(key, defaultValue) {
   useEffect(() => {
     if (typeof window === 'undefined' || !hasMounted.current) return
     const params = new URLSearchParams(window.location.search)
-    const isEmpty = isArray ? value.length === 0 : !value
+    const isEmpty = isArray
+      ? value.length === 0
+      : isNumber
+        ? value === defaultValue
+        : !value
     if (isEmpty) {
       params.delete(key)
     } else {
-      params.set(key, isArray ? value.join(',') : value)
+      params.set(key, isArray ? value.join(',') : String(value))
     }
     const qs = params.toString()
     history.replaceState(
