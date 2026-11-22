@@ -22,7 +22,14 @@ export function useUrlState(key, defaultValue) {
     const raw = params.get(key)
     if (raw !== null) {
       if (isArray) {
-        setValue(raw ? raw.split(',') : [])
+        setValue(
+          raw
+            ? raw
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [],
+        )
       } else if (isNumber) {
         const parsed = parseInt(raw, 10)
         if (!isNaN(parsed) && parsed > 0) {

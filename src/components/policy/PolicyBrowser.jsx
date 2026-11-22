@@ -16,6 +16,25 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { PolicyCard } from './PolicyCard'
 import { useUrlState } from '../../hooks/useUrlState'
 
+const sortFilterArray = (arr) =>
+  arr
+    ? arr
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .sort()
+        .join(',')
+    : ''
+
+const sortFilterString = (str) =>
+  str
+    ? str
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .sort()
+        .join(',')
+    : ''
+
 export const PolicyBrowser = ({ policies }) => {
   const [searchQuery, setSearchQuery] = useUrlState('q', '')
   const [selectedCategories, setSelectedCategories] = useUrlState(
@@ -31,8 +50,35 @@ export const PolicyBrowser = ({ policies }) => {
   const [selectedTypes, setSelectedTypes] = useUrlState('type', [])
   const [activeCategoryButton, setActiveCategoryButton] = useState('all')
   const [currentPage, setCurrentPage] = useUrlState('page', 1)
-  const isInitialMount = useRef(true)
   const itemsPerPage = 24
+
+  // Track initial filter values present in URL query parameters at page load
+  const initialUrlFilters = useRef(null)
+  if (initialUrlFilters.current === null) {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      initialUrlFilters.current = {
+        q: p.get('q') || '',
+        category: p.get('category') || '',
+        severity: p.get('severity') || '',
+        resource: p.get('resource') || '',
+        tag: p.get('tag') || '',
+        type: p.get('type') || '',
+      }
+    } else {
+      initialUrlFilters.current = {
+        q: '',
+        category: '',
+        severity: '',
+        resource: '',
+        tag: '',
+        type: '',
+      }
+    }
+  }
+
+  const prevFiltersRef = useRef(null)
+  const isRestoredRef = useRef(false)
 
   // Helper function to check if a policy matches filters (excluding a specific filter type)
   const matchesFilters = (policy, excludeFilter) => {
@@ -226,13 +272,56 @@ export const PolicyBrowser = ({ policies }) => {
     selectedTypes,
   ])
 
-  // Reset to page 1 when filters change after initial mount
+  // Reset to page 1 when filters change (skipping the initial URL restoration pass)
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
+    const currentFilters = {
+      q: searchQuery.trim(),
+      category: sortFilterArray(selectedCategories),
+      severity: sortFilterArray(selectedSeverities),
+      resource: sortFilterArray(selectedResources),
+      tag: sortFilterArray(selectedTags),
+      type: sortFilterArray(selectedTypes),
+    }
+
+    if (!isRestoredRef.current) {
+      const initial = initialUrlFilters.current
+      const initialSorted = {
+        q: (initial.q || '').trim(),
+        category: sortFilterString(initial.category),
+        severity: sortFilterString(initial.severity),
+        resource: sortFilterString(initial.resource),
+        tag: sortFilterString(initial.tag),
+        type: sortFilterString(initial.type),
+      }
+
+      const matchesInitial =
+        currentFilters.q === initialSorted.q &&
+        currentFilters.category === initialSorted.category &&
+        currentFilters.severity === initialSorted.severity &&
+        currentFilters.resource === initialSorted.resource &&
+        currentFilters.tag === initialSorted.tag &&
+        currentFilters.type === initialSorted.type
+
+      if (matchesInitial) {
+        isRestoredRef.current = true
+        prevFiltersRef.current = currentFilters
+      }
       return
     }
-    setCurrentPage(1)
+
+    const prev = prevFiltersRef.current
+    if (
+      prev &&
+      (prev.q !== currentFilters.q ||
+        prev.category !== currentFilters.category ||
+        prev.severity !== currentFilters.severity ||
+        prev.resource !== currentFilters.resource ||
+        prev.tag !== currentFilters.tag ||
+        prev.type !== currentFilters.type)
+    ) {
+      prevFiltersRef.current = currentFilters
+      setCurrentPage(1)
+    }
   }, [
     searchQuery,
     selectedCategories,
