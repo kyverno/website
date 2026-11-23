@@ -20,7 +20,7 @@ jobs:
       issues: write
       checks: read
       actions: read
-    uses: kyverno/assistant/.github/workflows/pr-management.yml@7ed9e0c69cd59c4a3514646796c162160e35dc63
+    uses: kyverno/assistant/.github/workflows/pr-management.yml@ae822c50407ae8cc514393191650d0d3d9d8a00b
     with:
       mode: labels
       dry-run: 'false'
