@@ -513,7 +513,8 @@ spec:
         operations: ['CREATE', 'UPDATE']
         resources: ['configmaps']
   variables:
-    triggerNamespace: request.object.metadata.name
+    - name: triggerNamespace
+      expression: request.object.metadata.name
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
