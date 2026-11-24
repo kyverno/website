@@ -3,7 +3,7 @@ date: 2026-11-12
 title: Announcing Kyverno 1.20!
 tags:
   - Releases
-excerpt: Kyverno 1.20 makes CEL-based policy types the only engine, and adds private Sigstore and GitHub attestations, kyverno oci policy bundles, explainable decisions and JSON mutation for any payload
+excerpt: Kyverno 1.20 makes CEL-based policy types the only engine, and adds private Sigstore and GitHub attestations, kyverno oci policy bundles, explainable decisions and JSON mutation for object-rooted JSON documents
 draft: false
 featured: true
 coverImage: assets/kyverno-1-20-release.jpg
@@ -69,7 +69,7 @@ For a real-world look at attestation-driven admission, see AT&T and Nirmata's Ku
 
 The Kyverno CLI is where most teams write and test policy, and 1.20 gives it three big upgrades.
 
-**Package policy sets with `kyverno oci`.** 1.20 defines an OCI bundle format for CEL policies ([#17777](https://github.com/kyverno/kyverno/pull/17777)), so a set of policies can be versioned, signed and distributed like any other artifact. New subcommands validate a bundle with CEL-aware checks, inspect it and resolve its named sets ([#18422](https://github.com/kyverno/kyverno/pull/18422), [#18423](https://github.com/kyverno/kyverno/pull/18423)), and `kyverno test` and `kyverno apply` can run directly against OCI bundles ([#17689](https://github.com/kyverno/kyverno/pull/17689)).
+**Package policy sets with `kyverno oci`.** 1.20 defines an OCI bundle format for CEL policies ([#17777](https://github.com/kyverno/kyverno/pull/17777)), so a set of policies can be versioned, signed and distributed like any other artifact. New subcommands validate a bundle with CEL-aware checks, inspect its metadata and named sets, and resolve a bundle tag to an immutable digest ([#18422](https://github.com/kyverno/kyverno/pull/18422), [#18423](https://github.com/kyverno/kyverno/pull/18423)), and `kyverno test` and `kyverno apply` can run directly against OCI bundles ([#17689](https://github.com/kyverno/kyverno/pull/17689)).
 
 **Richer tests.** `kyverno test` supports mocks, `apiCall` and context, so policies that look up live data can be tested offline and in CI. Tests now fail correctly on `messageExpression` errors ([#17863](https://github.com/kyverno/kyverno/pull/17863)), and compiled CEL providers are reused across resources for faster runs ([#18277](https://github.com/kyverno/kyverno/pull/18277)).
 
