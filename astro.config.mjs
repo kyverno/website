@@ -21,6 +21,7 @@ const checkLinksPlugin = process.env.CHECK_LINKS
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://kyverno.io',
   integrations: [
     mermaid(),
     starlight({
