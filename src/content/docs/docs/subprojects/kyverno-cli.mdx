@@ -889,7 +889,7 @@ For example, this `ValidatingPolicy` requires `team` and `app` labels and no `:l
 Policy manifest (require-team-and-app.yaml):
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: ValidatingPolicy
 metadata:
   name: require-team-and-app
@@ -1576,7 +1576,7 @@ data:
 Test manifest (kyverno-test.yaml):
 
 ```yaml
-apiVersion: kyverno.io/v1
+apiVersion: cli.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: test
@@ -1740,7 +1740,7 @@ namespaceSelector:
 Test manifest (kyverno-test.yaml):
 
 ```yaml
-apiVersion: kyverno.io/v1
+apiVersion: cli.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: test

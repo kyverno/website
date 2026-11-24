@@ -539,7 +539,7 @@ As of kyverno 1.17, its possible to select mutation targets with a CEL expressio
 The following policy will target a configmap resource called `test-cm-1` in the same namespace as the trigger object.
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: test-mpol-different-trigger-target-expression
@@ -599,7 +599,7 @@ A native Kubernetes `MutatingAdmissionPolicy` does not support referencing `vari
 The `targetMatchConditions` field defines CEL conditions evaluated against each resolved target resource, after variables and target resolution. This allows filtering which targets are mutated, using both target state (`object`) and trigger data (through `variables`).
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: filter-targets
@@ -645,7 +645,7 @@ In this example, a Deployment event triggers mutation of only those existing Con
 Target resource rules may declare a subresource. Kyverno resolves the target through its parent resource and persists the mutation through the declared subresource endpoint. This enables use cases such as in-place Pod vertical scaling through the `pods/resize` subresource (Kubernetes 1.33+), where `spec.containers[*].resources` on a running Pod can only be changed via `/resize`:
 
 ```yaml
-apiVersion: policies.kyverno.io/v1beta1
+apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
   name: cap-cpu-requests
