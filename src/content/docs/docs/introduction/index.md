@@ -10,7 +10,7 @@ excerpt: Learn about Kyverno and its powerful capabilities
 
 In cloud native systems, policies are configurations that manage other configurations or runtime behaviors.
 
-The <a href="https://github.com/kubernetes/sig-security/blob/main/sig-security-docs/papers/policy/CNCF_Kubernetes_Policy_Management_WhitePaper_v1.pdf" target="_blank" rel="noopener">Kubernetes Policy Management</a> paper is a good reference to understand the role and implementation of policies.
+The <a href="https://github.com/kubernetes/sig-security/raw/main/sig-security-docs/papers/policy/CNCF_Kubernetes_Policy_Management_WhitePaper_v1.pdf" target="_blank" rel="noopener">Kubernetes Policy Management</a> paper is a good reference to understand the role and implementation of policies.
 
 ## Why is Policy Management necessary?
 
