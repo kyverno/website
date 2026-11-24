@@ -275,7 +275,7 @@ export const PolicyBrowser = ({ policies }) => {
   // Reset to page 1 when filters change (skipping the initial URL restoration pass)
   useEffect(() => {
     const currentFilters = {
-      q: searchQuery.trim(),
+      q: searchQuery,
       category: sortFilterArray(selectedCategories),
       severity: sortFilterArray(selectedSeverities),
       resource: sortFilterArray(selectedResources),
@@ -286,7 +286,7 @@ export const PolicyBrowser = ({ policies }) => {
     if (!isRestoredRef.current) {
       const initial = initialUrlFilters.current
       const initialSorted = {
-        q: (initial.q || '').trim(),
+        q: initial.q || '',
         category: sortFilterString(initial.category),
         severity: sortFilterString(initial.severity),
         resource: sortFilterString(initial.resource),
@@ -347,10 +347,10 @@ export const PolicyBrowser = ({ policies }) => {
 
   // Clamp currentPage if filtered results shrink totalPages below current page
   useEffect(() => {
-    if (totalPages > 0 && currentPage > totalPages) {
-      setCurrentPage(totalPages)
+    if (totalPages > 0) {
+      setCurrentPage((page) => Math.max(1, Math.min(page, totalPages)))
     }
-  }, [totalPages, currentPage, setCurrentPage])
+  }, [totalPages, setCurrentPage])
 
   const goToPage = (page) => {
     const validPage = Math.max(1, Math.min(page, totalPages))
