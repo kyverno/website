@@ -138,6 +138,12 @@ export default defineConfig({
         },
       ],
       plugins: [starlightImageZoom(), ...checkLinksPlugin],
+      expressiveCode: {
+        shiki: {
+          // Shiki has no CEL grammar; CEL expressions highlight well as JavaScript
+          langAlias: { cel: 'javascript' },
+        },
+      },
     }),
     react(),
     markdoc(),
