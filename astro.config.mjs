@@ -21,6 +21,9 @@ const checkLinksPlugin = process.env.CHECK_LINKS
 
 // https://astro.build/config
 export default defineConfig({
+  redirects: {
+    '/docs': '/docs/introduction/',
+  },
   integrations: [
     mermaid(),
     starlight({
