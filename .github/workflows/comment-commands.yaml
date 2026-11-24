@@ -29,6 +29,8 @@ jobs:
   # /cherry-pick command, only send a message if PR is unmerged, cherry-pick if PR was already merged
   cherry-pick:
     runs-on: ubuntu-latest
+    # Holds the PR updater app secrets; its branch rules allow only main.
+    environment: pr-updater-app
     if: |
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/cherry-pick')
