@@ -642,7 +642,7 @@ spec:
         keyless:
           identities:
             - issuer: 'https://token.actions.githubusercontent.com'
-              subjectRegExp: '^https://github\\.com/nirmata/demo-attestations-kyverno/\\.github/workflows/reusable-build-attest\\.yml@refs/(heads/main|tags/v.*)$'
+              subjectRegExp: '^https://github\.com/nirmata/demo-attestations-kyverno/\.github/workflows/reusable-build-attest\.yml@refs/(heads/main|tags/v.*)$'
         trustedRoot:
           expression: variables.githubTrustedRoot
         ctlog:
