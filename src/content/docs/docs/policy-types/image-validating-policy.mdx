@@ -451,7 +451,7 @@ spec:
       cosign:
         keyless:
           identities:
-            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+            - subjectRegExp: '^https://github\.com/myorg/myrepo/\.github/workflows/.+$'
               issuer: 'https://token.actions.githubusercontent.com'
         ctlog:
           url: 'https://rekor.sigstore.dev'
@@ -500,7 +500,7 @@ spec:
         keyless:
           identities:
             - issuer: 'https://token.actions.githubusercontent.com'
-              subject: '*@myorg.github.io'
+              subjectRegExp: '^.+@myorg\.github\.io$'
   validations:
     - message: 'image must be signed by the development team'
       expression: >-
@@ -515,7 +515,7 @@ The `NamespacedImageValidatingPolicy` allows namespace owners to manage image ve
 
 This sample policy demonstrates how to verify container image signatures using Cosign keyless signing and validate the presence of a vulnerability scan attestation.
 
-Kyverno supports the use of regular expressions in identities.subjectRegExp and identities.issuerRegExp fields when configuring keyless attestors
+In a keyless identity, `subject` and `issuer` must match the signing certificate exactly, so a `*` in them is not treated as a wildcard. To match a pattern, use `subjectRegExp` or `issuerRegExp`, which take regular expressions. A regular expression can match anywhere in the value, so anchor it with `^` and `$`.
 
 ```yaml
 apiVersion: policies.kyverno.io/v1
@@ -540,7 +540,7 @@ spec:
       cosign:
         keyless:
           identities:
-            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+            - subjectRegExp: '^https://github\.com/myorg/myrepo/\.github/workflows/.+$'
               issuer: 'https://token.actions.githubusercontent.com'
         ctlog:
           url: 'https://rekor.sigstore.dev'
@@ -642,7 +642,7 @@ spec:
         keyless:
           identities:
             - issuer: 'https://token.actions.githubusercontent.com'
-              subjectRegExp: '^https://github\\.com/nirmata/demo-attestations-kyverno/\\.github/workflows/reusable-build-attest\\.yml@refs/(heads/main|tags/v.*)$'
+              subjectRegExp: '^https://github\.com/nirmata/demo-attestations-kyverno/\.github/workflows/reusable-build-attest\.yml@refs/(heads/main|tags/v.*)$'
         trustedRoot:
           expression: variables.githubTrustedRoot
         ctlog:
