@@ -442,7 +442,7 @@ This policy ensures that:
 3. All SBOMs are in CycloneDX format
 
 :::note[Note]
-The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`. The same check for an SBOM attested with cosign keyless, as a fragment of `spec`:
+The shape of the payload `extractPayload()` returns depends on how the attestation is attached. For a `referrer` attestation, as in the policy above, it is the referenced artifact itself, so a CycloneDX SBOM's fields are at the top level. When multiple Notary referrers of a type verify, `extractPayload()` returns the newest one ranked by signing time (timestamp-authority time is not used, since anyone with push access can replace it without the signing key). A Notary attestor verifies at most 30 referrers of a type by default (configurable via `--imageVerifyMaxReferrersPerType`), and results are cached for up to the cache TTL, so a newer referrer can take up to an hour to be picked up. For an `intoto` attestation, such as one made with `cosign attest`, it is the whole in-toto statement, and the predicate's fields are under `predicate`. The same check for an SBOM attested with cosign keyless, as a fragment of `spec`:
 
 ```yaml
 spec:
