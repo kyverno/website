@@ -95,4 +95,4 @@ _Thank you to my mentors, the Kyverno community, and the Linux Foundation for th
 - [Kyverno Slack Community](https://slack.k8s.io/#kyverno)
 - [Kyverno Weekly Community Meetings](https://kyverno.io/community/)
 - [LFX Mentorship Program](https://mentorship.lfx.linuxfoundation.org/)
-- [CNCF Slack](https://communityinviter.com/apps/cloud-native/cncf)
+- [CNCF Slack](https://slack.cncf.io)

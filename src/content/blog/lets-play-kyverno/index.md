@@ -67,7 +67,7 @@ Let's take a look at a small selection of these available additional features.
 
 ### Example Library
 
-In order to give new users an interactive overview of what Kyverno can do and how different use cases can be achieved within the Playground, we decided to include a small sample library based on the extensive [Kyverno Policy Repository](https://github.com/kyverno/policies). The examples provide a set of predefined policies and related resources and configurations for common use cases such as the [Pod Security Standards](https://github.com/kyverno/policies/tree/main/pod-security) and [Best Practices](https://github.com/kyverno/policies/tree/main/best-practices).
+In order to give new users an interactive overview of what Kyverno can do and how different use cases can be achieved within the Playground, we decided to include a small sample library based on the extensive [Kyverno Policy Repository](https://github.com/kyverno/policies). The examples provide a set of predefined policies and related resources and configurations for common use cases such as the [Pod Security Standards](https://github.com/kyverno/policies/tree/main/pod-security-vpol) and [Best Practices](https://github.com/kyverno/policies/tree/main/best-practices-vpol).
 
 The tutorials focus on features and how they can be simulated in the Playground, providing various examples such as upgrade operations, image verification, resource cloning, and more.
 
