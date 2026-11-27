@@ -241,7 +241,7 @@ matchConstraints:
 
 ### Validation Rules with Assertion Trees
 
-Kyverno-JSON allows Kyverno policies to be used anywhere, even for non-Kubernetes workloads. It introduces the powerful concept of [assertion trees](https://kyverno.io/blog/2023/12/13/kyverno-chainsaw-exploring-the-power-of-assertion-trees/).
+Kyverno-JSON allows Kyverno policies to be used anywhere, even for non-Kubernetes workloads. It introduces the powerful concept of [assertion trees](https://kyverno.io/blog/2023/12/13/why-chainsaw-is-unique/).
 
 Previously the [Kyverno CLI added support for assertion trees](https://kyverno.io/docs/kyverno-cli/assertion-trees/), and now in Release 1.13 assertion trees can also be used in validation rules as a sub-type.
 
