@@ -40,10 +40,9 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
    - Enable `CreateNamespace=true` if deploying to a new namespace
 
 4. **Config Preservation**
-   - By default, `config.preserve=true` is set in the Helm chart. This is useful for Helm-based install, upgrade, and uninstall scenarios.
-   - This setting enables a Helm post-delete hook, which can cause ArgoCD to show the application as out-of-sync if deployed using an App of Apps pattern.
-   - It may also prevent ArgoCD from cleaning up the Kyverno application when the parent application is deleted.
-   - **Recommendation:** Set `config.preserve=false` when deploying Kyverno via ArgoCD to ensure proper resource cleanup and sync status.
+   - By default, `config.preserve=true` is set in the Helm chart. This adds the `helm.sh/resource-policy: keep` annotation to the Kyverno ConfigMap so that it is kept when the Helm release is uninstalled.
+   - Argo CD honors this annotation too, so deleting the Kyverno application leaves the ConfigMap behind.
+   - **Recommendation:** Set `config.preserve=false` when deploying Kyverno via Argo CD so that the ConfigMap is removed together with the application.
 
 #### Complete Application Example
 
@@ -66,8 +65,8 @@ spec:
     targetRevision: <my.target.version>
     helm:
       values: |
-        webhookLabels:
-          app.kubernetes.io/managed-by: argocd
+        config:
+          preserve: false
   syncPolicy:
     automated:
       prune: true
@@ -123,12 +122,37 @@ For considerations when using Argo CD along with Kyverno mutating policies, see 
 
 #### Resource Tracking and Ownership
 
-ArgoCD automatically sets the `app.kubernetes.io/instance` label and uses it to determine which resources form the app. The Kyverno Helm chart also sets this label for the same purposes. To resolve this conflict:
+Starting with Argo CD v3.0, Argo CD [tracks resources with an annotation by default](https://argo-cd.readthedocs.io/en/stable/operator-manual/upgrading/2.14-3.0/#use-annotation-based-tracking-by-default). It records which application owns a resource in the `argocd.argoproj.io/tracking-id` annotation and no longer uses the `app.kubernetes.io/instance` label, so the label set by the Kyverno Helm chart does not get in the way. No extra configuration is needed.
 
-1. Configure ArgoCD to use a different tracking mechanism as described in the [documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/#additional-tracking-methods-via-an-annotation).
-2. Add appropriate annotations to your Application manifest.
+Label-based tracking is the default in Argo CD v2 and can still be enabled in v3. With it, Argo CD uses the `app.kubernetes.io/instance` label to determine which resources form the app, and the Kyverno Helm chart also sets this label. To avoid this conflict, switch to annotation-based tracking in the `argocd-cm` ConfigMap, as described in the Argo CD [resource tracking documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/resource_tracking/):
 
-Argo CD users may also have Kyverno add labels to webhooks via the `webhookLabels` key in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys), helpful when viewing the Kyverno application in Argo CD.
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  application.resourceTrackingMethod: annotation
+```
+
+If you need to keep label-based tracking, you can instead set `application.instanceLabelKey` in `argocd-cm` to a different label, such as `argocd.argoproj.io/instance`.
+
+##### Webhook Configurations
+
+Kyverno creates its webhook configurations at runtime, so they are not part of the rendered Helm chart. With annotation-based tracking, Argo CD does not track them: they are not shown in the Kyverno application, and Argo CD does not modify or prune them. You do not need to set `config.webhookLabels`.
+
+With label-based tracking, you can show the webhook configurations in the Kyverno application by adding your tracking label to them with the `config.webhookLabels` Helm value, which sets the `webhookLabels` key in the [Kyverno ConfigMap](/docs/installation/customization#configmap-keys). Argo CD then treats them as extraneous resources, because they are not in the rendered chart. The application shows as `OutOfSync`, and with `prune: true` Argo CD deletes the webhook configurations on every sync, after which Kyverno recreates them. To prevent this, also add the [`IgnoreExtraneous`](https://argo-cd.readthedocs.io/en/stable/user-guide/compare-options/#ignoring-resources-that-are-extraneous) compare option and the [`Prune=false`](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#no-prune-resources) sync option with `config.webhookAnnotations`:
+
+```yaml
+config:
+  webhookLabels:
+    # <application.instanceLabelKey>: <Application name>
+    argocd.argoproj.io/instance: kyverno
+  webhookAnnotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+    argocd.argoproj.io/sync-options: Prune=false
+```
 
 ### Notes for OpenShift Users
 
