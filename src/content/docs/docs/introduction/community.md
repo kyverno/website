@@ -25,10 +25,10 @@ Notable adopters include:
 
 The following posts on the Kyverno blog document real-world usage patterns and adopter experiences:
 
-- **[Policy-as-Code on Alibaba Cloud ACK](https://kyverno.io/blog/2026/02/13/policy-as-code-on-alibaba-cloud-container-service-for-kubernetes-flexible-kubernetes-governance-with-kyverno/)** (2026) — Flexible Kubernetes governance with Kyverno on Alibaba Cloud Container Service for Kubernetes, co-authored by engineers from Alibaba Cloud and Nirmata.
-- **[Automating EKS CIS Compliance with Kyverno and KubeBench](https://kyverno.io/blog/2025/06/11/automating-eks-cis-compliance-with-kyverno-and-kubebench/)** (2025) — Practical approach to automating CIS compliance for Amazon EKS at scale.
-- **[PodSecurityPolicy Migration with Kyverno](https://kyverno.io/blog/2023/05/24/podsecuritypolicy-migration-with-kyverno/)** (2023) — Migration guide used widely by organizations upgrading past Kubernetes v1.25.
-- **[Simplifying OpenShift MachineSet Management Using Kyverno](https://kyverno.io/blog/2023/07/28/simplifying-openshift-machineset-management-using-kyverno/)** (2023) — Red Hat engineer demonstrates mutation use cases on OpenShift.
+- **[Policy-as-Code on Alibaba Cloud ACK](https://kyverno.io/blog/2026/02/13/alibabacloud/)** (2026) — Flexible Kubernetes governance with Kyverno on Alibaba Cloud Container Service for Kubernetes, co-authored by engineers from Alibaba Cloud and Nirmata.
+- **[Automating EKS CIS Compliance with Kyverno and KubeBench](https://kyverno.io/blog/2025/06/11/automating-cis-compliance/)** (2025) — Practical approach to automating CIS compliance for Amazon EKS at scale.
+- **[PodSecurityPolicy Migration with Kyverno](https://kyverno.io/blog/2023/05/24/psp-migration/)** (2023) — Migration guide used widely by organizations upgrading past Kubernetes v1.25.
+- **[Simplifying OpenShift MachineSet Management Using Kyverno](https://kyverno.io/blog/2023/07/28/openshift-machinesets/)** (2023) — Red Hat engineer demonstrates mutation use cases on OpenShift.
 
 ## CNCF Annual Survey Data
 
